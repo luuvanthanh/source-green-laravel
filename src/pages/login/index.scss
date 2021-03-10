@@ -1,0 +1,51 @@
+@import '@/assets/styles/mixins.scss';
+
+.login {
+  background-color: $gray-lighten-more;
+  background-position: center center;
+  background-size: cover;
+}
+
+.title {
+  margin: 0 auto;
+  max-width: rem(740);
+  padding-left: rem(20);
+  padding-right: rem(20);
+  text-align: center;
+  h1 {
+    font-weight: 900;
+    margin-bottom: rem(30);
+  }
+}
+
+.block {
+  align-self: center;
+  padding: rem(40) rem(40) rem(80);
+  position: relative;
+  width: 100%;
+  z-index: 2;
+
+  @media (max-width: $md-max-width) {
+    padding: rem(20);
+  }
+}
+
+.inner {
+  background-color: $white;
+  border-radius: 10px;
+  margin: 0 auto;
+  max-width: rem(500);
+  min-width: rem(300);
+  overflow: hidden;
+  padding: rem(50) rem(40) rem(20);
+  position: relative;
+
+  @media (max-width: $md-max-width) {
+    padding: rem(30) rem(30) rem(10);
+  }
+}
+
+.form {
+  position: relative;
+  z-index: 2;
+}
