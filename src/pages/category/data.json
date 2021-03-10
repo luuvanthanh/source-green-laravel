@@ -1,0 +1,42 @@
+{
+  "dataSource": [
+    {
+      "id": "1",
+      "ten": "Lưu trú",
+      "suDung": true
+    },
+    {
+      "id": "2",
+      "ten": "Hướng dẫn viên",
+      "suDung": true
+    },
+    {
+      "id": "3",
+      "ten": "Landtour",
+      "suDung": false
+    },
+    {
+      "id": "4",
+      "ten": "Xe",
+      "suDung": true
+    },
+    {
+      "id": "5",
+      "ten": "Vé",
+      "suDung": false
+    },
+    {
+      "id": "6",
+      "ten": "Ăn uống",
+      "suDung": true
+    },
+    {
+      "id": "7",
+      "ten": "Khác",
+      "suDung": true
+    }
+  ],
+  "column": [
+
+  ]
+}
