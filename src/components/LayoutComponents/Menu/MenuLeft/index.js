@@ -13,18 +13,18 @@ import { isValidCondition } from '@/utils/authority';
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
-const mapStateToProps = ({ menu, settings, badges }) => ({
+const mapStateToProps = ({ menu, settings, badges, user }) => ({
   menuData: menu.menuLeftData,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
   isMenuCollapsed: settings.isMenuCollapsed,
   isMobileMenuOpen: settings.isMobileMenuOpen,
+  user: user,
 });
 
 @withRouter
 @connect(mapStateToProps)
-@connect(({ user }) => ({ user }))
 class MenuLeft extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -87,8 +87,7 @@ class MenuLeft extends React.Component {
     const selectedItem = flattenItems(menuData, 'children').find((item) => {
       if (_.isArray(item.url)) {
         return item.url.filter(
-          (itemChildren) =>
-            itemChildren === this.convertPathname(props.location.pathname),
+          (itemChildren) => itemChildren === this.convertPathname(props.location.pathname),
         )[0];
       }
       return item.url === props.location.pathname;
@@ -162,35 +161,15 @@ class MenuLeft extends React.Component {
           >
             {item.target ? (
               <a href={url} rel="noopener noreferrer" target={item.target}>
-                {icon && (
-                  <span
-                    className={`${icon} ${styles.icon} icon-collapsed-hidden`}
-                  />
-                )}
+                {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
-                {pro && (
-                  <Badge
-                    className="ml-2 badge-custom"
-                    dot
-                    count={item.count || 0}
-                  />
-                )}
+                {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
               </a>
             ) : (
               <Link to={_.isArray(url) ? url[0] : url}>
-                {icon && (
-                  <span
-                    className={`${icon} ${styles.icon} icon-collapsed-hidden`}
-                  />
-                )}
+                {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
-                {pro && (
-                  <Badge
-                    className="ml-2 badge-custom"
-                    dot
-                    count={item.count || 0}
-                  />
-                )}
+                {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
               </Link>
             )}
           </Menu.Item>
@@ -204,13 +183,9 @@ class MenuLeft extends React.Component {
           key={key}
           disabled={disabled}
         >
-          {icon && (
-            <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />
-          )}
+          {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
           <span className={styles.title}>{title}</span>
-          {pro && (
-            <Badge className="ml-2 badge-custom" dot count={item.count || 0} />
-          )}
+          {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
         </Menu.Item>
       );
     };
@@ -231,15 +206,9 @@ class MenuLeft extends React.Component {
             const subMenuTitle = (
               <span key={menuItem.key}>
                 <span className={styles.title}>{menuItem.title}</span>
-                {menuItem.icon && (
-                  <span className={`${menuItem.icon} ${styles.icon}`} />
-                )}
+                {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
                 {menuItem.pro && (
-                  <Badge
-                    className="ml-2 badge-custom"
-                    dot
-                    count={menuItem.count || 0}
-                  />
+                  <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
                 )}
               </span>
             );
@@ -270,15 +239,9 @@ class MenuLeft extends React.Component {
           const subMenuTitle = (
             <span key={menuItem.key}>
               <span className={styles.title}>{menuItem.title}</span>
-              {menuItem.icon && (
-                <span className={`${menuItem.icon} ${styles.icon}`} />
-              )}
+              {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
               {menuItem.pro && (
-                <Badge
-                  className="ml-2 badge-custom"
-                  dot
-                  count={menuItem.count || 0}
-                />
+                <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
               )}
             </span>
           );
@@ -316,9 +279,7 @@ class MenuLeft extends React.Component {
     return (
       <Sider
         {...menuSettings}
-        className={
-          isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu
-        }
+        className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
       >
         <div className={styles.logo}>
           <div className={styles.logoContainer}>
@@ -327,9 +288,7 @@ class MenuLeft extends React.Component {
         </div>
         <Scrollbars
           autoHide
-          className={
-            isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop
-          }
+          className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
             <div
               {...props}

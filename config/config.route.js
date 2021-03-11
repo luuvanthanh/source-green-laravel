@@ -102,6 +102,18 @@ export default [
         ],
       },
       {
+        path: '/thoi-khoa-bieu',
+        component: './schedules/layout',
+        routes: [
+          {
+            path: '/thoi-khoa-bieu',
+            component: './schedules',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404'
       },

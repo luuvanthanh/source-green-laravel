@@ -170,7 +170,7 @@
         color: $white;
 
         .icon {
-          color: $white;
+          color: #b8beca;
         }
       }
       .title {
@@ -185,7 +185,7 @@
     :global(.ant-menu-submenu-selected),
     :global(.ant-menu-submenu-open) {
       .icon {
-        color: $white !important;
+        color: #b8beca !important;
       }
     }
 
