@@ -51,3 +51,65 @@
 .ant-picker {
   width: 100%;
 }
+
+.schedules-custom {
+  .fc-toolbar-title {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 26px;
+    display: flex;
+    align-items: center;
+    color: rgba($color: $text-dark, $alpha: 0.85);
+    text-transform: capitalize;
+  }
+  .fc-button {
+    background-color: $background-white;
+    border: 1px solid #d9d9d9;
+    color: #bfbfbf;
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: #3e4247;
+    &:disabled {
+      opacity: 1;
+      background-color: $background-white !important;
+      color: #bfbfbf !important;
+      border: 1px solid #d9d9d9 !important;
+      cursor: no-drop;
+    }
+    &.fc-button-active {
+      background-color: #12a4e7 !important;
+      border: 1px solid #12a4e7 !important;
+      color: $text-white !important;
+    }
+    .fc-icon {
+      color: #d9d9d9;
+    }
+    cursor: pointer;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: $background-white !important;
+      color: #bfbfbf !important;
+      border: 1px solid #d9d9d9 !important;
+    }
+  }
+  .fc-daygrid-event-dot {
+    border-color: $background-success;
+  }
+  .fc-event-title {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 18px;
+    color: #31434b;
+  }
+  .fc-daygrid-day-frame {
+    padding: 0 12px;
+  }
+}
