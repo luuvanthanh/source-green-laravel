@@ -10,6 +10,7 @@ import {
   Radio,
   InputNumber,
   Switch,
+  TimePicker,
 } from 'antd';
 import Select from '@/components/CommonComponent/Select';
 import styles from '@/assets/styles/Common/common.scss';
@@ -172,6 +173,13 @@ const renderChildren = (
       showTime={{ format: 'HH:mm' }}
     />
   ),
+  timeRange: (
+    <TimePicker.RangePicker
+      format={variables.DATE_FORMAT.HOUR}
+      onBlur={onBlur}
+      placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
+    />
+  ),
   treeSelect: (
     <TreeSelect
       className={styles.treeSelect}
@@ -224,7 +232,7 @@ const renderChildren = (
       ))}
     </Radio.Group>
   ),
-  switch: <Switch />,
+  switch: <Switch onChange={onChange} />,
 });
 export default function FormItem({
   type,

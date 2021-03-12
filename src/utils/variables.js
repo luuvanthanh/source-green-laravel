@@ -15,6 +15,7 @@ export const variables = {
   CASCADER: 'cascader',
   TEXTAREA: 'textArea',
   RANGE_PICKER: 'rangePicker',
+  TIME_RANGE: 'timeRange',
   TREE_SELECT: 'treeSelect',
   TREE_SELECT_ADD: 'treeSelectAdd',
   TREE_SELECT_SINGLE: 'treeSelectSingle',
@@ -61,6 +62,7 @@ export const variables = {
     DATE_TIME: 'DD-MM-YYYY HH:mm',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
+    HOUR: 'HH-mm'
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',

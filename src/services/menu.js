@@ -15,7 +15,16 @@ export async function getLeftMenuData() {
     {
       title: 'Thời khóa biểu',
       key: 'calendar',
-      url: ['/thoi-khoa-bieu'],
+      url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi'],
+      icon: 'icon icon-calendar',
+      permission: [],
+      pro: true,
+      plus: false,
+    },
+    {
+      title: 'Thực đơn cho trẻ',
+      key: 'menu',
+      url: ['/thuc-don-cho-tre', '/thuc-don-cho-tre/tao-moi'],
       icon: 'icon icon-calendar',
       permission: [],
       pro: true,

@@ -8,7 +8,6 @@ import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import allLocales from '@fullcalendar/core/locales-all';
 import FormItem from '@/components/CommonComponent/FormItem';
 import moment from 'moment';
@@ -37,9 +36,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ schedules, loading }) => ({
-  data: schedules.data,
-  pagination: schedules.pagination,
+const mapStateToProps = ({ menuKid, loading }) => ({
+  data: menuKid.data,
+  pagination: menuKid.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -93,7 +92,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'schedules/GET_DATA',
+      type: 'menuKid/GET_DATA',
       payload: {
         ...search,
         status,
@@ -197,7 +196,7 @@ class Index extends PureComponent {
     const { objects } = this.state;
     this.formRef.current.validateFields().then((values) => {
       this.props.dispatch({
-        type: !isEmpty(objects) ? 'schedules/UPDATE' : 'schedules/ADD',
+        type: !isEmpty(objects) ? 'menuKid/UPDATE' : 'menuKid/ADD',
         payload: {
           ...values,
           id: objects.id,
@@ -258,7 +257,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'schedules/REMOVE',
+          type: 'menuKid/REMOVE',
           payload: {
             id,
             pagination: {
@@ -328,8 +327,8 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { visible, objects, search } = this.state;
-    const loading = effects['schedules/GET_DATA'];
-    const loadingSubmit = effects['schedules/ADD'] || effects['schedules/UPDATE'];
+    const loading = effects['menuKid/GET_DATA'];
+    const loadingSubmit = effects['menuKid/ADD'] || effects['menuKid/UPDATE'];
     const CustomViewConfig = {
       classNames: ['custom-view'],
 
@@ -352,50 +351,7 @@ class Index extends PureComponent {
     };
     return (
       <>
-        <Helmet title="Danh sách tiêu chí - đánh giá" />
-        <Modal
-          centered
-          footer={[
-            <div className={classnames('d-flex', 'justify-content-end')} key="action">
-              <Button
-                color="white"
-                icon="cross"
-                loading={loadingSubmit}
-                onClick={this.handleCancel}
-                size="medium"
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                loading={loadingSubmit}
-                onClick={this.onFinish}
-                size="medium"
-              >
-                LƯU
-              </Button>
-            </div>,
-          ]}
-          onCancel={this.handleCancel}
-          title={
-            !isEmpty(objects) ? 'CHỈNH SỬA TIÊU CHÍ - ĐÁNH GIÁ' : 'THÊM MỚI TIÊU CHÍ - ĐÁNH GIÁ'
-          }
-          visible={visible}
-        >
-          <Form layout="vertical" ref={this.formRef}>
-            <div className="row">
-              <div className="col-lg-12">
-                <FormItem
-                  label="TÊN"
-                  name="name"
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                  type={variables.INPUT}
-                />
-              </div>
-            </div>
-          </Form>
-        </Modal>
+        <Helmet title="Lịch thực đơn" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className={styles.search}>
@@ -432,7 +388,7 @@ class Index extends PureComponent {
           </div>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">LỊCH LỚP HỌC ĐỊNH HƯỚNG</Text>
+            <Text color="dark">LỊCH THỰC ĐƠN</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
@@ -471,15 +427,15 @@ class Index extends PureComponent {
                 console.log('12');
               }}
               events={[
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 23:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 21:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 22:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 20:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 01:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 05:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 06:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 07:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 08:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 23:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 21:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 22:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 20:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 01:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 05:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 06:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 07:00:00' },
+                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 08:00:00' },
               ]}
             />
           </div>

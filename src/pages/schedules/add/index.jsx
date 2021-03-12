@@ -39,9 +39,7 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      showDescription: false,
-    };
+    this.state = {};
     setIsMounted(true);
   }
 
@@ -70,7 +68,6 @@ class Index extends PureComponent {
   };
 
   render() {
-    const { showDescription } = this.state;
     return (
       <Form
         className={styles['layout-form']}
@@ -91,7 +88,7 @@ class Index extends PureComponent {
       >
         <div className={styles['content-form']}>
           <div className="d-flex justify-content-between">
-            <Text color="dark">TẠO MỚI BỘ TIÊU CHÍ - ĐÁNH GIÁ</Text>
+            <Text color="dark">THÊM MỚI LỊCH HỌC</Text>
           </div>
           <div className={styles['content-children']}>
             <Text color="dark" size="large-medium">
@@ -101,7 +98,7 @@ class Index extends PureComponent {
               <div className="col-lg-6">
                 <FormItem
                   data={[{ id: null, name: 'Tất cả' }]}
-                  label="CẤU HÌNH LOẠI ÁP DỤNG"
+                  label="THỜI GIAN ÁP DỤNG"
                   name="config"
                   rules={[variables.RULES.MAX_LENGTH_INPUT]}
                   type={variables.SELECT}
@@ -110,10 +107,9 @@ class Index extends PureComponent {
               <div className="col-lg-6">
                 <FormItem
                   data={[{ id: null, name: 'Tất cả' }]}
-                  label="THỜI GIAN NHẬP"
+                  label="KHOẢNG THỜI GIAN"
                   name="time"
-                  rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                  type={variables.SELECT}
+                  type={variables.RANGE_PICKER}
                 />
               </div>
             </div>
@@ -131,20 +127,10 @@ class Index extends PureComponent {
                         <div className="row">
                           <div className="col-lg-6">
                             <FormItem
-                              fieldKey={[field.fieldKey, 'criteria']}
-                              label="Bộ tiêu chí cha"
-                              name={[field.name, 'criteria']}
-                              rules={[variables.RULES.EMPTY_INPUT]}
-                              type={variables.INPUT}
-                            />
-                          </div>
-                          <div className="col-lg-6">
-                            <FormItem
-                              fieldKey={[field.fieldKey, 'description']}
-                              label="Tên mô tả"
-                              name={[field.name, 'description']}
-                              rules={[variables.RULES.EMPTY_INPUT]}
-                              type={variables.INPUT}
+                              fieldKey={[field.fieldKey, 'time']}
+                              label={`Mốc thời gian ${index + 1}`}
+                              name={[field.name, 'time']}
+                              type={variables.TIME_RANGE}
                             />
                           </div>
                         </div>
@@ -157,31 +143,20 @@ class Index extends PureComponent {
                               <div className="col-lg-12">
                                 {fieldsCriterias.map((fieldsCriteria, index) => (
                                   <div key={index} className="row">
-                                    <div className="offset-lg-2 col-lg-4">
+                                    <div className="offset-lg-1 col-lg-6">
                                       <FormItem
                                         fieldKey={[fieldsCriteria.fieldKey, 'description']}
-                                        label="Tiêu chí"
+                                        label={`Nội dung ${index + 1}`}
                                         name={[fieldsCriteria.name, 'description']}
                                         rules={[variables.RULES.EMPTY_INPUT]}
                                         type={variables.INPUT}
                                         className="mb-2"
                                       />
                                     </div>
-                                    <div className="col-lg-6">
-                                      <FormItem
-                                        fieldKey={[fieldsCriteria.fieldKey, 'type']}
-                                        label="Loại tính điểm"
-                                        data={[]}
-                                        name={[fieldsCriteria.name, 'type']}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
-                                        type={variables.SELECT}
-                                        className="mb-3"
-                                      />
-                                    </div>
                                   </div>
                                 ))}
                                 <div className="row">
-                                  <div className="offset-lg-2 col-lg-10 d-flex justify-content-end">
+                                  <div className="offset-lg-1 col-lg-6 d-flex justify-content-end">
                                     <Button
                                       color="success"
                                       icon="plus"
@@ -189,7 +164,7 @@ class Index extends PureComponent {
                                         add();
                                       }}
                                     >
-                                      THÊM TIÊU CHÍ CON
+                                      THÊM NỘI DUNG
                                     </Button>
                                   </div>
                                 </div>
@@ -207,36 +182,13 @@ class Index extends PureComponent {
                           add();
                         }}
                       >
-                        THÊM BỘ
+                        THÊM MỐC THỜI GIAN
                       </Button>
                     </div>
                   </div>
                 )}
               </Form.List>
             </div>
-            <div className="row mt-3">
-              <div className="col-lg-12">
-                <FormItem
-                  label="NHẬN XÉT"
-                  name="comment"
-                  valuePropName="checked"
-                  type={variables.SWITCH}
-                  onChange={this.onChange}
-                />
-              </div>
-            </div>
-            {showDescription && (
-              <div className="row">
-                <div className="col-lg-12">
-                  <FormItem
-                    label="NHẬN XÉT"
-                    name="description"
-                    rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                    type={variables.TEXTAREA}
-                  />
-                </div>
-              </div>
-            )}
           </div>
           <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
             <Button

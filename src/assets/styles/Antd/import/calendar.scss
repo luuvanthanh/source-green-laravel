@@ -53,6 +53,9 @@
 }
 
 .schedules-custom {
+  .fc-day-other {
+    background-color: #f6f6f6;
+  }
   .fc-toolbar-title {
     font-family: "Montserrat", sans-serif;
     font-style: normal;
@@ -110,6 +113,9 @@
     color: #31434b;
   }
   .fc-daygrid-day-frame {
-    padding: 0 12px;
+    padding: 0 5px;
+  }
+  .fc-col-header-cell {
+    padding: 5px 0;
   }
 }
