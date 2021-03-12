@@ -192,6 +192,24 @@ export default [
         ],
       },
       {
+        path: '/quan-ly-phuong-tien',
+        component: './vehicle/layout',
+        routes: [
+          {
+            path: '/quan-ly-phuong-tien/xe',
+            component: './vehicle',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-phuong-tien/xe/tao-moi',
+            component: './vehicle/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
