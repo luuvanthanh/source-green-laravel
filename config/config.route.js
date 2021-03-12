@@ -111,15 +111,39 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/thoi-khoa-bieu/tao-moi',
+            component: './schedules/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
+        path: '/thuc-don-cho-tre',
+        component: './menu/layout',
+        routes: [
+          {
+            path: '/thuc-don-cho-tre',
+            component: './menu',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/thuc-don-cho-tre/tao-moi',
+            component: './menu/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       {
         path: '/404',
-        component: './404'
+        component: './404',
       },
       {
-        component: './404'
-      }
+        component: './404',
+      },
     ],
   },
 ];
