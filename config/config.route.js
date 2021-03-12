@@ -138,6 +138,24 @@ export default [
         ],
       },
       {
+        path: '/khao-sat',
+        component: './survey/layout',
+        routes: [
+          {
+            path: '/khao-sat',
+            component: './survey',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/khao-sat/tao-moi',
+            component: './survey/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
