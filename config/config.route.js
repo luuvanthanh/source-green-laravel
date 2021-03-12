@@ -207,6 +207,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh',
+            component: './vehicle/tutorial',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+            component: './vehicle/tutorial/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       {
