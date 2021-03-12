@@ -1,0 +1,35 @@
+@import "@/assets/styles/mixins.scss";
+
+.tab {
+  border-radius: 50px;
+  padding: 2px 17px;
+  line-height: 20px;
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.primary {
+  background-color: #eff7ff;
+  border: 1px solid $border-primary;
+  color: $text-primary;
+}
+
+.success {
+  background-color: #f7fff5;
+  border: 1px solid #50c23d;
+  color: $text-success;
+}
+
+.danger {
+  background-color: #fff9f9;
+  border: 1px solid #ff4d4f;
+  color: $text-danger;
+}
+
+.yellow {
+  background-color: #fff9f4;
+  border: 1px solid rgba(250, 140, 22, 0.5);
+  color: $text-yellow;
+}

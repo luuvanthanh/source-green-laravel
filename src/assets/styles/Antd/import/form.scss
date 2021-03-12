@@ -1,0 +1,86 @@
+// Import mixins
+@import "@/assets/styles/mixins.scss";
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/*  ANT DESIGN FORM */
+
+.ant-form input[type="file"] {
+  min-height: 40px;
+}
+
+.ant-form input.ant-input-sm[type="file"] {
+  min-height: 48px;
+}
+
+.ant-form input.ant-input-lg[type="file"] {
+  min-height: 52px;
+}
+
+.ant-form-item-extra {
+  color: rgba($color: $text-dark, $alpha: 0.65);
+  line-height: 22px;
+  margin-top: 16px;
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.ant-form-item-label {
+  text-align: left;
+  white-space: normal;
+}
+
+.ant-form-item > .ant-form-item,
+.ant-form-item :not(.ant-form) > .ant-form-item {
+  margin-top: -2px;
+}
+
+form .ant-select:only-child,
+form .ant-cascader-picker:only-child {
+  display: inline-block;
+}
+
+.ant-form-item-label {
+  label {
+    color: rgba($color: $text-dark, $alpha: 0.65);
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    position: relative;
+  }
+
+  .ant-form-item-required {
+    &::before {
+      display: none !important;
+    }
+
+    > span {
+      overflow: hidden;
+      white-space: pre;
+      i {
+        font-family: 'Roboto', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 13px;
+        line-height: 22px;
+        color: rgba($color: $text-dark, $alpha: 0.45);
+      }
+      &::after {
+        color: $danger;
+        content: "*";
+        font-size: 13px;
+        line-height: 1;
+        position: absolute;
+        right: -8px;
+        top: 4px;
+      }
+    }
+  }
+}
+
+.ql-editor {
+  min-height: 200px;
+}

@@ -1,0 +1,21 @@
+@import '@/assets/styles/mixins.scss';
+
+.breadcrumbs {
+  background-color: $white;
+  border-bottom: 1px solid $gray-border;
+  padding: rem(10) rem(20);
+}
+
+.path {
+  color: $black;
+  font-size: rem(18);
+}
+
+.arrow {
+  display: inline-block;
+  margin: 0 rem(10);
+  &:after {
+    content: '·';
+    display: inline-block;
+  }
+}

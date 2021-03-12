@@ -1,0 +1,148 @@
+@for $i from 0 through 100 {
+  $value: $i * 5;
+  $unit: "";
+  @if $i != 0 {
+    $unit: "px";
+  }
+  .max-width-#{$i*5} {
+    max-width: #{$value}#{$unit};
+  }
+}
+@for $i from 0 through 100 {
+  $value: $i * 5;
+  $unit: "";
+  @if $i != 0 {
+    $unit: "px";
+  }
+  .min-width-#{$i*5} {
+    min-width: #{$value}#{$unit};
+  }
+}
+
+.min-width-stt {
+  min-width: 46px;
+  white-space: nowrap;
+}
+
+.ant-table-content {
+  table {
+    width: auto !important;
+  }
+}
+.table-edit-discount {
+  .editable-cell-value-wrap {
+    font-size: 13px;
+    font-family: "Roboto", sans-serif;
+    padding: 0px !important;
+    margin: 0 !important;
+    min-height: 20px !important;
+  }
+  td {
+    padding: 0px 5px !important;
+    &.drag-visible {
+      padding: 0 !important;
+      text-align: center;
+    }
+    &.ant-table-cell {
+      font-size: 13px;
+      font-family: "Roboto", sans-serif;
+      padding: 5px 10px !important;
+    }
+  }
+  th {
+    &.ant-table-cell {
+      font-size: 13px;
+      font-family: "Roboto", sans-serif;
+      padding: 5px 10px !important;
+    }
+  }
+}
+
+.table-edit {
+  .ant-table-empty {
+    .ant-table-tbody {
+      display: none;
+    }
+  }
+  .ant-table-cell {
+    position: relative;
+    .editable-cell-value-wrap {
+      min-height: 50px;
+      margin: -16px -16px;
+      padding: 16px;
+    }
+  }
+  .ant-table-content {
+    table {
+      width: 100% !important;
+    }
+  }
+  .ant-table-row-expand-icon {
+    display: none;
+  }
+  .ant-table-row-indent {
+    display: none;
+  }
+}
+
+.ant-rate-star {
+  margin-right: 5px;
+  > div[aria-checked="true"] {
+    .anticon-star {
+      color: $background-success;
+    }
+  }
+}
+
+.table-children {
+  .ant-table-row-level-0 {
+    h5,
+    p {
+      font-weight: bold;
+    }
+  }
+}
+
+.success {
+  color: $text-success !important;
+}
+.table-edit {
+  font-family: "Roboto", sans-serif;
+  font-weight: normal;
+  .table-edit-row-0 {
+    font-weight: bold;
+    color: $text-danger;
+  }
+  .table-edit-row-1 {
+    font-weight: 500;
+    color: $text-danger;
+  }
+  .table-edit-row-2 {
+    font-weight: 500;
+    color: $text-danger;
+  }
+  .table-edit-row-3 {
+    font-weight: normal;
+    color: $text-purple;
+  }
+  .table-edit-children {
+    font-weight: normal;
+    color: $text-purple;
+  }
+}
+
+.row-dragging {
+  background: #fafafa;
+  border: 1px solid rgba($color: #ccc, $alpha: 0.5);
+  z-index: 999999;
+  box-shadow: 0 0 2px -2px rgba($color: #000000, $alpha: 0.25);
+}
+
+.row-dragging td {
+  padding: 5px 10px 0 !important;
+  background: #fafafa;
+}
+
+.row-dragging .drag-visible {
+  visibility: visible;
+}
