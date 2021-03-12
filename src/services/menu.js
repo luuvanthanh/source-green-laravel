@@ -63,6 +63,14 @@ export async function getLeftMenuData() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Quản lý xe bus',
+      key: 'vehicle',
+      url: ['/quan-ly-phuong-tien/xe','/quan-ly-phuong-tien/xe/tao-moi'],
+      icon: 'icon icon-calendar1',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getTopMenuData() {
