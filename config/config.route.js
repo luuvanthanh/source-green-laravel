@@ -156,6 +156,24 @@ export default [
         ],
       },
       {
+        path: '/chi-nhanh',
+        component: './branch/layout',
+        routes: [
+          {
+            path: '/chi-nhanh',
+            component: './branch',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chi-nhanh/tao-moi',
+            component: './branch/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
