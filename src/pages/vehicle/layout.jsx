@@ -18,7 +18,7 @@ const MENU_MAIN = [
   {
     key: 'tutorial',
     title: 'Quản lý lộ trình',
-    url: '/quan-ly-phuong-tien/lo-trinh',
+    url: '/quan-ly-phuong-tien/quan-ly-lo-trinh',
   },
 ];
 const mapStateToProps = ({ settings }) => ({

@@ -50,7 +50,7 @@ export async function getLeftMenuData() {
     {
       title: 'Quản lý Điểm / Trường / Chi nhánh (Business unit)',
       key: 'branch',
-      url: ['/chi-nhanh','/chi-nhanh/tao-moi'],
+      url: ['/chi-nhanh', '/chi-nhanh/tao-moi'],
       icon: 'icon icon-calendar1',
       permission: [],
       pro: true,
@@ -58,7 +58,7 @@ export async function getLeftMenuData() {
     {
       title: 'Môn học',
       key: 'subjects',
-      url: ['/mon-hoc','/mon-hoc/tao-moi'],
+      url: ['/mon-hoc', '/mon-hoc/tao-moi'],
       icon: 'icon icon-calendar1',
       permission: [],
       pro: true,
@@ -66,7 +66,12 @@ export async function getLeftMenuData() {
     {
       title: 'Quản lý xe bus',
       key: 'vehicle',
-      url: ['/quan-ly-phuong-tien/xe','/quan-ly-phuong-tien/xe/tao-moi'],
+      url: [
+        '/quan-ly-phuong-tien/xe',
+        '/quan-ly-phuong-tien/xe/tao-moi',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+      ],
       icon: 'icon icon-calendar1',
       permission: [],
       pro: true,
