@@ -31,6 +31,15 @@ export async function getLeftMenuData() {
       plus: false,
     },
     {
+      title: 'Khảo sát',
+      key: 'survey',
+      url: ['/khao-sat', '/khao-sat/tao-moi'],
+      icon: 'icon icon-calendar',
+      permission: [],
+      pro: true,
+      plus: false,
+    },
+    {
       title: 'Quản lý xe bus',
       key: 'tours',
       url: ['/san-pham-tour/tour-cho-duyet'],
