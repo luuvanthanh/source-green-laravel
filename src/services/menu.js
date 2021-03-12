@@ -49,8 +49,8 @@ export async function getLeftMenuData() {
     },
     {
       title: 'Quản lý Điểm / Trường / Chi nhánh (Business unit)',
-      key: 'dashboardDocs',
-      url: ['/booking'],
+      key: 'branch',
+      url: ['/chi-nhanh','/chi-nhanh/tao-moi'],
       icon: 'icon icon-calendar1',
       permission: [],
       pro: true,
