@@ -55,6 +55,14 @@ export async function getLeftMenuData() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Môn học',
+      key: 'subjects',
+      url: ['/mon-hoc','/mon-hoc/tao-moi'],
+      icon: 'icon icon-calendar1',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getTopMenuData() {

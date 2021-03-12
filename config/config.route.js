@@ -174,6 +174,24 @@ export default [
         ],
       },
       {
+        path: '/mon-hoc',
+        component: './subjects/layout',
+        routes: [
+          {
+            path: '/mon-hoc',
+            component: './subjects',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/mon-hoc/tao-moi',
+            component: './subjects/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
