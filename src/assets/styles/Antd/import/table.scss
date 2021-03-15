@@ -146,3 +146,13 @@
 .row-dragging .drag-visible {
   visibility: visible;
 }
+
+.table-transfer {
+  table {
+    width: 100% !important;
+  }
+}
+
+.ant-transfer-list-body {
+  padding: 10px 20px;
+}
