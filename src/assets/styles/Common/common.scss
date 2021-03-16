@@ -554,6 +554,11 @@
     max-height: 95vh;
     overflow: auto;
   }
+  .leafletContainer {
+    height: 75vh;
+    width: 100%;
+    overflow: hidden;
+  }
 }
 
 .input-number-container {

@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Avatar } from 'antd';
+import { Form, Avatar, Modal } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Select from '@/components/CommonComponent/Select';
@@ -10,6 +11,9 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import Children from './components/children';
+import Maps from './components/maps';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 let isMounted = true;
 /**
@@ -27,7 +31,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({}) => ({});
-
+const { confirm } = Modal;
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
@@ -35,8 +39,16 @@ class Index extends PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      list: [{}],
+      list: [
+        {
+          id: '1',
+          children: [],
+        },
+      ],
+      listId: null,
       visible: false,
+      visibleMap: false,
+      targetKeys: [],
     };
     setIsMounted(true);
   }
@@ -63,7 +75,21 @@ class Index extends PureComponent {
    * Function save table cancel
    * @param {array} cancelPolicies values of table cancel
    */
-  onSave = (items, businessObjectGroupId) => {};
+  onSave = (items, listId) => {
+    this.setStateData((prevState) => ({
+      list: prevState.list.map((item) => {
+        if (item.id === listId) {
+          return {
+            ...item,
+            children: items,
+            parentId: listId,
+          };
+        }
+        return item;
+      }),
+      visible: false,
+    }));
+  };
 
   /**
    * Function save table cancel
@@ -87,15 +113,19 @@ class Index extends PureComponent {
    * Function edit list
    * @param {uid} id id of items
    */
-  onEditList = (id) => {
+  onEditList = (record) => {
     this.setStateData({
       visible: true,
+      listId: record.id,
+      targetKeys: record.children.map((item) => item.key),
     });
   };
 
   handleCancel = () => {
     this.setStateData({
       visible: false,
+      listId: null,
+      targetKeys: [],
     });
   };
 
@@ -106,6 +136,18 @@ class Index extends PureComponent {
     this.setStateData((prevState) => ({
       list: [...prevState.list, { id: Math.random().toString(36).substr(2, 9) }],
     }));
+  };
+
+  showMap = () => {
+    this.setStateData({
+      visibleMap: true,
+    });
+  };
+
+  handleCancelMap = () => {
+    this.setStateData({
+      visibleMap: false,
+    });
   };
 
   onRemove = (id) => {
@@ -124,6 +166,21 @@ class Index extends PureComponent {
       },
       onCancel() {},
     });
+  };
+
+  onRemoveChildren = (record) => {
+    console.log(record, this.state.list);
+    this.setStateData((prevState) => ({
+      list: prevState.list.map((item) => {
+        if (item.id == record.parentId) {
+          return {
+            ...item,
+            children: item.children.filter((itemChildren) => itemChildren.key !== record.key),
+          };
+        }
+        return item;
+      }),
+    }));
   };
 
   /**
@@ -165,8 +222,7 @@ class Index extends PureComponent {
           width: 80,
           render: (record) => (
             <div className={styles['list-button']}>
-              <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
-              <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+              <Button color="danger" icon="remove" onClick={() => this.onRemoveChildren(record)} />
             </div>
           ),
         },
@@ -221,7 +277,7 @@ class Index extends PureComponent {
   };
 
   render() {
-    const { list, visible } = this.state;
+    const { list, visible, listId, targetKeys, visibleMap } = this.state;
     const props = {
       beforeUpload: (file) => {
         return file;
@@ -229,6 +285,8 @@ class Index extends PureComponent {
       showUploadList: false,
       fileList: [],
     };
+    const position = [51.505, -0.09];
+
     return (
       <Form
         className={styles['layout-form']}
@@ -247,7 +305,16 @@ class Index extends PureComponent {
         colon={false}
         ref={this.formRef}
       >
-        <Children visible={visible} handleCancel={this.handleCancel} />
+        {visible && (
+          <Children
+            visible={visible}
+            listId={listId}
+            onSave={this.onSave}
+            handleCancel={this.handleCancel}
+            targetKeys={targetKeys}
+          />
+        )}
+        {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
         <div className={styles['content-form']}>
           <div className="d-flex justify-content-between">
             <Text color="dark">CHI TIẾT XE</Text>
@@ -344,14 +411,14 @@ class Index extends PureComponent {
                     <Text color="dark" size="large-medium">
                       DS TRẺ TẠI ĐIỂM ĐÓN
                     </Text>
-                    <Button color="success" icon="edit" onClick={() => this.onEditList(item.id)}>
+                    <Button color="success" icon="edit" onClick={() => this.onEditList(item)}>
                       Cập nhật danh sách
                     </Button>
                   </div>
                   <Table
                     bordered
                     columns={this.header('CHILDREN')}
-                    dataSource={[]}
+                    dataSource={item.children || []}
                     className="table-edit"
                     pagination={false}
                     isEmpty
@@ -359,7 +426,7 @@ class Index extends PureComponent {
                       header: this.header('CHILDREN'),
                       type: 'table',
                     }}
-                    rowKey={(record) => record.id}
+                    rowKey={(record) => record.id || record.key}
                     scroll={{ x: '100%' }}
                   />
                 </div>
@@ -368,6 +435,9 @@ class Index extends PureComponent {
           </div>
           <Button className="mt-4" color="success" icon="plus" onClick={this.addList}>
             Thêm điểm đón
+          </Button>
+          <Button className="mt-4" color="success" icon="plus" onClick={this.showMap}>
+            Maps
           </Button>
           <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
             <Button
