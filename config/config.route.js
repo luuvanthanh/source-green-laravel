@@ -252,6 +252,30 @@ export default [
         ],
       },
       {
+        path: '/ho-so-doi-tuong',
+        component: './profiles/layout',
+        routes: [
+          {
+            path: '/ho-so-doi-tuong/phu-huynh',
+            component: './profiles/parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/nhan-su',
+            component: './profiles/personnel',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/hoc-sinh',
+            component: './profiles/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
