@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Avatar, Modal } from 'antd';
+import { Form, Avatar, Modal, Input } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -12,8 +12,6 @@ import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import Children from './components/children';
 import Maps from './components/maps';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 
 let isMounted = true;
 /**
@@ -396,9 +394,21 @@ class Index extends PureComponent {
                     'align-items-center',
                   )}
                 >
-                  <Text color="dark" size="large">
-                    ĐIỂM ĐÓN SỐ {index + 1}
-                  </Text>
+                  <div className="d-flex align-items-center">
+                    <Text color="dark" size="large" style={{ whiteSpace: 'nowrap' }}>
+                      ĐIỂM ĐÓN SỐ {index + 1}
+                    </Text>
+                    <Input
+                      className="ml-3"
+                      size="large"
+                      suffix={
+                        <span
+                          className={classnames('icon-map', styles['icon-map'])}
+                          onClick={this.showMap}
+                        ></span>
+                      }
+                    />
+                  </div>
                   <div className="d-flex justify-content-end">
                     <div className={styles['list-button']}>
                       <Button color="danger" icon="remove" onClick={() => this.onRemove(item.id)} />
@@ -435,9 +445,6 @@ class Index extends PureComponent {
           </div>
           <Button className="mt-4" color="success" icon="plus" onClick={this.addList}>
             Thêm điểm đón
-          </Button>
-          <Button className="mt-4" color="success" icon="plus" onClick={this.showMap}>
-            Maps
           </Button>
           <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
             <Button

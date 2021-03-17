@@ -9,9 +9,12 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import 'leaflet/dist/leaflet.css';
+
 let DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
+  iconAnchor: [17, 46],
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -51,6 +54,7 @@ class Index extends PureComponent {
     this.state = {
       listId: props.listId,
       targetKeys: props.targetKeys || [],
+      position: [16.07176, 108.223961],
     };
     setIsMounted(true);
   }
@@ -77,6 +81,12 @@ class Index extends PureComponent {
     this.props.handleCancel();
   };
 
+  onClickMap = (e) => {
+    this.setStateData({
+      position: [e.latlng.lat, e.latlng.lng],
+    });
+  };
+
   onChange = (nextTargetKeys) => {
     this.setState({ targetKeys: nextTargetKeys });
   };
@@ -95,12 +105,11 @@ class Index extends PureComponent {
   handleClick = (e) => {};
 
   render() {
-    const position = [16.07176, 108.223961];
-
     const {
       loading: { effects },
+      visible,
     } = this.props;
-    const { targetKeys } = this.state;
+    const { targetKeys, position } = this.state;
     const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
@@ -129,8 +138,8 @@ class Index extends PureComponent {
           </div>,
         ]}
         onCancel={this.handleCancel}
-        title="CẬP NHẬT DANH SÁCH TRẺ"
-        visible={this.props.visible}
+        title="Maps"
+        visible={visible}
       >
         <div className={styles.leafletContainer}>
           <MapContainer
@@ -139,7 +148,12 @@ class Index extends PureComponent {
             zoom={15}
             maxZoom={22}
             scrollWheelZoom={true}
-            onClick={this.handleClick}
+            whenReady={(map) => {
+              const self = this;
+              map.target.on('click', function (e) {
+                self.onClickMap(e);
+              });
+            }}
           >
             <TileLayer
               url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
@@ -148,10 +162,16 @@ class Index extends PureComponent {
               minZoom="0"
               maxZoom="23"
             />
-            <Marker position={position} draggable={true}>
-              <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
-              </Popup>
+            <Marker
+              position={position}
+              draggable={true}
+              eventHandlers={{
+                click: (e) => {
+                  console.log('marker clicked', e);
+                },
+              }}
+            >
+              <Popup>Đà Nẵng</Popup>
             </Marker>
           </MapContainer>
         </div>
