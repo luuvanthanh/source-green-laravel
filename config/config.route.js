@@ -222,6 +222,36 @@ export default [
         ],
       },
       {
+        path: '/quan-ly',
+        component: './manager/layout',
+        routes: [
+          {
+            path: '/quan-ly/lop-hoc',
+            component: './manager/class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly/lop-hoc/tao-moi',
+            component: './manager/class/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly/lich-hoc',
+            component: './manager/schedules',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly/lich-hoc/tao-moi',
+            component: './manager/schedules/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },
