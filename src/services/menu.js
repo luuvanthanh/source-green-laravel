@@ -81,6 +81,18 @@ export async function getLeftMenuData() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Hồ sơ đối tượng',
+      key: 'profiles',
+      url: [
+        '/ho-so-doi-tuong/phu-huynh',
+        '/ho-so-doi-tuong/hoc-sinh',
+        '/ho-so-doi-tuong/nhan-su',
+      ],
+      icon: 'icon icon-calendar1',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getTopMenuData() {
