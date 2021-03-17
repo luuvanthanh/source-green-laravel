@@ -68,6 +68,19 @@ export async function getLeftMenuData() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Lớp học',
+      key: 'class',
+      url: [
+        '/quan-ly/lop-hoc',
+        '/quan-ly/lop-hoc/tao-moi',
+        '/quan-ly/lich-hoc',
+        '/quan-ly/lich-hoc/tao-moi',
+      ],
+      icon: 'icon icon-calendar1',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getTopMenuData() {

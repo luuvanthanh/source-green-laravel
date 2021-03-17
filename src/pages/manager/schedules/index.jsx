@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -9,9 +9,17 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import allLocales from '@fullcalendar/core/locales-all';
 import FormItem from '@/components/CommonComponent/FormItem';
+import moment from 'moment';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
+import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
+import { sliceEvents, createPlugin } from '@fullcalendar/core';
 
 let isMounted = true;
 /**
@@ -29,9 +37,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ vehicle, loading }) => ({
-  data: vehicle.data,
-  pagination: vehicle.pagination,
+const mapStateToProps = ({ managerSchedules, loading }) => ({
+  data: managerSchedules.data,
+  pagination: managerSchedules.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -54,7 +62,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -83,7 +93,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'vehicle/GET_DATA',
+      type: 'managerSchedules/GET_DATA',
       payload: {
         ...search,
         status,
@@ -187,7 +197,7 @@ class Index extends PureComponent {
     const { objects } = this.state;
     this.formRef.current.validateFields().then((values) => {
       this.props.dispatch({
-        type: !isEmpty(objects) ? 'vehicle/UPDATE' : 'vehicle/ADD',
+        type: !isEmpty(objects) ? 'managerSchedules/UPDATE' : 'managerSchedules/ADD',
         payload: {
           ...values,
           id: objects.id,
@@ -248,7 +258,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'vehicle/REMOVE',
+          type: 'managerSchedules/REMOVE',
           payload: {
             id,
             pagination: {
@@ -268,45 +278,31 @@ class Index extends PureComponent {
   header = () => {
     const columns = [
       {
-        title: 'MÃ SỐ',
-        key: 'code',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">0001</Text>,
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'HÃNG',
-        key: 'manufacturer',
+        title: 'TÊN TIÊU CHÍ - ĐÁNH GIÁ',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hyundai</Text>,
+        render: (record) => <Text size="normal">Học thuật</Text>,
       },
       {
-        title: 'SỐ CHỔ NGỒI',
-        key: 'seats',
+        title: 'CẤU HÌNH LOẠI ÁP DỤNG',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">45 chỗ</Text>,
+        render: (record) => <Text size="normal">Mẫu giáo</Text>,
       },
       {
-        title: 'XE',
-        key: 'vehicle',
-        className: 'min-width-200',
-        render: (record) => (
-          <Text size="normal">
-            <Avatar size={32} shape="circle" className="mr-2" />
-            Hyundai Universe
-          </Text>
-        ),
-      },
-      {
-        title: 'ĐỜI',
-        key: 'life',
+        title: 'THỜI HẠN NHẬP',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">2018</Text>,
-      },
-      {
-        title: 'TRUYỀN ĐỘNG',
-        key: 'movement',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Số tự động</Text>,
+        width: 150,
+        render: (record) => <Text size="normal">Hằng ngày</Text>,
       },
       {
         key: 'action',
@@ -332,11 +328,74 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { visible, objects, search } = this.state;
-    const loading = effects['vehicle/GET_DATA'];
-    const loadingSubmit = effects['vehicle/ADD'] || effects['vehicle/UPDATE'];
+    const loading = effects['managerSchedules/GET_DATA'];
+    const loadingSubmit = effects['managerSchedules/ADD'] || effects['managerSchedules/UPDATE'];
+    const CustomViewConfig = {
+      classNames: ['custom-view'],
+
+      content: function (props) {
+        let segs = sliceEvents(props, true); // allDay=true
+        let html =
+          '<div class="view-title">' +
+          props.dateProfile.currentRange.start.toUTCString() +
+          '</div>' +
+          '<div class="view-title">' +
+          props.dateProfile.currentRange.start.toUTCString() +
+          '</div>' +
+          '<div class="view-events">' +
+          segs.length +
+          ' events' +
+          '</div>';
+
+        return { html: html };
+      },
+    };
     return (
       <>
-        <Helmet title="Danh sách xe" />
+        <Helmet title="Danh sách tiêu chí - đánh giá" />
+        <Modal
+          centered
+          footer={[
+            <div className={classnames('d-flex', 'justify-content-end')} key="action">
+              <Button
+                color="white"
+                icon="cross"
+                loading={loadingSubmit}
+                onClick={this.handleCancel}
+                size="medium"
+              >
+                HỦY
+              </Button>
+              <Button
+                color="green"
+                icon="save"
+                loading={loadingSubmit}
+                onClick={this.onFinish}
+                size="medium"
+              >
+                LƯU
+              </Button>
+            </div>,
+          ]}
+          onCancel={this.handleCancel}
+          title={
+            !isEmpty(objects) ? 'CHỈNH SỬA TIÊU CHÍ - ĐÁNH GIÁ' : 'THÊM MỚI TIÊU CHÍ - ĐÁNH GIÁ'
+          }
+          visible={visible}
+        >
+          <Form layout="vertical" ref={this.formRef}>
+            <div className="row">
+              <div className="col-lg-12">
+                <FormItem
+                  label="TÊN"
+                  name="name"
+                  rules={[variables.RULES.EMPTY_INPUT]}
+                  type={variables.INPUT}
+                />
+              </div>
+            </div>
+          </Form>
+        </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className={styles.search}>
@@ -350,39 +409,21 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     data={[]}
-                    label="HÃNG"
-                    name="manufacturer"
-                    onChange={(event) => this.onChange(event, 'manufacturer')}
+                    label="CƠ SỞ"
+                    name="department"
+                    onChange={(event) => this.onChange(event, 'department')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     data={[]}
-                    label="LOẠI XE"
-                    name="type"
-                    onChange={(event) => this.onChange(event, 'type')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="ĐỜI"
-                    name="life"
-                    onChange={(event) => this.onChange(event, 'life')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="TRUYỀN ĐỘNG"
-                    name="movement"
-                    onChange={(event) => this.onChange(event, 'movement')}
+                    label="LỚP"
+                    name="level"
+                    onChange={(event) => this.onChange(event, 'level')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -391,24 +432,55 @@ class Index extends PureComponent {
           </div>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH XE</Text>
+            <Text color="dark">LỊCH LỚP HỌC ĐỊNH HƯỚNG</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>
-          <div className={styles['block-table']}>
-            <Table
-              bordered
-              columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
+          <div className={classnames(styles['block-table'], 'schedules-custom')}>
+            <FullCalendar
+              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+              plugins={[resourceTimeGridPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay',
               }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              views={{
+                dayGrid: {
+                  dayMaxEventRows: 3,
+                },
+                month: {
+                  dayMaxEventRows: 3,
+                },
+                agendaFourDay: {
+                  type: 'agenda',
+                  duration: { days: 4 },
+                  buttonText: '4 day',
+                },
+              }}
+              locale="vi"
+              editable={true}
+              fixedWeekCount={false}
+              showNonCurrentDates={true}
+              locales={allLocales}
+              allDaySlot={false}
+              height={650}
+              eventClick={() => {
+                console.log('12');
+              }}
+              events={[
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 23:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 21:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 22:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 20:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 01:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 05:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 06:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 07:00:00' },
+                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 08:00:00' },
+              ]}
             />
           </div>
         </div>

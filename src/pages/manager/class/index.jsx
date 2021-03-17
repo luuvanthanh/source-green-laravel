@@ -29,9 +29,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ vehicle, loading }) => ({
-  data: vehicle.data,
-  pagination: vehicle.pagination,
+const mapStateToProps = ({ managerClass, loading }) => ({
+  data: managerClass.data,
+  pagination: managerClass.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,7 +83,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'vehicle/GET_DATA',
+      type: 'managerClass/GET_DATA',
       payload: {
         ...search,
         status,
@@ -187,7 +187,7 @@ class Index extends PureComponent {
     const { objects } = this.state;
     this.formRef.current.validateFields().then((values) => {
       this.props.dispatch({
-        type: !isEmpty(objects) ? 'vehicle/UPDATE' : 'vehicle/ADD',
+        type: !isEmpty(objects) ? 'managerClass/UPDATE' : 'managerClass/ADD',
         payload: {
           ...values,
           id: objects.id,
@@ -248,7 +248,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'vehicle/REMOVE',
+          type: 'managerClass/REMOVE',
           payload: {
             id,
             pagination: {
@@ -268,45 +268,36 @@ class Index extends PureComponent {
   header = () => {
     const columns = [
       {
-        title: 'MÃ SỐ',
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'MÃ LỚP',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">0001</Text>,
+        render: (record) => <Text size="normal">CLV-L01</Text>,
       },
       {
-        title: 'HÃNG',
-        key: 'manufacturer',
+        title: 'TÊN LỚP',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hyundai</Text>,
+        render: (record) => <Text size="normal">Định hướng</Text>,
       },
       {
-        title: 'SỐ CHỔ NGỒI',
+        title: 'CƠ SỞ',
         key: 'seats',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">45 chỗ</Text>,
+        render: (record) => <Text size="normal">Lake View</Text>,
       },
       {
-        title: 'XE',
-        key: 'vehicle',
+        title: 'SỐ LƯỢNG HỌC SINH',
+        key: 'total',
         className: 'min-width-200',
-        render: (record) => (
-          <Text size="normal">
-            <Avatar size={32} shape="circle" className="mr-2" />
-            Hyundai Universe
-          </Text>
-        ),
-      },
-      {
-        title: 'ĐỜI',
-        key: 'life',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">2018</Text>,
-      },
-      {
-        title: 'TRUYỀN ĐỘNG',
-        key: 'movement',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Số tự động</Text>,
+        render: (record) => <Text size="normal">12</Text>,
       },
       {
         key: 'action',
@@ -332,11 +323,11 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { visible, objects, search } = this.state;
-    const loading = effects['vehicle/GET_DATA'];
-    const loadingSubmit = effects['vehicle/ADD'] || effects['vehicle/UPDATE'];
+    const loading = effects['managerClass/GET_DATA'];
+    const loadingSubmit = effects['managerClass/ADD'] || effects['managerClass/UPDATE'];
     return (
       <>
-        <Helmet title="Danh sách xe" />
+        <Helmet title="Danh sách lớp" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className={styles.search}>
@@ -350,39 +341,21 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-8">
                   <FormItem
-                    data={[]}
-                    label="HÃNG"
-                    name="manufacturer"
-                    onChange={(event) => this.onChange(event, 'manufacturer')}
-                    type={variables.SELECT}
+                    label="TÌM KIẾM"
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa"
+                    type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     data={[]}
-                    label="LOẠI XE"
+                    label="CƠ SỞ"
                     name="type"
                     onChange={(event) => this.onChange(event, 'type')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="ĐỜI"
-                    name="life"
-                    onChange={(event) => this.onChange(event, 'life')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="TRUYỀN ĐỘNG"
-                    name="movement"
-                    onChange={(event) => this.onChange(event, 'movement')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -391,7 +364,7 @@ class Index extends PureComponent {
           </div>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH XE</Text>
+            <Text color="dark">DANH SÁCH LỚP</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
