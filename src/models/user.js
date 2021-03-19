@@ -38,7 +38,6 @@ const UserModel = {
               permissions: permission,
             },
           });
-          history.push(payload.redirect);
           cookies.set('access_token', response.access_token, { path: '/' });
           cookies.set('token_type', response.token_type, { path: '/' });
           const { can, rules } = new AbilityBuilder();

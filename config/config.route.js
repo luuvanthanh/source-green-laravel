@@ -5,7 +5,7 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/san-pham-tour/tour-cho-duyet',
+        redirect: '/tieu-chi-danh-gia/danh-gia-hoc-tap',
       },
       {
         path: '/login',
