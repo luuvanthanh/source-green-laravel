@@ -283,7 +283,8 @@ class MenuLeft extends React.Component {
       >
         <div className={styles.logo}>
           <div className={styles.logoContainer}>
-            <img alt="Clean UI React Admin Template" src="/logo-admin.png" />
+            {isMenuCollapsed && <img alt="Clean UI React Admin Template" src="/logo-mobile.png" />}
+            {!isMenuCollapsed && <img alt="Clean UI React Admin Template" src="/logo-admin.png" />}
           </div>
         </div>
         <Scrollbars
