@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Input, DatePicker, Collapse } from 'antd';
+import { Form, Collapse } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Select from '@/components/CommonComponent/Select';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 
 let isMounted = true;
 /**
@@ -116,64 +115,108 @@ class Index extends PureComponent {
           </div>
           <div className={styles['content-children']}>
             <Text color="dark" size="large-medium">
-              BỘ TIÊU CHÍ
+              CHI TIẾT
             </Text>
-            <div className="row mt-3">
-              <Form.List name="criteria">
-                {(fields, { add, remove }) => (
+            <Form.List name="criteria">
+              {(fields, { add, remove }) => (
+                <div className="row mt-3">
                   <div className="col-lg-12">
-                    {fields.map((field, index) => (
-                      <div key={index}>
-                        <div className="row">
-                          <div className="col-lg-6">
-                            <FormItem
-                              fieldKey={[field.fieldKey, 'time']}
-                              label={`Mốc thời gian ${index + 1}`}
-                              name={[field.name, 'time']}
-                              type={variables.TIME_RANGE}
-                            />
+                    <Collapse className={styles.collapse} defaultActiveKey={[0, 1, 2, 3, 4, 5, 6]}>
+                      {fields.map((field, index) => (
+                        <Collapse.Panel
+                          extra={
+                            <div>
+                              {fields.length > 1 && (
+                                <span
+                                  className={classnames('icon-remove', styles['icon-remove'])}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    remove(field.name);
+                                  }}
+                                />
+                              )}
+                            </div>
+                          }
+                          header={`Mốc thời gian ${index + 1}`}
+                          key={index}
+                        >
+                          <div className="row">
+                            <div className="col-lg-6">
+                              <FormItem
+                                fieldKey={[field.fieldKey, 'time']}
+                                label={`Mốc thời gian`}
+                                name={[field.name, 'time']}
+                                type={variables.TIME_RANGE}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="row">
-                          <Form.List
-                            name={[field.name, 'itemsCriterias']}
-                            fieldKey={[field.fieldKey, 'itemsCriterias']}
-                          >
-                            {(fieldsCriterias, { add, remove }) => (
-                              <div className="col-lg-12">
-                                {fieldsCriterias.map((fieldsCriteria, index) => (
-                                  <div key={index} className="row">
-                                    <div className="offset-lg-1 col-lg-6">
-                                      <FormItem
-                                        fieldKey={[fieldsCriteria.fieldKey, 'description']}
-                                        label={`Nội dung ${index + 1}`}
-                                        name={[fieldsCriteria.name, 'description']}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
-                                        type={variables.INPUT}
-                                        className="mb-2"
-                                      />
+                          <div className="row">
+                            <Form.List
+                              name={[field.name, 'itemsCriterias']}
+                              fieldKey={[field.fieldKey, 'itemsCriterias']}
+                            >
+                              {(fieldsCriterias, { add, remove }) => (
+                                <div className="col-lg-12">
+                                  <Collapse
+                                    className={classnames(styles.collapse)}
+                                    defaultActiveKey={[0, 1, 2, 3, 4, 5, 6]}
+                                  >
+                                    {fieldsCriterias.map((fieldsCriteria, index) => (
+                                      <Collapse.Panel
+                                        extra={
+                                          <div>
+                                            {fieldsCriterias.length > 1 && (
+                                              <span
+                                                className={classnames(
+                                                  'icon-remove',
+                                                  styles['icon-remove'],
+                                                )}
+                                                onClick={(event) => {
+                                                  event.stopPropagation();
+                                                  remove(fieldsCriteria.name);
+                                                }}
+                                              />
+                                            )}
+                                          </div>
+                                        }
+                                        header={`Nội dung ${index + 1}`}
+                                        key={index}
+                                      >
+                                        <div key={index} className="row">
+                                          <div className="col-lg-12">
+                                            <FormItem
+                                              fieldKey={[fieldsCriteria.fieldKey, 'description']}
+                                              label={`Nội dung ${index + 1}`}
+                                              name={[fieldsCriteria.name, 'description']}
+                                              rules={[variables.RULES.EMPTY]}
+                                              type={variables.TEXTAREA}
+                                              className="mb-2"
+                                            />
+                                          </div>
+                                        </div>
+                                      </Collapse.Panel>
+                                    ))}
+                                  </Collapse>
+                                  <div className="row">
+                                    <div className="col-lg-12 d-flex justify-content-end mt-3">
+                                      <Button
+                                        color="success"
+                                        icon="plus"
+                                        onClick={() => {
+                                          add();
+                                        }}
+                                      >
+                                        THÊM NỘI DUNG
+                                      </Button>
                                     </div>
                                   </div>
-                                ))}
-                                <div className="row">
-                                  <div className="offset-lg-1 col-lg-6 d-flex justify-content-end">
-                                    <Button
-                                      color="success"
-                                      icon="plus"
-                                      onClick={() => {
-                                        add();
-                                      }}
-                                    >
-                                      THÊM NỘI DUNG
-                                    </Button>
-                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </Form.List>
-                        </div>
-                      </div>
-                    ))}
+                              )}
+                            </Form.List>
+                          </div>
+                        </Collapse.Panel>
+                      ))}
+                    </Collapse>
                     <div className="d-flex justify-content-start mt-3 mb-3">
                       <Button
                         color="success"
@@ -186,9 +229,9 @@ class Index extends PureComponent {
                       </Button>
                     </div>
                   </div>
-                )}
-              </Form.List>
-            </div>
+                </div>
+              )}
+            </Form.List>
           </div>
           <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
             <Button
