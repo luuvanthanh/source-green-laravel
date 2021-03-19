@@ -30,7 +30,7 @@ class IndexLayout extends React.PureComponent {
     const {
       children,
       loading,
-      location: { pathname, search },
+      location: { pathname, search, query },
       user,
     } = this.props;
 
@@ -72,7 +72,10 @@ class IndexLayout extends React.PureComponent {
       }
       // redirect to main dashboard when user on login page and authorized
       if (isLoginLayout && isUserAuthorized) {
-        return <Redirect to="/booking" />;
+        if (query.redirect) {
+          return <Redirect to={query.redirect} />;
+        }
+        return <Redirect to="/tieu-chi-danh-gia/danh-gia-hoc-tap" />;
       }
       // in other case render previously set layout
       return <Container>{children}</Container>;
