@@ -467,9 +467,7 @@ class Index extends PureComponent {
               locales={allLocales}
               allDaySlot={false}
               height={650}
-              eventClick={() => {
-                console.log('12');
-              }}
+              eventClick={() => {}}
               events={[
                 { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 23:00:00' },
                 { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 21:00:00' },

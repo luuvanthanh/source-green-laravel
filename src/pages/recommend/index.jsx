@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Modal, Form, Avatar, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -9,17 +9,9 @@ import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
-import allLocales from '@fullcalendar/core/locales-all';
 import FormItem from '@/components/CommonComponent/FormItem';
-import moment from 'moment';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
-import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import { sliceEvents, createPlugin } from '@fullcalendar/core';
 
 let isMounted = true;
 /**
@@ -37,9 +29,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ schedules, loading }) => ({
-  data: schedules.data,
-  pagination: schedules.pagination,
+const mapStateToProps = ({ recommend, loading }) => ({
+  data: recommend.data,
+  pagination: recommend.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -62,9 +54,7 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {
-    this.onLoad();
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -93,7 +83,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'schedules/GET_DATA',
+      type: 'recommend/GET_DATA',
       payload: {
         ...search,
         status,
@@ -197,7 +187,7 @@ class Index extends PureComponent {
     const { objects } = this.state;
     this.formRef.current.validateFields().then((values) => {
       this.props.dispatch({
-        type: !isEmpty(objects) ? 'schedules/UPDATE' : 'schedules/ADD',
+        type: !isEmpty(objects) ? 'recommend/UPDATE' : 'recommend/ADD',
         payload: {
           ...values,
           id: objects.id,
@@ -258,7 +248,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'schedules/REMOVE',
+          type: 'recommend/REMOVE',
           payload: {
             id,
             pagination: {
@@ -283,37 +273,73 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => index + 1,
       },
       {
-        title: 'TÊN TIÊU CHÍ - ĐÁNH GIÁ',
+        title: 'HỌ VÀ TÊN TRẺ',
         key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Học thuật</Text>,
-      },
-      {
-        title: 'CẤU HÌNH LOẠI ÁP DỤNG',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Mẫu giáo</Text>,
-      },
-      {
-        title: 'THỜI HẠN NHẬP',
-        key: 'name',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">Hằng ngày</Text>,
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-200',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
+          <Text size="normal">
+            <Avatar size={32} shape="circle" className="mr-2" />
+            Nguyễn Văn A
+          </Text>
         ),
+      },
+      {
+        title: 'THÁNG TUỔI',
+        key: 'month',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">32 tháng</Text>,
+      },
+      {
+        title: 'LỚP',
+        key: 'class',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Preschool</Text>,
+      },
+      {
+        title: 'TÊN THUỐC',
+        key: 'name',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Preschool</Text>,
+      },
+      {
+        title: 'HÌNH ẢNH/CLIP',
+        key: 'image',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Preschool</Text>,
+      },
+      {
+        title: 'ĐƠN VỊ',
+        key: 'position',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Viên</Text>,
+      },
+      {
+        title: 'LIỀU LƯỢNG',
+        key: 'amount',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">2 viên/lần</Text>,
+      },
+      {
+        title: 'THỜI GIAN UỐNG',
+        key: 'date',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Sau ăn sáng, sau ăn trưa</Text>,
+      },
+      {
+        title: 'GHI CHÚ',
+        key: 'note',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal"></Text>,
+      },
+      {
+        title: 'XÁC NHẬN CHO UỐNG',
+        key: 'confirm',
+        className: 'min-width-150',
+        align: 'center',
+        render: (record) => <Checkbox />,
       },
     ];
     return columns;
@@ -328,74 +354,11 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { visible, objects, search } = this.state;
-    const loading = effects['schedules/GET_DATA'];
-    const loadingSubmit = effects['schedules/ADD'] || effects['schedules/UPDATE'];
-    const CustomViewConfig = {
-      classNames: ['custom-view'],
-
-      content: function (props) {
-        let segs = sliceEvents(props, true); // allDay=true
-        let html =
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-events">' +
-          segs.length +
-          ' events' +
-          '</div>';
-
-        return { html: html };
-      },
-    };
+    const loading = effects['recommend/GET_DATA'];
+    const loadingSubmit = effects['recommend/ADD'] || effects['recommend/UPDATE'];
     return (
       <>
-        <Helmet title="Danh sách tiêu chí - đánh giá" />
-        <Modal
-          centered
-          footer={[
-            <div className={classnames('d-flex', 'justify-content-end')} key="action">
-              <Button
-                color="white"
-                icon="cross"
-                loading={loadingSubmit}
-                onClick={this.handleCancel}
-                size="medium"
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                loading={loadingSubmit}
-                onClick={this.onFinish}
-                size="medium"
-              >
-                LƯU
-              </Button>
-            </div>,
-          ]}
-          onCancel={this.handleCancel}
-          title={
-            !isEmpty(objects) ? 'CHỈNH SỬA TIÊU CHÍ - ĐÁNH GIÁ' : 'THÊM MỚI TIÊU CHÍ - ĐÁNH GIÁ'
-          }
-          visible={visible}
-        >
-          <Form layout="vertical" ref={this.formRef}>
-            <div className="row">
-              <div className="col-lg-12">
-                <FormItem
-                  label="TÊN"
-                  name="name"
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                  type={variables.INPUT}
-                />
-              </div>
-            </div>
-          </Form>
-        </Modal>
+        <Helmet title="Danh sách phụ huynh" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className={styles.search}>
@@ -409,76 +372,57 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[]}
-                    label="CƠ SỞ"
-                    name="department"
-                    onChange={(event) => this.onChange(event, 'department')}
+                    label="TÌM KIẾM"
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả' }]}
+                    label="LỚP"
+                    name="class"
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[]}
-                    label="LỚP"
-                    name="level"
-                    onChange={(event) => this.onChange(event, 'level')}
+                    data={[{ id: null, name: 'Tất cả' }]}
+                    label="BÉ"
+                    name="children"
                     type={variables.SELECT}
                   />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem label="THỜI GIAN" name="date" type={variables.DATE_PICKER} />
                 </div>
               </div>
             </Form>
           </div>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">LỊCH LỚP HỌC ĐỊNH HƯỚNG</Text>
+            <Text color="dark">DANH SÁCH DẶN THUỐC</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>
-          <div className={classnames(styles['block-table'], 'schedules-custom')}>
-            <FullCalendar
-              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-              plugins={[resourceTimeGridPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+          <div className={styles['block-table']}>
+            <Table
+              bordered
+              columns={this.header(params)}
+              dataSource={[{ id: 1 }]}
+              loading={loading}
+              pagination={this.pagination(pagination)}
+              params={{
+                header: this.header(),
+                type: 'table',
               }}
-              views={{
-                dayGrid: {
-                  dayMaxEventRows: 3,
-                },
-                month: {
-                  dayMaxEventRows: 3,
-                },
-                agendaFourDay: {
-                  type: 'agenda',
-                  duration: { days: 4 },
-                  buttonText: '4 day',
-                },
-              }}
-              locale="vi"
-              editable={true}
-              fixedWeekCount={false}
-              showNonCurrentDates={true}
-              locales={allLocales}
-              allDaySlot={false}
-              height={650}
-              eventClick={() => {}}
-              events={[
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 23:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 21:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 22:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 20:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 01:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 05:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 06:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 07:00:00' },
-                { title: '7:00 - 7:30: Đón bé vào lớp', date: '2021-03-22 08:00:00' },
-              ]}
+              rowKey={(record) => record.id}
+              scroll={{ x: '100%' }}
             />
           </div>
         </div>
