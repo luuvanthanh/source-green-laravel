@@ -285,6 +285,7 @@
     font-size: 13px;
     line-height: 20px;
     color: rgba($color: $text-dark, $alpha: 0.65);
+    background-color: rgba(14, 11, 32, 0.05);
   }
   &:global(.ant-collapse) {
     border: none;
@@ -292,15 +293,20 @@
   :global(.ant-collapse-content) {
     border: none;
   }
+  :global(.ant-collapse-item) {
+    border-bottom: unset;
+  }
   .icon-remove {
     color: $background-danger;
   }
 }
 
 .collapse-children {
+  :global(.ant-collapse-item) {
+    border-bottom: none !important;
+  }
   &:global(.ant-collapse) {
     border: none;
-    margin: -24px;
   }
   :global(.ant-collapse-item .ant-collapse-extra) {
     button {
@@ -318,27 +324,8 @@
       }
     }
   }
-  > :global(.ant-collapse-item > .ant-collapse-header) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px !important;
-    &::after,
-    &::before {
-      display: none !important;
-    }
-    .title {
-      font-family: "Roboto", sans-serif;
-      font-style: normal;
-      font-weight: normal;
-      font-size: 13px;
-      line-height: 22px;
-      color: rgba($color: $text-dark, $alpha: 0.85);
-      margin-bottom: 0;
-    }
-  }
-  > :global(.ant-collapse-item > .ant-collapse-content-box) {
-    padding: 24px !important;
+  :global(.ant-collapse-content-box) {
+    padding: 5px 16px !important;
   }
 }
 

@@ -20,22 +20,14 @@ class ProfileMenu extends React.Component {
       <Menu selectable={false}>
         <Menu.Item>
           <strong>Hello, {user?.user?.userName || 'Anonymous'}</strong>
-          <div>
-            <strong className="mr-1">Role:</strong>
-            {user.role}
-          </div>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item>
           <div>
             <strong className="mr-1">Email:</strong>
             {user?.user?.email}
-            <br />
-            <strong className="mr-1">Phone:</strong>
-            {user?.user?.phone || '-'}
           </div>
         </Menu.Item>
-        <Menu.Divider />
         <Menu.Divider />
         <Menu.Item onClick={this.logout}>
           <span>
