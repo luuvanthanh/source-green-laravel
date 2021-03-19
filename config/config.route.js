@@ -276,6 +276,18 @@ export default [
         ],
       },
       {
+        path: '/dan-thuoc',
+        component: './recommend/layout',
+        routes: [
+          {
+            path: '/dan-thuoc',
+            component: './recommend',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      {
         path: '/404',
         component: './404',
       },

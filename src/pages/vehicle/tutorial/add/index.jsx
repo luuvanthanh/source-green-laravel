@@ -167,7 +167,6 @@ class Index extends PureComponent {
   };
 
   onRemoveChildren = (record) => {
-    console.log(record, this.state.list);
     this.setStateData((prevState) => ({
       list: prevState.list.map((item) => {
         if (item.id == record.parentId) {

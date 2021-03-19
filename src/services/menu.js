@@ -84,11 +84,15 @@ export async function getLeftMenuData() {
     {
       title: 'Hồ sơ đối tượng',
       key: 'profiles',
-      url: [
-        '/ho-so-doi-tuong/phu-huynh',
-        '/ho-so-doi-tuong/hoc-sinh',
-        '/ho-so-doi-tuong/nhan-su',
-      ],
+      url: ['/ho-so-doi-tuong/phu-huynh', '/ho-so-doi-tuong/hoc-sinh', '/ho-so-doi-tuong/nhan-su'],
+      icon: 'icon icon-calendar1',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Dặn thuốc',
+      key: 'remommend',
+      url: ['/dan-thuoc'],
       icon: 'icon icon-calendar1',
       permission: [],
       pro: true,
