@@ -67,16 +67,16 @@ class IndexLayout extends React.PureComponent {
         return <Loader />;
       }
       // redirect to login page if current is not login page and user not authorized
-      if (!isLoginLayout && !isUserAuthorized) {
-        return <Redirect to={{ pathname: '/login', query: { redirect: pathname } }} />;
-      }
+      // if (!isLoginLayout && !isUserAuthorized) {
+      //   return <Redirect to={{ pathname: '/login', query: { redirect: pathname } }} />;
+      // }
       // redirect to main dashboard when user on login page and authorized
-      if (isLoginLayout && isUserAuthorized) {
-        if (query.redirect) {
-          return <Redirect to={query.redirect} />;
-        }
-        return <Redirect to="/tieu-chi-danh-gia/danh-gia-hoc-tap" />;
-      }
+      // if (isLoginLayout && isUserAuthorized) {
+      //   if (query.redirect) {
+      //     return <Redirect to={query.redirect} />;
+      //   }
+      //   return <Redirect to="/tieu-chi-danh-gia/danh-gia-hoc-tap" />;
+      // }
       // in other case render previously set layout
       return <Container>{children}</Container>;
     };

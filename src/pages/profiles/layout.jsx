@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import ProfileMenu from '@/components/LayoutComponents/TopBar/ProfileMenu';
 import Notification from '@/components/LayoutComponents/TopBar/Notification';
 import { Layout } from 'antd';
-import classNames from 'classnames';
+import classnames from 'classnames';
 
 const MENU_MAIN = [
   {
@@ -26,6 +26,25 @@ const MENU_MAIN = [
     url: '/ho-so-doi-tuong/nhan-su',
   },
 ];
+
+const MENU_CREATE = [
+  {
+    key: 'PARENT',
+    title: 'Thông tin cha',
+    url: '/ho-so-doi-tuong/phu-huynh/thong-tin-cha',
+  },
+  {
+    key: 'MOTHER',
+    title: 'Thông tin mẹ',
+    url: '/ho-so-doi-tuong/phu-huynh/thong-tin-me',
+  },
+  {
+    key: 'CHILDREN',
+    title: 'Thông tin trẻ',
+    url: '/ho-so-doi-tuong/phu-huynh/thong-tin-tre',
+  },
+];
+
 const mapStateToProps = ({ settings }) => ({
   isMenuCollapsed: settings.isMenuCollapsed,
 });
@@ -74,10 +93,30 @@ class Index extends PureComponent {
           </div>
         </Layout.Header>
         <Layout.Content
-          className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
+          className={classnames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
           style={{ height: '100%', position: 'relative' }}
         >
-          <div className={styles.content}>{this.props.children}</div>
+          {pathname.includes('/tao-moi') && (
+            <Menu
+              className={classnames(styles['menu-horizontal'], styles['menu-horizontal-children'])}
+              mode="horizontal"
+              onClick={this.handleClick}
+              selectedKeys={[pathname]}
+            >
+              {MENU_CREATE.map((item) => {
+                return (
+                  <Menu.Item
+                    className={classnames({ [`${styles.back}`]: item.isBack })}
+                    key={item.url}
+                  >
+                    <Link to={item.url}>{item.title}</Link>
+                  </Menu.Item>
+                );
+              })}
+            </Menu>
+          )}
+
+          <div className={styles.content}>{children}</div>
         </Layout.Content>
       </>
     );

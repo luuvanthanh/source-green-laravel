@@ -1,5 +1,8 @@
 @import "@/assets/styles/mixins.scss";
 
+.menu-horizontal-children {
+  padding: 0 rem(20);
+}
 // menu horizontal
 .menu-horizontal {
   &.menu-horizontal-main {
