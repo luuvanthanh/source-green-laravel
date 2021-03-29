@@ -208,8 +208,20 @@ export default [
             authority: [],
           },
           {
+            path: '/ho-so-doi-tuong/nhan-su/tao-moi',
+            component: './profiles/personnel/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/ho-so-doi-tuong/hoc-sinh',
             component: './profiles/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/hoc-sinh/tao-moi',
+            component: './profiles/children/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
