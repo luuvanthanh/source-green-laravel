@@ -12,72 +12,6 @@ export default [
         component: './login',
       },
       {
-        path: '/danh-muc',
-        component: './category/layout',
-        routes: [
-          {
-            path: '/danh-muc',
-            component: './category',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/tour',
-            component: './category/tours',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/loai-hinh-du-lich',
-            component: './category/product-areas',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/nhom-tour',
-            component: './category/product-group',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/loai-tour',
-            component: './category/product-types',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/dia-diem',
-            component: './category/locations',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/dich-vu',
-            component: './category/services',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/dich-vu-cung-cap',
-            component: './category/bo-group',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/tien-ich',
-            component: './category/utilities',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/danh-muc/danh-muc-chung',
-            component: './category/bo-data-type',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
-      {
         path: '/tieu-chi-danh-gia',
         component: './criteria/layout',
         routes: [
@@ -258,6 +192,12 @@ export default [
           {
             path: '/ho-so-doi-tuong/phu-huynh',
             component: './profiles/parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/phu-huynh/tao-moi',
+            component: './profiles/parents/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
