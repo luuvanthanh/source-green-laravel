@@ -54,9 +54,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {
-    this.onLoad();
-  }
+  // componentDidMount() {
+  //   this.onLoad();
+  // }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -348,7 +348,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={[{ id: 1 }]}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
