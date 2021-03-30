@@ -154,3 +154,13 @@ action: action of function
   Add
 </Button>
 ```
+
+### QUERY BUILD WEB-APP DOCKER
+```
+sudo docker-compose stop
+
+sudo docker-compose run --rm web yarn
+sudo docker-compose run --rm web yarn build
+
+sudo docker-compose up -d
+```
