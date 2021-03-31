@@ -5,11 +5,15 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/tieu-chi-danh-gia/danh-gia-hoc-tap',
+        redirect: '/trang-chu',
       },
       {
         path: '/login',
         component: './login',
+      },
+      {
+        path: '/trang-chu',
+        component: './home',
       },
       {
         path: '/tieu-chi-danh-gia',

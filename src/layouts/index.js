@@ -47,11 +47,11 @@ class IndexLayout extends React.PureComponent {
 
     // Layout Rendering
     const getLayout = () => {
-      if (pathname === '/') {
-        return 'public';
-      }
       if (/^\/login(?=\/|$)/i.test(pathname)) {
         return 'login';
+      }
+      if (/^\/trang-chu(?=\/|$)/i.test(pathname)) {
+        return 'public';
       }
       return 'main';
     };

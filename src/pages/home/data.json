@@ -1,0 +1,69 @@
+{
+  "dataSource": [
+    {
+      "title": "Thông báo",
+      "src": "images/home/notification.png",
+      "url": "/"
+    },
+    {
+      "title": "Hồ sơ đối tượng",
+      "src": "images/home/contact.png",
+      "url": "/"
+    },
+    {
+      "title": "Phân bổ",
+      "src": "images/home/pin.png",
+      "url": "/"
+    },
+    {
+      "title": "Trao đổi",
+      "src": "images/home/speech.png",
+      "url": "/"
+    },
+    {
+      "title": "Ghi nhận",
+      "src": "images/home/movies.png",
+      "url": "/"
+    },
+    {
+      "title": "Điểm danh",
+      "src": "images/home/note.png",
+      "url": "/"
+    },
+    {
+      "title": "Tiêu chí, đánh giá",
+      "src": "images/home/spreadsheet.png",
+      "url": "/"
+    },
+    {
+      "title": "Bus",
+      "src": "images/home/road.png",
+      "url": "/"
+    },
+    {
+      "title": "Y tế",
+      "src": "images/home/balloons.png",
+      "url": "/"
+    },
+    {
+      "title": "Thời khóa biểu",
+      "src": "images/home/calendar.png",
+      "url": "/"
+    },
+    {
+      "title": "Bếp",
+      "src": "images/home/cooking.png",
+      "url": "/"
+    },
+    {
+      "title": "Biếu phí",
+      "src": "images/home/currency.png",
+      "url": "/"
+    },
+    {
+      "title": "Cấu hình",
+      "src": "images/home/gear.png",
+      "url": "/"
+    }
+  ]
+}

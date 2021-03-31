@@ -13,3 +13,18 @@
     width: 100%;
   }
 }
+
+.ant-input {
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #d6ebdf;
+}
+
+.ant-input-password {
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #d6ebdf;
+  .ant-input {
+    height: auto;
+  }
+}

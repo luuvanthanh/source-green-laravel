@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Form } from 'antd';
 import { Helmet } from 'react-helmet';
 import { connect } from 'umi';
+import classname from 'classnames';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
@@ -41,44 +42,44 @@ class Index extends PureComponent {
     } = this.props;
     const loading = effects['user/login'];
     return (
-      <div>
+      <div className={styles.block}>
         <Helmet title="Login" />
-        <div className={styles.block}>
-          <div className="row">
-            <div className="col-12">
-              <div className={styles.inner}>
-                <div className={styles.form}>
-                  <h4 className="text-uppercase">
-                    <strong>Đăng nhập</strong>
-                  </h4>
-                  <br />
-                  <Form
-                    hideRequiredMark
-                    initialValues={{ password: '1q2w3E*', username: 'admin' }}
-                    layout="vertical"
-                    onFinish={this.onFinish}
-                  >
-                    <FormItem
-                      label="TÊN ĐĂNG NHẬP"
-                      name="username"
-                      rules={[variables.RULES.EMPTY_INPUT]}
-                      type={variables.INPUT}
-                    />
-                    <FormItem
-                      label="PASSWORD"
-                      name="password"
-                      rules={[variables.RULES.EMPTY_INPUT]}
-                      type={variables.INPUT_PASSWORD}
-                    />
-                    <div className="form-actions">
-                      <Button color="primary" htmlType="submit" loading={loading}>
-                        Đăng nhập
-                      </Button>
-                    </div>
-                  </Form>
-                </div>
-              </div>
+        <div className={styles.inner}>
+          <div className={styles.form}>
+            <div
+              className={classname(styles['logo-container'], 'd-flex', 'justify-content-center')}
+            >
+              <img src="images/login/logo.png" className={styles.logo} />
             </div>
+            <Form
+              hideRequiredMark
+              initialValues={{ password: '1q2w3E*', username: 'admin' }}
+              layout="vertical"
+              onFinish={this.onFinish}
+            >
+              <FormItem
+                label="User ID / Email"
+                name="username"
+                rules={[variables.RULES.EMPTY_INPUT]}
+                type={variables.INPUT}
+              />
+              <FormItem
+                label="Mật khẩu"
+                name="password"
+                rules={[variables.RULES.EMPTY_INPUT]}
+                type={variables.INPUT_PASSWORD}
+              />
+              <div className="form-actions">
+                <Button
+                  color="primary"
+                  htmlType="submit"
+                  className={styles.button}
+                  loading={loading}
+                >
+                  ĐĂNG NHẬP
+                </Button>
+              </div>
+            </Form>
           </div>
         </div>
       </div>
