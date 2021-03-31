@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import { connect } from 'umi';
+import { connect, Link } from 'umi';
 import PropTypes from 'prop-types';
-import Cookies from 'universal-cookie';
 import styles from './index.scss';
 import Slider from 'react-slick';
 import { dataSource } from './data.json';
@@ -77,14 +76,14 @@ class Index extends PureComponent {
           <Slider {...settings}>
             {dataSource.map((item, index) => (
               <div key={index}>
-                <a href={item.url} target="_blank" className={styles.item}>
+                <Link to={item.url} className={styles.item}>
                   <div className={styles['item-image']}>
                     <img src={item.src} alt="notification" className={styles.icon} />
                   </div>
                   <div className={styles['item-content']}>
                     <p className={styles['norm']}>{item.title}</p>
                   </div>
-                </a>
+                </Link>
               </div>
             ))}
           </Slider>

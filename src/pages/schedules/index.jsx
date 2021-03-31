@@ -63,7 +63,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.onLoad();
+    // this.onLoad();
   }
 
   componentWillUnmount() {
