@@ -5,46 +5,19 @@ import styles from './style.module.scss';
 
 @withRouter
 class LoginLayout extends React.PureComponent {
-  state = {
-    backgroundNumber: 1,
-    backgroundEnabled: false,
-  };
-
-  changeBackground = () => {
-    const { backgroundNumber } = this.state;
-    this.setState({
-      backgroundEnabled: true,
-      backgroundNumber: backgroundNumber === 5 ? 1 : backgroundNumber + 1,
-    });
-  };
-
-  toggleBackground = () => {
-    const { backgroundEnabled } = this.state;
-    this.setState({
-      backgroundEnabled: !backgroundEnabled,
-    });
-  };
-
   render() {
     const { children } = this.props;
-    const { backgroundNumber, backgroundEnabled } = this.state;
 
     return (
       <Layout>
-        <Layout.Content>
+        <Layout.Content className={styles.wrapper}>
           <div
-            className={backgroundEnabled ? `${styles.layout} ${styles.light}` : `${styles.layout}`}
+            className={styles.content}
             style={{
-              backgroundImage: backgroundEnabled
-                ? `url('resources/images/photos/${backgroundNumber}.jpeg')`
-                : `none`,
+              backgroundImage: `url('images/bg.png')`,
             }}
           >
-            <div className={styles.header} />
-            <div className={styles.content}>{children}</div>
-            <div className={`${styles.footer} text-center`}>
-              <p>&copy; 2021 Clover.</p>
-            </div>
+            {children}
           </div>
         </Layout.Content>
       </Layout>

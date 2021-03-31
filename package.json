@@ -98,7 +98,9 @@
     "umi": "^3.2.14",
     "umi-request": "^1.0.8",
     "universal-cookie": "^4.0.4",
-    "use-merge-value": "^1.0.1"
+    "use-merge-value": "^1.0.1",
+    "slick-carousel": "^1.8.1",
+    "react-slick": "^0.28.1"
   },
   "devDependencies": {
     "@types/react-helmet": "^6.1.0",

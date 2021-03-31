@@ -1,0 +1,28 @@
+{
+  "dataSource": [
+    {
+      "img": "images/bg_01.png"
+    },
+    {
+      "img": "images/bg_02.png"
+    },
+    {
+      "img": "images/bg_03.png"
+    },
+    {
+      "img": "images/bg_04.png"
+    },
+    {
+      "img": "images/bg_05.png"
+    },
+    {
+      "img": "images/bg_06.png"
+    },
+    {
+      "img": "images/bg_07.png"
+    },
+    {
+      "img": "images/bg_08.png"
+    }
+  ]
+}
