@@ -1,6 +1,9 @@
 {
   "dataSource": [
     {
+      "img": "images/bg.png"
+    },
+    {
       "img": "images/bg_01.png"
     },
     {

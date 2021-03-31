@@ -88,12 +88,14 @@
     }
   }
   .image {
-    width: 100%;
-    object-fit: cover;
+    width: 130px;
+    height: 130px;
     border-radius: 8px;
     img {
       width: 100%;
       border-radius: 8px;
+      height: 100%;
+      object-fit: cover;
     }
   }
 }

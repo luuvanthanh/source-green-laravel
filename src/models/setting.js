@@ -1,8 +1,8 @@
 import store from 'store';
 
-const STORED_SETTINGS = storedSettings => {
+const STORED_SETTINGS = (storedSettings) => {
   const settings = {};
-  Object.keys(storedSettings).forEach(key => {
+  Object.keys(storedSettings).forEach((key) => {
     const item = store.get(`app.settings.${key}`);
     settings[key] = typeof item !== 'undefined' ? item : storedSettings[key];
   });
@@ -24,17 +24,14 @@ export default {
       isFixedWidth: false,
       isMenuShadow: true,
     }),
+    background: localStorage.getItem('background') || 'images/bg.png',
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
+    SET_CHANGE_BACKGROUND: (state, { payload }) => ({ ...state, background: payload }),
   },
   effects: {
-    *CHANGE_SETTING(
-      {
-        payload: { setting, value },
-      },
-      { put },
-    ) {
+    *CHANGE_SETTING({ payload: { setting, value } }, { put }) {
       yield store.set(`app.settings.${setting}`, value);
       yield put({
         type: 'SET_STATE',
@@ -43,13 +40,20 @@ export default {
         },
       });
     },
+    *CHANGE_BACKGROUND({ payload }, { put }) {
+      localStorage.setItem('background', payload);
+      yield put({
+        type: 'SET_CHANGE_BACKGROUND',
+        payload,
+      });
+    },
   },
   subscriptions: {
     setup: ({ dispatch, history }) => {
       // load settings from url on app load
-      history.listen(params => {
+      history.listen((params) => {
         const { query } = params;
-        Object.keys(query).forEach(key => {
+        Object.keys(query).forEach((key) => {
           dispatch({
             type: 'CHANGE_SETTING',
             payload: {
