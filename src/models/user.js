@@ -24,33 +24,33 @@ const UserModel = {
   effects: {
     *login({ payload }, { call, put }) {
       try {
-        const response = yield call(services.login, payload);
-        const me = yield call(services.me, {
-          access_token: response.access_token,
-          token_type: response.token_type,
+        // const response = yield call(services.login, payload);
+        // const me = yield call(services.me, {
+        //   access_token: response.access_token,
+        //   token_type: response.token_type,
+        // });
+        // if (me) {
+        yield put({
+          type: 'SET_USER',
+          payload: {
+            // ...me,
+            authorized: true,
+            // permissions: permission,
+          },
         });
-        if (me) {
-          yield put({
-            type: 'SET_USER',
-            payload: {
-              ...me,
-              authorized: true,
-              permissions: permission,
-            },
-          });
-          cookies.set('access_token', response.access_token, { path: '/' });
-          cookies.set('token_type', response.token_type, { path: '/' });
-          const { can, rules } = new AbilityBuilder();
-          permission.forEach((item) => {
-            if (splitPermission(item)[0] === 'VIEW') {
-              can(['VIEW'], splitPermission(item)[1]);
-            }
-            if (splitPermission(item)[0] === 'NEW') {
-              can(['NEW'], splitPermission(item)[1]);
-            }
-          });
-          ability.update(rules);
-        }
+        // cookies.set('access_token', response.access_token, { path: '/' });
+        // cookies.set('token_type', response.token_type, { path: '/' });
+        const { can, rules } = new AbilityBuilder();
+        permission.forEach((item) => {
+          if (splitPermission(item)[0] === 'VIEW') {
+            can(['VIEW'], splitPermission(item)[1]);
+          }
+          if (splitPermission(item)[0] === 'NEW') {
+            can(['NEW'], splitPermission(item)[1]);
+          }
+        });
+        ability.update(rules);
+        // }
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
@@ -115,15 +115,15 @@ const UserModel = {
     }),
   },
   subscriptions: {
-    setup: ({ dispatch }) => {
-      dispatch({
-        type: 'LOAD_CURRENT_ACCOUNT',
-        payload: {
-          access_token: cookies.get('access_token'),
-          token_type: cookies.get('token_type'),
-        },
-      });
-    },
+    // setup: ({ dispatch }) => {
+    //   dispatch({
+    //     type: 'LOAD_CURRENT_ACCOUNT',
+    //     payload: {
+    //       access_token: cookies.get('access_token'),
+    //       token_type: cookies.get('token_type'),
+    //     },
+    //   });
+    // },
   },
 };
 export default UserModel;
