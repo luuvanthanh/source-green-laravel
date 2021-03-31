@@ -8,7 +8,7 @@
     {
       "title": "Hồ sơ đối tượng",
       "src": "images/home/contact.png",
-      "url": "/"
+      "url": "/ho-so-doi-tuong/phu-huynh"
     },
     {
       "title": "Phân bổ",
@@ -28,17 +28,17 @@
     {
       "title": "Điểm danh",
       "src": "images/home/note.png",
-      "url": "/"
+      "url": "/thoi-khoa-bieu"
     },
     {
       "title": "Tiêu chí, đánh giá",
       "src": "images/home/spreadsheet.png",
-      "url": "/"
+      "url": "/tieu-chi-danh-gia/danh-gia-hoc-tap"
     },
     {
       "title": "Bus",
       "src": "images/home/road.png",
-      "url": "/"
+      "url": "/quan-ly-phuong-tien/xe"
     },
     {
       "title": "Y tế",
@@ -48,7 +48,7 @@
     {
       "title": "Thời khóa biểu",
       "src": "images/home/calendar.png",
-      "url": "/"
+      "url": "/thoi-khoa-bieu"
     },
     {
       "title": "Bếp",
