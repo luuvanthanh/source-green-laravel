@@ -1,14 +1,19 @@
 import React from 'react';
 import { Layout } from 'antd';
-import { withRouter } from 'umi';
+import { connect, withRouter } from 'umi';
+import PropTypes from 'prop-types';
 import styles from './style.module.scss';
 import TopBar from '@/components/LayoutComponents/Home/TopBar';
 
-@withRouter
-class LoginLayout extends React.PureComponent {
-  render() {
-    const { children } = this.props;
+const mapStateToProps = ({ settings }) => ({
+  background: settings.background,
+});
 
+@withRouter
+@connect(mapStateToProps)
+class PublicLayout extends React.PureComponent {
+  render() {
+    const { children, background } = this.props;
     return (
       <Layout>
         <Layout.Header className={styles.header}>
@@ -18,7 +23,7 @@ class LoginLayout extends React.PureComponent {
           <div
             className={styles.content}
             style={{
-              backgroundImage: `url('images/bg.png')`,
+              backgroundImage: background ? `url(${background})` : `url('images/bg.png')`,
             }}
           >
             {children}
@@ -29,4 +34,14 @@ class LoginLayout extends React.PureComponent {
   }
 }
 
-export default LoginLayout;
+PublicLayout.propTypes = {
+  children: PropTypes.objectOf(PropTypes.any),
+  background: PropTypes.string,
+};
+
+PublicLayout.defaultProps = {
+  children: null,
+  background: '',
+};
+
+export default PublicLayout;
