@@ -2,67 +2,67 @@
   "dataSource": [
     {
       "title": "Thông báo",
-      "src": "images/home/notification.png",
+      "src": "images/home/news.svg",
       "url": "/"
     },
     {
       "title": "Hồ sơ đối tượng",
-      "src": "images/home/contact.png",
+      "src": "images/home/contact.svg",
       "url": "/ho-so-doi-tuong/phu-huynh"
     },
     {
       "title": "Phân bổ",
-      "src": "images/home/pin.png",
+      "src": "images/home/pin.svg",
       "url": "/"
     },
     {
       "title": "Trao đổi",
-      "src": "images/home/speech.png",
+      "src": "images/home/speech.svg",
       "url": "/"
     },
     {
       "title": "Ghi nhận",
-      "src": "images/home/movies.png",
+      "src": "images/home/movies.svg",
       "url": "/"
     },
     {
       "title": "Điểm danh",
-      "src": "images/home/note.png",
+      "src": "images/home/note.svg",
       "url": "/thoi-khoa-bieu"
     },
     {
       "title": "Tiêu chí, đánh giá",
-      "src": "images/home/spreadsheet.png",
+      "src": "images/home/spreadsheet.svg",
       "url": "/tieu-chi-danh-gia/danh-gia-hoc-tap"
     },
     {
       "title": "Bus",
-      "src": "images/home/road.png",
+      "src": "images/home/road.svg",
       "url": "/quan-ly-phuong-tien/xe"
     },
     {
       "title": "Y tế",
-      "src": "images/home/balloons.png",
+      "src": "images/home/balloons.svg",
       "url": "/"
     },
     {
       "title": "Thời khóa biểu",
-      "src": "images/home/calendar.png",
+      "src": "images/home/calendar.svg",
       "url": "/thoi-khoa-bieu"
     },
     {
       "title": "Bếp",
-      "src": "images/home/cooking.png",
+      "src": "images/home/cooking.svg",
       "url": "/"
     },
     {
       "title": "Biếu phí",
-      "src": "images/home/currency.png",
+      "src": "images/home/currency.svg",
       "url": "/"
     },
     {
       "title": "Cấu hình",
-      "src": "images/home/gear.png",
+      "src": "images/home/gear.svg",
       "url": "/"
     }
   ]
