@@ -73,7 +73,7 @@ class Index extends PureComponent {
               />
               <div className="form-actions">
                 <Button
-                  color="primary"
+                  color="success"
                   htmlType="submit"
                   className={styles.button}
                   loading={loading}
