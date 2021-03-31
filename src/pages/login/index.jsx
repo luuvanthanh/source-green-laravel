@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Form } from 'antd';
 import { Helmet } from 'react-helmet';
 import { connect } from 'umi';
-import classname from 'classnames';
+import classnames from 'classnames';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
@@ -42,12 +42,12 @@ class Index extends PureComponent {
     } = this.props;
     const loading = effects['user/login'];
     return (
-      <div className={styles.block}>
+      <div className={classnames(styles.block, 'login-container')}>
         <Helmet title="Login" />
         <div className={styles.inner}>
           <div className={styles.form}>
             <div
-              className={classname(styles['logo-container'], 'd-flex', 'justify-content-center')}
+              className={classnames(styles['logo-container'], 'd-flex', 'justify-content-center')}
             >
               <img src="images/login/logo.png" className={styles.logo} />
             </div>

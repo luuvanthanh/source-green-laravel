@@ -65,6 +65,7 @@
     "@fullcalendar/resource-timegrid": "^5.5.0",
     "@fullcalendar/timegrid": "^5.5.1",
     "@umijs/route-utils": "^1.0.33",
+    "animate.css": "^4.1.1",
     "antd": "^4.13.1",
     "array-move": "^3.0.1",
     "babel-eslint": "^10.1.0",
@@ -92,15 +93,16 @@
     "react-infinite-scroller": "^1.2.4",
     "react-leaflet": "^3.1.0",
     "react-quill": "^1.3.5",
+    "react-slick": "^0.28.1",
     "react-sortable-hoc": "^1.11.0",
     "sass-loader": "^10.0.5",
+    "slick-carousel": "^1.8.1",
     "store": "^2.0.12",
     "umi": "^3.2.14",
     "umi-request": "^1.0.8",
     "universal-cookie": "^4.0.4",
     "use-merge-value": "^1.0.1",
-    "slick-carousel": "^1.8.1",
-    "react-slick": "^0.28.1"
+    "wowjs": "^1.1.3"
   },
   "devDependencies": {
     "@types/react-helmet": "^6.1.0",

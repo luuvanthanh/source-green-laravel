@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, Link } from 'umi';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import styles from './index.scss';
 import Slider from 'react-slick';
 import { dataSource } from './data.json';
@@ -72,20 +73,22 @@ class Index extends PureComponent {
     return (
       <div className={styles.block}>
         <Helmet title="Trang Chủ" />
-        <div className={styles['items-container']}>
+        <div className={classnames(styles['items-container'])}>
           <Slider {...settings}>
-            {dataSource.map((item, index) => (
-              <div key={index}>
-                <Link to={item.url} className={styles.item}>
-                  <div className={styles['item-image']}>
-                    <img src={item.src} alt="notification" className={styles.icon} />
-                  </div>
-                  <div className={styles['item-content']}>
-                    <p className={styles['norm']}>{item.title}</p>
-                  </div>
-                </Link>
-              </div>
-            ))}
+            {dataSource.map((item, index) => {
+              return (
+                <div key={index}>
+                  <Link to={item.url} className={styles.item}>
+                    <div className={styles['item-image']}>
+                      <img src={item.src} alt="notification" className={styles.icon} />
+                    </div>
+                    <div className={styles['item-content']}>
+                      <p className={styles['norm']}>{item.title}</p>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </Slider>
         </div>
       </div>
