@@ -1,5 +1,5 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN INPUT */
@@ -14,17 +14,21 @@
   }
 }
 
-.ant-input {
-  height: 44px;
-  border-radius: 6px;
-  border: 1px solid #d6ebdf;
-}
-
-.ant-input-password {
-  height: 44px;
-  border-radius: 6px;
-  border: 1px solid #d6ebdf;
+.input-login {
   .ant-input {
-    height: auto;
+    height: 44px;
+    border-radius: 6px;
+    border: 1px solid #d6ebdf;
   }
 }
+
+.input-password {
+  .ant-input-password {
+    height: 44px;
+    border-radius: 6px;
+    border: 1px solid #d6ebdf;
+    .ant-input {
+      height: auto;
+    }
+  }
+  }

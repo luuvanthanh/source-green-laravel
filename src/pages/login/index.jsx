@@ -62,12 +62,14 @@ class Index extends PureComponent {
                 name="username"
                 rules={[variables.RULES.EMPTY_INPUT]}
                 type={variables.INPUT}
+                className="input-login"
               />
               <FormItem
                 label="Mật khẩu"
                 name="password"
                 rules={[variables.RULES.EMPTY_INPUT]}
                 type={variables.INPUT_PASSWORD}
+                className="input-password"
               />
               <div className="form-actions">
                 <Button
