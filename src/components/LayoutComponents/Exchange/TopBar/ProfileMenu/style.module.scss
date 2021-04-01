@@ -1,19 +1,18 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .dropdown {
-  align-items: center;
-  cursor: pointer;
   display: flex;
   justify-content: center;
   padding-right: 15px;
   position: relative;
+  align-items: center;
   &::after {
     border-bottom: 0;
     border-left: 0.3em solid transparent;
     border-right: 0.3em solid transparent;
     border-top: 0.3em solid;
     color: $gray;
-    content: '';
+    content: "";
     display: inline-block;
     height: 0;
     margin-left: 0.255em;
@@ -40,20 +39,17 @@
 }
 
 .content {
-  align-items: center;
+  align-items: flex-end;
   display: flex;
   flex-direction: column;
   padding: 0 5px;
   h3 {
     color: rgba(0, 0, 0, 0.85);
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-size: 14px;
     font-style: normal;
     font-weight: normal;
-    /* identical to box height, or 157% */
-
     line-height: 22px;
-
     margin-bottom: 0;
     text-align: left;
     width: 100%;
@@ -61,7 +57,7 @@
 
   p {
     color: rgba(0, 0, 0, 0.85);
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-size: 12px;
     font-style: normal;
     font-weight: normal;

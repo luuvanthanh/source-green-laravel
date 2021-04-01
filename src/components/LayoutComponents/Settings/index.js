@@ -32,16 +32,7 @@ class Settings extends React.Component {
 
   render() {
     const {
-      settings: {
-        isLightTheme,
-        isSettingsOpen,
-        isMenuTop,
-        isMenuCollapsed,
-        isBorderless,
-        isMenuShadow,
-        isSquaredBorders,
-        isFixedWidth,
-      },
+      settings: { isLightTheme, isSettingsOpen, isMenuTop, isMenuCollapsed },
     } = this.props;
 
     return (
@@ -51,25 +42,12 @@ class Settings extends React.Component {
         <Scrollbars style={{ height: '100vh' }}>
           <div className={styles.container}>
             <div className={styles.title}>
-              Theme Settings
+              Thay đổi cấu hình
               <span
                 className={`${styles.close} fa fa-times`}
                 onClick={this.closeSettings}
                 type="button"
               />
-            </div>
-            <div className={styles.description}>
-              This component &quot;Settings&quot; gives possibility to construct custom blocks with
-              any widgets, components and elements inside, like this theme settings
-            </div>
-            <div className={styles.item}>
-              <Switch
-                checked={isMenuTop}
-                onChange={(value) => {
-                  this.changeSetting('isMenuTop', value);
-                }}
-              />
-              <span className={styles.itemLabel}>Menu Top (Horizontal)</span>
             </div>
             <div className={styles.item}>
               <Switch
@@ -79,17 +57,7 @@ class Settings extends React.Component {
                   this.changeSetting('isMenuCollapsed', value);
                 }}
               />
-              <span className={styles.itemLabel}>Collapsed Menu</span>
-            </div>
-            <div className={styles.item}>
-              <Switch
-                disabled={isMenuTop}
-                checked={isMenuShadow && !isMenuTop}
-                onChange={(value) => {
-                  this.changeSetting('isMenuShadow', value);
-                }}
-              />
-              <span className={styles.itemLabel}>Menu Shadow</span>
+              <span className={styles.itemLabel}>Đóng menu trái</span>
             </div>
             <div className={styles.item}>
               <Switch
@@ -98,34 +66,7 @@ class Settings extends React.Component {
                   this.changeSetting('isLightTheme', value);
                 }}
               />
-              <span className={styles.itemLabel}>Light Theme</span>
-            </div>
-            <div className={styles.item}>
-              <Switch
-                checked={isBorderless}
-                onChange={(value) => {
-                  this.changeSetting('isBorderless', value);
-                }}
-              />
-              <span className={styles.itemLabel}>Borderless Cards</span>
-            </div>
-            <div className={styles.item}>
-              <Switch
-                checked={isSquaredBorders}
-                onChange={(value) => {
-                  this.changeSetting('isSquaredBorders', value);
-                }}
-              />
-              <span className={styles.itemLabel}>Squared Borders</span>
-            </div>
-            <div className={styles.item}>
-              <Switch
-                checked={isFixedWidth}
-                onChange={(value) => {
-                  this.changeSetting('isFixedWidth', value);
-                }}
-              />
-              <span className={styles.itemLabel}>Fixed Width</span>
+              <span className={styles.itemLabel}>Giao diện trắng</span>
             </div>
           </div>
         </Scrollbars>

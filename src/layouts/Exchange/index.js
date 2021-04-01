@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Menu from '@/components/LayoutComponents/Exchange/Menu';
 import Settings from '@/components/LayoutComponents/Settings';
 import PropTypes from 'prop-types';
+import TopBar from '@/components/LayoutComponents/Exchange/TopBar';
 
 const mapStateToProps = ({ settings }) => ({
   isBorderless: settings.isBorderless,
@@ -40,7 +41,12 @@ class MainLayout extends React.PureComponent {
       >
         <Menu />
         <Settings />
-        <Layout>{children}</Layout>
+        <Layout>
+          <Layout.Header>
+            <TopBar />
+          </Layout.Header>
+          {children}
+        </Layout>
       </Layout>
     );
   }

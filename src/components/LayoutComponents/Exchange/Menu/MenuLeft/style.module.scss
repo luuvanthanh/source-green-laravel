@@ -67,7 +67,7 @@
 
 .logo {
   background: #fff;
-  height: 70px;
+  height: 60px;
   overflow: hidden;
 }
 
@@ -181,6 +181,74 @@
 
     :global(.ant-menu-item-selected) {
       background-color: transparent;
+      opacity: 1;
+      > a {
+        color: $white;
+        background-color: $background-success;
+
+        .icon {
+          color: $white;
+        }
+      }
+      .title {
+        color: $white;
+      }
+    }
+    :global(.ant-menu-item-selected::after) {
+      border-right: unset;
+    }
+
+    :global(.ant-menu-submenu:hover),
+    :global(.ant-menu-submenu-selected),
+    :global(.ant-menu-submenu-open) {
+      .icon {
+        color: #b8beca !important;
+      }
+    }
+
+    :global(.ant-menu-submenu-active) {
+      .icon {
+        color: $blue !important;
+      }
+    }
+
+    :global(.ant-menu-inline.ant-menu-sub) {
+      box-shadow: none !important;
+      transition: all 0.3s;
+    }
+  }
+
+  &:global(.ant-menu-dark) {
+    background-color: $background-dark;
+    color: $gray-darken;
+    height: 100%;
+
+    :global(.ant-menu-item-divider) {
+      opacity: 0.2;
+    }
+
+    :global(.ant-menu-sub) {
+      color: $gray-darken;
+    }
+
+    .title {
+      color: $text-white;
+    }
+
+    .icon {
+      color: $text-white;
+    }
+
+    :global(.ant-menu-item) {
+      color: $text-darken;
+      opacity: 0.85;
+      > a {
+        color: $text-white;
+      }
+    }
+
+    :global(.ant-menu-item-selected) {
+      background-color: transparent !important;
       opacity: 1;
       > a {
         color: $white;
