@@ -142,6 +142,34 @@ export async function getLeftMenuExchange() {
     },
   ];
 }
+export async function getLeftMenuProfile() {
+  return [
+    {
+      title: 'Học sinh',
+      key: 'children',
+      url: ['/ho-so-doi-tuong/hoc-sinh'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Phụ Huynh',
+      key: 'parents',
+      url: ['/ho-so-doi-tuong/phu-huynh'],
+      icon: 'icon icon-list',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Nhân viên',
+      key: 'users',
+      url: ['/ho-so-doi-tuong/nhan-vien'],
+      icon: 'icon icon-notification',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }
