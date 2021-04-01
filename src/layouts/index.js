@@ -77,6 +77,9 @@ class IndexLayout extends React.PureComponent {
       }
       // redirect to main dashboard when user on login page and authorized
       if (isLoginLayout && isUserAuthorized) {
+        if (query.redirect === '/') {
+          return <Redirect to="/trang-chu" />;
+        }
         if (query.redirect) {
           return <Redirect to={query.redirect} />;
         }

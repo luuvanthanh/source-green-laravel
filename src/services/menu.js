@@ -119,7 +119,7 @@ export async function getLeftMenuExchange() {
     {
       title: 'Danh sách',
       key: 'items',
-      url: ['/trao-doi/danh-sach'],
+      url: ['/trao-doi/danh-sach', '/trao-doi/tao-moi', '/trao-doi/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
