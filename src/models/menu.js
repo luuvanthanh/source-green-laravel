@@ -1,4 +1,9 @@
-import { getLeftMenuData, getTopMenuData, getLeftMenuExchange } from '@/services/menu';
+import {
+  getLeftMenuData,
+  getTopMenuData,
+  getLeftMenuExchange,
+  getLeftMenuProfile,
+} from '@/services/menu';
 
 export default {
   namespace: 'menu',
@@ -6,6 +11,7 @@ export default {
     menuLeftData: [],
     menuTopData: [],
     MenuLeftExchange: [],
+    MenuLeftObjectProfiles: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -14,6 +20,7 @@ export default {
     *GET_DATA(action, { put, call }) {
       const menuLeftData = yield call(getLeftMenuData);
       const MenuLeftExchange = yield call(getLeftMenuExchange);
+      const MenuLeftObjectProfiles = yield call(getLeftMenuProfile);
       const menuTopData = yield call(getTopMenuData);
       yield put({
         type: 'SET_STATE',
@@ -21,6 +28,7 @@ export default {
           menuLeftData,
           menuTopData,
           MenuLeftExchange,
+          MenuLeftObjectProfiles,
         },
       });
     },

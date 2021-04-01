@@ -190,48 +190,6 @@ export default [
         ],
       },
       {
-        path: '/ho-so-doi-tuong',
-        component: './profiles/layout',
-        routes: [
-          {
-            path: '/ho-so-doi-tuong/phu-huynh',
-            component: './profiles/parents',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/ho-so-doi-tuong/phu-huynh/tao-moi',
-            component: './profiles/parents/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/ho-so-doi-tuong/nhan-su',
-            component: './profiles/personnel',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/ho-so-doi-tuong/nhan-su/tao-moi',
-            component: './profiles/personnel/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/ho-so-doi-tuong/hoc-sinh',
-            component: './profiles/children',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/ho-so-doi-tuong/hoc-sinh/tao-moi',
-            component: './profiles/children/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
-      {
         path: '/dan-thuoc',
         component: './recommend/layout',
         routes: [
@@ -279,6 +237,36 @@ export default [
         ],
       },
       // EXCHANGE
+      // OBJECT PROFILES
+      {
+        path: '/ho-so-doi-tuong',
+        component: './object-profiles/layout',
+        routes: [
+          {
+            path: '/ho-so-doi-tuong',
+            redirect: '/ho-so-doi-tuong/hoc-sinh',
+          },
+          {
+            path: '/ho-so-doi-tuong/hoc-sinh',
+            component: './object-profiles/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/phu-huynh',
+            component: './object-profiles/parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/nhan-vien',
+            component: './object-profiles/users',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // OBJECT PROFILES
       {
         path: '/404',
         component: './404',

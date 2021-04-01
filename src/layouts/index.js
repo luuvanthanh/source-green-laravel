@@ -8,12 +8,14 @@ import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
 import ExchangeLayout from './Exchange';
+import ObjectProfiles from './Object-Profiles';
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
   exchange: ExchangeLayout,
+  objectProfiles: ObjectProfiles,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -57,6 +59,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
         return 'exchange';
+      }
+      if (/^\/ho-so-doi-tuong(?=\/|$)/i.test(pathname)) {
+        return 'objectProfiles';
       }
       return 'main';
     };
