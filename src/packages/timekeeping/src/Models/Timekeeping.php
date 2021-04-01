@@ -2,12 +2,14 @@
 
 namespace GGPHP\Timekeeping\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 use GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper;
 use GGPHP\Users\Models\User;
 
-class Timekeeping extends CoreModel
+class Timekeeping extends UuidModel
 {
+    public $incrementing = false;
+
     const CHECK_IN = 'CHECK_IN';
     const CHECK_OUT = 'CHECK_OUT';
     const TYPE_FINGERPRINT = '1';

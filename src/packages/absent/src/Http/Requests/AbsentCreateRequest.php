@@ -5,7 +5,6 @@ namespace GGPHP\Absent\Http\Requests;
 use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Models\AbsentType;
-use GGPHP\ShiftSchedule\Models\Holiday;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AbsentCreateRequest extends FormRequest
@@ -53,13 +52,6 @@ class AbsentCreateRequest extends FormRequest
                         return true;
                     }
 
-                    if ((int) request('absent_type_id') == $type->id) {
-                        $accessSameHoliday = $this->checkSameHoliday($value);
-                        if ($accessSameHoliday === true) {
-                            return true;
-                        }
-                        return $fail("Không được nghỉ vào ngày lễ " . $accessSameHoliday);
-                    }
                     return true;
                 },
                 function ($attribute, $value, $fail) use ($type, $awolType, $quitWorkType, $early, $late) {
@@ -114,46 +106,6 @@ class AbsentCreateRequest extends FormRequest
 
     /**
      * @param $value
-     * @return bool|string
-     */
-    private function checkSameHoliday($value)
-    {
-        $year = Carbon::parse($value)->format('Y');
-        $date = Carbon::parse($value)->format('Y-m-d');
-        $startDate = request()->start_date;
-        $endDate = request()->end_date;
-
-        if ($startDate === $endDate) {
-            $holiday = Holiday::where('name', $year)->whereHas('holidayDetail', function ($query) use ($startDate) {
-                $query->where('date', $startDate);
-            })->first();
-
-            if (!is_null($holiday)) {
-                return Carbon::parse($date)->format('Y-m-d');
-            }
-        }
-
-        $begin = new \DateTime($startDate);
-        $end = new \DateTime($endDate);
-
-        $interval = \DateInterval::createFromDateString('1 day');
-        $period = new \DatePeriod($begin, $interval, $end);
-
-        foreach ($period as $date) {
-            $holiday = Holiday::where('name', $year)->whereHas('holidayDetail', function ($query) use ($date) {
-                $query->where('date', $date);
-            })->first();
-
-            if (!is_null($holiday)) {
-                return Carbon::parse($date)->format('Y-m-d');
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $value
      * @return bool
      */
     private function checkWeekend($value)
@@ -194,14 +146,6 @@ class AbsentCreateRequest extends FormRequest
             $q2->where([['start_date', '<=', $startDate], ['end_date', '>=', $endDate]])
                 ->orWhere([['start_date', '>=', $startDate], ['start_date', '<=', $endDate]])
                 ->orWhere([['end_date', '>=', $startDate], ['end_date', '<=', $endDate]]);
-        })->whereHas('approvalRequest', function ($q) {
-            $q->whereHas('currentPlace', function ($q) {
-                $q->whereJsonContains('meta_data->is_end_place', false);
-                $q->where('meta_data->place_type', '!=', \GGPHP\Workflow\Models\Place::TYPE_DECLINE);
-            })->orWhereHas('currentPlace', function ($q) {
-                $q->whereJsonContains('meta_data->place_type', \GGPHP\Workflow\Models\Place::TYPE_APPROVE);
-                $q->whereJsonContains("meta_data->is_end_place", true);
-            });
         })->where('user_id', $userId)->get();
 
         $absent2 = Absent::whereIn('absent_type_id', [$awolType->id, $offType->id])->where(function ($q2) use ($startDate, $endDate) {
@@ -237,12 +181,7 @@ class AbsentCreateRequest extends FormRequest
             $q->where([['start_date', '<=', $startDate->firstOfMonth()->format('Y-m-d')], ['end_date', '>=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['start_date', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['start_date', '<=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['end_date', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['end_date', '<=', $startDate->endOfMonth()->format('Y-m-d')]]);
-        })->where('user_id', $userId)->whereHas('approvalRequest', function ($q) {
-            $q->whereHas('currentPlace', function ($q) {
-                $q->whereJsonContains('meta_data->place_type', \GGPHP\Workflow\Models\Place::TYPE_APPROVE);
-                $q->whereJsonContains("meta_data->is_end_place", true);
-            });
-        })->get();
+        })->where('user_id', $userId)->get();
 
         if (count($check) > 3) {
             return false;

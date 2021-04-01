@@ -2,10 +2,12 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class Schedule extends CoreModel
+class Schedule extends UuidModel
 {
+    public $incrementing = false;
+
     /**
      * Declare the table name
      */
@@ -17,7 +19,7 @@ class Schedule extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'shift_id', 'start_date', 'end_date', 'schedule_request_detail_id',
+        'user_id', 'shift_id', 'start_date', 'end_date',
     ];
 
     protected $dateTimeFields = [

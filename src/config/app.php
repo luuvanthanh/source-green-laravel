@@ -177,7 +177,6 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
         GGPHP\ShiftSchedule\Providers\ShiftScheduleServiceProvider::class,
         GGPHP\FingerprintTimekeeper\Providers\FingerprintTimekeeperServiceProvider::class,
         UserServiceProvider::class,

@@ -2,10 +2,11 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class ScheduleException extends CoreModel
+class ScheduleException extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Declare the table name

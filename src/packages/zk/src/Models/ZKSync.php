@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 class ZKSync extends Model
 {
@@ -18,9 +17,8 @@ class ZKSync extends Model
      * @var array
      */
     protected $fillable = [
-        'payload', 'action'
+        'payload', 'action',
     ];
-
 
     public function subject(): MorphTo
     {

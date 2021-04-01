@@ -25,7 +25,6 @@ class FingerprintTimekeeperCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'store_id' => 'required',
             'ip' => 'required|string',
             'port' => 'required|numeric',
             'serial_number' => 'required|string',

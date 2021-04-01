@@ -20,10 +20,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forKiosk();
     });
 
-    \GGPHP\ShiftSchedule\RouteRegistrar::routes(function ($router) {
-        $router->forKiosk();
-    });
-
     \GGPHP\Timekeeping\RouteRegistrar::routes(function ($router) {
         $router->forKiosk();
     });

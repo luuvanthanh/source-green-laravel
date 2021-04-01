@@ -43,7 +43,7 @@ class LateEarlyController extends Controller
         $data['limit'] = $limit;
         $lateEarlies = $this->lateEarlyRepository->filterLateEarly($data);
 
-        return $this->success($lateEarlies, trans('lang-lateEarly::messages.common.getListSuccess'));
+        return $this->success($lateEarlies, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -55,7 +55,7 @@ class LateEarlyController extends Controller
     public function show($id)
     {
         $lateEarly = $this->lateEarlyRepository->find($id);
-        return $this->success($lateEarly, trans('lang-lateEarly::messages.common.getListSuccess'));
+        return $this->success($lateEarly, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -69,7 +69,7 @@ class LateEarlyController extends Controller
         $credentials = $request->all();
         $credentials['approval_id'] = Auth::id();
         $lateEarly = $this->lateEarlyRepository->update($credentials, $id);
-        return $this->success($lateEarly, trans('lang-lateEarly::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($lateEarly, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     public function lateEarlyByUser(Request $request)
@@ -83,22 +83,7 @@ class LateEarlyController extends Controller
         $data['limit'] = $limit;
 
         $lateEarlies = $this->lateEarlyRepository->getLateEarlyByUser($data);
-        return $this->success($lateEarlies, trans('lang-lateEarly::messages.common.getListSuccess'));
-    }
-
-    /**
-     * @param Request $request
-     * @return file
-     */
-    public function export(Request $request)
-    {
-        $result = $this->lateEarlyRepository->export($request);
-
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('Template not found'), 400);
-        }
-
-        return $result;
+        return $this->success($lateEarlies, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -111,7 +96,7 @@ class LateEarlyController extends Controller
     {
         $result = $this->lateEarlyRepository->create($request->all());
 
-        return $this->success($result, trans('lang-lateEarly::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($result, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -123,7 +108,7 @@ class LateEarlyController extends Controller
     public function getLateEarlyReport(Request $request)
     {
         $this->lateEarlyRepository->lateEarlyReportNew($request->all());
-        return $this->success([], trans('lang-lateEarly::messages.common.createSuccess'));
+        return $this->success([], trans('lang::messages.common.createSuccess'));
     }
 
     /**
@@ -135,6 +120,6 @@ class LateEarlyController extends Controller
     public function invalidTimekeeping(Request $request)
     {
         $invalid = $this->lateEarlyRepository->invalidTimekeeping($request->all());
-        return $this->success($invalid, trans('lang-lateEarly::messages.common.getInfoSuccess'));
+        return $this->success($invalid, trans('lang::messages.common.getInfoSuccess'));
     }
 }

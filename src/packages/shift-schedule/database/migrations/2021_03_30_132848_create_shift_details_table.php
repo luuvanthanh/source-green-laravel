@@ -16,6 +16,8 @@ class CreateShiftDetailsTable extends Migration
         Schema::create('shift_details', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
+            $table->time('start_time');
+            $table->time('end_time');
             $table->string('shift_id', 36)->unique();
             $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('cascade');
             $table->timestamps();
