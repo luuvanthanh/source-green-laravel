@@ -237,24 +237,6 @@ class Index extends PureComponent {
 
   /**
    * Function remove items
-   * @param {objects} record value of items
-   */
-  onEdit = (objects) => {
-    this.setStateData(
-      {
-        objects,
-        visible: true,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          ...objects,
-        });
-      },
-    );
-  };
-
-  /**
-   * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
@@ -344,7 +326,11 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push('/trao-doi/1/chi-tiet')}
+            />
           </div>
         ),
       },
@@ -370,21 +356,15 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách trao đổi</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button color="success" icon="plus" onClick={() => history.push(`/trao-doi/tao-moi`)}>
               Tạo trao đổi
             </Button>
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs defaultActiveKey="1">
-              <TabPane tab="Trạng thái 1" key="1">
-                Content of Tab Pane 1
-              </TabPane>
-              <TabPane tab="Trạng thái 2" key="2">
-                Content of Tab Pane 2
-              </TabPane>
-              <TabPane tab="Trạng thái 3" key="3">
-                Content of Tab Pane 3
-              </TabPane>
+              <TabPane tab="Trạng thái 1" key="1"></TabPane>
+              <TabPane tab="Trạng thái 2" key="2"></TabPane>
+              <TabPane tab="Trạng thái 3" key="3"></TabPane>
             </Tabs>
             <Form
               initialValues={{

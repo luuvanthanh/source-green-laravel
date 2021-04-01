@@ -258,6 +258,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/trao-doi/tao-moi',
+            component: './exchange/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/trao-doi/:id/chi-tiet',
+            component: './exchange/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/trao-doi/can-duyet',
+            component: './exchange/approve',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // EXCHANGE
