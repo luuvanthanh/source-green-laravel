@@ -7,11 +7,13 @@ import Loader from '@/components/LayoutComponents/Loader';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
+import ExchangeLayout from './Exchange';
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
+  exchange: ExchangeLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -52,6 +54,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/trang-chu(?=\/|$)/i.test(pathname)) {
         return 'public';
+      }
+      if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
+        return 'exchange';
       }
       return 'main';
     };

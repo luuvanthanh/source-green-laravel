@@ -1,0 +1,235 @@
+@import "@/assets/styles/mixins.scss";
+
+.menu {
+  box-sizing: content-box;
+  position: relative;
+  &:global(.ant-layout-sider) {
+    background-color: $background-white;
+  }
+
+  .title {
+    color: $text-dark;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  :global(.ant-layout-sider-children) {
+    height: 100%;
+    position: fixed;
+    transition: width 0.3s;
+    width: 256px;
+  }
+
+  &:global(.ant-layout-sider-collapsed) {
+    :global(.ant-layout-sider-children) {
+      width: 80px;
+    }
+  }
+
+  :global(.ant-menu-inline-collapsed-tooltip) .icon {
+    display: none;
+  }
+
+  :global(.ant-layout-sider-zero-width-trigger) {
+    top: 10px !important;
+  }
+
+  :global(.ant-menu-item) {
+    height: auto;
+    padding: 0 15px;
+    a {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-radius: 4px;
+    }
+    .title {
+      white-space: pre-wrap;
+      line-height: 20px;
+    }
+  }
+
+  :global(.ant-menu-item),
+  :global(.ant-menu-submenu-title) {
+    transition: padding 0s !important;
+  }
+}
+
+.light {
+  :global(.ant-layout-sider-trigger) {
+    color: inherit;
+    background: $gray-border;
+  }
+}
+
+.logo {
+  background: #fff;
+  height: 70px;
+  overflow: hidden;
+}
+
+.copyRight {
+  align-items: center;
+  bottom: 0;
+  color: #fff;
+  display: flex;
+  left: 17px;
+  opacity: 0.65;
+  position: absolute;
+}
+
+.logoContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eef0f4;
+  :global(.icon-toggle) {
+    font-size: 16px;
+    color: $background-success;
+    cursor: pointer;
+  }
+  img {
+    height: auto;
+    width: 30px;
+  }
+  .block-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  .title {
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    color: $text;
+    margin-bottom: 0;
+    margin-left: 16px;
+  }
+}
+
+.icon {
+  padding-right: 10px;
+  color: rgba($color: $text-dark, $alpha: 0.75);
+}
+
+.navigation {
+  border: 0;
+  padding: rem(5) 0 rem(30) !important;
+
+  > :global(.ant-menu-item-divider) {
+    margin: 0 23px !important;
+  }
+
+  :global(.ant-menu-submenu-inline) > :global(.ant-menu-submenu-title .ant-menu-submenu-arrow) {
+    right: 50px;
+  }
+
+  :global(.ant-menu-inline, .ant-menu-vertical),
+  :global(.ant-menu-vertical-left) {
+    border-right: 0;
+  }
+
+  :global(.ant-menu-dark .ant-menu-inline.ant-menu-sub) {
+    box-shadow: none !important;
+    transition: all 0.3s;
+  }
+
+  &:global(.ant-menu-inline-collapsed) {
+    .title {
+      display: none;
+    }
+
+    :global(.ant-menu-submenu) > :global(.ant-menu-submenu-title .ant-menu-submenu-arrow) {
+      display: block;
+      opacity: 0.2;
+      right: 14px;
+      top: 48%;
+    }
+
+    .icon {
+      right: 30px;
+    }
+  }
+
+  &:global(.ant-menu-light) {
+    background-color: $background-white;
+    color: $gray-darken;
+    height: 100%;
+
+    :global(.ant-menu-item-divider) {
+      opacity: 0.2;
+    }
+
+    :global(.ant-menu-sub) {
+      color: $gray-darken;
+    }
+
+    :global(.ant-menu-item) {
+      color: $gray-darken;
+      opacity: 0.85;
+      > a {
+        color: $gray-darken;
+      }
+    }
+
+    :global(.ant-menu-item-selected) {
+      background-color: transparent;
+      opacity: 1;
+      > a {
+        color: $white;
+        background-color: $background-success;
+
+        .icon {
+          color: $white;
+        }
+      }
+      .title {
+        color: $white;
+      }
+    }
+    :global(.ant-menu-item-selected::after) {
+      border-right: unset;
+    }
+
+    :global(.ant-menu-submenu:hover),
+    :global(.ant-menu-submenu-selected),
+    :global(.ant-menu-submenu-open) {
+      .icon {
+        color: #b8beca !important;
+      }
+    }
+
+    :global(.ant-menu-submenu-active) {
+      .icon {
+        color: $blue !important;
+      }
+    }
+
+    :global(.ant-menu-inline.ant-menu-sub) {
+      box-shadow: none !important;
+      transition: all 0.3s;
+    }
+  }
+}
+
+.scrollbarDesktop {
+  height: 100vh;
+}
+
+.scrollbarMobile {
+  height: calc(100vh - 67px) !important;
+}
+
+.icon-plus {
+  position: absolute;
+  right: 20px;
+  top: 13px;
+  color: $text-success;
+}
