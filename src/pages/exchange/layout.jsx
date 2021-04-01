@@ -1,11 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { Link } from 'umi';
-import { Menu } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
-import ProfileMenu from '@/components/LayoutComponents/TopBar/ProfileMenu';
-import Notification from '@/components/LayoutComponents/TopBar/Notification';
 import { Layout } from 'antd';
 import classNames from 'classnames';
 
@@ -30,24 +26,12 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     return (
-      <>
-        <Layout.Header>
-          <div className={styles.topbar}>
-            <div className="mr-4" />
-            <div className="mr-auto" />
-            <div className="mr-4">
-              <Notification />
-            </div>
-            <ProfileMenu />
-          </div>
-        </Layout.Header>
-        <Layout.Content
-          className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
-          style={{ height: '100%', position: 'relative' }}
-        >
-          <div className={styles.content}>{this.props.children}</div>
-        </Layout.Content>
-      </>
+      <Layout.Content
+        className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
+        style={{ height: '100%', position: 'relative' }}
+      >
+        <div className={styles.content}>{this.props.children}</div>
+      </Layout.Content>
     );
   }
 }
