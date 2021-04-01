@@ -23,7 +23,6 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
      */
     protected $fieldSearchable = [
         'shift_code' => 'like',
-        'store_id',
         'status',
     ];
 

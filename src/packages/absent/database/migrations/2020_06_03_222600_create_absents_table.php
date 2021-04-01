@@ -16,7 +16,7 @@ class CreateAbsentsTable extends Migration
         Schema::create('absents', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('user_id')->unique();
+            $table->bigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->string('absent_type_id', 36);
             $table->foreign('absent_type_id')->references('id')->on('absent_types');

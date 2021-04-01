@@ -8,7 +8,6 @@ use GGPHP\ShiftSchedule\Presenters\SchedulePresenter;
 use GGPHP\ShiftSchedule\Repositories\Contracts\ScheduleRepository;
 use GGPHP\ShiftSchedule\Services\ScheduleExceptionService;
 use GGPHP\ShiftSchedule\Services\ScheduleRepeatService;
-use GGPHP\ShiftSchedule\Services\ScheduleRequestOriginService;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
@@ -144,9 +143,6 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
 
         if (isset($attributes['repeat_by']) && $attributes['repeat_by'] === 'daily') {
             foreach ($oldschedule as $value) {
-                if (isset($attributes['schedule_request_detail_id'])) {
-                    ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                }
                 if ($value->start_date->format('Y-m-d') >= Carbon::parse($attributes['start_date'])->format('Y-m-d')) {
                     $value->delete();
                 } else {
@@ -159,9 +155,6 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                 if (empty($value->scheduleRepeat)) {
                     $dayValue = $this::getDayRepeat($value);
                     if (in_array($dayValue, $listDaySchedule)) {
-                        if (isset($attributes['schedule_request_detail_id'])) {
-                            ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                        }
                         $value->delete();
                     }
                 }
@@ -175,10 +168,6 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                 }
 
                 if (!empty($dateException)) {
-
-                    if (isset($attributes['schedule_request_detail_id'])) {
-                        ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                    }
                     ScheduleExceptionService::add($value, $dateException);
                 }
 

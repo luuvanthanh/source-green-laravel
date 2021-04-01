@@ -2,11 +2,12 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
-use GGPHP\RolePermission\Models\Store;
+use GGPHP\Core\Models\UuidModel;
 
-class Shift extends CoreModel
+class Shift extends UuidModel
 {
+    public $incrementing = false;
+
     const ON = 'ON';
     const OFF = 'OFF';
 
@@ -21,7 +22,7 @@ class Shift extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'shift_code', 'description', 'store_id', 'status',
+        'shift_code', 'description', 'status',
     ];
 
     /**
@@ -54,13 +55,5 @@ class Shift extends CoreModel
         });
 
         return json_encode($shiftDetail);
-    }
-
-    /**
-     * Define relations store
-     */
-    public function store()
-    {
-        return $this->belongsTo(Store::class);
     }
 }

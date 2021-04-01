@@ -19,11 +19,13 @@ class CreateLateEarliesTable extends Migration
             $table->string('time_config_type')->nullable();
             $table->time('time')->nullable();
             $table->dateTime('date')->nullable();
-            $table->string('user_id')->nullable();
+            $table->bigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->string('shift_code')->nullable();
             $table->string('time_shift')->nullable();
             $table->string('time_slot')->nullable();
             $table->time('time_violation')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

@@ -3,10 +3,8 @@
 namespace GGPHP\LateEarly\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use GGPHP\LateEarly\Http\Requests\LateEarlyConfigCreateRequest;
 use GGPHP\LateEarly\Repositories\LateEarly\LateEarlyConfigRepository;
-use GGPHP\LateEarly\Repositories\LateEarly\LateEarlyRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -21,10 +19,11 @@ class LateEarlyConfigController extends Controller
      * UserController constructor.
      * @param LateEarlyConfigRepository $lateEarlyConfigRepository
      */
-    public function __construct(LateEarlyConfigRepository $lateEarlyConfigRepository){
-      $this->lateEarlyConfigRepository = $lateEarlyConfigRepository;
+    public function __construct(LateEarlyConfigRepository $lateEarlyConfigRepository)
+    {
+        $this->lateEarlyConfigRepository = $lateEarlyConfigRepository;
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -44,9 +43,9 @@ class LateEarlyConfigController extends Controller
             $LateEarlys = $this->lateEarlyConfigRepository->paginate($limit);
         }
 
-        return $this->success($LateEarlys, trans('lang-lateEarly::messages.common.getListSuccess'));
+        return $this->success($LateEarlys, trans('lang::messages.common.getListSuccess'));
     }
-  
+
     /**
      * Store a newly created resource in storage.
      *
@@ -55,8 +54,8 @@ class LateEarlyConfigController extends Controller
      */
     public function store(LateEarlyConfigCreateRequest $request)
     {
-        $credentials = $request->all();
-        $lateEarly = $this->lateEarlyConfigRepository->createOrUpdateLateEarlyConfig($credentials);
-        return $this->success($lateEarly, trans('lang-lateEarly::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+        $lateEarly = $this->lateEarlyConfigRepository->createOrUpdateLateEarlyConfig($request->all());
+
+        return $this->success($lateEarly, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 }

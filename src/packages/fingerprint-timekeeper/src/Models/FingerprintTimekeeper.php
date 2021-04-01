@@ -2,6 +2,7 @@
 
 namespace GGPHP\FingerprintTimekeeper\Models;
 
+use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,8 +10,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package namespace GGPHP\FingerprintTimekeeper\Models;
  */
-class FingerprintTimekeeper extends Model
+class FingerprintTimekeeper extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Declare the table name

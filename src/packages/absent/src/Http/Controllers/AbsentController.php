@@ -37,50 +37,9 @@ class AbsentController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        $data = $request->all();
-        $data['limit'] = $limit;
-        $absents = $this->absentRepository->filterAbsent($data);
+        $absents = $this->absentRepository->filterAbsent($request->all());
 
         return $this->success($absents, trans('lang::messages.common.getListSuccess'));
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function absentWithoutLeave(Request $request)
-    {
-        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        $data = $request->all();
-        $data['limit'] = $limit;
-        $absents = $this->absentRepository->filterAbsentWithoutLeave($data);
-
-        return $this->success($absents, trans('lang::messages.common.getListSuccess'));
-    }
-
-    /**
-     * Export Absent
-     * @param Request $request
-     * @return Response
-     */
-    public function export(Request $request)
-    {
-        $result = $this->absentRepository->export($request);
-
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
-        }
-
-        return $result;
     }
 
     /**
@@ -171,57 +130,6 @@ class AbsentController extends Controller
 
         $users = $this->absentRepository->getAbsent($data);
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
-    }
-
-    /**
-     * Export Absent by user
-     * @param Request $request
-     * @return Response
-     */
-    public function absentByUserExport(Request $request)
-    {
-        $result = $this->absentRepository->absentByUserExport($request);
-
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Get QuitWork by user
-     * @param Request $request
-     * @return Response
-     */
-    public function quitWorkByUser(Request $request)
-    {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        $data = $request->all();
-        $data['limit'] = $limit;
-
-        $users = $this->absentRepository->getQuitWork($data);
-        return $this->success($users, trans('lang::messages.common.getListSuccess'));
-    }
-
-    /**
-     * Export Absent by user
-     * @param Request $request
-     * @return Response
-     */
-    public function absentsAwolExport(Request $request)
-    {
-        $result = $this->absentRepository->absentsAwolExport($request->all());
-
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
-        }
-
-        return $result;
     }
 
 }

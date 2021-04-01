@@ -12,18 +12,17 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Permission\Traits\HasRoles;
+use ZK\Traits\SyncToDevice;
 
 class User extends CoreModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
-    use Notifiable, HasApiTokens, CanResetPassword;
-    use HasRoles, Authenticatable;
+    use Notifiable, CanResetPassword;
+    use Authenticatable;
     use Authorizable, CanResetPassword, MustVerifyEmail;
     use InteractsWithMedia;
-
+    use SyncToDevice;
     /**
      * The attributes that are mass assignable.
      *

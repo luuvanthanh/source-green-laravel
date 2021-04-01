@@ -2,11 +2,11 @@
 
 namespace GGPHP\LateEarly\Models;
 
-use Carbon\Carbon;
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class LateEarlyTimeConfig extends CoreModel
+class LateEarlyTimeConfig extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Define const late, early

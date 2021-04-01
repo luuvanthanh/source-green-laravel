@@ -19,7 +19,8 @@ class ScheduleTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['scheduleRepeat', 'user', 'scheduleException', 'shift'];
+    protected $availableIncludes = ['user', 'shift'];
+    protected $defaultIncludes = ['scheduleRepeat', 'scheduleException'];
 
     /**
      * Include ScheduleRepeat

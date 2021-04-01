@@ -63,6 +63,7 @@ class TimekeepingController extends Controller
     public function show($id)
     {
         $timekeeping = $this->timekeepingRepository->find($id);
+
         if ($timekeeping) {
             return $this->success($timekeeping, trans('lang::messages.common.getInfoSuccess'));
         }
@@ -79,6 +80,7 @@ class TimekeepingController extends Controller
     {
         $credentials = $request->all();
         $timekeeping = $this->timekeepingRepository->update($credentials, $id);
+
         return $this->success($timekeeping, trans('lang::messages.common.modifySuccess'));
     }
 
@@ -91,6 +93,7 @@ class TimekeepingController extends Controller
     public function destroy($id)
     {
         $this->timekeepingRepository->delete($id);
+
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
 }

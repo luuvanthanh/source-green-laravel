@@ -14,18 +14,18 @@ class ScheduleExceptionService
      */
     public static function add($schedule, $date)
     {
-        $attributes = [];
         for ($i = 0; $i < count($date); $i++) {
             $oldScheduleException = ScheduleException::where('schedule_id', $schedule->id)->where('date', $date[$i])->where('shift_id', $schedule->shift_id)->first();
             if (is_null($oldScheduleException)) {
-                $attributes[] = [
+                $attributes = [
                     'date' => $date[$i],
                     'shift_id' => $schedule->shift_id,
                     'schedule_id' => $schedule->id,
                 ];
+                $scheduleException = ScheduleException::create($attributes);
             }
         }
-        $scheduleException = ScheduleException::insert($attributes);
+
         return $scheduleException;
     }
 

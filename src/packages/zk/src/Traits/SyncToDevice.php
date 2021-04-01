@@ -5,7 +5,6 @@ namespace ZK\Traits;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use ZK\Models\ZKSync;
 
@@ -17,9 +16,11 @@ trait SyncToDevice
     {
         static::eventsToBeRecorded()->each(function ($eventName) {
             return static::$eventName(function (Model $model) use ($eventName) {
+                $data = $model->toArray();
+                $data['id'] = $model->id;
                 $model->activities()->create([
                     'action' => $eventName,
-                    'payload' => json_encode($model->toArray())
+                    'payload' => json_encode($data),
                 ]);
             });
         });

@@ -5,8 +5,7 @@
  */
 return [
     'subject_supporteds' => [
-        'USER' => "GGPHP\\Division\\Models\\RankPositionInformation",
+        'USER' => "GGPHP\\Users\\Models\\User",
         'FINGERPRINT' => "GGPHP\\Fingerprint\\Models\\Fingerprint",
-        'MAGNETIC_CARD' => "GGPHP\\MagneticCard\\Models\\MagneticCard",
     ],
 ];

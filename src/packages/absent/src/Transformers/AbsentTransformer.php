@@ -50,7 +50,7 @@ class AbsentTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($absent->absentReason, new AbsentReasonTransformer(), 'AbsentReason');
+        return $this->item($absent->absentReason, new AbsentReasonTransformer, 'AbsentReason');
     }
 
     /**
@@ -64,7 +64,7 @@ class AbsentTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($absent->absentType, new AbsentTypeTransformer(), 'AbsentType');
+        return $this->item($absent->absentType, new AbsentTypeTransformer, 'AbsentType');
     }
 
     /**
@@ -82,7 +82,7 @@ class AbsentTransformer extends BaseTransformer
 
         $shift = Shift::find($userHasWorkShift[$absent->start_date->format('Y-m-d')][0]['shift_id']);
 
-        return $this->item($shift, new ShiftTransformer(), 'Shift');
+        return $this->item($shift, new ShiftTransformer, 'Shift');
     }
 
     /**

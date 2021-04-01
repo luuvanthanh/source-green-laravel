@@ -27,8 +27,8 @@ class ScheduleCreateRequest extends FormRequest
             'start_date' => [
                 'required', 'date',
             ],
-            'user_id' => 'required',
-            'shift_id' => 'required',
+            'user_id' => 'required|exists:users,id',
+            'shift_id' => 'required|exists:shifts,id',
         ];
     }
 

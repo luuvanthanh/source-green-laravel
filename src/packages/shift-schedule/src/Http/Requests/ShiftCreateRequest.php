@@ -26,14 +26,12 @@ class ShiftCreateRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        $store_id = $request->store_id;
         return [
-            'store_id' => 'required|exists:stores,id',
             'shift_code' => [
                 'required',
                 'string',
-                Rule::unique('shifts')->where(function ($query) use ($store_id) {
-                    $query->where(['store_id' => $store_id, 'status' => Shift::ON]);
+                Rule::unique('shifts')->where(function ($query) {
+                    $query->where(['status' => Shift::ON]);
                 }),
             ],
             'description' => 'string',

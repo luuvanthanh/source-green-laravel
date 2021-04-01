@@ -8,6 +8,8 @@ use ZK\Traits\SyncToDevice;
 
 class Fingerprint extends UuidModel
 {
+    public $incrementing = false;
+
     use SoftDeletes, SyncToDevice;
 
     const ON = 'ON';
