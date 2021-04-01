@@ -243,6 +243,24 @@ export default [
           },
         ],
       },
+      // EXCHANGE
+      {
+        path: '/trao-doi',
+        component: './exchange/layout',
+        routes: [
+          {
+            path: '/trao-doi',
+            redirect: '/trao-doi/danh-sach',
+          },
+          {
+            path: '/trao-doi/danh-sach',
+            component: './exchange/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // EXCHANGE
       {
         path: '/404',
         component: './404',

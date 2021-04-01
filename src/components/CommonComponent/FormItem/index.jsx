@@ -252,7 +252,7 @@ export default function FormItem({
   ...rest
 }) {
   return (
-    <Form.Item {...rest} label={<span>{label}</span>} rules={rules}>
+    <Form.Item {...rest} label={label && <span>{label}</span>} rules={rules}>
       {
         renderChildren(
           placeholder,
