@@ -33,6 +33,9 @@ const renderChildren = (
   onSearch,
   onBlur,
   dropdownRender,
+  onSelect,
+  disabledHours,
+  disabledMinutes,
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -180,6 +183,15 @@ const renderChildren = (
       placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
     />
   ),
+  timePicker: (
+    <TimePicker
+      format={variables.DATE_FORMAT.HOUR}
+      onSelect={onSelect}
+      disabledHours={disabledHours}
+      disabledMinutes={disabledMinutes}
+      placeholder="Chọn"
+    />
+  ),
   treeSelect: (
     <TreeSelect
       className={styles.treeSelect}
@@ -249,6 +261,9 @@ export default function FormItem({
   onSearch,
   onBlur,
   dropdownRender,
+  onSelect,
+  disabledHours,
+  disabledMinutes,
   ...rest
 }) {
   return (
@@ -266,6 +281,9 @@ export default function FormItem({
           onSearch,
           onBlur,
           dropdownRender,
+          onSelect,
+          disabledHours,
+          disabledMinutes,
         )[type]
       }
     </Form.Item>
@@ -288,6 +306,7 @@ FormItem.propTypes = {
   onSearch: PropTypes.func,
   onBlur: PropTypes.func,
   dropdownRender: PropTypes.any,
+  onSelect: PropTypes.func,
 };
 
 FormItem.defaultProps = {
@@ -308,6 +327,7 @@ FormItem.defaultProps = {
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
+  onSelect: () => {},
 };
 
 FormItem.displayName = 'Form';

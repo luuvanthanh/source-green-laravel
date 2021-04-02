@@ -9,6 +9,7 @@ import LoginLayout from './Login';
 import MainLayout from './Main';
 import ExchangeLayout from './Exchange';
 import ObjectProfiles from './Object-Profiles';
+import SchedulesLayout from './Schedules';
 
 const Layouts = {
   public: PublicLayout,
@@ -16,6 +17,7 @@ const Layouts = {
   main: MainLayout,
   exchange: ExchangeLayout,
   objectProfiles: ObjectProfiles,
+  schedules: SchedulesLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -43,6 +45,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/ho-so-doi-tuong(?=\/|$)/i.test(pathname)) {
         return 'objectProfiles';
+      }
+      if (/^\/diem-danh(?=\/|$)/i.test(pathname)) {
+        return 'schedules';
       }
       return 'main';
     };

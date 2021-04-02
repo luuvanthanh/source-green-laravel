@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { reduce, isArray } from 'lodash';
 import { Link, withRouter } from 'dva/router';
 import styles from './style.module.scss';
+import validator from 'validator';
 
 const mapStateToProps = ({ menu }) => ({
   isMenuTop: menu.isMenuTop,
@@ -25,7 +26,7 @@ class Breadcrumbs extends React.Component {
     this.setBreadcrumbs(newProps);
   }
 
-  setBreadcrumbs = props => {
+  setBreadcrumbs = (props) => {
     const { isMenuTop, menuTopData, menuLeftData } = this.props;
     this.setState({
       breadcrumb: this.getBreadcrumb(props, isMenuTop ? menuTopData : menuLeftData),
@@ -43,13 +44,13 @@ class Breadcrumbs extends React.Component {
           return [entry].concat(parents);
         }
 
-        if (isArray(entry.url) && entry.url.find(item => item === this.convertPathname(url))) {
+        if (isArray(entry.url) && entry.url.find((item) => item === this.convertPathname(url))) {
           return [entry].concat(parents);
         }
 
         if (entry.children) {
           const nested = this.getPath(entry.children, url, [entry].concat(parents));
-          return (result || []).concat(nested.filter(e => !!e));
+          return (result || []).concat(nested.filter((e) => !!e));
         }
         return result;
       },
@@ -58,12 +59,12 @@ class Breadcrumbs extends React.Component {
     return items?.length > 0 ? items : [false];
   }
 
-  convertPathname = pathname => {
+  convertPathname = (pathname) => {
     if (pathname) {
       const listItemPath = pathname.split('/');
       return listItemPath
         .map((item, index) => {
-          return Number.parseInt(item, 10) ? ':id' : item;
+          return validator.isUUID(item) ? ':id' : item;
         })
         .join('/');
     }

@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .menu-horizontal-children {
   padding: 0 rem(20);
@@ -17,7 +17,7 @@
   :global(.ant-menu-submenu) {
     position: relative;
     &::after {
-      content: '';
+      content: "";
       height: 22px;
       width: 1px;
       background-color: #dbdbdb;
@@ -42,7 +42,7 @@
 
   :global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -122,7 +122,7 @@
 .itemChildren {
   &:global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -239,7 +239,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -307,7 +307,7 @@
     }
   }
   :global(.ant-collapse-header) {
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
@@ -377,7 +377,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white !important;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -523,7 +523,7 @@
     &:last-child {
       border-bottom: unset;
     }
-    span[class*='icon'] {
+    span[class*="icon"] {
       padding-right: 10px;
       color: rgba($color: $text-dark, $alpha: 0.65);
     }
@@ -554,7 +554,7 @@
   position: relative;
   &::after {
     color: $danger;
-    content: '*';
+    content: "*";
     font-size: 13px;
     line-height: 1;
     position: absolute;
@@ -580,14 +580,14 @@
   &.input-number-count {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: '';
+        content: "";
       }
     }
   }
   &.input-number-date {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: 'ngày';
+        content: "ngày";
       }
     }
   }
@@ -597,11 +597,11 @@
   :global(.ant-input-number-input-wrap) {
     position: relative;
     &::after {
-      content: 'đ';
+      content: "đ";
       position: absolute;
       right: 5px;
       top: 4px;
-      font-family: 'Roboto', sans-serif;
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -616,12 +616,12 @@
   flex-wrap: nowrap;
   padding: 4px;
   align-items: center;
-  span[class^='icon'] {
+  span[class^="icon"] {
     color: #e28631;
     padding-right: 10px;
   }
   span {
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -631,7 +631,7 @@
 }
 
 .description-upload {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-style: italic;
   font-weight: normal;
   font-size: 13px;
@@ -847,7 +847,7 @@
           flex-direction: column;
           border-radius: 4px;
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             width: 15px;
             height: 15px;
@@ -856,7 +856,7 @@
             top: 50%;
             transform: rotate(45deg) translateY(-50%);
           }
-          span[class*='icon'] {
+          span[class*="icon"] {
             font-size: 16px;
             color: $text-success;
           }
@@ -887,7 +887,7 @@
             height: 24px;
             width: 24px;
             border: 1px solid #eaeaea;
-            span[class*='icon'] {
+            span[class*="icon"] {
               font-size: 12px;
             }
             &:last-child {
@@ -1035,7 +1035,7 @@
           height: 24px;
           width: 24px;
           border: 1px solid #eaeaea;
-          span[class*='icon'] {
+          span[class*="icon"] {
             font-size: 12px;
           }
           &:last-child {
@@ -1056,3 +1056,25 @@
   }
 }
 // DETAILS CONTAINER
+
+.table-switch {
+  span {
+    padding-left: 10px;
+    font-family: "Roboto";
+    font-size: 13px;
+    line-height: 22px;
+    color: rgba($color: $black, $alpha: 0.85);
+  }
+}
+
+.form-item-advance {
+  position: relative;
+  .icon-delete {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    &:hover {
+      color: $danger;
+    }
+  }
+}

@@ -148,7 +148,7 @@ export async function getLeftMenuProfile() {
       title: 'Học sinh',
       key: 'children',
       url: ['/ho-so-doi-tuong/hoc-sinh'],
-      icon: 'icon icon-checkmark',
+      icon: 'icon icon-baby',
       permission: [],
       pro: true,
     },
@@ -156,7 +156,7 @@ export async function getLeftMenuProfile() {
       title: 'Phụ Huynh',
       key: 'parents',
       url: ['/ho-so-doi-tuong/phu-huynh'],
-      icon: 'icon icon-list',
+      icon: 'icon icon-woman',
       permission: [],
       pro: true,
     },
@@ -164,7 +164,27 @@ export async function getLeftMenuProfile() {
       title: 'Nhân viên',
       key: 'users',
       url: ['/ho-so-doi-tuong/nhan-vien'],
-      icon: 'icon icon-notification',
+      icon: 'icon icon-man',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
+export async function getLeftMenuSchedules() {
+  return [
+    {
+      title: 'Học sinh',
+      key: 'schedules',
+      url: ['/diem-danh/hoc-sinh'],
+      icon: 'icon icon-baby',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'config',
+      url: ['/diem-danh/cau-hinh', '/diem-danh/cau-hinh/tao-moi', '/diem-danh/cau-hinh/:id/chi-tiet'],
+      icon: 'icon icon-setting',
       permission: [],
       pro: true,
     },

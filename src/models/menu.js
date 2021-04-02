@@ -3,6 +3,7 @@ import {
   getTopMenuData,
   getLeftMenuExchange,
   getLeftMenuProfile,
+  getLeftMenuSchedules,
 } from '@/services/menu';
 
 export default {
@@ -12,6 +13,7 @@ export default {
     menuTopData: [],
     MenuLeftExchange: [],
     MenuLeftObjectProfiles: [],
+    MenuLeftSchedules: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -21,6 +23,7 @@ export default {
       const menuLeftData = yield call(getLeftMenuData);
       const MenuLeftExchange = yield call(getLeftMenuExchange);
       const MenuLeftObjectProfiles = yield call(getLeftMenuProfile);
+      const MenuLeftSchedules = yield call(getLeftMenuSchedules);
       const menuTopData = yield call(getTopMenuData);
       yield put({
         type: 'SET_STATE',
@@ -29,6 +32,7 @@ export default {
           menuTopData,
           MenuLeftExchange,
           MenuLeftObjectProfiles,
+          MenuLeftSchedules,
         },
       });
     },

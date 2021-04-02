@@ -9,6 +9,7 @@ import { Menu, Layout, Badge } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
+import validator from 'validator';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
@@ -67,7 +68,7 @@ class MenuLeft extends React.Component {
       const listItemPath = pathname.split('/');
       return listItemPath
         .map((item) => {
-          return Number.parseInt(item, 10) ? ':id' : item;
+          return validator.isUUID(item) ? ':id' : item;
         })
         .join('/');
     }

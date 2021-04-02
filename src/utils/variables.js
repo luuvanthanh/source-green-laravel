@@ -16,6 +16,7 @@ export const variables = {
   TEXTAREA: 'textArea',
   RANGE_PICKER: 'rangePicker',
   TIME_RANGE: 'timeRange',
+  TIME_PICKER: 'timePicker',
   TREE_SELECT: 'treeSelect',
   TREE_SELECT_ADD: 'treeSelectAdd',
   TREE_SELECT_SINGLE: 'treeSelectSingle',
@@ -62,7 +63,8 @@ export const variables = {
     DATE_TIME: 'DD-MM-YYYY HH:mm',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
-    HOUR: 'HH-mm'
+    HOUR: 'HH:mm',
+    TIME_FULL: 'HH:mm:ss',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -75,6 +77,7 @@ export const variables = {
   STATUS_403: 403,
   STATUS_404: 404,
   STATUS_500: 500,
+  QUERY_STRING: 'queryString',
 };
 
 export default variables;

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect, Link, withRouter } from 'umi';
 import { reduce, isArray } from 'lodash';
 import styles from './style.module.scss';
+import validator from 'validator';
 
 const mapStateToProps = ({ menu }) => ({
   isMenuTop: menu.isMenuTop,
@@ -62,7 +63,7 @@ class Breadcrumbs extends React.Component {
       const listItemPath = pathname.split('/');
       return listItemPath
         .map((item, index) => {
-          return Number.parseInt(item, 10) ? ':id' : item;
+          return validator.isUUID(item) ? ':id' : item;
         })
         .join('/');
     }

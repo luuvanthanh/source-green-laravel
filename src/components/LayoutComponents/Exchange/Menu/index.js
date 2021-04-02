@@ -4,10 +4,8 @@ import DrawerMenu from 'rc-drawer';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import MenuLeft from './MenuLeft';
-import MenuTop from './MenuTop';
 
 const mapStateToProps = ({ settings }) => ({
-  isMenuTop: settings.isMenuTop,
   isMobileMenuOpen: settings.isMobileMenuOpen,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
@@ -48,9 +46,6 @@ class AppMenu extends React.Component {
             <MenuLeft />
           </DrawerMenu>
         );
-      }
-      if (isMenuTop) {
-        return <MenuTop />;
       }
       return <MenuLeft />;
     };
