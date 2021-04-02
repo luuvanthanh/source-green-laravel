@@ -7,6 +7,7 @@ module.exports = {
     REACT_APP_ENV: true,
     API_URL: true,
     API_SSO_URL: true,
+    API_URL_LAVAREL: true
   },
   parserOptions: {
     ecmaVersion: 2020,

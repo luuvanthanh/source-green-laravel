@@ -53,7 +53,7 @@ class Index extends PureComponent {
             </div>
             <Form
               hideRequiredMark
-              initialValues={{ password: '1q2w3E*', username: 'admin' }}
+              initialValues={{ password: '123123', username: 'bpnhansu@gmail.com' }}
               layout="vertical"
               onFinish={this.onFinish}
             >

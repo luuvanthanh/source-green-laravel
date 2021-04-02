@@ -22,14 +22,6 @@ const Layouts = {
 class IndexLayout extends React.PureComponent {
   previousPath = '';
 
-  componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    const { prevLocation } = prevProps;
-    if (location !== prevLocation) {
-      // window.scrollTo(0, 0);
-    }
-  }
-
   render() {
     const {
       children,
@@ -37,17 +29,6 @@ class IndexLayout extends React.PureComponent {
       location: { pathname, search, query },
       user,
     } = this.props;
-
-    // NProgress Management
-    const currentPath = pathname + search;
-    if (currentPath !== this.previousPath || loading.global) {
-      NProgress.start();
-    }
-
-    if (!loading.global) {
-      NProgress.done();
-      this.previousPath = currentPath;
-    }
 
     // Layout Rendering
     const getLayout = () => {
