@@ -1,89 +1,146 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
+import * as categories from '@/services/categories';
+import { variables } from '@/utils';
 import * as services from './services';
 
 export default {
   namespace: 'schedulesChildren',
   state: {
     data: [],
-    pagination: {
-      total: 0
-    }
+    pagination: {},
+    isError: false,
+    error: {
+      isError: false,
+      data: {},
+    },
+    category: {
+      shifts: [],
+    },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
+      error: {
+        isError: false,
+        data: {},
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
+    SET_DATA_CATEGORY: (state, { payload }) => ({
+      ...state,
+      category: {
+        shifts: payload.shifts?.parsePayload || [],
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount
-            }
-          },
-        });
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+        });
+      }
+    },
+    *GET_CATEGORY({ callback }, saga) {
+      try {
+        const response = yield saga.all({
+          shifts: saga.call(services.getShifts),
+        });
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA_CATEGORY',
+            payload: response,
+          });
+          callback(response);
+        }
+      } catch (error) {
+        callback(error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
         });
       }
     },
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
-        callback(payload);
+        const response = yield saga.call(services.addSchedulesDetail, payload);
+        if (response) {
+          const response = yield saga.call(services.get, payload);
+          if (response) {
+            notification.success({
+              message: 'Cập nhật thành công',
+              description: 'Bạn đã cập nhật thành công dữ liệu',
+            });
+            yield saga.put({
+              type: 'SET_DATA',
+              payload: response,
+            });
+          }
+        }
+        callback(response);
       } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+        });
       }
     },
     *REMOVE({ payload }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination
-        });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
-      } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
+        yield saga.call(services.removeSchedulesDetail, payload);
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          notification.success({
+            message: 'Cập nhật thành công',
+            description: 'Bạn đã cập nhật thành công dữ liệu',
+          });
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
           });
         }
+      } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+        });
+      }
+    },
+    *REMOVE_ONLY({ payload }, saga) {
+      try {
+        yield saga.call(services.removeSchedulesDetail, payload);
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          notification.success({
+            message: 'Cập nhật thành công',
+            description: 'Bạn đã cập nhật thành công dữ liệu',
+          });
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
         });
       }
     },

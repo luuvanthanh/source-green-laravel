@@ -1,0 +1,20 @@
+{
+  "REPEAT": [
+    {
+      "id": null,
+      "name": "Không lặp lại"
+    },
+    {
+      "id": "daily",
+      "name": "Hàng ngày"
+    },
+    {
+      "id": "weekly",
+      "name": "Hàng tuần"
+    },
+    {
+      "id": "monthly",
+      "name": "Hàng Tháng"
+    }
+  ]
+}

@@ -65,6 +65,7 @@ export const variables = {
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
     TIME_FULL: 'HH:mm:ss',
+    DAY_NAME: 'ddd',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -78,6 +79,10 @@ export const variables = {
   STATUS_404: 404,
   STATUS_500: 500,
   QUERY_STRING: 'queryString',
+  setDateData: {
+    format: { targetValue: 'HH:mm:ss' },
+    attributes: ['hour', 'minute', 'second'],
+  },
 };
 
 export default variables;

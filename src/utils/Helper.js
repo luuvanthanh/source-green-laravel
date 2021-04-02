@@ -241,6 +241,67 @@ export default class Helpers {
   };
 
   /**
+   *Set a date and return it
+   * @param {*} originValue the origin value
+   * @param {*} targetValue the target value
+   * @param {object} format the formats
+   * @param {string} format.originValue the format of the originValue
+   * @param {string} format.targetValue the format of the targetValue
+   * @param {array} attributes the attributes which are set for a new value
+   * @param {object} add an object data which defines input for "moment.add()" method
+   * @param {object} subtract an object data which defines input for "moment.subtract()" method
+   * @returns {moment} the moment instace
+   * @static
+   * @memberof Helpers
+   */
+  static setDate = ({
+    originValue = null,
+    targetValue = null,
+    format = {
+      originValue: undefined,
+      targetValue: undefined,
+    },
+    attributes = ['year', 'month', 'date'],
+    add = {},
+    subtract = {},
+    isUTC = false,
+  }) => {
+    if (!originValue && (!targetValue || isEmpty(add) || isEmpty(subtract))) {
+      return undefined;
+    }
+    const formatOrigin = Helpers.get(format, 'originValue');
+    const formatTarget = Helpers.get(format, 'targetValue');
+    let result = formatOrigin ? moment(originValue, formatOrigin) : moment(originValue);
+    if (isUTC) {
+      result = result.utcOffset(0);
+    }
+    if (targetValue) {
+      const options = {};
+      attributes.forEach((attr) => {
+        options[attr] = formatTarget
+          ? moment(targetValue, formatTarget).get(attr)
+          : moment(targetValue).get(attr);
+      });
+      result = result.set(options);
+    }
+    if (!isEmpty(add)) {
+      const keys = Object.keys(add);
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        result = moment(result).add(add[key], `${key}`);
+      }
+    }
+    if (!isEmpty(subtract)) {
+      const keys = Object.keys(subtract);
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        result = moment(result).subtract(subtract[key], `${key}`);
+      }
+    }
+    return result;
+  };
+
+  /**
    *Get the datetime by format from utc
    * @param {*} obj.value the datetime value
    * @param {string} obj.format the format which will be used to convert the value
@@ -518,5 +579,15 @@ export default class Helpers {
     if (startDate) return moment(startDate).format(format);
     if (endDate) return moment(endDate).format(format);
     return null;
+  };
+
+  static convertArrayDays = (start_date = moment(), end_date = moment()) => {
+    const days = [];
+    let day = moment(start_date);
+    while (day <= moment(end_date)) {
+      days.push(day.toDate());
+      day = day.clone().add(1, 'd');
+    }
+    return days.map((item) => moment(item));
   };
 }
