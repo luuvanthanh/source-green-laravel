@@ -100,7 +100,6 @@ class ScheduleController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        dd(1);
         $this->scheduleRepository->deleteAll($id, $request->all());
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
