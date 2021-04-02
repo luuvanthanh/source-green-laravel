@@ -1,4 +1,4 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/requestLoginLavarel';
 import { Helper } from '@/utils';
 
 export async function logout() {

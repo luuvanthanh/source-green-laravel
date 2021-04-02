@@ -60,8 +60,9 @@ form .ant-cascader-picker:only-child {
     > span {
       overflow: hidden;
       white-space: pre;
+      padding-right: 2px;
       i {
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         font-style: italic;
         font-weight: normal;
         font-size: 13px;

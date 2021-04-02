@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'schedulesAdd',
+  namespace: 'schedulesChildren',
   state: {
     data: [],
     pagination: {

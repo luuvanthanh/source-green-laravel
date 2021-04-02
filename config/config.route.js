@@ -40,24 +40,6 @@ export default [
         ],
       },
       {
-        path: '/thoi-khoa-bieu',
-        component: './schedules/layout',
-        routes: [
-          {
-            path: '/thoi-khoa-bieu',
-            component: './schedules',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/thoi-khoa-bieu/tao-moi',
-            component: './schedules/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
-      {
         path: '/thuc-don-cho-tre',
         component: './menu/layout',
         routes: [
@@ -267,6 +249,42 @@ export default [
         ],
       },
       // OBJECT PROFILES
+      // SCHEDULES
+      {
+        path: '/diem-danh',
+        component: './schedules/layout',
+        routes: [
+          {
+            path: '/diem-danh',
+            redirect: '/diem-danh/hoc-sinh',
+          },
+          {
+            path: '/diem-danh/hoc-sinh',
+            component: './schedules/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh',
+            component: './schedules/settings',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh/tao-moi',
+            component: './schedules/settings/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh/:id/chi-tiet',
+            component: './schedules/settings/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // SCHEDULES
       {
         path: '/404',
         component: './404',

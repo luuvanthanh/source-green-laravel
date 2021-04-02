@@ -1,4 +1,4 @@
-import { get, pickBy } from 'lodash';
+import { get, pickBy, omit } from 'lodash';
 import build from 'redux-object';
 import { extend } from 'umi-request';
 import Cookies from 'universal-cookie';
@@ -10,6 +10,11 @@ const request = extend({
   prefix: API_URL_LAVAREL,
   maxCache: 10,
 });
+
+const removeParams = (params) => {
+  return omit(pickBy(params, (value) => value !== null && value !== undefined));
+};
+
 // request options
 request.interceptors.request.use(async (url, options) => {
   optionsRoot = options;
@@ -17,7 +22,7 @@ request.interceptors.request.use(async (url, options) => {
   if (token) {
     const customOps = {
       ...options,
-      params: pickBy(options.params, (value) => value),
+      params: removeParams(options.params),
       headers: { Authorization: `Bearer ${token}` },
       interceptors: true,
     };
