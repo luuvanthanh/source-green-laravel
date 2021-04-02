@@ -10,7 +10,7 @@ class UuidModel extends CoreModel
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->{$model->getKeyName()} = Uuid::generate(4);
+            $model->{$model->getKeyName()} = Uuid::generate(4)->string;
         });
     }
 
