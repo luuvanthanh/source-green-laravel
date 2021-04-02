@@ -599,16 +599,15 @@ class Index extends PureComponent {
     return (
       <>
         <Modal
-          title="XÁC NHẬN"
           visible={visibleSchedule}
           className={stylesChildren['modal-confirm']}
           onCancel={this.cancelSchedule}
           centered
-          width={400}
+          width={350}
           footer={[
             <Button
               key="ONLY"
-              color="primary"
+              color="white"
               icon="cancel"
               loading={loadingRemoveOnly}
               onClick={this.handleRemoveOnly}
@@ -617,7 +616,7 @@ class Index extends PureComponent {
             </Button>,
             <Button
               key="ALL"
-              color="success"
+              color="danger"
               icon="remove"
               loading={loadingRemoveAll}
               onClick={this.handleRemoveAll}

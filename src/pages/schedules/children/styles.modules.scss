@@ -87,13 +87,18 @@
 }
 
 .modal-confirm {
+  :global(.ant-modal-content) {
+    border-radius: 6px;
+  }
   :global(.ant-modal-body) {
+    padding: 50px 50px 30px 50px;
     h3 {
-      font-weight: bold;
+      font-weight: normal;
       font-size: 14px;
-      line-height: 20px;
+      line-height: 22px;
       color: $text;
       text-align: center;
+      margin-top: -10px;
     }
   }
   :global(.ant-modal-footer) {
@@ -109,10 +114,19 @@
       border-radius: 0;
       margin-left: 0px;
       font-size: 12px;
+      border: none;
+      &:first-child {
+        border-radius: 0 0 0px 6px;
+        background-color: #f2f4f8;
+      }
+      &:last-child {
+        border-radius: 0px 0px 6px 0;
+      }
     }
   }
   :global(.ant-modal-header) {
     border-bottom: unset;
+    border-radius: 6px;
   }
   :global(.ant-modal-title) {
     font-family: "Roboto", sans-serif;
