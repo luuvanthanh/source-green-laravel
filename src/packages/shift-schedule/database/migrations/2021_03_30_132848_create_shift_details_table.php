@@ -18,7 +18,7 @@ class CreateShiftDetailsTable extends Migration
             $table->primary('id');
             $table->time('start_time');
             $table->time('end_time');
-            $table->string('shift_id', 36)->unique();
+            $table->string('shift_id', 36);
             $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('cascade');
             $table->timestamps();
         });

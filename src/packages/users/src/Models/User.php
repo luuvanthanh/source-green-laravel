@@ -89,7 +89,7 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function timekeeping()
     {
-        return $this->hasMany(Timekeeping::class, 'user_id');
+        return $this->hasMany(db::class, 'user_id');
     }
 
     /**

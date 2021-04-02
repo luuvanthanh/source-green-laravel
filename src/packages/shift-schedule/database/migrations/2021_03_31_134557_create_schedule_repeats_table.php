@@ -16,7 +16,7 @@ class CreateScheduleRepeatsTable extends Migration
         Schema::create('schedule_repeats', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('schedule_id', 36)->unique();
+            $table->string('schedule_id', 36);
             $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade');
             $table->string('repeat_by');
             $table->integer('count');
