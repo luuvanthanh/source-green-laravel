@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .dropdown {
   align-items: center;
@@ -13,7 +13,7 @@
     border-right: 0.3em solid transparent;
     border-top: 0.3em solid;
     color: $gray;
-    content: '';
+    content: "";
     display: inline-block;
     height: 0;
     margin-left: 0.255em;
@@ -31,10 +31,6 @@
   }
 }
 
-.avatar {
-  background-color: $gray-border;
-}
-
 .menuIcon {
   margin-right: rem(5);
 }
@@ -46,7 +42,7 @@
   padding: 0 5px;
   h3 {
     color: rgba(0, 0, 0, 0.85);
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-size: 14px;
     font-style: normal;
     font-weight: normal;
@@ -61,7 +57,7 @@
 
   p {
     color: rgba(0, 0, 0, 0.85);
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-size: 12px;
     font-style: normal;
     font-weight: normal;
