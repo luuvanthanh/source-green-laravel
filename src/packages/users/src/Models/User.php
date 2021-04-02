@@ -2,7 +2,9 @@
 
 namespace GGPHP\Users\Models;
 
+use GGPHP\Absent\Models\Absent;
 use GGPHP\Core\Models\CoreModel;
+use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;

@@ -16,7 +16,7 @@ class CreateTimekeepingsTable extends Migration
         Schema::create('timekeepings', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('user_id')->unique();
+            $table->bigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
             $table->string('device_id', 36)->nullable();
             $table->foreign('device_id')->references('id')->on('fingerprint_timekeepers');
