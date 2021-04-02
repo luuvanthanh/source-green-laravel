@@ -30,11 +30,10 @@ class ShiftUpdateRequest extends FormRequest
     {
         $store_id = $request->store_id;
         return [
-            'store_id' => 'required',
             'shift_code' => [
                 'string',
                 Rule::unique('shifts')->ignore($this->id)->where(function ($query) use ($store_id) {
-                    $query->where(['store_id' => $store_id, 'status' => Shift::ON]);
+                    $query->where(['status' => Shift::ON]);
                 }),
             ],
             'shift_id' => [
