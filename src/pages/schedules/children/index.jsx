@@ -190,10 +190,10 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination.total,
-    pageSize: pagination.per_page,
-    defaultCurrent: pagination.current_page,
-    hideOnSinglePage: pagination.total_pages <= 1,
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1,
     showSizeChanger: true,
     onChange: (page, size) => {
       this.onLoadData(page, size);
