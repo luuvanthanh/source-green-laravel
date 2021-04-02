@@ -25,6 +25,13 @@ export default class Helpers {
     return null;
   };
 
+  static convertIncludes = (include = []) => {
+    if (!isEmpty(include)) {
+      return include.join(',');
+    }
+    return undefined;
+  };
+
   static getPercent = (value) => {
     if (value) {
       return `${parseFloat(value)} %`;
