@@ -36,6 +36,7 @@ const renderChildren = (
   onSelect,
   disabledHours,
   disabledMinutes,
+  allowClear,
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -76,7 +77,7 @@ const renderChildren = (
   ),
   select: (
     <Select
-      allowClear
+      allowClear={allowClear}
       dataSet={data}
       filterOption={(input, option) =>
         Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
@@ -264,6 +265,7 @@ export default function FormItem({
   onSelect,
   disabledHours,
   disabledMinutes,
+  allowClear,
   ...rest
 }) {
   return (
@@ -284,6 +286,7 @@ export default function FormItem({
           onSelect,
           disabledHours,
           disabledMinutes,
+          allowClear,
         )[type]
       }
     </Form.Item>
@@ -307,6 +310,7 @@ FormItem.propTypes = {
   onBlur: PropTypes.func,
   dropdownRender: PropTypes.any,
   onSelect: PropTypes.func,
+  allowClear: PropTypes.bool,
 };
 
 FormItem.defaultProps = {
@@ -328,6 +332,7 @@ FormItem.defaultProps = {
   maxTagCount: 20,
   dropdownRender: null,
   onSelect: () => {},
+  allowClear: true,
 };
 
 FormItem.displayName = 'Form';

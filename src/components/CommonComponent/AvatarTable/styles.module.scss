@@ -1,0 +1,9 @@
+@import "@/assets/styles/mixins.scss";
+.table-icon {
+  .norm {
+    padding-left: 8px;
+  }
+  .table-link {
+    color: rgba(14, 11, 32, 0.85);
+  }
+}
