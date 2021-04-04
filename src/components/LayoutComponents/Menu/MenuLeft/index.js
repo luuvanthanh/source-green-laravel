@@ -15,7 +15,7 @@ const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
 const mapStateToProps = ({ menu, settings, badges, user }) => ({
-  menuData: menu.MenuLeftSchedules,
+  menuData: menu.menuLeftSchedules,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,

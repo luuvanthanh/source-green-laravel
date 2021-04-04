@@ -5,7 +5,7 @@ import styles from './style.module.scss';
 import validator from 'validator';
 
 const mapStateToProps = ({ menu }) => ({
-  menuLeftData: menu.MenuLeftExchange,
+  menuLeftData: menu.menuLeftExchange,
 });
 
 @withRouter

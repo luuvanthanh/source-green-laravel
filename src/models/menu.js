@@ -5,6 +5,7 @@ import {
   getLeftMenuProfile,
   getLeftMenuSchedules,
   getLeftMenuConfiguration,
+  getLeftMenuVehicel,
 } from '@/services/menu';
 
 export default {
@@ -12,10 +13,11 @@ export default {
   state: {
     menuLeftData: [],
     menuTopData: [],
-    MenuLeftExchange: [],
-    MenuLeftObjectProfiles: [],
-    MenuLeftSchedules: [],
+    menuLeftExchange: [],
+    menuLeftObjectProfiles: [],
+    menuLeftSchedules: [],
     menuConfiguration: [],
+    menuLeftVehicel: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -23,20 +25,22 @@ export default {
   effects: {
     *GET_DATA(action, { put, call }) {
       const menuLeftData = yield call(getLeftMenuData);
-      const MenuLeftExchange = yield call(getLeftMenuExchange);
-      const MenuLeftObjectProfiles = yield call(getLeftMenuProfile);
-      const MenuLeftSchedules = yield call(getLeftMenuSchedules);
+      const menuLeftExchange = yield call(getLeftMenuExchange);
+      const menuLeftObjectProfiles = yield call(getLeftMenuProfile);
+      const menuLeftSchedules = yield call(getLeftMenuSchedules);
       const menuTopData = yield call(getTopMenuData);
       const menuConfiguration = yield call(getLeftMenuConfiguration);
+      const menuLeftVehicel = yield call(getLeftMenuVehicel);
       yield put({
         type: 'SET_STATE',
         payload: {
           menuLeftData,
           menuTopData,
-          MenuLeftExchange,
-          MenuLeftObjectProfiles,
-          MenuLeftSchedules,
+          menuLeftExchange,
+          menuLeftObjectProfiles,
+          menuLeftSchedules,
           menuConfiguration,
+          menuLeftVehicel,
         },
       });
     },

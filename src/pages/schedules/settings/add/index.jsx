@@ -44,7 +44,7 @@ const mapStateToProps = ({ schedulesSettingAdd, loading, menu }) => ({
   loading: loading,
   error: schedulesSettingAdd.error,
   details: schedulesSettingAdd.details,
-  menuData: menu.MenuLeftSchedules,
+  menuData: menu.menuLeftSchedules,
 });
 
 @connect(mapStateToProps)

@@ -32,7 +32,7 @@ const { confirm } = Modal;
 const mapStateToProps = ({ exchangeDetails, loading, menu }) => ({
   loading,
   data: exchangeDetails.data,
-  menuData: menu.MenuLeftExchange,
+  menuData: menu.menuLeftExchange,
   pagination: exchangeDetails.pagination,
 });
 @connect(mapStateToProps)

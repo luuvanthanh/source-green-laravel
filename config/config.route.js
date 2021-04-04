@@ -116,8 +116,12 @@ export default [
         component: './vehicle/layout',
         routes: [
           {
+            path: '/quan-ly-phuong-tien',
+            redirect: '/quan-ly-phuong-tien/xe',
+          },
+          {
             path: '/quan-ly-phuong-tien/xe',
-            component: './vehicle',
+            component: './vehicle/items',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
