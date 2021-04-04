@@ -1,0 +1,70 @@
+{
+  "dataSource": [
+    {
+      "id": "1",
+      "maQuyen": "Admin_CRM",
+      "tenQuyen": "Quản trị ứng dụng",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "2",
+      "maQuyen": "TOUR_MANAGER",
+      "tenQuyen": "Trưởng phòng điều hành",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "3",
+      "maQuyen": "SALE",
+      "tenQuyen": "Kinh doanh",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": false
+    },
+    {
+      "id": "4",
+      "maQuyen": "ACCOUNTANT_MANAGER",
+      "tenQuyen": "Trưởng phòng kế toán",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "5",
+      "maQuyen": "Admin_CRM",
+      "tenQuyen": "Quản trị ứng dụng",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "6",
+      "maQuyen": "DRIVER",
+      "tenQuyen": "Lái xe",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "7",
+      "maQuyen": "GUIDE",
+      "tenQuyen": "Hướng dẫn viên",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": false
+    },
+    {
+      "id": "8",
+      "maQuyen": "Contract_manager",
+      "tenQuyen": "Trưởng phòng",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    },
+    {
+      "id": "9",
+      "maQuyen": "OpErator",
+      "tenQuyen": "Điều hành",
+      "moTa": "Người có quyền truy cập, thao tác tất cả chức năng trong hệ thống",
+      "kichHoat": true
+    }
+  ],
+  "column": [
+
+  ]
+}

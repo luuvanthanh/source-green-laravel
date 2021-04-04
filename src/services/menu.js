@@ -183,7 +183,11 @@ export async function getLeftMenuSchedules() {
     {
       title: 'Cấu hình',
       key: 'config',
-      url: ['/diem-danh/cau-hinh', '/diem-danh/cau-hinh/tao-moi', '/diem-danh/cau-hinh/:id/chi-tiet'],
+      url: [
+        '/diem-danh/cau-hinh',
+        '/diem-danh/cau-hinh/tao-moi',
+        '/diem-danh/cau-hinh/:id/chi-tiet',
+      ],
       icon: 'icon icon-setting',
       permission: [],
       pro: true,
@@ -195,7 +199,11 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Tài khoản',
       key: 'account',
-      url: ['/cau-hinh/tai-khoan'],
+      url: [
+        '/cau-hinh/tai-khoan',
+        '/cau-hinh/tai-khoan/tao-moi',
+        '/cau-hinh/tai-khoan/:id/chi-tiet',
+      ],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,
@@ -203,7 +211,11 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Chi nhánh',
       key: 'store',
-      url: ['/cau-hinh/chi-nhanh'],
+      url: [
+        '/cau-hinh/chi-nhanh',
+        '/cau-hinh/chi-nhanh/tao-moi',
+        '/cau-hinh/chi-nhanh/:id/chi-tiet',
+      ],
       icon: 'icon icon-open-book',
       permission: [],
       pro: true,
@@ -211,7 +223,7 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Vai trò',
       key: 'roles',
-      url: ['/cau-hinh/vai-tro'],
+      url: ['/cau-hinh/vai-tro', '/cau-hinh/vai-tro/tao-moi', '/cau-hinh/vai-tro/:id/chi-tiet'],
       icon: 'icon icon-setting',
       permission: [],
       pro: true,

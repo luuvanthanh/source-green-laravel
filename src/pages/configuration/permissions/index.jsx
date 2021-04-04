@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar, Switch } from 'antd';
+import { Modal, Form, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -12,11 +12,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -33,9 +30,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ configurationAccount, loading }) => ({
-  data: configurationAccount.data,
-  pagination: configurationAccount.pagination,
+const mapStateToProps = ({ configurationPermissions, loading }) => ({
+  data: configurationPermissions.data,
+  pagination: configurationPermissions.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -89,7 +86,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'configurationAccount/GET_DATA',
+      type: 'configurationPermissions/GET_DATA',
       payload: {
         ...search,
         status,
@@ -217,7 +214,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'configurationAccount/REMOVE',
+          type: 'configurationPermissions/REMOVE',
           payload: {
             id,
             pagination: {
@@ -238,52 +235,103 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
+    const columns = [
       {
-        title: 'Mã ID',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => 'TK01',
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => index + 1,
       },
       {
-        title: 'Tên tài khoản',
-        key: 'name',
-        className: 'min-width-130',
-        render: (record) => 'Tài khoản 1',
+        title: 'MÃ QUYỀN',
+        key: 'maQuyen',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.maQuyen}</Text>,
       },
       {
-        title: 'Vai trò',
-        key: 'roles',
-        className: 'min-width-130',
-        render: (record) => 'Giáo viên',
+        title: 'SUPERADMIN',
+        key: 'SUPERADMIN',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
       },
       {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => HelperModules.tagStatus('VERIFIED'),
+        title: 'ADMIN',
+        key: 'ADMIN',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
       },
       {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
+        title: 'CHỦ TỊCH',
+        key: 'CHUTICH',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'GIÁM ĐỐC',
+        key: 'GIAMDOC',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'PHÓ GIÁM ĐỐC',
+        key: 'PHOGIAMDOC',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'TRƯỜNG PHÒNG ĐIỀU HÀNH',
+        key: 'TRUONGPHONGDIEUHANH',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'TRƯỜNG PHÒNG SALE',
+        key: 'TRUONGPHONGSALE',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'IT',
+        key: 'IT',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'TỔNG QUÁN KS',
+        key: 'TONGQUANKS',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
+      },
+      {
+        title: 'SALE',
+        key: 'SALE',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: () => <Checkbox />,
       },
     ];
+    return columns;
   };
 
   render() {
@@ -294,26 +342,19 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['configurationAccount/GET_DATA'];
+    const loading = effects['configurationPermissions/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách cấu hình ca" />
+        <Helmet title="Phân quyền" />
         <div
           className={classnames(
             styles['content-form'],
-            styles['content-form-configurationAccount'],
+            styles['content-form-configurationPermissions'],
           )}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách tài khoản</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`/cau-hinh/tai-khoan/tao-moi`)}
-            >
-              Tạo tài khoản
-            </Button>
+            <Text color="dark">Phân quyền</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -326,28 +367,12 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-12">
                   <FormItem
-                    name="shift_code"
-                    onChange={(event) => this.onChange(event, 'shift_code')}
+                    name="name"
+                    onChange={(event) => this.onChange(event, 'name')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="status"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'status')}
-                    type={variables.SELECT}
                   />
                 </div>
               </div>

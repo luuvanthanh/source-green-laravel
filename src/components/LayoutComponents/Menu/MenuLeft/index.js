@@ -283,7 +283,7 @@ class MenuLeft extends React.Component {
         className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
       >
         <div className={styles.logo}>
-          <div className={styles.logoContainer}>
+          <Link to="/" className={styles.logoContainer}>
             <div className={styles['block-menu']}>
               <img
                 alt="Clean UI React Admin Template"
@@ -293,7 +293,7 @@ class MenuLeft extends React.Component {
               {!isMenuCollapsed && <h1 className={styles.title}>{info?.title || 'Điểm danh'}</h1>}
             </div>
             {!isMenuCollapsed && <span className="icon-toggle"></span>}
-          </div>
+          </Link>
         </div>
         <Scrollbars
           autoHide

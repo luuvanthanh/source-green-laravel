@@ -5,8 +5,6 @@ import styles from './style.module.scss';
 import validator from 'validator';
 
 const mapStateToProps = ({ menu }) => ({
-  isMenuTop: menu.isMenuTop,
-  menuTopData: menu.menuTopData,
   menuLeftData: menu.MenuLeftExchange,
 });
 
@@ -26,9 +24,9 @@ class Breadcrumbs extends React.Component {
   }
 
   setBreadcrumbs = (props) => {
-    const { isMenuTop, menuTopData, menuLeftData } = this.props;
+    const { menu, menuLeftData } = this.props;
     this.setState({
-      breadcrumb: this.getBreadcrumb(props, isMenuTop ? menuTopData : menuLeftData),
+      breadcrumb: this.getBreadcrumb(props, menu || menuLeftData),
     });
   };
 

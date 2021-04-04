@@ -2,10 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
@@ -29,10 +26,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ configurationAccountAdd, loading, menu }) => ({
+const mapStateToProps = ({ configurationStoresAdd, loading, menu }) => ({
   loading: loading,
-  error: configurationAccountAdd.error,
-  details: configurationAccountAdd.details,
+  error: configurationStoresAdd.error,
+  details: configurationStoresAdd.details,
   menuConfiguration: menu.menuConfiguration,
 });
 
@@ -71,7 +68,7 @@ class Index extends PureComponent {
     } = this.props;
     if (get(params, 'id')) {
       dispatch({
-        type: 'configurationAccountAdd/GET_DETAILS',
+        type: 'configurationStoresAdd/GET_DETAILS',
         payload: get(params, 'id'),
       });
     }
@@ -96,7 +93,7 @@ class Index extends PureComponent {
     } = this.props;
     if (get(params, 'id')) {
       dispatch({
-        type: 'configurationAccountAdd/UPDATE',
+        type: 'configurationStoresAdd/UPDATE',
         payload: {
           ...values,
           id: get(params, 'id'),
@@ -121,7 +118,7 @@ class Index extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'configurationAccountAdd/ADD',
+        type: 'configurationStoresAdd/ADD',
         payload: {
           ...values,
         },
@@ -152,12 +149,12 @@ class Index extends PureComponent {
       loading: { effects },
       menuConfiguration,
     } = this.props;
-    const loading = effects['configurationAccountAdd/GET_DETAILS'];
+    const loading = effects['configurationStoresAdd/GET_DETAILS'];
     const loadingSubmit =
-      effects['configurationAccountAdd/ADD'] || effects['configurationAccountAdd/UPDATE'];
+      effects['configurationStoresAdd/ADD'] || effects['configurationStoresAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo tài khoản" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo chi nhánh" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -171,48 +168,19 @@ class Index extends PureComponent {
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
               <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI TÀI KHOẢN</Text>
+                <Text color="dark">TẠO MỚI CHI NHÁNH</Text>
               </div>
               <div className={styles['content-children']}>
                 <Text color="dark" size="large-medium">
-                  Thông tin tài khoản
+                  Thông tin chi nhánh
                 </Text>
                 <div className="row mt-3">
-                  <div className="col-lg-6">
+                  <div className="col-lg-12">
                     <FormItem
-                      label="Tên tài khoản"
-                      name="username"
+                      label="Tên chi nhánh"
+                      name="name"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="Mật khẩu"
-                      name="password"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT_PASSWORD}
-                    />
-                  </div>
-                </div>
-                <hr className={styles.dot} />
-                <div className="row mt-3">
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={[]}
-                      label="Vai trò"
-                      name="role_id"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={[]}
-                      label="Liên hệ với hồ sơ đối tượng"
-                      name="obId"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
                     />
                   </div>
                 </div>
