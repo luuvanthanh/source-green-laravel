@@ -323,8 +323,13 @@ class Index extends PureComponent {
       <>
         <Helmet title="Danh lộ trình" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className={styles.search}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">DANH SÁCH LỘ TRÌNH</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm mới
+            </Button>
+          </div>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
@@ -364,15 +369,6 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH LỘ TRÌNH</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
-          </div>
-          <div className={styles['block-table']}>
             <Table
               bordered
               columns={this.header(params)}

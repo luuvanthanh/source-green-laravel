@@ -238,6 +238,29 @@ export async function getLeftMenuConfiguration() {
     },
   ];
 }
+export async function getLeftMenuVehicel() {
+  return [
+    {
+      title: 'Quản lý xe',
+      key: 'vehicel',
+      url: ['/quan-ly-phuong-tien/xe', '/quan-ly-phuong-tien/xe/tao-moi'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Quản lý lộ trình',
+      key: 'tutorial',
+      url: [
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+      ],
+      icon: 'icon icon-notification',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }

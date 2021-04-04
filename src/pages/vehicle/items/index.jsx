@@ -172,49 +172,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'vehicle/UPDATE' : 'vehicle/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
    * Function remove items
    * @param {objects} record value of items
    */
@@ -338,13 +295,16 @@ class Index extends PureComponent {
       <>
         <Helmet title="Danh sách xe" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className={styles.search}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">DANH SÁCH XE</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm mới
+            </Button>
+          </div>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -388,15 +348,6 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH XE</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
-          </div>
-          <div className={styles['block-table']}>
             <Table
               bordered
               columns={this.header(params)}

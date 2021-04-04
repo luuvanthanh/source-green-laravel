@@ -12,6 +12,7 @@ import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import Children from './components/children';
 import Maps from './components/maps';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
 /**
@@ -28,7 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({}) => ({});
+const mapStateToProps = ({ menu }) => ({
+  menuData: menu.menuLeftVehicel,
+});
 const { confirm } = Modal;
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -275,6 +278,7 @@ class Index extends PureComponent {
 
   render() {
     const { list, visible, listId, targetKeys, visibleMap } = this.state;
+    const { menuData } = this.props;
     const props = {
       beforeUpload: (file) => {
         return file;
@@ -285,182 +289,189 @@ class Index extends PureComponent {
     const position = [51.505, -0.09];
 
     return (
-      <Form
-        className={styles['layout-form']}
-        layout="vertical"
-        initialValues={{
-          criteria: [
-            {
-              itemsCriterias: [
-                {
-                  children: [{}],
-                },
-              ],
-            },
-          ],
-        }}
-        colon={false}
-        ref={this.formRef}
-      >
-        {visible && (
-          <Children
-            visible={visible}
-            listId={listId}
-            onSave={this.onSave}
-            handleCancel={this.handleCancel}
-            targetKeys={targetKeys}
-          />
-        )}
-        {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
-        <div className={styles['content-form']}>
-          <div className="d-flex justify-content-between">
-            <Text color="dark">CHI TIẾT XE</Text>
-          </div>
-          <div className={styles['content-children']}>
-            <Text color="dark" size="large-medium">
-              THÔNG TIN CHUNG
-            </Text>
-            <div className="row">
-              <div className="col-lg-9">
-                <FormItem data={[]} label="TÊN LỘ TRÌNH" name="name" type={variables.INPUT} />
-              </div>
-              <div className="col-lg-3">
-                <FormItem
-                  data={[]}
-                  label="ĐIỂM XUẤT PHÁT"
-                  name="location"
-                  type={variables.SELECT}
-                />
-              </div>
+      <>
+        <Breadcrumbs last="Chi tiết xe" menu={menuData} />
+        <Form
+          className={styles['layout-form']}
+          layout="vertical"
+          initialValues={{
+            criteria: [
+              {
+                itemsCriterias: [
+                  {
+                    children: [{}],
+                  },
+                ],
+              },
+            ],
+          }}
+          colon={false}
+          ref={this.formRef}
+        >
+          {visible && (
+            <Children
+              visible={visible}
+              listId={listId}
+              onSave={this.onSave}
+              handleCancel={this.handleCancel}
+              targetKeys={targetKeys}
+            />
+          )}
+          {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
+          <div className={styles['content-form']}>
+            <div className="d-flex justify-content-between">
+              <Text color="dark">CHI TIẾT XE</Text>
             </div>
-          </div>
-          <div className={styles['content-children']}>
-            <Text color="dark" size="large-medium">
-              THÔNG TIN XE
-            </Text>
-            <div className="row">
-              <div className="col-lg-3">
-                <FormItem data={[]} label="CHỌN XE" name="vehicle" type={variables.SELECT} />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-lg-12">
-                <Table
-                  bordered
-                  columns={this.header()}
-                  dataSource={[{ id: 1 }]}
-                  pagination={false}
-                  params={{
-                    header: this.header(),
-                    type: 'table',
-                  }}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: '100%' }}
-                />
-              </div>
-            </div>
-            <div className="row mt-3">
-              <div className="col-lg-3">
-                <FormItem
-                  data={[]}
-                  label="THỜI KHÓA BIỂU XE HOẠT ĐỘNG"
-                  name="schedules"
-                  type={variables.SELECT}
-                />
-              </div>
-            </div>
-            <hr />
-            <Text color="dark" size="large-medium">
-              THÔNG TIN BẢO MẪU
-            </Text>
-            <div className="row">
-              <div className="col-lg-3">
-                <FormItem data={[]} label="BẢO MẪU" name="nanny" type={variables.SELECT} />
-              </div>
-            </div>
-          </div>
-          <div className={classnames(styles['list-info'], 'mt-5')}>
-            {list.map((item, index) => (
-              <div
-                className={classnames(styles.item, { [`${styles.collapsed}`]: item.collapsed })}
-                key={index}
-              >
-                <div
-                  className={classnames(
-                    styles.heading,
-                    'd-flex',
-                    'justify-content-between',
-                    'align-items-center',
-                  )}
-                >
-                  <div className="d-flex align-items-center">
-                    <Text color="dark" size="large" style={{ whiteSpace: 'nowrap' }}>
-                      ĐIỂM ĐÓN SỐ {index + 1}
-                    </Text>
-                    <Input
-                      className="ml-3"
-                      size="large"
-                      suffix={
-                        <span
-                          className={classnames('icon-map', styles['icon-map'])}
-                          onClick={this.showMap}
-                        ></span>
-                      }
-                    />
-                  </div>
-                  <div className="d-flex justify-content-end">
-                    <div className={styles['list-button']}>
-                      <Button color="danger" icon="remove" onClick={() => this.onRemove(item.id)} />
-                      <Button color="dark" icon="up" onClick={() => this.collapsed(item)} />
-                    </div>
-                  </div>
+            <div className={styles['content-children']}>
+              <Text color="dark" size="large-medium">
+                THÔNG TIN CHUNG
+              </Text>
+              <div className="row">
+                <div className="col-lg-9">
+                  <FormItem data={[]} label="TÊN LỘ TRÌNH" name="name" type={variables.INPUT} />
                 </div>
-                <div className={styles['content-block']}>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <Text color="dark" size="large-medium">
-                      DS TRẺ TẠI ĐIỂM ĐÓN
-                    </Text>
-                    <Button color="success" icon="edit" onClick={() => this.onEditList(item)}>
-                      Cập nhật danh sách
-                    </Button>
-                  </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[]}
+                    label="ĐIỂM XUẤT PHÁT"
+                    name="location"
+                    type={variables.SELECT}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className={styles['content-children']}>
+              <Text color="dark" size="large-medium">
+                THÔNG TIN XE
+              </Text>
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem data={[]} label="CHỌN XE" name="vehicle" type={variables.SELECT} />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-lg-12">
                   <Table
                     bordered
-                    columns={this.header('CHILDREN')}
-                    dataSource={item.children || []}
-                    className="table-edit"
+                    columns={this.header()}
+                    dataSource={[{ id: 1 }]}
                     pagination={false}
-                    isEmpty
                     params={{
-                      header: this.header('CHILDREN'),
+                      header: this.header(),
                       type: 'table',
                     }}
-                    rowKey={(record) => record.id || record.key}
+                    rowKey={(record) => record.id}
                     scroll={{ x: '100%' }}
                   />
                 </div>
               </div>
-            ))}
-          </div>
-          <Button className="mt-4" color="success" icon="plus" onClick={this.addList}>
-            Thêm điểm đón
-          </Button>
-          <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-            <Button
-              color="gray"
-              icon="prev"
-              onClick={() => history.goBack()}
-              size="large"
-              className="mr-3"
-            >
-              HỦY
+              <div className="row mt-3">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[]}
+                    label="THỜI KHÓA BIỂU XE HOẠT ĐỘNG"
+                    name="schedules"
+                    type={variables.SELECT}
+                  />
+                </div>
+              </div>
+              <hr />
+              <Text color="dark" size="large-medium">
+                THÔNG TIN BẢO MẪU
+              </Text>
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem data={[]} label="BẢO MẪU" name="nanny" type={variables.SELECT} />
+                </div>
+              </div>
+            </div>
+            <div className={classnames(styles['list-info'], 'mt-5')}>
+              {list.map((item, index) => (
+                <div
+                  className={classnames(styles.item, { [`${styles.collapsed}`]: item.collapsed })}
+                  key={index}
+                >
+                  <div
+                    className={classnames(
+                      styles.heading,
+                      'd-flex',
+                      'justify-content-between',
+                      'align-items-center',
+                    )}
+                  >
+                    <div className="d-flex align-items-center">
+                      <Text color="dark" size="large" style={{ whiteSpace: 'nowrap' }}>
+                        ĐIỂM ĐÓN SỐ {index + 1}
+                      </Text>
+                      <Input
+                        className="ml-3"
+                        size="large"
+                        suffix={
+                          <span
+                            className={classnames('icon-map', styles['icon-map'])}
+                            onClick={this.showMap}
+                          ></span>
+                        }
+                      />
+                    </div>
+                    <div className="d-flex justify-content-end">
+                      <div className={styles['list-button']}>
+                        <Button
+                          color="danger"
+                          icon="remove"
+                          onClick={() => this.onRemove(item.id)}
+                        />
+                        <Button color="dark" icon="up" onClick={() => this.collapsed(item)} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles['content-block']}>
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <Text color="dark" size="large-medium">
+                        DS TRẺ TẠI ĐIỂM ĐÓN
+                      </Text>
+                      <Button color="success" icon="edit" onClick={() => this.onEditList(item)}>
+                        Cập nhật danh sách
+                      </Button>
+                    </div>
+                    <Table
+                      bordered
+                      columns={this.header('CHILDREN')}
+                      dataSource={item.children || []}
+                      className="table-edit"
+                      pagination={false}
+                      isEmpty
+                      params={{
+                        header: this.header('CHILDREN'),
+                        type: 'table',
+                      }}
+                      rowKey={(record) => record.id || record.key}
+                      scroll={{ x: '100%' }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button className="mt-4" color="success" icon="plus" onClick={this.addList}>
+              Thêm điểm đón
             </Button>
-            <Button color="green" icon="save" size="large">
-              LƯU
-            </Button>
+            <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
+              <Button
+                color="gray"
+                icon="prev"
+                onClick={() => history.goBack()}
+                size="large"
+                className="mr-3"
+              >
+                HỦY
+              </Button>
+              <Button color="green" icon="save" size="large">
+                LƯU
+              </Button>
+            </div>
           </div>
-        </div>
-      </Form>
+        </Form>
+      </>
     );
   }
 }

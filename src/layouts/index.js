@@ -11,6 +11,7 @@ import ExchangeLayout from './Exchange';
 import ObjectProfiles from './Object-Profiles';
 import SchedulesLayout from './Schedules';
 import ConfigurationLayout from './Configuration';
+import VehicelLayout from './Vehicel';
 
 const Layouts = {
   public: PublicLayout,
@@ -20,6 +21,7 @@ const Layouts = {
   objectProfiles: ObjectProfiles,
   schedules: SchedulesLayout,
   configuration: ConfigurationLayout,
+  vehicel: VehicelLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -53,6 +55,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/cau-hinh(?=\/|$)/i.test(pathname)) {
         return 'configuration';
+      }
+      if (/^\/quan-ly-phuong-tien(?=\/|$)/i.test(pathname)) {
+        return 'vehicel';
       }
       return 'public';
     };

@@ -14,7 +14,7 @@ const mapStateToProps = ({ settings, menu }) => ({
   isMenuShadow: settings.isMenuShadow,
   isMenuTop: settings.isMenuTop,
   isMenuCollapsed: settings.isMenuCollapsed,
-  menuData: menu.MenuLeftExchange,
+  menuData: menu.menuLeftExchange,
 });
 
 @withRouter
