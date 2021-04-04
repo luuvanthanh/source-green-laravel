@@ -61,6 +61,11 @@
       "url": "/"
     },
     {
+      "title": "Bảng lương",
+      "src": "images/home/drive.svg",
+      "url": "/"
+    },
+    {
       "title": "Cấu hình",
       "src": "images/home/gear.svg",
       "url": "/cau-hinh"
