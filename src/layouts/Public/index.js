@@ -13,7 +13,6 @@ const mapStateToProps = ({ settings }) => ({
 @connect(mapStateToProps)
 class PublicLayout extends React.PureComponent {
   render() {
-    console.log('121')
     const { children, background } = this.props;
     return (
       <Layout>
