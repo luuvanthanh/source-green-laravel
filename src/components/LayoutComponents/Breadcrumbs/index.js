@@ -1,7 +1,6 @@
 import React from 'react';
-import { connect } from 'dva';
+import { connect, Link, withRouter } from 'umi';
 import { reduce, isArray } from 'lodash';
-import { Link, withRouter } from 'dva/router';
 import styles from './style.module.scss';
 import validator from 'validator';
 
@@ -103,6 +102,7 @@ class Breadcrumbs extends React.Component {
 
   render() {
     const { breadcrumb } = this.state;
+    const { last } = this.props;
     return (
       <div className={styles.breadcrumbs}>
         <div className={styles.path}>
@@ -110,6 +110,12 @@ class Breadcrumbs extends React.Component {
             Trang chủ
           </Link>
           {breadcrumb}
+          {last && (
+            <span>
+              <span className={`${styles.arrow} text-muted`} />
+              <strong className={styles.title}>{last}</strong>
+            </span>
+          )}
         </div>
       </div>
     );

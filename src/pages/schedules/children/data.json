@@ -16,5 +16,15 @@
       "id": "monthly",
       "name": "Hàng Tháng"
     }
+  ],
+  "CHOOSE": [
+    {
+      "id": "DATE",
+      "name": "Ngày"
+    },
+    {
+      "id": "MONTH",
+      "name": "Tháng"
+    }
   ]
 }

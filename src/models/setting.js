@@ -23,6 +23,7 @@ export default {
       isSquaredBorders: false,
       isFixedWidth: false,
       isMenuShadow: true,
+      isGreenTheme: false
     }),
     background: localStorage.getItem('background') || 'images/bg.png',
   },

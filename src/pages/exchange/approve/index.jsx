@@ -8,7 +8,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
-import Breadcrumbs from '@/components/LayoutComponents/Exchange/Breadcrumbs';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
 

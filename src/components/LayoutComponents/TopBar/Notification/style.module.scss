@@ -2,7 +2,6 @@
 
 .dropdown {
   cursor: pointer;
-  padding-right: 15px;
   position: relative;
   @include transition-slow;
   &:hover {

@@ -4,10 +4,8 @@ import DrawerMenu from 'rc-drawer';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import MenuLeft from './MenuLeft';
-import MenuTop from './MenuTop';
 
 const mapStateToProps = ({ settings }) => ({
-  isMenuTop: settings.isMenuTop,
   isMobileMenuOpen: settings.isMobileMenuOpen,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
@@ -34,7 +32,7 @@ class AppMenu extends React.Component {
   };
 
   render() {
-    const { isMenuTop, isMobileMenuOpen, isMobileView, isLightTheme } = this.props;
+    const { isMobileMenuOpen, isMobileView, isLightTheme, menu, info } = this.props;
     const BootstrappedMenu = () => {
       if (isMobileView) {
         return (
@@ -45,14 +43,11 @@ class AppMenu extends React.Component {
             onHandleClick={this.toggleOpen}
             open={isMobileMenuOpen}
           >
-            <MenuLeft />
+            <MenuLeft menu={menu} info={info} />
           </DrawerMenu>
         );
       }
-      if (isMenuTop) {
-        return <MenuTop />;
-      }
-      return <MenuLeft />;
+      return <MenuLeft menu={menu} info={info} />;
     };
 
     return BootstrappedMenu();
@@ -62,17 +57,17 @@ class AppMenu extends React.Component {
 AppMenu.propTypes = {
   isMobileMenuOpen: PropTypes.bool,
   dispatch: PropTypes.objectOf(PropTypes.any),
-  isMenuTop: PropTypes.bool,
   isMobileView: PropTypes.bool,
   isLightTheme: PropTypes.bool,
+  menu: PropTypes.arrayOf(PropTypes.any),
 };
 
 AppMenu.defaultProps = {
   isMobileMenuOpen: false,
   dispatch: {},
-  isMenuTop: false,
   isMobileView: false,
   isLightTheme: false,
+  menu: [],
 };
 
 export default AppMenu;

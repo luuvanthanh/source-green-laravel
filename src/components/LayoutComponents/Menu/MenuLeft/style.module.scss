@@ -9,11 +9,11 @@
 
   .title {
     color: $text-dark;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-style: normal;
-    font-weight: 500;
+    font-weight: normal;
     font-size: 14px;
-    line-height: 22px;
+    line-height: 24px;
   }
 
   :global(.ant-layout-sider-children) {
@@ -39,10 +39,12 @@
 
   :global(.ant-menu-item) {
     height: auto;
+    padding: 0 15px;
     a {
       display: flex;
       align-items: center;
-      padding: 10px 0;
+      padding: 12px 15px;
+      border-radius: 4px;
     }
     .title {
       white-space: pre-wrap;
@@ -65,7 +67,7 @@
 
 .logo {
   background: #fff;
-  height: 70px;
+  height: 60px;
   overflow: hidden;
 }
 
@@ -82,20 +84,33 @@
 .logoContainer {
   align-items: center;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   overflow: hidden;
-  padding: 13px 20px 15px 22px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eef0f4;
+  :global(.icon-toggle) {
+    font-size: 16px;
+    color: $background-success;
+    cursor: pointer;
+  }
   img {
     height: auto;
-    width: 148px;
+    width: 30px;
+  }
+  .block-menu {
+    display: flex;
+    align-items: center;
   }
 
   .title {
-    color: #50c23d;
-    font-family: "Roboto";
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: bold;
     font-size: 16px;
-    font-weight: 600;
-    line-height: 32px;
+    line-height: 24px;
+    color: $text;
+    margin-bottom: 0;
+    margin-left: 16px;
   }
 }
 
@@ -106,7 +121,7 @@
 
 .navigation {
   border: 0;
-  padding: rem(15) 0 rem(30) !important;
+  padding: rem(5) 0 rem(30) !important;
 
   > :global(.ant-menu-item-divider) {
     margin: 0 23px !important;
@@ -165,10 +180,11 @@
     }
 
     :global(.ant-menu-item-selected) {
-      background-color: $background-success !important;
+      background-color: transparent;
       opacity: 1;
       > a {
         color: $white;
+        background-color: $background-success;
 
         .icon {
           color: $white;
@@ -179,7 +195,75 @@
       }
     }
     :global(.ant-menu-item-selected::after) {
-      border-right: 3px solid $background-success;
+      border-right: unset;
+    }
+
+    :global(.ant-menu-submenu:hover),
+    :global(.ant-menu-submenu-selected),
+    :global(.ant-menu-submenu-open) {
+      .icon {
+        color: #b8beca !important;
+      }
+    }
+
+    :global(.ant-menu-submenu-active) {
+      .icon {
+        color: $blue !important;
+      }
+    }
+
+    :global(.ant-menu-inline.ant-menu-sub) {
+      box-shadow: none !important;
+      transition: all 0.3s;
+    }
+  }
+
+  &:global(.ant-menu-dark) {
+    background-color: $background-dark;
+    color: $gray-darken;
+    height: 100%;
+
+    :global(.ant-menu-item-divider) {
+      opacity: 0.2;
+    }
+
+    :global(.ant-menu-sub) {
+      color: $gray-darken;
+    }
+
+    .title {
+      color: $text-white;
+    }
+
+    .icon {
+      color: $text-white;
+    }
+
+    :global(.ant-menu-item) {
+      color: $text-darken;
+      opacity: 0.85;
+      > a {
+        color: $text-white;
+      }
+    }
+
+    :global(.ant-menu-item-selected) {
+      background-color: transparent !important;
+      opacity: 1;
+      > a {
+        color: $white;
+        background-color: $background-success;
+
+        .icon {
+          color: $white;
+        }
+      }
+      .title {
+        color: $white;
+      }
+    }
+    :global(.ant-menu-item-selected::after) {
+      border-right: unset;
     }
 
     :global(.ant-menu-submenu:hover),

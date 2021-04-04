@@ -16,7 +16,7 @@ import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import stylesChildren from './styles.modules.scss';
-import { REPEAT } from './data.json';
+import { REPEAT, CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -51,6 +51,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         end_date: HelperModules.getEndDate(query?.end_date, query?.choose),
@@ -59,7 +60,7 @@ class Index extends PureComponent {
       user: {},
       dayOfWeek: moment(),
       visible: false,
-      visibleSchedule: false,
+      showConfirm: false,
     };
     setIsMounted(true);
   }
@@ -138,6 +139,43 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchType = debounce((value) => {
+    if (value === 'MONTH') {
+      this.setStateData(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            type: value,
+            start_date: moment(prevState.search.start_date).startOf('month'),
+            end_date: moment(prevState.search.end_date).endOf('month'),
+          },
+        }),
+        () => {
+          this.formRef.current.setFieldsValue({
+            start_date: moment(this.state.search.start_date).startOf('month'),
+            end_date: moment(this.state.search.end_date).endOf('month'),
+          });
+          this.onLoad();
+        },
+      );
+    } else {
+      this.setStateData(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            type: value,
+          },
+        }),
+        () => this.onLoad(),
+      );
+    }
+  }, 300);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -153,6 +191,14 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change type
+   * @param {object} e value of select
+   */
+  onChangeType = (e) => {
+    this.debouncedSearchType(e);
   };
 
   /**
@@ -239,40 +285,11 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function submit form modal
-   * @param {object} values values of form
+   * Function show modal
+   * @param {date} dayOfWeek date show modal
+   * @param {object} record item of table
+   * @param {object} user info user
    */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'schedulesChildren/UPDATE' : 'schedulesChildren/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
   onShowModal = (dayOfWeek, record, user) => {
     this.setStateData({
       user,
@@ -281,19 +298,27 @@ class Index extends PureComponent {
     });
   };
 
+  /**
+   * Function show modal remove
+   * @param {object} record item of table
+   * @param {object} user info user
+   */
   onRemove = (record, user) => {
     this.setState({
       user,
       schedule: record,
-      visibleSchedule: true,
+      showConfirm: true,
     });
   };
 
+  /**
+   * Function cancel modal schedules
+   */
   cancelSchedule = () => {
     this.setState({
       user: {},
       schedule: {},
-      visibleSchedule: false,
+      showConfirm: false,
     });
   };
 
@@ -495,7 +520,7 @@ class Index extends PureComponent {
   };
 
   onChoose = () => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
     const { user, dayOfWeek, search } = this.state;
     if (this.formRefShift) {
       this.formRefShift.current.validateFields().then((values) => {
@@ -503,10 +528,10 @@ class Index extends PureComponent {
           type: 'schedulesChildren/ADD',
           payload: {
             ...search,
-            limit: 10,
+            limit: search.limit,
             repeat_by: values.repeat_by,
             user_id: user.id,
-            page: pagination.current_page,
+            page: search.page,
             shift_id: values.shift_id,
             start_date_add: moment(dayOfWeek),
             by_week_day:
@@ -525,17 +550,17 @@ class Index extends PureComponent {
     }
   };
 
-  handleRemoveAll = () => {
-    const { dispatch, pagination } = this.props;
+  removeAll = () => {
+    const { dispatch } = this.props;
     const { schedule, user, search } = this.state;
     dispatch({
       type: 'schedulesChildren/REMOVE',
       payload: {
         ...search,
-        limit: 10,
+        limit: search.limit,
         id: schedule.id,
         user_id: user.id,
-        page: pagination.current_page,
+        page: search.page,
         start_date_remove: schedule.start_date,
       },
     }).then(() => {
@@ -543,19 +568,19 @@ class Index extends PureComponent {
     });
   };
 
-  handleRemoveOnly = () => {
-    const { dispatch, pagination } = this.props;
+  removeOnly = () => {
+    const { dispatch } = this.props;
     const { schedule, user, search } = this.state;
     dispatch({
       type: 'schedulesChildren/REMOVE_ONLY',
       payload: {
         ...search,
-        limit: 10,
+        limit: search.limit,
         isRepeat: true,
         id: schedule.id,
         user_id: user.id,
         date: schedule.start_date,
-        page: pagination.current_page,
+        page: search.page,
       },
     }).then(() => {
       this.cancelSchedule();
@@ -586,20 +611,22 @@ class Index extends PureComponent {
   render() {
     const {
       data,
-      pagination,
       category,
+      pagination,
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, visible, visibleSchedule } = this.state;
+    const { search, visible, showConfirm } = this.state;
     const loading = effects['schedulesChildren/GET_DATA'];
     const loadingSubmit = effects['schedulesChildren/ADD'];
     const loadingRemoveAll = effects['schedulesChildren/REMOVE'];
     const loadingRemoveOnly = effects['schedulesChildren/REMOVE_ONLY'];
     return (
       <>
+        <Helmet title="Danh sách học sinh" />
+        {/* MODAL CONFIRM */}
         <Modal
-          visible={visibleSchedule}
+          visible={showConfirm}
           className={stylesChildren['modal-confirm']}
           onCancel={this.cancelSchedule}
           centered
@@ -610,7 +637,7 @@ class Index extends PureComponent {
               color="white"
               icon="cancel"
               loading={loadingRemoveOnly}
-              onClick={this.handleRemoveOnly}
+              onClick={this.removeOnly}
             >
               Xóa một ca
             </Button>,
@@ -619,7 +646,7 @@ class Index extends PureComponent {
               color="danger"
               icon="remove"
               loading={loadingRemoveAll}
-              onClick={this.handleRemoveAll}
+              onClick={this.removeAll}
             >
               Xóa tất cả
             </Button>,
@@ -629,6 +656,8 @@ class Index extends PureComponent {
             Bạn có muốn xóa ca này hoặc xóa tất cả ca này trong tương lai?
           </Text>
         </Modal>
+        {/* MODAL CONFIRM */}
+        {/* MODAL CHOOSE SHIFT */}
         <Modal
           visible={visible}
           title={this.renderTitleModal()}
@@ -663,6 +692,7 @@ class Index extends PureComponent {
             />
           </Form>
         </Modal>
+        {/* MODAL CHOOSE SHIFT */}
         <Helmet title="Danh sách học sinh" />
         <div
           className={classnames(styles['content-form'], styles['content-form-schedulesChildren'])}
@@ -676,6 +706,7 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 productType: search.productType || null,
+                type: search.type || 'DATE',
                 start_date: search.start_date && moment(search.start_date),
                 end_date: search.end_date && moment(search.end_date),
               }}
@@ -693,11 +724,21 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={CHOOSE}
+                    name="type"
+                    allowClear={false}
+                    onChange={this.onChangeType}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     name="start_date"
                     onChange={(event) => this.onChangeDate(event, 'start_date')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
+
                 <div className="col-lg-3">
                   <FormItem
                     name="end_date"
