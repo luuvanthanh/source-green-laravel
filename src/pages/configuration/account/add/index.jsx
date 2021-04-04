@@ -40,10 +40,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = (state) => ({
-  dataStores: state.schedulesSettingAdd.dataStores,
+  dataStores: state.configurationAccountAdd.dataStores,
   loading: state.loading,
-  error: state.schedulesSettingAdd.error,
-  details: state.schedulesSettingAdd.details,
+  error: state.configurationAccountAdd.error,
+  details: state.configurationAccountAdd.details,
 });
 
 @connect(mapStateToProps)
@@ -81,7 +81,7 @@ class Index extends PureComponent {
     } = this.props;
     if (get(params, 'id')) {
       dispatch({
-        type: 'schedulesSettingAdd/GET_DETAILS',
+        type: 'configurationAccountAdd/GET_DETAILS',
         payload: get(params, 'id'),
       });
     }
@@ -118,7 +118,7 @@ class Index extends PureComponent {
     } = this.props;
     if (get(params, 'id')) {
       dispatch({
-        type: 'schedulesSettingAdd/UPDATE',
+        type: 'configurationAccountAdd/UPDATE',
         payload: {
           ...values,
           id: get(params, 'id'),
@@ -162,7 +162,7 @@ class Index extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'schedulesSettingAdd/ADD',
+        type: 'configurationAccountAdd/ADD',
         payload: {
           ...values,
           time: values.time.map((item) => ({
@@ -314,9 +314,9 @@ class Index extends PureComponent {
       error,
       loading: { effects },
     } = this.props;
-    const loading = effects['schedulesSettingAdd/GET_DETAILS'];
+    const loading = effects['configurationAccountAdd/GET_DETAILS'];
     const loadingSubmit =
-      effects['schedulesSettingAdd/ADD'] || effects['schedulesSettingAdd/UPDATE'];
+      effects['configurationAccountAdd/ADD'] || effects['configurationAccountAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last="Tạo mới ca" />

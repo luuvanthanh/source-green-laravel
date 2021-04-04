@@ -285,6 +285,36 @@ export default [
         ],
       },
       // SCHEDULES
+      // SCHEDULES
+      {
+        path: '/cau-hinh',
+        component: './configuration/layout',
+        routes: [
+          {
+            path: '/cau-hinh',
+            redirect: '/cau-hinh/tai-khoan',
+          },
+          {
+            path: '/cau-hinh/tai-khoan',
+            component: './configuration/account',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tai-khoan/tao-moi',
+            component: './configuration/account/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tai-khoan/:id/chi-tiet',
+            component: './configuration/account/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // SCHEDULES
       {
         path: '/404',
         component: './404',

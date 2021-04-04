@@ -14,7 +14,7 @@ const mapStateToProps = ({ settings, menu }) => ({
   isMenuShadow: settings.isMenuShadow,
   isMenuTop: settings.isMenuTop,
   isMenuCollapsed: settings.isMenuCollapsed,
-  menuData: menu.MenuLeftExchange,
+  menuConfiguration: menu.menuConfiguration,
 });
 
 @withRouter
@@ -23,12 +23,12 @@ class MainLayout extends React.PureComponent {
   render() {
     const {
       children,
+      isMenuTop,
       isBorderless,
-      isSquaredBorders,
       isFixedWidth,
       isMenuShadow,
-      isMenuTop,
-      menuData,
+      isSquaredBorders,
+      menuConfiguration,
     } = this.props;
     return (
       <Layout
@@ -41,10 +41,10 @@ class MainLayout extends React.PureComponent {
         })}
       >
         <Menu
-          menu={menuData}
+          menu={menuConfiguration}
           info={{
-            icon: '/images/home/speech.svg',
-            title: 'Trao đổi',
+            icon: '/images/home/gear.svg',
+            title: 'Cấu hình',
           }}
         />
         <Settings />

@@ -190,6 +190,42 @@ export async function getLeftMenuSchedules() {
     },
   ];
 }
+export async function getLeftMenuConfiguration() {
+  return [
+    {
+      title: 'Tài khoản',
+      key: 'account',
+      url: ['/cau-hinh/tai-khoan'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Chi nhánh',
+      key: 'store',
+      url: ['/cau-hinh/chi-nhanh'],
+      icon: 'icon icon-open-book',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Vai trò',
+      key: 'roles',
+      url: ['/cau-hinh/vai-tro'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Phân quyền',
+      key: 'permission',
+      url: ['/cau-hinh/phan-quyen'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }

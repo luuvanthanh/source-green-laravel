@@ -15,7 +15,7 @@ const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
 const mapStateToProps = ({ menu, settings, badges, user }) => ({
-  menuData: menu.menuLeftData,
+  menuData: menu.MenuLeftSchedules,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
@@ -30,7 +30,7 @@ class MenuLeft extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      menuData: props.menuData,
+      menuData: props.menu || props.menuData,
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
     };
@@ -260,7 +260,7 @@ class MenuLeft extends React.Component {
 
   render() {
     const { selectedKeys, openedKeys } = this.state;
-    const { isMobileView, isMenuCollapsed, isLightTheme } = this.props;
+    const { isMobileView, isMenuCollapsed, isLightTheme, info } = this.props;
     const menuSettings = isMobileView
       ? {
           width: 256,
@@ -284,8 +284,15 @@ class MenuLeft extends React.Component {
       >
         <div className={styles.logo}>
           <div className={styles.logoContainer}>
-            {isMenuCollapsed && <img alt="Clean UI React Admin Template" src="/logo-mobile.png" />}
-            {!isMenuCollapsed && <img alt="Clean UI React Admin Template" src="/logo-admin.png" />}
+            <div className={styles['block-menu']}>
+              <img
+                alt="Clean UI React Admin Template"
+                className={styles.image}
+                src={info?.icon || '/images/home/note.svg'}
+              />
+              {!isMenuCollapsed && <h1 className={styles.title}>{info?.title || 'Điểm danh'}</h1>}
+            </div>
+            {!isMenuCollapsed && <span className="icon-toggle"></span>}
           </div>
         </div>
         <Scrollbars
