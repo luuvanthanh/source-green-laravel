@@ -312,6 +312,48 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/vai-tro',
+            component: './configuration/roles',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/vai-tro/tao-moi',
+            component: './configuration/roles/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/vai-tro/:id/chi-tiet',
+            component: './configuration/roles/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh',
+            component: './configuration/stores',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh/tao-moi',
+            component: './configuration/stores/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh/:id/chi-tiet',
+            component: './configuration/stores/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/phan-quyen',
+            component: './configuration/permissions',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // SCHEDULES

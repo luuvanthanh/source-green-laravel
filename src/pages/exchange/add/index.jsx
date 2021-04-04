@@ -28,10 +28,11 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ exchangeAdd, loading }) => ({
-  data: exchangeAdd.data,
-  pagination: exchangeAdd.pagination,
+const mapStateToProps = ({ exchangeAdd, loading, menu }) => ({
   loading,
+  data: exchangeAdd.data,
+  menuData: menu.MenuLeftExchange,
+  pagination: exchangeAdd.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -64,10 +65,11 @@ class Index extends PureComponent {
   };
 
   render() {
+    const { menuData } = this.props;
     return (
       <>
         <Helmet title="Chi tiết trao đổi" />
-        <Breadcrumbs last="Tạo trao đổi" />
+        <Breadcrumbs last="Tạo trao đổi" menu={menuData} />
         <div
           className={classnames(
             styles['content-form'],

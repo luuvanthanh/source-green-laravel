@@ -39,11 +39,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = (state) => ({
-  dataStores: state.schedulesSettingAdd.dataStores,
-  loading: state.loading,
-  error: state.schedulesSettingAdd.error,
-  details: state.schedulesSettingAdd.details,
+const mapStateToProps = ({ schedulesSettingAdd, loading, menu }) => ({
+  dataStores: schedulesSettingAdd.dataStores,
+  loading: loading,
+  error: schedulesSettingAdd.error,
+  details: schedulesSettingAdd.details,
+  menuData: menu.MenuLeftSchedules,
 });
 
 @connect(mapStateToProps)
@@ -312,6 +313,7 @@ class Index extends PureComponent {
   render() {
     const {
       error,
+      menuData,
       loading: { effects },
     } = this.props;
     const loading = effects['schedulesSettingAdd/GET_DETAILS'];
@@ -319,7 +321,7 @@ class Index extends PureComponent {
       effects['schedulesSettingAdd/ADD'] || effects['schedulesSettingAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo mới ca" />
+        <Breadcrumbs last="Tạo mới ca" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"

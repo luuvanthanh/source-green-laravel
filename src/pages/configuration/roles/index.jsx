@@ -33,9 +33,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ configurationAccount, loading }) => ({
-  data: configurationAccount.data,
-  pagination: configurationAccount.pagination,
+const mapStateToProps = ({ configurationRoles, loading }) => ({
+  data: configurationRoles.data,
+  pagination: configurationRoles.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -89,7 +89,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'configurationAccount/GET_DATA',
+      type: 'configurationRoles/GET_DATA',
       payload: {
         ...search,
         status,
@@ -217,7 +217,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'configurationAccount/REMOVE',
+          type: 'configurationRoles/REMOVE',
           payload: {
             id,
             pagination: {
@@ -250,23 +250,10 @@ class Index extends PureComponent {
         render: (record) => 'TK01',
       },
       {
-        title: 'Tên tài khoản',
+        title: 'Tên vai trò',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => 'Tài khoản 1',
-      },
-      {
-        title: 'Vai trò',
-        key: 'roles',
-        className: 'min-width-130',
-        render: (record) => 'Giáo viên',
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => HelperModules.tagStatus('VERIFIED'),
+        render: (record) => 'Vai trò 01',
       },
       {
         key: 'action',
@@ -294,25 +281,25 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['configurationAccount/GET_DATA'];
+    const loading = effects['configurationRoles/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách cấu hình ca" />
+        <Helmet title="Danh sách vai trò" />
         <div
           className={classnames(
             styles['content-form'],
-            styles['content-form-configurationAccount'],
+            styles['content-form-configurationRoles'],
           )}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách tài khoản</Text>
+            <Text color="dark">Danh sách vai trò</Text>
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`/cau-hinh/tai-khoan/tao-moi`)}
+              onClick={() => history.push(`/cau-hinh/vai-tro/tao-moi`)}
             >
-              Tạo tài khoản
+              Tạo vai trò
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
@@ -326,28 +313,12 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-12">
                   <FormItem
-                    name="shift_code"
-                    onChange={(event) => this.onChange(event, 'shift_code')}
+                    name="name"
+                    onChange={(event) => this.onChange(event, 'name')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="status"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'status')}
-                    type={variables.SELECT}
                   />
                 </div>
               </div>

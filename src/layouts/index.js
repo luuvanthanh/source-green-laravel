@@ -54,7 +54,7 @@ class IndexLayout extends React.PureComponent {
       if (/^\/cau-hinh(?=\/|$)/i.test(pathname)) {
         return 'configuration';
       }
-      return 'main';
+      return 'public';
     };
 
     const Container = Layouts[getLayout()];

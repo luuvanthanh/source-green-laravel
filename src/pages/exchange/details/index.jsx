@@ -29,10 +29,11 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ exchangeDetails, loading }) => ({
-  data: exchangeDetails.data,
-  pagination: exchangeDetails.pagination,
+const mapStateToProps = ({ exchangeDetails, loading, menu }) => ({
   loading,
+  data: exchangeDetails.data,
+  menuData: menu.MenuLeftExchange,
+  pagination: exchangeDetails.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -82,10 +83,11 @@ class Index extends PureComponent {
   };
 
   render() {
+    const { menuData } = this.props;
     return (
       <>
         <Helmet title="Chi tiết trao đổi" />
-        <Breadcrumbs last="Chi tiết trao đổi" />
+        <Breadcrumbs last="Chi tiết trao đổi" menu={menuData} />
         <div
           className={classnames(
             styles['content-form'],
@@ -163,7 +165,9 @@ class Index extends PureComponent {
               <div className={stylesExchange['info-footer']}>
                 <div className={stylesExchange['info-item']}>
                   <p className={stylesExchange['norm']}>Trạng thái</p>
-                  <div className={stylesExchange['content']}>{HelperModules.tagStatus('PENDING')}</div>
+                  <div className={stylesExchange['content']}>
+                    {HelperModules.tagStatus('PENDING')}
+                  </div>
                 </div>
                 <div className={stylesExchange['info-item']}>
                   <Button type="button" color="success" size="large">
