@@ -129,6 +129,15 @@
       color: $text-success;
     }
   }
+  &.ghost {
+    color: $text-success;
+    border: 1px solid $text-success;
+    background-color: transparent;
+    &:hover {
+      background-color: $text-success !important;
+      color: $white;
+    }
+  }
 }
 
 .success-full {

@@ -331,6 +331,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
+              ghost
               onClick={() => history.push('/ho-so-doi-tuong/hoc-sinh/1/chi-tiet')}
             >
               Chi tiết
