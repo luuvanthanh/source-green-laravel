@@ -13,6 +13,7 @@ import SchedulesLayout from './Schedules';
 import ConfigurationLayout from './Configuration';
 import VehicelLayout from './Vehicel';
 import CriteriaLayout from './Criteria';
+import MenuLayout from './Menu';
 
 const Layouts = {
   public: PublicLayout,
@@ -24,6 +25,7 @@ const Layouts = {
   configuration: ConfigurationLayout,
   vehicel: VehicelLayout,
   criteria: CriteriaLayout,
+  menu: MenuLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -63,6 +65,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/tieu-chi-danh-gia(?=\/|$)/i.test(pathname)) {
         return 'criteria';
+      }
+      if (/^\/thuc-don-cho-tre(?=\/|$)/i.test(pathname)) {
+        return 'menu';
       }
       return 'public';
     };

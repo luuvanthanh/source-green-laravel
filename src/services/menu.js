@@ -305,6 +305,18 @@ export async function getLeftMenuCriteria() {
     },
   ];
 }
+export async function getLeftMenuChildren() {
+  return [
+    {
+      title: 'Thực đơn cho trẻ',
+      key: 'learn',
+      url: ['/thuc-don-cho-tre', '/thuc-don-cho-tre/tao-moi'],
+      icon: 'icon icon-baby',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }
