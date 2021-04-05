@@ -173,24 +173,40 @@ export async function getLeftMenuProfile() {
 export async function getLeftMenuSchedules() {
   return [
     {
-      title: 'Học sinh',
+      title: 'Lịch làm việc',
       key: 'schedules',
       url: ['/diem-danh/hoc-sinh'],
-      icon: 'icon icon-baby',
+      icon: 'icon icon-clock',
       permission: [],
       pro: true,
-    },
-    {
-      title: 'Cấu hình',
-      key: 'config',
-      url: [
-        '/diem-danh/cau-hinh',
-        '/diem-danh/cau-hinh/tao-moi',
-        '/diem-danh/cau-hinh/:id/chi-tiet',
+      children: [
+        {
+          title: 'Chia ca',
+          key: 'schedules',
+          url: ['/diem-danh/hoc-sinh'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Lịch sử vào ra',
+          key: 'timekeeping',
+          url: ['/diem-danh/lich-su-vao-ra'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình',
+          key: 'config',
+          url: [
+            '/diem-danh/cau-hinh',
+            '/diem-danh/cau-hinh/tao-moi',
+            '/diem-danh/cau-hinh/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+       
       ],
-      icon: 'icon icon-setting',
-      permission: [],
-      pro: true,
     },
     {
       title: 'Tổng hợp công',
@@ -204,18 +220,11 @@ export async function getLeftMenuSchedules() {
       title: 'Máy chấm công',
       key: 'fingerprints',
       url: ['/diem-danh/may-cham-cong-van-tay'],
-      icon: 'icon icon-open-book',
+      icon: 'icon icon-newspaper',
       permission: [],
       pro: true,
     },
-    {
-      title: 'Lịch sử vào ra',
-      key: 'timekeeping',
-      url: ['/diem-danh/lich-su-vao-ra'],
-      icon: 'icon icon-clock',
-      permission: [],
-      pro: true,
-    },
+
     {
       title: 'Đi trễ về sớm',
       key: 'lateEarly',
