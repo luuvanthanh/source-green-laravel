@@ -332,6 +332,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/bo-ca',
+            component: './schedules/revoke-shifts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // SCHEDULES
