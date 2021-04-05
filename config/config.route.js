@@ -227,7 +227,7 @@ export default [
         ],
       },
       // SCHEDULES
-      // SCHEDULES
+      // CONFIGURATION
       {
         path: '/cau-hinh',
         component: './configuration/layout',
@@ -352,7 +352,25 @@ export default [
           },
         ],
       },
-      // SCHEDULES
+      // CONFIGURATION
+      // ALLOCATION
+      {
+        path: '/phan-bo',
+        component: './allocation/layout',
+        routes: [
+          {
+            path: '/phan-bo',
+            redirect: '/phan-bo/lich-su',
+          },
+          {
+            path: '/phan-bo/lich-su',
+            component: './allocation/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // ALLOCATION
       {
         path: '/404',
         component: './404',
