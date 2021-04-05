@@ -1078,3 +1078,22 @@
     }
   }
 }
+
+.item-schedules {
+  display: block;
+  margin: auto;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  margin-top: -16px;
+  padding-top: 16px;
+  margin-bottom: -16px;
+  padding-bottom: 16px;
+  width: 100%;
+  color: rgba($color: $black, $alpha: 0.85);
+  cursor: pointer;
+  &:focus,
+  &:hover {
+    color: rgba($color: $black, $alpha: 0.85);
+  }
+}

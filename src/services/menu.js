@@ -209,12 +209,27 @@ export async function getLeftMenuSchedules() {
       ],
     },
     {
-      title: 'Tổng hợp công',
+      title: 'Công',
       key: 'works',
-      url: ['/diem-danh/tong-hop-cong'],
       icon: 'icon icon-open-book',
       permission: [],
       pro: true,
+      children: [
+        {
+          title: 'Tổng hợp công',
+          key: 'total',
+          url: ['/diem-danh/tong-hop-cong'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tổng hợp công giờ',
+          key: 'hours',
+          url: ['/diem-danh/tong-hop-cong-gio'],
+          permission: [],
+          pro: true,
+        },
+      ],
     },
     {
       title: 'Máy chấm công',
