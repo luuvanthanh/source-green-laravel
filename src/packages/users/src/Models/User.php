@@ -83,13 +83,13 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
-     * Define relations timekeeping
+     * Get educations of user
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function timekeeping()
     {
-        return $this->hasMany(db::class, 'user_id');
+        return $this->hasMany(Timekeeping::class, 'user_id');
     }
 
     /**

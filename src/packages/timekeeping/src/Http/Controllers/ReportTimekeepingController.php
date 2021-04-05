@@ -114,7 +114,7 @@ class ReportTimekeepingController extends Controller
             $usersByStore = $this->timekeepingRepository->timekeepingReport($userId, $position, $store, $start_date, $end_date, $limit, true, $type, $work_form_id, $isFilter, null, $full_name, $is_shift);
         }
 
-        return $this->success($usersByStore, trans('lang-timekeeping::messages.common.getInfoSuccess'));
+        return $this->success($usersByStore, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
