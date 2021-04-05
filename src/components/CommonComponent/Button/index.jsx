@@ -29,6 +29,7 @@ const ICON_BUTTON = {
 };
 export default function ButtonCustom({
   children,
+  ghost,
   icon,
   color,
   size,
@@ -50,6 +51,9 @@ export default function ButtonCustom({
             styles.button,
             styles[`${color}`],
             styles[`size-${size}`],
+            {
+              [styles.ghost]: ghost
+            },
             className,
           )}
         >
@@ -71,6 +75,9 @@ export default function ButtonCustom({
           styles.notChildren,
           styles[`${color}`],
           styles[`size-${size}`],
+          {
+            [styles.ghost]: ghost
+          },
           className,
         )}
       >

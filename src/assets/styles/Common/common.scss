@@ -193,6 +193,10 @@
   align-items: center;
   button {
     margin: 0 4px;
+
+    span:not([class]) {
+      padding: 0;
+    }
   }
 }
 
