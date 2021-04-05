@@ -693,13 +693,13 @@ class Index extends PureComponent {
           </Form>
         </Modal>
         {/* MODAL CHOOSE SHIFT */}
-        <Helmet title="Danh sách học sinh" />
+        <Helmet title="Lịch làm việc" />
         <div
           className={classnames(styles['content-form'], styles['content-form-schedulesChildren'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Điểm danh học sinh</Text>
+            <Text color="dark">Lịch làm việc</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

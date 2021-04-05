@@ -161,6 +161,9 @@
   &:global(.ant-menu-light) {
     :global(.ant-menu-submenu) {
       padding: 0 15px;
+      &:global(.ant-menu-submenu-vertical) {
+        padding: 0 8px;
+      }
       :global(.ant-menu-submenu-title) {
         padding-left: 23px;
       }
@@ -212,14 +215,6 @@
     }
     :global(.ant-menu-item-selected::after) {
       border-right: unset;
-    }
-
-    :global(.ant-menu-submenu:hover),
-    :global(.ant-menu-submenu-selected),
-    :global(.ant-menu-submenu-open) {
-      .icon {
-        color: #b8beca !important;
-      }
     }
 
     :global(.ant-menu-submenu-active) {
@@ -289,14 +284,6 @@
     }
     :global(.ant-menu-item-selected::after) {
       border-right: unset;
-    }
-
-    :global(.ant-menu-submenu:hover),
-    :global(.ant-menu-submenu-selected),
-    :global(.ant-menu-submenu-open) {
-      .icon {
-        color: #b8beca !important;
-      }
     }
 
     :global(.ant-menu-submenu-active) {
