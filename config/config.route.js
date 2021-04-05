@@ -368,6 +368,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/phan-bo/hoc-sinh',
+            component: './allocation/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // ALLOCATION
