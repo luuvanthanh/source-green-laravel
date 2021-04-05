@@ -250,6 +250,13 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Không xác định công',
+          key: 'timekeeping-invalid',
+          url: ['/diem-danh/khong-xac-dinh-cong'],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
