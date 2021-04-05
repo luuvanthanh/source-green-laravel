@@ -206,8 +206,8 @@ class MenuLeft extends React.Component {
           if (menuItem.children) {
             const subMenuTitle = (
               <span key={menuItem.key}>
-                <span className={styles.title}>{menuItem.title}</span>
                 {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+                <span className={styles.title}>{menuItem.title}</span>
                 {menuItem.pro && (
                   <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
                 )}
@@ -239,8 +239,8 @@ class MenuLeft extends React.Component {
         if (menuItem.children) {
           const subMenuTitle = (
             <span key={menuItem.key}>
-              <span className={styles.title}>{menuItem.title}</span>
               {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+              <span className={styles.title}>{menuItem.title}</span>
               {menuItem.pro && (
                 <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
               )}

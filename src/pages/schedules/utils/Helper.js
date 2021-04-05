@@ -54,4 +54,14 @@ export default class Helpers {
         return 'CN';
     }
   };
+
+  static getLateEarly = (type) => {
+    if (type === variables.TYPE_EARLY_LATE.LATE) {
+      return 'Đi trễ';
+    }
+    if (type === variables.TYPE_EARLY_LATE.EARLY) {
+      return 'Về sớm';
+    }
+    return '';
+  };
 }

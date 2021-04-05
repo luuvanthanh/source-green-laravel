@@ -192,6 +192,78 @@ export async function getLeftMenuSchedules() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Tổng hợp công',
+      key: 'works',
+      url: ['/diem-danh/tong-hop-cong'],
+      icon: 'icon icon-open-book',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Máy chấm công',
+      key: 'fingerprints',
+      url: ['/diem-danh/may-cham-cong-van-tay'],
+      icon: 'icon icon-open-book',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Lịch sử vào ra',
+      key: 'timekeeping',
+      url: ['/diem-danh/lich-su-vao-ra'],
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Đi trễ về sớm',
+      key: 'lateEarly',
+      url: ['/diem-danh/di-tre-ve-som'],
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Đơn xin phép',
+      key: 'absents',
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
+      children: [
+        {
+          title: 'Nghỉ phép',
+          key: 'absents',
+          url: ['/diem-danh/don-xin-phep', '/diem-danh/don-xin-phep/tao-moi'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình',
+          key: 'lateEarlyConfig',
+          permission: [],
+          multiple: true,
+          children: [
+            {
+              title: 'Loại nghỉ phép',
+              key: 'AbsentTypes',
+              permission: [],
+              url: ['/diem-danh/cau-hinh/loai-nghi-phep'],
+            },
+            {
+              title: 'Lý do nghỉ phép',
+              key: 'AbsentReasons',
+              permission: [],
+              url: [
+                '/diem-danh/cau-hinh/ly-do-nghi-phep',
+                '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
+                '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
+              ],
+            },
+          ],
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuConfiguration() {
