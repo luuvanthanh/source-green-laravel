@@ -52,11 +52,13 @@ class LateEarlyConfigRepositoryEloquent extends BaseRepository implements LateEa
     public function createOrUpdateLateEarlyConfig($attributes)
     {
         if (!empty($attributes['create_rows'])) {
-            $lateEarlyConfig = $this->model()::insert($attributes['create_rows']);
+            foreach ($attributes['create_rows'] as $value) {
+                $lateEarlyConfig = $this->model()::create($value);
+            }
         }
 
         if (!empty($attributes['update_rows'])) {
-            foreach ($attributes['update_rows'] as $value){
+            foreach ($attributes['update_rows'] as $value) {
                 $lateEarlyConfig = $this->model()::find($value['id']);
                 if ($lateEarlyConfig) {
                     $lateEarlyConfig->update($value);
