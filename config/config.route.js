@@ -226,7 +226,13 @@ export default [
           },
           {
             path: '/diem-danh/tong-hop-cong',
-            component: './schedules/works',
+            component: './schedules/works/total',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/tong-hop-cong-gio',
+            component: './schedules/works/hours',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
