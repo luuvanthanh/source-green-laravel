@@ -8,6 +8,7 @@ import {
   getLeftMenuVehicel,
   getLeftMenuCriteria,
   getLeftMenuChildren,
+  getLeftMenuAllocation,
 } from '@/services/menu';
 
 export default {
@@ -22,6 +23,7 @@ export default {
     menuLeftVehicel: [],
     menuLeftCriteria: [],
     menuLeftChildren: [],
+    menuLeftAllocation: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -37,6 +39,7 @@ export default {
       const menuLeftVehicel = yield call(getLeftMenuVehicel);
       const menuLeftCriteria = yield call(getLeftMenuCriteria);
       const menuLeftChildren = yield call(getLeftMenuChildren);
+      const menuLeftAllocation = yield call(getLeftMenuAllocation);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -49,6 +52,7 @@ export default {
           menuLeftVehicel,
           menuLeftCriteria,
           menuLeftChildren,
+          menuLeftAllocation,
         },
       });
     },

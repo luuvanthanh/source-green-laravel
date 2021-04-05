@@ -153,7 +153,7 @@ export async function getLeftMenuProfile() {
       pro: true,
     },
     {
-      title: 'Phụ Huynh',
+      title: 'Phụ huynh',
       key: 'parents',
       url: ['/ho-so-doi-tuong/phu-huynh'],
       icon: 'icon icon-woman',
@@ -312,6 +312,42 @@ export async function getLeftMenuChildren() {
       key: 'learn',
       url: ['/thuc-don-cho-tre', '/thuc-don-cho-tre/tao-moi'],
       icon: 'icon icon-baby',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
+export async function getLeftMenuAllocation() {
+  return [
+    {
+      title: 'Học sinh',
+      key: 'children',
+      url: ['/pphan-bo/hoc-sinh'],
+      icon: 'icon icon-baby',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Phụ huynh',
+      key: 'parents',
+      url: ['/pphan-bo/phu-huynh'],
+      icon: 'icon icon-woman',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Nhân viên',
+      key: 'users',
+      url: ['/pphan-bo/nhan-vien'],
+      icon: 'icon icon-man',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Lịch sử',
+      key: 'clock',
+      url: ['/phan-bo/lich-su'],
+      icon: 'icon icon-alarm',
       permission: [],
       pro: true,
     },

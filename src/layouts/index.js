@@ -14,6 +14,7 @@ import ConfigurationLayout from './Configuration';
 import VehicelLayout from './Vehicel';
 import CriteriaLayout from './Criteria';
 import MenuLayout from './Menu';
+import AllocationLayout from './Allocation';
 
 const Layouts = {
   public: PublicLayout,
@@ -26,6 +27,7 @@ const Layouts = {
   vehicel: VehicelLayout,
   criteria: CriteriaLayout,
   menu: MenuLayout,
+  allocation: AllocationLayout
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -68,6 +70,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/thuc-don-cho-tre(?=\/|$)/i.test(pathname)) {
         return 'menu';
+      }
+      if (/^\/phan-bo(?=\/|$)/i.test(pathname)) {
+        return 'allocation';
       }
       return 'public';
     };

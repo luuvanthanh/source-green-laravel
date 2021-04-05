@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar } from 'antd';
+import { Modal, Form, Tabs } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,9 +13,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
+import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ OPparents, loading }) => ({
-  data: OPparents.data,
-  pagination: OPparents.pagination,
+const mapStateToProps = ({ allocationHistories, loading }) => ({
+  data: allocationHistories.data,
+  pagination: allocationHistories.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -57,7 +57,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -86,16 +88,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPparents/GET_DATA',
+      type: 'allocationHistories/GET_DATA',
       payload: {
         ...search,
         status,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
   };
 
   /**
@@ -168,15 +167,17 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
     onChange: (page, size) => {
-      this.changePagination(page, size);
+      this.onSearch(page, size);
+    },
+    onShowSizeChange: (current, size) => {
+      this.onSearch(current, size);
     },
   });
 
@@ -201,47 +202,11 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'OPparents/UPDATE' : 'OPparents/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
    * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
+    const { dispatch, pagination } = this.props;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -251,12 +216,15 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'OPparents/REMOVE',
+          type: 'allocationHistories/REMOVE',
           payload: {
             id,
             pagination: {
-              limit: search.limit,
-              page: search.page,
+              limit: 10,
+              page:
+                pagination.total % pagination.per_page === 1
+                  ? pagination.current_page - 1
+                  : pagination.current_page,
             },
           },
         });
@@ -269,51 +237,34 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const columns = [
+    const {
+      location: { pathname },
+    } = this.props;
+    return [
       {
-        title: 'Mã ID',
-        key: 'index',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
-        render: (text, record, index) => 'TD01',
+        title: 'Thời gian',
+        key: 'code',
+        width: 150,
+        className: 'min-width-130',
+        render: (record) => '15:31, 10/1/2021',
       },
       {
-        title: 'Hình ảnh',
+        title: 'Tên tài khoản',
         key: 'name',
-        className: 'min-width-100',
-        align: 'center',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
+        className: 'min-width-130',
+        render: (record) => 'Nguyễn Ngọc Bích',
       },
       {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Vân Khánh</Text>,
+        title: 'Hành động',
+        key: 'action',
+        className: 'min-width-130',
+        render: (record) => 'Xếp lớp',
       },
       {
-        title: 'Số điện thoại',
-        key: 'phone',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">0905142652</Text>,
-      },
-      {
-        title: 'Email',
-        key: 'email',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">nguyenanh@gmail.com</Text>,
-      },
-      {
-        title: 'Địa chỉ',
-        key: 'address',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">323 Bùi Hữu Nghĩa,  Bình Thạnh, HCM</Text>,
-      },
-      {
-        title: 'Trạng thái',
+        title: 'Nội dung',
         key: 'status',
-        className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus('PENDING'),
+        className: 'min-width-120',
+        render: (record) => 'Xếp trẻ Su Beo, Nguyễn Văn Đức vào lớp preschool 2, cơ sở 1',
       },
       {
         key: 'action',
@@ -324,37 +275,33 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push('/ho-so-doi-tuong/phu-huynh/1/chi-tiet')}
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
     ];
-    return columns;
   };
 
   render() {
     const {
-      match: { params },
+      data,
       pagination,
+      match: { params },
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['OPparents/GET_DATA'];
+    const loading = effects['allocationHistories/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách phụ huynh" />
-        <div className={classnames(styles['content-form'], styles['content-form-OPparents'])}>
+        <Helmet title="Lịch sử phân bổ" />
+        <div
+          className={classnames(styles['content-form'], styles['content-form-allocationHistories'])}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Phụ huynh</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/tao-moi`)}
-            >
-              Tạo hồ sơ
-            </Button>
+            <Text color="dark">Lịch sử</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -367,34 +314,27 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    name="user_id"
+                    data={[]}
+                    onChange={(event) => this.onChangeSelect(event, 'user_id')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    name="role_id"
+                    data={[]}
+                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    data={[]}
+                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
@@ -403,7 +343,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
