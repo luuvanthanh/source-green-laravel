@@ -15,6 +15,7 @@ export default [
         path: '/trang-chu',
         component: './home',
       },
+      // CRITERIA
       {
         path: '/tieu-chi-danh-gia',
         component: './criteria/layout',
@@ -39,6 +40,7 @@ export default [
           },
         ],
       },
+      // CRITERIA
       {
         path: '/thuc-don-cho-tre',
         component: './menu/layout',
@@ -75,42 +77,7 @@ export default [
           },
         ],
       },
-      {
-        path: '/chi-nhanh',
-        component: './branch/layout',
-        routes: [
-          {
-            path: '/chi-nhanh',
-            component: './branch',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/chi-nhanh/tao-moi',
-            component: './branch/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
-      {
-        path: '/mon-hoc',
-        component: './subjects/layout',
-        routes: [
-          {
-            path: '/mon-hoc',
-            component: './subjects',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/mon-hoc/tao-moi',
-            component: './subjects/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
+      // VEHICEL
       {
         path: '/quan-ly-phuong-tien',
         component: './vehicle/layout',
@@ -145,36 +112,7 @@ export default [
           },
         ],
       },
-      {
-        path: '/quan-ly',
-        component: './manager/layout',
-        routes: [
-          {
-            path: '/quan-ly/lop-hoc',
-            component: './manager/class',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly/lop-hoc/tao-moi',
-            component: './manager/class/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly/lich-hoc',
-            component: './manager/schedules',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly/lich-hoc/tao-moi',
-            component: './manager/schedules/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
+      // VEHICEL
       {
         path: '/dan-thuoc',
         component: './recommend/layout',
@@ -355,6 +293,60 @@ export default [
           {
             path: '/cau-hinh/phan-quyen',
             component: './configuration/permissions',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/mon-hoc',
+            component: './configuration/subjects',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/mon-hoc/tao-moi',
+            component: './configuration/subjects/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/mon-hoc/:id/chi-tiet',
+            component: './configuration/subjects/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lop-hoc',
+            component: './configuration/class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lop-hoc/tao-moi',
+            component: './configuration/class/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lop-hoc/:id/chi-tiet',
+            component: './configuration/class/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lich-hoc',
+            component: './configuration/schedules',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lich-hoc/tao-moi',
+            component: './configuration/schedules/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/lich-hoc/:id/chi-tiet',
+            component: './configuration/schedules/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

@@ -329,8 +329,13 @@ class Index extends PureComponent {
       <>
         <Helmet title="Danh sách lớp" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className={styles.search}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">DANH SÁCH LỚP</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm mới
+            </Button>
+          </div>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
@@ -343,7 +348,6 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-8">
                   <FormItem
-                    label="TÌM KIẾM"
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa"
@@ -353,7 +357,6 @@ class Index extends PureComponent {
                 <div className="col-lg-4">
                   <FormItem
                     data={[]}
-                    label="CƠ SỞ"
                     name="type"
                     onChange={(event) => this.onChange(event, 'type')}
                     type={variables.SELECT}
@@ -361,15 +364,6 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH LỚP</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
-          </div>
-          <div className={styles['block-table']}>
             <Table
               bordered
               columns={this.header(params)}
