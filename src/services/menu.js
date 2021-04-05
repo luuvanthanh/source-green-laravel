@@ -257,6 +257,13 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Bỏ ca',
+          key: 'revoke-shifts',
+          url: ['/diem-danh/bo-ca'],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
