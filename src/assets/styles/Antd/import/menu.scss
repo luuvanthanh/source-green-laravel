@@ -35,3 +35,23 @@
     }
   }
 }
+
+.ant-menu-inline {
+  > .ant-menu-item {
+    &::after {
+      right: unset;
+      left: 0;
+      border-color: $text-success;
+    }
+
+    &.ant-menu-item-selected {
+      background: transparent;
+      font-weight: 700;
+      color: $text-success;
+    }
+
+    &:hover {
+      color: $text-success;
+    }
+  }
+}
