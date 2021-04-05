@@ -6,6 +6,7 @@ import {
   getLeftMenuSchedules,
   getLeftMenuConfiguration,
   getLeftMenuVehicel,
+  getLeftMenuCriteria,
 } from '@/services/menu';
 
 export default {
@@ -18,6 +19,7 @@ export default {
     menuLeftSchedules: [],
     menuConfiguration: [],
     menuLeftVehicel: [],
+    menuLeftCriteria: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -31,6 +33,7 @@ export default {
       const menuTopData = yield call(getTopMenuData);
       const menuConfiguration = yield call(getLeftMenuConfiguration);
       const menuLeftVehicel = yield call(getLeftMenuVehicel);
+      const menuLeftCriteria = yield call(getLeftMenuCriteria);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -41,6 +44,7 @@ export default {
           menuLeftSchedules,
           menuConfiguration,
           menuLeftVehicel,
+          menuLeftCriteria,
         },
       });
     },

@@ -261,6 +261,26 @@ export async function getLeftMenuVehicel() {
     },
   ];
 }
+export async function getLeftMenuCriteria() {
+  return [
+    {
+      title: 'Đánh giá học tập',
+      key: 'learn',
+      url: ['/tieu-chi-danh-gia/danh-gia-hoc-tap', '/tieu-chi-danh-gia/danh-gia-hoc-tap/tao-moi'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Lượng nước uống',
+      key: 'water',
+      url: ['/tieu-chi-danh-gia/luong-nuoc-uong'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }
