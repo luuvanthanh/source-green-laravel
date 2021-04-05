@@ -29,6 +29,7 @@ class MainLayout extends React.PureComponent {
       isMenuShadow,
       isMenuTop,
       isMenuCollapsed,
+      menuData
     } = this.props;
     return (
       <Layout
