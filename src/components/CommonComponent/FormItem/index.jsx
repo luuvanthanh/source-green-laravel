@@ -37,6 +37,7 @@ const renderChildren = (
   disabledHours,
   disabledMinutes,
   allowClear,
+  picker,
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -165,6 +166,17 @@ const renderChildren = (
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
       placeholder="dd/mm/yyyy"
+      picker={picker}
+    />
+  ),
+  monthPicker: (
+    <DatePicker
+      disabled={disabled}
+      disabledDate={disabledDate}
+      format={'[Tháng] MM/YYYY'}
+      onChange={onChange}
+      placeholder="Chọn"
+      picker={picker}
     />
   ),
   dateTimePicker: (
@@ -266,6 +278,7 @@ export default function FormItem({
   disabledHours,
   disabledMinutes,
   allowClear,
+  picker,
   ...rest
 }) {
   return (
@@ -287,6 +300,7 @@ export default function FormItem({
           disabledHours,
           disabledMinutes,
           allowClear,
+          picker,
         )[type]
       }
     </Form.Item>
@@ -311,6 +325,7 @@ FormItem.propTypes = {
   dropdownRender: PropTypes.any,
   onSelect: PropTypes.func,
   allowClear: PropTypes.bool,
+  picker: PropTypes.string,
 };
 
 FormItem.defaultProps = {
@@ -333,6 +348,7 @@ FormItem.defaultProps = {
   dropdownRender: null,
   onSelect: () => {},
   allowClear: true,
+  picker: null,
 };
 
 FormItem.displayName = 'Form';

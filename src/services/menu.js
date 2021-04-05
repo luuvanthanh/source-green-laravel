@@ -205,7 +205,6 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
-       
       ],
     },
     {
@@ -226,6 +225,28 @@ export async function getLeftMenuSchedules() {
           title: 'Tổng hợp công giờ',
           key: 'hours',
           url: ['/diem-danh/tong-hop-cong-gio'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Công thêm',
+          key: 'additional-times',
+          url: [
+            '/diem-danh/cong-them',
+            '/diem-danh/cong-them/tao-moi',
+            '/diem-danh/cong-them/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Công trừ',
+          key: 'subtraction-times',
+          url: [
+            '/diem-danh/cong-tru',
+            '/diem-danh/cong-tru/tao-moi',
+            '/diem-danh/cong-tru/:id/chi-tiet',
+          ],
           permission: [],
           pro: true,
         },

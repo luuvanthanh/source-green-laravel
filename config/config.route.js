@@ -290,6 +290,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/cong-them',
+            component: './schedules/additional-times',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-them/tao-moi',
+            component: './schedules/additional-times/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-them/:id/chi-tiet',
+            component: './schedules/additional-times/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-tru',
+            component: './schedules/subtraction-times',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-tru/tao-moi',
+            component: './schedules/subtraction-times/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-tru/:id/chi-tiet',
+            component: './schedules/subtraction-times/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // SCHEDULES
