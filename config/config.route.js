@@ -326,6 +326,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/khong-xac-dinh-cong',
+            component: './schedules/timekeeping-invalid',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // SCHEDULES
