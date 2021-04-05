@@ -19,6 +19,10 @@ export const variables = {
     ALL: 'ALL',
     TOTAL: 'TOTAL',
   },
+  TYPE_EARLY_LATE: {
+    LATE: 'LATE',
+    EARLY: 'EARLY',
+  },
 };
 
 export default variables;
