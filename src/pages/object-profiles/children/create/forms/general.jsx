@@ -1,14 +1,13 @@
 import { memo, useRef } from 'react'
-import { Form, Upload, Input, DatePicker } from 'antd'
-import { CloudUploadOutlined } from '@ant-design/icons'
+import { Form, Input, DatePicker } from 'antd'
 import moment from 'moment'
 
 import Pane from '@/components/CommonComponent/Pane'
 import Heading from '@/components/CommonComponent/Heading'
 import Button from '@/components/CommonComponent/Button'
 import Select from '@/components/CommonComponent/Select'
+import ImageUpload from '@/components/CommonComponent/ImageUpload'
 
-import { imageUploadProps } from '@/utils/upload'
 import { variables } from '@/utils/variables'
 
 const { Item: FormItem } = Form
@@ -39,32 +38,7 @@ const General = memo(() => {
           <Pane className="row">
             <Pane className="col">
               <FormItem name="avatar" label="Hình ảnh học sinh">
-                {/* <Pane className={common['shape-image']}>
-                  <img
-                    src={`${IMAGE_URL}/${path.path}`}
-                    alt="avatar"
-                    className={common.image}
-                  />
-                  <Pane className={common.preview}>
-                    <EyeOutlined
-                      className={common.icon}
-                      onClick={() =>
-                        this.setState({
-                          previewVisible: true,
-                        })
-                      }
-                    />
-                    <Upload>
-                      <CloudUploadOutlined className={common.icon} />
-                    </Upload>
-                  </Pane>
-                </Pane> */}
-
-                <Upload {...imageUploadProps}>
-                  <Button color="success" ghost>
-                    <CloudUploadOutlined /> Tải lên
-                  </Button>
-                </Upload>
+                <ImageUpload />
               </FormItem>
             </Pane>
           </Pane>

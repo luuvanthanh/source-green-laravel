@@ -12,19 +12,19 @@ const maxSize = 5 * 2 ** 20 // 5 mB
 const warningSize = 'Dung lượng hình ảnh nhỏ hơn 5MB'
 
 export const imageUploadProps = {
-  beforeUpload: file => {
+  beforeUpload: (file, action) => {
     const { type, size } = file
 
     if (!allowImageTypes.includes(type)) {
-      return message.error(warningType);
+      return message.error(warningType)
     }
 
     if (size > maxSize) {
-      return message.error(warningSize);
+      return message.error(warningSize)
     }
 
-    // Do something here
-    return file;
+    action(file)
+    return null
   },
   showUploadList: false,
   fileList: [],
