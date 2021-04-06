@@ -24,7 +24,7 @@ const Index = memo(() => {
       <Helmet title="Tạo hồ sơ học sinh" />
       <Pane className="row" style={{ marginBottom: 20 }}>
         <Pane className="col">
-          <Heading type="page-title">TẠO MỚI NHÂN VIÊN</Heading>
+          <Heading type="page-title">Tạo hồ sơ học sinh</Heading>
         </Pane>
       </Pane>
       <Pane className="row">
