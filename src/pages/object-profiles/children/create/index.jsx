@@ -7,6 +7,7 @@ import Heading from '@/components/CommonComponent/Heading'
 import GeneralForm from './forms/general'
 import CuratorForm from './forms/curator'
 import ParentsForm from './forms/parents'
+import ShuttlersForm from './forms/shuttlers'
 
 import { menu, defaultKey } from './menu'
 
@@ -16,6 +17,7 @@ const forms = {
   general: <GeneralForm />,
   curator: <CuratorForm />,
   parents: <ParentsForm />,
+  shuttlers: <ShuttlersForm />,
 }
 
 const Index = memo(() => {
