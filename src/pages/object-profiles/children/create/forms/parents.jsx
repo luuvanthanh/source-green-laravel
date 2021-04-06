@@ -9,7 +9,6 @@ import Select from '@/components/CommonComponent/Select'
 import ImageUpload from '@/components/CommonComponent/ImageUpload'
 
 import { variables } from '@/utils/variables'
-import { group, flatten } from '@/utils/key'
 
 const { Item: FormItem } = Form
 const { Group: RadioGroup } = Radio
@@ -41,7 +40,7 @@ const Parents = memo(() => {
   const typeRadioGroup = useMemo(() => (key) => (
     <Pane className="row">
       <Pane className="col">
-        <FormItem name={`${key}.type`}>
+        <FormItem name={[key, 'type']}>
           <RadioGroup onChange={({ target: { value }}) => switchType(key, value)}>
             <Radio value={infomationTypes.create}>Tạo mới</Radio>
             <Radio value={infomationTypes.select}>Lấy từ danh sách phụ huynh</Radio>
@@ -58,7 +57,7 @@ const Parents = memo(() => {
           <>
             <Pane className="row">
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.avatar`} label="Hình ảnh">
+                <FormItem name={[key, 'avatar']} label="Hình ảnh">
                   <ImageUpload />
                 </FormItem>
               </Pane>
@@ -66,50 +65,50 @@ const Parents = memo(() => {
 
             <Pane className="row">
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.name`} label="Họ và tên">
+                <FormItem name={[key, 'name']} label="Họ và tên">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.birthday`} label="Ngày sinh">
+                <FormItem name={[key, 'birthday']} label="Ngày sinh">
                   <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} disabledDate={current => current > moment()} />
                 </FormItem>
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.job`} label="Nghề nghiệp">
+                <FormItem name={[key, 'job']} label="Nghề nghiệp">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
 
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.posistion`} label="Chức vụ">
+                <FormItem name={[key, 'posistion']} label="Chức vụ">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.workplace`} label="Nơi làm việc">
+                <FormItem name={[key, 'workplace']} label="Nơi làm việc">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.phone`} label="Số điện thoại">
+                <FormItem name={[key, 'phone']} label="Số điện thoại">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
 
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.mail`} label="Email">
+                <FormItem name={[key, 'mail']} label="Email">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.facebook`} label="Link facebook">
+                <FormItem name={[key, 'facebook']} label="Link facebook">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
 
               <Pane className="col-lg-12">
-                <FormItem name={`${key}.favorites`} label="Tính cách và sở thích">
+                <FormItem name={[key, 'favorites']} label="Tính cách và sở thích">
                   <Input placeholder="Nhập" />
                 </FormItem>
               </Pane>
@@ -121,7 +120,7 @@ const Parents = memo(() => {
           <>
             <Pane className="row">
               <Pane className="col-lg-4">
-                <FormItem name={`${key}.id`} label="Tên phụ huynh">
+                <FormItem name={[key, 'id']} label="Tên phụ huynh">
                   <Select
                     placeholder="Chọn"
                     dataSet={mockParents}
@@ -140,8 +139,8 @@ const Parents = memo(() => {
     <Form
       layout="vertical"
       ref={formRef}
-      onFinish={values => console.log(group(values))}
-      initialValues={flatten({
+      onFinish={values => console.log(values)}
+      initialValues={{
         father: {
           type: infomationTypes.create,
           name: 'Nguyễn Văn Phước',
@@ -151,7 +150,7 @@ const Parents = memo(() => {
           type: infomationTypes.create,
           id: 1,
         }
-      })}
+      }}
     >
       <Pane className="card">
         <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
