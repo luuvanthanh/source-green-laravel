@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography } from 'antd';
+import { Modal, Avatar, Input, Typography, Form } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables, Helper } from '@/utils';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -41,7 +43,9 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      items: [{ id: 1 }],
+    };
     setIsMounted(true);
   }
 
@@ -66,6 +70,20 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function edit items
+   * @param {uid} id id of items
+   */
+  onEdit = (event, record) => {
+    this.setStateData((prevState) => ({
+      items: prevState.items.map((item) =>
+        item.id === record.id
+          ? { ...item, isTyping: !item.isTyping }
+          : { ...item, isTyping: false },
+      ),
+    }));
+  };
+
+  /**
    * Function remove items
    * @param {uid} id id of items
    */
@@ -84,8 +102,9 @@ class Index extends PureComponent {
 
   render() {
     const { menuData } = this.props;
+    const { items } = this.state;
     return (
-      <>
+      <Form layout="vertical" ref={this.formRef}>
         <Helmet title="Chi tiết trao đổi" />
         <Breadcrumbs last="Chi tiết trao đổi" menu={menuData} />
         <div
@@ -96,7 +115,7 @@ class Index extends PureComponent {
           )}
         >
           {/* DETAILS CONTAINER */}
-          <div className={stylesExchange['details-container']}>
+          <div className={classnames(stylesExchange['details-container'], 'mt-3')}>
             {/* INFO CONTAINER */}
             <div className={classnames(stylesExchange['info-container'])}>
               <p className={stylesExchange['time']}>10:30, 15/3/2021</p>
@@ -128,7 +147,7 @@ class Index extends PureComponent {
               <div className={stylesExchange['group-user']}>
                 <p className={stylesExchange['norm']}>Người tạo</p>
                 <div className={stylesExchange['user-info']}>
-                  <Avatar size={64} shape="square" icon={<UserOutlined />} />
+                  <Avatar size={50} shape="square" icon={<UserOutlined />} />
                   <p className={stylesExchange['norm']}>Nguyễn Anh</p>
                 </div>
               </div>
@@ -136,7 +155,7 @@ class Index extends PureComponent {
               <div className={stylesExchange['group-user']}>
                 <p className={stylesExchange['norm']}>Dành cho</p>
                 <div className={stylesExchange['user-info']}>
-                  <Avatar size={64} shape="square" icon={<UserOutlined />} />
+                  <Avatar size={50} shape="square" icon={<UserOutlined />} />
                   <p className={stylesExchange['norm']}>Su beo</p>
                 </div>
               </div>
@@ -164,15 +183,7 @@ class Index extends PureComponent {
               <hr />
               <div className={stylesExchange['info-footer']}>
                 <div className={stylesExchange['info-item']}>
-                  <p className={stylesExchange['norm']}>Trạng thái</p>
-                  <div className={stylesExchange['content']}>
-                    {HelperModules.tagStatus('PENDING')}
-                  </div>
-                </div>
-                <div className={stylesExchange['info-item']}>
-                  <Button type="button" color="success" size="large">
-                    Kết thúc
-                  </Button>
+                  <FormItem name="user_id" label="Trạng thái" data={[]} type={variables.SELECT} />
                 </div>
               </div>
             </div>
@@ -180,38 +191,67 @@ class Index extends PureComponent {
             {/* CHAT CONTAINER */}
             <div className={stylesExchange['chat-container']}>
               <div className={stylesExchange['chat-content']}>
-                <div className={stylesExchange['chat-item']}>
-                  <div className={stylesExchange['heading']}>
-                    <div className={stylesExchange['group-user']}>
-                      <div className={stylesExchange['user-info']}>
-                        <Avatar size={64} shape="square" icon={<UserOutlined />} />
-                        <div className={stylesExchange['info']}>
-                          <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                          <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                {items.map((item) => (
+                  <div className={stylesExchange['chat-item']} key={item.id}>
+                    <div className={stylesExchange['heading']}>
+                      <div className={stylesExchange['group-user']}>
+                        <div className={stylesExchange['user-info']}>
+                          <Avatar size={50} shape="square" icon={<UserOutlined />} />
+                          <div className={stylesExchange['info']}>
+                            <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
+                            <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                          </div>
                         </div>
                       </div>
+                      <p className={stylesExchange['time']}>10:45 - 15/3/2021</p>
                     </div>
-                    <p className={stylesExchange['time']}>10:45 - 15/3/2021</p>
+                    <div className={stylesExchange['wrapper-content']}>
+                      {!item.isTyping && (
+                        <>
+                          <div className={stylesExchange['content']}>
+                            <Paragraph
+                              ellipsis={{
+                                rows: 2,
+                                expandable: true,
+                                symbol: 'Xem thêm',
+                              }}
+                            >
+                              Đã mặc áo cho bé. Ba mẹ yên tâm nhé
+                            </Paragraph>
+                          </div>
+                          <div className={stylesExchange['group-button']}>
+                            <Button icon="checkmark" color="dash-success"></Button>
+                            <Button
+                              icon="edit"
+                              color="dash-yellow"
+                              onClick={(event) => this.onEdit(event, item)}
+                            ></Button>
+                            <Button
+                              icon="cancel"
+                              color="dash-dark"
+                              onClick={this.onRemove}
+                            ></Button>
+                          </div>
+                        </>
+                      )}
+                      {item.isTyping && (
+                        <>
+                          <div className={stylesExchange['content']}>
+                            <Input />
+                          </div>
+                          <div
+                            className={classnames(
+                              stylesExchange['group-button'],
+                              stylesExchange['group-button-singal'],
+                            )}
+                          >
+                            <Button color="dash-success">Lưu</Button>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className={stylesExchange['wrapper-content']}>
-                    <div className={stylesExchange['content']}>
-                      <Paragraph
-                        ellipsis={{
-                          rows: 2,
-                          expandable: true,
-                          symbol: 'Xem thêm',
-                        }}
-                      >
-                        Đã mặc áo cho bé. Ba mẹ yên tâm nhé
-                      </Paragraph>
-                    </div>
-                    <div className={stylesExchange['group-button']}>
-                      <Button icon="checkmark" color="dash-success"></Button>
-                      <Button icon="edit" color="dash-yellow"></Button>
-                      <Button icon="cancel" color="dash-dark" onClick={this.onRemove}></Button>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
               <div className={stylesExchange['chat-footer']}>
                 <div className={stylesExchange['content']}>
@@ -224,7 +264,7 @@ class Index extends PureComponent {
           </div>
           {/* DETAILS CONTAINER */}
         </div>
-      </>
+      </Form>
     );
   }
 }

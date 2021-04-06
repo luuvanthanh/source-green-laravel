@@ -1,12 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Modal, Avatar, Typography } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
-import Button from '@/components/CommonComponent/Button';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { UserOutlined } from '@ant-design/icons';
@@ -30,9 +27,9 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
 const mapStateToProps = ({ exchangeApprove, loading }) => ({
+  loading,
   data: exchangeApprove.data,
   pagination: exchangeApprove.pagination,
-  loading,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -64,23 +61,6 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = () => {
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Bạn có chắc muốn xóa trao đổi của Nguyễn Thị Mai không?',
-      onOk() {},
-      onCancel() {},
-    });
-  };
-
   render() {
     return (
       <>
@@ -96,7 +76,12 @@ class Index extends PureComponent {
           {/* DETAILS CONTAINER */}
           <div className={stylesExchange['details-container']}>
             {/* INFO CONTAINER */}
-            <div className={classnames(stylesExchange['info-container'], stylesExchange['info-aprrove-container'])}>
+            <div
+              className={classnames(
+                stylesExchange['info-container'],
+                stylesExchange['info-aprrove-container'],
+              )}
+            >
               <div className="d-flex justify-content-between">
                 <h3 className={stylesExchange['title']}>Giữ ấm cho bé</h3>
                 <p className={stylesExchange['time']}>10:30, 15/3/2021</p>
@@ -142,23 +127,23 @@ class Index extends PureComponent {
                   <div className={stylesExchange['heading']}>
                     <div className={stylesExchange['group-user']}>
                       <div className={stylesExchange['user-info']}>
-                        <Avatar size={64} shape="square" icon={<UserOutlined />} />
+                        <Avatar size={50} shape="square" icon={<UserOutlined />} />
                         <div className={stylesExchange['info']}>
                           <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
                           <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
-                          <div className={stylesExchange['wrapper-content']}>
-                            <div className={stylesExchange['content']}>
-                              <Paragraph
-                                ellipsis={{
-                                  rows: 2,
-                                  expandable: true,
-                                  symbol: 'Xem thêm',
-                                }}
-                              >
-                                Đã mặc áo cho bé. Ba mẹ yên tâm nhé
-                              </Paragraph>
-                            </div>
-                          </div>
+                        </div>
+                      </div>
+                      <div className={stylesExchange['wrapper-content']}>
+                        <div className={stylesExchange['content']}>
+                          <Paragraph
+                            ellipsis={{
+                              rows: 2,
+                              expandable: true,
+                              symbol: 'Xem thêm',
+                            }}
+                          >
+                            Đã mặc áo cho bé. Ba mẹ yên tâm nhé
+                          </Paragraph>
                         </div>
                       </div>
                     </div>
