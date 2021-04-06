@@ -338,6 +338,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/khai-bao-cong',
+            component: './schedules/work-declarations',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-gio-ho-tro',
+            component: './schedules/work-hours',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // SCHEDULES
