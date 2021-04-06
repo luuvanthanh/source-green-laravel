@@ -62,6 +62,7 @@
             "GGPHP\\Fingerprint\\": "packages/fingerprint/src/",
             "GGPHP\\Absent\\": "packages/absent/src/",
             "GGPHP\\LateEarly\\": "packages/late_early/src/",
+            "GGPHP\\AddSubTime\\": "packages/add-sub-time/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

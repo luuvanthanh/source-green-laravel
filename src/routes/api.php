@@ -53,5 +53,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\AddSubTime\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });

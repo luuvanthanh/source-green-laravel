@@ -8,6 +8,8 @@ class AbsentType extends UuidModel
 {
     public $incrementing = false;
 
+    protected $table = 'absent_types';
+
     /**
      * Status on,off for absent type
      */

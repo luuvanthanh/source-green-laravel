@@ -186,6 +186,7 @@ return [
         AbsentServiceProvider::class,
         Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
         GGPHP\LateEarly\Providers\LateEarlyServiceProvider::class,
+        GGPHP\AddSubTime\Providers\AddSubTimeProvider::class,
         ZK\Providers\ZKProvider::class,
         Cviebrock\EloquentSluggable\ServiceProvider::class,
     ],

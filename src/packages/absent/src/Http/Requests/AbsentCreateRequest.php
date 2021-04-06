@@ -18,48 +18,23 @@ class AbsentCreateRequest extends FormRequest
     {
 
         $type = AbsentType::where('type', AbsentType::ANNUAL_LEAVE)->first();
-        $awolType = AbsentType::where('type', AbsentType::AWOL)->first();
         $quitWorkType = AbsentType::where('type', AbsentType::QUIT_WORK)->first();
-        $early = AbsentType::where('type', AbsentType::ABSENT_EARLY)->first();
-        $late = AbsentType::where('type', AbsentType::ABSENT_LATE)->first();
 
         return [
             'absent_type_id' => [
                 'required',
                 'exists:absent_types,id',
-                function ($attribute, $value, $fail) use ($early, $late) {
-                    if (request('absent_type_id') == $early->id || request('absent_type_id') == $late->id) {
-                        $checkMaxAbsentEarlyLateInMonth = $this->checkMaxAbsentEarlyLateInMonth($value);
-
-                        if (!$checkMaxAbsentEarlyLateInMonth) {
-                            return $fail("Không được xin đi trễ về sớm quá 3 lần trong tháng");
-                        }
-
-                        return true;
-                    }
-
-                    return true;
-                },
             ],
-            'absent_reason_id' => request('absent_type_id') == $awolType->id ? '' : 'required|exists:absent_reasons,id',
+            'absent_reason_id' => 'required|exists:absent_reasons,id',
             'user_id' => 'required|exists:users,id',
-            'store_id' => 'required|exists:stores,id',
             'start_date' => [
                 'date',
                 'date_format:Y-m-d',
-                function ($attribute, $value, $fail) use ($type, $awolType, $quitWorkType, $early, $late) {
-                    if (!is_null(request()->pass_validate_weekend) || request('absent_type_id') == $awolType->id || request('absent_type_id') == $quitWorkType->id || request('absent_type_id') == $early->id || request('absent_type_id') == $late->id) {
+                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
+                    if (request('absent_type_id') == $quitWorkType->id) {
                         return true;
                     }
-
-                    return true;
-                },
-                function ($attribute, $value, $fail) use ($type, $awolType, $quitWorkType, $early, $late) {
-                    if (!is_null(request()->pass_validate_weekend) || request('absent_type_id') == $awolType->id || request('absent_type_id') == $quitWorkType->id || request('absent_type_id') == $early->id || request('absent_type_id') == $late->id) {
-                        return true;
-                    }
-
-                    if ((int) request('absent_type_id') == $type->id) {
+                    if (request('absent_type_id') == $type->id) {
                         $accessWeekend = $this->checkWeekend($value);
                         if ($accessWeekend === true) {
                             return true;
@@ -68,8 +43,8 @@ class AbsentCreateRequest extends FormRequest
                     }
                     return true;
                 },
-                function ($attribute, $value, $fail) use ($type, $quitWorkType, $early, $late) {
-                    if (request('absent_type_id') == $quitWorkType->id || request('absent_type_id') == $early->id || request('absent_type_id') == $late->id) {
+                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
+                    if (request('absent_type_id') == $quitWorkType->id) {
                         return true;
                     }
 
@@ -86,12 +61,9 @@ class AbsentCreateRequest extends FormRequest
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:start_date',
-                function ($attribute, $value, $fail) use ($type, $awolType, $quitWorkType, $early, $late) {
-                    if (!is_null(request()->pass_validate_weekend) || request('absent_type_id') == $awolType->id || request('absent_type_id') == $quitWorkType->id || request('absent_type_id') == $early->id || request('absent_type_id') == $late->id) {
-                        return true;
-                    }
+                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
 
-                    if ((int) request('absent_type_id') == $type->id) {
+                    if (request('absent_type_id') == $type->id) {
                         $accessWeekend = $this->checkWeekend($value);
                         if ($accessWeekend === true) {
                             return true;
@@ -127,8 +99,6 @@ class AbsentCreateRequest extends FormRequest
         $userId = request()->user_id;
         $annualLeaveType = AbsentType::where('type', AbsentType::ANNUAL_LEAVE)->first();
         $unpaidLeaveType = AbsentType::where('type', AbsentType::UNPAID_LEAVE)->first();
-        $awolType = AbsentType::where('type', AbsentType::AWOL)->first();
-        $offType = AbsentType::where('type', AbsentType::OFF)->first();
 
         $startDate = request()->start_date;
         $endDate = request()->end_date;
@@ -148,13 +118,7 @@ class AbsentCreateRequest extends FormRequest
                 ->orWhere([['end_date', '>=', $startDate], ['end_date', '<=', $endDate]]);
         })->where('user_id', $userId)->get();
 
-        $absent2 = Absent::whereIn('absent_type_id', [$awolType->id, $offType->id])->where(function ($q2) use ($startDate, $endDate) {
-            $q2->where([['start_date', '<=', $startDate], ['end_date', '>=', $endDate]])
-                ->orWhere([['start_date', '>=', $startDate], ['start_date', '<=', $endDate]])
-                ->orWhere([['end_date', '>=', $startDate], ['end_date', '<=', $endDate]]);
-        })->where('user_id', $userId)->get();
-
-        $result = $absent->merge($absent2);
+        $result = $absent;
         foreach ($result as $value) {
             foreach ($listDateRequestAbsent as $dateRequest) {
                 if ($value->start_date->format('Y-m-d') <= $dateRequest && $value->end_date->format('Y-m-d') >= $dateRequest) {
