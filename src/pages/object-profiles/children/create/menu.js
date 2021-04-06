@@ -14,7 +14,7 @@ export const menu = [
     label: 'Phụ huynh',
   },
   {
-    key: 'transport',
+    key: 'shuttlers',
     label: 'Người đưa đón',
   },
   {
