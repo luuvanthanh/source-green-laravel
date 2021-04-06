@@ -345,8 +345,20 @@ export default [
             authority: [],
           },
           {
+            path: '/diem-danh/khai-bao-cong/tao-moi',
+            component: './schedules/work-declarations/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/diem-danh/cong-gio-ho-tro',
             component: './schedules/work-hours',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cong-gio-ho-tro/tao-moi',
+            component: './schedules/work-hours/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

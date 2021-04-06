@@ -267,14 +267,22 @@ export async function getLeftMenuSchedules() {
         {
           title: 'Khai báo công',
           key: 'work-declarations',
-          url: ['/diem-danh/khai-bao-cong'],
+          url: [
+            '/diem-danh/khai-bao-cong',
+            '/diem-danh/khai-bao-cong/tao-moi',
+            '/diem-danh/khai-bao-cong/:id/chi-tiet',
+          ],
           permission: [],
           pro: true,
         },
         {
           title: 'Công giờ hỗ trợ',
           key: 'work-hours',
-          url: ['/diem-danh/cong-gio-ho-tro'],
+          url: [
+            '/diem-danh/cong-gio-ho-tro',
+            '/diem-danh/cong-gio-ho-tro/tao-moi',
+            '/diem-danh/cong-gio-ho-tro/:id/chi-tiet',
+          ],
           permission: [],
           pro: true,
         },
