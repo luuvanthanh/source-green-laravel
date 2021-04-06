@@ -264,6 +264,20 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Khai báo công',
+          key: 'work-declarations',
+          url: ['/diem-danh/khai-bao-cong'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Công giờ hỗ trợ',
+          key: 'work-hours',
+          url: ['/diem-danh/cong-gio-ho-tro'],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
