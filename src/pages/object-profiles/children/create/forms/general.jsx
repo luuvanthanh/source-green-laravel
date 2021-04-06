@@ -89,7 +89,7 @@ const General = memo(() => {
             <Pane className="col-lg-4">
               <Pane className="row">
                 <Pane className="col-lg-8">
-                  <FormItem name="birthday" label="Ngày nhập học">
+                  <FormItem name="birthday" label="Ngày sinh">
                     <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} disabledDate={current => current > moment()} />
                   </FormItem>
                 </Pane>
