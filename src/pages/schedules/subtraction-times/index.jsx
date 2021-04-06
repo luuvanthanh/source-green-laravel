@@ -232,7 +232,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-130',
         width: 130,
-        render: (record) => get(record, 'subtractionTimeDetail[0].days'),
+        render: (record) => get(record, 'addSubTimeDetail[0].days'),
       },
       {
         title: 'Số giờ công',
@@ -240,7 +240,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-130',
         width: 130,
-        render: (record) => get(record, 'subtractionTimeDetail[0].hours'),
+        render: (record) => get(record, 'addSubTimeDetail[0].hours'),
       },
       {
         title: 'Lý do',
@@ -254,7 +254,7 @@ class Index extends PureComponent {
               symbol: 'Xem thêm',
             }}
           >
-            {get(record, 'subtractionTimeDetail[0].reason')}
+            {get(record, 'addSubTimeDetail[0].reason')}
           </Paragraph>
         ),
       },

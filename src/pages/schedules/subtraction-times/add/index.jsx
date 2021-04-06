@@ -3,6 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
+import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -80,13 +81,19 @@ class Index extends PureComponent {
         type: 'subtractionTimesAdd/UPDATE',
         payload: {
           user_id: values.user_id,
+          type: 'SUB',
           data: [
             {
+              user_id: values.user_id,
               days: values.days,
               hours: values.hours,
               reason: values.reason,
-              end_date: moment(values.month).startOf('month'),
-              start_date: moment(values.month).endOf('month'),
+              end_date: moment(values.month)
+                .endOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
+              start_date: moment(values.month)
+                .startOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
             },
           ],
           id: params.id,
@@ -114,13 +121,19 @@ class Index extends PureComponent {
         type: 'subtractionTimesAdd/ADD',
         payload: {
           user_id: values.user_id,
+          type: 'SUB',
           data: [
             {
+              user_id: values.user_id,
               days: values.days,
               hours: values.hours,
               reason: values.reason,
-              end_date: moment(values.month).startOf('month'),
-              start_date: moment(values.month).endOf('month'),
+              end_date: moment(values.month)
+                .endOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
+              start_date: moment(values.month)
+                .startOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
             },
           ],
         },
@@ -151,7 +164,8 @@ class Index extends PureComponent {
       menuLeftSchedules,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['subtractionTimesAdd/GET_DATA'];
+    const loadingSubmit =
+      effects['subtractionTimesAdd/ADD'] || effects['subtractionTimesAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last="Tạo công trừ" menu={menuLeftSchedules} />
@@ -204,12 +218,7 @@ class Index extends PureComponent {
               </div>
               <div className="row">
                 <div className="col-lg-12">
-                  <FormItem
-                    label="LÝ DO"
-                    name="reason"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.TEXTAREA}
-                  />
+                  <FormItem label="LÝ DO" name="reason" type={variables.TEXTAREA} />
                 </div>
               </div>
             </div>

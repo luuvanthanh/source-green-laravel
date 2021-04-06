@@ -1,4 +1,4 @@
-import request from '@/utils/requestLoginLavarel';
+import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {

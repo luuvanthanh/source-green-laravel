@@ -11,7 +11,7 @@ export function getUsers(params = {}) {
 }
 
 export function add(data = {}) {
-  return request('/v1/additional-times', {
+  return request('/v1/add-sub-times', {
     method: 'POST',
     data: {
       ...data,
@@ -36,14 +36,32 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/v1/product-types/${data.id}`, {
+  return request(`/v1/add-sub-times/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+      start_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.start_date,
+          targetValue: '00:00:00',
+        }),
+        isUTC: false,
+      }),
+      end_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.end_date,
+          targetValue: '23:59:59',
+        }),
+        isUTC: false,
+      }),
+    },
   });
 }
 
 export function remove(id) {
-  return request(`/v1/product-types/${id}`, {
+  return request(`/v1/add-sub-times/${id}`, {
     method: 'DELETE',
     parse: true,
   });

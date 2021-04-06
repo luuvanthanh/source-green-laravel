@@ -7,6 +7,9 @@ export default {
   state: {
     data: [],
     pagination: {},
+    error: {
+      isError: false,
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -19,9 +22,8 @@ export default {
       ...state,
       error: {
         isError: true,
-        data: {
-          ...payload,
-        },
+        status: payload.status,
+        title: payload.status,
       },
     }),
     UPDATE_DATA: (state, { payload }) => ({

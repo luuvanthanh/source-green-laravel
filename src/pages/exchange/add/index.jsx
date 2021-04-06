@@ -81,7 +81,6 @@ class Index extends PureComponent {
   };
 
   onFinish = (values) => {
-    console.log(values)
     const {
       dispatch,
       match: { params },
@@ -113,7 +112,7 @@ class Index extends PureComponent {
           <div className={classnames(stylesExchange['details-container'], 'mt-3')}>
             <div className={stylesExchange['left-container']}>
               <Text color="dark">Thông tin trẻ</Text>
-              <div className="row">
+              <div className="row mt-3">
                 <div className="col-lg-6">
                   <FormItem name="user_id" label="Cơ sở" data={[]} type={variables.SELECT} />
                 </div>
@@ -156,7 +155,7 @@ class Index extends PureComponent {
             <div className={stylesExchange['right-container']}>
               <div className={stylesExchange['form-content']}>
                 <Text color="dark">Chi tiết trao đổi</Text>
-                <div className="row">
+                <div className="row mt-3">
                   <div className="col-lg-12">
                     <FormItem
                       name="title"

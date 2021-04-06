@@ -11,8 +11,17 @@ export function getUsers(params = {}) {
 }
 
 export function add(data = {}) {
-  return request('/v1/additional-times', {
+  return request('/v1/add-sub-times', {
     method: 'POST',
+    data: {
+      ...data,
+    },
+  });
+}
+
+export function update(data = {}) {
+  return request(`/v1/add-sub-times/${data.id}`, {
+    method: 'PUT',
     data: {
       ...data,
       start_date: Helper.getDateTime({
@@ -35,15 +44,8 @@ export function add(data = {}) {
   });
 }
 
-export function update(data = {}) {
-  return request(`/v1/product-types/${data.id}`, {
-    method: 'PUT',
-    data,
-  });
-}
-
 export function remove(id) {
-  return request(`/v1/product-types/${id}`, {
+  return request(`/v1/add-sub-times/${id}`, {
     method: 'DELETE',
     parse: true,
   });
