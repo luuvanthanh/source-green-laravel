@@ -258,20 +258,6 @@ class Index extends PureComponent {
           </Paragraph>
         ),
       },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-          </div>
-        ),
-      },
     ];
   };
 

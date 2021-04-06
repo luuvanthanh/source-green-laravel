@@ -64,7 +64,7 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
@@ -72,7 +72,7 @@ export default {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
     *REMOVE({ payload }, saga) {
