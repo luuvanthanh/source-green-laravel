@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
+import moment from 'moment';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
@@ -80,13 +81,19 @@ class Index extends PureComponent {
         type: 'additionalTimesAdd/UPDATE',
         payload: {
           user_id: values.user_id,
+          type: 'ADD',
           data: [
             {
               days: values.days,
               hours: values.hours,
               reason: values.reason,
-              end_date: moment(values.month).startOf('month'),
-              start_date: moment(values.month).endOf('month'),
+              user_id: values.user_id,
+              end_date: moment(values.month)
+                .endOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
+              start_date: moment(values.month)
+                .startOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
             },
           ],
           id: params.id,
@@ -114,13 +121,19 @@ class Index extends PureComponent {
         type: 'additionalTimesAdd/ADD',
         payload: {
           user_id: values.user_id,
+          type: 'ADD',
           data: [
             {
               days: values.days,
               hours: values.hours,
               reason: values.reason,
-              end_date: moment(values.month).startOf('month'),
-              start_date: moment(values.month).endOf('month'),
+              user_id: values.user_id,
+              end_date: moment(values.month)
+                .endOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
+              start_date: moment(values.month)
+                .startOf('month')
+                .format(variables.DATE_FORMAT.DATE_AFTER),
             },
           ],
         },
@@ -151,7 +164,7 @@ class Index extends PureComponent {
       menuLeftSchedules,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['additionalTimesAdd/GET_DATA'];
+    const loadingSubmit = effects['additionalTimesAdd/ADD'] || effects['additionalTimesAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last="Tạo công thêm" menu={menuLeftSchedules} />
@@ -204,12 +217,7 @@ class Index extends PureComponent {
               </div>
               <div className="row">
                 <div className="col-lg-12">
-                  <FormItem
-                    label="LÝ DO"
-                    name="reason"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.TEXTAREA}
-                  />
+                  <FormItem label="LÝ DO" name="reason" type={variables.TEXTAREA} />
                 </div>
               </div>
             </div>

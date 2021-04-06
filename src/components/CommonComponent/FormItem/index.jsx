@@ -166,7 +166,6 @@ const renderChildren = (
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
       placeholder="dd/mm/yyyy"
-      picker={picker}
     />
   ),
   monthPicker: (

@@ -1,8 +1,8 @@
-import request from '@/utils/requestLoginLavarel';
+import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/additional-times', {
+  return request('/v1/add-sub-times', {
     method: 'GET',
     params: {
       limit: data.limit,
@@ -26,9 +26,10 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['additionalTime']),
+      include: Helper.convertIncludes(['user', 'addSubTimeDetail.user']),
       search: Helper.convertParamSearchConvert({
         'user.full_name': data.full_name,
+        type: 'ADD',
       }),
     },
   });

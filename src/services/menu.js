@@ -475,7 +475,7 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Học sinh',
       key: 'children',
-      url: ['/pphan-bo/hoc-sinh'],
+      url: ['/phan-bo/hoc-sinh'],
       icon: 'icon icon-baby',
       permission: [],
       pro: true,
@@ -483,7 +483,7 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Phụ huynh',
       key: 'parents',
-      url: ['/pphan-bo/phu-huynh'],
+      url: ['/phan-bo/phu-huynh'],
       icon: 'icon icon-woman',
       permission: [],
       pro: true,
@@ -491,7 +491,7 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Nhân viên',
       key: 'users',
-      url: ['/pphan-bo/nhan-vien'],
+      url: ['/phan-bo/nhan-vien'],
       icon: 'icon icon-man',
       permission: [],
       pro: true,

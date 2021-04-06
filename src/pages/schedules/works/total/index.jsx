@@ -35,6 +35,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ works, loading }) => ({
   data: works.data,
   pagination: works.pagination,
+  error: works.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -556,6 +557,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      error,
       pagination,
       match: { params },
       loading: { effects },
@@ -620,6 +622,8 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              error={error}
+              isError={error.isError}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
