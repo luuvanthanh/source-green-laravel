@@ -281,7 +281,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian tạo',
         key: 'name',
-        className: 'min-width-200',
+        className: 'min-width-140',
+        width: 140,
         render: (record) => <Text size="normal">10:15 - 15/3/2021</Text>,
       },
       {
@@ -329,7 +330,9 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push('/trao-doi/1/chi-tiet')}
+              onClick={() =>
+                history.push('/trao-doi/ff1a44bb-f7a0-41f9-ab82-f83725c565b1/chi-tiet')
+              }
             />
           </div>
         ),

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography } from 'antd';
+import { Modal, Avatar, Input, Typography, Form, List, Radio, Upload } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -8,8 +8,12 @@ import Button from '@/components/CommonComponent/Button';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import { variables, Helper } from '@/utils';
 import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
+import Text from '@/components/CommonComponent/Text';
+import Quill from '@/components/CommonComponent/Quill';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -40,7 +44,9 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      description: null,
+    };
     setIsMounted(true);
   }
 
@@ -64,10 +70,36 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  /**
+   * Function change editor
+   * @param {string} description value of editor
+   */
+  onChangeEditor = (description) => {
+    this.setState({
+      description,
+    });
+  };
+
+  onFinish = (values) => {
+    console.log(values)
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+  };
+
   render() {
     const { menuData } = this.props;
+    const { description } = this.state;
+    const props = {
+      beforeUpload: (file) => {
+        return file;
+      },
+      showUploadList: false,
+      fileList: [],
+    };
     return (
-      <>
+      <Form layout="vertical" ref={this.formRef} onFinish={this.onFinish}>
         <Helmet title="Chi tiết trao đổi" />
         <Breadcrumbs last="Tạo trao đổi" menu={menuData} />
         <div
@@ -78,168 +110,100 @@ class Index extends PureComponent {
           )}
         >
           {/* DETAILS CONTAINER */}
-          <div className={stylesExchange['details-container']}>
-            {/* INFO CONTAINER */}
-            <div className={stylesExchange['info-container']}>
-              <p className={stylesExchange['time']}>10:30, 15/3/2021</p>
-              <h3 className={stylesExchange['title']}>Giữ ấm cho bé</h3>
-              <p className={stylesExchange['norm']}>
-                Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió.
-              </p>
-              <div className={stylesExchange['list-image']}>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
+          <div className={classnames(stylesExchange['details-container'], 'mt-3')}>
+            <div className={stylesExchange['left-container']}>
+              <Text color="dark">Thông tin trẻ</Text>
+              <div className="row">
+                <div className="col-lg-6">
+                  <FormItem name="user_id" label="Cơ sở" data={[]} type={variables.SELECT} />
                 </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
+                <div className="col-lg-6">
+                  <FormItem name="class_id" label="Lớp" data={[]} type={variables.SELECT} />
                 </div>
               </div>
-              <hr />
-              <div className={stylesExchange['group-user']}>
-                <p className={stylesExchange['norm']}>Người tạo</p>
-                <div className={stylesExchange['user-info']}>
-                  <Avatar size={64} shape="square" icon={<UserOutlined />} />
-                  <p className={stylesExchange['norm']}>Nguyễn Anh</p>
-                </div>
-              </div>
-              <hr />
-              <div className={stylesExchange['group-user']}>
-                <p className={stylesExchange['norm']}>Dành cho</p>
-                <div className={stylesExchange['user-info']}>
-                  <Avatar size={64} shape="square" icon={<UserOutlined />} />
-                  <p className={stylesExchange['norm']}>Su beo</p>
-                </div>
-              </div>
-              <hr />
-              <div className={stylesExchange['info-content']}>
-                <div className={stylesExchange['info-item']}>
-                  <p className={stylesExchange['norm']}>Cơ sở</p>
-                  <div className={stylesExchange['content']}>
-                    <div className={styles.circle}>
-                      <span className={'icon-school'}></span>
-                    </div>
-                    <p className={stylesExchange['norm']}>Lake view</p>
-                  </div>
-                </div>
-                <div className={stylesExchange['info-item']}>
-                  <p className={stylesExchange['norm']}>Lớp</p>
-                  <div className={stylesExchange['content']}>
-                    <div className={styles.circle}>
-                      <span className="icon-open-book"></span>
-                    </div>
-                    <p className={stylesExchange['norm']}>Preschool</p>
-                  </div>
-                </div>
-              </div>
-              <hr />
-              <div className={stylesExchange['info-footer']}>
-                <div className={stylesExchange['info-item']}>
-                  <p className={stylesExchange['norm']}>Trạng thái</p>
-                  <div className={stylesExchange['content']}>
-                    {HelperModules.tagStatus('PENDING')}
-                  </div>
-                </div>
-                <div className={stylesExchange['info-item']}>
-                  <Button type="button" color="success" size="large">
-                    Kết thúc
-                  </Button>
-                </div>
-              </div>
-            </div>
-            {/* INFO CONTAINER */}
-            {/* CHAT CONTAINER */}
-            <div className={stylesExchange['chat-container']}>
-              <div className={stylesExchange['chat-content']}>
-                <div className={stylesExchange['chat-item']}>
-                  <div className={stylesExchange['heading']}>
-                    <div className={stylesExchange['group-user']}>
-                      <div className={stylesExchange['user-info']}>
-                        <Avatar size={64} shape="square" icon={<UserOutlined />} />
-                        <div className={stylesExchange['info']}>
-                          <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                          <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
-                        </div>
+              <List
+                className={stylesExchange.list}
+                dataSource={[
+                  { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                ]}
+                renderItem={(item) => (
+                  <List.Item key={item.id}>
+                    <Radio className={stylesExchange.radio} />
+                    <div className={stylesExchange['group-info']}>
+                      <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                      <div className={stylesExchange['info']}>
+                        <h3 className={stylesExchange['title']}>Su beo</h3>
+                        <p className={stylesExchange['norm']}>32 tháng tuổi</p>
                       </div>
                     </div>
-                    <p className={stylesExchange['time']}>10:45 - 15/3/2021</p>
-                  </div>
-                  <div className={stylesExchange['wrapper-content']}>
-                    <div className={stylesExchange['content']}>
-                      <Paragraph
-                        ellipsis={{
-                          rows: 2,
-                          expandable: true,
-                          symbol: 'Xem thêm',
-                        }}
-                      >
-                        Đã mặc áo cho bé. Ba mẹ yên tâm nhé
-                      </Paragraph>
-                    </div>
-                    <div className={stylesExchange['group-button']}>
-                      <Button icon="checkmark" color="dash-success"></Button>
-                      <Button icon="edit" color="dash-yellow"></Button>
-                      <Button icon="cancel" color="dash-dark"></Button>
-                    </div>
+                  </List.Item>
+                )}
+              />
+            </div>
+            <div className={stylesExchange['right-container']}>
+              <div className={stylesExchange['form-content']}>
+                <Text color="dark">Chi tiết trao đổi</Text>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      name="title"
+                      label="Tiêu đề"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT]}
+                    />
                   </div>
                 </div>
-                <div className={stylesExchange['chat-item']}>
-                  <div className={stylesExchange['heading']}>
-                    <div className={stylesExchange['group-user']}>
-                      <div className={stylesExchange['user-info']}>
-                        <Avatar size={64} shape="square" icon={<UserOutlined />} />
-                        <div className={stylesExchange['info']}>
-                          <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                          <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
-                        </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <div className="ant-col ant-form-item-label">
+                      <label>
+                        <span>Nội dung</span>
+                      </label>
+                    </div>
+                    <Quill onChange={this.onChangeEditor} value={description} />
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col-lg-12">
+                    <div className="ant-col ant-form-item-label">
+                      <label>
+                        <span>Hình ảnh đính kèm</span>
+                      </label>
+                    </div>
+                    <Upload {...props} className={stylesExchange['custom-upload']}>
+                      <Button htmlType="button" icon="plusMain" />
+                    </Upload>
+                    <div className={stylesExchange['list-image']}>
+                      <div className={stylesExchange['image-item']}>
+                        <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
                       </div>
                     </div>
-                    <p className={stylesExchange['time']}>10:45 - 15/3/2021</p>
-                  </div>
-                  <div className={stylesExchange['wrapper-content']}>
-                    <div className={stylesExchange['content']}>
-                      <Paragraph
-                        ellipsis={{
-                          rows: 2,
-                          expandable: true,
-                          symbol: 'Xem thêm',
-                        }}
-                      >
-                        Đã mặc áo cho bé. Ba mẹ yên tâm nhé
-                      </Paragraph>
-                    </div>
-                    <div className={stylesExchange['group-button']}>
-                      <Button icon="checkmark" color="dash-success"></Button>
-                      <Button icon="edit" color="dash-yellow"></Button>
-                      <Button icon="cancel" color="dash-dark"></Button>
-                    </div>
                   </div>
                 </div>
               </div>
-
-              <div className={stylesExchange['chat-footer']}>
-                <div className={stylesExchange['content']}>
-                  <Input placeholder="Nhập" />
-                  <Button icon="plan" color="dash-success"></Button>
-                </div>
+              <div className={stylesExchange['form-footer']}>
+                <Button htmlType="submit" color="success" size="large">
+                  Gửi trao đổi
+                </Button>
               </div>
             </div>
-            {/* CHAT CONTAINER */}
           </div>
           {/* DETAILS CONTAINER */}
         </div>
-      </>
+      </Form>
     );
   }
 }
