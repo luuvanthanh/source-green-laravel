@@ -26,7 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['absentType', 'absentReason']),
+      include: Helper.convertIncludes(['user', 'absentType', 'absentReason']),
       search: Helper.convertParamSearchConvert({
         'user.full_name': data.full_name,
       }),

@@ -39,6 +39,7 @@ export function add(data = {}) {
           originValue: data.start_date,
           targetValue: '00:00:00',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
       end_date: Helper.getDateTime({
@@ -47,6 +48,7 @@ export function add(data = {}) {
           originValue: data.end_date,
           targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
     },

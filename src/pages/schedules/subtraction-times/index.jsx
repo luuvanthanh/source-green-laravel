@@ -258,20 +258,6 @@ class Index extends PureComponent {
           </Paragraph>
         ),
       },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-          </div>
-        ),
-      },
     ];
   };
 
@@ -288,7 +274,9 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách công trừ" />
-        <div className={classnames(styles['content-form'], styles['content-form-subtractionTimes'])}>
+        <div
+          className={classnames(styles['content-form'], styles['content-form-subtractionTimes'])}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách công trừ</Text>

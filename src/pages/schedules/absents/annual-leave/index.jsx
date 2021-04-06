@@ -240,21 +240,28 @@ class Index extends PureComponent {
         key: 'fullName',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.full_name}</Text>,
+        render: (record) => <Text size="normal">{record?.user?.full_name}</Text>,
       },
       {
-        title: 'Số lần chấm',
+        title: 'Ngày',
         key: 'count',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record.absents?.length,
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          `${Helper.getDate(record.start_date)} / ${Helper.getDate(record.end_date)}`,
       },
       {
-        title: 'Chi tiết',
-        key: 'description',
+        title: 'Loại',
+        key: 'absentType',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.absentType?.name,
+      },
+      {
+        title: 'Lý do',
+        key: 'absentReason',
         className: 'min-width-200',
-        render: (record) => this.renderDescription(record.absents),
+        render: (record) => record?.absentReason?.name,
       },
     ];
   };
