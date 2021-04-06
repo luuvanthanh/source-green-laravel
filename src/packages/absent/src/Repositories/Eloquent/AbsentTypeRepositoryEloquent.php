@@ -17,6 +17,7 @@ class AbsentTypeRepositoryEloquent extends BaseRepository implements AbsentTypeR
 {
     protected $fieldSearchable = [
         'status',
+        'name' => 'like',
     ];
 
     /**
