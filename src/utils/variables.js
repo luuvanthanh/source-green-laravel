@@ -86,6 +86,7 @@ export const variables = {
     format: { targetValue: 'HH:mm:ss' },
     attributes: ['hour', 'minute', 'second'],
   },
+  EMPTY_DATA_TEXT: 'Chưa có dữ liệu'
 };
 
 export default variables;
