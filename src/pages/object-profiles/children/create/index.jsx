@@ -1,18 +1,18 @@
-import { memo, useState } from 'react'
-import { Helmet } from 'react-helmet'
-import { Menu } from 'antd'
+import { memo, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { Menu } from 'antd';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import GeneralForm from './forms/general'
-import CuratorForm from './forms/curator'
-import ParentsForm from './forms/parents'
-import ShuttlersForm from './forms/shuttlers'
-import OtherForm from './forms/other'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import GeneralForm from './forms/general';
+import CuratorForm from './forms/curator';
+import ParentsForm from './forms/parents';
+import ShuttlersForm from './forms/shuttlers';
+import OtherForm from './forms/other';
 
-import { menu, defaultKey } from './menu'
+import { menu, defaultKey } from './menu';
 
-const { Item: MenuItem } = Menu
+const { Item: MenuItem } = Menu;
 
 const forms = {
   general: <GeneralForm />,
@@ -20,10 +20,10 @@ const forms = {
   parents: <ParentsForm />,
   shuttlers: <ShuttlersForm />,
   other: <OtherForm />,
-}
+};
 
-const Index = memo(() => {
-  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey)
+const Index = memo(({ match: { params } }) => {
+  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
 
   return (
     <Pane style={{ padding: 20 }}>
@@ -41,20 +41,18 @@ const Index = memo(() => {
               mode="inline"
               onClick={({ key }) => setActiveMenuItem(key)}
             >
-              {menu.map(({ key, label }) => (
-                <MenuItem key={key}>
-                  {label}
-                </MenuItem>
-              ))}
+              {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+              {!params.id &&
+                menu
+                  .filter((item) => item.key === 'general')
+                  .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
             </Menu>
           </Pane>
         </Pane>
-        <Pane className="col-lg-9">
-          {forms[activeMenuItem]}
-        </Pane>
+        <Pane className="col-lg-9">{forms[activeMenuItem]}</Pane>
       </Pane>
     </Pane>
-  )
-})
+  );
+});
 
-export default Index
+export default Index;

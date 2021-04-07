@@ -51,13 +51,16 @@ class Index extends PureComponent {
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        keyWord: query?.keyWord,
       },
       objects: {},
     };
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -179,63 +182,11 @@ class Index extends PureComponent {
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    onShowSizeChange: (current, size) => {
+      this.onSearch(current, size);
+    },
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'OPchildren/UPDATE' : 'OPchildren/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
 
   /**
    * Function remove items
@@ -278,7 +229,7 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => 'TD01',
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
         title: 'Hình ảnh',
@@ -291,37 +242,42 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Vân Khánh</Text>,
+        render: (record) => <Text size="normal">{record.fullName}</Text>,
       },
       {
         title: 'Tuổi (tháng)',
         key: 'age',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">32 tháng</Text>,
+        align: 'center',
+        render: (record) => <Text size="normal">{record.age} tháng tuổi</Text>,
       },
       {
         title: 'Cơ sở',
         key: 'position',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view </Text>,
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Preschool 1 </Text>,
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
         title: 'Ngày nhập học',
         key: 'date',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">15/3/2021</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
+          </Text>
+        ),
       },
       {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus('PENDING'),
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'action',
@@ -332,7 +288,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push('/ho-so-doi-tuong/hoc-sinh/1/chi-tiet')}
+              onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -345,8 +301,9 @@ class Index extends PureComponent {
 
   render() {
     const {
-      match: { params },
+      data,
       pagination,
+      match: { params },
       loading: { effects },
     } = this.props;
     const { search } = this.state;
@@ -413,7 +370,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{

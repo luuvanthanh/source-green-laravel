@@ -183,8 +183,20 @@ export default [
             authority: [],
           },
           {
+            path: '/ho-so-doi-tuong/hoc-sinh/:id/chi-tiet',
+            component: './object-profiles/children/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/ho-so-doi-tuong/phu-huynh',
             component: './object-profiles/parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/phu-huynh/:id/chi-tiet',
+            component: './object-profiles/parents/create',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

@@ -1,180 +1,203 @@
-import { memo, useRef } from 'react'
-import { Form, Input, DatePicker } from 'antd'
-import moment from 'moment'
+import { memo, useRef, useEffect } from 'react';
+import { Form } from 'antd';
+import { head, isEmpty, get } from 'lodash';
+import moment from 'moment';
+import { connect, history, withRouter } from 'umi';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import Button from '@/components/CommonComponent/Button'
-import Select from '@/components/CommonComponent/Select'
-import ImageUpload from '@/components/CommonComponent/ImageUpload'
-
-import { variables } from '@/utils/variables'
-
-const { Item: FormItem } = Form
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import Loading from '@/components/CommonComponent/Loading';
+import { variables } from '@/utils/variables';
+import FormItem from '@/components/CommonComponent/FormItem';
 
 const genders = [
-  { id: 0, name: 'Nam' },
-  { id: 1, name: 'Nữ' },
-]
+  { id: 'MALE', name: 'Nam' },
+  { id: 'FEMALE', name: 'Nữ' },
+];
 
-const marginProps = {  style: { marginBottom: 12 }}
+const marginProps = { style: { marginBottom: 12 } };
+const mapStateToProps = ({ loading, OPParentsAdd }) => ({
+  loading,
+  details: OPParentsAdd.details,
+  error: OPParentsAdd.error,
+});
+const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+  const formRef = useRef();
+  const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
+  const loading = effects[`OPParentsAdd/GET_DETAILS`];
 
-const General = memo(() => {
-  const formRef = useRef()
+  /**
+   * Function submit form modal
+   * @param {object} values values of form
+   */
+  const onFinish = (values) => {
+    dispatch({
+      type: params.id ? 'OPParentsAdd/UPDATE' : 'OPParentsAdd/ADD',
+      payload: params.id ? { ...details, ...values, id: params.id } : values,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'OPParentsAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!isEmpty(details) && params.id) {
+      formRef.current.setFieldsValue({
+        ...details,
+        boD: moment(details.boD),
+      });
+    }
+  }, [details]);
 
   return (
-    <Form
-      layout="vertical"
-      ref={formRef}
-      initialValues={{
-        name: 'Nguyễn Văn Phước',
-        birthday: moment('1986/12/15'),
-      }}
-    >
-      <Pane className="card">
-        <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-          <Heading type="form-title" style={{ marginBottom: 20 }}>Thông tin cơ bản</Heading>
-          <Pane className="row">
-            <Pane className="col">
-              <FormItem name="avatar" label="Hình ảnh phụ huynh">
-                <ImageUpload />
-              </FormItem>
+    <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
+      <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <Pane className="card">
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Heading type="form-title" style={{ marginBottom: 20 }}>
+              Thông tin cơ bản
+            </Heading>
+            <Pane className="row">
+              <Pane className="col">
+                <Form.Item name="avatar" label="Hình ảnh phụ huynh">
+                  <ImageUpload />
+                </Form.Item>
+              </Pane>
+            </Pane>
+            <Pane className="row border-bottom" {...marginProps}>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="fullName"
+                  label="Tên khách hàng"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="boD"
+                  label="Ngày sinh"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                  disabledDate={(current) => current > moment()}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  data={genders}
+                  name="sex"
+                  label="Giới tính"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="email"
+                  label="Email"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="phone"
+                  label="Số điện thoại"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="anotherPhone"
+                  label="Số điện thoại khác"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+            </Pane>
+
+            <Heading type="form-block-title" {...marginProps}>
+              Địa chỉ
+            </Heading>
+
+            <Pane className="row border-bottom" {...marginProps}>
+              <Pane className="col-lg-4">
+                <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-8">
+                <FormItem data={[]} name="city" label="Thành phố" type={variables.CASCADER} />
+              </Pane>
+            </Pane>
+
+            <Pane className="row">
+              <Pane className="col-lg-4">
+                <FormItem name="jobTile" label="Nghề nghiệp" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="facebook" label="Địa chỉ facebook" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="zalo" label="Địa chỉ zalo" type={variables.INPUT} />
+              </Pane>
+
+              <Pane className="col-lg-4">
+                <FormItem name="instagram" label="Địa chỉ Instagram" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="referent" label="Khách hàng liên quan" type={variables.INPUT} />
+              </Pane>
+
+              <Pane className="col-lg-12">
+                <FormItem name="remark" label="Ghi chú" type={variables.INPUT} />
+              </Pane>
+
+              <Pane className="col-lg-12">
+                <FormItem name="hobby" label="Sở thích" type={variables.INPUT} />
+              </Pane>
             </Pane>
           </Pane>
 
-          <Pane className="row border-bottom" {...marginProps}>
-            <Pane className="col-lg-4">
-              <FormItem name="name" label="Tên khách hàng">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="birthday" label="Ngày sinh">
-                <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} disabledDate={current => current > moment()} />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="gender" label="Giới tính">
-                  <Select
-                    placeholder="Chọn"
-                    dataSet={genders}
-                  />
-                </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-4">
-              <FormItem name="email" label="Email">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="phoneNumber" label="Số điện thoại">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="otherPhoneNumber" label="Số điện thoại khác">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-          </Pane>
-
-          <Heading type="form-block-title" {...marginProps}>Địa chỉ</Heading>
-
-          <Pane className="row border-bottom" {...marginProps}>
-            <Pane className="col-lg-4">
-              <FormItem name="streetNumber" label="Số nhà">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="street" label="Tên đường">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="city" label="Thành phố">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-4">
-              <FormItem name="district" label="Quận/Huyện">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="commune" label="Xã/Phường">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={genders}
-                />
-              </FormItem>
-            </Pane>
-          </Pane>
-
-          <Pane className="row">
-            <Pane className="col-lg-4">
-              <FormItem name="job" label="Nghề nghiệp">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="facebook" label="Địa chỉ facebook">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="zalo" label="Địa chỉ zalo">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-4">
-              <FormItem name="instagram" label="Địa chỉ Instagram">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="involve" label="Khách hàng liên quan">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-12">
-              <FormItem name="note" label="Ghi chú">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-12">
-              <FormItem name="interesting" label="Quan tâm">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-12">
-              <FormItem name="favorites" label="Sở thích">
-                <Input placeholder="Nhập" />
-              </FormItem>
-            </Pane>
+          <Pane style={{ padding: 20 }}>
+            <Button
+              color="success"
+              size="large"
+              htmlType="submit"
+              style={{ marginLeft: 'auto' }}
+              loading={loadingSubmit}
+            >
+              Lưu
+            </Button>
           </Pane>
         </Pane>
-
-        <Pane style={{ padding: 20 }}>
-          <Button color="success" style={{ marginLeft: 'auto' }}>
-            Lưu
-          </Button>
-        </Pane>
-      </Pane>
+      </Loading>
     </Form>
-  )
-})
+  );
+});
 
-export default General
+export default withRouter(connect(mapStateToProps)(General));

@@ -150,6 +150,7 @@ export async function getLeftMenuProfile() {
       url: [
         '/ho-so-doi-tuong/hoc-sinh',
         '/ho-so-doi-tuong/hoc-sinh/tao-moi',
+        '/ho-so-doi-tuong/hoc-sinh/:id/chi-tiet',
       ],
       icon: 'icon icon-baby',
       permission: [],
@@ -161,6 +162,7 @@ export async function getLeftMenuProfile() {
       url: [
         '/ho-so-doi-tuong/phu-huynh',
         '/ho-so-doi-tuong/phu-huynh/tao-moi',
+        '/ho-so-doi-tuong/phu-huynh/:id/chi-tiet',
       ],
       icon: 'icon icon-woman',
       permission: [],

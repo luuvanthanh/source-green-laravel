@@ -1,24 +1,22 @@
-import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { Upload, Modal } from 'antd'
-import { CloudUploadOutlined, EyeOutlined } from '@ant-design/icons'
-import { useDispatch } from 'dva'
+import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { Upload, Modal } from 'antd';
+import { CloudUploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { useDispatch } from 'dva';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Button from '@/components/CommonComponent/Button'
+import Pane from '@/components/CommonComponent/Pane';
+import Button from '@/components/CommonComponent/Button';
 
-import { imageUploadProps } from '@/utils/upload'
-import styles from './styles.module.scss'
+import { imageUploadProps } from '@/utils/upload';
+import styles from './styles.module.scss';
+import { isEmpty, get } from 'lodash';
 
-const { beforeUpload, ...otherProps } = imageUploadProps
+const { beforeUpload, ...otherProps } = imageUploadProps;
 
-// / Dùng tạm api image của DEV ERP TRẦN
-const API_URL = 'http://api-dev.erptran.projects.greenglobal.vn:11018/erptran'
+const ImageUpload = memo(({ callback }) => {
+  const _mounted = useRef(false);
+  const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
-const ImageUpload = memo((callback) => {
-  const _mounted = useRef(false)
-  const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value)
-
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [image, setImage] = useState();
   const [showFullPreview, setShowFullPreview] = useState(false);
 
@@ -26,29 +24,32 @@ const ImageUpload = memo((callback) => {
     dispatch({
       type: 'upload/UPLOAD',
       payload: file,
-      callback: res => {
-        if (res) {
+      callback: (res) => {
+        if (!isEmpty(res.results)) {
           _mountedSet(setImage, {
-            path: res?.path,
-            name: file?.name
-          })
-          callback && callback(res)
+            path: get(res, 'results[0].fileInfo.url'),
+            name: get(res, 'results[0].fileInfo.name'),
+          });
+          callback && callback(get(res, 'results[0]'));
         }
-      }
-    })
-  }, [])
+      },
+    });
+  }, []);
 
-  const uploadProps = useMemo(() => ({
-    ...otherProps,
-    beforeUpload: (file) => beforeUpload(file, uploadAction),
-  }), [uploadAction])
+  const uploadProps = useMemo(
+    () => ({
+      ...otherProps,
+      beforeUpload: (file) => beforeUpload(file, uploadAction),
+    }),
+    [uploadAction],
+  );
 
   useEffect(() => {
-    _mounted.current = true
-    return () => (_mounted.current = false)
-  }, [])
+    _mounted.current = true;
+    return () => (_mounted.current = false);
+  }, []);
 
-  const imageUrl = useMemo(() => `${API_URL}/${image?.path}`, [image])
+  const imageUrl = useMemo(() => `${API_UPLOAD}/${image?.path}`, [image]);
 
   return (
     <>
@@ -58,43 +59,30 @@ const ImageUpload = memo((callback) => {
         footer={null}
         onCancel={() => setShowFullPreview(false)}
       >
-        <img
-          className={styles.fullImage}
-          src={imageUrl}
-          alt="upload-image"
-        />
+        <img className={styles.fullImage} src={imageUrl} alt="upload-image" />
       </Modal>
       <Pane>
         {image?.path ? (
           <Pane className={styles.imageWrapper}>
-            <img
-              className={styles.thumb}
-              src={imageUrl}
-              alt="upload-image-thumb"
-            />
+            <img className={styles.thumb} src={imageUrl} alt="upload-image-thumb" />
 
             <Pane className={styles.actions}>
-              <EyeOutlined
-                className={styles.preview}
-                onClick={() => setShowFullPreview(true)}
-              />
+              <EyeOutlined className={styles.preview} onClick={() => setShowFullPreview(true)} />
               <Upload {...uploadProps}>
                 <CloudUploadOutlined />
               </Upload>
             </Pane>
           </Pane>
-        )
-          : (
-            <Upload {...uploadProps}>
-              <Button color="success" ghost>
-                <CloudUploadOutlined /> Tải lên
+        ) : (
+          <Upload {...uploadProps}>
+            <Button color="success" ghost>
+              <CloudUploadOutlined /> Tải lên
             </Button>
-            </Upload>
-          )
-        }
+          </Upload>
+        )}
       </Pane>
     </>
-  )
-})
+  );
+});
 
-export default ImageUpload
+export default ImageUpload;
