@@ -1,0 +1,21 @@
+import request from '@/utils/request';
+
+export function add(data = {}) {
+  return request('/parents', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function update(data = {}) {
+  return request(`/parents/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function details(data = {}) {
+  return request(`/parents/${data.id}`, {
+    method: 'GET',
+  });
+}

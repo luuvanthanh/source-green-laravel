@@ -1,24 +1,23 @@
-import { memo, useState } from 'react'
-import { Helmet } from 'react-helmet'
-import { Menu } from 'antd'
+import { memo, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { Menu } from 'antd';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import GeneralForm from './forms/general'
-import CuratorForm from './forms/curator'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import GeneralForm from './forms/general';
+import CuratorForm from './forms/curator';
 
-import { menu, defaultKey } from './menu'
+import { menu, defaultKey } from './menu';
 
-const { Item: MenuItem } = Menu
+const { Item: MenuItem } = Menu;
 
 const forms = {
   general: <GeneralForm />,
   curator: <CuratorForm />,
-}
+};
 
-const Index = memo(() => {
-  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey)
-
+const Index = memo(({ match: { params } }) => {
+  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
   return (
     <Pane style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ học sinh" />
@@ -35,20 +34,18 @@ const Index = memo(() => {
               mode="inline"
               onClick={({ key }) => setActiveMenuItem(key)}
             >
-              {menu.map(({ key, label }) => (
-                <MenuItem key={key}>
-                  {label}
-                </MenuItem>
-              ))}
+              {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+              {!params.id &&
+                menu
+                  .filter((item) => item.key === 'general')
+                  .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
             </Menu>
           </Pane>
         </Pane>
-        <Pane className="col-lg-9">
-          {forms[activeMenuItem]}
-        </Pane>
+        <Pane className="col-lg-9">{forms[activeMenuItem]}</Pane>
       </Pane>
     </Pane>
-  )
-})
+  );
+});
 
-export default Index
+export default Index;
