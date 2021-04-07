@@ -64,7 +64,7 @@ export const variables = {
   // DATE FORMAT
   DATE_FORMAT: {
     DATE: 'DD-MM-YYYY',
-    DATE_TIME: 'DD-MM-YYYY HH:mm',
+    DATE_TIME: 'HH:mm, DD-MM-YYYY',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
