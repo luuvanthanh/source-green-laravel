@@ -43,7 +43,8 @@ form .ant-cascader-picker:only-child {
 
 .ant-form-item-label {
   label {
-    color: rgba($color: $text-dark, $alpha: 0.65);
+    // color: rgba($color: $text-dark, $alpha: 0.65);
+    color: $text-form-label;
     font-family: "Roboto", sans-serif;
     font-size: 13px;
     font-style: normal;

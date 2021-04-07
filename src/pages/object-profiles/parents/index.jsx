@@ -169,15 +169,16 @@ class Index extends PureComponent {
   pagination = (pagination) => ({
     size: 'default',
     total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultPageSize: variables.PAGINATION.PAGE_SIZE,
     defaultCurrent: Number(this.state.search.page),
     current: Number(this.state.search.page),
     hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**
@@ -313,7 +314,7 @@ class Index extends PureComponent {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus('PENDING'),
+        render: (record) => HelperModules.tagStatus('VERIFIED'),
       },
       {
         key: 'action',
@@ -322,10 +323,12 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="primary"
-              icon="edit"
+              color="success"
+              ghost
               onClick={() => history.push('/ho-so-doi-tuong/phu-huynh/1/chi-tiet')}
-            />
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -360,42 +363,17 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>

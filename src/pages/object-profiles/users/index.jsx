@@ -169,15 +169,17 @@ class Index extends PureComponent {
   pagination = (pagination) => ({
     size: 'default',
     total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultPageSize: variables.PAGINATION.PAGE_SIZE,
     defaultCurrent: Number(this.state.search.page),
     current: Number(this.state.search.page),
     hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**
@@ -328,10 +330,12 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="primary"
-              icon="edit"
+              color="success"
+              ghost
               onClick={() => history.push('/ho-so-doi-tuong/nhan-vien/1/chi-tiet')}
-            />
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -373,7 +377,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
@@ -381,15 +385,15 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
+                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
                     name="manufacturer"
                     onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả bộ phận' }]}
                     name="class"
@@ -397,11 +401,19 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả chức vụ' }]}
                     name="position"
-                    onChange={(event) => this.onChangeSelect(event, 'position"')}
+                    onChange={(event) => this.onChangeSelect(event, 'position')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả hình thức làm việc' }]}
+                    name="form"
+                    onChange={(event) => this.onChangeSelect(event, 'form')}
                     type={variables.SELECT}
                   />
                 </div>
