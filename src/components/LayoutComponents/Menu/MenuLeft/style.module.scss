@@ -47,7 +47,8 @@
       border-radius: 4px;
     }
     .title {
-      white-space: pre-wrap;
+      // white-space: pre-wrap;
+      white-space: nowrap;
       line-height: 20px;
     }
   }
@@ -100,6 +101,7 @@
   .block-menu {
     display: flex;
     align-items: center;
+    white-space: nowrap;
   }
 
   .title {

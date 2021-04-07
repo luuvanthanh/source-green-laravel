@@ -147,7 +147,10 @@ export async function getLeftMenuProfile() {
     {
       title: 'Học sinh',
       key: 'children',
-      url: ['/ho-so-doi-tuong/hoc-sinh'],
+      url: [
+        '/ho-so-doi-tuong/hoc-sinh',
+        '/ho-so-doi-tuong/hoc-sinh/tao-moi',
+      ],
       icon: 'icon icon-baby',
       permission: [],
       pro: true,
@@ -155,7 +158,10 @@ export async function getLeftMenuProfile() {
     {
       title: 'Phụ huynh',
       key: 'parents',
-      url: ['/ho-so-doi-tuong/phu-huynh'],
+      url: [
+        '/ho-so-doi-tuong/phu-huynh',
+        '/ho-so-doi-tuong/phu-huynh/tao-moi',
+      ],
       icon: 'icon icon-woman',
       permission: [],
       pro: true,
@@ -163,7 +169,10 @@ export async function getLeftMenuProfile() {
     {
       title: 'Nhân viên',
       key: 'users',
-      url: ['/ho-so-doi-tuong/nhan-vien'],
+      url: [
+        '/ho-so-doi-tuong/nhan-vien',
+        '/ho-so-doi-tuong/nhan-vien/tao-moi',
+      ],
       icon: 'icon icon-man',
       permission: [],
       pro: true,
