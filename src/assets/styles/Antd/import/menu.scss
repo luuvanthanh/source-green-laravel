@@ -48,6 +48,10 @@
       background: transparent;
       font-weight: 700;
       color: $text-success;
+
+      > a {
+        color: $text-success;
+      }
     }
 
     &:hover {
