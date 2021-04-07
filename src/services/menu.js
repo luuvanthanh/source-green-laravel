@@ -491,7 +491,7 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Nhân viên',
       key: 'users',
-      url: ['/phan-bo/nhan-vien'],
+      url: ['/phan-bo/nhan-vien/danh-sach', '/phan-bo/nhan-vien/dieu-chuyen'],
       icon: 'icon icon-man',
       permission: [],
       pro: true,

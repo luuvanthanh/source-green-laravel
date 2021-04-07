@@ -13,6 +13,7 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import stylesChildren from './styles.modules.scss';
@@ -535,11 +536,8 @@ class Index extends PureComponent {
             shift_id: values.shift_id,
             start_date_add: moment(dayOfWeek),
             by_week_day:
-              repeat_by === variables.DATE_FORMAT.WEEKLY
-                ? moment(dayOfWeek)
-                    .format(variables.DATE_FORMAT.DAY_NAME)
-                    .substr(0, 2)
-                    .toLocaleLowerCase()
+              values.repeat_by === variables.DATE_FORMAT.WEEKLY
+                ? variablesModules.DATE_OF_WEEK[moment().format('d')]
                 : null,
           },
           callback: () => {
