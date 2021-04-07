@@ -78,7 +78,7 @@ class Index extends PureComponent {
     const loading = effects['allocationUsersTransfers/GET_DATA'];
     return (
       <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
-        <Helmet title="Trẻ chưa xếp lớp" />
+        <Helmet title="Điều chuyển nhân viên" />
         <div
           className={classnames(
             styles['content-form'],
@@ -86,7 +86,7 @@ class Index extends PureComponent {
           )}
         >
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Học sinh</Text>
+            <Text color="dark">Nhân viên</Text>
           </div>
           {/* TABS LINK */}
           <div className="d-flex align-items-center mt-3 mb-3">
@@ -114,7 +114,7 @@ class Index extends PureComponent {
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
                   <Text color="dark" size="large-medium">
-                    Danh sách trẻ chưa xếp lớp
+                    Danh sách nhân viên
                   </Text>
                 </div>
                 <List
@@ -141,8 +141,10 @@ class Index extends PureComponent {
                       <div className={stylesAllocation['group-info']}>
                         <Avatar shape="square" size={40} icon={<UserOutlined />} />
                         <div className={stylesAllocation['info']}>
-                          <h3 className={stylesAllocation['title']}>Su beo</h3>
-                          <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                          <h3 className={stylesAllocation['title']}>Nguyễn Văn Tuấn</h3>
+                          <p className={stylesAllocation['norm']}>
+                            Hành chính nhân sự - Ghi danh - Nhân viên
+                          </p>
                         </div>
                       </div>
                     </List.Item>
@@ -152,11 +154,8 @@ class Index extends PureComponent {
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                   <Text color="dark" size="normal">
-                    Đã chọn 2 bé
+                    Đã chọn 1 nhân viên
                   </Text>
-                  <Button color="success" size="large" className="ml-auto">
-                    Xếp lớp
-                  </Button>
                 </div>
               </div>
             </div>
@@ -164,49 +163,70 @@ class Index extends PureComponent {
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
                   <Text color="dark" size="large-medium">
-                    Danh sách cơ sở/lớp
+                    Thông tin điều chuyển
                   </Text>
                 </div>
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
-                    <div className="col-lg-6">
+                    <div className="col-lg-4">
                       <FormItem
                         label="Cơ sở"
-                        name="position"
-                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                        type={variables.INPUT}
+                        name="location"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
                       />
                     </div>
-                    <div className="col-lg-6">
+                    <div className="col-lg-4">
                       <FormItem
-                        label="Lớp"
-                        name="class"
-                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                        label="Bộ phận"
+                        name="division"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                      />
+                    </div>
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Chức vụ"
+                        name="position"
+                        rules={[variables.RULES.EMPTY]}
                         type={variables.INPUT_PASSWORD}
                       />
                     </div>
                   </div>
                   <hr />
                   <div className="row mt-3">
-                    <div className="col-lg-12">
+                    <div className="col-lg-4">
                       <FormItem
-                        label="Chọn lớp để xếp"
-                        name="radio"
-                        type={variables.RADIO}
-                        data={[
-                          { value: '1', label: 'Lớp preschool 1' },
-                          { value: '2', label: 'Lớp preschool 2' },
-                          { value: '3', label: 'Lớp preschool 3' },
-                        ]}
+                        label="Hình thức làm việc"
+                        name="workForm"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                      />
+                    </div>
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Vai trò"
+                        name="role_id"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                      />
+                    </div>
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Thời gian điều chuyển"
+                        name="date"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.DATE_PICKER}
                       />
                     </div>
                   </div>
-                  <hr />
-                  <div className="row mt-3">
-                    <div className="col-lg-12">
-                      <FormItem label="Ngày vào lớp" name="date" type={variables.DATE_PICKER} />
-                    </div>
-                  </div>
+                </div>
+              </div>
+              <div className={stylesAllocation['footer-content']}>
+                <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+                  <Button color="success" size="large" className="ml-auto">
+                    Điểu chuyển
+                  </Button>
                 </div>
               </div>
             </div>
