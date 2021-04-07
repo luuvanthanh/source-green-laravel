@@ -13,9 +13,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 
+const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ medicalHistories, loading }) => ({
-  data: medicalHistories.data,
-  pagination: medicalHistories.pagination,
+const mapStateToProps = ({ medicalItems, loading }) => ({
+  data: medicalItems.data,
+  pagination: medicalItems.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -57,9 +57,7 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {
-    this.onLoad();
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -88,13 +86,16 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'medicalHistories/GET_DATA',
+      type: 'medicalItems/GET_DATA',
       payload: {
         ...search,
         status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
   };
 
   /**
@@ -167,17 +168,15 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: false,
+    pageSizeOptions: false,
     onChange: (page, size) => {
-      this.onSearch(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(page, size);
     },
   });
 
@@ -202,11 +201,47 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function submit form modal
+   * @param {object} values values of form
+   */
+  onFinish = () => {
+    const { objects } = this.state;
+    this.formRef.current.validateFields().then((values) => {
+      this.props.dispatch({
+        type: !isEmpty(objects) ? 'medicalItems/UPDATE' : 'medicalItems/ADD',
+        payload: {
+          ...values,
+          id: objects.id,
+        },
+        callback: (response, error) => {
+          if (response) {
+            this.handleCancel();
+            this.onLoad();
+          }
+          if (error) {
+            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                this.formRef.current.setFields([
+                  {
+                    name: head(item.members),
+                    errors: [item.message],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    });
+  };
+
+  /**
    * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
+    const { search } = this.state;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -216,15 +251,12 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'medicalHistories/REMOVE',
+          type: 'medicalItems/REMOVE',
           payload: {
             id,
             pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
+              limit: search.limit,
+              page: search.page,
             },
           },
         });
@@ -237,87 +269,144 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
+    const columns = [
       {
-        title: 'Thời gian',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => '15:31, 10/1/2021',
+        title: 'Mã ID',
+        key: 'index',
+        className: 'min-width-70',
+        width: 70,
+        align: 'center',
+        render: (text, record, index) => 'TD01',
       },
       {
-        title: 'Tên tài khoản',
+        title: 'Thời gian tạo',
         key: 'name',
-        className: 'min-width-130',
-        render: (record) => 'Nguyễn Ngọc Bích',
+        className: 'min-width-140',
+        width: 140,
+        render: (record) => <Text size="normal">10:15 - 15/3/2021</Text>,
       },
       {
-        title: 'Hành động',
-        key: 'action',
-        className: 'min-width-130',
-        render: (record) => 'Xác nhận đã nhận thuốc',
+        title: 'Cơ sở',
+        key: 'life',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Lake view</Text>,
       },
       {
-        title: 'Nội dung',
+        title: 'Lớp',
+        key: 'class',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Preschool</Text>,
+      },
+      {
+        title: 'Tiêu đề',
+        key: 'title',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Giữ ấm cho bé</Text>,
+      },
+      {
+        title: 'Phụ huynh',
+        key: 'parents',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Nguyễn Văn A</Text>,
+      },
+      {
+        title: 'Dành cho bé',
+        key: 'parents',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">Su Beo</Text>,
+      },
+      {
+        title: 'Trạng thái',
         key: 'status',
-        className: 'min-width-120',
-        render: (record) => 'Xác nhận đã nhận thuốc dành cho bé Su Beo',
+        className: 'min-width-150',
+        render: (record) => HelperModules.tagStatus('PENDING'),
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() =>
+                history.push('/trao-doi/ff1a44bb-f7a0-41f9-ab82-f83725c565b1/chi-tiet')
+              }
+            />
+          </div>
+        ),
       },
     ];
+    return columns;
   };
 
   render() {
     const {
+      match: { params },
       data,
       pagination,
-      match: { params },
       loading: { effects },
+      location: { pathname },
     } = this.props;
-    const { search } = this.state;
-    const loading = effects['medicalHistories/GET_DATA'];
+    const { visible, objects, search } = this.state;
+    const loading = effects['medicalItems/GET_DATA'];
+    const loadingSubmit = effects['medicalItems/ADD'] || effects['medicalItems/UPDATE'];
     return (
       <>
-        <Helmet title="Lịch sử y tế" />
-        <div
-          className={classnames(styles['content-form'], styles['content-form-medicalHistories'])}
-        >
+        <Helmet title="Thống kê y tế" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Lịch sử</Text>
+            <Text color="dark">Thống kê y tế</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/tao-moi`)}>
+              Tạo y tế
+            </Button>
           </div>
-          <div className={classnames(styles['block-table'])}>
+          <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
+            <Tabs defaultActiveKey="1">
+              <TabPane tab="Trạng thái 1" key="1"></TabPane>
+              <TabPane tab="Trạng thái 2" key="2"></TabPane>
+              <TabPane tab="Trạng thái 3" key="3"></TabPane>
+            </Tabs>
             <Form
               initialValues={{
                 ...search,
+                productType: search.productType || null,
+                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="user_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'user_id')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
+                    name="manufacturer"
+                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
+                    data={[{ id: null, name: 'Tất cả lớp' }]}
+                    name="class"
+                    onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
+                    onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
@@ -326,14 +415,13 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={[{ id: 1 }]}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />

@@ -558,7 +558,13 @@ export default [
         routes: [
           {
             path: '/y-te',
-            redirect: '/y-te/lich-su',
+            redirect: '/y-te/thong-ke',
+          },
+          {
+            path: '/y-te/thong-ke',
+            component: './medical/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
           },
           {
             path: '/y-te/lich-su',
