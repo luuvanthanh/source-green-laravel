@@ -551,6 +551,24 @@ export default [
         ],
       },
       // ALLOCATION
+      // MEDICAL
+      {
+        path: '/y-te',
+        component: './medical/layout',
+        routes: [
+          {
+            path: '/y-te',
+            redirect: '/y-te/lich-su',
+          },
+          {
+            path: '/y-te/lich-su',
+            component: './medical/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // MEDICAL
       {
         path: '/404',
         component: './404',

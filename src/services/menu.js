@@ -506,6 +506,26 @@ export async function getLeftMenuAllocation() {
     },
   ];
 }
+export async function getLeftMenuMedical() {
+  return [
+    {
+      title: 'Thống kê',
+      key: 'children',
+      url: ['/y-te/thong-ke'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Lịch sử',
+      key: 'clock',
+      url: ['/y-te/lich-su'],
+      icon: 'icon icon-alarm',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }

@@ -9,6 +9,7 @@ import {
   getLeftMenuCriteria,
   getLeftMenuChildren,
   getLeftMenuAllocation,
+  getLeftMenuMedical,
 } from '@/services/menu';
 
 export default {
@@ -24,6 +25,7 @@ export default {
     menuLeftCriteria: [],
     menuLeftChildren: [],
     menuLeftAllocation: [],
+    menuLeftMedical: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -40,6 +42,7 @@ export default {
       const menuLeftCriteria = yield call(getLeftMenuCriteria);
       const menuLeftChildren = yield call(getLeftMenuChildren);
       const menuLeftAllocation = yield call(getLeftMenuAllocation);
+      const menuLeftMedical = yield call(getLeftMenuMedical);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -53,6 +56,7 @@ export default {
           menuLeftCriteria,
           menuLeftChildren,
           menuLeftAllocation,
+          menuLeftMedical,
         },
       });
     },
