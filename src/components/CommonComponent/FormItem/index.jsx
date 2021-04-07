@@ -248,7 +248,7 @@ const renderChildren = (
     </Checkbox.Group>
   ),
   radio: (
-    <Radio.Group>
+    <Radio.Group className="radio-custom">
       {data.map((item, index) => (
         <Radio key={index} value={item.value}>
           {item.label}

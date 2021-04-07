@@ -513,8 +513,26 @@ export default [
             authority: [],
           },
           {
-            path: '/phan-bo/hoc-sinh',
-            component: './allocation/children',
+            path: '/phan-bo/hoc-sinh/tre-chua-xep-lop',
+            component: './allocation/children/arrange-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phan-bo/hoc-sinh/chuyen-lop',
+            component: './allocation/children/change-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phan-bo/giao-vien/danh-sach',
+            component: './allocation/teacher/list',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phan-bo/giao-vien/dieu-chuyen',
+            component: './allocation/teacher/transfers',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
