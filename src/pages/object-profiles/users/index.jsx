@@ -361,7 +361,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/tao-moi`)}
+              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/tao-moi?type=info`)}
             >
               Tạo hồ sơ
             </Button>

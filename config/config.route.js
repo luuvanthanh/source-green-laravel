@@ -194,6 +194,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/ho-so-doi-tuong/nhan-vien/tao-moi',
+            component: './object-profiles/users/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // OBJECT PROFILES
