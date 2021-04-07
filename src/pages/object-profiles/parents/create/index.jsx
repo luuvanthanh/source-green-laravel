@@ -5,7 +5,7 @@ import { Menu } from 'antd'
 import Pane from '@/components/CommonComponent/Pane'
 import Heading from '@/components/CommonComponent/Heading'
 import GeneralForm from './forms/general'
-// import CuratorForm from './forms/curator'
+import CuratorForm from './forms/curator'
 
 import { menu, defaultKey } from './menu'
 
@@ -13,7 +13,7 @@ const { Item: MenuItem } = Menu
 
 const forms = {
   general: <GeneralForm />,
-  // curator: <CuratorForm />,
+  curator: <CuratorForm />,
 }
 
 const Index = memo(() => {
