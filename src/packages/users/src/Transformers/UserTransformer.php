@@ -53,6 +53,10 @@ class UserTransformer extends BaseTransformer
         $attributes = [
             'totalRealTimekeeping' => $model->totalRealTimekeeping,
             'totalHourRedundantTimekeeping' => $model->totalHourRedundantTimekeeping,
+            'totalAdditionalTimes' => $model->additionalTimes,
+            'totalAdditionalHours' => $model->additionalHours,
+            'totalSubtractionTimes' => $model->subtractionTimes,
+            'totalSubtractionHours' => $model->subtractionHours,
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'workHourRedundant' => $model->workHourRedundant,
             'totalAnnualAbsent' => $model->totalAnnualAbsent,

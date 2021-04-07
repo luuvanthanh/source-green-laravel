@@ -126,10 +126,10 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $usersByStore = $this->userRepositoryEloquent->model()::with(['lateEarly' => function ($q) use ($start_date, $end_date) {
             $q->whereDate('date', '>=', $start_date)->whereDate('date', '<=', $end_date);
         }])->with(['addSubTime' => function ($query) use ($start_date, $end_date) {
-            $query->with(['addSubTimeDetail' => function ($q) use ($start_date, $end_date) {
+            $query->whereHas('addSubTimeDetail', function ($q) use ($start_date, $end_date) {
                 $q->where('start_date', '>=', $start_date);
                 $q->where('end_date', '<=', $end_date);
-            }]);
+            });
         }]);
 
         if ($is_shift === "true") {
@@ -238,9 +238,31 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
 
         $addSubTime = $user->addSubTime;
 
-        // if (count($addSubTime) > 0) {
-        //     $this->calculatorAddSubTime($user, $start_date, $end_date, $addSubTime);
-        // }
+        if (count($addSubTime) > 0) {
+            foreach ($addSubTime as $value) {
+                $detail = $value->addSubTimeDetail;
+
+                switch ($value->type) {
+                    case 'ADD':
+                        foreach ($detail as $value) {
+                            $additionalTimes += $value->days;
+                            $additionalHours += $value->hours;
+                        }
+                        break;
+                    case 'SUB':
+                        foreach ($detail as $value) {
+                            $subtractionTimes += $value->days;
+                            $subtractionHours += $value->hours;
+                        }
+                        break;
+                }
+            }
+        }
+
+        $user->additionalTimes = $additionalTimes;
+        $user->additionalHours = $additionalHours > 0 ? gmdate("H:i", $additionalHours * 3600) : '00:00';
+        $user->subtractionTimes = $subtractionTimes;
+        $user->subtractionHours = $subtractionHours > 0 ? gmdate("H:i", $subtractionHours * 3600) : '00:00';
 
         // lateEarly
         $lateEarly = $user->lateEarly;
@@ -364,11 +386,29 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             $totalTimekeepingWork = $totalTimekeepingWork >= 1 ? $totalTimekeepingWork : 0;
 
             // thuc cong
-            $totalWorks = ($user->totalRealTimekeeping + $user->totalAnnualAbsent) > 0
-            ? $user->totalRealTimekeeping + $user->totalAnnualAbsent
+            $totalWorks = ($user->totalRealTimekeeping + $user->totalAnnualAbsent + $additionalTimes - $subtractionTimes) > 0
+            ? $user->totalRealTimekeeping + $user->totalAnnualAbsent + $additionalTimes - $subtractionTimes
             : $totalTimekeepingWork;
 
-            $hourRedundant = $hourRedundantAfterSub;
+            $totalHoursAdd = $additionalHours * 3600 + $hourRedundantAfterSub;
+
+            $totalHoursSub = $subtractionHours * 3600;
+
+            if ($totalHoursAdd >= $totalHoursSub) {
+                $hourRedundant = $totalHoursAdd - $totalHoursSub;
+            } else {
+                $temp = $totalHoursSub - $totalHoursAdd;
+                $a = $temp / ($quotaWork * 3600);
+                $totalWorks = $totalWorks - $a;
+
+                $hourRedundant = ($totalWorks - floor($totalWorks)) * ($quotaWork * 3600);
+                $totalWorks = floor($totalWorks);
+
+            }
+            if ($hourRedundant > $quotaWork * 3600) {
+                $hourSub = $hourRedundant / ($quotaWork * 3600);
+                $hourRedundant = ($hourSub - floor($hourSub)) * 3600;
+            };
 
             //sinh nhật user
             $hourBirthday = 0;
@@ -833,17 +873,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $user->totalOffAbsent = $totalOffAbsent;
 
         return $responseTimeKeepingUser;
-    }
-
-    /**
-     * Calculator Absents
-     * @param object $user
-     * @param string $start_date
-     * @param string $end_date
-     */
-    public function calculatorAddSubTime(&$user, $start_date, $end_date, $addSubTime)
-    {
-        dd($addSubTime);
     }
 
     /**
