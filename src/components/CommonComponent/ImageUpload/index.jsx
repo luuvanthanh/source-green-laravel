@@ -39,7 +39,10 @@ const ImageUpload = memo(({ callback }) => {
   const uploadProps = useMemo(
     () => ({
       ...otherProps,
-      beforeUpload: (file) => beforeUpload(file, uploadAction),
+      beforeUpload: (file) => beforeUpload(file),
+      customRequest({ file }) {
+        uploadAction(file);
+      },
     }),
     [uploadAction],
   );
