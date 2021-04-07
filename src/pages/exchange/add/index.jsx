@@ -1,21 +1,22 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography, Form, List, Radio, Upload } from 'antd';
+import { connect, history, NavLink } from 'umi';
+import { Modal, Form, Tabs, List, Avatar, Checkbox, Upload } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
-import Button from '@/components/CommonComponent/Button';
-import HelperModules from '../utils/Helper';
-import PropTypes from 'prop-types';
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { variables, Helper } from '@/utils';
 import { UserOutlined } from '@ant-design/icons';
-import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
+import Table from '@/components/CommonComponent/Table';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables, Helper } from '@/utils';
+import PropTypes from 'prop-types';
+import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
+import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,11 +33,11 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ exchangeAdd, loading, menu }) => ({
+const mapStateToProps = ({ allocationChangeClass, loading, menu }) => ({
   loading,
-  data: exchangeAdd.data,
+  data: allocationChangeClass.data,
+  pagination: allocationChangeClass.pagination,
   menuData: menu.menuLeftExchange,
-  pagination: exchangeAdd.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -44,6 +45,9 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
+    const {
+      location: { query },
+    } = props;
     this.state = {
       description: null,
     };
@@ -80,16 +84,14 @@ class Index extends PureComponent {
     });
   };
 
-  onFinish = (values) => {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-  };
-
   render() {
-    const { menuData } = this.props;
+    const {
+      menuData,
+      match: { params },
+      loading: { effects },
+    } = this.props;
     const { description } = this.state;
+    const loading = effects['allocationChangeClass/GET_DATA'];
     const props = {
       beforeUpload: (file) => {
         return file;
@@ -98,109 +100,140 @@ class Index extends PureComponent {
       fileList: [],
     };
     return (
-      <Form layout="vertical" ref={this.formRef} onFinish={this.onFinish}>
+      <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
         <Helmet title="Chi tiết trao đổi" />
         <Breadcrumbs last="Tạo trao đổi" menu={menuData} />
-        <div
-          className={classnames(
-            styles['content-form'],
-            styles['content-form-children'],
-            styles['content-form-details'],
-          )}
-        >
-          {/* DETAILS CONTAINER */}
-          <div className={classnames(stylesExchange['details-container'], 'mt-3')}>
-            <div className={stylesExchange['left-container']}>
-              <Text color="dark">Thông tin trẻ</Text>
-              <div className="row mt-3">
-                <div className="col-lg-6">
-                  <FormItem name="user_id" label="Cơ sở" data={[]} type={variables.SELECT} />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          {/* MAIN CONTAINER */}
+          <div className={stylesAllocation['main-container']}>
+            <div className={stylesAllocation['left-container']}>
+              <div className={stylesAllocation['content']}>
+                <div className={stylesAllocation['heading']}>
+                  <Text color="dark" size="large-medium">
+                    Thông tin trẻ
+                  </Text>
                 </div>
-                <div className="col-lg-6">
-                  <FormItem name="class_id" label="Lớp" data={[]} type={variables.SELECT} />
+                <div className={stylesAllocation['content-form']}>
+                  <div className="row mt-3">
+                    <div className="col-lg-6">
+                      <FormItem
+                        label="Cơ sở"
+                        name="position"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                      />
+                    </div>
+                    <div className="col-lg-6">
+                      <FormItem
+                        label="Lớp"
+                        name="class"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                      />
+                    </div>
+                  </div>
+                  <hr />
+                </div>
+                <List
+                  className={stylesAllocation.list}
+                  dataSource={[
+                    { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                  ]}
+                  renderItem={(item) => (
+                    <List.Item key={item.id}>
+                      <Checkbox className={stylesAllocation.checkbox} />
+                      <div className={stylesAllocation['group-info']}>
+                        <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                        <div className={stylesAllocation['info']}>
+                          <h3 className={stylesAllocation['title']}>Su beo</h3>
+                          <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                        </div>
+                      </div>
+                    </List.Item>
+                  )}
+                />
+              </div>
+              <div className={stylesAllocation['footer-content']}>
+                <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+                  <Text color="dark" size="normal">
+                    Đã chọn 2 bé
+                  </Text>
                 </div>
               </div>
-              <List
-                className={stylesExchange.list}
-                dataSource={[
-                  { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                ]}
-                renderItem={(item) => (
-                  <List.Item key={item.id}>
-                    <Radio className={stylesExchange.radio} />
-                    <div className={stylesExchange['group-info']}>
-                      <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                      <div className={stylesExchange['info']}>
-                        <h3 className={stylesExchange['title']}>Su beo</h3>
-                        <p className={stylesExchange['norm']}>32 tháng tuổi</p>
-                      </div>
-                    </div>
-                  </List.Item>
-                )}
-              />
             </div>
-            <div className={stylesExchange['right-container']}>
-              <div className={stylesExchange['form-content']}>
-                <Text color="dark">Chi tiết trao đổi</Text>
-                <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <FormItem
-                      name="title"
-                      label="Tiêu đề"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT]}
-                    />
-                  </div>
+            <div className={stylesAllocation['right-container']}>
+              <div className={stylesAllocation['content']}>
+                <div className={stylesAllocation['heading']}>
+                  <Text color="dark" size="large-medium">
+                    Chi tiết trao đổi
+                  </Text>
                 </div>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="ant-col ant-form-item-label">
-                      <label>
-                        <span>Nội dung</span>
-                      </label>
+                <div className={stylesAllocation['content-form']}>
+                  <div className="row mt-3">
+                    <div className="col-lg-12">
+                      <FormItem
+                        name="title"
+                        label="Tiêu đề"
+                        type={variables.INPUT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
+                      />
                     </div>
-                    <Quill onChange={this.onChangeEditor} value={description} />
                   </div>
-                </div>
-                <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <div className="ant-col ant-form-item-label">
-                      <label>
-                        <span>Hình ảnh đính kèm</span>
-                      </label>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Nội dung</span>
+                        </label>
+                      </div>
+                      <Quill onChange={this.onChangeEditor} value={description} />
                     </div>
-                    <Upload {...props} className={stylesExchange['custom-upload']}>
-                      <Button htmlType="button" icon="plusMain" />
-                    </Upload>
-                    <div className={stylesExchange['list-image']}>
-                      <div className={stylesExchange['image-item']}>
-                        <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-lg-12">
+                      <div className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Hình ảnh đính kèm</span>
+                        </label>
+                      </div>
+                      <Upload {...props} className={stylesExchange['custom-upload']}>
+                        <Button htmlType="button" icon="plusMain" />
+                      </Upload>
+                      <div className={stylesExchange['list-image']}>
+                        <div className={stylesExchange['image-item']}>
+                          <img
+                            src="/images/slice/image_01.png"
+                            className={stylesExchange['image']}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className={stylesExchange['form-footer']}>
-                <Button htmlType="submit" color="success" size="large">
-                  Gửi trao đổi
-                </Button>
+              <div className={stylesAllocation['footer-content']}>
+                <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+                  <Button color="success" size="large" className="ml-auto">
+                    Chuyển lớp
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-          {/* DETAILS CONTAINER */}
+          {/* MAIN CONTAINER */}
         </div>
       </Form>
     );
