@@ -123,12 +123,12 @@ const General = memo(() => {
               </FormItem>
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name="commune" label="Xã/Phường">
-                  <Select
-                    placeholder="Chọn"
-                    dataSet={genders}
-                  />
-                </FormItem>
+              <FormItem name="city" label="Thành phố">
+                <Select
+                  placeholder="Chọn"
+                  dataSet={[]}
+                />
+              </FormItem>
             </Pane>
 
             <Pane className="col-lg-4">
@@ -140,12 +140,12 @@ const General = memo(() => {
               </FormItem>
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name="city" label="Thành phố">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
-              </FormItem>
+              <FormItem name="commune" label="Xã/Phường">
+                  <Select
+                    placeholder="Chọn"
+                    dataSet={genders}
+                  />
+                </FormItem>
             </Pane>
           </Pane>
         </Pane>
