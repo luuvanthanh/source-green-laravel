@@ -8,6 +8,7 @@ import GeneralForm from './forms/general'
 import CuratorForm from './forms/curator'
 import ParentsForm from './forms/parents'
 import ShuttlersForm from './forms/shuttlers'
+import OtherForm from './forms/other'
 
 import { menu, defaultKey } from './menu'
 
@@ -18,6 +19,7 @@ const forms = {
   curator: <CuratorForm />,
   parents: <ParentsForm />,
   shuttlers: <ShuttlersForm />,
+  other: <OtherForm />,
 }
 
 const Index = memo(() => {
