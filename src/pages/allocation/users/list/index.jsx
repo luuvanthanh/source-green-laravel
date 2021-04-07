@@ -243,29 +243,47 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'Thời gian',
+        title: 'Mã ID',
         key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => '15:31, 10/1/2021',
+        width: 80,
+        className: 'min-width-80',
+        render: (record) => 'NV01',
       },
       {
-        title: 'Tên tài khoản',
+        title: 'Tên nhân viên',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => 'Nguyễn Ngọc Bích',
+        render: (record) => 'Nguyễn Văn Tuấn',
       },
       {
-        title: 'Hành động',
-        key: 'action',
+        title: 'Cơ sở',
+        key: 'location',
         className: 'min-width-130',
-        render: (record) => 'Xếp lớp',
+        render: (record) => 'Cơ sở 1',
       },
       {
-        title: 'Nội dung',
-        key: 'status',
+        title: 'Bộ phận',
+        key: 'division',
         className: 'min-width-120',
-        render: (record) => 'Xếp trẻ Su Beo, Nguyễn Văn Đức vào lớp preschool 2, cơ sở 1',
+        render: (record) => 'Hành chính nhân sự',
+      },
+      {
+        title: 'Chức vụ',
+        key: 'positon',
+        className: 'min-width-120',
+        render: (record) => 'Ghi danh',
+      },
+      {
+        title: 'Số điện thoại',
+        key: 'phone',
+        className: 'min-width-120',
+        render: (record) => '0905145754',
+      },
+      {
+        title: 'Hình thức làm việc',
+        key: 'workForm',
+        className: 'min-width-120',
+        render: (record) => 'Chính thức',
       },
       {
         key: 'action',
@@ -278,7 +296,6 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
