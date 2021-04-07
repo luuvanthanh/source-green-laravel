@@ -189,8 +189,20 @@ export default [
             authority: [],
           },
           {
+            path: '/ho-so-doi-tuong/phu-huynh/tao-moi',
+            component: './object-profiles/parents/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/ho-so-doi-tuong/nhan-vien',
             component: './object-profiles/users',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/nhan-vien/tao-moi',
+            component: './object-profiles/users/create',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

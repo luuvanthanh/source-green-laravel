@@ -42,6 +42,8 @@ export const variables = {
     MAX_LENGTH_INPUT_CODE: { max: 30, message: 'Trường này không quá 30 kí tự' },
     MAX_LENGTH_INPUT: { max: 500, message: 'Trường này không quá 500 kí tự' },
     MAX_LENGTH_TEXTAREA: { max: 1000, message: 'Trường này không quá 1000 kí tự' },
+    // TODO: Rename
+    MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
     NUMBER: { pattern: /^\d+$/, message: 'Trường này là chỉ là số' },
     EMAIL: { type: 'email', message: 'Trường này là email' },
@@ -86,6 +88,7 @@ export const variables = {
     format: { targetValue: 'HH:mm:ss' },
     attributes: ['hour', 'minute', 'second'],
   },
+  EMPTY_DATA_TEXT: 'Chưa có dữ liệu'
 };
 
 export default variables;

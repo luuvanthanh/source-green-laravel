@@ -17,6 +17,8 @@ const genders = [
   { id: 1, name: 'Nữ' },
 ]
 
+const marginProps = {  style: { marginBottom: 12 }}
+
 const General = memo(() => {
   const formRef = useRef()
 
@@ -25,11 +27,8 @@ const General = memo(() => {
       layout="vertical"
       ref={formRef}
       initialValues={{
-        name: 'Trần Thu Hà',
-        id: '01',
-        admissionDate: moment(),
-        birthday: moment('2018/08/12'),
-        gender: 1
+        name: 'Nguyễn Văn Phước',
+        birthday: moment('1986/12/15'),
       }}
     >
       <Pane className="card">
@@ -37,42 +36,22 @@ const General = memo(() => {
           <Heading type="form-title" style={{ marginBottom: 20 }}>Thông tin cơ bản</Heading>
           <Pane className="row">
             <Pane className="col">
-              <FormItem name="avatar" label="Hình ảnh học sinh">
+              <FormItem name="avatar" label="Hình ảnh phụ huynh">
                 <ImageUpload />
               </FormItem>
             </Pane>
           </Pane>
 
-          <Pane className="row">
+          <Pane className="row border-bottom" {...marginProps}>
             <Pane className="col-lg-4">
-              <FormItem name="name" label="Họ và tên">
+              <FormItem name="name" label="Tên khách hàng">
                 <Input placeholder="Nhập" />
               </FormItem>
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name="id" label="Mã học sinh">
-                <Input placeholder="Nhập" />
+              <FormItem name="birthday" label="Ngày sinh">
+                <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} disabledDate={current => current > moment()} />
               </FormItem>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="admissionDate" label="Ngày nhập học">
-                <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} />
-              </FormItem>
-            </Pane>
-
-            <Pane className="col-lg-4">
-              <Pane className="row">
-                <Pane className="col-lg-8">
-                  <FormItem name="birthday" label="Ngày sinh">
-                    <DatePicker placeholder="Chọn" format={variables.DATE_FORMAT.DATE} disabledDate={current => current > moment()} />
-                  </FormItem>
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem label="Tuổi(tháng)">
-                    32
-                  </FormItem>
-                </Pane>
-              </Pane>
             </Pane>
             <Pane className="col-lg-4">
               <FormItem name="gender" label="Giới tính">
@@ -82,36 +61,27 @@ const General = memo(() => {
                   />
                 </FormItem>
             </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name="classId" label="Mã lớp">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
-              </FormItem>
-            </Pane>
 
             <Pane className="col-lg-4">
-              <FormItem name="premisesId" label="Mã cơ sở">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
+              <FormItem name="email" label="Email">
+                <Input placeholder="Nhập" />
               </FormItem>
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name="yearId" label="Mã năm">
-                <Select
-                  placeholder="Chọn"
-                  dataSet={[]}
-                />
+              <FormItem name="phoneNumber" label="Số điện thoại">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="otherPhoneNumber" label="Số điện thoại khác">
+                <Input placeholder="Nhập" />
               </FormItem>
             </Pane>
           </Pane>
 
-          <Heading type="form-block-title" style={{ marginBottom: 12 }}>Địa chỉ</Heading>
+          <Heading type="form-block-title" {...marginProps}>Địa chỉ</Heading>
 
-          <Pane className="row">
+          <Pane className="row border-bottom" {...marginProps}>
             <Pane className="col-lg-4">
               <FormItem name="streetNumber" label="Số nhà">
                 <Input placeholder="Nhập" />
@@ -141,11 +111,58 @@ const General = memo(() => {
             </Pane>
             <Pane className="col-lg-4">
               <FormItem name="commune" label="Xã/Phường">
-                  <Select
-                    placeholder="Chọn"
-                    dataSet={genders}
-                  />
-                </FormItem>
+                <Select
+                  placeholder="Chọn"
+                  dataSet={genders}
+                />
+              </FormItem>
+            </Pane>
+          </Pane>
+
+          <Pane className="row">
+            <Pane className="col-lg-4">
+              <FormItem name="job" label="Nghề nghiệp">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="facebook" label="Địa chỉ facebook">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="zalo" label="Địa chỉ zalo">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+
+            <Pane className="col-lg-4">
+              <FormItem name="instagram" label="Địa chỉ Instagram">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="involve" label="Khách hàng liên quan">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+
+            <Pane className="col-lg-12">
+              <FormItem name="note" label="Ghi chú">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+
+            <Pane className="col-lg-12">
+              <FormItem name="interesting" label="Quan tâm">
+                <Input placeholder="Nhập" />
+              </FormItem>
+            </Pane>
+
+            <Pane className="col-lg-12">
+              <FormItem name="favorites" label="Sở thích">
+                <Input placeholder="Nhập" />
+              </FormItem>
             </Pane>
           </Pane>
         </Pane>
