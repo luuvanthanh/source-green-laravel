@@ -12,7 +12,7 @@ import { isEmpty, get } from 'lodash';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
-const ImageUpload = memo(({ callback }) => {
+const ImageUpload = memo(({ callback, fileImage }) => {
   const _mounted = useRef(false);
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
@@ -51,6 +51,12 @@ const ImageUpload = memo(({ callback }) => {
     _mounted.current = true;
     return () => (_mounted.current = false);
   }, []);
+
+  useEffect(() => {
+    if (fileImage) {
+      _mountedSet(setImage, { path: fileImage });
+    }
+  }, [fileImage]);
 
   const imageUrl = useMemo(() => `${API_UPLOAD}/${image?.path}`, [image]);
 

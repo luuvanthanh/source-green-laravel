@@ -174,6 +174,7 @@ export async function getLeftMenuProfile() {
       url: [
         '/ho-so-doi-tuong/nhan-vien',
         '/ho-so-doi-tuong/nhan-vien/tao-moi',
+        '/ho-so-doi-tuong/nhan-vien/:id/chi-tiet',
       ],
       icon: 'icon icon-man',
       permission: [],
