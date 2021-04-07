@@ -63,6 +63,7 @@
             "GGPHP\\Absent\\": "packages/absent/src/",
             "GGPHP\\LateEarly\\": "packages/late_early/src/",
             "GGPHP\\AddSubTime\\": "packages/add-sub-time/src/",
+            "GGPHP\\Config\\": "packages/config/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

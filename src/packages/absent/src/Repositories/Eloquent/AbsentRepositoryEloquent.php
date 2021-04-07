@@ -136,8 +136,6 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
             $this->userRepositoryEloquent->model->whereIn('id', explode(',', $attributes['user_id']));
         }
 
-        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->tranferHistory($attributes);
-
         if (!empty($attributes['limit'])) {
             $users = $this->userRepositoryEloquent->paginate($attributes['limit']);
         } else {

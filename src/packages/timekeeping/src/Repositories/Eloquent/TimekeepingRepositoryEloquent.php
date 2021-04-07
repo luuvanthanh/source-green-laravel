@@ -125,6 +125,11 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
     {
         $usersByStore = $this->userRepositoryEloquent->model()::with(['lateEarly' => function ($q) use ($start_date, $end_date) {
             $q->whereDate('date', '>=', $start_date)->whereDate('date', '<=', $end_date);
+        }])->with(['addSubTime' => function ($query) use ($start_date, $end_date) {
+            $query->with(['addSubTimeDetail' => function ($q) use ($start_date, $end_date) {
+                $q->where('start_date', '>=', $start_date);
+                $q->where('end_date', '<=', $end_date);
+            }]);
         }]);
 
         if ($is_shift === "true") {
@@ -151,6 +156,11 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
 
             $users = $this->userRepositoryEloquent->model()::whereIn('id', $usersArray)->with(['lateEarly' => function ($q) use ($start_date, $end_date) {
                 $q->whereDate('date', '>=', Carbon::parse($start_date)->format('Y-m-d'))->whereDate('date', '<=', Carbon::parse($end_date)->format('Y-m-d'));
+            }])->with(['addSubTime' => function ($query) use ($start_date, $end_date) {
+                $query->with(['addSubTimeDetail' => function ($q) use ($start_date, $end_date) {
+                    $q->where('start_date', '>=', $start_date);
+                    $q->where('end_date', '<=', $end_date);
+                }]);
             }]);
 
             if ($is_shift === "true") {
@@ -219,9 +229,18 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $timeKeepingByDate = [];
         $workHourRedundant = 0;
         $workBirthday = 0;
-
+        $additionalTimes = 0;
+        $additionalHours = 0;
+        $subtractionTimes = 0;
+        $subtractionHours = 0;
         // thoi gian cham cong
         $userHasTimekeeping = $user->timekeeping;
+
+        $addSubTime = $user->addSubTime;
+
+        // if (count($addSubTime) > 0) {
+        //     $this->calculatorAddSubTime($user, $start_date, $end_date, $addSubTime);
+        // }
 
         // lateEarly
         $lateEarly = $user->lateEarly;
@@ -277,6 +296,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
                             "type" => "KXD",
                         ];
                     } else {
+                        $quotaWork = 8;
                         $this->quotaWork = 8;
                         // mac dinh lay tat ca cac ngay
                         $resultTimekeeping[$key] = $this->calculatorTimekeeping($quotaWork, $key, $value, $timeKeepingByDate[$key], $type, $dataAutoApproval);
@@ -308,11 +328,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $user->totalHourRedundantTimekeeping = $totalHourRedundantTimekeeping > 0 ? gmdate("H:i", $totalHourRedundantTimekeeping) : '00:00';
         $responseTimeKeepingUser = $this->calculatorAbsents($user, $start_date, $end_date, $responseTimeKeepingUser);
 
-        // for report page
-        $user->dateIncrease = $userOverTime['dateIncrease'];
-        $user->dateOvertime = $userOverTime['dateOvertime'];
-        // end for report page
-
         $quotaWork = $this->quotaWork;
 
         if ($quotaWork > 0) {
@@ -330,7 +345,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
                     $totalHoursMinutesPartTime += $minute;
                 }
             }
-
             $user->totalTimekeepingDate = $totalTimekeepingWork;
             // ngay cong thuc te, gio du sau khi chia
             if ($totalHourRedundantTimekeeping >= ($quotaWork * 3600)) {
@@ -354,7 +368,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             ? $user->totalRealTimekeeping + $user->totalAnnualAbsent
             : $totalTimekeepingWork;
 
-            $hourSub = $hourRedundant / ($quotaWork * 3600);
             $hourRedundant = $hourRedundantAfterSub;
 
             //sinh nhật user
@@ -468,6 +481,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             foreach ($item->user as $value) {
                 $getWorkTimes = $value->pivot->shift_time;
                 $workTimes = json_decode($getWorkTimes, true);
+
                 $userTimeWorkShift[Carbon::parse($item->work_date)->format('Y-m-d')]['workShiftTimes'] = $workTimes;
             }
         }
@@ -486,7 +500,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
      */
     public function calculatorTimekeeping($quotaWork, $date, $value, $timeKeepingByDate, $type, $dataAutoApproval)
     {
-
         $resultCalculator = 0;
         $totalShiftTime = 0;
         $totalBreakTime = 0;
@@ -520,8 +533,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
                     'timeSlot' => $item['start_time'] . '-' . $item['end_time'],
                 ];
 
-                $mealTime = !empty($item['meal_time']) ? $item['meal_time'] * 3600 : 0;
-                $resultCalculator += $this->applyRule($attributeApplyRule, $date, $dataAutoApproval, $mealTime);
+                $resultCalculator += $this->applyRule($attributeApplyRule, $date, $dataAutoApproval);
                 $resultCalculatorHours += $userTrackingEndTime - $userTrackingStartTime;
             }
         }
@@ -531,6 +543,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         } elseif ($type && $type == 'PART_TIME_SECOND') {
             $result = ['totalTimeKeeping' => $resultCalculatorHours, 'totalTimeRedundant' => 0];
         } else {
+
             $response = $resultCalculator / ($quotaWork * 3600) > 1 ? 1 : ($resultCalculator / ($quotaWork * 3600));
 
             $totalTimeRedundant = $resultCalculator < ($quotaWork * 3600) ? $resultCalculator : 0;
@@ -560,17 +573,22 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $durationAllow[$date]['validTimeEnd'] = $this->getDurationsAllow($date, $item['end_time'], Timekeeping::ALLOW_END_TIME, $key);
 
         foreach ($timeKeepingByDate as $time) {
+
             if ($time->attended_at >= $durationAllow[$date]['validTimeStart'][0]
                 && $time->attended_at <= $durationAllow[$date]['validTimeStart'][1]) {
+
                 if (!($userTracking[$date][$key][Timekeeping::CHECK_IN])) {
                     $userTracking[$date][$key][Timekeeping::CHECK_IN]
                     = Carbon::parse($time->attended_at)->format($formatHIS);
+                } elseif ($time->attended_at >= $durationAllow[$date]['validTimeEnd'][0]
+                    && $time->attended_at <= $durationAllow[$date]['validTimeEnd'][1]) {
+                    $userTracking[$date][$key][Timekeeping::CHECK_OUT] = Carbon::parse($time->attended_at)->format($formatHIS);
                 }
-
             } elseif ($time->attended_at >= $durationAllow[$date]['validTimeEnd'][0]
                 && $time->attended_at <= $durationAllow[$date]['validTimeEnd'][1]) {
                 $userTracking[$date][$key][Timekeeping::CHECK_OUT] = Carbon::parse($time->attended_at)->format($formatHIS);
             }
+
         }
 
         return $userTracking;
@@ -581,7 +599,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
      * @param $date
      * @return mixed
      */
-    public function applyRule($attribute, $date, $dataAutoApproval, $mealTime = 0)
+    public function applyRule($attribute, $date, $dataAutoApproval)
     {
         $time = 0;
         if (!empty($attribute)) {
@@ -631,10 +649,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
 
             if (empty($existLate) && empty($existEarly)) {
                 $time = $attribute['totalShiftTime'];
-            }
-
-            if (!empty($mealTime)) {
-                $time = $time - $mealTime;
             }
 
             $time = $time / 3600;
@@ -715,7 +729,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
                 $query->where([['start_date', '>=', $start_date], ['end_date', '<=', $end_date]])
                     ->orWhere([['start_date', '<=', $start_date], ['end_date', '>=', $start_date]])
                     ->orWhere([['start_date', '<=', $end_date], ['end_date', '>=', $end_date]]);
-            })->approved()->get();
+            })->get();
 
         $absents2 = $user->absent()->whereIn('absent_type_id', $absentType2)
             ->where(function ($query) use ($start_date, $end_date) {
@@ -819,6 +833,17 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $user->totalOffAbsent = $totalOffAbsent;
 
         return $responseTimeKeepingUser;
+    }
+
+    /**
+     * Calculator Absents
+     * @param object $user
+     * @param string $start_date
+     * @param string $end_date
+     */
+    public function calculatorAddSubTime(&$user, $start_date, $end_date, $addSubTime)
+    {
+        dd($addSubTime);
     }
 
     /**
@@ -1057,9 +1082,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             }]);
         }
 
-        $query->tranferHistory($attribute);
-        $query->orderByUserByPosition();
-
         if (!empty($attribute['user_id'])) {
             $query->whereHas('timekeeping', function ($query) use ($attribute) {
                 $query->whereIn('user_id', explode(',', $attribute['user_id']));
@@ -1148,9 +1170,6 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
                     ->whereDate('attended_at', '<=', Carbon::parse($attribute['end_date'])->format('Y-m-d'));
             }]);
         }
-
-        $query->tranferHistory($attribute);
-        $query->orderByUserByPosition();
 
         if (!empty($attribute['user_id'])) {
             $query->whereHas('timekeeping', function ($query) use ($attribute) {

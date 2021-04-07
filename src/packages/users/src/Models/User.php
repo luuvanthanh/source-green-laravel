@@ -117,6 +117,14 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Define relations store
+     */
+    public function addSubTime()
+    {
+        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTime::class, 'user_id');
+    }
+
+    /**
      * Count Annual Absents
      * @param null $start_date
      * @param null $end_date

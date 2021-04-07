@@ -189,6 +189,7 @@ return [
         GGPHP\AddSubTime\Providers\AddSubTimeProvider::class,
         ZK\Providers\ZKProvider::class,
         Cviebrock\EloquentSluggable\ServiceProvider::class,
+        GGPHP\Config\Providers\ConfigServiceProvider::class,
     ],
 
     /*

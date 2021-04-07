@@ -30,7 +30,7 @@ class AddSubTime extends UuidModel
      */
     public function addSubTimeDetail()
     {
-        return $this->hasMany(AddSubTimeDetail::class);
+        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTimeDetail::class);
     }
 
     /**

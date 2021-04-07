@@ -17,6 +17,7 @@ services:
       - ./deployment/configs/crontab.conf:/etc/crontabs/root
     environment:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
+    restart: on-failure
   # container for database
   # s3:
   #   image: bitnami/minio:latest
@@ -35,6 +36,7 @@ services:
       POSTGRES_DB: ${MYSQL_DATABASE}
       POSTGRES_USER: ${MYSQL_USER}
       POSTGRES_PASSWORD: ${MYSQL_PASSWORD}
+    restart: on-failure
   # container for UI database management
   phpmyadmin:
     image: dpage/pgadmin4
@@ -47,3 +49,4 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    restart: on-failure

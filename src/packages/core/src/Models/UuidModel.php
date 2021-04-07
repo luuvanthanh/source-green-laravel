@@ -6,6 +6,8 @@ use Webpatser\Uuid\Uuid;
 
 class UuidModel extends CoreModel
 {
+    public $keyType = 'string';
+
     public static function boot()
     {
         parent::boot();

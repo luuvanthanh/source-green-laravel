@@ -129,8 +129,6 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
             $query->lateEarlyDeclineAutoApprove();
         }]);
 
-        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->tranferHistory($attributes);
-
         if (!empty($attributes['limit'])) {
             $users = $this->userRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -371,10 +369,6 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
             $statusWorkDeclaration = explode(',', $attributes['status_work_declaration']);
             $this->model = $this->model->whereIn('status_work_declaration', $statusWorkDeclaration);
         }
-
-        $this->model = $this->model->whereHas('user', function ($query) use ($attributes) {
-            $query->tranferHistory($attributes);
-        });
 
         if (!empty($attributes['limit'])) {
             $users = $this->paginate($attributes['limit']);

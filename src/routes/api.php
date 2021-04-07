@@ -57,5 +57,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\Config\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });
