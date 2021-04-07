@@ -190,6 +190,7 @@ return [
         ZK\Providers\ZKProvider::class,
         Cviebrock\EloquentSluggable\ServiceProvider::class,
         GGPHP\Config\Providers\ConfigServiceProvider::class,
+        GGPHP\RevokeShift\Providers\RevokeShiftServiceProvider::class,
     ],
 
     /*

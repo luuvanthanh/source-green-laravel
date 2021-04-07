@@ -61,5 +61,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\RevokeShift\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });

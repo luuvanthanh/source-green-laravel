@@ -64,6 +64,7 @@
             "GGPHP\\LateEarly\\": "packages/late_early/src/",
             "GGPHP\\AddSubTime\\": "packages/add-sub-time/src/",
             "GGPHP\\Config\\": "packages/config/src/",
+            "GGPHP\\RevokeShift\\": "packages/revoke-shift/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [
