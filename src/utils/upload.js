@@ -1,6 +1,6 @@
 import { message } from 'antd';
 
-const allowImageTypes = ['image/jpeg', 'image/png'];
+const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
 const warningType = 'Định dạng hình ảnh thuộc loại .JPG, .PNG';
 

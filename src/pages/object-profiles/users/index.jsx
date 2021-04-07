@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar } from 'antd';
+import { Modal, Form, Avatar } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
@@ -15,7 +15,6 @@ import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -51,13 +50,16 @@ class Index extends PureComponent {
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        keyWord: query?.keyWord,
       },
       objects: {},
     };
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -183,61 +185,6 @@ class Index extends PureComponent {
   });
 
   /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'OPusers/UPDATE' : 'OPusers/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
    * Function remove items
    * @param {uid} id id of items
    */
@@ -278,26 +225,29 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => 'TD01',
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
         title: 'Hình ảnh',
         key: 'name',
         className: 'min-width-100',
         align: 'center',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
+        render: (record) =>
+          record.fileImage && (
+            <Avatar size={40} shape="square" src={`${API_UPLOAD}${record.fileImage}`} />
+          ),
       },
       {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Vân Khánh</Text>,
+        render: (record) => <Text size="normal">{record.fullName}</Text>,
       },
       {
         title: 'Số điện thoại',
         key: 'phone',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">0905142652</Text>,
+        render: (record) => <Text size="normal">{record.phone}</Text>,
       },
       {
         title: 'Cơ sở',
@@ -332,7 +282,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push('/ho-so-doi-tuong/nhan-vien/1/chi-tiet')}
+              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -345,8 +295,9 @@ class Index extends PureComponent {
 
   render() {
     const {
-      match: { params },
+      data,
       pagination,
+      match: { params },
       loading: { effects },
     } = this.props;
     const { search } = this.state;
@@ -370,8 +321,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -422,7 +371,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{

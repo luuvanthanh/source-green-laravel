@@ -3,6 +3,7 @@ import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -15,19 +16,20 @@ const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
 ];
-const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
+
+const marginProps = { style: { marginBottom: 12 } };
+const mapStateToProps = ({ loading, OPusersAdd }) => ({
   loading,
-  details: OPchildrenAdd.details,
-  error: OPchildrenAdd.error,
+  details: OPusersAdd.details,
+  error: OPusersAdd.error,
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
-
-  const loadingSubmit = effects[`OPchildrenAdd/ADD`] || effects[`OPchildrenAdd/UPDATE`];
-  const loading = effects[`OPchildrenAdd/GET_DETAILS`];
+  const loadingSubmit = effects[`OPusersAdd/ADD`] || effects[`OPusersAdd/UPDATE`];
+  const loading = effects[`OPusersAdd/GET_DETAILS`];
 
   /**
    * Function submit form modal
@@ -35,7 +37,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
    */
   const onFinish = (values) => {
     dispatch({
-      type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
+      type: params.id ? 'OPusersAdd/UPDATE' : 'OPusersAdd/ADD',
       payload: params.id
         ? { ...details, ...values, id: params.id, fileImage }
         : { ...values, fileImage },
@@ -62,29 +64,30 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'OPchildrenAdd/GET_DETAILS',
+        type: 'OPusersAdd/GET_DETAILS',
         payload: params,
       });
     }
   }, [params.id]);
 
   useEffect(() => {
+    if (!isEmpty(details) && params.id) {
+      formRef.current.setFieldsValue({
+        ...details,
+        boD: moment(details.boD),
+        identifyDate: moment(details.boD),
+      });
+      mountedSet(setFileImage, details.fileImage);
+    }
+  }, [details]);
+
+  useEffect(() => {
     mounted.current = true;
     return () => (mounted.current = false);
   }, []);
 
-  useEffect(() => {
-    if (!isEmpty(details) && params.id) {
-      formRef.current.setFieldsValue({
-        ...details,
-        doB: details.doB && moment(details.doB),
-        registerDate: details.registerDate && moment(details.registerDate),
-      });
-    }
-  }, [details]);
-
   return (
-    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+    <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <Loading loading={loading} isError={error.isError} params={{ error }}>
         <Pane className="card">
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
@@ -93,85 +96,88 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             </Heading>
             <Pane className="row">
               <Pane className="col">
-                <Form.Item name="avatar" label="Hình ảnh học sinh">
+                <Form.Item name="avatar" label="Hình ảnh nhân viên">
                   <ImageUpload
                     callback={(res) => {
                       mountedSet(setFileImage, res.fileInfo.url);
                     }}
+                    fileImage={fileImage}
                   />
                 </Form.Item>
               </Pane>
             </Pane>
-
-            <Pane className="row">
+            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
                   name="fullName"
-                  label="Họ và tên"
+                  label="Tên nhân viên"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                 />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="code"
-                  label="Mã học sinh"
-                  type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  name="registerDate"
-                  label="Ngày nhập học"
+                  name="boD"
+                  label="Ngày sinh"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
+                  disabledDate={(current) => current > moment()}
                 />
-              </Pane>
-
-              <Pane className="col-lg-4">
-                <Pane className="row">
-                  <Pane className="col-lg-8">
-                    <FormItem
-                      name="doB"
-                      label="Ngày sinh"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <Form.Item label="Tuổi(tháng)">32</Form.Item>
-                  </Pane>
-                </Pane>
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
                   data={genders}
                   name="sex"
-                  label="Ngày sinh"
+                  label="Giới tính"
                   type={variables.SELECT}
                   rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
+            </Pane>
+            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
-                <FormItem data={[]} name="classId" label="Mã lớp" type={variables.SELECT} />
+                <FormItem
+                  name="identifyNumber"
+                  label="Số CMND"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
               </Pane>
-
               <Pane className="col-lg-4">
-                <FormItem data={[]} name="premisesId" label="Mã cơ sở" type={variables.SELECT} />
+                <FormItem
+                  name="identifyDate"
+                  label="Ngày cấp"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem data={[]} name="yearId" label="Mã năm" type={variables.SELECT} />
+                <FormItem
+                  name="identifyLocation"
+                  label="Nơi cấp"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
               </Pane>
             </Pane>
 
-            <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-              Địa chỉ
-            </Heading>
-
-            <Pane className="row">
-              <Pane className="col-lg-12">
-                <FormItem name="address" label="Địa chỉ hiện tại" type={variables.INPUT} />
+            <Pane className="row" {...marginProps}>
+              <Pane className="col-lg-4">
+                <FormItem name="nation" label="Dân tộc" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="religion" label="Tôn giáo" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  data={[
+                    { value: false, label: 'Độc thân' },
+                    { value: true, label: 'Đã kết hôn' },
+                  ]}
+                  name="married"
+                  label="Tình trạng hôn nhân"
+                  type={variables.RADIO}
+                />
               </Pane>
             </Pane>
           </Pane>
