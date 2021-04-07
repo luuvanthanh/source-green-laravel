@@ -536,6 +536,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/phan-bo/nhan-vien/danh-sach',
+            component: './allocation/users/list',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phan-bo/nhan-vien/dieu-chuyen',
+            component: './allocation/users/transfers',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // ALLOCATION

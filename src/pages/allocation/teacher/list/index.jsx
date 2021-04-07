@@ -210,7 +210,7 @@ class Index extends PureComponent {
                 <div className={stylesAllocation['content']}>
                   <div className={stylesAllocation['heading']}>
                     <Text color="dark" size="large-medium">
-                      Danh sách trẻ chưa xếp lớp
+                      Danh sách trẻ
                     </Text>
                   </div>
                   <List
@@ -249,7 +249,7 @@ class Index extends PureComponent {
                 <div className={stylesAllocation['content']}>
                   <div className={stylesAllocation['heading']}>
                     <Text color="dark" size="large-medium">
-                      Danh sách cơ sở/lớp
+                      Danh sách giáo viên
                     </Text>
                   </div>
                   <List

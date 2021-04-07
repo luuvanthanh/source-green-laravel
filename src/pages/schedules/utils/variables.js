@@ -23,6 +23,15 @@ export const variables = {
     LATE: 'LATE',
     EARLY: 'EARLY',
   },
+  DATE_OF_WEEK: {
+    0: 'su',
+    1: 'mo',
+    2: 'tu',
+    3: 'th',
+    4: 'we',
+    5: 'fr',
+    6: 'sa',
+  },
 };
 
 export default variables;
