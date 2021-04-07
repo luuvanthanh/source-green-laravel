@@ -3,7 +3,7 @@ import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'allocationChildren',
+  namespace: 'allocationChangeClass',
   state: {
     data: [],
     pagination: {},
