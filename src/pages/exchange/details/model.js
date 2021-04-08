@@ -17,6 +17,31 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_REMOVE: (state, { payload }) => ({
+      ...state,
+      details: {
+        ...state.details,
+        feedbacks: state.details.feedbacks.filter((item) => item.id !== payload.id),
+      },
+    }),
+    SET_ADD: (state, { payload }) => ({
+      ...state,
+      details: {
+        ...state.details,
+        feedbacks: [payload, ...state.details.feedbacks],
+      },
+    }),
+    SET_UPDATE: (state, { payload }) => ({
+      ...state,
+      details: {
+        ...state.details,
+        feedbacks: state.details.feedbacks.map((item) => (item.id === payload.id ? payload : item)),
+      },
+    }),
+    SET_UPDATE_COMMUNICATION: (state, { payload }) => ({
+      ...state,
+      details: payload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -44,7 +69,11 @@ export default {
     },
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        const response = yield saga.call(services.add, payload);
+        yield saga.put({
+          type: 'SET_ADD',
+          payload: response,
+        });
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
@@ -52,7 +81,23 @@ export default {
     },
     *UPDATE({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload);
+        const response = yield saga.call(services.update, payload);
+        yield saga.put({
+          type: 'SET_UPDATE',
+          payload: response,
+        });
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *UPDATE_COMMUNICATION({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateCommunications, payload);
+        yield saga.put({
+          type: 'SET_UPDATE_COMMUNICATION',
+          payload: response,
+        });
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
@@ -62,12 +107,12 @@ export default {
       try {
         yield saga.call(services.remove, payload.id);
         yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
+          type: 'SET_REMOVE',
+          payload: payload,
         });
         notification.success({
           message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
+          description: 'Dữ liệu cập nhật thành côngh',
         });
       } catch (error) {
         if (get(error.data, 'error.validationErrors[0]')) {

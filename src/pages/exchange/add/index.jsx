@@ -292,7 +292,7 @@ class Index extends PureComponent {
                     className="ml-auto"
                     loading={loadingSubmit}
                   >
-                    Chuyển lớp
+                    Gửi trao đổi
                   </Button>
                 </div>
               </div>
