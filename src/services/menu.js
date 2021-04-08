@@ -523,6 +523,7 @@ export async function getLeftMenuMedical() {
       url: [
         '/y-te/thong-ke',
         '/y-te/thong-ke/tao-moi',
+        '/y-te/thong-ke/:id/chi-tiet',
       ],
       icon: 'icon icon-checkmark',
       permission: [],
