@@ -6,6 +6,13 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
+import LevelForm from './forms/level';
+import CertificateForm from './forms/certificate';
+import HistoryForm from './forms/history';
+import ContactForm from './forms/contact';
+import HealthForm from './forms/health';
+import BankForm from './forms/bank';
+import TimeworkForm from './forms/timework';
 
 import { menu, defaultKey } from './menu';
 
@@ -14,6 +21,13 @@ const { Item: MenuItem } = Menu;
 const forms = {
   general: <GeneralForm />,
   curator: <CuratorForm />,
+  level: <LevelForm />,
+  certificate: <CertificateForm />,
+  history: <HistoryForm />,
+  contact: <ContactForm />,
+  health: <HealthForm />,
+  bank: <BankForm />,
+  timework: <TimeworkForm />,
 };
 
 const Index = memo(({ match: { params } }) => {
