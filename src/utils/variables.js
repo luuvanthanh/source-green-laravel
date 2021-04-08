@@ -71,6 +71,9 @@ export const variables = {
     TIME_FULL: 'HH:mm:ss',
     DAY_NAME: 'ddd',
     WEEKLY: 'weekly',
+    // TODO: rename
+    DATE_TIME_VI: 'HH:mm, DD/MM/YYYY',
+    DATE_VI: 'DD/MM/YYYY',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',

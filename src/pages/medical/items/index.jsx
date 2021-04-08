@@ -328,12 +328,12 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="primary"
-              icon="edit"
-              onClick={() =>
-                history.push('/trao-doi/ff1a44bb-f7a0-41f9-ab82-f83725c565b1/chi-tiet')
-              }
-            />
+              color="success"
+              ghost
+              onClick={() => history.push('/y-te/thong-ke/1/chi-tiet')}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -359,7 +359,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Thống kê y tế</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/tao-moi`)}>
+            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}>
               Tạo y tế
             </Button>
           </div>
@@ -413,7 +413,7 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
+              // bordered
               columns={this.header(params)}
               dataSource={[{ id: 1 }]}
               loading={loading}

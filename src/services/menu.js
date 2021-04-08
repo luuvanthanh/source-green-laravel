@@ -523,7 +523,11 @@ export async function getLeftMenuMedical() {
     {
       title: 'Thống kê',
       key: 'children',
-      url: ['/y-te/thong-ke'],
+      url: [
+        '/y-te/thong-ke',
+        '/y-te/thong-ke/tao-moi',
+        '/y-te/thong-ke/:id/chi-tiet',
+      ],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,
