@@ -305,7 +305,7 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách phụ huynh" />
-        <div className={classnames(styles['content-form'], styles['content-form-OPusers'])}>
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Nhân viên</Text>
