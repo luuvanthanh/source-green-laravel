@@ -15,6 +15,10 @@
   @include title(700, 16px, 20px, $text-form-label);
 }
 
+.form-sub-title {
+  @include title(600, 14px, 20px, #36383A);
+}
+
 .form-block-title {
   @include title(600, 14px, 20px, $text-success);
   text-transform: uppercase;
