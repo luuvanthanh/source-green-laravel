@@ -125,6 +125,14 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Define relations reviews
+     */
+    public function revokeShifts()
+    {
+        return $this->hasMany(\GGPHP\RevokeShift\Models\RevokeShift::class);
+    }
+
+    /**
      * Count Annual Absents
      * @param null $start_date
      * @param null $end_date

@@ -191,6 +191,7 @@ return [
         Cviebrock\EloquentSluggable\ServiceProvider::class,
         GGPHP\Config\Providers\ConfigServiceProvider::class,
         GGPHP\RevokeShift\Providers\RevokeShiftServiceProvider::class,
+        GGPHP\WorkDeclaration\Providers\WorkDeclarationServiceProvider::class,
     ],
 
     /*

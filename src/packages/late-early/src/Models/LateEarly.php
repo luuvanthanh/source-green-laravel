@@ -69,4 +69,13 @@ class LateEarly extends UuidModel
         return $this->lateEarlyConfig->type;
     }
 
+    /**
+     * Return approval requests relations via moprhMany.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function workDeclarationDetail()
+    {
+        return $this->morphOne(\GGPHP\WorkDeclaration\Models\WorkDeclarationDetail::class, 'model');
+    }
 }

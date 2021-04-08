@@ -349,6 +349,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
 
         $user->totalHourRedundantTimekeeping = $totalHourRedundantTimekeeping > 0 ? gmdate("H:i", $totalHourRedundantTimekeeping) : '00:00';
         $responseTimeKeepingUser = $this->calculatorAbsents($user, $start_date, $end_date, $responseTimeKeepingUser);
+        $responseTimeKeepingUser = $this->getRecordRevokeShift($user, $start_date, $end_date, $responseTimeKeepingUser);
 
         $quotaWork = $this->quotaWork;
 
@@ -871,6 +872,37 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
         $user->totalAnnualAbsent = $totalAnnualAbsent;
         $user->totalUnpaidAbsent = $totalUnpaidAbsent;
         $user->totalOffAbsent = $totalOffAbsent;
+
+        return $responseTimeKeepingUser;
+    }
+
+    /**
+     * Calculator RevokeShift
+     * @param object $user
+     * @param string $start_date
+     * @param string $end_date
+     */
+    public function getRecordRevokeShift(&$user, $start_date, $end_date, $responseTimeKeepingUser)
+    {
+        $revokeShifts = $user->revokeShifts()
+            ->where(function ($query) use ($start_date, $end_date) {
+                $query->where('date_violation', '>=', $start_date)->where('date_violation', '<=', $end_date);
+            })->get();
+
+        if (!empty(count($revokeShifts))) {
+            foreach ($revokeShifts as $revokeShift) {
+
+                $checkValue = array_search($revokeShift->date_violation, array_column($responseTimeKeepingUser, 'date'));
+
+                if (!$checkValue) {
+                    $responseTimeKeepingUser[] = [
+                        "date" => $revokeShift->date_violation->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "BC",
+                    ];
+                }
+            }
+        }
 
         return $responseTimeKeepingUser;
     }
