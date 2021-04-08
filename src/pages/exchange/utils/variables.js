@@ -28,9 +28,10 @@ export const variables = {
     },
     {
       id: 'CLOSED',
-      name: 'Đang trao đổi',
+      name: 'Đã xác nhận',
     },
   ],
+  PARENT: 'PARENT',
 };
 
 export default variables;

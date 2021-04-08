@@ -7,22 +7,22 @@ export default {
   effects: {
     *UPLOAD({ payload, callback }, { call }) {
       try {
-        const response = yield call(upload, payload)
+        const response = yield call(upload, payload);
 
-        if (response) callback(response)
+        if (response) callback(response);
 
         notification.success({
           message: 'Upload dữ liệu thành công',
           description: 'Bạn đã cập nhật thành công dữ liệu',
         });
       } catch (err) {
-        callback(null, err)
+        callback(null, err);
 
         notification.success({
           message: 'Upload dữ liệu thành công',
           description: 'Bạn đã cập nhật thành công dữ liệu',
         });
       }
-    }
-  }
-}
+    },
+  },
+};
