@@ -1,16 +1,17 @@
 import React, { PureComponent } from 'react';
-import { connect, history, NavLink } from 'umi';
-import { Modal, Form, Tabs, List, Avatar, Checkbox, Upload } from 'antd';
+import { connect, history } from 'umi';
+import { Modal, Form, List, Avatar, Radio, Upload } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
+import { isEmpty, get } from 'lodash';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import { UserOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -32,11 +33,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ allocationChangeClass, loading, menu }) => ({
+const mapStateToProps = ({ exchangeAdd, loading, menu }) => ({
   loading,
-  data: allocationChangeClass.data,
-  pagination: allocationChangeClass.pagination,
+  categories: exchangeAdd.categories,
   menuData: menu.menuLeftExchange,
 });
 @connect(mapStateToProps)
@@ -50,11 +49,16 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       description: null,
+      students: [],
+      studentId: null,
+      files: [],
     };
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.loadStudents();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -84,23 +88,99 @@ class Index extends PureComponent {
     });
   };
 
+  /**
+   * Function change radio
+   * @param {string} description value of editor
+   */
+  onChangeRadio = (e, record) => {
+    this.setStateData({
+      studentId: record.id,
+    });
+  };
+
+  /**
+   * Function get list students
+   */
+  loadStudents = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_STUDENTS',
+      payload: {},
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData({
+            students: response.items,
+          });
+        }
+      },
+    });
+  };
+
+  customRequest = ({ file }) => {
+    this.props.dispatch({
+      type: 'upload/UPLOAD',
+      payload: file,
+      callback: (res) => {
+        if (res?.results && !isEmpty(res?.results)) {
+          this.setState((prevState) => ({
+            files: [get(res, 'results[0].fileInfo.url'), ...prevState.files],
+          }));
+        }
+      },
+    });
+  };
+
+  /**
+   * Function submit form
+   * @param {object} values values of form
+   */
+  onFinish = (values) => {
+    const { description, studentId, files } = this.state;
+    this.props.dispatch({
+      type: 'exchangeAdd/ADD',
+      payload: {
+        ...values,
+        description,
+        studentId,
+        type: variablesModules.PARENT,
+        files: files && JSON.stringify(files),
+      },
+      callback: (response) => {
+        if (response) {
+          history.goBack();
+        }
+      },
+    });
+  };
+
   render() {
     const {
+      dispatch,
+      categories,
       menuData,
       match: { params },
       loading: { effects },
     } = this.props;
-    const { description } = this.state;
-    const loading = effects['allocationChangeClass/GET_DATA'];
+    const { description, students, studentId, files } = this.state;
+    const loading = effects['exchangeAdd/GET_DATA'];
+    const loadingStudents = effects['exchangeAdd/GET_STUDENTS'];
+    const loadingSubmit = effects['exchangeAdd/ADD'];
     const props = {
       beforeUpload: (file) => {
-        return file;
+        return null;
       },
+      customRequest: this.customRequest,
       showUploadList: false,
       fileList: [],
     };
     return (
-      <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
+      <Form
+        layout="vertical"
+        initialValues={{}}
+        colon={false}
+        ref={this.formRef}
+        onFinish={this.onFinish}
+      >
         <Helmet title="Chi tiết trao đổi" />
         <Breadcrumbs last="Tạo trao đổi" menu={menuData} />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
@@ -116,62 +196,37 @@ class Index extends PureComponent {
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem
-                        label="Cơ sở"
-                        name="position"
-                        rules={[variables.RULES.EMPTY]}
-                        type={variables.SELECT}
-                      />
+                      <FormItem label="Cơ sở" name="position" type={variables.SELECT} />
                     </div>
                     <div className="col-lg-6">
-                      <FormItem
-                        label="Lớp"
-                        name="class"
-                        rules={[variables.RULES.EMPTY]}
-                        type={variables.SELECT}
-                      />
+                      <FormItem label="Lớp" name="class" type={variables.SELECT} />
                     </div>
                   </div>
                   <hr />
                 </div>
-                <List
-                  className={stylesAllocation.list}
-                  dataSource={[
-                    { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  ]}
-                  renderItem={(item) => (
-                    <List.Item key={item.id}>
-                      <Checkbox className={stylesAllocation.checkbox} />
-                      <div className={stylesAllocation['group-info']}>
-                        <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                        <div className={stylesAllocation['info']}>
-                          <h3 className={stylesAllocation['title']}>Su beo</h3>
-                          <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                <Radio.Group value={studentId}>
+                  <List
+                    className={stylesAllocation.list}
+                    dataSource={students}
+                    loading={loadingStudents}
+                    renderItem={(item) => (
+                      <List.Item key={item.id}>
+                        <Radio
+                          className={stylesAllocation.radio}
+                          value={item.id}
+                          onChange={(event) => this.onChangeRadio(event, item)}
+                        />
+                        <div className={stylesAllocation['group-info']}>
+                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                          <div className={stylesAllocation['info']}>
+                            <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
+                            <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                          </div>
                         </div>
-                      </div>
-                    </List.Item>
-                  )}
-                />
-              </div>
-              <div className={stylesAllocation['footer-content']}>
-                <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                  <Text color="dark" size="normal">
-                    Đã chọn 2 bé
-                  </Text>
-                </div>
+                      </List.Item>
+                    )}
+                  />
+                </Radio.Group>
               </div>
             </div>
             <div className={stylesAllocation['right-container']}>
@@ -212,13 +267,17 @@ class Index extends PureComponent {
                       <Upload {...props} className={stylesExchange['custom-upload']}>
                         <Button htmlType="button" icon="plusMain" />
                       </Upload>
-                      <div className={stylesExchange['list-image']}>
-                        <div className={stylesExchange['image-item']}>
-                          <img
-                            src="/images/slice/image_01.png"
-                            className={stylesExchange['image']}
-                          />
-                        </div>
+                      <div
+                        className={classnames(
+                          stylesExchange['list-image'],
+                          stylesExchange['list-image-large'],
+                        )}
+                      >
+                        {files.map((item) => (
+                          <div className={stylesExchange['image-item']} key={item}>
+                            <img src={`${API_UPLOAD}${item}`} className={stylesExchange['image']} />
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -226,7 +285,13 @@ class Index extends PureComponent {
               </div>
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                  <Button color="success" size="large" className="ml-auto">
+                  <Button
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    className="ml-auto"
+                    loading={loadingSubmit}
+                  >
                     Chuyển lớp
                   </Button>
                 </div>

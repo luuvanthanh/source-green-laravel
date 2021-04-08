@@ -45,9 +45,11 @@
   }
   .left-container {
     width: 50%;
+    align-self: baseline;
   }
   .right-container {
     width: 50%;
+    align-self: baseline;
   }
 }
 
@@ -56,6 +58,9 @@
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  :global(.ant-radio-group) {
+    width: 100%;
+  }
   .heading {
     padding: 20px;
     border-bottom: 1px solid #eaeaea;

@@ -334,6 +334,7 @@
 // DETAILS CONTAINER
 
 .left-container {
+  align-self: baseline;
   width: 35%;
   background-color: $background-white;
   box-shadow: 0 0 10px -2px rgba($color: #000000, $alpha: 0.25);
@@ -389,6 +390,7 @@
 }
 
 .right-container {
+  align-self: baseline;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -427,6 +429,12 @@
   display: flex;
   flex-wrap: wrap;
   margin: 5px -5px;
+  &.list-image-large {
+    .image-item {
+      max-width: 100px;
+      height: 100px;
+    }
+  }
   .image-item {
     max-width: 60px;
     height: 60px;

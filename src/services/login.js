@@ -1,33 +1,31 @@
-import request from '@/utils/requestLoginLavarel';
-import { Helper } from '@/utils';
-
-export async function logout() {
-  return request('/v1/logout', {
-    method: 'POST',
-    parse: true,
-  });
-}
+import request from '@/utils/requestLogin';
+import qs from 'qs';
 
 export function login(data) {
-  return request('/v1/oauth/token', {
+  return request('/connect/token', {
     method: 'POST',
-    data: {
-      username: data.username,
-      password: data.password,
-      client_secret: 'dGQ8qvxGwmnqTiCy4j03Cif6Nd8CVBzeDWB4QgUp',
-      client_id: '2',
-      grant_type: 'password',
-      scope: '',
+    headers: {
+      Authorization: 'Basic RXJwX0FwcDoxcTJ3M0Uq',
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
-    parse: true,
+    data: qs.stringify({
+      ...data
+    }),
   });
 }
 
-export function me() {
-  return request('/v1/me', {
+export function me(data) {
+  return request('/api/identity/my-profile', {
     method: 'GET',
-    params: {
-      include: Helper.convertIncludes(['role.permission']),
-    },
+    headers: {
+      Authorization: `${data.token_type} ${data.access_token}`
+    }
+  });
+}
+
+export async function logout() {
+  return request('/api/logout', {
+    method: 'POST',
+    parse: true,
   });
 }

@@ -148,7 +148,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem
                   data={genders}
                   name="sex"
-                  label="Ngày sinh"
+                  label="Giới tính"
                   type={variables.SELECT}
                   rules={[variables.RULES.EMPTY]}
                 />

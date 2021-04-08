@@ -84,7 +84,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -92,7 +92,6 @@ class Index extends PureComponent {
       type: 'exchangeItems/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({
@@ -360,11 +359,9 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}
-            />
+            <Button color="success" onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}>
+              Chi tiết
+            </Button>
           </div>
         ),
       },

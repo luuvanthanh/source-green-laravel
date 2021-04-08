@@ -25,8 +25,10 @@ const UserModel = {
     *login({ payload }, { call, put }) {
       try {
         const response = yield call(services.login, payload);
-        cookies.set('access_token', response.access_token, { path: '/' });
-        const me = yield call(services.me);
+        const me = yield call(services.me, {
+          access_token: response.access_token,
+          token_type: response.token_type,
+        });
         if (me) {
           yield put({
             type: 'SET_USER',
@@ -36,6 +38,7 @@ const UserModel = {
               permissions: permission,
             },
           });
+          cookies.set('access_token', response.access_token, { path: '/' });
           cookies.set('token_type', response.token_type, { path: '/' });
           const { can, rules } = new AbilityBuilder();
           permission.forEach((item) => {

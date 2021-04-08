@@ -233,7 +233,10 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-100',
         align: 'center',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
+        render: (record) =>
+          record.fileImage && (
+            <Avatar size={40} shape="square" src={`${API_UPLOAD}${record.fileImage}`} />
+          ),
       },
       {
         title: 'Họ và Tên',

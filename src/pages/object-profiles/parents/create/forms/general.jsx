@@ -1,6 +1,6 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
 
@@ -25,6 +25,9 @@ const mapStateToProps = ({ loading, OPParentsAdd }) => ({
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
+  const [fileImage, setFileImage] = useState(null);
+  const mounted = useRef(false);
+  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
   const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
   const loading = effects[`OPParentsAdd/GET_DETAILS`];
 
@@ -35,7 +38,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const onFinish = (values) => {
     dispatch({
       type: params.id ? 'OPParentsAdd/UPDATE' : 'OPParentsAdd/ADD',
-      payload: params.id ? { ...details, ...values, id: params.id } : values,
+      payload: params.id
+        ? { ...details, ...values, id: params.id, fileImage }
+        : { ...values, fileImage },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -71,8 +76,14 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         ...details,
         boD: moment(details.boD),
       });
+      mountedSet(setFileImage, details.fileImage);
     }
   }, [details]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => (mounted.current = false);
+  }, []);
 
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
@@ -85,7 +96,12 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             <Pane className="row">
               <Pane className="col">
                 <Form.Item name="avatar" label="Hình ảnh phụ huynh">
-                  <ImageUpload />
+                  <ImageUpload
+                    callback={(res) => {
+                      mountedSet(setFileImage, res.fileInfo.url);
+                    }}
+                    fileImage={fileImage}
+                  />
                 </Form.Item>
               </Pane>
             </Pane>
