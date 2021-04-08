@@ -579,6 +579,12 @@ export default [
             authority: [],
           },
           {
+            path: '/y-te/thong-ke/tao-moi',
+            component: './medical/items/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/y-te/lich-su',
             component: './medical/histories',
             wrappers: ['@/wrappers/auth'],

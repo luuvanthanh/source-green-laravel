@@ -359,7 +359,7 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Thống kê y tế</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/tao-moi`)}>
+            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}>
               Tạo y tế
             </Button>
           </div>
