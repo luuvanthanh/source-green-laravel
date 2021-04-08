@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography, Form } from 'antd';
+import { Modal, Avatar, Input, Typography, Form, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -46,7 +45,10 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      description: null,
+      objects: {},
+    };
     setIsMounted(true);
   }
 
@@ -105,21 +107,120 @@ class Index extends PureComponent {
    * Function edit items
    * @param {uid} id id of items
    */
-  onEdit = (event, record) => {
+  onEdit = (record) => {
     this.setStateData((prevState) => ({
-      items: prevState.items.map((item) =>
-        item.id === record.id
-          ? { ...item, isTyping: !item.isTyping }
-          : { ...item, isTyping: false },
-      ),
+      objects: record,
     }));
+  };
+
+  /**
+   * Function edit items
+   * @param {uid} id id of items
+   */
+  onChangeDescription = (event) => {
+    this.setStateData({
+      description: event.target.value,
+    });
+  };
+
+  /**
+   * Function edit items
+   * @param {uid} id id of items
+   */
+  onChangeDescriptionFeedback = (event) => {
+    this.setStateData((prevState) => ({
+      objects: {
+        ...prevState.objects,
+        description: event.target.value,
+      },
+    }));
+  };
+
+  /**
+   * Function change status
+   * @param {uid} id id of items
+   */
+  onChangeStatus = (e) => {
+    const {
+      match: { params },
+      dispatch,
+      details,
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'exchangeDetails/UPDATE_COMMUNICATION',
+        payload: {
+          ...details,
+          status: e,
+        },
+        callback: () => {},
+      });
+    }
+  };
+
+  onSend = () => {
+    const {
+      location: { pathname },
+      match: { params },
+      dispatch,
+    } = this.props;
+    const { description } = this.state;
+    if (!description) {
+      message.error('Vui lòng không để trống');
+      return;
+    }
+    if (params.id) {
+      dispatch({
+        type: 'exchangeDetails/ADD',
+        payload: {
+          communicationId: params.id,
+          type: 'TEACHER',
+          description,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              description: null,
+            });
+          }
+        },
+      });
+    }
+  };
+
+  onSave = () => {
+    const {
+      match: { params },
+      dispatch,
+    } = this.props;
+    const { objects } = this.state;
+    if (!objects.description) {
+      message.error('Vui lòng không để trống');
+      return;
+    }
+    if (params.id) {
+      dispatch({
+        type: 'exchangeDetails/UPDATE',
+        payload: {
+          ...objects,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              objects: {},
+            });
+          }
+        },
+      });
+    }
   };
 
   /**
    * Function remove items
    * @param {uid} id id of items
    */
-  onRemove = () => {
+  onRemove = (record) => {
+    const { dispatch } = this.props;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -127,7 +228,13 @@ class Index extends PureComponent {
       okText: 'Có',
       cancelText: 'Không',
       content: 'Bạn có chắc muốn xóa trao đổi của Nguyễn Thị Mai không?',
-      onOk() {},
+      onOk() {
+        dispatch({
+          type: 'exchangeDetails/REMOVE',
+          payload: record,
+          callback: () => {},
+        });
+      },
       onCancel() {},
     });
   };
@@ -139,7 +246,10 @@ class Index extends PureComponent {
       details,
       loading: { effects },
     } = this.props;
+    const { description, objects } = this.state;
     const loading = effects['exchangeDetails/GET_DATA'];
+    const loadingSend = effects['exchangeDetails/ADD'];
+    const loadingSave = effects['exchangeDetails/Update'];
     return (
       <Form layout="vertical" ref={this.formRef}>
         <Loading loading={loading} isError={error.isError} params={{ error }}>
@@ -160,7 +270,10 @@ class Index extends PureComponent {
                   {Helper.getDate(details.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                 </p>
                 <h3 className={stylesExchange['title']}>{details.title}</h3>
-                <p className={stylesExchange['norm']}>{details.description}</p>
+                <div
+                  className={stylesExchange['norm']}
+                  dangerouslySetInnerHTML={{ __html: details.description }}
+                ></div>
                 <div className={stylesExchange['list-image']}>
                   {Helper.isJSON(details.files) &&
                     JSON.parse(details.files).map((item) => (
@@ -215,6 +328,7 @@ class Index extends PureComponent {
                       allowClear={false}
                       data={variablesModules.STATUS_TABS}
                       type={variables.SELECT}
+                      onChange={this.onChangeStatus}
                     />
                   </div>
                 </div>
@@ -241,7 +355,7 @@ class Index extends PureComponent {
                           </p>
                         </div>
                         <div className={stylesExchange['wrapper-content']}>
-                          {!item.isTyping && (
+                          {objects.id !== item.id && (
                             <>
                               <div className={stylesExchange['content']}>
                                 {item.description.length < 20 && item.description}
@@ -267,15 +381,18 @@ class Index extends PureComponent {
                                 <Button
                                   icon="cancel"
                                   color="dash-dark"
-                                  onClick={this.onRemove}
+                                  onClick={() => this.onRemove(item)}
                                 ></Button>
                               </div>
                             </>
                           )}
-                          {item.isTyping && (
+                          {objects.id === item.id && (
                             <>
                               <div className={stylesExchange['content']}>
-                                <Input />
+                                <Input
+                                  value={objects.description}
+                                  onChange={this.onChangeDescriptionFeedback}
+                                />
                               </div>
                               <div
                                 className={classnames(
@@ -283,7 +400,13 @@ class Index extends PureComponent {
                                   stylesExchange['group-button-singal'],
                                 )}
                               >
-                                <Button color="dash-success">Lưu</Button>
+                                <Button
+                                  color="dash-success"
+                                  onClick={this.onSave}
+                                  loading={loadingSave}
+                                >
+                                  Lưu
+                                </Button>
                               </div>
                             </>
                           )}
@@ -293,8 +416,18 @@ class Index extends PureComponent {
                 </div>
                 <div className={stylesExchange['chat-footer']}>
                   <div className={stylesExchange['content']}>
-                    <Input placeholder="Nhập" />
-                    <Button icon="plan" color="dash-success"></Button>
+                    <Input
+                      placeholder="Nhập"
+                      onChange={this.onChangeDescription}
+                      value={description}
+                    />
+                    <Button
+                      icon="plan"
+                      htmlType="button"
+                      color="dash-success"
+                      onClick={this.onSend}
+                      loading={loadingSend}
+                    />
                   </div>
                 </div>
               </div>

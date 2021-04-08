@@ -17,22 +17,29 @@ export function details(data) {
   });
 }
 
-export function add(data = {}) {
-  return request('/communications', {
-    method: 'POST',
-    data,
-  });
-}
-
-export function update(data = {}) {
+export function updateCommunications(data = {}) {
   return request(`/communications/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
+export function add(data = {}) {
+  return request('/feedbacks', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function update(data = {}) {
+  return request(`/feedbacks/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 export function remove(id) {
-  return request(`/communications/${id}`, {
+  return request(`/feedbacks/${id}`, {
     method: 'DELETE',
     parse: true,
   });
