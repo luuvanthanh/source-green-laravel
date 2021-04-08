@@ -1,7 +1,7 @@
 <?php
 namespace GGPHP\WorkDeclaration\Services;
 
-use GGPHP\Absent\Models\RevokeShift;
+use GGPHP\RevokeShift\Models\RevokeShift;
 use GGPHP\WorkDeclaration\Models\WorkDeclaration;
 use GGPHP\WorkDeclaration\Models\WorkDeclarationDetail;
 

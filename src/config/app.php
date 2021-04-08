@@ -192,6 +192,7 @@ return [
         GGPHP\Config\Providers\ConfigServiceProvider::class,
         GGPHP\RevokeShift\Providers\RevokeShiftServiceProvider::class,
         GGPHP\WorkDeclaration\Providers\WorkDeclarationServiceProvider::class,
+        GGPHP\WorkHour\Providers\WorkHourServiceProvider::class,
     ],
 
     /*

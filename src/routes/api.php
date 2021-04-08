@@ -69,5 +69,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\WorkHour\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });

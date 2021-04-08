@@ -16,7 +16,6 @@ class WorkDeclarationCreateRequest extends FormRequest
 
         return [
             "user_id" => "required|exists:users,id",
-            "store_id" => "required|exists:stores,id",
             "data" => "required|array",
             "data.*.type" => "required|string",
             "data.*.reason" => "required|string",
