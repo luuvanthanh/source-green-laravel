@@ -18,6 +18,7 @@ import AllocationLayout from './Allocation';
 import MedicalLayout from './Medical';
 import AttendanceLayout from './Attendance';
 import TimetableLayout from './Timetable';
+import NotificationLayout from './Notification';
 
 const Layouts = {
   public: PublicLayout,
@@ -34,6 +35,7 @@ const Layouts = {
   medical: MedicalLayout,
   attendance: AttendanceLayout,
   timetable: TimetableLayout,
+  notification: NotificationLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -85,6 +87,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/thoi-khoa-bieu(?=\/|$)/i.test(pathname)) {
         return 'timetable';
+      }
+      if (/^\/thong-bao(?=\/|$)/i.test(pathname)) {
+        return 'notification';
       }
       return 'public';
     };
