@@ -33,7 +33,8 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ exchangeAdd, loading, menu }) => ({
+const mapStateToProps = ({ exchangeAdd, loading, menu, user }) => ({
+  user: user.user,
   loading,
   categories: exchangeAdd.categories,
   menuData: menu.menuLeftExchange,
@@ -136,13 +137,14 @@ class Index extends PureComponent {
    */
   onFinish = (values) => {
     const { description, studentId, files } = this.state;
+    const { user } = this.props;
     this.props.dispatch({
       type: 'exchangeAdd/ADD',
       payload: {
         ...values,
         description,
         studentId,
-        type: variablesModules.PARENT,
+        type: user.userName,
         files: files && JSON.stringify(files),
       },
       callback: (response) => {

@@ -37,7 +37,7 @@ const Index = memo(({ match: { params } }) => {
       <Helmet title="Tạo hồ sơ học sinh" />
       <Pane className="row" style={{ marginBottom: 20 }}>
         <Pane className="col">
-          <Heading type="page-title">Tạo hồ sơ phụ huynh</Heading>
+          <Heading type="page-title">Tạo hồ sơ nhân viên</Heading>
         </Pane>
       </Pane>
       <Pane className="row">

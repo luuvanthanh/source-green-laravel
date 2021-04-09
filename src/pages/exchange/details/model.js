@@ -40,7 +40,10 @@ export default {
     }),
     SET_UPDATE_COMMUNICATION: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: {
+        ...state.details,
+        status: payload.status,
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

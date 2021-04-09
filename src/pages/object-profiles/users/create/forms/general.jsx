@@ -27,7 +27,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
+  const mountedSet = (setFunction, value) => !!mounted?.current && (setFunction && setFunction(value));
   const loadingSubmit = effects[`OPusersAdd/ADD`] || effects[`OPusersAdd/UPDATE`];
   const loading = effects[`OPusersAdd/GET_DETAILS`];
 

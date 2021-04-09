@@ -5,6 +5,7 @@ export const variables = {
     EXPIRE: 'EXPIRE',
     VALIDATING: 'VALIDATING',
     IN_PROGRESS: 'IN_PROGRESS',
+    SENT: 'SENT',
   },
   STATUS_NAME: {
     IN_PROGRESS: 'Đang trao đổi',
@@ -32,6 +33,7 @@ export const variables = {
     },
   ],
   PARENT: 'PARENT',
+  TEACHER: 'TEACHER',
 };
 
 export default variables;

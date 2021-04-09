@@ -23,22 +23,44 @@ const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
+  const [dayOfBirth, setDayOfBirth] = useState(null);
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
 
   const loadingSubmit = effects[`OPchildrenAdd/ADD`] || effects[`OPchildrenAdd/UPDATE`];
   const loading = effects[`OPchildrenAdd/GET_DETAILS`];
+
+  const onChaneDate = (e) => {
+    mountedSet(setDayOfBirth, e);
+  };
 
   /**
    * Function submit form modal
    * @param {object} values values of form
    */
   const onFinish = (values) => {
+    const age = moment().endOf('month').diff(moment(values.dayOfBirth).startOf('month'), 'month');
     dispatch({
       type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage }
-        : { ...values, fileImage },
+        ? {
+            id: params.id,
+            student: {
+              ...details,
+              ...values,
+              id: params.id,
+              fileImage,
+              age,
+            },
+          }
+        : {
+            student: {
+              ...values,
+              fileImage,
+              age,
+            },
+          },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -76,10 +98,12 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
-        ...details,
-        doB: details.doB && moment(details.doB),
-        registerDate: details.registerDate && moment(details.registerDate),
+        ...details.student,
+        dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
+        registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
       });
+      mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
+      mountedSet(setFileImage, details?.student?.fileImage);
     }
   }, [details]);
 
@@ -130,19 +154,19 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
 
               <Pane className="col-lg-4">
-                <Pane className="row">
-                  <Pane className="col-lg-8">
-                    <FormItem
-                      name="doB"
-                      label="Ngày sinh"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <Form.Item label="Tuổi(tháng)">32</Form.Item>
-                  </Pane>
-                </Pane>
+                <FormItem
+                  name="dayOfBirth"
+                  label="Ngày sinh"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                  onChange={onChaneDate}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <Form.Item label="Tuổi(tháng)">
+                  {dayOfBirth &&
+                    moment().endOf('month').diff(moment(dayOfBirth).startOf('month'), 'month')}
+                </Form.Item>
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
