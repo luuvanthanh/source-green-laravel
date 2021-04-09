@@ -359,9 +359,14 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success" onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}>
-              Chi tiết
-            </Button>
+            {record.status !== variablesModules.STATUS.CLOSED && (
+              <Button
+                color="success"
+                onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}
+              >
+                Chi tiết
+              </Button>
+            )}
           </div>
         ),
       },

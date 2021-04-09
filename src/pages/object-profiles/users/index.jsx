@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -232,10 +233,7 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-100',
         align: 'center',
-        render: (record) =>
-          record.fileImage && (
-            <Avatar size={40} shape="square" src={`${API_UPLOAD}${record.fileImage}`} />
-          ),
+        render: (record) => <AvatarTable fileImage={record.fileImage} />,
       },
       {
         title: 'Họ và Tên',

@@ -1,48 +1,15 @@
-import { Link } from 'umi';
-import { get } from 'lodash';
 import { Avatar } from 'antd';
 import PropTypes from 'prop-types';
-import ability from '@/utils/ability';
 import React, { Component } from 'react';
-import styles from './styles.module.scss';
+import { UserOutlined } from '@ant-design/icons';
 
 class AvatarTable extends Component {
   render() {
-    const { user } = this.props;
-    if (!ability.can('show', 'users')) {
-      return (
-        <div className={styles['table-icon']}>
-          <Avatar
-            shape="square"
-            className={styles.icon}
-            size={32}
-            src={
-              get(user, 'avatar.path')
-                ? `${IMAGE_URL}/${get(user, 'avatar.path')}`
-                : '/images/avatar-default.png'
-            }
-          />
-          <span className={styles.norm}>{get(user, 'full_name')}</span>
-        </div>
-      );
+    const { fileImage } = this.props;
+    if (fileImage) {
+      return <Avatar size={40} shape="square" src={`${API_UPLOAD}${fileImage}`} />;
     }
-    return (
-      <div className={styles['table-icon']}>
-        <Link to={`/nhan-vien/${get(user, 'id')}?type=info`} className={styles['table-link']}>
-          <Avatar
-            shape="square"
-            className={styles.icon}
-            size={32}
-            src={
-              get(user, 'avatar.path')
-                ? `${IMAGE_URL}/${get(user, 'avatar.path')}`
-                : '/images/avatar-default.png'
-            }
-          />
-          <span className={styles.norm}>{get(user, 'full_name')}</span>
-        </Link>
-      </div>
-    );
+    return <Avatar size={40} shape="square" icon={<UserOutlined />} />;
   }
 }
 

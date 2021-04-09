@@ -15,7 +15,7 @@ export default class Helpers {
       return <Tag color="primary">{variables.STATUS_NAME.VALIDATING}</Tag>;
     }
     if (type === variables.STATUS.CLOSED) {
-      return <Tag color="danger">{variables.STATUS_NAME.CLOSED}</Tag>;
+      return <Tag color="success">{variables.STATUS_NAME.CLOSED}</Tag>;
     }
     return <Tag color="danger">{variables.STATUS_NAME.CLOSED}</Tag>;
   };

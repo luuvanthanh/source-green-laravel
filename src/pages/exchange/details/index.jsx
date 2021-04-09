@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography, Form, message } from 'antd';
+import { Modal, Avatar, Input, Typography, Form, message, Select } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { isEmpty } from 'lodash';
@@ -215,6 +215,24 @@ class Index extends PureComponent {
     }
   };
 
+  approve = (record) => {
+    const {
+      match: { params },
+      dispatch,
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'exchangeDetails/UPDATE',
+        payload: {
+          id: record.id,
+          description: record.description,
+          status: variablesModules.STATUS.SENT,
+        },
+        callback: (response) => {},
+      });
+    }
+  };
+
   /**
    * Function remove items
    * @param {uid} id id of items
@@ -249,7 +267,7 @@ class Index extends PureComponent {
     const { description, objects } = this.state;
     const loading = effects['exchangeDetails/GET_DATA'];
     const loadingSend = effects['exchangeDetails/ADD'];
-    const loadingSave = effects['exchangeDetails/Update'];
+    const loadingSave = effects['exchangeDetails/UPDATE'];
     return (
       <Form layout="vertical" ref={this.formRef}>
         <Loading loading={loading} isError={error.isError} params={{ error }}>
@@ -371,19 +389,25 @@ class Index extends PureComponent {
                                   </Paragraph>
                                 )}
                               </div>
-                              <div className={stylesExchange['group-button']}>
-                                <Button icon="checkmark" color="dash-success"></Button>
-                                <Button
-                                  icon="edit"
-                                  color="dash-yellow"
-                                  onClick={(event) => this.onEdit(event, item)}
-                                ></Button>
-                                <Button
-                                  icon="cancel"
-                                  color="dash-dark"
-                                  onClick={() => this.onRemove(item)}
-                                ></Button>
-                              </div>
+                              {item.status !== variablesModules.STATUS.SENT && (
+                                <div className={stylesExchange['group-button']}>
+                                  <Button
+                                    icon="checkmark"
+                                    color="dash-success"
+                                    onClick={() => this.approve(item)}
+                                  ></Button>
+                                  <Button
+                                    icon="edit"
+                                    color="dash-yellow"
+                                    onClick={(event) => this.onEdit(event, item)}
+                                  ></Button>
+                                  <Button
+                                    icon="cancel"
+                                    color="dash-dark"
+                                    onClick={() => this.onRemove(item)}
+                                  ></Button>
+                                </div>
+                              )}
                             </>
                           )}
                           {objects.id === item.id && (

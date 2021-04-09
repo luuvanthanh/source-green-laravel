@@ -84,7 +84,7 @@ const Curator = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem data={[]} name="source" label="Nguồn khách hà" type={variables.SELECT} />
+                <FormItem data={[]} name="source" label="Nguồn khách hàng" type={variables.SELECT} />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem name="code" label="Nguồn khách hàng" type={variables.INPUT} />
