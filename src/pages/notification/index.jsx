@@ -107,7 +107,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="success"
             icon="plus"
-          // onClick={() => history.push(`/thong-bao/tao-moi`)}
+            onClick={() => history.push(`/thong-bao/tao-moi`)}
           >
             Tạo thông báo
           </Button>

@@ -644,6 +644,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/thong-bao/tao-moi',
+            component: './notification/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // NOTIFICATION

@@ -17,6 +17,14 @@
   .ml#{$i*5} {
     margin-left: #{$value}#{$unit} !important;
   }
+  .mx#{$i*5} {
+    margin-left: #{$value}#{$unit} !important;
+    margin-right: #{$value}#{$unit} !important;
+  }
+  .my#{$i*5} {
+    margin-top: #{$value}#{$unit} !important;
+    margin-bottom: #{$value}#{$unit} !important;
+  }
 
   .p#{$i*5} {
     padding: #{$value}#{$unit} !important;
@@ -32,5 +40,13 @@
   }
   .pl#{$i*5} {
     padding-left: #{$value}#{$unit} !important;
+  }
+  .px#{$i*5} {
+    padding-left: #{$value}#{$unit} !important;
+    padding-right: #{$value}#{$unit} !important;
+  }
+  .py#{$i*5} {
+    padding-top: #{$value}#{$unit} !important;
+    padding-bottom: #{$value}#{$unit} !important;
   }
 }
