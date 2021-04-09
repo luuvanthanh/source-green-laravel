@@ -31,7 +31,16 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->userRepository->all();
+        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
+        if ($request->has('limit')) {
+            $limit = $request->limit;
+        }
+
+        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
+            $users = $this->userRepository->all();
+        } else {
+            $users = $this->userRepository->paginate($limit);
+        }
 
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
@@ -56,7 +65,7 @@ class UserController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $user = $this->userRepository->findUser($request->all(), $id);
+        $user = $this->userRepository->find($id);
 
         return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
     }

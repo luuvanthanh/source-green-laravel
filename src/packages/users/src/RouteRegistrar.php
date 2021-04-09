@@ -55,39 +55,29 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             //users
-            \Route::get('users', [
-                'comment' => 'Danh sách người dùng',
+            \Route::get('employees', [
                 'uses' => 'UserController@index',
-                'as' => 'users.index',
-                'group' => 'Người dùng',
+                'as' => 'employees.index',
             ]);
 
-            \Route::post('users', [
-                'comment' => 'Tạo mới người dùng',
+            \Route::post('employees', [
                 'uses' => 'UserController@store',
-                'as' => 'users.store',
-                'group' => 'Người dùng',
+                'as' => 'employees.store',
             ]);
 
-            \Route::put('users/{id}', [
-                'comment' => 'Chỉnh sửa người dùng',
+            \Route::put('employees/{id}', [
                 'uses' => 'UserController@update',
-                'as' => 'users.update',
-                'group' => 'Người dùng',
+                'as' => 'employees.update',
             ]);
 
-            \Route::get('users/{id}', [
-                'comment' => 'Thông tin người dùng',
+            \Route::get('employees/{id}', [
                 'uses' => 'UserController@show',
                 'as' => 'users.show',
-                'group' => 'Người dùng',
             ]);
 
             \Route::get('me', [
-                'comment' => 'Thông tin tài khoản',
                 'uses' => 'AuthController@authenticated',
                 'as' => 'users.me.show',
-                'group' => 'Người dùng',
             ]);
 
         });

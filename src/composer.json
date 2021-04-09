@@ -67,6 +67,8 @@
             "GGPHP\\RevokeShift\\": "packages/revoke-shift/src/",
             "GGPHP\\WorkDeclaration\\": "packages/work-declaration/src/",
             "GGPHP\\WorkHour\\": "packages/work-hour/src/",
+            "GGPHP\\Category\\": "packages/category/src/",
+            "GGPHP\\Profile\\": "packages/profile/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

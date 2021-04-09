@@ -25,13 +25,20 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
     use Authorizable, CanResetPassword, MustVerifyEmail;
     use InteractsWithMedia;
     use SyncToDevice;
+
+    /**
+     * Declare the table name
+     */
+    protected $table = 'employees';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'full_name',
+        'full_name', 'date_of_birth', 'gender', 'code', 'tax_code', 'degree_id',
+        'training_major_id', 'training_school_id', 'date_off',
     ];
 
     /**

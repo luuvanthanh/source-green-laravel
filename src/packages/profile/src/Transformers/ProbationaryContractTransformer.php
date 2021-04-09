@@ -1,0 +1,103 @@
+<?php
+
+namespace GGPHP\Profile\Transformers;
+
+use GGPHP\Category\Transformers\BranchTransformer;
+use GGPHP\Category\Transformers\DivisionTransformer;
+use GGPHP\Category\Transformers\PositionTransformer;
+use GGPHP\Category\Transformers\TypeOfContractTransformer;
+use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Profile\Models\ProbationaryContract;
+use GGPHP\Users\Transformers\UserTransformer;
+
+/**
+ * Class ProbationaryContractTransformer.
+ *
+ * @package namespace App\Transformers;
+ */
+class ProbationaryContractTransformer extends BaseTransformer
+{
+    /**
+     * List of resources possible to include
+     *
+     * @var array
+     */
+    protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch'];
+
+    /**
+     * Transform the custom field entity.
+     *
+     * @return array
+     */
+    public function customAttributes($model): array
+    {
+        return [
+        ];
+    }
+
+    /**
+     * @param ProbationaryContract $probationaryContract
+     * @return mixed
+     */
+    public function includeEmployee(ProbationaryContract $probationaryContract)
+    {
+        if (empty($probationaryContract->employee)) {
+            return;
+        }
+
+        return $this->item($probationaryContract->employee, new UserTransformer, 'Employee');
+    }
+
+    /**
+     * @param ProbationaryContract $probationaryContract
+     * @return mixed
+     */
+    public function includeTypeOfContract(ProbationaryContract $probationaryContract)
+    {
+        if (empty($probationaryContract->typeOfContract)) {
+            return;
+        }
+
+        return $this->item($probationaryContract->typeOfContract, new TypeOfContractTransformer, 'TypeOfContract');
+    }
+
+    /**
+     * @param ProbationaryContract $probationaryContract
+     * @return mixed
+     */
+    public function includeDivision(ProbationaryContract $probationaryContract)
+    {
+        if (empty($probationaryContract->division)) {
+            return;
+        }
+
+        return $this->item($probationaryContract->division, new DivisionTransformer, 'Division');
+    }
+
+    /**
+     * @param ProbationaryContract $probationaryContract
+     * @return mixed
+     */
+    public function includePosition(ProbationaryContract $probationaryContract)
+    {
+        if (empty($probationaryContract->position)) {
+            return;
+        }
+
+        return $this->item($probationaryContract->position, new PositionTransformer, 'Position');
+    }
+
+    /**
+     * @param ProbationaryContract $probationaryContract
+     * @return mixed
+     */
+    public function includeBranch(ProbationaryContract $probationaryContract)
+    {
+        if (empty($probationaryContract->branch)) {
+            return;
+        }
+
+        return $this->item($probationaryContract->branch, new BranchTransformer, 'Branch');
+    }
+
+}
