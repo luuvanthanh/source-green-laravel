@@ -629,6 +629,24 @@ export default [
         ],
       },
       // MEDICAL
+      // NOTIFICATION
+      {
+        path: '/thong-bao',
+        component: './notification/layout',
+        routes: [
+          {
+            path: '/thong-bao',
+            redirect: '/thong-bao',
+          },
+          {
+            path: '/thong-bao/danh-sach',
+            component: './notification',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // NOTIFICATION
       {
         path: '/404',
         component: './404',

@@ -550,6 +550,21 @@ export async function getLeftMenuTimeTable() {
     },
   ];
 }
+export async function getLeftMenuNotification() {
+  return [
+    {
+      title: 'Danh sách',
+      key: 'children',
+      url: [
+        '/thong-bao/danh-sach',
+        '/thong-bao/tao-moi',
+      ],
+      icon: 'icon icon-list',
+      permission: [],
+      pro: true,
+    }
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }
