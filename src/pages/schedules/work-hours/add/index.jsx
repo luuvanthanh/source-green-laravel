@@ -99,6 +99,7 @@ class Index extends PureComponent {
         type: 'workHoursAdd/UPDATE',
         payload: {
           user_id: values.user_id,
+          user_create: values.user_id,
           date: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
@@ -136,6 +137,7 @@ class Index extends PureComponent {
         type: 'workHoursAdd/ADD',
         payload: {
           user_id: values.user_id,
+          user_create: values.user_id,
           date: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,

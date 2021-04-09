@@ -238,7 +238,7 @@ class Index extends PureComponent {
         key: 'fullName',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.userCreate?.full_name}</Text>,
+        render: (record) => <Text size="normal">{record?.user?.full_name}</Text>,
       },
       {
         title: 'Ngày tạo',

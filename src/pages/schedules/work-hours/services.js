@@ -26,7 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['userCreate', 'decisionRewardDetail.user']),
+      include: Helper.convertIncludes(['user', 'decisionRewardDetail.user']),
       search: Helper.convertParamSearchConvert({
         'user.full_name': data.full_name,
       }),
