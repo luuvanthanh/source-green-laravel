@@ -16,6 +16,8 @@ import CriteriaLayout from './Criteria';
 import MenuLayout from './Menu';
 import AllocationLayout from './Allocation';
 import MedicalLayout from './Medical';
+import AttendanceLayout from './Attendance';
+import TimetableLayout from './Timetable';
 
 const Layouts = {
   public: PublicLayout,
@@ -23,13 +25,15 @@ const Layouts = {
   main: MainLayout,
   exchange: ExchangeLayout,
   objectProfiles: ObjectProfiles,
-  schedules: SchedulesLayout,
+  timetable: SchedulesLayout,
   configuration: ConfigurationLayout,
   vehicel: VehicelLayout,
   criteria: CriteriaLayout,
   menu: MenuLayout,
   allocation: AllocationLayout,
   medical: MedicalLayout,
+  attendance: AttendanceLayout,
+  timetable: TimetableLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -59,7 +63,7 @@ class IndexLayout extends React.PureComponent {
         return 'objectProfiles';
       }
       if (/^\/diem-danh(?=\/|$)/i.test(pathname)) {
-        return 'schedules';
+        return 'attendance';
       }
       if (/^\/cau-hinh(?=\/|$)/i.test(pathname)) {
         return 'configuration';
@@ -78,6 +82,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/y-te(?=\/|$)/i.test(pathname)) {
         return 'medical';
+      }
+      if (/^\/thoi-khoa-bieu(?=\/|$)/i.test(pathname)) {
+        return 'timetable';
       }
       return 'public';
     };

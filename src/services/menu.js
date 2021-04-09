@@ -523,11 +523,7 @@ export async function getLeftMenuMedical() {
     {
       title: 'Thống kê',
       key: 'children',
-      url: [
-        '/y-te/thong-ke',
-        '/y-te/thong-ke/tao-moi',
-        '/y-te/thong-ke/:id/chi-tiet',
-      ],
+      url: ['/y-te/thong-ke', '/y-te/thong-ke/tao-moi', '/y-te/thong-ke/:id/chi-tiet'],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,
@@ -537,6 +533,18 @@ export async function getLeftMenuMedical() {
       key: 'clock',
       url: ['/y-te/lich-su'],
       icon: 'icon icon-alarm',
+      permission: [],
+      pro: true,
+    },
+  ];
+}
+export async function getLeftMenuTimeTable() {
+  return [
+    {
+      title: 'Thời khóa biểu',
+      key: 'timetable',
+      url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
+      icon: 'icon icon-checkmark',
       permission: [],
       pro: true,
     },
