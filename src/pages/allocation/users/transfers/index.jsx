@@ -1,18 +1,17 @@
 import React, { PureComponent } from 'react';
-import { connect, history, NavLink } from 'umi';
-import { Modal, Form, Tabs, List, Avatar, Checkbox } from 'antd';
+import { connect, NavLink } from 'umi';
+import { Form, List, Avatar, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import { UserOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -29,7 +28,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ allocationUsersTransfers, loading }) => ({
   loading,
   data: allocationUsersTransfers.data,
@@ -117,39 +115,41 @@ class Index extends PureComponent {
                     Danh sách nhân viên
                   </Text>
                 </div>
-                <List
-                  className={stylesAllocation.list}
-                  dataSource={[
-                    { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  ]}
-                  renderItem={(item) => (
-                    <List.Item key={item.id}>
-                      <Checkbox className={stylesAllocation.checkbox} />
-                      <div className={stylesAllocation['group-info']}>
-                        <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                        <div className={stylesAllocation['info']}>
-                          <h3 className={stylesAllocation['title']}>Nguyễn Văn Tuấn</h3>
-                          <p className={stylesAllocation['norm']}>
-                            Hành chính nhân sự - Ghi danh - Nhân viên
-                          </p>
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                  <List
+                    className={stylesAllocation.list}
+                    dataSource={[
+                      { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    ]}
+                    renderItem={(item) => (
+                      <List.Item key={item.id}>
+                        <Checkbox className={stylesAllocation.checkbox} />
+                        <div className={stylesAllocation['group-info']}>
+                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                          <div className={stylesAllocation['info']}>
+                            <h3 className={stylesAllocation['title']}>Nguyễn Văn Tuấn</h3>
+                            <p className={stylesAllocation['norm']}>
+                              Hành chính nhân sự - Ghi danh - Nhân viên
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </List.Item>
-                  )}
-                />
+                      </List.Item>
+                    )}
+                  />
+                </Scrollbars>
               </div>
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">

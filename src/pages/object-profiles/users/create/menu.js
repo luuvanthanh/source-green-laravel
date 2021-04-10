@@ -30,7 +30,43 @@ export const menu = [
     label: 'Thông tin ngân hàng',
   },
   {
+    key: 'rank',
+    label: 'Cấp bậc, chức vụ',
+  },
+  {
     key: 'timework',
     label: 'Thời gian làm việc',
+  },
+  {
+    key: 'contract',
+    label: 'Hợp đồng lao động',
+  },
+  {
+    key: 'minutesOfAgreement',
+    label: 'Biên bản thỏa thuận',
+  },
+  {
+    key: 'insurrance',
+    label: 'Bảo hiểm xã hội',
+  },
+  {
+    key: 'healthInsurrance',
+    label: 'Bảo hiểm y tế',
+  },
+  {
+    key: 'daysOff',
+    label: 'Số ngày nghỉ phép',
+  },
+  {
+    key: 'children',
+    label: 'Thông tin con',
+  },
+  {
+    key: 'salary',
+    label: 'Thông tin mức lương',
+  },
+  {
+    key: 'reward',
+    label: 'Thưởng cá nhân',
   },
 ];

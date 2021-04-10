@@ -17,6 +17,7 @@ import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.s
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -206,29 +207,31 @@ class Index extends PureComponent {
                   </div>
                   <hr />
                 </div>
-                <Radio.Group value={studentId}>
-                  <List
-                    className={stylesAllocation.list}
-                    dataSource={students}
-                    loading={loadingStudents}
-                    renderItem={(item) => (
-                      <List.Item key={item.id}>
-                        <Radio
-                          className={stylesAllocation.radio}
-                          value={item.id}
-                          onChange={(event) => this.onChangeRadio(event, item)}
-                        />
-                        <div className={stylesAllocation['group-info']}>
-                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                          <div className={stylesAllocation['info']}>
-                            <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
-                            <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                  <Radio.Group value={studentId}>
+                    <List
+                      className={stylesAllocation.list}
+                      dataSource={students}
+                      loading={loadingStudents}
+                      renderItem={(item) => (
+                        <List.Item key={item.id}>
+                          <Radio
+                            className={stylesAllocation.radio}
+                            value={item.id}
+                            onChange={(event) => this.onChangeRadio(event, item)}
+                          />
+                          <div className={stylesAllocation['group-info']}>
+                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                            <div className={stylesAllocation['info']}>
+                              <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
+                              <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                            </div>
                           </div>
-                        </div>
-                      </List.Item>
-                    )}
-                  />
-                </Radio.Group>
+                        </List.Item>
+                      )}
+                    />
+                  </Radio.Group>
+                </Scrollbars>
               </div>
             </div>
             <div className={stylesAllocation['right-container']}>

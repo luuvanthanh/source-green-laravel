@@ -8,6 +8,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils/variables';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const Index = memo(() => {
   const formRef = useRef();
@@ -29,53 +30,55 @@ const Index = memo(() => {
         <Form.List name="shuttlers">
           {(fields, { add, remove }) => (
             <>
-              {fields.map(({ key, name }, index) => (
-                <Pane
-                  key={key}
-                  className={csx('pb-0', 'border-bottom', 'position-relative')}
-                  style={{ padding: 20 }}
-                >
-                  <Pane className="row">
-                    <Pane className="col-lg-6">
-                      <FormItem
-                        name={[key, 'level']}
-                        label="Tên chứng chỉ"
-                        type={variables.INPUT}
-                      />
+              <Scrollbars autoHeight autoHeightMax={window.innerHeight - 400}>
+                {fields.map(({ key, name }, index) => (
+                  <Pane
+                    key={key}
+                    className={csx('pb-0', 'border-bottom', 'position-relative')}
+                    style={{ padding: 20 }}
+                  >
+                    <Pane className="row">
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name={[key, 'level']}
+                          label="Tên chứng chỉ"
+                          type={variables.INPUT}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name={[key, 'relationship']}
+                          label="Loại chứng chỉ"
+                          type={variables.INPUT}
+                        />
+                      </Pane>
                     </Pane>
-                    <Pane className="col-lg-6">
-                      <FormItem
-                        name={[key, 'relationship']}
-                        label="Loại chứng chỉ"
-                        type={variables.INPUT}
-                      />
+                    <Pane className="row">
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name={[key, 'identityCard']}
+                          label="Nơi đào tạo"
+                          type={variables.INPUT}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          name={[key, 'date']}
+                          label="Ngày cấp"
+                          type={variables.DATE_PICKER}
+                        />
+                      </Pane>
                     </Pane>
+                    {fields.length > 1 && (
+                      <DeleteOutlined
+                        className="position-absolute"
+                        style={{ top: 20, right: 20 }}
+                        onClick={() => remove(name)}
+                      />
+                    )}
                   </Pane>
-                  <Pane className="row">
-                    <Pane className="col-lg-6">
-                      <FormItem
-                        name={[key, 'identityCard']}
-                        label="Nơi đào tạo"
-                        type={variables.INPUT}
-                      />
-                    </Pane>
-                    <Pane className="col-lg-6">
-                      <FormItem
-                        name={[key, 'date']}
-                        label="Ngày cấp"
-                        type={variables.DATE_PICKER}
-                      />
-                    </Pane>
-                  </Pane>
-                  {fields.length > 1 && (
-                    <DeleteOutlined
-                      className="position-absolute"
-                      style={{ top: 20, right: 20 }}
-                      onClick={() => remove(name)}
-                    />
-                  )}
-                </Pane>
-              ))}
+                ))}
+              </Scrollbars>
 
               <Pane style={{ padding: 20 }} className="border-bottom">
                 <Button
