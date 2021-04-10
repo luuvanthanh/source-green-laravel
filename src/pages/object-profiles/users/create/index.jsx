@@ -13,6 +13,16 @@ import ContactForm from './forms/contact';
 import HealthForm from './forms/health';
 import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
+import RankForm from './forms/rank';
+import ContractForm from './forms/contract';
+import MinutesOfAgreementForm from './forms/minutesOfAgreement';
+import InsurranceForm from './forms/insurrance';
+import InsurranceHealthForm from './forms/InsurranceHealth';
+import DaysOffForm from './forms/daysOff';
+import ChildrenForm from './forms/children';
+import SalaryForm from './forms/salary';
+import RewardForm from './forms/reward';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { menu, defaultKey } from './menu';
 
@@ -28,6 +38,15 @@ const forms = {
   health: <HealthForm />,
   bank: <BankForm />,
   timework: <TimeworkForm />,
+  rank: <RankForm />,
+  contract: <ContractForm />,
+  minutesOfAgreement: <MinutesOfAgreementForm />,
+  insurrance: <InsurranceForm />,
+  healthInsurrance: <InsurranceHealthForm />,
+  daysOff: <DaysOffForm />,
+  children: <ChildrenForm />,
+  salary: <SalaryForm />,
+  reward: <RewardForm />,
 };
 
 const Index = memo(({ match: { params } }) => {
@@ -43,17 +62,19 @@ const Index = memo(({ match: { params } }) => {
       <Pane className="row">
         <Pane className="col-lg-3">
           <Pane className="card">
-            <Menu
-              selectedKeys={activeMenuItem}
-              mode="inline"
-              onClick={({ key }) => setActiveMenuItem(key)}
-            >
-              {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
-              {!params.id &&
-                menu
-                  .filter((item) => item.key === 'general')
-                  .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
-            </Menu>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
+              <Menu
+                activeKey={activeMenuItem}
+                mode="inline"
+                onClick={({ key }) => setActiveMenuItem(key)}
+              >
+                {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+                {!params.id &&
+                  menu
+                    .filter((item) => item.key === 'general')
+                    .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+              </Menu>
+            </Scrollbars>
           </Pane>
         </Pane>
         <Pane className="col-lg-9">{forms[activeMenuItem]}</Pane>

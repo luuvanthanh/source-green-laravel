@@ -13,6 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -138,37 +139,39 @@ class Index extends PureComponent {
                   </div>
                   <hr />
                 </div>
-                <List
-                  className={stylesAllocation.list}
-                  dataSource={[
-                    { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                  ]}
-                  renderItem={(item) => (
-                    <List.Item key={item.id}>
-                      <Checkbox className={stylesAllocation.checkbox} />
-                      <div className={stylesAllocation['group-info']}>
-                        <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                        <div className={stylesAllocation['info']}>
-                          <h3 className={stylesAllocation['title']}>Su beo</h3>
-                          <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                  <List
+                    className={stylesAllocation.list}
+                    dataSource={[
+                      { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                    ]}
+                    renderItem={(item) => (
+                      <List.Item key={item.id}>
+                        <Checkbox className={stylesAllocation.checkbox} />
+                        <div className={stylesAllocation['group-info']}>
+                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                          <div className={stylesAllocation['info']}>
+                            <h3 className={stylesAllocation['title']}>Su beo</h3>
+                            <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                          </div>
                         </div>
-                      </div>
-                    </List.Item>
-                  )}
-                />
+                      </List.Item>
+                    )}
+                  />
+                </Scrollbars>
               </div>
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">

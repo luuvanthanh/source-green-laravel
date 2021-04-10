@@ -1,19 +1,17 @@
 import React, { PureComponent } from 'react';
 import { connect, history, NavLink } from 'umi';
-import { Modal, Form, Tabs, List, Avatar, Checkbox } from 'antd';
+import { Modal, Form, List, Avatar } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { debounce } from 'lodash';
-import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import { UserOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -213,36 +211,38 @@ class Index extends PureComponent {
                       Danh sách trẻ
                     </Text>
                   </div>
-                  <List
-                    className={stylesAllocation.list}
-                    dataSource={[
-                      { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    ]}
-                    renderItem={(item) => (
-                      <List.Item key={item.id}>
-                        <div className={stylesAllocation['group-info']}>
-                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                          <div className={stylesAllocation['info']}>
-                            <h3 className={stylesAllocation['title']}>Su beo</h3>
-                            <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                    <List
+                      className={stylesAllocation.list}
+                      dataSource={[
+                        { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      ]}
+                      renderItem={(item) => (
+                        <List.Item key={item.id}>
+                          <div className={stylesAllocation['group-info']}>
+                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                            <div className={stylesAllocation['info']}>
+                              <h3 className={stylesAllocation['title']}>Su beo</h3>
+                              <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                            </div>
                           </div>
-                        </div>
-                      </List.Item>
-                    )}
-                  />
+                        </List.Item>
+                      )}
+                    />
+                  </Scrollbars>
                 </div>
               </div>
               <div className={stylesAllocation['right-container']}>
@@ -252,36 +252,38 @@ class Index extends PureComponent {
                       Danh sách giáo viên
                     </Text>
                   </div>
-                  <List
-                    className={stylesAllocation.list}
-                    dataSource={[
-                      { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    ]}
-                    renderItem={(item) => (
-                      <List.Item key={item.id}>
-                        <div className={stylesAllocation['group-info']}>
-                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                          <div className={stylesAllocation['info']}>
-                            <h3 className={stylesAllocation['title']}>Lê Xuân Thanh</h3>
-                            <p className={stylesAllocation['norm']}>Giáo viên</p>
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                    <List
+                      className={stylesAllocation.list}
+                      dataSource={[
+                        { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                        { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
+                      ]}
+                      renderItem={(item) => (
+                        <List.Item key={item.id}>
+                          <div className={stylesAllocation['group-info']}>
+                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                            <div className={stylesAllocation['info']}>
+                              <h3 className={stylesAllocation['title']}>Lê Xuân Thanh</h3>
+                              <p className={stylesAllocation['norm']}>Giáo viên</p>
+                            </div>
                           </div>
-                        </div>
-                      </List.Item>
-                    )}
-                  />
+                        </List.Item>
+                      )}
+                    />
+                  </Scrollbars>
                 </div>
               </div>
             </div>
