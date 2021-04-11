@@ -1,5 +1,5 @@
 // Import mixins
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN MENU */
@@ -50,6 +50,15 @@
       color: $text-success;
 
       > a {
+        color: $text-success;
+        &:hover {
+          color: $text-success;
+        }
+      }
+    }
+
+    a {
+      &:hover {
         color: $text-success;
       }
     }

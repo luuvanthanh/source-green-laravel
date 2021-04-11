@@ -1,35 +1,20 @@
 import request from '@/utils/request';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
+import variablesModules from '../utils/variables';
 
 export function get(params = {}) {
-  return request('/api/product-types', {
+  return request('/communications', {
     method: 'GET',
     params: {
-      ...params,
-      ...Helper.getPagination(params.page, params.limit),
-    }
-  });
-}
-
-export function add(data = {}) {
-  return request('/api/product-types', {
-    method: 'POST',
-    data
+      feedbackStatus: variablesModules.STATUS.VALIDATING,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }
 
 export function update(data = {}) {
-  return request(`/api/product-types/${data.id}`, {
+  return request(`/feedbacks/${data.id}`, {
     method: 'PUT',
-    data
+    data,
   });
 }
-
-export function remove(id) {
-  return request(`/api/product-types/${id}`, {
-    method: 'DELETE',
-    parse: true
-  });
-}
-
-export default get;

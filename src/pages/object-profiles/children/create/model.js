@@ -11,6 +11,7 @@ export default {
       status: null,
       isError: false,
     },
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -28,6 +29,10 @@ export default {
         status: null,
         isError: false,
       },
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -73,6 +78,20 @@ export default {
         }
         yield saga.put({
           type: 'SET_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
           payload: response,
         });
       } catch (error) {

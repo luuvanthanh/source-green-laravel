@@ -15,6 +15,7 @@ import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss'
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import variablesModules from '../utils/variables';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -107,7 +108,7 @@ class Index extends PureComponent {
    * Function edit items
    * @param {uid} id id of items
    */
-  onEdit = (record) => {
+  onEdit = (event, record) => {
     this.setStateData((prevState) => ({
       objects: record,
     }));
@@ -160,7 +161,6 @@ class Index extends PureComponent {
 
   onSend = () => {
     const {
-      location: { pathname },
       match: { params },
       dispatch,
     } = this.props;
@@ -179,6 +179,9 @@ class Index extends PureComponent {
         },
         callback: (response) => {
           if (response) {
+            document
+              .getElementById('chat-content')
+              .scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
             this.setStateData({
               description: null,
             });
@@ -353,91 +356,93 @@ class Index extends PureComponent {
               </div>
               {/* INFO CONTAINER */}
               {/* CHAT CONTAINER */}
-              <div className={stylesExchange['chat-container']}>
-                <div className={stylesExchange['chat-content']}>
-                  {details.feedbacks &&
-                    details.feedbacks.map((item, index) => (
-                      <div className={stylesExchange['chat-item']} key={item.id}>
-                        <div className={stylesExchange['heading']}>
-                          <div className={stylesExchange['group-user']}>
-                            <div className={stylesExchange['user-info']}>
-                              <Avatar size={50} shape="square" icon={<UserOutlined />} />
-                              <div className={stylesExchange['info']}>
-                                <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                                <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+              <div className={stylesExchange['chat-container']} id="chat-container">
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                  <div className={stylesExchange['chat-content']} id="chat-content">
+                    {details.feedbacks &&
+                      details.feedbacks.map((item) => (
+                        <div className={stylesExchange['chat-item']} key={item.id}>
+                          <div className={stylesExchange['heading']}>
+                            <div className={stylesExchange['group-user']}>
+                              <div className={stylesExchange['user-info']}>
+                                <Avatar size={50} shape="square" icon={<UserOutlined />} />
+                                <div className={stylesExchange['info']}>
+                                  <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
+                                  <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                                </div>
                               </div>
                             </div>
+                            <p className={stylesExchange['time']}>
+                              {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+                            </p>
                           </div>
-                          <p className={stylesExchange['time']}>
-                            {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-                          </p>
-                        </div>
-                        <div className={stylesExchange['wrapper-content']}>
-                          {objects.id !== item.id && (
-                            <>
-                              <div className={stylesExchange['content']}>
-                                {item.description.length < 20 && item.description}
-                                {item.description.length > 20 && (
-                                  <Paragraph
-                                    ellipsis={{
-                                      rows: 2,
-                                      expandable: true,
-                                      symbol: 'Xem thêm',
-                                    }}
-                                  >
-                                    {item.description}
-                                  </Paragraph>
-                                )}
-                              </div>
-                              {item.status !== variablesModules.STATUS.SENT && (
-                                <div className={stylesExchange['group-button']}>
-                                  <Button
-                                    icon="checkmark"
-                                    color="dash-success"
-                                    onClick={() => this.approve(item)}
-                                  ></Button>
-                                  <Button
-                                    icon="edit"
-                                    color="dash-yellow"
-                                    onClick={(event) => this.onEdit(event, item)}
-                                  ></Button>
-                                  <Button
-                                    icon="cancel"
-                                    color="dash-dark"
-                                    onClick={() => this.onRemove(item)}
-                                  ></Button>
+                          <div className={stylesExchange['wrapper-content']}>
+                            {objects.id !== item.id && (
+                              <>
+                                <div className={stylesExchange['content']}>
+                                  {item.description.length < 20 && item.description}
+                                  {item.description.length > 20 && (
+                                    <Paragraph
+                                      ellipsis={{
+                                        rows: 2,
+                                        expandable: true,
+                                        symbol: 'Xem thêm',
+                                      }}
+                                    >
+                                      {item.description}
+                                    </Paragraph>
+                                  )}
                                 </div>
-                              )}
-                            </>
-                          )}
-                          {objects.id === item.id && (
-                            <>
-                              <div className={stylesExchange['content']}>
-                                <Input
-                                  value={objects.description}
-                                  onChange={this.onChangeDescriptionFeedback}
-                                />
-                              </div>
-                              <div
-                                className={classnames(
-                                  stylesExchange['group-button'],
-                                  stylesExchange['group-button-singal'],
+                                {item.status !== variablesModules.STATUS.SENT && (
+                                  <div className={stylesExchange['group-button']}>
+                                    <Button
+                                      icon="checkmark"
+                                      color="dash-success"
+                                      onClick={() => this.approve(item)}
+                                    ></Button>
+                                    <Button
+                                      icon="edit"
+                                      color="dash-yellow"
+                                      onClick={(event) => this.onEdit(event, item)}
+                                    ></Button>
+                                    <Button
+                                      icon="cancel"
+                                      color="dash-dark"
+                                      onClick={() => this.onRemove(item)}
+                                    ></Button>
+                                  </div>
                                 )}
-                              >
-                                <Button
-                                  color="dash-success"
-                                  onClick={this.onSave}
-                                  loading={loadingSave}
+                              </>
+                            )}
+                            {objects.id === item.id && (
+                              <>
+                                <div className={stylesExchange['content']}>
+                                  <Input
+                                    value={objects.description}
+                                    onChange={this.onChangeDescriptionFeedback}
+                                  />
+                                </div>
+                                <div
+                                  className={classnames(
+                                    stylesExchange['group-button'],
+                                    stylesExchange['group-button-singal'],
+                                  )}
                                 >
-                                  Lưu
-                                </Button>
-                              </div>
-                            </>
-                          )}
+                                  <Button
+                                    color="dash-success"
+                                    onClick={this.onSave}
+                                    loading={loadingSave}
+                                  >
+                                    Lưu
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                </div>
+                      ))}
+                  </div>
+                </Scrollbars>
                 <div className={stylesExchange['chat-footer']}>
                   <div className={stylesExchange['content']}>
                     <Input
