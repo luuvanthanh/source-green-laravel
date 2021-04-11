@@ -69,6 +69,7 @@
             "GGPHP\\WorkHour\\": "packages/work-hour/src/",
             "GGPHP\\Category\\": "packages/category/src/",
             "GGPHP\\Profile\\": "packages/profile/src/",
+            "GGPHP\\Transfer\\": "packages/transfer/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

@@ -37,8 +37,12 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
      * @var array
      */
     protected $fillable = [
-        'full_name', 'date_of_birth', 'gender', 'code', 'tax_code', 'degree_id',
-        'training_major_id', 'training_school_id', 'date_off',
+        'full_name', 'date_of_birth', 'place_of_birth', 'email', 'phone_number', 'gender', 'code', 'tax_code', 'degree_id',
+        'training_major_id', 'training_school_id', 'date_off', 'permanent_address', 'nationality',
+        'nation', 'id_card', 'date_of_issue_id_card', 'place_of_issue_id_card', 'religion', 'work_date',
+        'health_insurance_book_number', 'hospital_adress', 'social_insurance_book_number', 'bank_name',
+        'bank_number_of_account', 'note', 'maternity_leave', 'maternity_leave_from', 'maternity_leave_to',
+        'educational_level_id', 'address',
     ];
 
     /**

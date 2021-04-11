@@ -33,7 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('labours-contracts', 'LabourContractController');
 
             //probationary_contract
-            \Route::resource('probationary_contracts', 'ProbationaryContractController');
+            \Route::resource('probationary-contracts', 'ProbationaryContractController');
         });
     }
 }
