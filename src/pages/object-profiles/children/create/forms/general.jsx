@@ -45,9 +45,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
       payload: params.id
         ? {
+            ...details,
             id: params.id,
             student: {
-              ...details,
+              ...details.student,
               ...values,
               id: params.id,
               fileImage,
@@ -109,8 +110,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
 
   return (
     <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-      <Loading loading={loading} isError={error.isError} params={{ error }}>
-        <Pane className="card">
+      <Pane className="card">
+        <Loading loading={loading} isError={error.isError} params={{ error }}>
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin cơ bản
@@ -194,8 +195,22 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             </Heading>
 
             <Pane className="row">
+              <Pane className="col-lg-6">
+                <FormItem name="address" label="Số nhà" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-6">
+                <FormItem name="street" label="Tên đường" type={variables.INPUT} />
+              </Pane>
+            </Pane>
+
+            <Pane className="row">
               <Pane className="col-lg-12">
-                <FormItem name="address" label="Địa chỉ hiện tại" type={variables.INPUT} />
+                <FormItem
+                  data={[]}
+                  name="wardId"
+                  label="Thành Phố/Quận Huyện"
+                  type={variables.CASCADER}
+                />
               </Pane>
             </Pane>
           </Pane>
@@ -211,8 +226,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               Lưu
             </Button>
           </Pane>
-        </Pane>
-      </Loading>
+        </Loading>
+      </Pane>
     </Form>
   );
 });

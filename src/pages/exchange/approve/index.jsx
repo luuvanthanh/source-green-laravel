@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
+import { variables, Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -25,11 +27,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ exchangeApprove, loading }) => ({
   loading,
   data: exchangeApprove.data,
-  pagination: exchangeApprove.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -41,7 +41,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -61,7 +63,35 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  /**
+   * Function load data
+   */
+  onLoad = () => {
+    const { search } = this.state;
+    const {
+      location: { pathname },
+    } = this.props;
+    this.props.dispatch({
+      type: 'exchangeApprove/GET_DATA',
+      payload: {},
+    });
+  };
+
+  approve = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeApprove/UPDATE',
+      payload: {
+        id: record.id,
+        description: record.description,
+        status: variablesModules.STATUS.SENT,
+      },
+      callback: (response) => {},
+    });
+  };
+
   render() {
+    const { data } = this.props;
     return (
       <>
         <Helmet title="Trao đổi cần duyệt" />
@@ -74,85 +104,93 @@ class Index extends PureComponent {
           )}
         >
           {/* DETAILS CONTAINER */}
+
           <div className={stylesExchange['details-container']}>
             {/* INFO CONTAINER */}
-            <div
-              className={classnames(
-                stylesExchange['info-container'],
-                stylesExchange['info-aprrove-container'],
-              )}
-            >
-              <div className="d-flex justify-content-between">
-                <h3 className={stylesExchange['title']}>Giữ ấm cho bé</h3>
-                <p className={stylesExchange['time']}>10:30, 15/3/2021</p>
-              </div>
-              <div className="d-flex">
-                <p className={stylesExchange['norm']}>
-                  Người tạo: <strong>Nguyễn Anh</strong>
-                </p>
-                <p className={classnames(stylesExchange['norm'], 'ml-4')}>
-                  Dành cho: <strong>Su Beo</strong>
-                </p>
-              </div>
-              <p className={stylesExchange['norm']}>
-                Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió.
-              </p>
-              <div className={stylesExchange['list-image']}>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
+            {data.map((item) => (
+              <div
+                className={classnames(
+                  stylesExchange['info-container'],
+                  stylesExchange['info-aprrove-container'],
+                )}
+                key={item.id}
+              >
+                <div className="d-flex justify-content-between">
+                  <h3 className={stylesExchange['title']}>{item.title}</h3>
+                  <p className={stylesExchange['time']}>
+                    {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+                  </p>
                 </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
+                <div className="d-flex">
+                  <p className={stylesExchange['norm']}>
+                    Người tạo: <strong>Nguyễn Anh</strong>
+                  </p>
+                  <p className={classnames(stylesExchange['norm'], 'ml-4')}>
+                    Dành cho: <strong>Su Beo</strong>
+                  </p>
                 </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-                <div className={stylesExchange['image-item']}>
-                  <img src="/images/slice/image_01.png" className={stylesExchange['image']} />
-                </div>
-              </div>
-              <hr />
-              <div className={stylesExchange['chat-content']}>
-                <div className={stylesExchange['chat-item']}>
-                  <div className={stylesExchange['chat-aprrove']}>
-                    <span className="icon-checkmark"></span>
-                    <p className={stylesExchange['norm']}>Duyệt</p>
-                  </div>
-                  <div className={stylesExchange['heading']}>
-                    <div className={stylesExchange['group-user']}>
-                      <div className={stylesExchange['user-info']}>
-                        <Avatar size={50} shape="square" icon={<UserOutlined />} />
-                        <div className={stylesExchange['info']}>
-                          <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                          <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
-                        </div>
+                <div
+                  className={stylesExchange['norm']}
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                ></div>
+                <div className={stylesExchange['list-image']}>
+                  {Helper.isJSON(item.files) &&
+                    JSON.parse(item.files).map((item) => (
+                      <div className={stylesExchange['image-item']} key={item}>
+                        <img src={`${API_UPLOAD}${item}`} className={stylesExchange['image']} />
                       </div>
-                      <div className={stylesExchange['wrapper-content']}>
-                        <div className={stylesExchange['content']}>
-                          <Paragraph
-                            ellipsis={{
-                              rows: 2,
-                              expandable: true,
-                              symbol: 'Xem thêm',
-                            }}
-                          >
-                            Đã mặc áo cho bé. Ba mẹ yên tâm nhé
-                          </Paragraph>
+                    ))}
+                </div>
+                <hr />
+                <div className={stylesExchange['chat-content']}>
+                  {item.feedbacks.map((itemFeedbacks) => (
+                    <div className={stylesExchange['chat-item']} key={itemFeedbacks.id}>
+                      {itemFeedbacks.status !== variablesModules.STATUS.SENT && (
+                        <div
+                          className={stylesExchange['chat-aprrove']}
+                          onClick={() => this.approve(itemFeedbacks)}
+                        >
+                          <span className="icon-checkmark"></span>
+                          <p className={stylesExchange['norm']}>Duyệt</p>
                         </div>
+                      )}
+                      <div className={stylesExchange['heading']}>
+                        <div className={stylesExchange['group-user']}>
+                          <div className={stylesExchange['user-info']}>
+                            <Avatar size={50} shape="square" icon={<UserOutlined />} />
+                            <div className={stylesExchange['info']}>
+                              <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
+                              <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                            </div>
+                          </div>
+                          <div className={stylesExchange['wrapper-content']}>
+                            <div className={stylesExchange['content']}>
+                              {itemFeedbacks.description.length < 20 && itemFeedbacks.description}
+                              {itemFeedbacks.description.length > 20 && (
+                                <Paragraph
+                                  ellipsis={{
+                                    rows: 2,
+                                    expandable: true,
+                                    symbol: 'Xem thêm',
+                                  }}
+                                >
+                                  {itemFeedbacks.description}
+                                </Paragraph>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <p className={stylesExchange['time']}>
+                          {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+                        </p>
                       </div>
+                      <hr />
                     </div>
-                    <p className={stylesExchange['time']}>10:45 - 15/3/2021</p>
-                  </div>
-                  <hr />
+                  ))}
                 </div>
               </div>
-            </div>
+            ))}
+
             {/* INFO CONTAINER */}
           </div>
           {/* DETAILS CONTAINER */}

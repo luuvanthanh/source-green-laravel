@@ -1,6 +1,7 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import * as services from './services';
+import variablesModules from '../utils/variables';
 
 export default {
   namespace: 'exchangeDetails',
@@ -28,7 +29,10 @@ export default {
       ...state,
       details: {
         ...state.details,
-        feedbacks: [payload, ...state.details.feedbacks],
+        status: isEmpty(state?.details?.feedbacks)
+          ? variablesModules.STATUS.IN_PROGRESS
+          : state?.details?.status,
+        feedbacks: [...state.details.feedbacks, payload],
       },
     }),
     SET_UPDATE: (state, { payload }) => ({
@@ -101,8 +105,16 @@ export default {
           type: 'SET_UPDATE_COMMUNICATION',
           payload: response,
         });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành côngh',
+        });
         callback(payload);
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'error.validationErrors[0].message'),
+        });
         callback(null, error?.data?.error);
       }
     },
