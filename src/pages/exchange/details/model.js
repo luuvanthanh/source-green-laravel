@@ -107,7 +107,7 @@ export default {
         });
         notification.success({
           message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành côngh',
+          description: 'Dữ liệu cập nhật thành công',
         });
         callback(payload);
       } catch (error) {
@@ -127,7 +127,7 @@ export default {
         });
         notification.success({
           message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành côngh',
+          description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
         if (get(error.data, 'error.validationErrors[0]')) {
