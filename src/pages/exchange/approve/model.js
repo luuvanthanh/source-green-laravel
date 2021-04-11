@@ -63,7 +63,7 @@ export default {
         });
         notification.success({
           message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành côngh',
+          description: 'Dữ liệu cập nhật thành công',
         });
         callback(payload);
       } catch (error) {
