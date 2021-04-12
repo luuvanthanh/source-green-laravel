@@ -22,9 +22,9 @@ export async function getLeftMenuData() {
       plus: false,
     },
     {
-      title: 'Thực đơn cho trẻ',
+      title: 'Thực đơn',
       key: 'menu',
-      url: ['/thuc-don-cho-tre', '/thuc-don-cho-tre/tao-moi'],
+      url: ['/thuc-don', '/thuc-don/tao-moi'],
       icon: 'icon icon-menu',
       permission: [],
       pro: true,
@@ -473,10 +473,10 @@ export async function getLeftMenuCriteria() {
 export async function getLeftMenuChildren() {
   return [
     {
-      title: 'Thực đơn cho trẻ',
-      key: 'learn',
-      url: ['/thuc-don-cho-tre', '/thuc-don-cho-tre/tao-moi'],
-      icon: 'icon icon-baby',
+      title: 'Thực đơn',
+      key: 'menu',
+      url: ['/thuc-don', '/thuc-don/tao-moi'],
+      icon: 'icon icon-list',
       permission: [],
       pro: true,
     },
