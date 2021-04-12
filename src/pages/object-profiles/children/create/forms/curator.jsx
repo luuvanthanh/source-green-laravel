@@ -1,12 +1,11 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty } from 'lodash';
 
 import { connect, history, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import Select from '@/components/CommonComponent/Select';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils/variables';
 import Loading from '@/components/CommonComponent/Loading';
@@ -45,9 +44,6 @@ const Curator = memo(
           },
         },
         callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {

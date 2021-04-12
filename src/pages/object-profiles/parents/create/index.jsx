@@ -6,6 +6,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
+import { Link } from 'umi';
 
 import { menu, defaultKey } from './menu';
 
@@ -16,7 +17,7 @@ const forms = {
   curator: <CuratorForm />,
 };
 
-const Index = memo(({ match: { params } }) => {
+const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
   return (
     <Pane style={{ padding: 20 }}>
@@ -29,20 +30,25 @@ const Index = memo(({ match: { params } }) => {
       <Pane className="row">
         <Pane className="col-lg-3">
           <Pane className="card">
-            <Menu
-              selectedKeys={activeMenuItem}
-              mode="inline"
-              onClick={({ key }) => setActiveMenuItem(key)}
-            >
-              {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+            <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
+              {params.id &&
+                menu.map(({ key, label }) => (
+                  <MenuItem key={key}>
+                    <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                  </MenuItem>
+                ))}
               {!params.id &&
                 menu
                   .filter((item) => item.key === 'general')
-                  .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+                  .map(({ key, label }) => (
+                    <MenuItem key={key}>
+                      <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                    </MenuItem>
+                  ))}
             </Menu>
           </Pane>
         </Pane>
-        <Pane className="col-lg-9">{forms[activeMenuItem]}</Pane>
+        <Pane className="col-lg-9">{forms[query.type || defaultKey]}</Pane>
       </Pane>
     </Pane>
   );

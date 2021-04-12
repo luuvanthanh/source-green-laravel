@@ -46,9 +46,6 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
         id: params.id,
       },
       callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
@@ -104,7 +101,7 @@ const Other = memo(({ dispatch, loading: { effects }, match: { params }, details
 
           <Pane className="row">
             <Pane className="col">
-              <FormItem name="desire" label="Mong muốn của phụ huynh">
+              <FormItem name="parentWish" label="Mong muốn của phụ huynh">
                 <Input placeholder="Nhập" />
               </FormItem>
             </Pane>

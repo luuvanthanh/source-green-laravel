@@ -11,6 +11,7 @@ export default {
       status: null,
       isError: false,
     },
+    parents: [],
     employees: [],
   },
   reducers: {
@@ -30,6 +31,10 @@ export default {
         isError: false,
       },
     }),
+    SET_PARENTS: (state, { payload }) => ({
+      ...state,
+      parents: payload.items,
+    }),
     SET_EMPLOYEES: (state, { payload }) => ({
       ...state,
       employees: payload.items,
@@ -47,8 +52,24 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        const response = yield saga.call(services.add, payload);
+        callback(response);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_TRANSPORTER({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addTransporter, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -57,6 +78,10 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -78,6 +103,20 @@ export default {
         }
         yield saga.put({
           type: 'SET_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParents, payload);
+        yield saga.put({
+          type: 'SET_PARENTS',
           payload: response,
         });
       } catch (error) {
