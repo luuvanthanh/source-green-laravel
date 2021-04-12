@@ -27,7 +27,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) => !!mounted?.current && (setFunction && setFunction(value));
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
   const loading = effects[`OPParentsAdd/GET_DETAILS`];
 
@@ -43,7 +44,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         : { ...values, fileImage },
       callback: (response, error) => {
         if (response) {
-          history.goBack();
+          history.push(`/ho-so-doi-tuong/phu-huynh/${response?.id}/chi-tiet?type=general`);
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
@@ -167,7 +168,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-8">
-                <FormItem data={[]} name="city" label="Thành phố" type={variables.CASCADER} />
+                <FormItem data={[]} name="cityId" label="Thành phố" type={variables.CASCADER} />
               </Pane>
             </Pane>
 
@@ -176,7 +177,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem name="jobTile" label="Nghề nghiệp" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name="facebook" label="Địa chỉ facebook" type={variables.INPUT} />
+                <FormItem name="faceBook" label="Địa chỉ facebook" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem name="zalo" label="Địa chỉ zalo" type={variables.INPUT} />
@@ -194,7 +195,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
 
               <Pane className="col-lg-12">
-                <FormItem name="hobby" label="Sở thích" type={variables.INPUT} />
+                <FormItem name="hobby" label="Tính cách, sở thích" type={variables.INPUT} />
               </Pane>
             </Pane>
           </Pane>

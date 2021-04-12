@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
   return request('/parents', {
@@ -17,5 +18,14 @@ export function update(data = {}) {
 export function details(data = {}) {
   return request(`/parents/${data.id}`, {
     method: 'GET',
+  });
+}
+
+export function getEmployees() {
+  return request(`/employees`, {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }

@@ -7,25 +7,25 @@ export default {
   state: {
     data: [],
     pagination: {
-      total: 0
-    }
+      total: 0,
+    },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -36,14 +36,14 @@ export default {
           payload: {
             parsePayload: response.items,
             pagination: {
-              total: response.totalCount
-            }
+              total: response.totalCount,
+            },
           },
         });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },
@@ -68,7 +68,7 @@ export default {
         yield saga.call(services.remove, payload.id);
         yield saga.put({
           type: 'GET_DATA',
-          payload: payload.pagination
+          payload: payload.pagination,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -83,7 +83,7 @@ export default {
         }
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },

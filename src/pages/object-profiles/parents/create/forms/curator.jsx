@@ -13,100 +13,107 @@ const mapStateToProps = ({ loading, OPParentsAdd }) => ({
   loading,
   details: OPParentsAdd.details,
   error: OPParentsAdd.error,
+  employees: OPParentsAdd.employees,
 });
-const Curator = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
-  const formRef = useRef();
+const Curator = memo(
+  ({ dispatch, loading: { effects }, match: { params }, details, error, employees }) => {
+    const formRef = useRef();
 
-  const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
-  const loading = effects[`OPParentsAdd/GET_DETAILS`];
+    const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
+    const loading = effects[`OPParentsAdd/GET_DETAILS`] || effects[`OPParentsAdd/GET_EMPLOYEES`];
 
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  const onFinish = (values) => {
-    dispatch({
-      type: params.id ? 'OPParentsAdd/UPDATE' : 'OPParentsAdd/ADD',
-      payload: params.id ? { ...details, ...values, id: params.id } : values,
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (params.id) {
+    /**
+     * Function submit form modal
+     * @param {object} values values of form
+     */
+    const onFinish = (values) => {
       dispatch({
-        type: 'OPParentsAdd/GET_DETAILS',
-        payload: params,
+        type: params.id ? 'OPParentsAdd/UPDATE' : 'OPParentsAdd/ADD',
+        payload: params.id ? { ...details, ...values, id: params.id } : values,
+        callback: (response, error) => {
+          if (error) {
+            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: head(item.members),
+                    errors: [item.message],
+                  },
+                ]);
+              });
+            }
+          }
+        },
       });
-    }
-  }, [params.id]);
+    };
 
-  useEffect(() => {
-    if (!isEmpty(details) && params.id) {
-      formRef.current.setFieldsValue({
-        ...details,
-      });
-    }
-  }, [details]);
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'OPParentsAdd/GET_DETAILS',
+          payload: params,
+        });
+        dispatch({
+          type: 'OPParentsAdd/GET_EMPLOYEES',
+          payload: params,
+        });
+      }
+    }, [params.id]);
 
-  return (
-    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-      <Loading loading={loading} isError={error.isError} params={{ error }}>
+    useEffect(() => {
+      if (!isEmpty(details) && params.id) {
+        formRef.current.setFieldsValue({
+          ...details,
+        });
+      }
+    }, [details]);
+
+    return (
+      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-            <Heading type="form-title" style={{ marginBottom: 20 }}>
-              Theo dõi
-            </Heading>
+          <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                Theo dõi
+              </Heading>
 
-            <Pane className="row">
-              <Pane className="col-lg-4">
-                <FormItem
-                  data={[]}
-                  name="curator"
-                  label="Nhân viên theo dõi"
-                  type={variables.SELECT}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem data={[]} name="source" label="Nguồn khách hàng" type={variables.SELECT} />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name="code" label="Nguồn khách hàng" type={variables.INPUT} />
+              <Pane className="row">
+                <Pane className="col-lg-4">
+                  <FormItem
+                    data={employees.map((item) => ({
+                      id: item.id,
+                      name: item.fullName,
+                    }))}
+                    name="employeeId"
+                    label="Nhân viên theo dõi"
+                    type={variables.SELECT}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem name="source" label="Nguồn khách hàng" type={variables.INPUT} />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem name="code" label="Mã khách hàng" type={variables.INPUT} />
+                </Pane>
               </Pane>
             </Pane>
-          </Pane>
 
-          <Pane style={{ padding: 20 }}>
-            <Button
-              color="success"
-              size="large"
-              htmlType="submit"
-              style={{ marginLeft: 'auto' }}
-              loading={loadingSubmit}
-            >
-              Lưu
-            </Button>
-          </Pane>
+            <Pane style={{ padding: 20 }}>
+              <Button
+                color="success"
+                size="large"
+                htmlType="submit"
+                style={{ marginLeft: 'auto' }}
+                loading={loadingSubmit}
+              >
+                Lưu
+              </Button>
+            </Pane>
+          </Loading>
         </Pane>
-      </Loading>
-    </Form>
-  );
-});
+      </Form>
+    );
+  },
+);
 
 export default withRouter(connect(mapStateToProps)(Curator));

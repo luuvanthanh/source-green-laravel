@@ -64,7 +64,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
           },
       callback: (response, error) => {
         if (response) {
-          history.goBack();
+          history.push(`/ho-so-doi-tuong/hoc-sinh/${response?.student?.id}/chi-tiet?type=general`);
         }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {

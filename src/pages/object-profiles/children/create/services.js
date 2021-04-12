@@ -26,11 +26,27 @@ export function details(data = {}) {
   });
 }
 
+export function getParents() {
+  return request(`/parents`, {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
 export function getEmployees() {
   return request(`/employees`, {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
+  });
+}
+
+export function addTransporter(data = {}) {
+  return request(`/student-transporter?id=${data.id}`, {
+    method: 'POST',
+    data: data.studentTransporter,
   });
 }

@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import { variables } from '@/utils';
 import * as services from './services';
 
@@ -11,6 +10,7 @@ export default {
       status: null,
       isError: false,
     },
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -20,6 +20,10 @@ export default {
         status: null,
         isError: false,
       },
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.items,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -42,8 +46,12 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
-        callback(payload);
+        const response = yield saga.call(services.add, payload);
+        callback(response);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -52,8 +60,26 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     *GET_DETAILS({ payload }, saga) {

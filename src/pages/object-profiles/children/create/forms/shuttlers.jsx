@@ -1,186 +1,212 @@
-import { memo, useRef, useMemo, useState, useCallback } from 'react'
-import { Form, Input, Radio } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
-import csx from 'classnames'
+import { memo, useRef, useState, useEffect } from 'react';
+import { Form } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import csx from 'classnames';
+import { connect, withRouter } from 'umi';
+import { head, isEmpty } from 'lodash';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import Button from '@/components/CommonComponent/Button'
-import Select from '@/components/CommonComponent/Select'
-import ImageUpload from '@/components/CommonComponent/ImageUpload'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import Loading from '@/components/CommonComponent/Loading';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables } from '@/utils/variables';
 
-const { Item: FormItem, List: FormList } = Form
-const { Group: RadioGroup } = Radio
+const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
+  loading,
+  details: OPchildrenAdd.details,
+  error: OPchildrenAdd.error,
+});
+const Shuttlers = memo(
+  ({ dispatch, loading: { effects }, match: { params }, details, error, parents }) => {
+    const formRef = useRef();
+    const loading = effects[`OPchildrenAdd/GET_DETAILS`];
+    const loadingSubmit = effects[`OPchildrenAdd/ADD`] || effects[`OPchildrenAdd/UPDATE`];
+    const mounted = useRef(false);
+    const [fileImage, setFileImage] = useState([]);
 
-const infomationTypes = {
-  create: 'CREATE',
-  select: 'SELECT',
-}
+    const mountedSet = (action, value) => {
+      if (mounted.current) {
+        action(value);
+      }
+    };
 
-const mockParents = [
-  { id: 1, name: 'Nguyễn Văn Mai' },
-]
+    const onFinish = (values) => {
+      const payload = {
+        studentTransporter: values.studentTransporter.map((item, index) => ({
+          ...item,
+          fileImage: fileImage[index],
+        })),
+        id: params.id,
+      };
+      dispatch({
+        type: 'OPchildrenAdd/ADD_TRANSPORTER',
+        payload,
+        callback: (response, error) => {
+          if (error) {
+            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: head(item.members),
+                    errors: [item.message],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    };
 
-const Shuttlers = memo(() => {
-  const formRef = useRef()
+    useEffect(() => {
+      mounted.current = true;
+      return () => (mounted.current = false);
+    }, []);
 
-  const [formType, setFormType] = useState({
-    0: infomationTypes.create,
-  })
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'OPchildrenAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
 
-  const switchType = useCallback((key, value) => {
-    setFormType(prevValue => ({
-      ...prevValue,
-      [key]: value
-    }))
-  })
+    useEffect(() => {
+      if (!isEmpty(details) && params.id) {
+        formRef.current.setFieldsValue({
+          studentTransporter: !isEmpty(details?.student?.studentTransporter)
+            ? details?.student?.studentTransporter
+            : [{}],
+        });
+        mountedSet(
+          setFileImage,
+          details?.student?.studentTransporter.map((item) => item.fileImage),
+        );
+      }
+    }, [details]);
 
-  const typeRadioGroup = useMemo(() => (key) => (
-    <Pane className="row">
-      <Pane className="col">
-        <FormItem name={[key, 'type']}>
-          <RadioGroup onChange={({ target: { value } }) => switchType(key, value)}>
-            <Radio value={infomationTypes.create}>Tạo mới</Radio>
-            <Radio value={infomationTypes.select}>Lấy từ danh sách phụ huynh</Radio>
-          </RadioGroup>
-        </FormItem>
-      </Pane>
-    </Pane>
-  ), [switchType])
-
-  const detailForm = useMemo(() => (key) => {
-    switch (formType[key]) {
-      case infomationTypes.create:
-        return (
-          <>
-            <Pane className="row">
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'avatar']} label="Hình ảnh">
-                  <ImageUpload />
-                </FormItem>
-              </Pane>
+    return (
+      <Form
+        layout="vertical"
+        ref={formRef}
+        onFinish={onFinish}
+        initialValues={{
+          studentTransporter: [{}],
+        }}
+      >
+        <Pane className="card">
+          <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Pane style={{ padding: 20 }} className="pb-0">
+              <Heading type="form-title">Người đưa đón</Heading>
             </Pane>
 
-            <Pane className="row">
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'name']} label="Họ và tên">
-                  <Input placeholder="Nhập" />
-                </FormItem>
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'relationship']} label="Mối liên hệ">
-                  <Select
-                    placeholder="Chọn"
-                    dataSet={[]}
-                  />
-                </FormItem>
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'identityCard']} label="Số CMND">
-                  <Input placeholder="Nhập" maxLength={9} />
-                </FormItem>
-              </Pane>
+            <Form.List name="studentTransporter">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name }, index) => (
+                    <Pane
+                      key={key}
+                      className={csx('pb-0', 'border-bottom', 'position-relative')}
+                      style={{ padding: 20 }}
+                    >
+                      <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                        Người đưa đón {index + 1}
+                      </Heading>
 
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'posistion']} label="Số điện thoại">
-                  <Input placeholder="Nhập" maxLength={10} />
-                </FormItem>
-              </Pane>
-            </Pane>
-          </>
-        )
-      case infomationTypes.select:
-        return (
-          <>
-            <Pane className="row">
-              <Pane className="col-lg-4">
-                <FormItem name={[key, 'id']} label="Tên phụ huynh">
-                  <Select
-                    placeholder="Chọn"
-                    dataSet={mockParents}
-                  />
-                </FormItem>
-              </Pane>
-            </Pane>
-          </>
-        )
-      default:
-        return null
-    }
-  }, [formType])
+                      <Pane className="row">
+                        <Pane className="col-lg-4">
+                          <Form.Item name={[key, 'fileImage']} label="Hình ảnh">
+                            <ImageUpload
+                              callback={(res) => {
+                                mountedSet(setFileImage, [...fileImage, res.fileInfo.url]);
+                              }}
+                              fileImage={fileImage[`index`]}
+                            />
+                          </Form.Item>
+                        </Pane>
+                      </Pane>
 
-  return (
-    <Form
-      layout="vertical"
-      ref={formRef}
-      onFinish
-      initialValues={{
-        shuttlers: [
-          {
-            type: infomationTypes.create,
-            name: 'Nguyễn Văn Phước',
-          },
-        ]
-      }}
-    >
-      <Pane className="card">
-        <Pane style={{ padding: 20 }} className="pb-0">
-          <Heading type="form-title">Người đưa đón</Heading>
+                      <Pane className="row">
+                        <Pane className="col-lg-4">
+                          <FormItem
+                            name={[key, 'fullName']}
+                            label="Họ và tên"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          />
+                        </Pane>
+                        <Pane className="col-lg-4">
+                          <FormItem
+                            name={[key, 'relationship']}
+                            label="Mối liên hệ"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          />
+                        </Pane>
+                        <Pane className="col-lg-4">
+                          <FormItem
+                            name={[key, 'identifyNumber']}
+                            label="Số CMND"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          />
+                        </Pane>
+
+                        <Pane className="col-lg-4">
+                          <FormItem
+                            name={[key, 'phone']}
+                            label="Số điện thoại"
+                            type={variables.INPUT}
+                            rules={[variables.RULES.EMPTY_INPUT, variables.RULES.PHONE]}
+                          />
+                        </Pane>
+                      </Pane>
+
+                      {fields.length > 1 && (
+                        <DeleteOutlined
+                          className="position-absolute"
+                          style={{ top: 20, right: 20 }}
+                          onClick={() => remove(name)}
+                        />
+                      )}
+                    </Pane>
+                  ))}
+
+                  <Pane style={{ padding: 20 }} className="border-bottom">
+                    <Button
+                      color="success"
+                      ghost
+                      icon="plus"
+                      onClick={() => {
+                        add();
+                      }}
+                    >
+                      Thêm
+                    </Button>
+                  </Pane>
+                </>
+              )}
+            </Form.List>
+
+            <Pane style={{ padding: 20 }}>
+              <Button
+                color="success"
+                style={{ marginLeft: 'auto' }}
+                size="large"
+                htmlType="submit"
+                loading={loadingSubmit || loading}
+              >
+                Lưu
+              </Button>
+            </Pane>
+          </Loading>
         </Pane>
+      </Form>
+    );
+  },
+);
 
-        <FormList name="shuttlers">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name }, index) => (
-                <Pane
-                  key={key}
-                  className={csx("pb-0", "border-bottom", "position-relative")}
-                  style={{ padding: 20 }}
-                >
-                  <Heading type="form-block-title" style={{ marginBottom: 12 }}>Người đưa đón {index + 1}</Heading>
-
-                  {typeRadioGroup(name)}
-                  {detailForm(name)}
-
-                  {fields.length > 1 && (
-                    <DeleteOutlined
-                      className="position-absolute"
-                      style={{ top: 20, right: 20 }}
-                      onClick={() => remove(name)}
-                    />
-                  )}
-                </Pane>
-              ))}
-
-              <Pane style={{ padding: 20 }} className="border-bottom">
-                <Button
-                  color="success"
-                  ghost
-                  icon="plus"
-                  onClick={() => {
-                    switchType(fields.length, infomationTypes.create)
-                    add({ type: infomationTypes.create })
-                  }}
-                >
-                  Thêm
-                </Button>
-              </Pane>
-            </>
-          )}
-        </FormList>
-
-        <Pane style={{ padding: 20 }}>
-          <Button
-            color="success"
-            style={{ marginLeft: 'auto' }}
-            htmlType="submit"
-          >
-            Lưu
-          </Button>
-        </Pane>
-      </Pane>
-    </Form>
-  )
-})
-
-export default Shuttlers
+export default withRouter(connect(mapStateToProps)(Shuttlers));
