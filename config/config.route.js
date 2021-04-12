@@ -53,7 +53,7 @@ export default [
           },
           {
             path: '/thuc-don/tao-moi',
-            component: './menu/add',
+            component: './menu/create-v2',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
