@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'medicalItems',
+  namespace: 'medicalItemsAdd',
   state: {
     data: [],
     pagination: {
@@ -32,23 +32,20 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
+        const response = yield saga.call(services.getStudents);
+        callback(response);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },
