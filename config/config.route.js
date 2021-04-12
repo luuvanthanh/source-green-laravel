@@ -626,6 +626,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/thoi-khoa-bieu/tao-moi',
+            component: './timetable/items/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // MEDICAL
