@@ -749,6 +749,24 @@ export default [
         ],
       },
       // NOTIFICATION
+      // MEDIA
+      {
+        path: '/ghi-nhan',
+        component: './notification/layout',
+        routes: [
+          {
+            path: '/ghi-nhan',
+            redirect: '/ghi-nhan/danh-sach',
+          },
+          {
+            path: '/ghi-nhan/danh-sach',
+            component: './media',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // MEDIA
       {
         path: '/404',
         component: './404',
