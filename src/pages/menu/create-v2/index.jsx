@@ -1,5 +1,5 @@
 import { memo, useRef, useState } from 'react'
-import { Form, List, Checkbox } from 'antd'
+import { Form, Checkbox } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import { Helmet } from 'react-helmet'
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -23,18 +23,14 @@ const days = [
   { id: 7, name: 'Chủ nhật' },
 ]
 
-const takePillTimes = []
-
 const classes = [
   { id: 1, name: 'Lớp Preschool 1' },
   { id: 2, name: 'Lớp Preschool 2' },
 ]
 
-const { Item: ListItem } = List
 const { List: FormList, Item: FormItemAntd } = Form
 
 const Index = memo(() => {
-  const [pillTimes, setPillTimes] = useState({})
   const [type, setType] = useState(1)
 
   const formRef = useRef()
