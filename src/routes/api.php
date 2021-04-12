@@ -97,5 +97,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\Dismissed\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });

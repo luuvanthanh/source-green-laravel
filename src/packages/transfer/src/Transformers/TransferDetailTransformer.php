@@ -2,14 +2,10 @@
 
 namespace GGPHP\Transfer\Transformers;
 
+use GGPHP\Category\Transformers\BranchTransformer;
+use GGPHP\Category\Transformers\DivisionTransformer;
+use GGPHP\Category\Transformers\PositionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Division\Transformers\DivisionTransformer;
-use GGPHP\Division\Transformers\PositionTransformer;
-use GGPHP\Division\Transformers\RankPositionInformationTransformer;
-use GGPHP\Division\Transformers\RankTransformer;
-use GGPHP\Division\Transformers\WorkFormTransformer;
-use GGPHP\RolePermission\Transformers\RoleTransformer;
-use GGPHP\RolePermission\Transformers\StoreTransformer;
 use GGPHP\Transfer\Models\TransferDetail;
 use GGPHP\Users\Transformers\UserTransformer;
 
@@ -26,34 +22,21 @@ class TransferDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['oldRankPositionInformations'];
+    protected $availableIncludes = [];
 
-    protected $defaultIncludes = ['user', 'store', 'position', 'division', 'workForm', 'rank', 'role'];
+    protected $defaultIncludes = ['employee', 'position', 'division', 'branch'];
 
     /**
-     * Include store
+     * Include employee
      * @param  TransferDetail $transferDetail
      */
-    public function includeStore(TransferDetail $transferDetail)
+    public function includeEmployee(TransferDetail $transferDetail)
     {
-        if (empty($transferDetail->store)) {
+        if (empty($transferDetail->employee)) {
             return;
         }
 
-        return $this->item($transferDetail->store, new StoreTransformer, 'Store');
-    }
-
-    /**
-     * Include user
-     * @param  TransferDetail $transferDetail
-     */
-    public function includeUser(TransferDetail $transferDetail)
-    {
-        if (empty($transferDetail->user)) {
-            return;
-        }
-
-        return $this->item($transferDetail->user, new UserTransformer, 'User');
+        return $this->item($transferDetail->employee, new UserTransformer, 'Employee');
     }
 
     /**
@@ -83,54 +66,16 @@ class TransferDetailTransformer extends BaseTransformer
     }
 
     /**
-     * Include workForm
+     * Include branch
      * @param  TransferDetail $transferDetail
      */
-    public function includeWorkForm(TransferDetail $transferDetail)
+    public function includeBranch(TransferDetail $transferDetail)
     {
-        if (empty($transferDetail->workForm)) {
+        if (empty($transferDetail->branch)) {
             return;
         }
 
-        return $this->item($transferDetail->workForm, new WorkFormTransformer, 'WorkForm');
+        return $this->item($transferDetail->branch, new BranchTransformer, 'Branch');
     }
 
-    /**
-     * Include rank
-     * @param  TransferDetail $transferDetail
-     */
-    public function includeRank(TransferDetail $transferDetail)
-    {
-        if (empty($transferDetail->rank)) {
-            return;
-        }
-
-        return $this->item($transferDetail->rank, new RankTransformer, 'Rank');
-    }
-
-    /**
-     * Include role
-     * @param  TransferDetail $transferDetail
-     */
-    public function includeRole(TransferDetail $transferDetail)
-    {
-        if (empty($transferDetail->role)) {
-            return;
-        }
-
-        return $this->item($transferDetail->role, new RoleTransformer, 'Role');
-    }
-
-    /**
-     * Include role
-     * @param  TransferDetail $transferDetail
-     */
-    public function includeOldRankPositionInformations(TransferDetail $transferDetail)
-    {
-        if (empty($transferDetail->oldRankPositionInformations)) {
-            return;
-        }
-
-        return $this->item($transferDetail->oldRankPositionInformations, new RankPositionInformationTransformer, 'OldRankPositionInformation');
-    }
 }

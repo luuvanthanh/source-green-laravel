@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Appoint\Http\Requests;
+namespace GGPHP\Dismissed\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AppointCreateRequest extends FormRequest
+class DismissedCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class AppointCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:appoints,decision_number',
+            'decision_number' => 'unique:dismisseds,decision_number',
             'decision_date' => 'required',
             'reason' => 'required',
             'type' => 'required',

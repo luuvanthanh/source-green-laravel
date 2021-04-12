@@ -20,7 +20,7 @@ class PositionLevel extends UuidModel
      */
     protected $fillable = [
         'employee_id', 'branch_id', 'position_id', 'division_id',
-        'start_date', 'end_date',
+        'start_date', 'end_date', 'type',
     ];
 
     protected $dateTimeFields = [

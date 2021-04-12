@@ -199,6 +199,7 @@ return [
         GGPHP\PositionLevel\Providers\PositionLevelServiceProvider::class,
         GGPHP\Reward\Providers\RewardServiceProvider::class,
         GGPHP\Appoint\Providers\AppointServiceProvider::class,
+        GGPHP\Dismissed\Providers\DismissedServiceProvider::class,
     ],
 
     /*

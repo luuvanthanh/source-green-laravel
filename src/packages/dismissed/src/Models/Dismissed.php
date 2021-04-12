@@ -1,19 +1,19 @@
 <?php
 
-namespace GGPHP\Transfer\Models;
+namespace GGPHP\Dismissed\Models;
 
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Transfer\Models\TransferDetail;
+use GGPHP\Dismissed\Models\DismissedDetail;
 use GGPHP\Users\Models\User;
 
-class Transfer extends UuidModel
+class Dismissed extends UuidModel
 {
     public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'transfers';
+    protected $table = 'dismisseds';
 
     /**
      * The attributes that are mass assignable.
@@ -49,8 +49,9 @@ class Transfer extends UuidModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transferDetails()
+    public function dismissedDetails()
     {
-        return $this->hasMany(TransferDetail::class, 'transfer_id');
+        return $this->hasMany(DismissedDetail::class, 'dismissed_id');
     }
+
 }

@@ -73,6 +73,7 @@
             "GGPHP\\PositionLevel\\": "packages/position-level/src/",
             "GGPHP\\Reward\\": "packages/reward/src/",
             "GGPHP\\Appoint\\": "packages/appoint/src/",
+            "GGPHP\\Dismissed\\": "packages/dismissed/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

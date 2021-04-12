@@ -25,12 +25,15 @@ class TransferCreateRequest extends FormRequest
     {
         return [
             'decision_number' => 'unique:transfers,decision_number',
-            'user_create' => 'required',
-            'time_apply' => [
-                'required',
-                'date',
-                'after:today',
-            ],
+            'decision_date' => 'required',
+            'reason' => 'required',
+            'type' => 'required',
+            'data' => 'required|array',
+            'data.*.employee_id' => 'required',
+            'data.*.branch_id' => 'required',
+            'data.*.division_id' => 'required',
+            'data.*.position_id' => 'required',
+            'data.*.note' => 'required',
         ];
     }
 }
