@@ -93,5 +93,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\Appoint\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });
