@@ -80,7 +80,16 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Profile\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
     \GGPHP\Transfer\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\PositionLevel\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\Reward\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
 
