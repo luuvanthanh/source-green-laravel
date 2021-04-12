@@ -49,6 +49,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        actionType: query?.actionType,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -167,18 +168,21 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**
@@ -246,7 +250,11 @@ class Index extends PureComponent {
         key: 'code',
         width: 150,
         className: 'min-width-130',
-        render: (record) => '15:31, 10/1/2021',
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          </Text>
+        ),
       },
       {
         title: 'Tên tài khoản',
@@ -258,13 +266,13 @@ class Index extends PureComponent {
         title: 'Hành động',
         key: 'action',
         className: 'min-width-130',
-        render: (record) => 'Xác nhận đã nhận thuốc',
+        render: (record) => variablesModules.MEDICAL_ACTION_TYPE[`${record.actionType}`],
       },
       {
         title: 'Nội dung',
         key: 'status',
         className: 'min-width-120',
-        render: (record) => 'Xác nhận đã nhận thuốc dành cho bé Su Beo',
+        render: (record) => <Text size="normal">{record.logContent}</Text>,
       },
     ];
   };
@@ -307,9 +315,12 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
+                    name="actionType"
+                    data={[
+                      { id: null, name: 'Chọn tất cả' },
+                      ...variablesModules.MEDICAL_ACTION_TYPE_STATUS,
+                    ]}
+                    onChange={(event) => this.onChangeSelect(event, 'actionType')}
                     type={variables.SELECT}
                   />
                 </div>

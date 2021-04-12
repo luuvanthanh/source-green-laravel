@@ -1,4 +1,4 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /* CARDS */
@@ -43,7 +43,9 @@
 .card {
   border-radius: 7px;
   margin-bottom: rem(30);
-
+  .ant-radio-group {
+    width: 100%;
+  }
   &--withShadow {
     transition: box-shadow 0.1s ease-in-out;
 

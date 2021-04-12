@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
+import variablesModules from '../utils/variables';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -35,6 +36,7 @@ const { confirm } = Modal;
 const mapStateToProps = ({ medicalItems, loading }) => ({
   data: medicalItems.data,
   pagination: medicalItems.pagination,
+  error: medicalItems.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,6 +51,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -57,7 +60,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -89,7 +94,6 @@ class Index extends PureComponent {
       type: 'medicalItems/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({
@@ -116,6 +120,23 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchStatus = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -140,6 +161,15 @@ class Index extends PureComponent {
    */
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectStatus = (e, type) => {
+    this.debouncedSearchStatus(e, type);
   };
 
   /**
@@ -271,55 +301,59 @@ class Index extends PureComponent {
   header = () => {
     const columns = [
       {
-        title: 'Mã ID',
+        title: 'STT',
         key: 'index',
-        className: 'min-width-70',
-        width: 70,
         align: 'center',
-        render: (text, record, index) => 'TD01',
+        className: 'min-width-60',
+        width: 60,
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
         title: 'Thời gian tạo',
-        key: 'name',
+        key: 'creationTime',
         className: 'min-width-140',
         width: 140,
-        render: (record) => <Text size="normal">10:15 - 15/3/2021</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          </Text>
+        ),
       },
       {
         title: 'Cơ sở',
         key: 'life',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view</Text>,
+        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Preschool</Text>,
+        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
       },
       {
         title: 'Tiêu đề',
         key: 'title',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Giữ ấm cho bé</Text>,
+        render: (record) => <Text size="normal">{record.diseaseName}</Text>,
       },
       {
         title: 'Phụ huynh',
         key: 'parents',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Nguyễn Văn A</Text>,
+        render: (record) => <Text size="normal"></Text>,
       },
       {
         title: 'Dành cho bé',
-        key: 'parents',
+        key: 'student',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Su Beo</Text>,
+        render: (record) => <Text size="normal">{record?.student?.fullName}</Text>,
       },
       {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus('PENDING'),
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'action',
@@ -330,7 +364,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push('/y-te/thong-ke/1/chi-tiet')}
+              onClick={() => history.push(`/y-te/thong-ke/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -343,8 +377,9 @@ class Index extends PureComponent {
 
   render() {
     const {
-      match: { params },
       data,
+      error,
+      match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
@@ -359,15 +394,22 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Thống kê y tế</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}
+            >
               Tạo y tế
             </Button>
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
-            <Tabs defaultActiveKey="1">
-              <TabPane tab="Trạng thái 1" key="1"></TabPane>
-              <TabPane tab="Trạng thái 2" key="2"></TabPane>
-              <TabPane tab="Trạng thái 3" key="3"></TabPane>
+            <Tabs
+              accessKey={search?.status || variablesModules.STATUS.NEW}
+              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
+            >
+              {variablesModules.STATUS_TABS.map((item) => (
+                <TabPane tab={item.name} key={item.id}></TabPane>
+              ))}
             </Tabs>
             <Form
               initialValues={{
@@ -381,8 +423,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    name="diseaseName"
+                    onChange={(event) => this.onChange(event, 'diseaseName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
@@ -413,10 +455,11 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              // bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
+              error={error}
+              isError={error.isError}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
