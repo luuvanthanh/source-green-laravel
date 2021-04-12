@@ -98,4 +98,21 @@ class LabourContractRepositoryEloquent extends BaseRepository implements LabourC
 
         return $labourContract;
     }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $tranfer = LabourContract::create($attributes);
+            foreach ($attributes['detail'] as $value) {
+                $tranfer->parameterValues()->attach($value['labour_contract_id'], ['value' => $value['value']]);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($tranfer->id);
+    }
 }

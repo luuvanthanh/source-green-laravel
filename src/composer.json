@@ -74,6 +74,7 @@
             "GGPHP\\Reward\\": "packages/reward/src/",
             "GGPHP\\Appoint\\": "packages/appoint/src/",
             "GGPHP\\Dismissed\\": "packages/dismissed/src/",
+            "GGPHP\\SalaryIncrease\\": "packages/salary-increase/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

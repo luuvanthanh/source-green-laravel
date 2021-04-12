@@ -68,4 +68,11 @@ class LabourContract extends UuidModel
         return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'branch_id');
     }
 
+    /**
+     * Define relations user
+     */
+    public function parameterValues()
+    {
+        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'labour_contract_parameter_value', 'labour_contract_id', 'parameter_value_id')->withPivot('value');
+    }
 }

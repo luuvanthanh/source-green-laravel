@@ -200,6 +200,7 @@ return [
         GGPHP\Reward\Providers\RewardServiceProvider::class,
         GGPHP\Appoint\Providers\AppointServiceProvider::class,
         GGPHP\Dismissed\Providers\DismissedServiceProvider::class,
+        GGPHP\SalaryIncrease\Providers\SalaryIncreaseServiceProvider::class,
     ],
 
     /*

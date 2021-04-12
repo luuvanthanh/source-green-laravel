@@ -14,5 +14,4 @@ class ParamaterValueTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = [];
-
 }

@@ -25,13 +25,18 @@ class ProbationaryContractTransformer extends BaseTransformer
     protected $availableIncludes = ['employee', 'typeOfContract', 'division', 'position', 'branch'];
 
     /**
-     * Transform the custom field entity.
+     * Transform the User entity.
+     *
+     * @param User $model
      *
      * @return array
      */
     public function customAttributes($model): array
     {
+        $parameterValues = $model->parameterValues;
+
         return [
+            "parameter_values" => $parameterValues,
         ];
     }
 

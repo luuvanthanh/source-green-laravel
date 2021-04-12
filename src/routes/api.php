@@ -101,5 +101,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\SalaryIncrease\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });
