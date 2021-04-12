@@ -42,17 +42,17 @@ export default [
       },
       // CRITERIA
       {
-        path: '/thuc-don-cho-tre',
+        path: '/thuc-don',
         component: './menu/layout',
         routes: [
           {
-            path: '/thuc-don-cho-tre',
-            component: './menu',
+            path: '/thuc-don',
+            component: './menu/index-v2',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
-            path: '/thuc-don-cho-tre/tao-moi',
+            path: '/thuc-don/tao-moi',
             component: './menu/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],

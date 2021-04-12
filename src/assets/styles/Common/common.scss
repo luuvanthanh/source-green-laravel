@@ -701,3 +701,9 @@
     color: rgba($color: $black, $alpha: 0.85);
   }
 }
+
+.dishes-image {
+  width: 84px;
+  height: 64px;
+  object-fit: cover;
+}
