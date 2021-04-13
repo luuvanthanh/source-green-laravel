@@ -428,6 +428,17 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Trường đào tạo',
+          key: 'training-schools',
+          url: [
+            '/cau-hinh/truong-dao-tao',
+            '/cau-hinh/truong-dao-tao/tao-moi',
+            '/cau-hinh/truong-dao-tao/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },

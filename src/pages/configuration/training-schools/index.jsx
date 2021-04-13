@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ positions, loading }) => ({
-  data: positions.data,
-  error: positions.error,
-  pagination: positions.pagination,
+const mapStateToProps = ({ trainingSchools, loading }) => ({
+  data: trainingSchools.data,
+  error: trainingSchools.error,
+  pagination: trainingSchools.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -86,7 +86,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'positions/GET_DATA',
+      type: 'trainingSchools/GET_DATA',
       payload: {
         ...search,
       },
@@ -184,7 +184,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'positions/REMOVE',
+          type: 'trainingSchools/REMOVE',
           payload: {
             id,
             pagination: {
@@ -227,6 +227,12 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
+        title: 'ĐỊA CHỈ',
+        key: 'adress',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.adress}</Text>,
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -255,13 +261,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['positions/GET_DATA'];
+    const loading = effects['trainingSchools/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách chức vụ" />
+        <Helmet title="Danh sách trường đào tạo" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH CHỨC VỤ</Text>
+            <Text color="dark">DANH SÁCH TRƯỜNG ĐÀO TẠO</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

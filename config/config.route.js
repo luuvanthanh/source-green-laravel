@@ -560,6 +560,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/truong-dao-tao',
+            component: './configuration/training-schools',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/truong-dao-tao/tao-moi',
+            component: './configuration/training-schools/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/truong-dao-tao/:id/chi-tiet',
+            component: './configuration/training-schools/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION
