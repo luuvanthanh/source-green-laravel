@@ -632,6 +632,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/tham-so-gia-tri',
+            component: './configuration/paramater-values',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tham-so-gia-tri/tao-moi',
+            component: './configuration/paramater-values/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
+            component: './configuration/paramater-values/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION

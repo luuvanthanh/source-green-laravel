@@ -472,6 +472,17 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Tham số giá trị',
+          key: 'paramater-values',
+          url: [
+            '/cau-hinh/tham-so-gia-tri',
+            '/cau-hinh/tham-so-gia-tri/tao-moi',
+            '/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },
