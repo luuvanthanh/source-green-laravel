@@ -374,18 +374,6 @@ export async function getLeftMenuConfiguration() {
       pro: true,
     },
     {
-      title: 'Chi nhánh',
-      key: 'store',
-      url: [
-        '/cau-hinh/chi-nhanh',
-        '/cau-hinh/chi-nhanh/tao-moi',
-        '/cau-hinh/chi-nhanh/:id/chi-tiet',
-      ],
-      icon: 'icon icon-open-book',
-      permission: [],
-      pro: true,
-    },
-    {
       title: 'Vai trò',
       key: 'roles',
       url: ['/cau-hinh/vai-tro', '/cau-hinh/vai-tro/tao-moi', '/cau-hinh/vai-tro/:id/chi-tiet'],
@@ -410,21 +398,40 @@ export async function getLeftMenuConfiguration() {
       pro: true,
     },
     {
-      title: 'Bộ phận',
-      key: 'divisions',
-      url: ['/cau-hinh/bo-phan', '/cau-hinh/bo-phan/tao-moi', '/cau-hinh/bo-phan/:id/chi-tiet'],
+      title: 'Danh mục',
+      key: 'categories',
       icon: 'icon icon-setting',
       permission: [],
+      children: [
+        {
+          title: 'Bộ phận',
+          key: 'divisions',
+          url: ['/cau-hinh/bo-phan', '/cau-hinh/bo-phan/tao-moi', '/cau-hinh/bo-phan/:id/chi-tiet'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Chức vụ',
+          key: 'positions',
+          url: ['/cau-hinh/chuc-vu', '/cau-hinh/chuc-vu/tao-moi', '/cau-hinh/chuc-vu/:id/chi-tiet'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Chi nhánh',
+          key: 'branchs',
+          url: [
+            '/cau-hinh/chi-nhanh',
+            '/cau-hinh/chi-nhanh/tao-moi',
+            '/cau-hinh/chi-nhanh/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
       pro: true,
     },
-    {
-      title: 'Chức vụ',
-      key: 'positions',
-      url: ['/cau-hinh/chuc-vu', '/cau-hinh/chuc-vu/tao-moi', '/cau-hinh/chuc-vu/:id/chi-tiet'],
-      icon: 'icon icon-setting',
-      permission: [],
-      pro: true,
-    },
+
     {
       title: 'Lịch học',
       key: 'schedules',
