@@ -148,7 +148,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               <Pane className="col-lg-4">
                 <FormItem
                   name="registerDate"
-                  label="Ngày nhập học"
+                  label="Ngày vào lớp"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
                 />

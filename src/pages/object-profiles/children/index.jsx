@@ -264,7 +264,7 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
-        title: 'Ngày nhập học',
+        title: 'Ngày vào lớp',
         key: 'date',
         className: 'min-width-150',
         render: (record) => (
