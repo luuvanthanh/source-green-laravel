@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ branchs, loading }) => ({
-  data: branchs.data,
-  error: branchs.error,
-  pagination: branchs.pagination,
+const mapStateToProps = ({ degrees, loading }) => ({
+  data: degrees.data,
+  error: degrees.error,
+  pagination: degrees.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -87,7 +87,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'branchs/GET_DATA',
+      type: 'degrees/GET_DATA',
       payload: {
         ...search,
       },
@@ -185,7 +185,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'branchs/REMOVE',
+          type: 'degrees/REMOVE',
           payload: {
             id,
             pagination: {
@@ -228,18 +228,6 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'ĐỊA CHỈ',
-        key: 'adress',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.adress}</Text>,
-      },
-      {
-        title: 'SĐT',
-        key: 'phone_number',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone_number}</Text>,
-      },
-      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -268,13 +256,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['branchs/GET_DATA'];
+    const loading = effects['degrees/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách chi nhánh" />
+        <Helmet title="Danh sách bằng cấp" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH CHI NHÁNH</Text>
+            <Text color="dark">DANH SÁCH BẰNG CẤP</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

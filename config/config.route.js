@@ -578,6 +578,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/bang-cap',
+            component: './configuration/degrees',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/bang-cap/tao-moi',
+            component: './configuration/degrees/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/bang-cap/:id/chi-tiet',
+            component: './configuration/degrees/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/nganh-dao-tao',
+            component: './configuration/training-majors',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/nganh-dao-tao/tao-moi',
+            component: './configuration/training-majors/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/nganh-dao-tao/:id/chi-tiet',
+            component: './configuration/training-majors/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION
