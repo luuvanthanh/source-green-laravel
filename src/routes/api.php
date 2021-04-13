@@ -105,5 +105,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\ResignationDecision\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });
