@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -19,6 +18,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
 import { sliceEvents, createPlugin } from '@fullcalendar/core';
+import listPlugin from '@fullcalendar/list';
+import rrulePlugin from '@fullcalendar/rrule';
 
 let isMounted = true;
 /**
@@ -35,10 +36,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ menuKid, loading }) => ({
-  data: menuKid.data,
-  pagination: menuKid.pagination,
+const mapStateToProps = ({ timeTables, loading }) => ({
+  data: timeTables.data,
+  pagination: timeTables.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -51,18 +51,13 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
-      search: {
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
-      objects: {},
+      search: {},
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    // this.onLoad();
+    this.onLoad();
   }
 
   componentWillUnmount() {
@@ -92,10 +87,9 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'menuKid/GET_DATA',
+      type: 'timeTables/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({
@@ -150,185 +144,29 @@ class Index extends PureComponent {
     );
   };
 
-  /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-  });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
+  convertData = (items) => {
+    if (!isEmpty(items)) {
+      let array = [];
+      items.map((item) => {
+        const dates = Helper.getDates(item.fromDate, item.toDate);
+        array = [...array, ...dates];
       });
+      return array;
     }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'menuKid/UPDATE' : 'menuKid/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
-   * Function remove items
-   * @param {objects} record value of items
-   */
-  onEdit = (objects) => {
-    this.setStateData(
-      {
-        objects,
-        visible: true,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          ...objects,
-        });
-      },
-    );
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'menuKid/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
-
-  /**
-   * Function header table
-   */
-  header = () => {
-    const columns = [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
-      },
-      {
-        title: 'TÊN TIÊU CHÍ - ĐÁNH GIÁ',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Học thuật</Text>,
-      },
-      {
-        title: 'CẤU HÌNH LOẠI ÁP DỤNG',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Mẫu giáo</Text>,
-      },
-      {
-        title: 'THỜI HẠN NHẬP',
-        key: 'name',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">Hằng ngày</Text>,
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
-      },
-    ];
-    return columns;
+    return [];
   };
 
   render() {
     const {
-      match: { params },
       data,
-      pagination,
+      match: { params },
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
-    const loading = effects['menuKid/GET_DATA'];
-    const loadingSubmit = effects['menuKid/ADD'] || effects['menuKid/UPDATE'];
+    const { search } = this.state;
+    console.log(data, this.convertData(data));
+    const loading = effects['timeTables/GET_DATA'];
+    const loadingSubmit = effects['timeTables/ADD'] || effects['timeTables/UPDATE'];
     const CustomViewConfig = {
       classNames: ['custom-view'],
 
@@ -396,14 +234,22 @@ class Index extends PureComponent {
           <div className={classnames(styles['block-table'], 'schedules-custom')}>
             <FullCalendar
               schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-              plugins={[resourceTimeGridPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              plugins={[
+                resourceTimeGridPlugin,
+                dayGridPlugin,
+                timeGridPlugin,
+                interactionPlugin,
+                listPlugin,
+                rrulePlugin,
+              ]}
               initialView="dayGridMonth"
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay',
               }}
               views={{
+                custom: CustomViewConfig,
                 dayGrid: {
                   dayMaxEventRows: 3,
                 },
@@ -425,15 +271,18 @@ class Index extends PureComponent {
               height={650}
               eventClick={() => {}}
               events={[
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 23:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 21:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 22:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 20:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 01:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 05:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 06:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 07:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 08:00:00' },
+                {
+                  title: 'my recurring event',
+                  rrule: {
+                    freq: 'weekly',
+                    dtstart: '2021-04-01',
+                  },
+                  exrule: {
+                    freq: 'weekly',
+                    dtstart: '2021-04-15',
+                    until: '2021-04-22',
+                  },
+                },
               ]}
             />
           </div>

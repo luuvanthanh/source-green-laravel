@@ -594,4 +594,15 @@ export default class Helpers {
   static toFixed = (num) => {
     return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
   };
+
+  static getDates(startDate, stopDate) {
+    var dateArray = [];
+    var currentDate = moment(startDate).startOf('day');
+    var stopDate = moment(stopDate).startOf('day');
+    while (currentDate <= stopDate) {
+      dateArray.push(moment(currentDate));
+      currentDate = moment(currentDate).add(1, 'days');
+    }
+    return dateArray;
+  }
 }
