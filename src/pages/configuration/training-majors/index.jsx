@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ branchs, loading }) => ({
-  data: branchs.data,
-  error: branchs.error,
-  pagination: branchs.pagination,
+const mapStateToProps = ({ trainingMajors, loading }) => ({
+  data: trainingMajors.data,
+  error: trainingMajors.error,
+  pagination: trainingMajors.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -47,7 +47,6 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
-        name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -87,7 +86,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'branchs/GET_DATA',
+      type: 'trainingMajors/GET_DATA',
       payload: {
         ...search,
       },
@@ -185,7 +184,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'branchs/REMOVE',
+          type: 'trainingMajors/REMOVE',
           payload: {
             id,
             pagination: {
@@ -228,18 +227,6 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'ĐỊA CHỈ',
-        key: 'adress',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.adress}</Text>,
-      },
-      {
-        title: 'SĐT',
-        key: 'phone_number',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone_number}</Text>,
-      },
-      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -268,13 +255,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['branchs/GET_DATA'];
+    const loading = effects['trainingMajors/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách chi nhánh" />
+        <Helmet title="Danh sách ngành đào tạo" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH CHI NHÁNH</Text>
+            <Text color="dark">DANH SÁCH NGÀNH ĐẠO TẠO</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

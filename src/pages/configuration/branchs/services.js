@@ -10,6 +10,9 @@ export function get(data = {}) {
       orderBy: 'id',
       sortedBy: 'desc',
       searchJoin: 'and',
+      search: Helper.convertParamSearchConvert({
+        name: data.name,
+      }),
     },
   });
 }

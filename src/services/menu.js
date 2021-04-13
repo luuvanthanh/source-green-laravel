@@ -439,6 +439,28 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Bằng cấp',
+          key: 'degrees',
+          url: [
+            '/cau-hinh/bang-cap',
+            '/cau-hinh/bang-cap/tao-moi',
+            '/cau-hinh/bang-cap/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Ngành đào tạo',
+          key: 'training-majors',
+          url: [
+            '/cau-hinh/nganh-dao-tao',
+            '/cau-hinh/nganh-dao-tao/tao-moi',
+            '/cau-hinh/nganh-dao-tao/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },
