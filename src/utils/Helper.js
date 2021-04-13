@@ -605,4 +605,10 @@ export default class Helpers {
     }
     return dateArray;
   }
+
+  static joinDateTime = (date, time) => {
+    return `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
+      variables.DATE_FORMAT.TIME_FULL,
+    )}`;
+  };
 }

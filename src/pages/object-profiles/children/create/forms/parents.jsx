@@ -196,7 +196,6 @@ const Parents = memo(
     );
 
     const onFinish = (values) => {
-      console.log(values);
       const payload = {
         ...details,
         ...values,
