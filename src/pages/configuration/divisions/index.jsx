@@ -256,7 +256,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['divisions/GET_DATA'];
-    console.log(data);
     return (
       <>
         <Helmet title="Danh sách bộ phận" />

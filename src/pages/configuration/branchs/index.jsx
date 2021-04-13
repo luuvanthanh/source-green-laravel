@@ -268,7 +268,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['branchs/GET_DATA'];
-    console.log(data);
     return (
       <>
         <Helmet title="Danh sách chi nhánh" />
