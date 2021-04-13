@@ -614,6 +614,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/trinh-do-hoc-van',
+            component: './configuration/educational-levels',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/trinh-do-hoc-van/tao-moi',
+            component: './configuration/educational-levels/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/trinh-do-hoc-van/:id/chi-tiet',
+            component: './configuration/educational-levels/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION

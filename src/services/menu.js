@@ -461,6 +461,17 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Trình độ học vấn',
+          key: 'educational-levels',
+          url: [
+            '/cau-hinh/trinh-do-hoc-van',
+            '/cau-hinh/trinh-do-hoc-van/tao-moi',
+            '/cau-hinh/trinh-do-hoc-van/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },
