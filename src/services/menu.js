@@ -504,6 +504,26 @@ export async function getLeftMenuVehicel() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Lịch sử điểm danh',
+      key: 'history',
+      url: [
+        '/quan-ly-phuong-tien/lich-su',
+      ],
+      icon: 'icon icon-notification',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Điểm danh hôm nay',
+      key: 'today',
+      url: [
+        '/quan-ly-phuong-tien/hom-nay',
+      ],
+      icon: 'icon icon-notification',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuCriteria() {
