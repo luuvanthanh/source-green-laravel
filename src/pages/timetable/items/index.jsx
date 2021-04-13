@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -17,9 +17,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import { sliceEvents, createPlugin } from '@fullcalendar/core';
+import { sliceEvents } from '@fullcalendar/core';
 import listPlugin from '@fullcalendar/list';
 import rrulePlugin from '@fullcalendar/rrule';
+import variablesModules from '../utils/variables';
 
 let isMounted = true;
 /**
@@ -148,8 +149,31 @@ class Index extends PureComponent {
     if (!isEmpty(items)) {
       let array = [];
       items.map((item) => {
-        const dates = Helper.getDates(item.fromDate, item.toDate);
-        array = [...array, ...dates];
+        item.timetableDetails.map((itemTime) => {
+          const durations = moment(itemTime.toTime).diff(moment(itemTime.fromTime), 'seconds');
+          array = [
+            ...array,
+            {
+              title: itemTime.content,
+              rrule: {
+                freq: 'weekly',
+                interval: 1,
+                byweekday: item.timetableWeeks.map(
+                  (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
+                ),
+                dtstart: Helper.getDateTimeFromUTC({
+                  value: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
+                  format: variables.DATE_FORMAT.DATE_TIME_UTC,
+                }),
+                until: Helper.getDateTimeFromUTC({
+                  value: Helper.joinDateTime(item.toDate, itemTime.toTime),
+                  format: variables.DATE_FORMAT.DATE_TIME_UTC,
+                }),
+              },
+              duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
+            },
+          ];
+        });
       });
       return array;
     }
@@ -164,7 +188,6 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    console.log(data, this.convertData(data));
     const loading = effects['timeTables/GET_DATA'];
     const loadingSubmit = effects['timeTables/ADD'] || effects['timeTables/UPDATE'];
     const CustomViewConfig = {
@@ -270,20 +293,7 @@ class Index extends PureComponent {
               allDaySlot={false}
               height={650}
               eventClick={() => {}}
-              events={[
-                {
-                  title: 'my recurring event',
-                  rrule: {
-                    freq: 'weekly',
-                    dtstart: '2021-04-01',
-                  },
-                  exrule: {
-                    freq: 'weekly',
-                    dtstart: '2021-04-15',
-                    until: '2021-04-22',
-                  },
-                },
-              ]}
+              events={this.convertData(data)}
             />
           </div>
         </div>

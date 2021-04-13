@@ -13,16 +13,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
-
-const days = [
-  { id: 'Monday', name: 'Thứ hai' },
-  { id: 'Tuesday', name: 'Thứ ba' },
-  { id: 'Wednesday', name: 'Thứ tư' },
-  { id: 'Thursday', name: 'Thứ năm' },
-  { id: 'Friday', name: 'Thứ sáu' },
-  { id: 'Saturday', name: 'Thứ bảy' },
-  { id: 'Sunday', name: 'Chủ nhật' },
-];
+import variablesModules from '../../utils/variables';
 
 const classes = [
   { id: 1, name: 'Lớp Preschool 1' },
@@ -123,7 +114,7 @@ const Index = memo(({ dispatch, loading: { effects }, match: { params }, branche
                       name="timetableWeeks"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
-                      data={days}
+                      data={variablesModules.DAYS}
                     />
                   </Pane>
                   <Pane className="col-lg-6">
