@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react'
+import { memo, useRef, useState } from 'react'
 import { Form } from 'antd'
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -10,6 +10,7 @@ import Heading from '@/components/CommonComponent/Heading'
 import Button from '@/components/CommonComponent/Button'
 import FormItem from '@/components/CommonComponent/FormItem'
 import NoData from '@/components/CommonComponent/NoData'
+import UploadModal from './upload'
 
 import variables from '@/utils/variables'
 import styles from './style.module.scss'
@@ -17,6 +18,8 @@ import styles from './style.module.scss'
 const Index = memo(() => {
   const filterRef = useRef()
   const history = useHistory()
+
+  const [visibleUpload, setVisibleUpload] = useState(false)
 
   return (
     <>
@@ -28,7 +31,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="primary"
             icon="upload1"
-            onClick={() => { }}
+            onClick={() => setVisibleUpload(true)}
           >
             Tải ảnh lên
           </Button>
@@ -95,6 +98,8 @@ const Index = memo(() => {
           </Button>
         </Pane>
       </Pane>
+
+      <UploadModal visible={visibleUpload} onCancel={() => setVisibleUpload(false)} />
     </>
   )
 })
