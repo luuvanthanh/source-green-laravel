@@ -26,11 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, positionsAdd }) => ({
+const mapStateToProps = ({ menu, loading, branchsAdd }) => ({
   menuConfiguration: menu.menuConfiguration,
   loading,
-  details: positionsAdd.details,
-  error: positionsAdd.error,
+  details: branchsAdd.details,
+  error: branchsAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -50,7 +50,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'positionsAdd/GET_DETAILS',
+        type: 'branchsAdd/GET_DETAILS',
         payload: params,
       });
     }
@@ -93,7 +93,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'positionsAdd/UPDATE',
+        type: 'branchsAdd/UPDATE',
         payload: {
           ...values,
           id: params.id,
@@ -118,7 +118,7 @@ class Index extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'positionsAdd/ADD',
+        type: 'branchsAdd/ADD',
         payload: {
           ...values,
         },
@@ -149,11 +149,11 @@ class Index extends PureComponent {
       menuConfiguration,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['positionsAdd/ADD'] || effects['positionsAdd/UPDATE'];
-    const loading = effects['positionsAdd/GET_DETAILS'];
+    const loadingSubmit = effects['branchsAdd/ADD'] || effects['branchsAdd/UPDATE'];
+    const loading = effects['branchsAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo chức vụ" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo chi nhánh" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -164,7 +164,7 @@ class Index extends PureComponent {
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
               <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI CHỨC VỤ</Text>
+                <Text color="dark">TẠO MỚI CHI NHÁNH</Text>
               </div>
               <div className={styles['content-children']}>
                 <Text color="dark" size="large-medium">
@@ -183,6 +183,24 @@ class Index extends PureComponent {
                     <FormItem
                       label="TÊN"
                       name="name"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="ĐỊA CHỈ"
+                      name="adress"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="SĐT"
+                      name="phone_number"
                       rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />

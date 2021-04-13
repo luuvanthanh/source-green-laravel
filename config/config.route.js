@@ -447,24 +447,6 @@ export default [
             authority: [],
           },
           {
-            path: '/cau-hinh/chi-nhanh',
-            component: './configuration/stores',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/cau-hinh/chi-nhanh/tao-moi',
-            component: './configuration/stores/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/cau-hinh/chi-nhanh/:id/chi-tiet',
-            component: './configuration/stores/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
             path: '/cau-hinh/phan-quyen',
             component: './configuration/permissions',
             wrappers: ['@/wrappers/auth'],
@@ -539,6 +521,24 @@ export default [
           {
             path: '/cau-hinh/chuc-vu/:id/chi-tiet',
             component: './configuration/positions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh',
+            component: './configuration/branchs',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh/tao-moi',
+            component: './configuration/branchs/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chi-nhanh/:id/chi-tiet',
+            component: './configuration/branchs/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
