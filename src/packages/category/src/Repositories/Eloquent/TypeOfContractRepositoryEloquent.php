@@ -17,6 +17,9 @@ class TypeOfContractRepositoryEloquent extends BaseRepository implements TypeOfC
 {
     protected $fieldSearchable = [
         'id',
+        'name' => 'like',
+        'code' => 'like',
+        'type',
     ];
 
     /**

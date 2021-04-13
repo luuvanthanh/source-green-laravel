@@ -17,6 +17,8 @@ class ParamaterFormulaRepositoryEloquent extends BaseRepository implements Param
 {
     protected $fieldSearchable = [
         'id',
+        'name' => 'like',
+        'code' => 'like',
     ];
 
     /**

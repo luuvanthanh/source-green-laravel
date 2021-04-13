@@ -17,6 +17,7 @@ class DegreeRepositoryEloquent extends BaseRepository implements DegreeRepositor
 {
     protected $fieldSearchable = [
         'id',
+        'name' => 'like',
     ];
 
     /**

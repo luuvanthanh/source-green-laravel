@@ -15,6 +15,10 @@ use Prettus\Repository\Eloquent\BaseRepository;
  */
 class BranchRepositoryEloquent extends BaseRepository implements BranchRepository
 {
+    protected $fieldSearchable = [
+        'id',
+        'name' => 'like',
+    ];
 
     /**
      * Specify Model class name

@@ -17,6 +17,7 @@ class EducationalLevelRepositoryEloquent extends BaseRepository implements Educa
 {
     protected $fieldSearchable = [
         'id',
+        'name' => 'like',
     ];
 
     /**

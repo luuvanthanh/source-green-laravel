@@ -17,6 +17,8 @@ class TrainingMajorRepositoryEloquent extends BaseRepository implements Training
 {
     protected $fieldSearchable = [
         'id',
+        'name' => 'like',
+        'code' => 'like',
     ];
 
     /**

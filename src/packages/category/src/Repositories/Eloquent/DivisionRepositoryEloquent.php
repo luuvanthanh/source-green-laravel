@@ -15,7 +15,6 @@ use Prettus\Repository\Eloquent\BaseRepository;
  */
 class DivisionRepositoryEloquent extends BaseRepository implements DivisionRepository
 {
-
     protected $fieldSearchable = [
         'id',
         'name' => 'like',
