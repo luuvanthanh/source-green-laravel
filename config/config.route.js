@@ -752,7 +752,7 @@ export default [
       // MEDIA
       {
         path: '/ghi-nhan',
-        component: './notification/layout',
+        component: './media/layout',
         routes: [
           {
             path: '/ghi-nhan',
@@ -761,6 +761,12 @@ export default [
           {
             path: '/ghi-nhan/danh-sach',
             component: './media',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ghi-nhan/:id/chi-tiet',
+            component: './media/details',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
