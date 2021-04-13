@@ -483,6 +483,17 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/cau-hinh/tham-so-cong-thuc',
+            '/cau-hinh/tham-so-cong-thuc/tao-moi',
+            '/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },
