@@ -749,6 +749,42 @@ export default [
         ],
       },
       // NOTIFICATION
+      // MEDIA
+      {
+        path: '/ghi-nhan',
+        component: './media/layout',
+        routes: [
+          {
+            path: '/ghi-nhan',
+            redirect: '/ghi-nhan/danh-sach',
+          },
+          {
+            path: '/ghi-nhan/danh-sach',
+            component: './media',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ghi-nhan/:id/chi-tiet',
+            component: './media/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ghi-nhan/duyet-hinh/ket-qua',
+            component: './media/browser/result',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ghi-nhan/duyet-hinh',
+            component: './media/browser',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // MEDIA
       {
         path: '/404',
         component: './404',

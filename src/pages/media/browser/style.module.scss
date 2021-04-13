@@ -1,0 +1,12 @@
+.imageWrapper {
+  position: relative;
+}
+
+.close {
+  border-radius: 50%;
+  transform: scale(.6);
+  background: #fff !important;
+  position: absolute;
+  right: -4px;
+  top: -16px;
+}

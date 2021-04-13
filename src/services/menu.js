@@ -610,12 +610,41 @@ export async function getLeftMenuNotification() {
   return [
     {
       title: 'Danh sách',
-      key: 'children',
-      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi'],
+      key: 'notification',
+      url: [
+        '/thong-bao/danh-sach',
+        '/thong-bao/tao-moi',
+      ],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
     },
+  ];
+}
+export async function getLeftMenuMedia() {
+  return [
+    {
+      title: 'Duyệt hình',
+      key: 'browser',
+      url: [
+        '/ghi-nhan/duyet-hinh',
+        '/ghi-nhan/duyet-hinh/ket-qua',
+      ],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Danh sách',
+      key: 'list',
+      url: [
+        '/ghi-nhan/danh-sach',
+        '/ghi-nhan/:id/chi-tiet',
+      ],
+      icon: 'icon icon-list',
+      permission: [],
+      pro: true,
+    }
   ];
 }
 export async function getTopMenuData() {
