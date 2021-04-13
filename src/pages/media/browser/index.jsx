@@ -3,6 +3,7 @@ import { Form } from 'antd'
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory } from 'umi'
+import csx from 'classnames'
 
 import Pane from '@/components/CommonComponent/Pane'
 import Heading from '@/components/CommonComponent/Heading'
@@ -11,6 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem'
 import NoData from '@/components/CommonComponent/NoData'
 
 import variables from '@/utils/variables'
+import styles from './style.module.scss'
 
 const Index = memo(() => {
   const filterRef = useRef()
@@ -61,7 +63,7 @@ const Index = memo(() => {
                   <Pane className="row">
                     {new Array(8).fill(null).map((v, index) => (
                       <Pane
-                        className="col-lg-2 position-relative my10"
+                        className={csx("col-lg-2 my10", styles.imageWrapper)}
                         key={index}
                       >
                         <img
@@ -72,14 +74,7 @@ const Index = memo(() => {
 
                         <Button
                           icon="cancel"
-                          style={{
-                            borderRadius: '50%',
-                            transform: 'scale(.6)',
-                            position: 'absolute',
-                            background: '#fff',
-                            right: -4,
-                            top: -16,
-                          }}
+                          className={styles.close}
                         />
                       </Pane>
                     ))}

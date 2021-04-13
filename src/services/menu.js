@@ -628,6 +628,7 @@ export async function getLeftMenuMedia() {
       key: 'browser',
       url: [
         '/ghi-nhan/duyet-hinh',
+        '/ghi-nhan/duyet-hinh/ket-qua',
       ],
       icon: 'icon icon-checkmark',
       permission: [],
