@@ -507,6 +507,42 @@ export default [
             authority: [],
           },
           {
+            path: '/cau-hinh/bo-phan',
+            component: './configuration/divisions',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/bo-phan/tao-moi',
+            component: './configuration/divisions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/bo-phan/:id/chi-tiet',
+            component: './configuration/divisions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chuc-vu',
+            component: './configuration/positions',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chuc-vu/tao-moi',
+            component: './configuration/positions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/chuc-vu/:id/chi-tiet',
+            component: './configuration/positions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/cau-hinh/lich-hoc',
             component: './configuration/schedules',
             wrappers: ['@/wrappers/auth'],
