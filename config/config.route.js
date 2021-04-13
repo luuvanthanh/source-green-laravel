@@ -770,6 +770,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/ghi-nhan/duyet-hinh',
+            component: './media/browser',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // MEDIA
