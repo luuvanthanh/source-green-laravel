@@ -76,6 +76,7 @@
             "GGPHP\\Dismissed\\": "packages/dismissed/src/",
             "GGPHP\\SalaryIncrease\\": "packages/salary-increase/src/",
             "GGPHP\\ResignationDecision\\": "packages/resignation-decision/src/",
+            "GGPHP\\DecisionSuspend\\": "packages/decision-suspend/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [
