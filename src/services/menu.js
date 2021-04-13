@@ -410,6 +410,22 @@ export async function getLeftMenuConfiguration() {
       pro: true,
     },
     {
+      title: 'Bộ phận',
+      key: 'divisions',
+      url: ['/cau-hinh/bo-phan', '/cau-hinh/bo-phan/tao-moi', '/cau-hinh/bo-phan/:id/chi-tiet'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Chức vụ',
+      key: 'positions',
+      url: ['/cau-hinh/chuc-vu', '/cau-hinh/chuc-vu/tao-moi', '/cau-hinh/chuc-vu/:id/chi-tiet'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+    {
       title: 'Lịch học',
       key: 'schedules',
       url: ['/cau-hinh/lich-hoc', '/cau-hinh/lich-hoc/tao-moi', '/cau-hinh/lich-hoc/:id/chi-tiet'],
@@ -555,14 +571,11 @@ export async function getLeftMenuNotification() {
     {
       title: 'Danh sách',
       key: 'children',
-      url: [
-        '/thong-bao/danh-sach',
-        '/thong-bao/tao-moi',
-      ],
+      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
-    }
+    },
   ];
 }
 export async function getTopMenuData() {
