@@ -26,6 +26,7 @@ class CreateAppointDetailsTable extends Migration
             $table->foreign('division_id')->references('id')->on('divisions');
             $table->string('position_id', 36);
             $table->foreign('position_id')->references('id')->on('positions');
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }

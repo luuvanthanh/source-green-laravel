@@ -105,7 +105,7 @@ class LabourContractRepositoryEloquent extends BaseRepository implements LabourC
         try {
             $tranfer = LabourContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['labour_contract_id'], ['value' => $value['value']]);
+                $tranfer->parameterValues()->attach($value['parameter_value_id'], ['value' => $value['value']]);
             }
 
             \DB::commit();

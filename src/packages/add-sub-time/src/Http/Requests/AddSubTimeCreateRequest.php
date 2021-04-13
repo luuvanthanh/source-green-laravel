@@ -24,11 +24,11 @@ class AddSubTimeCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:employees,id',
             'type' => 'required',
             'data' => 'array',
             'data.*.start_date' => 'required|date|date_format:Y-m-d',
-            'data.*.user_id' => 'required|exists:users,id',
+            'data.*.user_id' => 'required|exists:employees,id',
             'data.*.end_date' => 'required|date|date_format:Y-m-d|after_or_equal:data.*.start_date',
             'data.*.days' => 'nullable|numeric',
             'data.*.hours' => 'nullable|numeric',

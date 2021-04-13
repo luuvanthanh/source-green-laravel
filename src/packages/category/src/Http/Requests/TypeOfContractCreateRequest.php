@@ -24,6 +24,13 @@ class TypeOfContractCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "code" => 'required|string',
+            "type" => 'required|string',
+            "name" => 'required',
+            "year" => 'required',
+            "month" => 'required',
+            "param_value" => 'required|array',
+            "param_formula" => 'required|array',
         ];
     }
 }

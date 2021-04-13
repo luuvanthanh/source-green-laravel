@@ -4,7 +4,7 @@ namespace GGPHP\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryCreateRequest extends FormRequest
+class TrainingSchoolCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,9 @@ class CategoryCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "code" => 'required|string',
+            "name" => 'required|string',
+            "adress" => 'string',
         ];
     }
 }

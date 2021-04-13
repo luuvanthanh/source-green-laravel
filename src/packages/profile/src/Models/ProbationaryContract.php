@@ -11,9 +11,9 @@ class ProbationaryContract extends UuidModel
     protected $table = 'probationary_contracts';
 
     protected $fillable = [
-        'contract_number', 'contract_date', 'type_of_contract_id', 'employee_id', 'year',
+        'contract_number', 'contract_date', 'type_of_contract_id', 'employee_id', 'salary_ratio',
         'month', 'division_id', 'contract_from', 'contract_to', 'position_id', 'work',
-        'work_adress', 'branch_id',
+        'work_time', 'branch_id',
     ];
 
     protected $dateTimeFields = [

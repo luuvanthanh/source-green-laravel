@@ -24,7 +24,7 @@ class ProbationaryContractUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'exists:users,id',
+            'user_id' => 'exists:employees,id',
             'contract_number' => 'string',
             'sign_date' => 'date',
             'expiration_date' => 'date',

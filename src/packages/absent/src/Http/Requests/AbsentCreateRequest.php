@@ -26,7 +26,7 @@ class AbsentCreateRequest extends FormRequest
                 'exists:absent_types,id',
             ],
             'absent_reason_id' => 'required|exists:absent_reasons,id',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:employees,id',
             'start_date' => [
                 'date',
                 'date_format:Y-m-d',

@@ -61,6 +61,7 @@ class DismissedRepositoryEloquent extends BaseRepository implements DismissedRep
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 

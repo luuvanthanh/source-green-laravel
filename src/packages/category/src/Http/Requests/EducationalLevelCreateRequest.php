@@ -24,6 +24,8 @@ class EducationalLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "code" => 'required|string',
+            "name" => 'required|string',
         ];
     }
 }

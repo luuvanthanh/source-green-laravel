@@ -27,7 +27,6 @@ class DismissedCreateRequest extends FormRequest
             'decision_number' => 'unique:dismisseds,decision_number',
             'decision_date' => 'required',
             'reason' => 'required',
-            'type' => 'required',
             'data' => 'required|array',
             'data.*.employee_id' => 'required',
             'data.*.branch_id' => 'required',

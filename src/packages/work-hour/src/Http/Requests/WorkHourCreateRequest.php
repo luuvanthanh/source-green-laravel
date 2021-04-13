@@ -25,7 +25,7 @@ class CreatWorkHourRequest extends FormRequest
     {
 
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:employees,id',
             'date' => 'required|date',
             'hours' => 'required',
         ];

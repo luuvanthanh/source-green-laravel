@@ -15,10 +15,10 @@ class CreateProbationaryContractParameterValueTable extends Migration
     {
         Schema::create('probationary_contract_parameter_value', function (Blueprint $table) {
             $table->integer('value');
-            $table->string('salary_increase_id', 36);
             $table->string('probationary_contract_id', 36);
-            $table->foreign('salary_increase_id')->references('id')->on('salary_increases');
+            $table->string('parameter_value_id', 36);
             $table->foreign('probationary_contract_id')->references('id')->on('probationary_contracts');
+            $table->foreign('parameter_value_id')->references('id')->on('parameter_values');
         });
     }
 

@@ -13,7 +13,7 @@ class LabourContract extends UuidModel
     protected $fillable = [
         'contract_number', 'contract_date', 'type_of_contract_id', 'employee_id', 'year',
         'month', 'division_id', 'contract_from', 'contract_to', 'position_id', 'work',
-        'work_adress', 'branch_id',
+        'work_time', 'branch_id',
     ];
 
     protected $dateTimeFields = [

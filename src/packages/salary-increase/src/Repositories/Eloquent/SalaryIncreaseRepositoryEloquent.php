@@ -57,7 +57,7 @@ class SalaryIncreaseRepositoryEloquent extends BaseRepository implements SalaryI
         try {
             $tranfer = SalaryIncrease::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['salary_increase_id'], ['value' => $value['value']]);
+                $tranfer->parameterValues()->attach($value['parameter_value_id'], ['value' => $value['value']]);
             }
 
             \DB::commit();

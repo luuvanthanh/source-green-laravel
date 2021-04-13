@@ -102,13 +102,14 @@ class ProbationaryContractRepositoryEloquent extends BaseRepository implements P
     {
         \DB::beginTransaction();
         try {
-            $tranfer = LabourContract::create($attributes);
+            $tranfer = ProbationaryContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['probationary_contract_id'], ['value' => $value['value']]);
+                $tranfer->parameterValues()->attach($value['parameter_value_id'], ['value' => $value['value']]);
             }
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 

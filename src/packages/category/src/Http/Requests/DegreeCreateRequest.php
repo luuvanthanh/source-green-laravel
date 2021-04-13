@@ -4,7 +4,7 @@ namespace GGPHP\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DergeeCreateRequest extends FormRequest
+class DegreeCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,8 @@ class DergeeCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "code" => 'required|string',
+            "name" => 'required|string',
         ];
     }
 }

@@ -23,15 +23,15 @@ class UpdateTimekeepingRequest extends FormRequest
      */
     public function rules()
     {
-        $type   = implode(',', config('constants-timekeeping.TYPE.COLLECTIONS'));
-        $trackingType   = implode(',', config('constants-timekeeping.TRACKING_TYPE.COLLECTIONS'));
-        
+        $type = implode(',', config('constants-timekeeping.TYPE.COLLECTIONS'));
+        $trackingType = implode(',', config('constants-timekeeping.TRACKING_TYPE.COLLECTIONS'));
+
         return [
-            'user_id'       => 'required|exists:users,id',
-            'device_id'     => 'required|exists:fingerprint_timekeepers,id',
-            'type'          => 'required|string|in:' . $type,
+            'user_id' => 'required|exists:employees,id',
+            'device_id' => 'required|exists:fingerprint_timekeepers,id',
+            'type' => 'required|string|in:' . $type,
             'tracking_type' => 'required|string|in:' . $trackingType,
-            'attended_at'   => 'required|date|date_format:Y-m-d H:i:s',
+            'attended_at' => 'required|date|date_format:Y-m-d H:i:s',
         ];
     }
 }

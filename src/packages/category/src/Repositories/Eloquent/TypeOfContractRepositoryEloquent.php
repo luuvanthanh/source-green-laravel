@@ -47,4 +47,22 @@ class TypeOfContractRepositoryEloquent extends BaseRepository implements TypeOfC
         return TypeOfContractPresenter::class;
     }
 
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $tranfer = TypeOfContract::create($attributes);
+
+            $tranfer->parameterValues()->attach($attributes['param_value']);
+
+            $tranfer->parameterFormulas()->attach($attributes['param_formula']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
+
+        return parent::find($tranfer->id);
+    }
 }
