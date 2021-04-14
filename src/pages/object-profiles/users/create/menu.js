@@ -57,4 +57,8 @@ export const menu = [
     key: 'children',
     label: 'Thông tin con',
   },
+  {
+    key: 'magneticCards',
+    label: 'Thẻ từ',
+  },
 ];

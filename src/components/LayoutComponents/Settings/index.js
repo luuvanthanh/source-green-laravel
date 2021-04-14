@@ -42,7 +42,7 @@ class Settings extends React.Component {
         <Scrollbars style={{ height: '100vh' }}>
           <div className={styles.container}>
             <div className={styles.title}>
-              Thay đổi cấu hình 1
+              Thay đổi cấu hình
               <span className={`icon-cancel`} onClick={this.closeSettings} />
             </div>
             <div className={styles.item}>
