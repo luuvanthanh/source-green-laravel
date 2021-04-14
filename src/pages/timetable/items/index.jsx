@@ -57,13 +57,19 @@ class Index extends PureComponent {
       search: {
         fromDate: query.fromDate ? moment(query.fromDate) : moment().startOf('month'),
         toDate: query.toDate ? moment(query.toDate) : moment().endOf('month'),
-        type: 'month',
+        type: query.type || 'dayGridMonth',
       },
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
+    const { current } = this.calendarComponentRef;
+    const { search } = this.state;
+    if (current) {
+      const calendarApi = current.getApi();
+      calendarApi.gotoDate(moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER));
+    }
     this.onLoad();
   }
 
@@ -239,6 +245,7 @@ class Index extends PureComponent {
         return { html: html };
       },
     };
+
     return (
       <>
         <Helmet title="Thời khóa biểu" />
@@ -294,23 +301,103 @@ class Index extends PureComponent {
                 listPlugin,
                 rrulePlugin,
               ]}
-              initialView="dayGridMonth"
+              initialView={search.type}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay',
               }}
               customButtons={{
-                // next: {
-                //   click: (event) => {
-                //     console.log(event);
-                //     const { current } = this.calendarComponentRef;
-                //     if (current) {
-                //       const calendarApi = current.getApi();
-                //       console.log(current, calendarApi);
-                //     }
-                //   },
-                // },
+                next: {
+                  click: (event) => {
+                    const { search } = this.state;
+                    const { current } = this.calendarComponentRef;
+                    if (current) {
+                      const calendarApi = current.getApi();
+                      if (search.type === 'dayGridMonth') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).add(1, 'months'),
+                          moment(search.toDate).add(1, 'months'),
+                          'dayGridMonth',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.toDate)
+                            .add(1, 'months')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                      if (search.type === 'timeGridWeek') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).add(1, 'weeks'),
+                          moment(search.toDate).add(1, 'weeks'),
+                          'timeGridWeek',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.toDate)
+                            .add(1, 'weeks')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).add(1, 'days'),
+                          moment(search.toDate).add(1, 'days'),
+                          'timeGridWeek',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.toDate)
+                            .add(1, 'days')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                    }
+                  },
+                },
+                prev: {
+                  click: (event) => {
+                    const { search } = this.state;
+                    const { current } = this.calendarComponentRef;
+                    if (current) {
+                      const calendarApi = current.getApi();
+                      if (search.type === 'dayGridMonth') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).subtract(1, 'months'),
+                          moment(search.toDate).subtract(1, 'months'),
+                          'dayGridMonth',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.fromDate)
+                            .subtract(1, 'months')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                      if (search.type === 'timeGridWeek') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).subtract(1, 'weeks'),
+                          moment(search.toDate).subtract(1, 'weeks'),
+                          'timeGridWeek',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.fromDate)
+                            .subtract(1, 'weeks')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                      if (search.type === 'timeGridDay' || search.type === 'listDay') {
+                        this.debouncedSearchDate(
+                          moment(search.fromDate).subtract(1, 'days'),
+                          moment(search.toDate).subtract(1, 'days'),
+                          'timeGridWeek',
+                        );
+                        calendarApi.gotoDate(
+                          moment(search.toDate)
+                            .subtract(1, 'days')
+                            .format(variables.DATE_FORMAT.DATE_AFTER),
+                        );
+                      }
+                    }
+                  },
+                },
                 dayGridMonth: {
                   text: 'Tháng',
                   click: (event) => {
@@ -328,19 +415,55 @@ class Index extends PureComponent {
                 timeGridWeek: {
                   text: 'Tuần',
                   click: (event) => {
-                    console.log('121');
+                    if (this.calendarComponentRef.current) {
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.changeView('timeGridWeek');
+                      this.debouncedSearchDate(
+                        moment().startOf('weeks').add(1, 'days'),
+                        moment().endOf('weeks').add(1, 'days'),
+                        'timeGridWeek',
+                      );
+                      calendarApi.gotoDate(
+                        moment()
+                          .endOf('weeks')
+                          .add(1, 'days')
+                          .format(variables.DATE_FORMAT.DATE_AFTER),
+                      );
+                    }
                   },
                 },
                 timeGridDay: {
                   text: 'Ngày',
                   click: (event) => {
-                    console.log('121');
+                    if (this.calendarComponentRef.current) {
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.changeView('timeGridDay');
+                      this.debouncedSearchDate(
+                        moment().startOf('days'),
+                        moment().endOf('days'),
+                        'timeGridDay',
+                      );
+                      calendarApi.gotoDate(
+                        moment().startOf('days').format(variables.DATE_FORMAT.DATE_AFTER),
+                      );
+                    }
                   },
                 },
                 listDay: {
                   text: 'Lịch biểu',
                   click: (event) => {
-                    console.log('121');
+                    if (this.calendarComponentRef.current) {
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.changeView('listDay');
+                      this.debouncedSearchDate(
+                        moment().startOf('days'),
+                        moment().endOf('days'),
+                        'timeGridDay',
+                      );
+                      calendarApi.gotoDate(
+                        moment().startOf('days').format(variables.DATE_FORMAT.DATE_AFTER),
+                      );
+                    }
                   },
                 },
               }}
@@ -359,6 +482,8 @@ class Index extends PureComponent {
                 },
               }}
               locale="vi"
+              slotMinTime="04:00"
+              slotMaxTime="20:00"
               editable={true}
               fixedWeekCount={false}
               showNonCurrentDates={true}
