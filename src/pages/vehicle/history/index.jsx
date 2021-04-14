@@ -1,19 +1,21 @@
 import { memo, useMemo, useRef, useState } from 'react'
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet'
 import { Form, Tabs } from 'antd'
-import { useSelector, useHistory, useLocation } from 'dva'
+import { useSelector, useLocation } from 'dva'
 import csx from 'classnames'
 
 import Pane from '@/components/CommonComponent/Pane'
 import Heading from '@/components/CommonComponent/Heading'
 import Button from '@/components/CommonComponent/Button'
 import FormItem from '@/components/CommonComponent/FormItem'
-import Table from '@/components/CommonComponent/Table';
-import Text from '@/components/CommonComponent/Text';
+import Table from '@/components/CommonComponent/Table'
+import Text from '@/components/CommonComponent/Text'
 
 import variables from '@/utils/variables'
-import variablesModules from '../utils/variables';
-import styles from '@/assets/styles/Common/common.scss';
+import variablesModules from '../utils/variables'
+import styles from '@/assets/styles/Common/common.scss'
+
+import RouteModal from './route'
 
 const { TabPane } = Tabs
 
@@ -21,11 +23,11 @@ const Index = memo(() => {
   const [loadingReducer, paginationReducer] = useSelector(({ loading, busHistory = {} }) => [loading, busHistory?.pagination])
   const loading = loadingReducer?.effects['notification/GET_DATA']
 
-  const history = useHistory()
   const { query } = useLocation()
 
   const filterRef = useRef()
 
+  const [visibleRoute, setVisibleRoute] = useState(false)
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -90,6 +92,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
+            onClick={() => setVisibleRoute(true)}
           >
             Xem lộ trình
           </Button>
@@ -172,6 +175,7 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
+      <RouteModal visible={visibleRoute} onCancel={() => setVisibleRoute(false)} />
     </>
   )
 })
