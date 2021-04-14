@@ -1,4 +1,4 @@
-export const defaultKey = 'general'
+export const defaultKey = 'general';
 
 export const menu = [
   {
@@ -9,4 +9,8 @@ export const menu = [
     key: 'curator',
     label: 'Theo dõi',
   },
-]
+  {
+    key: 'account',
+    label: 'Tài khoản',
+  },
+];

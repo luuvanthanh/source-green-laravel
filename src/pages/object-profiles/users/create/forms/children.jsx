@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Checkbox } from 'antd';
 import { get } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -62,6 +62,13 @@ const Index = memo(() => {
         title: 'Ngày sinh',
         key: 'birthday',
         render: (record) => Helper.getDate(record?.birthday, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Người phụ thuộc',
+        key: 'checkbox',
+        className: 'min-width-150',
+        align: 'center',
+        render: (record) => <Checkbox />,
       },
       {
         title: 'Thao tác',

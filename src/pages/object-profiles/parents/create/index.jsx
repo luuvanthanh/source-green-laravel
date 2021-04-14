@@ -6,6 +6,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
+import AccountForm from './forms/account';
 import { Link } from 'umi';
 
 import { menu, defaultKey } from './menu';
@@ -15,6 +16,7 @@ const { Item: MenuItem } = Menu;
 const forms = {
   general: <GeneralForm />,
   curator: <CuratorForm />,
+  account: <AccountForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

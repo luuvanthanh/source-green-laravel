@@ -1,5 +1,5 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN MENU */
@@ -64,6 +64,13 @@
     }
 
     &:hover {
+      color: $text-success;
+    }
+  }
+
+  .ant-menu-item-active {
+    background-color: $background-white;
+    a {
       color: $text-success;
     }
   }
