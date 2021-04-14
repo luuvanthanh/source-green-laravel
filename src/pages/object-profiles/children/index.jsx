@@ -253,9 +253,9 @@ class Index extends PureComponent {
       },
       {
         title: 'Cơ sở',
-        key: 'position',
+        key: 'branch',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',

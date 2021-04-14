@@ -13,6 +13,8 @@ export default {
     },
     parents: [],
     employees: [],
+    branches: [],
+    classes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -38,6 +40,14 @@ export default {
     SET_EMPLOYEES: (state, { payload }) => ({
       ...state,
       employees: payload.items,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.items,
+    }),
+    SET_CLASSES: (state, { payload }) => ({
+      ...state,
+      classes: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -131,6 +141,34 @@ export default {
         const response = yield saga.call(services.getEmployees, payload);
         yield saga.put({
           type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CLASSES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getClasses, payload);
+        yield saga.put({
+          type: 'SET_CLASSES',
           payload: response,
         });
       } catch (error) {

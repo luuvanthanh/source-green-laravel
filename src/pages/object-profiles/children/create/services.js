@@ -44,6 +44,25 @@ export function getEmployees() {
   });
 }
 
+export function getBranches() {
+  return request(`/branches`, {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getClasses(params) {
+  return request(`/classes`, {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
 export function addTransporter(data = {}) {
   return request(`/student-transporter?id=${data.id}`, {
     method: 'POST',
