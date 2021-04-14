@@ -26,6 +26,7 @@ const ICON_BUTTON = {
   plan: <span className="icon-plan" />,
   checkmark: <span className="icon-checkmark" />,
   cancel: <span className="icon-cancel" />,
+  phone: <span className="icon-phone" />,
 };
 export default function ButtonCustom({
   children,
