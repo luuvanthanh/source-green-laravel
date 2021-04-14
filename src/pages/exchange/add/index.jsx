@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, List, Avatar, Radio, Upload } from 'antd';
+import { Modal, Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { isEmpty, get } from 'lodash';
@@ -18,6 +18,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
 import { Scrollbars } from 'react-custom-scrollbars';
+import InfiniteScroll from 'react-infinite-scroller';
 
 let isMounted = true;
 /**
@@ -54,6 +55,13 @@ class Index extends PureComponent {
       students: [],
       studentId: null,
       files: [],
+      hasMore: true,
+      loadingStudents: false,
+      searchStudents: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        totalCount: 0,
+      },
     };
     setIsMounted(true);
   }
@@ -105,14 +113,23 @@ class Index extends PureComponent {
    */
   loadStudents = () => {
     const { dispatch } = this.props;
+    const { searchStudents } = this.state;
+    this.setStateData({
+      loadingStudents: true,
+    });
     dispatch({
       type: 'exchangeAdd/GET_STUDENTS',
-      payload: {},
-      callback: (response, error) => {
+      payload: searchStudents,
+      callback: (response) => {
         if (response) {
-          this.setStateData({
+          this.setStateData((prevState) => ({
             students: response.items,
-          });
+            loadingStudents: false,
+            searchStudents: {
+              ...prevState.searchStudents,
+              totalCount: response.totalCount,
+            },
+          }));
         }
       },
     });
@@ -156,6 +173,47 @@ class Index extends PureComponent {
     });
   };
 
+  handleInfiniteOnLoad = () => {
+    const { students, searchStudents } = this.state;
+    this.setStateData({
+      loadingStudents: true,
+    });
+    if (students.length >= searchStudents.totalCount) {
+      message.warning('Danh sách đã hiển thị tất cả.');
+      this.setStateData({
+        hasMore: false,
+        loadingStudents: false,
+      });
+      return;
+    }
+    this.props.dispatch({
+      type: 'exchangeAdd/GET_STUDENTS',
+      payload: {
+        ...searchStudents,
+        page: searchStudents.page + 1,
+      },
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData((prevState) => ({
+            students: prevState.students.concat(response.items),
+            loadingStudents: false,
+            searchStudents: {
+              ...searchStudents,
+              page: searchStudents.page + 1,
+            },
+          }));
+        }
+        if (error) {
+          message.error('Lỗi hệ thống.');
+          this.setStateData({
+            hasMore: false,
+            loadingStudents: false,
+          });
+        }
+      },
+    });
+  };
+
   render() {
     const {
       dispatch,
@@ -164,9 +222,8 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { description, students, studentId, files } = this.state;
+    const { description, students, studentId, files, loadingStudents, hasMore } = this.state;
     const loading = effects['exchangeAdd/GET_DATA'];
-    const loadingStudents = effects['exchangeAdd/GET_STUDENTS'];
     const loadingSubmit = effects['exchangeAdd/ADD'];
     const props = {
       beforeUpload: (file) => {
@@ -208,29 +265,43 @@ class Index extends PureComponent {
                   <hr />
                 </div>
                 <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
-                  <Radio.Group value={studentId}>
-                    <List
-                      className={stylesAllocation.list}
-                      dataSource={students}
-                      loading={loadingStudents}
-                      renderItem={(item) => (
-                        <List.Item key={item.id}>
-                          <Radio
-                            className={stylesAllocation.radio}
-                            value={item.id}
-                            onChange={(event) => this.onChangeRadio(event, item)}
-                          />
-                          <div className={stylesAllocation['group-info']}>
-                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                            <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
-                              <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                  <InfiniteScroll
+                    hasMore={!loadingStudents && hasMore}
+                    initialLoad={false}
+                    loadMore={this.handleInfiniteOnLoad}
+                    pageStart={0}
+                    useWindow={false}
+                  >
+                    <Radio.Group value={studentId}>
+                      <List
+                        className={stylesAllocation.list}
+                        dataSource={students}
+                        loading={loadingStudents}
+                        renderItem={(item) => (
+                          <List.Item key={item.id}>
+                            <Radio
+                              className={stylesAllocation.radio}
+                              value={item.id}
+                              onChange={(event) => this.onChangeRadio(event, item)}
+                            />
+                            <div className={stylesAllocation['group-info']}>
+                              <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                              <div className={stylesAllocation['info']}>
+                                <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
+                                <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                              </div>
                             </div>
+                          </List.Item>
+                        )}
+                      >
+                        {loadingStudents && hasMore && (
+                          <div className="demo-loading-container">
+                            <Spin />
                           </div>
-                        </List.Item>
-                      )}
-                    />
-                  </Radio.Group>
+                        )}
+                      </List>
+                    </Radio.Group>
+                  </InfiniteScroll>
                 </Scrollbars>
               </div>
             </div>

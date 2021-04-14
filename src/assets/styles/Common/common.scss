@@ -707,3 +707,9 @@
   height: 64px;
   object-fit: cover;
 }
+
+.modal-fullscreen {
+  &:global(.ant-modal){
+    width: 90vw !important;
+  }
+}

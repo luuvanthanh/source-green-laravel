@@ -23,6 +23,7 @@ import ChildrenForm from './forms/children';
 import SalaryForm from './forms/salary';
 import RewardForm from './forms/reward';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { Link } from 'umi';
 
 import { menu, defaultKey } from './menu';
 
@@ -49,7 +50,7 @@ const forms = {
   reward: <RewardForm />,
 };
 
-const Index = memo(({ match: { params } }) => {
+const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
   return (
     <Pane style={{ padding: 20 }}>
@@ -63,21 +64,26 @@ const Index = memo(({ match: { params } }) => {
         <Pane className="col-lg-3">
           <Pane className="card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
-              <Menu
-                activeKey={activeMenuItem}
-                mode="inline"
-                onClick={({ key }) => setActiveMenuItem(key)}
-              >
-                {params.id && menu.map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+              <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
+                {params.id &&
+                  menu.map(({ key, label }) => (
+                    <MenuItem key={key}>
+                      <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                    </MenuItem>
+                  ))}
                 {!params.id &&
                   menu
                     .filter((item) => item.key === 'general')
-                    .map(({ key, label }) => <MenuItem key={key}>{label}</MenuItem>)}
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))}
               </Menu>
             </Scrollbars>
           </Pane>
         </Pane>
-        <Pane className="col-lg-9">{forms[activeMenuItem]}</Pane>
+        <Pane className="col-lg-9">{forms[query.type || defaultKey]}</Pane>
       </Pane>
     </Pane>
   );

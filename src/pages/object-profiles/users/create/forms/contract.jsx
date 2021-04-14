@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Tabs } from 'antd';
 import { get } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -7,10 +7,12 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
+import moment from 'moment';
 import Table from '@/components/CommonComponent/Table';
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
+const { TabPane } = Tabs;
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const formRef = useRef();
@@ -153,6 +155,61 @@ const Index = memo(() => {
     return columns;
   };
 
+  const headerEdit = (type = 'paramaterValues') => {
+    if (type === 'paramaterFormulas') {
+      return [
+        {
+          title: 'STT',
+          key: 'text',
+          width: 60,
+          className: 'min-width-60',
+          align: 'center',
+          render: (text, record, index) => index + 1,
+        },
+        {
+          title: 'Loại tham số',
+          key: 'type',
+          className: 'min-width-120',
+          render: (record) => 'Lương chính thức',
+        },
+        {
+          title: 'Công thức',
+          key: 'recipe',
+          className: 'min-width-120',
+          render: (record) => 'LCB * NGAY_CONG',
+        },
+      ];
+    }
+    return [
+      {
+        title: 'STT',
+        key: 'text',
+        width: 60,
+        className: 'min-width-60',
+        align: 'center',
+        render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'Loại tham số',
+        key: 'type',
+        className: 'min-width-120',
+        render: (record) => 'Lương cơ bản',
+      },
+      {
+        title: 'Số tiền',
+        key: 'values',
+        className: 'min-width-120',
+        render: (record) => Helper.getPrice(100000000),
+      },
+      {
+        title: 'Ngày hiệu lực',
+        key: 'application_date',
+        className: 'min-width-120',
+        render: (record) => Helper.getDate(moment()),
+      },
+    ];
+  };
+
   return (
     <>
       <Modal
@@ -160,7 +217,7 @@ const Index = memo(() => {
         title="Hợp đồng lao động"
         onOk={handleOk}
         centered
-        width={700}
+        className={styles['modal-fullscreen']}
         onCancel={cancelModal}
         footer={
           <Pane className="d-flex justify-content-end align-items-center">
@@ -175,7 +232,7 @@ const Index = memo(() => {
       >
         <Form layout="vertical" ref={formRefModal} initialValues={{}}>
           <Pane className="row">
-            <Pane className="col-lg-6">
+            <Pane className="col-lg-4">
               <FormItem
                 data={[]}
                 label="Số hợp đồng"
@@ -183,7 +240,10 @@ const Index = memo(() => {
                 type={variables.INPUT}
               />
             </Pane>
-            <Pane className="col-lg-6">
+            <Pane className="col-lg-4">
+              <FormItem label="Ngày hợp đồng" name="contract_date" type={variables.DATE_PICKER} />
+            </Pane>
+            <Pane className="col-lg-4">
               <FormItem
                 data={[]}
                 label="Loại hợp đồng"
@@ -196,70 +256,74 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={[]}
-                label="Số quyết định"
-                name="decision_number"
-                type={variables.SELECT}
+                label="Số năm hợp đồng"
+                name="contract_year"
+                type={variables.INPUT_COUNT}
               />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Ngày ký" name="work_form_id" type={variables.DATE_PICKER} />
+              <FormItem
+                data={[]}
+                label="Số tháng hợp đồng"
+                name="contract_month"
+                type={variables.INPUT_COUNT}
+              />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem label="Ngày hiệu lự" name="start_date" type={variables.DATE_PICKER} />
+              <FormItem label="Thời hạn HĐ từ" name="start_date" type={variables.DATE_PICKER} />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Ngày hết hạn" name="expiration_date" type={variables.DATE_PICKER} />
+              <FormItem label="Thời hạn HĐ đến" name="end_date" type={variables.DATE_PICKER} />
             </Pane>
           </Pane>
           <hr className={styles['dot-bottom']} />
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem label="Công việc phải làm" name="work" type={variables.INPUT} />
+              <FormItem label="Công việc cụ thể" name="work" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-6">
               <FormItem label="Thời gian làm việc" name="work_time" type={variables.INPUT} />
             </Pane>
           </Pane>
           <Pane className="row">
-            <Pane className="col-lg-6">
-              <FormItem label="Mức lương chính" name="salary" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem label="Hình thức thanh toán" name="payment" type={variables.INPUT} />
+            <Pane className="col-lg-12">
+              <FormItem label="Nơi làm việc" name="position" type={variables.INPUT} />
             </Pane>
           </Pane>
-          <Pane className="row">
-            <Pane className="col-lg-6">
-              <FormItem label="Hình thức trả lương" name="payment_form" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem label="Đảm nhận vị trí" name="professional_titles" type={variables.INPUT} />
-            </Pane>
-          </Pane>
-          <Pane className="row">
-            <Pane className="col-lg-6">
-              <FormItem label="hức danh chuyên môn" name="position" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem
-                data={[
-                  {
-                    id: 'Theo chế độ hiện hành của nhà nước',
-                    name: 'Theo chế độ hiện hành của nhà nước',
-                  },
-                  {
-                    id: 'Được tính trong lương',
-                    name: 'Được tính trong lương',
-                  },
-                ]}
-                label="Bảo hiểm xã hội và bảo hiểm y tế "
-                name="insurrance"
-                type={variables.SELECT}
+
+          <Heading type="form-block-title">Chi tiết hợp đồng</Heading>
+          <Tabs defaultActiveKey="paramaterValues">
+            <TabPane tab="Tham số giá trị" key="paramaterValues">
+              <Table
+                bordered
+                columns={headerEdit('paramaterValues')}
+                dataSource={[{ id: 1 }]}
+                pagination={false}
+                params={{
+                  header: headerEdit('paramaterValues'),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
               />
-            </Pane>
-          </Pane>
+            </TabPane>
+            <TabPane tab="Tham số công thức" key="paramaterFormulas">
+              <Table
+                bordered
+                columns={headerEdit('paramaterFormulas')}
+                dataSource={[{ id: 1 }]}
+                pagination={false}
+                params={{
+                  header: headerEdit('paramaterFormulas'),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </TabPane>
+          </Tabs>
         </Form>
       </Modal>
       <Form

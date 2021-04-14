@@ -27,7 +27,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) => !!mounted?.current && (setFunction && setFunction(value));
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit = effects[`OPusersAdd/ADD`] || effects[`OPusersAdd/UPDATE`];
   const loading = effects[`OPusersAdd/GET_DETAILS`];
 
@@ -117,6 +118,14 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
+                  name="code"
+                  label="Mã nhân viên"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
                   name="boD"
                   label="Ngày sinh"
                   type={variables.DATE_PICKER}
@@ -124,6 +133,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   disabledDate={(current) => current > moment()}
                 />
               </Pane>
+            </Pane>
+            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
                   data={genders}
@@ -133,8 +144,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
-            </Pane>
-            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
                   name="identifyNumber"
@@ -151,6 +160,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
+            </Pane>
+
+            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
                   name="identifyLocation"
@@ -159,9 +171,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
-            </Pane>
-
-            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem name="nation" label="Dân tộc" type={variables.INPUT} />
               </Pane>
@@ -178,6 +187,37 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   label="Tình trạng hôn nhân"
                   type={variables.RADIO}
                 />
+              </Pane>
+            </Pane>
+          </Pane>
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Pane className="row" {...marginProps}>
+              <Pane className="col-lg-4">
+                <FormItem name="faxCode" label="Mã số thuế" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem data={[]} name="degree" label="Bằng cấp" type={variables.SELECT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  data={[]}
+                  name="trainingMajorsId"
+                  label="Chuyên ngành đào tạo"
+                  type={variables.SELECT}
+                />
+              </Pane>
+            </Pane>
+            <Pane className="row" {...marginProps}>
+              <Pane className="col-lg-4">
+                <FormItem
+                  data={[]}
+                  name="trainingSchoolsId"
+                  label="Trường đào tạo"
+                  type={variables.SELECT}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="dayoff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
               </Pane>
             </Pane>
           </Pane>

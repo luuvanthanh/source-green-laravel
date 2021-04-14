@@ -16,7 +16,9 @@ export function getStudents(params = {}) {
   return request('/students', {
     method: 'GET',
     params: {
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      isStoreStaus: 'false',
+      classStatus: 'ALL',
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }

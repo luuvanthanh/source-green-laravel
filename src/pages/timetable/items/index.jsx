@@ -46,13 +46,19 @@ const mapStateToProps = ({ timeTables, loading }) => ({
 class Index extends PureComponent {
   formRef = React.createRef();
 
+  calendarComponentRef = React.createRef();
+
   constructor(props) {
     super(props);
     const {
       location: { query },
     } = props;
     this.state = {
-      search: {},
+      search: {
+        fromDate: query.fromDate ? moment(query.fromDate) : moment().startOf('month'),
+        toDate: query.toDate ? moment(query.toDate) : moment().endOf('month'),
+        type: 'month',
+      },
     };
     setIsMounted(true);
   }
@@ -83,7 +89,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -95,7 +101,11 @@ class Index extends PureComponent {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        fromDate: moment(search.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        toDate: moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   };
 
@@ -110,6 +120,25 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 300);
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDate = debounce((fromDate = moment(), toDate = moment(), type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          type,
+          fromDate: moment(fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+          toDate: moment(toDate).format(variables.DATE_FORMAT.DATE_AFTER),
         },
       }),
       () => this.onLoad(),
@@ -271,6 +300,50 @@ class Index extends PureComponent {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listDay',
               }}
+              customButtons={{
+                // next: {
+                //   click: (event) => {
+                //     console.log(event);
+                //     const { current } = this.calendarComponentRef;
+                //     if (current) {
+                //       const calendarApi = current.getApi();
+                //       console.log(current, calendarApi);
+                //     }
+                //   },
+                // },
+                dayGridMonth: {
+                  text: 'Tháng',
+                  click: (event) => {
+                    if (this.calendarComponentRef.current) {
+                      const calendarApi = this.calendarComponentRef.current.getApi();
+                      calendarApi.changeView('dayGridMonth');
+                      this.debouncedSearchDate(
+                        moment().startOf('month'),
+                        moment().endOf('month'),
+                        'dayGridMonth',
+                      );
+                    }
+                  },
+                },
+                timeGridWeek: {
+                  text: 'Tuần',
+                  click: (event) => {
+                    console.log('121');
+                  },
+                },
+                timeGridDay: {
+                  text: 'Ngày',
+                  click: (event) => {
+                    console.log('121');
+                  },
+                },
+                listDay: {
+                  text: 'Lịch biểu',
+                  click: (event) => {
+                    console.log('121');
+                  },
+                },
+              }}
               views={{
                 custom: CustomViewConfig,
                 dayGrid: {
@@ -294,6 +367,7 @@ class Index extends PureComponent {
               height={650}
               eventClick={() => {}}
               events={this.convertData(data)}
+              ref={this.calendarComponentRef}
             />
           </div>
         </div>

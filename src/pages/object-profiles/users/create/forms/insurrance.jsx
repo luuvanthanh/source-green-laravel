@@ -55,12 +55,6 @@ const Index = memo(() => {
         render: (record) => get(record, 'insurrance_number'),
       },
       {
-        title: 'Người thụ hưởng',
-        key: 'beneficiary',
-        className: 'min-width-150',
-        render: (record) => get(record, 'beneficiary.name'),
-      },
-      {
         title: 'Ngày bắt đầu',
         key: 'start_time',
         className: 'min-width-150',
@@ -116,19 +110,16 @@ const Index = memo(() => {
       >
         <Form layout="vertical" ref={formRefModal} initialValues={{}}>
           <Pane className="row">
-            <Pane className="col-lg-6">
+            <Pane className="col-lg-12">
               <FormItem data={[]} label="Số BH" name="insurrance_number" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem label="Người thụ hưởng" name="beneficiary_id" type={variables.SELECT} />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem label="Ngày bắt đầu" name="start_date" type={variables.DATE_PICKER} />
+              <FormItem label="Thời gian tham gia" name="start_date" type={variables.DATE_PICKER} />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Ngày kết thúc" name="end_date" type={variables.DATE_PICKER} />
+              <FormItem label="Thời gian ngừng đóng" name="end_date" type={variables.DATE_PICKER} />
             </Pane>
           </Pane>
         </Form>

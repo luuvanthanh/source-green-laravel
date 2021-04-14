@@ -50,23 +50,11 @@ export const menu = [
     label: 'Bảo hiểm xã hội',
   },
   {
-    key: 'healthInsurrance',
-    label: 'Bảo hiểm y tế',
-  },
-  {
     key: 'daysOff',
     label: 'Số ngày nghỉ phép',
   },
   {
     key: 'children',
     label: 'Thông tin con',
-  },
-  {
-    key: 'salary',
-    label: 'Thông tin mức lương',
-  },
-  {
-    key: 'reward',
-    label: 'Thưởng cá nhân',
   },
 ];

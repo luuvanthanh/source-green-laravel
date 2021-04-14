@@ -39,7 +39,7 @@ export default {
   effects: {
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getStudents);
+        const response = yield saga.call(services.getStudents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
