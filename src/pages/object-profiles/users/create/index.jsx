@@ -22,6 +22,7 @@ import DaysOffForm from './forms/daysOff';
 import ChildrenForm from './forms/children';
 import SalaryForm from './forms/salary';
 import RewardForm from './forms/reward';
+import MagneticCardsForm from './forms/magnetic-cards';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -48,6 +49,7 @@ const forms = {
   children: <ChildrenForm />,
   salary: <SalaryForm />,
   reward: <RewardForm />,
+  magneticCards: <MagneticCardsForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
