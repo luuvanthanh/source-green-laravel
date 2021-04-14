@@ -15,7 +15,7 @@ import variablesModules from '../utils/variables'
 import styles from '@/assets/styles/Common/common.scss'
 import infoStyles from '@/assets/styles/Common/information.module.scss';
 
-import RouteModal from '../history/route'
+import RouteModal from './route'
 
 const { TabPane } = Tabs
 
