@@ -498,6 +498,28 @@ export async function getLeftMenuConfiguration() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Loại công việc',
+          key: 'job-types',
+          url: [
+            '/cau-hinh/loai-cong-viec',
+            '/cau-hinh/loai-cong-viec/tao-moi',
+            '/cau-hinh/loai-cong-viec/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Quản lý cấp bậc',
+          key: 'manager-level',
+          url: [
+            '/cau-hinh/cap-bac',
+            '/cau-hinh/cap-bac/tao-moi',
+            '/cau-hinh/cap-bac/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
       pro: true,
     },
