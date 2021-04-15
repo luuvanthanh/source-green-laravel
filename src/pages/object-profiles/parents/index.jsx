@@ -264,7 +264,7 @@ class Index extends PureComponent {
         title: 'Trạng thái',
         key: 'status',
         className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus('VERIFIED'),
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'action',

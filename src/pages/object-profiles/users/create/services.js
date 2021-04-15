@@ -32,3 +32,10 @@ export function detailsAccount(data = {}) {
     method: 'GET',
   });
 }
+
+export function updateStatus(data = {}) {
+  return request(`/employees/${data.id}/update-status?status=${data.status}`, {
+    method: 'PUT',
+    data,
+  });
+}

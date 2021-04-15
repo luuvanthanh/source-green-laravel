@@ -42,3 +42,10 @@ export function getEmployees() {
     },
   });
 }
+
+export function updateStatus(data = {}) {
+  return request(`/parents/${data.id}/update-status?status=${data.status}`, {
+    method: 'PUT',
+    data,
+  });
+}

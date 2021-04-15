@@ -10,6 +10,7 @@ import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
+import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 const genders = [
@@ -29,7 +30,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
-  const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
+  const loadingSubmit =
+    effects[`OPParentsAdd/ADD`] ||
+    effects[`OPParentsAdd/UPDATE`] ||
+    effects[`OPParentsAdd/UPDATE_STATUS`];
   const loading = effects[`OPParentsAdd/GET_DETAILS`];
 
   /**
@@ -57,6 +61,22 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               ]);
             });
           }
+        }
+      },
+    });
+  };
+
+  /**
+   * Function submit form modal
+   * @param {object} values values of form
+   */
+  const updateStatus = () => {
+    dispatch({
+      type: 'OPParentsAdd/UPDATE_STATUS',
+      payload: { status: variablesModules.STATUS.STORE, id: params.id },
+      callback: (response, error) => {
+        if (response) {
+          history.push(`/ho-so-doi-tuong/phu-huynh`);
         }
       },
     });
@@ -200,14 +220,20 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             </Pane>
           </Pane>
 
-          <Pane style={{ padding: 20 }}>
-            <Button
-              color="success"
-              size="large"
-              htmlType="submit"
-              style={{ marginLeft: 'auto' }}
-              loading={loadingSubmit}
-            >
+          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            {params.id && (
+              <Button
+                color="success"
+                size="large"
+                htmlType="button"
+                className="mr-3"
+                onClick={updateStatus}
+                loading={loadingSubmit}
+              >
+                Lưu trữ hồ sơ
+              </Button>
+            )}
+            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
               Lưu
             </Button>
           </Pane>

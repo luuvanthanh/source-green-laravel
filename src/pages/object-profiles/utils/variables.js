@@ -1,13 +1,17 @@
 export const variables = {
-  STATUS : {
+  STATUS: {
     REGIST: 'NO_VERIFYE',
     JOIN_CLASS: 'VERIFIED',
     LEAVE_SCHOOL: 'PENDING',
+    NO_REGIST: 'NO_REGIST',
+    REGISTED: 'REGISTED',
+    STORE: 'STORE',
   },
   STATUS_NAME: {
     REGIST: 'Đăng ký',
     JOIN_CLASS: 'Đã xếp lớp',
     LEAVE_SCHOOL: 'Nghỉ học',
+    STORE: 'Lưu trữ'
   },
   TYPE_USER: {
     RANK: 'rank',

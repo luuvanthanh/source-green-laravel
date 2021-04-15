@@ -310,7 +310,7 @@ class Index extends PureComponent {
     const loading = effects['OPchildren/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách phụ huynh" />
+        <Helmet title="Danh sách học sinh" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -327,7 +327,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
                 startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
