@@ -55,7 +55,7 @@ export async function getLeftMenuData() {
     {
       title: 'Quản lý Điểm / Trường / Chi nhánh (Business unit)',
       key: 'branch',
-      url: ['/chi-nhanh', '/chi-nhanh/tao-moi'],
+      url: ['/co-so', '/co-so/tao-moi'],
       icon: 'icon icon-school',
       permission: [],
       pro: true,
@@ -389,13 +389,28 @@ export async function getLeftMenuConfiguration() {
       permission: [],
       pro: true,
     },
+
     {
-      title: 'Lớp học',
-      key: 'class',
-      url: ['/cau-hinh/lop-hoc', '/cau-hinh/lop-hoc/tao-moi', '/cau-hinh/lop-hoc/:id/chi-tiet'],
+      title: 'Danh mục Lớp',
+      key: 'categoriesClass',
       icon: 'icon icon-setting',
       permission: [],
-      pro: true,
+      children: [
+        {
+          title: 'Cơ sở',
+          key: 'branches',
+          url: ['/cau-hinh/co-so', '/cau-hinh/co-so/tao-moi', '/cau-hinh/co-so/:id/chi-tiet'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Lớp học',
+          key: 'class',
+          url: ['/cau-hinh/lop-hoc', '/cau-hinh/lop-hoc/tao-moi', '/cau-hinh/lop-hoc/:id/chi-tiet'],
+          permission: [],
+          pro: true,
+        },
+      ],
     },
     {
       title: 'Danh mục',
@@ -414,17 +429,6 @@ export async function getLeftMenuConfiguration() {
           title: 'Chức vụ',
           key: 'positions',
           url: ['/cau-hinh/chuc-vu', '/cau-hinh/chuc-vu/tao-moi', '/cau-hinh/chuc-vu/:id/chi-tiet'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Chi nhánh',
-          key: 'branchs',
-          url: [
-            '/cau-hinh/chi-nhanh',
-            '/cau-hinh/chi-nhanh/tao-moi',
-            '/cau-hinh/chi-nhanh/:id/chi-tiet',
-          ],
           permission: [],
           pro: true,
         },
@@ -540,9 +544,7 @@ export async function getLeftMenuVehicel() {
     {
       title: 'Lịch sử điểm danh',
       key: 'history',
-      url: [
-        '/quan-ly-phuong-tien/lich-su',
-      ],
+      url: ['/quan-ly-phuong-tien/lich-su'],
       icon: 'icon icon-notification',
       permission: [],
       pro: true,
@@ -550,9 +552,7 @@ export async function getLeftMenuVehicel() {
     {
       title: 'Điểm danh hôm nay',
       key: 'today',
-      url: [
-        '/quan-ly-phuong-tien/hom-nay',
-      ],
+      url: ['/quan-ly-phuong-tien/hom-nay'],
       icon: 'icon icon-notification',
       permission: [],
       pro: true,
@@ -664,10 +664,7 @@ export async function getLeftMenuNotification() {
     {
       title: 'Danh sách',
       key: 'notification',
-      url: [
-        '/thong-bao/danh-sach',
-        '/thong-bao/tao-moi',
-      ],
+      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
@@ -679,10 +676,7 @@ export async function getLeftMenuMedia() {
     {
       title: 'Duyệt hình',
       key: 'browser',
-      url: [
-        '/ghi-nhan/duyet-hinh',
-        '/ghi-nhan/duyet-hinh/ket-qua',
-      ],
+      url: ['/ghi-nhan/duyet-hinh', '/ghi-nhan/duyet-hinh/ket-qua'],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,
@@ -690,14 +684,11 @@ export async function getLeftMenuMedia() {
     {
       title: 'Danh sách',
       key: 'list',
-      url: [
-        '/ghi-nhan/danh-sach',
-        '/ghi-nhan/:id/chi-tiet',
-      ],
+      url: ['/ghi-nhan/danh-sach', '/ghi-nhan/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
-    }
+    },
   ];
 }
 export async function getTopMenuData() {

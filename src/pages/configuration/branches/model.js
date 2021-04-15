@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'branchs',
+  namespace: 'branches',
   state: {
     data: [],
     pagination: {
@@ -35,12 +35,15 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response.items,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
