@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ branchs, loading }) => ({
-  data: branchs.data,
-  error: branchs.error,
-  pagination: branchs.pagination,
+const mapStateToProps = ({ branches, loading }) => ({
+  data: branches.data,
+  error: branches.error,
+  pagination: branches.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -87,19 +87,15 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'branchs/GET_DATA',
+      type: 'branches/GET_DATA',
       payload: {
         ...search,
       },
     });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
   };
 
   /**
@@ -154,12 +150,13 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: false,
+    pageSizeOptions: false,
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
@@ -185,7 +182,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'branchs/REMOVE',
+          type: 'branches/REMOVE',
           payload: {
             id,
             pagination: {
@@ -216,28 +213,28 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'TÊN',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.name}</Text>,
-      },
-      {
         title: 'MÃ',
         key: 'code',
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'ĐỊA CHỈ',
-        key: 'adress',
+        title: 'TÊN',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.adress}</Text>,
+        render: (record) => <Text size="normal">{record.name}</Text>,
+      },
+      {
+        title: 'ĐỊA CHỈ',
+        key: 'address',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.address}</Text>,
       },
       {
         title: 'SĐT',
-        key: 'phone_number',
+        key: 'phone',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone_number}</Text>,
+        render: (record) => <Text size="normal">{record.phone}</Text>,
       },
       {
         key: 'action',
@@ -268,13 +265,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['branchs/GET_DATA'];
+    const loading = effects['branches/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách chi nhánh" />
+        <Helmet title="Danh sách cơ sở" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH CHI NHÁNH</Text>
+            <Text color="dark">DANH SÁCH CƠ SỞ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

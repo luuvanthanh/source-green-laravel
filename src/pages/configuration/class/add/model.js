@@ -3,47 +3,58 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'managerClassAdd',
+  namespace: 'classesAdd',
   state: {
-    data: [],
-    pagination: {
-      total: 0
-    }
+    details: {},
+    error: {
+      isError: false,
+      data: {},
+    },
+    branches: [],
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.items,
+    }),
+    SET_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload,
+    }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_BRANCHES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getBranches, payload);
         yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount
-            }
-          },
+          type: 'SET_BRANCHES',
+          payload: response,
         });
+      } catch (error) {}
+    },
+    *GET_DETAILS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.details, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DETAILS',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },
@@ -61,30 +72,6 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
-      }
-    },
-    *REMOVE({ payload }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination
-        });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
-      } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data
-        });
       }
     },
   },

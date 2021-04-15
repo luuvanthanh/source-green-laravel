@@ -294,7 +294,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`/cau-hinh/chi-nhanh/tao-moi`)}
+              onClick={() => history.push(`/cau-hinh/co-so/tao-moi`)}
             >
               Tạo chi nhánh
             </Button>

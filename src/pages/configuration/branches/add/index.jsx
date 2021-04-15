@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, omit, head } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -26,11 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, branchsAdd }) => ({
+const mapStateToProps = ({ menu, loading, branchesAdd }) => ({
   menuConfiguration: menu.menuConfiguration,
   loading,
-  details: branchsAdd.details,
-  error: branchsAdd.error,
+  details: branchesAdd.details,
+  error: branchesAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -50,7 +50,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'branchsAdd/GET_DETAILS',
+        type: 'branchesAdd/GET_DETAILS',
         payload: params,
       });
     }
@@ -91,56 +91,31 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'branchsAdd/UPDATE',
-        payload: {
-          ...values,
-          id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    const payload = {
+      ...values,
+      id: get(params, 'id'),
+    };
+    dispatch({
+      type: params?.id ? 'branchesAdd/UPDATE' : 'branchesAdd/ADD',
+      payload: params?.id ? payload : omit(payload, 'id'),
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'branchsAdd/ADD',
-        payload: {
-          ...values,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
@@ -149,11 +124,11 @@ class Index extends PureComponent {
       menuConfiguration,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['branchsAdd/ADD'] || effects['branchsAdd/UPDATE'];
-    const loading = effects['branchsAdd/GET_DETAILS'];
+    const loadingSubmit = effects['branchesAdd/ADD'] || effects['branchesAdd/UPDATE'];
+    const loading = effects['branchesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo chi nhánh" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo cơ sở" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -164,7 +139,7 @@ class Index extends PureComponent {
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
               <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI CHI NHÁNH</Text>
+                <Text color="dark">TẠO MỚI CƠ SỞ</Text>
               </div>
               <div className={styles['content-children']}>
                 <Text color="dark" size="large-medium">
@@ -188,11 +163,11 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
-                <div className="row mt-3">
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       label="ĐỊA CHỈ"
-                      name="adress"
+                      name="address"
                       rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -200,9 +175,37 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="SĐT"
-                      name="phone_number"
+                      name="phone"
                       rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="HIỆU TRƯỞNG"
+                      name="principal"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="PHÓ HIỆU TƯỞNG"
+                      name="assistantprincipal"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="GHI CHÚ"
+                      name="description"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
                     />
                   </div>
                 </div>

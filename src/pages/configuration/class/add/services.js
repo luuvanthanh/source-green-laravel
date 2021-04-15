@@ -1,35 +1,33 @@
 import request from '@/utils/request';
-import { Helper } from '@/utils';
-
-export function get(params = {}) {
-  return request('/api/product-types', {
-    method: 'GET',
-    params: {
-      ...params,
-      ...Helper.getPagination(params.page, params.limit),
-    }
-  });
-}
+import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
-  return request('/api/product-types', {
+  return request('/classes', {
     method: 'POST',
-    data
+    data,
+    parse: true,
   });
 }
 
 export function update(data = {}) {
-  return request(`/api/product-types/${data.id}`, {
+  return request(`/classes/${data.id}`, {
     method: 'PUT',
-    data
+    data,
+    parse: true,
   });
 }
 
-export function remove(id) {
-  return request(`/api/product-types/${id}`, {
-    method: 'DELETE',
-    parse: true
+export function details(data = {}) {
+  return request(`/classes/${data.id}`, {
+    method: 'GET',
   });
 }
 
-export default get;
+export function getBranches(params = {}) {
+  return request('/branches', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}

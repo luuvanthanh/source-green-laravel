@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/classes', {
+  return request('/branches', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
@@ -13,7 +13,7 @@ export function get(params = {}) {
 }
 
 export function remove(id) {
-  return request(`/classes/${id}`, {
+  return request(`/branches/${id}`, {
     method: 'DELETE',
     parse: true,
   });

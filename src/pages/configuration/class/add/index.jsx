@@ -1,16 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Input, DatePicker, Collapse, Upload, Avatar } from 'antd';
+import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
+import { isEmpty, get, omit, head } from 'lodash';
+import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Select from '@/components/CommonComponent/Select';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
-import ListUpload from '@/components/CommonComponent/ListUpload';
-import Table from '@/components/CommonComponent/Table';
-import Children from './components/children';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
@@ -28,8 +26,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, settings }) => ({
+const mapStateToProps = ({ menu, loading, classesAdd }) => ({
   menuConfiguration: menu.menuConfiguration,
+  loading,
+  details: classesAdd.details,
+  branches: classesAdd.branches,
+  error: classesAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -38,10 +40,37 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      visible: false,
-    };
+    this.state = {};
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'classesAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+    dispatch({
+      type: 'classesAdd/GET_BRANCHES',
+      payload: params,
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      details,
+      match: { params },
+    } = this.props;
+    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+      this.formRef.current.setFieldsValue({
+        ...details,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -62,187 +91,132 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  /**
-   * Function edit list
-   * @param {uid} id id of items
-   */
-  onChangeModal = () => {
-    this.setStateData((prevState) => ({
-      visible: !prevState.visible,
-    }));
-  };
-
-  /**
-   * Function save table cancel
-   * @param {array} cancelPolicies values of table cancel
-   */
-  onSave = (items, listId) => {};
-
-  /**
-   * Function header table
-   */
-  header = (type) => {
-    let columns = [];
-    columns = [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => <Text size="normal">{index + 1}</Text>,
+  onFinish = (values) => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    const payload = {
+      ...values,
+      id: get(params, 'id'),
+    };
+    dispatch({
+      type: params?.id ? 'classesAdd/UPDATE' : 'classesAdd/ADD',
+      payload: params?.id ? payload : omit(payload, 'id'),
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
       },
-      {
-        title: 'HỌC SINH',
-        key: 'children',
-        width: 200,
-        className: 'min-width-200',
-        render: (record) => (
-          <Text size="normal">
-            <Avatar size={32} shape="circle" className="mr-2" />
-            Nguyễn Văn A
-          </Text>
-        ),
-      },
-      {
-        title: 'ĐỊA CHỈ',
-        key: 'address',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">10 Hùng Vương </Text>,
-      },
-      {
-        title: 'NGÀY SINH',
-        key: 'birthday',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">15/09/2020</Text>,
-      },
-    ];
-    return columns;
+    });
   };
 
   render() {
-    const { visible } = this.state;
-    const { menuConfiguration } = this.props;
-    const props = {
-      beforeUpload: (file) => {
-        return file;
-      },
-      showUploadList: false,
-      fileList: [],
-    };
+    const {
+      error,
+      branches,
+      menuConfiguration,
+      loading: { effects },
+    } = this.props;
+    const loadingSubmit = effects['classesAdd/ADD'] || effects['classesAdd/UPDATE'];
+    const loading = effects['classesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo lớp học" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo lớp" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
-          initialValues={{}}
           colon={false}
           ref={this.formRef}
+          onFinish={this.onFinish}
         >
-          {visible && (
-            <Children visible={visible} onSave={this.onSave} handleCancel={this.onChangeModal} />
-          )}
-          <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">CHI TIẾT XE</Text>
-            </div>
-            <div className={styles['content-children']}>
-              <Text color="dark" size="large-medium">
-                THÔNG TIN LỚP
-              </Text>
-              <div className="row">
-                <div className="col-lg-3">
-                  <FormItem data={[]} label="MÃ LỚP" name="code" type={variables.INPUT} />
+          <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <div className={styles['content-form']}>
+              <div className="d-flex justify-content-between">
+                <Text color="dark">TẠO MỚI LỚP</Text>
+              </div>
+              <div className={styles['content-children']}>
+                <Text color="dark" size="large-medium">
+                  THÔNG TIN CHUNG
+                </Text>
+                <div className="row mt-3">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="MÃ"
+                      name="code"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="TÊN"
+                      name="name"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
                 </div>
-                <div className="col-lg-3">
-                  <FormItem data={[]} label="TÊN LỚP" name="name" type={variables.INPUT} />
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem label="NĂM" name="year" rules={[]} type={variables.INPUT_COUNT} />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={branches}
+                      label="CƠ SỞ"
+                      name="branchId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
                 </div>
-                <div className="col-lg-3">
-                  <FormItem data={[]} label="CƠ SỞ" name="life" type={variables.SELECT} />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="SỐ LƯỢNG HỌC SINH"
-                    name="totla"
-                    type={variables.INPUT_COUNT}
-                  />
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="GHI CHÚ"
+                      name="description"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className={styles['content-children']}>
-              <div className="d-flex justify-content-between items align-items-center mb-3">
-                <Text color="dark" size="large-medium">
-                  DANH SÁCH GIÁO VIÊN CỦA LỚP
-                </Text>
-                <Button color="success" icon="plus">
-                  Cập nhật danh sách giáo viên
+              <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
+                <Button
+                  color="gray"
+                  icon="prev"
+                  onClick={() => history.goBack()}
+                  size="large"
+                  className="mr-3"
+                  loading={loadingSubmit}
+                >
+                  HỦY
+                </Button>
+                <Button
+                  color="green"
+                  htmlType="submit"
+                  icon="save"
+                  size="large"
+                  loading={loadingSubmit}
+                >
+                  LƯU
                 </Button>
               </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <Table
-                    bordered
-                    columns={this.header()}
-                    dataSource={[{ id: 1 }]}
-                    pagination={false}
-                    params={{
-                      header: this.header(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                  />
-                </div>
-              </div>
             </div>
-            <div className={styles['content-children']}>
-              <div className="d-flex justify-content-between items align-items-center mb-3">
-                <Text color="dark" size="large-medium">
-                  DANH SÁCH TRẺ XẾP LỚP
-                </Text>
-                <div className="d-flex justify-content-end items align-items-center">
-                  <Button color="success" icon="send" className="mr-2" onClick={this.onChangeModal}>
-                    Chuyển lớp
-                  </Button>
-                  <Button color="success" icon="plus">
-                    Cập nhật danh sách trẻ
-                  </Button>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <Table
-                    bordered
-                    columns={this.header()}
-                    dataSource={[{ id: 1 }]}
-                    pagination={false}
-                    params={{
-                      header: this.header(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-              <Button
-                color="gray"
-                icon="prev"
-                onClick={() => history.goBack()}
-                size="large"
-                className="mr-3"
-              >
-                HỦY
-              </Button>
-              <Button color="green" icon="save" size="large">
-                LƯU
-              </Button>
-            </div>
-          </div>
+          </Loading>
         </Form>
       </>
     );

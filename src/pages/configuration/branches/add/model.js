@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'branchsAdd',
+  namespace: 'branchesAdd',
   state: {
     details: {},
     error: {
@@ -34,7 +34,7 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_DETAILS',
-            payload: response.parsePayload,
+            payload: response,
           });
         }
       } catch (error) {
