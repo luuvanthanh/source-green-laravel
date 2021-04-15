@@ -22,6 +22,30 @@ export default {
         });
       }
     },
+    *GET_STUDENTS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getStudents, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_BRANCHES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_CLASSES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getClasses, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

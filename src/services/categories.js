@@ -12,4 +12,25 @@ export function getRoles(params = {}) {
   });
 }
 
+export function getStudents(params = {}) {
+  return request('/students', {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getBranches(params = {}) {
+  return request('/branches', {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getClasses(params = {}) {
+  return request('/classes', {
+    method: 'GET',
+    params,
+  });
+}
+
 export default getRoles;
