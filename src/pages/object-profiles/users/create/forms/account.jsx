@@ -9,19 +9,18 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 
-const mapStateToProps = ({ loading, OPParentsAdd }) => ({
+const mapStateToProps = ({ loading, OPusersAdd }) => ({
   loading,
-  details: OPParentsAdd.detailsAccount,
-  error: OPParentsAdd.error,
-  roles: OPParentsAdd.roles,
+  details: OPusersAdd.detailsAccount,
+  error: OPusersAdd.error,
+  roles: OPusersAdd.roles,
 });
 const Index = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, roles }) => {
     const formRef = useRef();
 
-    const loadingSubmit = effects[`OPParentsAdd/ADD_ACCOUNT`];
-    const loading =
-      effects[`OPParentsAdd/GET_DETAILS_ACCOUNT`] || effects[`OPParentsAdd/GET_ROLES`];
+    const loadingSubmit = effects[`OPusersAdd/ADD_ACCOUNT`];
+    const loading = effects[`OPusersAdd/GET_DETAILS_ACCOUNT`] || effects[`OPusersAdd/GET_ROLES`];
 
     /**
      * Function submit form modal
@@ -29,7 +28,7 @@ const Index = memo(
      */
     const onFinish = (values) => {
       dispatch({
-        type: 'OPParentsAdd/ADD_ACCOUNT',
+        type: 'OPusersAdd/ADD_ACCOUNT',
         payload: { ...details, ...values, id: params.id },
         callback: (response, error) => {
           if (error) {
@@ -51,11 +50,11 @@ const Index = memo(
     useEffect(() => {
       if (params.id) {
         dispatch({
-          type: 'OPParentsAdd/GET_DETAILS_ACCOUNT',
+          type: 'OPusersAdd/GET_DETAILS_ACCOUNT',
           payload: params,
         });
         dispatch({
-          type: 'OPParentsAdd/GET_ROLES',
+          type: 'OPusersAdd/GET_ROLES',
           payload: params,
         });
       }

@@ -7,6 +7,10 @@ export default {
   state: {
     data: [],
     pagination: {},
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -35,12 +39,15 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: {
+            parsePayload: response.items,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -60,36 +67,16 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (!isEmpty(error?.data?.errors)) {
+        if (get(error.data, 'error.validationErrors[0]')) {
           notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, xóa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
           });
         }
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
         });
-      }
-    },
-    *UPDATE_CONFIG({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.activeStatus, payload);
-        if (response) {
-          yield saga.put({
-            type: 'UPDATE_DATA',
-            payload: response.parsePayload,
-          });
-        }
-      } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
       }
     },
   },

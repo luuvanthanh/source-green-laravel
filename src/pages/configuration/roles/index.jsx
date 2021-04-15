@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar, Switch } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -16,7 +16,6 @@ import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -34,9 +33,10 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
 const mapStateToProps = ({ configurationRoles, loading }) => ({
-  data: configurationRoles.data,
-  pagination: configurationRoles.pagination,
   loading,
+  data: configurationRoles.data,
+  error: configurationRoles.error,
+  pagination: configurationRoles.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -50,6 +50,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        filter: query?.filter,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -84,7 +85,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -92,10 +93,12 @@ class Index extends PureComponent {
       type: 'configurationRoles/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
   };
 
   /**
@@ -168,46 +171,28 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: false,
+    pageSizeOptions: false,
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
 
   /**
    * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
+    const { search } = this.state;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -221,11 +206,8 @@ class Index extends PureComponent {
           payload: {
             id,
             pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
+              limit: search.limit,
+              page: search.page,
             },
           },
         });
@@ -243,17 +225,18 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'Mã ID',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => 'TK01',
+        title: 'STT',
+        key: 'index',
+        align: 'center',
+        className: 'min-width-60',
+        width: 60,
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
         title: 'Tên vai trò',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => 'Vai trò 01',
+        render: (record) => record.name,
       },
       {
         key: 'action',
@@ -275,6 +258,7 @@ class Index extends PureComponent {
 
   render() {
     const {
+      error,
       data,
       pagination,
       match: { params },
@@ -286,10 +270,7 @@ class Index extends PureComponent {
       <>
         <Helmet title="Danh sách vai trò" />
         <div
-          className={classnames(
-            styles['content-form'],
-            styles['content-form-configurationRoles'],
-          )}
+          className={classnames(styles['content-form'], styles['content-form-configurationRoles'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -315,8 +296,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="filter"
+                    onChange={(event) => this.onChange(event, 'filter')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
@@ -328,6 +309,8 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              error={error}
+              isError={error.isError}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),

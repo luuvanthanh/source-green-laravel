@@ -19,3 +19,16 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
+
+export function addAccount(data = {}) {
+  return request(`/employees/${data.id}/account`, {
+    method: 'POST',
+    data,
+  });
+}
+
+export function detailsAccount(data = {}) {
+  return request(`/employees/${data.id}/account`, {
+    method: 'GET',
+  });
+}

@@ -61,4 +61,8 @@ export const menu = [
     key: 'magneticCards',
     label: 'Thẻ từ',
   },
+  {
+    key: 'account',
+    label: 'Tài khoản',
+  },
 ];

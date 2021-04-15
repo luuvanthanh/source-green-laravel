@@ -8,6 +8,13 @@ export function add(data = {}) {
   });
 }
 
+export function addAccount(data = {}) {
+  return request(`/parents/${data.id}/account`, {
+    method: 'POST',
+    data,
+  });
+}
+
 export function update(data = {}) {
   return request(`/parents/${data.id}`, {
     method: 'PUT',
@@ -17,6 +24,12 @@ export function update(data = {}) {
 
 export function details(data = {}) {
   return request(`/parents/${data.id}`, {
+    method: 'GET',
+  });
+}
+
+export function detailsAccount(data = {}) {
+  return request(`/parents/${data.id}/account`, {
     method: 'GET',
   });
 }

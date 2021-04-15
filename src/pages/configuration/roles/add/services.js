@@ -1,37 +1,21 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/requestLogin';
 
 export function add(data) {
-  return request('/v1/shifts', {
+  return request('/api/identity/roles', {
     method: 'POST',
-    data: {
-      description: data.description,
-      store_id: data.store_id,
-      time: data.time,
-      shift_code: data.shift_code,
-    },
-    parse: true,
+    data,
   });
 }
 
 export function update(data) {
-  return request(`/v1/shifts/${data.id}`, {
+  return request(`/api/identity/roles/${data.id}`, {
     method: 'PUT',
-    data: {
-      description: data.description,
-      store_id: data.store_id,
-      time: data.time,
-      shift_code: data.shift_code,
-      shift_id: data.id,
-    },
-    parse: true,
+    data,
   });
 }
 
 export function details(id) {
-  return request(`/v1/shifts/${id}`, {
+  return request(`/api/identity/roles/${id}`, {
     method: 'GET',
-    params: {
-      include: 'shiftDetail',
-    },
   });
 }
