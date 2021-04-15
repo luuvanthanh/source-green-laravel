@@ -14,13 +14,13 @@ class CreateSalaryIncreasesTable extends Migration
     public function up()
     {
         Schema::create('SalaryIncreases', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('DecisionNumber');
             $table->string('DecisionDate');
             $table->string('Reason')->nullable();
             $table->string('EmployeeId', 36);
-            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('TimeApply');
             $table->string('Note')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();

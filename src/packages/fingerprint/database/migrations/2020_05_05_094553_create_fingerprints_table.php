@@ -16,8 +16,8 @@ class CreateFingerprintsTable extends Migration
         $referenceTables = config('fingerprint.reference_tables');
 
         Schema::create('Fingerprints', function (Blueprint $table) use ($referenceTables) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->float('Size')->nullable();
             $table->boolean('Valid')->nullable();
             $table->text('Finger');
@@ -35,7 +35,7 @@ class CreateFingerprintsTable extends Migration
             foreach ($referenceTables as $tableName => $field) {
                 if (Schema::hasTable($tableName)) {
                     $table->{$field['type']}($field['fieldName'])->unsigned()->nullable();
-                    $table->foreign($field['fieldName'])->references('id')->on($tableName)->onUpdate('cascade')->onDelete('cascade');
+                    $table->foreign($field['fieldName'])->references('Id')->on($tableName)->onUpdate('cascade')->onDelete('cascade');
                 }
             }
         });

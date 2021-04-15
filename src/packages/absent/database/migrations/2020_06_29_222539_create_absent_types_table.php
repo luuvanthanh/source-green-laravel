@@ -14,8 +14,8 @@ class CreateAbsentTypesTable extends Migration
     public function up()
     {
         Schema::create('AbsentTypes', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('Name');
             $table->string('Status');
             $table->string('Type');

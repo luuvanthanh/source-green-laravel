@@ -14,12 +14,12 @@ class CreateTimekeepingsTable extends Migration
     public function up()
     {
         Schema::create('Timekeepings', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('EmployeeId', 36);
-            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->string('DeviceId', 36)->nullable();
-            $table->foreign('DeviceId')->references('id')->on('FingerprintTimekeepers');
+            $table->foreign('DeviceId')->references('Id')->on('FingerprintTimekeepers');
             $table->string('Type');
             $table->text('TrackingType');
             $table->dateTime('AttendedAt');

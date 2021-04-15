@@ -17,8 +17,8 @@ class CreateLabourContractParameterValueTable extends Migration
             $table->integer('Value');
             $table->string('LabourContractId', 36);
             $table->string('ParameterValueId', 36);
-            $table->foreign('LabourContractId')->references('id')->on('LabourContracts');
-            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
+            $table->foreign('LabourContractId')->references('Id')->on('LabourContracts');
+            $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
         });
     }
 

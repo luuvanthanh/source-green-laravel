@@ -14,12 +14,12 @@ class CreateAddSubTimeDetailsTable extends Migration
     public function up()
     {
         Schema::create('AddSubTimeDetails', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('AddSubTimeId', 36);
-            $table->foreign('AddSubTimeId')->references('id')->on('AddSubTimes')->onDelete('cascade');
+            $table->foreign('AddSubTimeId')->references('Id')->on('AddSubTimes')->onDelete('cascade');
             $table->string('EmployeeId', 36);
-            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('days')->nullable();

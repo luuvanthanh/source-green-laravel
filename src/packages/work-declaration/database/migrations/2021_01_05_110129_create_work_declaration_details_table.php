@@ -14,10 +14,10 @@ class CreateWorkDeclarationDetailsTable extends Migration
     public function up()
     {
         Schema::create('WorkDeclarationDetails', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('WorkDeclarationId', 36);
-            $table->foreign('WorkDeclarationId')->references('id')->on('WorkDeclarations')->onDelete('cascade');
+            $table->foreign('WorkDeclarationId')->references('Id')->on('WorkDeclarations')->onDelete('cascade');
             $table->string('ModelId', 36)->nullable();
             $table->string('ModelType')->nullable();
             $table->string('Reason')->nullable();
@@ -25,7 +25,7 @@ class CreateWorkDeclarationDetailsTable extends Migration
             $table->date('Month')->nullable();
             $table->json('Time');
             $table->string('ShiftId', 36)->nullable();
-            $table->foreign('ShiftId')->references('id')->on('Shifts');
+            $table->foreign('ShiftId')->references('Id')->on('Shifts');
             $table->date('WorkDate')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

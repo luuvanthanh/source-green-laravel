@@ -14,10 +14,10 @@ class CreateScheduleRepeatsTable extends Migration
     public function up()
     {
         Schema::create('ScheduleRepeats', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('ScheduleId', 36);
-            $table->foreign('ScheduleId')->references('id')->on('Schedules')->onDelete('cascade');
+            $table->foreign('ScheduleId')->references('Id')->on('Schedules')->onDelete('cascade');
             $table->string('RepeatBy');
             $table->integer('Count');
             $table->integer('Interval')->nullable();

@@ -16,8 +16,8 @@ class CreateEmployeesTable extends Migration
         Schema::create('Employees', function (Blueprint $table) {
             $table->bigIncrements("FingerprintId");
             $table->dropPrimary("Employees_FingerprintId_primary");
-            $table->string('id', 36)->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->unique();
+            $table->primary('Id');
             $table->string('FullName')->nullable();
             $table->date('DateOfBirth')->nullable();
             $table->date('PlaceOfBirth')->nullable();
@@ -34,15 +34,15 @@ class CreateEmployeesTable extends Migration
             $table->string('Gender')->nullable();
             $table->string('TaxCode')->nullable();
             $table->string('DegreeId', 36)->nullable();
-            $table->foreign('DegreeId')->references('id')->on('Degrees');
+            $table->foreign('DegreeId')->references('Id')->on('Degrees');
             $table->string('TrainingMajorId', 36)->nullable();
-            $table->foreign('TrainingMajorId')->references('id')->on('TrainingMajors');
+            $table->foreign('TrainingMajorId')->references('Id')->on('TrainingMajors');
             $table->string('TrainingSchoolId', 36)->nullable();
-            $table->foreign('TrainingSchoolId')->references('id')->on('TrainingSchools');
+            $table->foreign('TrainingSchoolId')->references('Id')->on('TrainingSchools');
             $table->date('DateOff')->nullable();
             $table->date('Address')->nullable();
             $table->string('EducationalLevelId', 36)->nullable();
-            $table->foreign('EducationalLevelId')->references('id')->on('EducationalLevels');
+            $table->foreign('EducationalLevelId')->references('Id')->on('EducationalLevels');
             $table->date('WorkDate')->nullable();
             $table->string('HealthInsuranceBookNumber')->nullable();
             $table->string('HospitalAdress')->nullable();
@@ -53,6 +53,7 @@ class CreateEmployeesTable extends Migration
             $table->boolean('MaternityLeave')->default(false);
             $table->date('MaternityLeaveFrom')->nullable();
             $table->date('MaternityLeaveTo')->nullable();
+            $table->integer('Status')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

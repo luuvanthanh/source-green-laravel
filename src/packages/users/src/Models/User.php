@@ -3,7 +3,7 @@
 namespace GGPHP\Users\Models;
 
 use GGPHP\Absent\Models\Absent;
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use Illuminate\Auth\Authenticatable;
@@ -16,20 +16,21 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use ZK\Traits\SyncToDevice;
 
-class User extends CoreModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
+class User extends UuidModel implements HasMedia, AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
+    public $incrementing = false;
+
     use Notifiable, CanResetPassword;
     use Authenticatable;
     use Authorizable, CanResetPassword, MustVerifyEmail;
     use InteractsWithMedia;
-    use SyncToDevice;
+    // use SyncToDevice;
 
     /**
      * Declare the table name
      */
-    protected $table = 'employees';
+    protected $table = 'Employees';
 
     /**
      * The attributes that are mass assignable.
@@ -37,12 +38,12 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
      * @var array
      */
     protected $fillable = [
-        'full_name', 'date_of_birth', 'place_of_birth', 'email', 'phone_number', 'gender', 'code', 'tax_code', 'degree_id',
-        'training_major_id', 'training_school_id', 'date_off', 'permanent_address', 'nationality',
-        'nation', 'id_card', 'date_of_issue_id_card', 'place_of_issue_id_card', 'religion', 'work_date',
-        'health_insurance_book_number', 'hospital_adress', 'social_insurance_book_number', 'bank_name',
-        'bank_number_of_account', 'note', 'maternity_leave', 'maternity_leave_from', 'maternity_leave_to',
-        'educational_level_id', 'address',
+        'FullName', 'DateOfBirth', 'PlaceOfBirth', 'Email', 'PhoneNumber', 'Gender', 'Code', 'TaxCode', 'DegreeId',
+        'TrainingMajorId', 'TrainingSchoolId', 'DateOff', 'PermanentAddress', 'Nationality',
+        'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
+        'HealthInsuranceBookNumber', 'HospitalAdress', 'SocialInsuranceBooknumber', 'BankName',
+        'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId',
     ];
 
     /**

@@ -14,13 +14,13 @@ class CreateScheduleExceptionsTable extends Migration
     public function up()
     {
         Schema::create('ScheduleExceptions', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('ScheduleId', 36);
-            $table->foreign('ScheduleId')->references('id')->on('Schedules')->onDelete('cascade');
+            $table->foreign('ScheduleId')->references('Id')->on('Schedules')->onDelete('cascade');
             $table->date('Date');
             $table->string('ShiftId', 36);
-            $table->foreign('ShiftId')->references('id')->on('Shifts')->onDelete('cascade');
+            $table->foreign('ShiftId')->references('Id')->on('Shifts')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

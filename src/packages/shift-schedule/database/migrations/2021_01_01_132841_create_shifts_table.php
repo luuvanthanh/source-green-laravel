@@ -14,8 +14,8 @@ class CreateShiftsTable extends Migration
     public function up()
     {
         Schema::create('Shifts', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('ShiftCode');
             $table->string('Description')->nullable();
             $table->string('Status');

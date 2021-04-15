@@ -14,8 +14,8 @@ class CreateEducationalLevelsTable extends Migration
     public function up()
     {
         Schema::create('EducationalLevels', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
             $table->timestamp('CreationTime', 0)->nullable();

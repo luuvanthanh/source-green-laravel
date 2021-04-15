@@ -17,8 +17,8 @@ class CreateSalaryIncreaseParameterValueTable extends Migration
             $table->integer('Value');
             $table->string('SalaryIncreaseId', 36);
             $table->string('ParameterValueId', 36);
-            $table->foreign('SalaryIncreaseId')->references('id')->on('SalaryIncreases');
-            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
+            $table->foreign('SalaryIncreaseId')->references('Id')->on('SalaryIncreases');
+            $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
         });
     }
 

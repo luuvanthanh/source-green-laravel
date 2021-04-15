@@ -14,14 +14,14 @@ class CreateAbsentsTable extends Migration
     public function up()
     {
         Schema::create('Absents', function (Blueprint $table) {
-            $table->string('id', 36)->index()->unique();
-            $table->primary('id');
+            $table->string('Id', 36)->index()->unique();
+            $table->primary('Id');
             $table->string('EmployeeId', 36);
-            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->string('AbsentTypeId', 36);
-            $table->foreign('AbsentTypeId')->references('id')->on('AbsentTypes');
+            $table->foreign('AbsentTypeId')->references('Id')->on('AbsentTypes');
             $table->string('AbsentReasonId', 36);
-            $table->foreign('AbsentReasonId')->references('id')->on('AbsentReasons');
+            $table->foreign('AbsentReasonId')->references('Id')->on('AbsentReasons');
             $table->date('StartDate');
             $table->date('EndDate')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
@@ -36,6 +36,6 @@ class CreateAbsentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('absents');
+        Schema::dropIfExists('Absents');
     }
 }

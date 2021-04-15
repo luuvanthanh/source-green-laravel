@@ -17,8 +17,8 @@ class CreateProbationaryContractParameterValueTable extends Migration
             $table->integer('Value');
             $table->string('ProbationaryContractId', 36);
             $table->string('ParameterValueId', 36);
-            $table->foreign('ProbationaryContractId')->references('id')->on('ProbationaryContracts');
-            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
+            $table->foreign('ProbationaryContractId')->references('Id')->on('ProbationaryContracts');
+            $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
         });
     }
 
