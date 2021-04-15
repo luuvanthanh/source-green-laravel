@@ -680,6 +680,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/loai-cong-viec',
+            component: './configuration/job-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/loai-cong-viec/tao-moi',
+            component: './configuration/job-types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/loai-cong-viec/:id/chi-tiet',
+            component: './configuration/job-types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/cap-bac',
+            component: './configuration/manager-level',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/cap-bac/tao-moi',
+            component: './configuration/manager-level/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/cap-bac/:id/chi-tiet',
+            component: './configuration/manager-level/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION
