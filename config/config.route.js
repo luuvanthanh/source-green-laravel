@@ -236,6 +236,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/ho-so-doi-tuong/phu-huynh/luu-tru',
+            component: './object-profiles/stores/parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/hoc-sinh/luu-tru',
+            component: './object-profiles/stores/students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/ho-so-doi-tuong/nhan-vien/luu-tru',
+            component: './object-profiles/stores/employees',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // OBJECT PROFILES

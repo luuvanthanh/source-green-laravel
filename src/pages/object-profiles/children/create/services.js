@@ -69,3 +69,11 @@ export function addTransporter(data = {}) {
     data: data.studentTransporter,
   });
 }
+
+
+export function updateStatus(data = {}) {
+  return request(`/students/${data.id}/update-status?status=${data.status}`, {
+    method: 'PUT',
+    data,
+  });
+}

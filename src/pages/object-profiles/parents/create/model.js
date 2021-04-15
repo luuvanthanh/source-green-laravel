@@ -96,6 +96,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE_STATUS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateStatus, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
         const response = yield saga.call(services.getEmployees, payload);

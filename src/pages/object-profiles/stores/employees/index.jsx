@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,7 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
+import HelperModules from '../../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ OPusers, loading }) => ({
-  data: OPusers.data,
-  pagination: OPusers.pagination,
+const mapStateToProps = ({ storeEmployees, loading }) => ({
+  data: storeEmployees.data,
+  pagination: storeEmployees.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,6 +49,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        isStoreStaus: true,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
@@ -89,7 +90,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPusers/GET_DATA',
+      type: 'storeEmployees/GET_DATA',
       payload: {
         ...search,
         status,
@@ -204,7 +205,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'OPusers/REMOVE',
+          type: 'storeEmployees/REMOVE',
           payload: {
             id,
             pagination: {
@@ -302,7 +303,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['OPusers/GET_DATA'];
+    const loading = effects['storeEmployees/GET_DATA'];
     return (
       <>
         <Helmet title="Danh sách phụ huynh" />
@@ -310,13 +311,6 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Nhân viên</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/tao-moi?type=info`)}
-            >
-              Tạo hồ sơ
-            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

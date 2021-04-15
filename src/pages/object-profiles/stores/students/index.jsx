@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,7 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
+import HelperModules from '../../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ OPusers, loading }) => ({
-  data: OPusers.data,
-  pagination: OPusers.pagination,
+const mapStateToProps = ({ storeStudents, loading }) => ({
+  data: storeStudents.data,
+  pagination: storeStudents.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,6 +49,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        isStoreStaus: true,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
@@ -89,7 +90,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'OPusers/GET_DATA',
+      type: 'storeStudents/GET_DATA',
       payload: {
         ...search,
         status,
@@ -172,7 +173,7 @@ class Index extends PureComponent {
   pagination = (pagination) => ({
     size: 'default',
     total: pagination.total,
-    defaultPageSize: variables.PAGINATION.PAGE_SIZE,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
     defaultCurrent: Number(this.state.search.page),
     current: Number(this.state.search.page),
     hideOnSinglePage: pagination.total <= 10,
@@ -204,7 +205,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'OPusers/REMOVE',
+          type: 'storeStudents/REMOVE',
           payload: {
             id,
             pagination: {
@@ -245,34 +246,39 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.fullName}</Text>,
       },
       {
-        title: 'Số điện thoại',
-        key: 'phone',
+        title: 'Tuổi (tháng)',
+        key: 'age',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone}</Text>,
+        align: 'center',
+        render: (record) => <Text size="normal">{record.age} tháng tuổi</Text>,
       },
       {
         title: 'Cơ sở',
-        key: 'position',
+        key: 'branch',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view</Text>,
+        render: (record) => <Text size="normal">{record?.class?.branch?.name}</Text>,
       },
       {
-        title: 'Bộ phận',
-        key: 'division',
+        title: 'Lớp',
+        key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hành chính nhân sự</Text>,
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
-        title: 'Chức vụ',
-        key: 'position',
+        title: 'Ngày vào lớp',
+        key: 'date',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Ghi danh</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.registerDate, variables.DATE_FORMAT.DATE)}
+          </Text>
+        ),
       },
       {
-        title: 'Hình thức làm việc',
-        key: 'work',
+        title: 'Trạng thái',
+        key: 'status',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Chính thức</Text>,
+        render: (record) => HelperModules.tagStatus(record.status),
       },
       {
         key: 'action',
@@ -283,7 +289,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -302,21 +308,14 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['OPusers/GET_DATA'];
+    const loading = effects['storeStudents/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách phụ huynh" />
+        <Helmet title="Danh sách học sinh lưu trữ" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Nhân viên</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/tao-moi?type=info`)}
-            >
-              Tạo hồ sơ
-            </Button>
+            <Text color="dark">Học sinh</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -327,7 +326,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
@@ -335,7 +334,7 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả cơ sở' }]}
                     name="manufacturer"
@@ -343,28 +342,19 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả bộ phận' }]}
+                    data={[{ id: null, name: 'Tất cả lớp' }]}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả chức vụ' }]}
-                    name="position"
-                    onChange={(event) => this.onChangeSelect(event, 'position')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-2">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả hình thức làm việc' }]}
-                    name="form"
-                    onChange={(event) => this.onChangeSelect(event, 'form')}
-                    type={variables.SELECT}
+                    name="startDate"
+                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>

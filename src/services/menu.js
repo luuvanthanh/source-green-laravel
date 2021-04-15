@@ -180,6 +180,35 @@ export async function getLeftMenuProfile() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Hồ sơ lưu trữ',
+      key: 'stores',
+      icon: 'icon icon-fileText',
+      permission: [],
+      children: [
+        {
+          title: 'Phụ huynh',
+          key: 'storeParents',
+          url: ['/ho-so-doi-tuong/phu-huynh/luu-tru'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Học sinh',
+          key: 'storeStudents',
+          url: ['/ho-so-doi-tuong/hoc-sinh/luu-tru'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Nhân viên',
+          key: 'storeEmployees',
+          url: ['/ho-so-doi-tuong/nhan-vien/luu-tru'],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuSchedules() {
@@ -512,11 +541,7 @@ export async function getLeftMenuConfiguration() {
         {
           title: 'Quản lý cấp bậc',
           key: 'manager-level',
-          url: [
-            '/cau-hinh/cap-bac',
-            '/cau-hinh/cap-bac/tao-moi',
-            '/cau-hinh/cap-bac/:id/chi-tiet',
-          ],
+          url: ['/cau-hinh/cap-bac', '/cau-hinh/cap-bac/tao-moi', '/cau-hinh/cap-bac/:id/chi-tiet'],
           permission: [],
           pro: true,
         },
