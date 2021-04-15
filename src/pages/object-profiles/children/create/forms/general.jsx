@@ -107,7 +107,13 @@ const General = memo(
     const updateStatus = () => {
       dispatch({
         type: 'OPchildrenAdd/UPDATE_STATUS',
-        payload: { status: variablesModules.STATUS.STORE, id: params.id },
+        payload: {
+          status:
+            details?.student?.status === variablesModules.STATUS.STORE
+              ? variablesModules.STATUS.REGIST
+              : variablesModules.STATUS.STORE,
+          id: params.id,
+        },
         callback: (response, error) => {
           if (response) {
             history.push(`/ho-so-doi-tuong/hoc-sinh`);
@@ -279,7 +285,9 @@ const General = memo(
                   onClick={updateStatus}
                   loading={loadingSubmit}
                 >
-                  Lưu trữ hồ sơ
+                  {details?.student?.status === variablesModules.STATUS.STORE
+                    ? 'Khôi phục'
+                    : 'Lưu trữ hồ sơ'}
                 </Button>
               )}
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
