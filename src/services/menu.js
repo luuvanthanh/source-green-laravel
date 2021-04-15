@@ -187,16 +187,16 @@ export async function getLeftMenuProfile() {
       permission: [],
       children: [
         {
-          title: 'Phụ huynh',
-          key: 'storeParents',
-          url: ['/ho-so-doi-tuong/phu-huynh/luu-tru'],
+          title: 'Học sinh',
+          key: 'storeStudents',
+          url: ['/ho-so-doi-tuong/hoc-sinh/luu-tru'],
           permission: [],
           pro: true,
         },
         {
-          title: 'Học sinh',
-          key: 'storeStudents',
-          url: ['/ho-so-doi-tuong/hoc-sinh/luu-tru'],
+          title: 'Phụ huynh',
+          key: 'storeParents',
+          url: ['/ho-so-doi-tuong/phu-huynh/luu-tru'],
           permission: [],
           pro: true,
         },
