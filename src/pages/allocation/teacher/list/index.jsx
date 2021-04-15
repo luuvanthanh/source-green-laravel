@@ -120,7 +120,6 @@ class Index extends PureComponent {
       payload,
       callback: (res) => {
         if (res) {
-          console.log(res)
           this.setStateData({
             teachers: res?.items.map(item => item?.teacher) || []
           })
@@ -203,8 +202,8 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={students}
-                      renderItem={({ id, fullName, age }) => (
-                        <List.Item key={id}>
+                      renderItem={({ id, fullName, age }, index) => (
+                        <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
                             <AvatarTable />
                             <div className={stylesAllocation['info']}>
@@ -229,8 +228,8 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={teachers}
-                      renderItem={({ id, fullName }) => (
-                        <List.Item key={id}>
+                      renderItem={({ id, fullName }, index) => (
+                        <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
                             <AvatarTable />
                             <div className={stylesAllocation['info']}>

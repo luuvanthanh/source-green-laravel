@@ -147,8 +147,6 @@ class Index extends PureComponent {
       },
       callback: (res) => {
         if (res) {
-          console.log(res)
-
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
