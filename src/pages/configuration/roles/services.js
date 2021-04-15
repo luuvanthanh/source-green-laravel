@@ -1,41 +1,23 @@
-import request from '@/utils/requestLavarel';
+import request from '@/utils/requestLogin';
+import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
-export function get(data = {}) {
-  return request('/v1/shifts', {
+export function get(params = {}) {
+  return request('/api/identity/roles', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
-      orderBy: 'id',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['store', 'shiftDetail']),
-      search: Helper.convertParamSearchConvert({
-        store_id: data.store_id,
-        shift_code: data.shift_code,
-      }),
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }
 
 export function remove(id) {
-  return request(`/v1/shifts/${id}`, {
+  return request(`/api/identity/roles/${id}`, {
     method: 'DELETE',
     data: {
       shift_id: id,
     },
     parse: true,
-  });
-}
-
-export function activeStatus(data) {
-  return request(`/v1/active-status-shift/${data.id}`, {
-    method: 'PUT',
-    data: {
-      shift_code: data.shift_code,
-      store_id: data.store_id,
-      status: data.status,
-    },
   });
 }

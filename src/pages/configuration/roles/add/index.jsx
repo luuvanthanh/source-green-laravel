@@ -3,8 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import moment from 'moment';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head, omit } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
@@ -92,56 +91,31 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (get(params, 'id')) {
-      dispatch({
-        type: 'configurationRolesAdd/UPDATE',
-        payload: {
-          ...values,
-          id: get(params, 'id'),
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    const payload = {
+      ...values,
+      id: get(params, 'id'),
+    };
+    dispatch({
+      type: params?.id ? 'configurationRolesAdd/UPDATE' : 'configurationRolesAdd/ADD',
+      payload: params?.id ? payload : omit(payload, 'id'),
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'configurationRolesAdd/ADD',
-        payload: {
-          ...values,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
@@ -155,13 +129,10 @@ class Index extends PureComponent {
       effects['configurationRolesAdd/ADD'] || effects['configurationRolesAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo tài khoản" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo vai trò" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
-          initialValues={{
-            time: [{}],
-          }}
           colon={false}
           onFinish={this.onFinish}
           ref={this.formRef}
@@ -182,17 +153,6 @@ class Index extends PureComponent {
                       name="name"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <hr className={styles.dot} />
-                <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="MÔ TẢ"
-                      name="description"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
                     />
                   </div>
                 </div>

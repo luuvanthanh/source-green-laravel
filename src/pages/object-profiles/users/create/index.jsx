@@ -23,6 +23,7 @@ import ChildrenForm from './forms/children';
 import SalaryForm from './forms/salary';
 import RewardForm from './forms/reward';
 import MagneticCardsForm from './forms/magnetic-cards';
+import AccountForm from './forms/account';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -50,13 +51,14 @@ const forms = {
   salary: <SalaryForm />,
   reward: <RewardForm />,
   magneticCards: <MagneticCardsForm />,
+  account: <AccountForm />
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
   return (
     <Pane style={{ padding: 20 }}>
-      <Helmet title="Tạo hồ sơ học sinh" />
+      <Helmet title="Tạo hồ sơ nhân viên" />
       <Pane className="row" style={{ marginBottom: 20 }}>
         <Pane className="col">
           <Heading type="page-title">Tạo hồ sơ nhân viên</Heading>
