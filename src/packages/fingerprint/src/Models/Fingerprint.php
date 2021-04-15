@@ -25,7 +25,7 @@ class Fingerprint extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'finger', 'size', 'valid', 'finger_index', 'status', 'device_id',
+        'employee_id', 'finger', 'size', 'valid', 'finger_index', 'status', 'device_id',
     ];
 
     /**
@@ -38,7 +38,7 @@ class Fingerprint extends UuidModel
     /**
      * Define relations store
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class);
     }

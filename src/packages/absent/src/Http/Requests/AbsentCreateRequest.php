@@ -26,7 +26,7 @@ class AbsentCreateRequest extends FormRequest
                 'exists:absent_types,id',
             ],
             'absent_reason_id' => 'required|exists:absent_reasons,id',
-            'user_id' => 'required|exists:employees,id',
+            'employee_id' => 'required|exists:employees,id',
             'start_date' => [
                 'date',
                 'date_format:Y-m-d',
@@ -96,7 +96,7 @@ class AbsentCreateRequest extends FormRequest
      */
     private function checkDuplicateAbsent($value)
     {
-        $userId = request()->user_id;
+        $employeeId = request()->employee_id;
         $annualLeaveType = AbsentType::where('type', AbsentType::ANNUAL_LEAVE)->first();
         $unpaidLeaveType = AbsentType::where('type', AbsentType::UNPAID_LEAVE)->first();
 
@@ -116,7 +116,7 @@ class AbsentCreateRequest extends FormRequest
             $q2->where([['start_date', '<=', $startDate], ['end_date', '>=', $endDate]])
                 ->orWhere([['start_date', '>=', $startDate], ['start_date', '<=', $endDate]])
                 ->orWhere([['end_date', '>=', $startDate], ['end_date', '<=', $endDate]]);
-        })->where('user_id', $userId)->get();
+        })->where('employee_id', $employeeId)->get();
 
         $result = $absent;
         foreach ($result as $value) {
@@ -135,17 +135,17 @@ class AbsentCreateRequest extends FormRequest
 
     public function checkMaxAbsentEarlyLateInMonth($value)
     {
-        $userId = request()->user_id;
+        $employeeId = request()->employee_id;
         $startDate = Carbon::parse(request()->start_date);
         $endDate = Carbon::parse(request()->end_date);
         $early = AbsentType::where('type', AbsentType::ABSENT_EARLY)->first();
         $late = AbsentType::where('type', AbsentType::ABSENT_LATE)->first();
 
-        $check = Absent::whereIn('absent_type_id', [$early->id, $late->id])->where(function ($q) use ($userId, $startDate, $endDate, $early, $late) {
+        $check = Absent::whereIn('absent_type_id', [$early->id, $late->id])->where(function ($q) use ($employeeId, $startDate, $endDate, $early, $late) {
             $q->where([['start_date', '<=', $startDate->firstOfMonth()->format('Y-m-d')], ['end_date', '>=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['start_date', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['start_date', '<=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['end_date', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['end_date', '<=', $startDate->endOfMonth()->format('Y-m-d')]]);
-        })->where('user_id', $userId)->get();
+        })->where('employee_id', $employeeId)->get();
 
         if (count($check) > 3) {
             return false;

@@ -4,7 +4,6 @@ namespace GGPHP\Appoint\Models;
 
 use GGPHP\Appoint\Models\AppointDetail;
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Users\Models\User;
 
 class Appoint extends UuidModel
 {
@@ -45,7 +44,7 @@ class Appoint extends UuidModel
     protected $hidden = [];
 
     /**
-     * Get educations of user
+     * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

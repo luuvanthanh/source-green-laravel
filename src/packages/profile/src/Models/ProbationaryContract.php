@@ -69,7 +69,7 @@ class ProbationaryContract extends UuidModel
     }
 
     /**
-     * Define relations user
+     * Define relations employee
      */
     public function parameterValues()
     {

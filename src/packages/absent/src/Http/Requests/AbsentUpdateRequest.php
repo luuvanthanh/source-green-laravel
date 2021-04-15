@@ -23,7 +23,7 @@ class AbsentUpdateRequest extends FormRequest
             return [
                 'absent_type_id' => 'required|exists:absent_types,id',
                 'absent_reason_id' => 'required|exists:absent_reasons,id',
-                'user_id' => 'required|exists:employees,id',
+                'employee_id' => 'required|exists:employees,id',
                 'store_id' => 'required|exists:stores,id',
                 'start_date' => 'date|date_format:Y-m-d',
                 'end_date' => 'date|date_format:Y-m-d|after_or_equal:start_date',

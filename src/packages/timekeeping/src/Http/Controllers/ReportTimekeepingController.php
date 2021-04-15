@@ -11,22 +11,22 @@ use Illuminate\Http\Request;
 class ReportTimekeepingController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $timekeepingRepository;
-    protected $userRepository;
+    protected $employeeRepository;
 
     /**
      * UserController constructor.
      * @param TimekeepingRepository $timekeepingRepository
-     * @param UserRepository $userRepository
+     * @param UserRepository $employeeRepository
      */
     public function __construct(
         TimekeepingRepository $timekeepingRepository,
-        UserRepository $userRepository
+        UserRepository $employeeRepository
     ) {
         $this->timekeepingRepository = $timekeepingRepository;
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
 
     /**
@@ -43,10 +43,10 @@ class ReportTimekeepingController extends Controller
         $work_form_id = $request->work_form_id;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $userId = $request->user_id;
+        $employeeId = $request->employee_id;
         $type = $request->type;
         $year = $request->year;
-        $usersByStore = [];
+        $employeesByStore = [];
         $full_name = $request->full_name;
         $limit = config('constants-timekeeping.SEARCH_VALUES_DEFAULT.LIMIT_ZERO');
         $is_shift = !is_null($request->is_shift) ? $request->is_shift : "true";
@@ -67,9 +67,9 @@ class ReportTimekeepingController extends Controller
 
             foreach ($months as $key => &$month) {
 
-                $usersByStore = $this->timekeepingRepository->timekeepingReport($userId, $position, $store, $month['start_date'], $month['end_date'], $limit, true, $type, $work_form_id, $isFilter, $full_name, $is_shift);
+                $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $month['start_date'], $month['end_date'], $limit, true, $type, $work_form_id, $isFilter, $full_name, $is_shift);
 
-                foreach ($usersByStore as &$value) {
+                foreach ($employeesByStore as &$value) {
                     $resultTimekeepingMonth[$value->id][$key] = [
                         'hourRedundantMonth' => gmdate("H:i", $value->totalHourRedundantWorks),
                         'hourRedundantMonthFormat' => $value->totalHourRedundantWorks,
@@ -78,7 +78,7 @@ class ReportTimekeepingController extends Controller
                 }
             }
 
-            foreach ($usersByStore as &$item) {
+            foreach ($employeesByStore as &$item) {
                 if (array_key_exists($item->id, $resultTimekeepingMonth)) {
                     // Sum total timekeeping, hour redundant
                     $collection = collect($resultTimekeepingMonth[$item->id]);
@@ -102,19 +102,19 @@ class ReportTimekeepingController extends Controller
 
             // used to return results for excel export
             if ($forceReturn) {
-                return $usersByStore;
+                return $employeesByStore;
             }
 
-            $response = $limit == config('constants-timekeeping.SEARCH_VALUES_DEFAULT.LIMIT_ZERO') ? $usersByStore : $this->timekeepingRepository->paginateCollection($usersByStore, $limit);
+            $response = $limit == config('constants-timekeeping.SEARCH_VALUES_DEFAULT.LIMIT_ZERO') ? $employeesByStore : $this->timekeepingRepository->paginateCollection($employeesByStore, $limit);
 
-            $usersByStore = $this->userRepository->parserResult($response);
+            $employeesByStore = $this->employeeRepository->parserResult($response);
 
         } elseif ($start_date && $end_date) {
 
-            $usersByStore = $this->timekeepingRepository->timekeepingReport($userId, $position, $store, $start_date, $end_date, $limit, true, $type, $work_form_id, $isFilter, null, $full_name, $is_shift);
+            $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $start_date, $end_date, $limit, true, $type, $work_form_id, $isFilter, null, $full_name, $is_shift);
         }
 
-        return $this->success($usersByStore, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**

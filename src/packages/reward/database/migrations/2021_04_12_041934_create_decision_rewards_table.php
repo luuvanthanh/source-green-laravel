@@ -13,14 +13,15 @@ class CreateDecisionRewardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('decision_rewards', function (Blueprint $table) {
+        Schema::create('DecisionRewards', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('decision_number');
-            $table->date('decision_date');
-            $table->string('reason');
-            $table->string('type');
-            $table->timestamps();
+            $table->string('DecisionNumber');
+            $table->date('DecisionDate');
+            $table->string('Reason')->nullable();
+            $table->string('Type');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -31,6 +32,6 @@ class CreateDecisionRewardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('decision_rewards');
+        Schema::dropIfExists('DecisionRewards');
     }
 }

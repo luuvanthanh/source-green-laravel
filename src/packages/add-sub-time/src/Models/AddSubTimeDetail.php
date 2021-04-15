@@ -16,7 +16,7 @@ class AddSubTimeDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'additional_time_id', 'user_id', 'start_date', 'end_date', 'days', 'hours', 'reason',
+        'additional_time_id', 'employee_id', 'start_date', 'end_date', 'days', 'hours', 'reason',
     ];
 
     protected $dateTimeFields = [
@@ -40,8 +40,8 @@ class AddSubTimeDetail extends UuidModel
     /**
      * Define relations store
      */
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'user_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
     }
 }

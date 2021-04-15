@@ -19,7 +19,7 @@ class ScheduleTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['user', 'shift'];
+    protected $availableIncludes = ['employee', 'shift'];
     protected $defaultIncludes = ['scheduleRepeat', 'scheduleException'];
 
     /**
@@ -40,10 +40,10 @@ class ScheduleTransformer extends BaseTransformer
      */
     public function includeUser(Schedule $schedule)
     {
-        if (empty($schedule->user)) {
+        if (empty($schedule->employee)) {
             return;
         }
-        return $this->item($schedule->user, new UserTransformer, 'User');
+        return $this->item($schedule->employee, new UserTransformer, 'User');
     }
 
     /**

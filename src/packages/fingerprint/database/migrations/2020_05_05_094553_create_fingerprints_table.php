@@ -15,17 +15,18 @@ class CreateFingerprintsTable extends Migration
     {
         $referenceTables = config('fingerprint.reference_tables');
 
-        Schema::create('fingerprints', function (Blueprint $table) use ($referenceTables) {
+        Schema::create('Fingerprints', function (Blueprint $table) use ($referenceTables) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->float('size')->nullable();
-            $table->boolean('valid')->nullable();
-            $table->text('finger');
-            $table->integer('finger_index')->nullable();
-            $table->string('device_id');
-            $table->string('status')->default('ON');
-            $table->timestamp('deleted_at')->nullable();
-            $table->timestamps();
+            $table->float('Size')->nullable();
+            $table->boolean('Valid')->nullable();
+            $table->text('Finger');
+            $table->integer('FingerIndex')->nullable();
+            $table->string('DeviceId');
+            $table->string('Status')->default('ON');
+            $table->timestamp('Deleted_At')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
 
             if (empty($referenceTables)) {
                 return;
@@ -47,6 +48,6 @@ class CreateFingerprintsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fingerprints');
+        Schema::dropIfExists('Fingerprints');
     }
 }

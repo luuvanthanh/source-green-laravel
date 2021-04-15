@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class TrainingMajorController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $trainingMajorRepository;
 

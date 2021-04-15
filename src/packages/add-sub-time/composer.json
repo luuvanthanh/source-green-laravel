@@ -1,11 +1,11 @@
 {
-    "name": "kun391/users",
-    "description": "A Package for management users with jsonapi specification",
+    "name": "kun391/employees",
+    "description": "A Package for management employees with jsonapi specification",
     "keywords": [
         "kun391",
-        "users"
+        "employees"
     ],
-    "homepage": "https://github.com/kun391/users",
+    "homepage": "https://github.com/kun391/employees",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -36,7 +36,6 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true

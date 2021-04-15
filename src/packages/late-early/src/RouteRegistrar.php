@@ -81,7 +81,7 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Đi trễ về sớm',
             ]);
 
-            \Route::get('user/late-early', [
+            \Route::get('employee/late-early', [
                 'comment' => 'Tổng hợp đi trễ về sớm',
                 'uses' => 'LateEarlyController@lateEarlyByUser',
                 'as' => 'late-early.summary',

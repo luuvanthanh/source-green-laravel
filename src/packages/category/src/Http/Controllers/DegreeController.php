@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class DegreeController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $degreeRepository;
 

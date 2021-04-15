@@ -35,9 +35,9 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'reward.index',
             ]);
 
-            \Route::get('user/reward', [
-                'uses' => 'RewardController@userReward',
-                'as' => 'reward.userReward',
+            \Route::get('employee/reward', [
+                'uses' => 'RewardController@employeeReward',
+                'as' => 'reward.employeeReward',
             ]);
 
             \Route::post('rewards', [

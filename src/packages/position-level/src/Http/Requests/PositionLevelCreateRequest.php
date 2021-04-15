@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class PositionLevelCreateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -37,9 +37,9 @@ class PositionLevelCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $now = Carbon::now();
                     $today = $now->toDateString();
-                    $userId = request()->user_id;
+                    $employeeId = request()->employee_id;
 
-                    $tranfer = PositionLevel::where('user_id', $userId)->where('start_date', '>', $today)->first();
+                    $tranfer = PositionLevel::where('employee_id', $employeeId)->where('start_date', '>', $today)->first();
 
                     if (!is_null($tranfer)) {
                         return $fail('Bạn đã tạo điều chuyển, vui lòng xem lại.');

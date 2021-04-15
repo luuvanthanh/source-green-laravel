@@ -66,7 +66,7 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Cấp bậc chức vụ',
             ]);
 
-            \Route::get('position-level-user/{id}', [
+            \Route::get('position-level-employee/{id}', [
                 'uses' => 'PositionLevelController@getForUser',
             ]);
 

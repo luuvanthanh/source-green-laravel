@@ -13,16 +13,17 @@ class CreateScheduleRepeatsTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedule_repeats', function (Blueprint $table) {
+        Schema::create('ScheduleRepeats', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('schedule_id', 36);
-            $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade');
-            $table->string('repeat_by');
-            $table->integer('count');
-            $table->integer('interval')->nullable();
-            $table->string('by_week_day')->nullable();
-            $table->timestamps();
+            $table->string('ScheduleId', 36);
+            $table->foreign('ScheduleId')->references('id')->on('Schedules')->onDelete('cascade');
+            $table->string('RepeatBy');
+            $table->integer('Count');
+            $table->integer('Interval')->nullable();
+            $table->string('ByWeekDay')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -33,6 +34,6 @@ class CreateScheduleRepeatsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schedule_repeats');
+        Schema::dropIfExists('ScheduleRepeats');
     }
 }

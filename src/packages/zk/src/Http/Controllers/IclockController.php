@@ -30,11 +30,11 @@ class IclockController extends Controller
             $return = 'OK';
             if (in_array($modelSync->subject_type, ['GGPHP\MagneticCard\Models\MagneticCard'])) {
                 $obj = json_decode($modelSync->payload);
-                $user = User::find($obj->user_id);
+                $employee = User::find($obj->employee_id);
                 $array = [
                     $modelSync->id,
-                    $user->id,
-                    $user->full_name,
+                    $employee->id,
+                    $employee->full_name,
                     0,
                     rand(9999, 5),
                     0,
@@ -56,13 +56,13 @@ class IclockController extends Controller
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
 
-        $user = $model->user;
+        $employee = $model->employee;
 
-        if (!$user) {
-            $user = $model;
+        if (!$employee) {
+            $employee = $model;
 
         }
-        if (!$user) {
+        if (!$employee) {
             $modelSync->delete();
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
@@ -71,8 +71,8 @@ class IclockController extends Controller
             case config('zk.subject_supporteds')['USER']:
                 $array = [
                     $modelSync->id,
-                    $user->id,
-                    $user->full_name,
+                    $employee->id,
+                    $employee->full_name,
                     0,
                     rand(9999, 5),
                     0,
@@ -86,17 +86,17 @@ class IclockController extends Controller
                 if ($modelSync->action === 'deleted') {
                     $array = [
                         $modelSync->id,
-                        $model->user->id,
+                        $model->employee->id,
                         $model->finger_index,
                     ];
                     $template = "C:%d:DATA DEL_FP PIN=%d\tFID=%d\r\n";
                 } else {
                     $template = "C:YUEOI:DATA DEL_FP PIN=%d\tFID=%d\r\nC:%d:DATA UPDATE FINGERTMP PIN=%d\tFID=%d\tSize=%d\tValid=%d\tTMP=%s\r\n";
                     $array = [
-                        $model->user->id,
+                        $model->employee->id,
                         $model->finger_index,
                         $modelSync->id,
-                        $model->user->id,
+                        $model->employee->id,
                         $model->finger_index,
                         (int) $model->size,
                         $model->valid,
@@ -193,7 +193,7 @@ class IclockController extends Controller
         $dataFromClient = (array) request()->getContent();
         $data = preg_split('/\n/', $dataFromClient[0]);
         $haystack = [
-            'user' => 'USER',
+            'employee' => 'USER',
             'fingerprint' => 'FP',
             'operationLog' => 'OPLOG',
         ];
@@ -206,7 +206,7 @@ class IclockController extends Controller
                 if (preg_match("/^{$str}/i", $value, $m)) {
                     $stringAttributes = trim(str_replace($str, '', $value));
                     switch ($m[0]) {
-                        case $haystack['user']:
+                        case $haystack['employee']:
                             $arrayAttributes = preg_split('/\t/', $stringAttributes);
                             $result = array_map(function ($item) {
                                 $pos = strpos($item, '=');
@@ -214,9 +214,9 @@ class IclockController extends Controller
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
 
-                            $user = User::find($attributes['PIN']);
+                            $employee = User::find($attributes['PIN']);
 
-                            if (!$user) {
+                            if (!$employee) {
                                 break;
                             }
 
@@ -238,15 +238,15 @@ class IclockController extends Controller
                                 return [substr($item, 0, $pos) => substr($item, $pos + 1)];
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
-                            //find user
-                            $user = User::find($attributes['PIN']);
+                            //find employee
+                            $employee = User::find($attributes['PIN']);
 
-                            if (!$user) {
+                            if (!$employee) {
                                 break;
                             }
 
-                            //call service add fingerprint to user
-                            \GGPHP\Fingerprint\Services\UserFingerprint::addOrUpdate($user, [
+                            //call service add fingerprint to employee
+                            \GGPHP\Fingerprint\Services\UserFingerprint::addOrUpdate($employee, [
                                 'valid' => $attributes['Valid'],
                                 'size' => $attributes['Size'],
                                 'finger' => $attributes['TMP'],
@@ -268,12 +268,12 @@ class IclockController extends Controller
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
 
-                $keyAttributes = ['user_id', 'attended_at', 'tracking_type', 'type'];
+                $keyAttributes = ['employee_id', 'attended_at', 'tracking_type', 'type'];
                 $attributes = array_combine($keyAttributes, $attributes);
 
-                $user = User::find($attributes['user_id']);
+                $employee = User::find($attributes['employee_id']);
 
-                if (!$user) {
+                if (!$employee) {
                     continue;
                 }
 
@@ -284,7 +284,7 @@ class IclockController extends Controller
                 }
 
                 $fields['type'] = \GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['type']];
-                \GGPHP\Timekeeping\Services\UserAttendence::attend($user, array_merge(['device_id' => $device->id], $fields));
+                \GGPHP\Timekeeping\Services\UserAttendence::attend($employee, array_merge(['device_id' => $device->id], $fields));
             }
         }
         return response('ok', 200)->header('Content-Type', 'text/plain');

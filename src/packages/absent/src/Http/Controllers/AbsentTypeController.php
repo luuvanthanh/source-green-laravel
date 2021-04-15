@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class AbsentTypeController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $absentTypeRepository;
 

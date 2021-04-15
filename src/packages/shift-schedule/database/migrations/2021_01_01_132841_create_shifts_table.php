@@ -13,13 +13,14 @@ class CreateShiftsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shifts', function (Blueprint $table) {
+        Schema::create('Shifts', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('shift_code');
-            $table->string('description')->nullable();
-            $table->string('status');
-            $table->timestamps();
+            $table->string('ShiftCode');
+            $table->string('Description')->nullable();
+            $table->string('Status');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -30,6 +31,6 @@ class CreateShiftsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shifts');
+        Schema::dropIfExists('Shifts');
     }
 }

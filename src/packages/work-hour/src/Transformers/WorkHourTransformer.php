@@ -14,7 +14,7 @@ use GGPHP\WorkHour\Models\WorkHour;
 class WorkHourTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['user'];
+    protected $availableIncludes = ['employee'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
@@ -30,10 +30,10 @@ class WorkHourTransformer extends BaseTransformer
      */
     public function includeUser(WorkHour $workHour)
     {
-        if (empty($workHour->user)) {
+        if (empty($workHour->employee)) {
             return;
         }
 
-        return $this->item($workHour->user, new UserTransformer, 'User');
+        return $this->item($workHour->employee, new UserTransformer, 'User');
     }
 }

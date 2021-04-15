@@ -24,7 +24,7 @@ class LateEarly extends UuidModel
     const INVALID = 'INVALID';
 
     protected $fillable = [
-        'time_config_type', 'time', 'date', 'status', 'user_id', 'approval_id',
+        'time_config_type', 'time', 'date', 'status', 'employee_id', 'approval_id',
         'time_shift', 'shift_code', 'time_slot', 'time_violation',
     ];
 
@@ -40,7 +40,7 @@ class LateEarly extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(User::class);
     }
@@ -58,7 +58,7 @@ class LateEarly extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->user->timekeeping()->whereDate('attended_at', $this->date);
+        return $this->employee->timekeeping()->whereDate('attended_at', $this->date);
     }
 
     /**

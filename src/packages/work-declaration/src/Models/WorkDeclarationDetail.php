@@ -60,6 +60,6 @@ class WorkDeclarationDetail extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->workDeclaration->user->timekeeping()->whereDate('attended_at', $this->date);
+        return $this->workDeclaration->employee->timekeeping()->whereDate('attended_at', $this->date);
     }
 }

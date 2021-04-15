@@ -79,14 +79,14 @@ class UserTransformer extends BaseTransformer
                 $attributes['annualAbsentsByMonth'] = $countAnnualAbsentsByMonth;
                 $attributes['unpaidLeaveByMonth'] = $countUnpaidLeaveByMonth;
                 $attributes['countAwolLeaveByMonth'] = $countAwolLeaveByMonth;
-            } elseif (request()->type === 'year' || isset(request()->id) || \Request::route()->getName() == 'users.me.show') {
+            } elseif (request()->type === 'year' || isset(request()->id) || \Request::route()->getName() == 'employees.me.show') {
 
                 $currentYear = Carbon::now()->format('Y-m-d');
 
                 $attributes['absentYear'] = $model->countAbsents(request()->start_date ? request()->start_date : $currentYear, request()->end_date);
             }
 
-            if (\Request::route()->getName() == 'reviews.user-review-productivity.show-mobile') {
+            if (\Request::route()->getName() == 'reviews.employee-review-productivity.show-mobile') {
                 $attributes['reviewProductivityYear'] = $model->reviewProductivityYear;
             }
 
@@ -101,59 +101,59 @@ class UserTransformer extends BaseTransformer
 
     /**
      * Include Store
-     * @param User $user
+     * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeTimekeeping(User $user)
+    public function includeTimekeeping(User $employee)
     {
-        return $this->collection(empty($user->timekeeping) ? [] : $user->timekeeping, new TimekeepingTransformer(), 'Timekeeping');
+        return $this->collection(empty($employee->timekeeping) ? [] : $employee->timekeeping, new TimekeepingTransformer(), 'Timekeeping');
     }
 
     /**
      * Include RankPositionInformation
-     * @param User $user
+     * @param User $employee
      * @return \League\Fractal\Resource\Item
      */
-    public function includeSabbaticalLeave(User $user)
+    public function includeSabbaticalLeave(User $employee)
     {
-        if (empty($user->sabbaticalLeaves)) {
+        if (empty($employee->sabbaticalLeaves)) {
             return;
         }
 
-        return $this->item($user->sabbaticalLeaves, new SabbaticalLeaveTransformer(), 'SabbaticalLeave');
+        return $this->item($employee->sabbaticalLeaves, new SabbaticalLeaveTransformer(), 'SabbaticalLeave');
     }
 
     /**
      * Include RankPositionInformation
-     * @param User $user
+     * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeAbsent(User $user)
+    public function includeAbsent(User $employee)
     {
-        if (empty($user->absent)) {
+        if (empty($employee->absent)) {
             return;
         }
 
-        return $this->collection($user->absent, new AbsentTransformer(), 'Absent');
+        return $this->collection($employee->absent, new AbsentTransformer(), 'Absent');
     }
 
     /**
      * Include schedules
-     * @param User $user
+     * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeSchedules(User $user)
+    public function includeSchedules(User $employee)
     {
-        return $this->collection(empty($user->schedules) ? [] : $user->schedules, new ScheduleTransformer(), 'Schedules');
+        return $this->collection(empty($employee->schedules) ? [] : $employee->schedules, new ScheduleTransformer(), 'Schedules');
     }
 
     /** Include SubtractionTime
-     * @param User $user
+     * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeLateEarly(User $user)
+    public function includeLateEarly(User $employee)
     {
-        return $this->collection(empty($user->lateEarly) ? [] : $user->lateEarly, new LateEarlyTransformer(), 'LateEarly');
+        return $this->collection(empty($employee->lateEarly) ? [] : $employee->lateEarly, new LateEarlyTransformer(), 'LateEarly');
     }
 
 }

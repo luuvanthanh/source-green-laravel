@@ -14,7 +14,7 @@ use GGPHP\WorkDeclaration\Models\WorkDeclaration;
 class WorkDeclarationTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['user', 'workDeclarationDetails'];
+    protected $availableIncludes = ['employee', 'workDeclarationDetails'];
 
     /**
      * Include Store
@@ -27,17 +27,17 @@ class WorkDeclarationTransformer extends BaseTransformer
     }
 
     /**
-     * Include user
+     * Include employee
      * @param WorkDeclaration $workDeclaration
      * @return \League\Fractal\Resource\Item
      */
     public function includeUser(WorkDeclaration $workDeclaration)
     {
-        if (empty($workDeclaration->user)) {
+        if (empty($workDeclaration->employee)) {
             return;
         }
 
-        return $this->item($workDeclaration->user, new UserTransformer, 'User');
+        return $this->item($workDeclaration->employee, new UserTransformer, 'User');
     }
 
 }

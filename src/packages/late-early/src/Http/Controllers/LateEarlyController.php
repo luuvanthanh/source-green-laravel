@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class LateEarlyController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $lateEarlyRepository;
 

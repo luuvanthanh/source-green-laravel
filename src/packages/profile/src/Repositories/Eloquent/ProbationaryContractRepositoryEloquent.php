@@ -22,7 +22,7 @@ class ProbationaryContractRepositoryEloquent extends BaseRepository implements P
      */
     protected $fieldSearchable = [
         'id',
-        'user_id',
+        'employee_id',
     ];
 
     /**

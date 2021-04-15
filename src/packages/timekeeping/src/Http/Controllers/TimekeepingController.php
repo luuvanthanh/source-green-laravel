@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class TimekeepingController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $timekeepingRepository;
 
@@ -38,8 +38,8 @@ class TimekeepingController extends Controller
             $limit = $request->limit;
         }
 
-        $users = $this->timekeepingRepository->filterTimekeeping($request->all());
-        return $this->success($users, trans('lang::messages.common.getInfoSuccess'));
+        $employees = $this->timekeepingRepository->filterTimekeeping($request->all());
+        return $this->success($employees, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**

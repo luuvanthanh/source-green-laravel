@@ -13,13 +13,14 @@ class CreateAddSubTimesTable extends Migration
      */
     public function up()
     {
-        Schema::create('add_sub_times', function (Blueprint $table) {
+        Schema::create('AddSubTimes', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
-            $table->string('type');
-            $table->timestamps();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->string('Type');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -30,6 +31,6 @@ class CreateAddSubTimesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('add_sub_times');
+        Schema::dropIfExists('AddSubTimes');
     }
 }

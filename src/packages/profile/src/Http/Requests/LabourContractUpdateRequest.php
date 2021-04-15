@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class LabourContractUpdateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -24,7 +24,7 @@ class LabourContractUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'exists:employees,id',
+            'employee_id' => 'exists:employees,id',
             'contract_number' => 'string',
             'sign_date' => 'date',
             'expiration_date' => 'date',

@@ -13,14 +13,15 @@ class CreateBranchsTable extends Migration
      */
     public function up()
     {
-        Schema::create('branchs', function (Blueprint $table) {
+        Schema::create('Branches', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('code');
-            $table->string('name');
-            $table->string('adress')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->timestamps();
+            $table->string('Code');
+            $table->string('Name');
+            $table->string('Adress')->nullable();
+            $table->string('PhoneNumber')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -31,6 +32,6 @@ class CreateBranchsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('branchs');
+        Schema::dropIfExists('Branches');
     }
 }

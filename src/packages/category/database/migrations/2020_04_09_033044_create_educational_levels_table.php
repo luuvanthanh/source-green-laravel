@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAbsentReasonsTable extends Migration
+class CreateEducationalLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateAbsentReasonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('absent_reasons', function (Blueprint $table) {
+        Schema::create('EducationalLevels', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('name');
-            $table->string('absent_type_id', 36)->unsigned();
-            $table->foreign('absent_type_id')->references('id')->on('absent_types')->onDelete('cascade');
-            $table->timestamps();
+            $table->string('Code');
+            $table->string('Name');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -30,6 +30,6 @@ class CreateAbsentReasonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('absent_reasons');
+        Schema::dropIfExists('EducationalLevels');
     }
 }

@@ -210,9 +210,9 @@ class ZKLib
     }
 
     /**
-     * Get users data
+     * Get employees data
      *
-     * @return array [userid, name, cardno, uid, role, password]
+     * @return array [employeeid, name, cardno, uid, role, password]
      */
     public function getUser()
     {
@@ -220,19 +220,19 @@ class ZKLib
     }
 
     /**
-     * Set user data
+     * Set employee data
      *
      * @param int $uid Unique ID (max 65535)
-     * @param int|string $userid ID in DB (same like $uid, max length = 9, only numbers - depends device setting)
+     * @param int|string $employeeid ID in DB (same like $uid, max length = 9, only numbers - depends device setting)
      * @param string $name (max length = 24)
      * @param int|string $password (max length = 8, only numbers - depends device setting)
      * @param int $role Default Util::LEVEL_USER
      * @param int $cardno Default 0 (max length = 10, only numbers)
      * @return bool|mixed
      */
-    public function setUser($uid, $userid, $name, $password, $role = Util::LEVEL_USER, $cardno = 0)
+    public function setUser($uid, $employeeid, $name, $password, $role = Util::LEVEL_USER, $cardno = 0)
     {
-        return (new User())->set($this, $uid, $userid, $name, $password, $role, $cardno);
+        return (new User())->set($this, $uid, $employeeid, $name, $password, $role, $cardno);
     }
 
     /**
@@ -273,7 +273,7 @@ class ZKLib
     }
 
     /**
-     * Remove All users
+     * Remove All employees
      *
      * @return bool|mixed
      */
@@ -293,7 +293,7 @@ class ZKLib
     }
 
     /**
-     * Remove user by UID
+     * Remove employee by UID
      *
      * @param integer $uid
      * @return bool|mixed
@@ -347,7 +347,7 @@ class ZKLib
     public function restartDevice()
     {
         $command = Util::CMD_RESET_DEVICE;
-        $command_string = chr(0).chr(0);
+        $command_string = chr(0) . chr(0);
         return $this->_command($command, $command_string);
     }
 

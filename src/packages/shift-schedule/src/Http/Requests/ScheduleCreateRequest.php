@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ScheduleCreateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -27,7 +27,7 @@ class ScheduleCreateRequest extends FormRequest
             'start_date' => [
                 'required', 'date',
             ],
-            'user_id' => 'required|exists:employees,id',
+            'employee_id' => 'required|exists:employees,id',
             'shift_id' => 'required|exists:shifts,id',
         ];
     }

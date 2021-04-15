@@ -13,15 +13,16 @@ class CreateWorkHoursTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_hours', function (Blueprint $table) {
+        Schema::create('WorkHours', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
-            $table->date('date');
-            $table->json('hours');
-            $table->string('reason')->nullable();
-            $table->timestamps();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->date('Date');
+            $table->json('Hours');
+            $table->string('Reason')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -32,6 +33,6 @@ class CreateWorkHoursTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_hours');
+        Schema::dropIfExists('WorkHours');
     }
 }

@@ -13,18 +13,19 @@ class CreateDecisionSuspendsTable extends Migration
      */
     public function up()
     {
-        Schema::create('decision_suspends', function (Blueprint $table) {
+        Schema::create('DecisionSuspends', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('decision_number');
-            $table->string('decision_date');
-            $table->string('reason')->nullable();
-            $table->bigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('SET NULL');
-            $table->date('from');
-            $table->date('to');
-            $table->string('note')->nullable();
-            $table->timestamps();
+            $table->string('DecisionNumber');
+            $table->string('DecisionDate');
+            $table->string('Reason')->nullable();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->date('From');
+            $table->date('To');
+            $table->string('Note')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -35,6 +36,6 @@ class CreateDecisionSuspendsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('decision_suspends');
+        Schema::dropIfExists('DecisionSuspends');
     }
 }

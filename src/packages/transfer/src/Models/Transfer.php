@@ -4,7 +4,6 @@ namespace GGPHP\Transfer\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Transfer\Models\TransferDetail;
-use GGPHP\Users\Models\User;
 
 class Transfer extends UuidModel
 {
@@ -45,7 +44,7 @@ class Transfer extends UuidModel
     protected $hidden = [];
 
     /**
-     * Get educations of user
+     * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

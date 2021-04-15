@@ -37,7 +37,7 @@ class DecisionReward extends UuidModel
     ];
 
     /**
-     * Get educations of user
+     * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -47,11 +47,11 @@ class DecisionReward extends UuidModel
     }
 
     /**
-     * Define relations user
+     * Define relations employee
      */
-    public function userCreate()
+    public function employeeCreate()
     {
-        return $this->belongsTo(User::class, 'user_create');
+        return $this->belongsTo(User::class, 'employee_create');
     }
 
 }

@@ -13,12 +13,13 @@ class CreateWorkDeclarationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_declarations', function (Blueprint $table) {
+        Schema::create('WorkDeclarations', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
-            $table->timestamps();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -29,6 +30,6 @@ class CreateWorkDeclarationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_declarations');
+        Schema::dropIfExists('WorkDeclarations');
     }
 }

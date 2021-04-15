@@ -18,7 +18,7 @@ class WorkDeclarationRepositoryEloquent extends BaseRepository implements WorkDe
 {
     protected $fieldSearchable = [
         'id',
-        'user_id',
+        'employee_id',
     ];
 
     /**
@@ -65,14 +65,14 @@ class WorkDeclarationRepositoryEloquent extends BaseRepository implements WorkDe
         }
 
         if (!empty($attributes['is_filter'])) {
-            $this->model = $this->model->whereHas('user', function ($query) use ($attributes) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
                 $query->tranferHistory($attributes);
             });
         }
 
-        if (!empty($attributes['user_id'])) {
-            $userId = explode(',', $attributes['user_id']);
-            $this->model = $this->model->whereIn('user_id', $userId);
+        if (!empty($attributes['employee_id'])) {
+            $employeeId = explode(',', $attributes['employee_id']);
+            $this->model = $this->model->whereIn('employee_id', $employeeId);
         }
 
         if (!empty($attributes['limit'])) {

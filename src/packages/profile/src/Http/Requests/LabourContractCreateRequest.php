@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class LabourContractCreateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -36,7 +36,7 @@ class LabourContractCreateRequest extends FormRequest
             'position_id' => 'required|exists:positions,id',
             'work' => 'required|string',
             'work_time' => 'required|string',
-            'branch_id' => 'required|exists:branchs,id',
+            'branch_id' => 'required|exists:branches,id',
         ];
     }
 }

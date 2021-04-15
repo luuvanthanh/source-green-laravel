@@ -13,17 +13,18 @@ class CreateParameterValueLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('parameter_value_logs', function (Blueprint $table) {
+        Schema::create('ParameterValueLogs', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('parameter_value_id', 36);
-            $table->foreign('parameter_value_id')->references('id')->on('parameter_values');
-            $table->bigInteger('edit_user');
-            $table->foreign('edit_user')->references('id')->on('users')->onDelete('SET NULL');
-            $table->date('edit_date');
-            $table->string('value_default')->nullable();
-            $table->date('apply_date')->nullable();
-            $table->timestamps();
+            $table->string('ParameterValueId', 36);
+            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
+            $table->string('EditEmployee', 36);
+            $table->foreign('EditEmployee')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->date('EditDate');
+            $table->string('ValueDefault')->nullable();
+            $table->date('ApplyDate')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -34,6 +35,6 @@ class CreateParameterValueLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameter_value_logs');
+        Schema::dropIfExists('ParameterValueLogs');
     }
 }

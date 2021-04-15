@@ -14,7 +14,7 @@ class ParamaterFormulaLog extends UuidModel
     protected $table = 'parameter_formula_logs';
 
     protected $fillable = [
-        'parameter_formula_id', 'edit_user', 'edit_date', 'name', 'apply_date', 'recipe',
+        'parameter_formula_id', 'edit_employee', 'edit_date', 'name', 'apply_date', 'recipe',
     ];
 
 }

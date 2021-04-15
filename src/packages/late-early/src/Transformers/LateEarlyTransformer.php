@@ -16,7 +16,7 @@ class LateEarlyTransformer extends BaseTransformer
 {
 
     protected $defaultIncludes = ['lateEarlyConfig'];
-    protected $availableIncludes = ['user', 'timekeeping'];
+    protected $availableIncludes = ['employee', 'timekeeping'];
 
     /**
      * Include AbsentType
@@ -25,11 +25,11 @@ class LateEarlyTransformer extends BaseTransformer
      */
     public function includeUser(LateEarly $lateEarly)
     {
-        if (empty($lateEarly->user)) {
+        if (empty($lateEarly->employee)) {
             return;
         }
 
-        return $this->item($lateEarly->user, new UserTransformer, 'User');
+        return $this->item($lateEarly->employee, new UserTransformer, 'User');
     }
 
     /**

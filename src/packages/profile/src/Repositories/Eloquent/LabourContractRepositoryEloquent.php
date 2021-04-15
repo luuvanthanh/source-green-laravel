@@ -23,7 +23,7 @@ class LabourContractRepositoryEloquent extends BaseRepository implements LabourC
      */
     protected $fieldSearchable = [
         'id',
-        'user_id',
+        'employee_id',
     ];
 
     /**

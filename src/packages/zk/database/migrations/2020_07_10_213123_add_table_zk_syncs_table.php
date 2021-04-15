@@ -13,22 +13,24 @@ class AddTableZkSyncsTable extends Migration
      */
     public function up()
     {
-        Schema::create('zk_syncs', function (Blueprint $table) {
+        Schema::create('ZkSyncs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('subject_type')->nullable();
-            $table->string('action')->nullable();
-            $table->string('subject_id', 36)->nullable();
-            $table->longText('payload');
-            $table->index(['subject_id', 'subject_type'], 'subject');
-            $table->timestamps();
+            $table->string('SubjectType')->nullable();
+            $table->string('Action')->nullable();
+            $table->string('SubjectId', 36)->nullable();
+            $table->longText('Payload');
+            $table->index(['SubjectId', 'SubjectType'], 'Subject');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
-        Schema::create('zk_device_sync_times', function (Blueprint $table) {
+        Schema::create('ZkDeviceSyncTimes', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('device_id', 36);
-            $table->foreign('device_id')->references('id')->on('fingerprint_timekeepers')->onDelete('cascade');
-            $table->bigInteger('zk_sync_id')->nullable();
-            $table->timestamps();
+            $table->string('DeviceId', 36);
+            $table->foreign('DeviceId')->references('id')->on('FingerprintTimekeepers')->onDelete('cascade');
+            $table->bigInteger('ZkSyncId')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -39,7 +41,7 @@ class AddTableZkSyncsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zk_device_sync_times');
-        Schema::dropIfExists('zk_syncs');
+        Schema::dropIfExists('ZkDeviceSyncTimes');
+        Schema::dropIfExists('ZkSyncs');
     }
 }

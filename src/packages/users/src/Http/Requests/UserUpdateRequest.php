@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UserUpdateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -28,7 +28,7 @@ class UserUpdateRequest extends FormRequest
         $marriageStatus = implode(',', config('constants.MARRIAGE_STATUS.COLLECTIONS'));
 
         return [
-            'email' => 'sometimes|email|unique:users,email,' . $this->route('id'),
+            'email' => 'sometimes|email|unique:employees,email,' . $this->route('id'),
             'full_name' => 'string',
             'birthday' => [
                 'required', 'sometimes', 'date', 'date_format:Y-m-d',

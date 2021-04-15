@@ -11,7 +11,7 @@ class Branch extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'branchs';
+    protected $table = 'Branches';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Branch extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'code', 'name', 'adress', 'phone_number',
+        'Code', 'Name', 'Adress', 'PhoneNumber',
     ];
 
     /**

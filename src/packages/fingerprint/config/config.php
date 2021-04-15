@@ -6,16 +6,16 @@
 return [
     /*
      * Definition tables have reference with fingerprint
-        'reference_tables' => [
-            'users' => [
-                'type' => 'bigInteger',
-                'fieldName' => 'user_id'
-            ],
-            'fingerprint_timekeepers' => [
-                'type' => 'integer',
-                'fieldName' => 'device_id'
-            ]
-        ]
+    'reference_tables' => [
+    'employees' => [
+    'type' => 'bigInteger',
+    'fieldName' => 'employee_id'
+    ],
+    'fingerprint_timekeepers' => [
+    'type' => 'integer',
+    'fieldName' => 'device_id'
+    ]
+    ]
      */
-    'userModel' => \App\Models\User::class,
+    'employeeModel' => \App\Models\User::class,
 ];

@@ -39,7 +39,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('paramater-formulas', 'ParamaterFormulaController');
                 \Route::resource('paramater-formula-logs', 'ParamaterFormulaLogController');
                 \Route::resource('type-of-contracts', 'TypeOfContractController');
-                \Route::resource('branchs', 'BranchController');
+                \Route::resource('branches', 'BranchController');
                 \Route::resource('divisions', 'DivisionController');
                 \Route::resource('positions', 'PositionController');
             });

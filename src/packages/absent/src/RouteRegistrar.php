@@ -146,7 +146,7 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             //abents summary
-            \Route::get('user/absents', [
+            \Route::get('employee/absents', [
                 'comment' => 'Tổng hợp nghỉ phép',
                 'uses' => 'AbsentController@absentByUser',
                 'as' => 'absent.summary',

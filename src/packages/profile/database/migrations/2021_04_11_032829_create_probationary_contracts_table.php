@@ -13,28 +13,29 @@ class CreateProbationaryContractsTable extends Migration
      */
     public function up()
     {
-        Schema::create('probationary_contracts', function (Blueprint $table) {
+        Schema::create('ProbationaryContracts', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('contract_number');
-            $table->date('contract_date');
-            $table->string('type_of_contract_id');
-            $table->foreign('type_of_contract_id')->references('id')->on('type_of_contracts');
-            $table->bigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('SET NULL');
-            $table->integer('salary_ratio');
-            $table->integer('month');
-            $table->string('division_id', 36);
-            $table->foreign('division_id')->references('id')->on('divisions');
-            $table->date('contract_from');
-            $table->date('contract_to');
-            $table->string('position_id', 36);
-            $table->foreign('position_id')->references('id')->on('positions');
-            $table->string('work');
-            $table->string('work_time');
-            $table->string('branch_id', 36);
-            $table->foreign('branch_id')->references('id')->on('branchs');
-            $table->timestamps();
+            $table->string('ContractNumber');
+            $table->date('ContractDate');
+            $table->string('TypeOfContractId');
+            $table->foreign('TypeOfContractId')->references('id')->on('TypeOfContracts');
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->integer('SalaryRatio');
+            $table->integer('Month');
+            $table->string('DivisionId', 36);
+            $table->foreign('DivisionId')->references('id')->on('Divisions');
+            $table->date('ContractFrom');
+            $table->date('ContractTo');
+            $table->string('PositionId', 36);
+            $table->foreign('PositionId')->references('id')->on('Positions');
+            $table->string('Work');
+            $table->string('WorkTime');
+            $table->string('BranchId', 36);
+            $table->foreign('BranchId')->references('id')->on('Branches');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -45,6 +46,6 @@ class CreateProbationaryContractsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('probationary_contracts');
+        Schema::dropIfExists('ProbationaryContracts');
     }
 }

@@ -13,15 +13,16 @@ class CreateTypeOfContractsTable extends Migration
      */
     public function up()
     {
-        Schema::create('type_of_contracts', function (Blueprint $table) {
+        Schema::create('TypeOfContracts', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('code');
-            $table->string('type');
-            $table->string('name');
-            $table->integer('year');
-            $table->integer('month');
-            $table->timestamps();
+            $table->string('Code');
+            $table->string('Type');
+            $table->string('Name');
+            $table->integer('Year');
+            $table->integer('Month');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -32,6 +33,6 @@ class CreateTypeOfContractsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_of_contracts');
+        Schema::dropIfExists('TypeOfContracts');
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 class ShiftCreateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */

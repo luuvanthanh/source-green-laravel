@@ -29,7 +29,7 @@ class UserServiceProvider extends AuthServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/config.php', 'constants'
         );
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ggphp-users');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ggphp-employees');
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang');
         if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
@@ -39,7 +39,7 @@ class UserServiceProvider extends AuthServiceProvider
 
         // set auth config system
         $setDriver = Config::set('auth.guards.api.driver', 'passport');
-        $setProviders = Config::set('auth.providers.users.model', User::class);
+        $setProviders = Config::set('auth.providers.employees.model', User::class);
         $setConfigRepository = Config::set('repository.fractal.serializer', 'League\Fractal\Serializer\JsonApiSerializer');
 
     }

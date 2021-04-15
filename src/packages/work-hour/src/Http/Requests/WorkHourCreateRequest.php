@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class CreatWorkHourRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -25,7 +25,7 @@ class CreatWorkHourRequest extends FormRequest
     {
 
         return [
-            'user_id' => 'required|exists:employees,id',
+            'employee_id' => 'required|exists:employees,id',
             'date' => 'required|date',
             'hours' => 'required',
         ];

@@ -13,21 +13,22 @@ class CreateTransferDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transfer_details', function (Blueprint $table) {
+        Schema::create('TransferDetails', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('transfer_id', 36);
-            $table->foreign('transfer_id')->references('id')->on('transfers');
-            $table->bigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('SET NULL');
-            $table->string('branch_id', 36);
-            $table->foreign('branch_id')->references('id')->on('branchs');
-            $table->string('division_id', 36);
-            $table->foreign('division_id')->references('id')->on('divisions');
-            $table->string('position_id', 36);
-            $table->foreign('position_id')->references('id')->on('positions');
-            $table->string('note')->nullable();
-            $table->timestamps();
+            $table->string('TransferId', 36);
+            $table->foreign('TransferId')->references('id')->on('Transfers');
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->string('BranchId', 36);
+            $table->foreign('BranchId')->references('id')->on('Branches');
+            $table->string('DivisionId', 36);
+            $table->foreign('DivisionId')->references('id')->on('Divisions');
+            $table->string('PositionId', 36);
+            $table->foreign('PositionId')->references('id')->on('Positions');
+            $table->string('Note')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -38,6 +39,6 @@ class CreateTransferDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transfer_details');
+        Schema::dropIfExists('TransferDetails');
     }
 }

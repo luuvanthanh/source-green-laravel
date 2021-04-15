@@ -76,9 +76,9 @@ class RevokeShiftRepositoryEloquent extends BaseRepository implements RevokeShif
             $this->model = $this->model->whereIn('status_work_declaration', $statusWorkDeclaration);
         }
 
-        if (!empty($attributes['user_id'])) {
-            $userId = explode(',', $attributes['user_id']);
-            $this->model = $this->model->whereIn('user_id', $userId);
+        if (!empty($attributes['employee_id'])) {
+            $employeeId = explode(',', $attributes['employee_id']);
+            $this->model = $this->model->whereIn('employee_id', $employeeId);
         }
 
         if (!empty($attributes['limit'])) {
@@ -92,45 +92,45 @@ class RevokeShiftRepositoryEloquent extends BaseRepository implements RevokeShif
 
     public function loadRevokeShift(array $attributes)
     {
-        $user = User::query();
+        $employee = User::query();
 
-        if (!empty($attributes['user_id'])) {
-            $user->where('id', $attributes['user_id']);
+        if (!empty($attributes['employee_id'])) {
+            $employee->where('id', $attributes['employee_id']);
         }
 
-        $user = $user->get();
+        $employee = $employee->get();
 
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now()->format('Y-m-d');
 
-        foreach ($user as $value) {
-            $userHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($value->id, $date, $date);
+        foreach ($employee as $value) {
+            $employeeHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($value->id, $date, $date);
 
-            if (!empty($userHasWorkShift)) {
-                $timekepping = Timekeeping::where('user_id', $value->id)->whereDate('attended_at', $date)->get();
+            if (!empty($employeeHasWorkShift)) {
+                $timekepping = Timekeeping::where('employee_id', $value->id)->whereDate('attended_at', $date)->get();
 
                 if (empty(count($timekepping))) {
 
                     $absentType = AbsentType::whereIn('type', [AbsentType::ANNUAL_LEAVE, AbsentType::UNPAID_LEAVE, AbsentType::QUIT_WORK])->pluck('id')->toArray();
                     $absentType2 = AbsentType::whereIn('type', [AbsentType::TYPE_OFF, AbsentType::AWOL])->pluck('id')->toArray();
 
-                    $absent = Absent::where('user_id', $value->id)->whereIn('absent_type_id', $absentType)->where(function ($q2) use ($date) {
+                    $absent = Absent::where('employee_id', $value->id)->whereIn('absent_type_id', $absentType)->where(function ($q2) use ($date) {
                         $q2->where([['start_date', '<=', $date], ['end_date', '>=', $date]])
                             ->orWhere([['start_date', '>=', $date], ['start_date', '<=', $date]])
                             ->orWhere([['end_date', '>=', $date], ['end_date', '<=', $date]]);
                     })->approved()->get();
-                    $absent2 = Absent::where('user_id', 28)->whereIn('absent_type_id', $absentType2)->where(function ($q2) use ($date) {
+                    $absent2 = Absent::where('employee_id', 28)->whereIn('absent_type_id', $absentType2)->where(function ($q2) use ($date) {
                         $q2->where([['start_date', '<=', $date], ['end_date', '>=', $date]])
                             ->orWhere([['start_date', '>=', $date], ['start_date', '<=', $date]])
                             ->orWhere([['end_date', '>=', $date], ['end_date', '<=', $date]]);
                     })->get();
                     $data = [
-                        "user_id" => $value->id,
-                        "shift_id" => $userHasWorkShift[$date][0]['shift_id'],
+                        "employee_id" => $value->id,
+                        "shift_id" => $employeeHasWorkShift[$date][0]['shift_id'],
                         "date_violation" => $date,
                     ];
 
                     if (empty(count($absent)) && empty(count($absent2))) {
-                        $checkRevokeShift = RevokeShift::where('user_id', $data['user_id'])->where('date_violation', $data['date_violation'])->first();
+                        $checkRevokeShift = RevokeShift::where('employee_id', $data['employee_id'])->where('date_violation', $data['date_violation'])->first();
 
                         if (is_null($checkRevokeShift)) {
                             $revokeShift = RevokeShift::create($data);
@@ -148,14 +148,14 @@ class RevokeShiftRepositoryEloquent extends BaseRepository implements RevokeShif
                         return ($start_date <= $date && $end_date >= $date) || ($start_date <= $date && $end_date == null);
                     })->first();
 
-                    $shift = Shift::findOrFail($userHasWorkShift[$date][0]['shift_id']);
+                    $shift = Shift::findOrFail($employeeHasWorkShift[$date][0]['shift_id']);
                     $shiftCode = $shift->shift_code;
                     $timeShift = [];
-                    foreach ($userHasWorkShift[$date] as $key => $time) {
+                    foreach ($employeeHasWorkShift[$date] as $key => $time) {
                         $timeShift[] = $time['start_time'] . ' - ' . $time['end_time'];
                     }
 
-                    $existInvalid = LateEarly::where('user_id', $value->id)
+                    $existInvalid = LateEarly::where('employee_id', $value->id)
                         ->where('status', LateEarly::INVALID)
                         ->whereDate('date', $date)
                         ->get();
@@ -163,7 +163,7 @@ class RevokeShiftRepositoryEloquent extends BaseRepository implements RevokeShif
                     if (count($existInvalid) == 0) {
                         $data['date'] = $date;
                         $data['created_at'] = $date;
-                        $data['user_id'] = $value->id;
+                        $data['employee_id'] = $value->id;
                         $data['shift_code'] = $shiftCode;
                         $data['time_shift'] = implode(',', $timeShift);
                         $data['status'] = LateEarly::INVALID;

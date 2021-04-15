@@ -2,9 +2,9 @@
 
 namespace GGPHP\Fingerprint\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use GGPHP\Fingerprint\Repositories\Contracts\FingerprintRepository;
 use GGPHP\Fingerprint\Repositories\Eloquent\FingerprintRepositoryEloquent;
+use Illuminate\Support\ServiceProvider;
 
 class FingerprintProvider extends ServiceProvider
 {
@@ -16,13 +16,13 @@ class FingerprintProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
         $this->publishes([
-            __DIR__.'/../../config/config.php' => config_path('fingerprint.php')
+            __DIR__ . '/../../config/config.php' => config_path('fingerprint.php'),
         ]);
-        $this->mergeConfigFrom(__DIR__.'/../../config/config.php', 'fingerprint');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'fingerprint');
 
         // Registering package commands.
         // $this->commands([]);
@@ -37,8 +37,8 @@ class FingerprintProvider extends ServiceProvider
         // $this->app->register('GGPHP\Fingerprints\Providers\FingerprintProvider');
         // Register the main class to use with the facade
         $this->app->bind(FingerprintRepository::class, FingerprintRepositoryEloquent::class);
-        // $this->app->singleton('users', function () {
-            // return new \Meisoft\Models\User;
+        // $this->app->singleton('employees', function () {
+        // return new \Meisoft\Models\User;
         // });
     }
 }

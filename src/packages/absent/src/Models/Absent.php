@@ -9,24 +9,26 @@ class Absent extends UuidModel
 {
     public $incrementing = false;
 
+    protected $table = 'Absents';
+
     protected $fillable = [
-        'absent_type_id', 'absent_reason_id', 'user_id', 'start_date', 'end_date',
+        'AbsentTypeId', 'AbsentReasonId', 'EmployeeId', 'StartDate', 'EndDate',
     ];
 
     protected $dateTimeFields = [
-        'start_date',
-        'end_date',
+        'StartDate',
+        'EndDate',
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(User::class);
     }

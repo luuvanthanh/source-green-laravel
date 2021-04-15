@@ -39,11 +39,11 @@ class DismissedTransformer extends BaseTransformer
      */
     public function includeUserCreate(Dismissed $dismissed)
     {
-        if (empty($dismissed->userCreate)) {
+        if (empty($dismissed->employeeCreate)) {
             return;
         }
 
-        return $this->item($dismissed->userCreate, new UserTransformer, 'UserCreate');
+        return $this->item($dismissed->employeeCreate, new UserTransformer, 'UserCreate');
     }
 
     /**

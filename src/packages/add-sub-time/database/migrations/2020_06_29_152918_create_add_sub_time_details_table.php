@@ -13,19 +13,20 @@ class CreateAddSubTimeDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('add_sub_time_details', function (Blueprint $table) {
+        Schema::create('AddSubTimeDetails', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('add_sub_time_id', 36);
-            $table->foreign('add_sub_time_id')->references('id')->on('add_sub_times')->onDelete('cascade');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
+            $table->string('AddSubTimeId', 36);
+            $table->foreign('AddSubTimeId')->references('id')->on('AddSubTimes')->onDelete('cascade');
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('days')->nullable();
             $table->integer('hours')->nullable();
             $table->text('reason')->nullable();
-            $table->timestamps();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -36,6 +37,6 @@ class CreateAddSubTimeDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('add_sub_time_details');
+        Schema::dropIfExists('AddSubTimeDetails');
     }
 }

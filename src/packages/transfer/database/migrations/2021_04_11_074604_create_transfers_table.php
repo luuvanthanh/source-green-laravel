@@ -13,13 +13,14 @@ class CreateTransfersTable extends Migration
      */
     public function up()
     {
-        Schema::create('transfers', function (Blueprint $table) {
+        Schema::create('Transfers', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('decision_number');
-            $table->string('decision_date');
-            $table->string('reason');
-            $table->timestamps();
+            $table->string('DecisionNumber');
+            $table->string('DecisionDate');
+            $table->string('Reason')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -30,6 +31,6 @@ class CreateTransfersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transfers');
+        Schema::dropIfExists('Transfers');
     }
 }

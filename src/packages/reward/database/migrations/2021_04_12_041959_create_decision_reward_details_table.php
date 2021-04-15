@@ -13,17 +13,18 @@ class CreateDecisionRewardDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('decision_reward_details', function (Blueprint $table) {
+        Schema::create('DecisionRewardDetails', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('SET NULL');
-            $table->string('decision_reward_id', 36)->unsigned();
-            $table->foreign('decision_reward_id')->references('id')->on('decision_rewards')->onDelete('cascade');
-            $table->integer('money');
-            $table->date('time_apply')->nullable();
-            $table->string('note')->nullable();
-            $table->timestamps();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->string('DecisionRewardId', 36)->unsigned();
+            $table->foreign('DecisionRewardId')->references('id')->on('DecisionRewards')->onDelete('cascade');
+            $table->integer('Money');
+            $table->date('TimeApply')->nullable();
+            $table->string('Note')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -34,6 +35,6 @@ class CreateDecisionRewardDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('decision_reward_details');
+        Schema::dropIfExists('DecisionRewardDetails');
     }
 }

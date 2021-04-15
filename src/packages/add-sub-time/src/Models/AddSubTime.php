@@ -22,7 +22,7 @@ class AddSubTime extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'type',
+        'employee_id', 'type',
     ];
 
     /**
@@ -36,8 +36,8 @@ class AddSubTime extends UuidModel
     /**
      * Define relations store
      */
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'user_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
     }
 }

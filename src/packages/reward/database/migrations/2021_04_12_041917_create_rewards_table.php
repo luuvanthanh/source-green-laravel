@@ -13,18 +13,20 @@ class CreateRewardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rewards', function (Blueprint $table) {
+        Schema::create('Rewards', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->bigInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('SET NULL');
-            $table->string('decision_number');
-            $table->date('decision_date');
-            $table->string('reason');
-            $table->string('type');
-            $table->integer('money');
-            $table->date('time_apply')->nullable();
-            $table->string('note')->nullable();
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->string('DecisionNumber');
+            $table->date('DecisionDate');
+            $table->string('Reason');
+            $table->string('Type');
+            $table->integer('Money');
+            $table->date('TimeApply')->nullable();
+            $table->string('Note')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -35,6 +37,6 @@ class CreateRewardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rewards');
+        Schema::dropIfExists('Rewards');
     }
 }

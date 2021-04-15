@@ -10,7 +10,7 @@ use Illuminate\Http\Response;
 class RewardController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $rewardRepository;
 
@@ -107,11 +107,11 @@ class RewardController extends Controller
     }
 
     /**
-     * get list reward by user
+     * get list reward by employee
      * @param Request $request
      * @return Response
      */
-    public function userReward(Request $request)
+    public function employeeReward(Request $request)
     {
         $rewards = $this->rewardRepository->getRewardByUser($request->all());
         return $this->success($rewards, trans('lang::messages.common.modifySuccess'));

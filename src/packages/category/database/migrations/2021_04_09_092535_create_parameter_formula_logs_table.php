@@ -13,18 +13,19 @@ class CreateParameterFormulaLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('parameter_formula_logs', function (Blueprint $table) {
+        Schema::create('ParameterFormulaLogs', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('parameter_formula_id', 36);
-            $table->foreign('parameter_formula_id')->references('id')->on('parameter_formulas');
-            $table->bigInteger('edit_user');
-            $table->foreign('edit_user')->references('id')->on('users')->onDelete('SET NULL');
-            $table->date('edit_date');
-            $table->string('name');
-            $table->date('apply_date')->nullable();
-            $table->string('recipe')->nullable();
-            $table->timestamps();
+            $table->string('ParameterFormulaId', 36);
+            $table->foreign('ParameterFormulaId')->references('id')->on('ParameterFormulas');
+            $table->string('EditEmployee', 36);
+            $table->foreign('EditEmployee')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->date('EditDate');
+            $table->date('ApplyDate')->nullable();
+            $table->string('Name');
+            $table->string('Recipe')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -35,6 +36,6 @@ class CreateParameterFormulaLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameter_formula_logs');
+        Schema::dropIfExists('ParameterFormulaLogs');
     }
 }

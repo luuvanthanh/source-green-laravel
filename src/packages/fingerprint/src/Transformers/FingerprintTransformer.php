@@ -3,8 +3,8 @@
 namespace GGPHP\Fingerprint\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Users\Transformers\UserTransformer;
 use GGPHP\Fingerprint\Models\Fingerprint;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class FingerprintTransformer.
@@ -18,7 +18,7 @@ class FingerprintTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['user'];
+    protected $defaultIncludes = ['employee'];
 
     /**
      * Include User
@@ -26,9 +26,9 @@ class FingerprintTransformer extends BaseTransformer
      */
     public function includeUser(Fingerprint $fingerprint)
     {
-        if (empty($fingerprint->user)) {
+        if (empty($fingerprint->employee)) {
             return;
         }
-        return $this->item($fingerprint->user, new UserTransformer, 'User');
+        return $this->item($fingerprint->employee, new UserTransformer, 'User');
     }
 }

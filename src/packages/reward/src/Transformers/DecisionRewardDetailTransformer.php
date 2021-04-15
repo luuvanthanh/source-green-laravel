@@ -14,17 +14,17 @@ use GGPHP\Users\Transformers\UserTransformer;
 class DecisionRewardDetailTransformer extends BaseTransformer
 {
 
-    protected $defaultIncludes = ['user'];
+    protected $defaultIncludes = ['employee'];
 
     /**
-     * Define relations user
+     * Define relations employee
      */
     public function includeUser(DecisionRewardDetail $decisionRewardDetail)
     {
-        if (empty($decisionRewardDetail->user)) {
+        if (empty($decisionRewardDetail->employee)) {
             return;
         }
 
-        return $this->item($decisionRewardDetail->user, new UserTransformer, 'User');
+        return $this->item($decisionRewardDetail->employee, new UserTransformer, 'User');
     }
 }

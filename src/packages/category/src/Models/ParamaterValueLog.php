@@ -14,7 +14,7 @@ class ParamaterValueLog extends UuidModel
     protected $table = 'parameter_value_logs';
 
     protected $fillable = [
-        'parameter_value_id', 'edit_user', 'edit_date', 'apply_date', 'value_default',
+        'parameter_value_id', 'edit_employee', 'edit_date', 'apply_date', 'value_default',
     ];
 
 }

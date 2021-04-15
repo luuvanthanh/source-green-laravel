@@ -13,16 +13,17 @@ class CreateSchedulesTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('Schedules', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->string('shift_id', 36);
-            $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('cascade');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
-            $table->timestamps();
+            $table->date('StartDate');
+            $table->date('EndDate');
+            $table->string('ShiftId', 36);
+            $table->foreign('ShiftId')->references('id')->on('Shifts')->onDelete('cascade');
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -33,6 +34,6 @@ class CreateSchedulesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schedules');
+        Schema::dropIfExists('Schedules');
     }
 }

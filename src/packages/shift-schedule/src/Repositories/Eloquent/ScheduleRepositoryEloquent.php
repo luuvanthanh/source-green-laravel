@@ -22,12 +22,12 @@ use Prettus\Repository\Eloquent\BaseRepository;
 class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepository
 {
 
-    protected $userRepositoryEloquent;
+    protected $employeeRepositoryEloquent;
 
-    public function __construct(UserRepositoryEloquent $userRepositoryEloquent, Application $app)
+    public function __construct(UserRepositoryEloquent $employeeRepositoryEloquent, Application $app)
     {
         parent::__construct($app);
-        $this->userRepositoryEloquent = $userRepositoryEloquent;
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
     }
 
     /**
@@ -35,7 +35,7 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
      */
     protected $fieldSearchable = [
         'id',
-        'user.full_name' => 'like',
+        'employee.full_name' => 'like',
     ];
 
     /**
@@ -133,11 +133,11 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
 
         if (isset($attributes['repeat_by'])) {
             $attributes['schedule_id'] = $schedule->id;
-            ScheduleRepeatService::add(\Arr::except($attributes, ['start_date', 'user_id', 'shift_id']));
+            ScheduleRepeatService::add(\Arr::except($attributes, ['start_date', 'employee_id', 'shift_id']));
         }
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
-        $oldschedule = $this->model()::whereNotIn('id', [$schedule->id])->where('user_id', $attributes['user_id'])->where(function ($query) use ($attributes, $dateEndYear) {
+        $oldschedule = $this->model()::whereNotIn('id', [$schedule->id])->where('employee_id', $attributes['employee_id'])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
         })->get();
 
@@ -178,7 +178,7 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
     }
 
     /**
-     * Get list schedule user
+     * Get list schedule employee
      *
      * @param  array  $attributes attributes from request
      * @return object
@@ -186,14 +186,14 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
     public function scheduleUser(array $attributes)
     {
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->with(['schedules' => function ($query) use ($attributes) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['schedules' => function ($query) use ($attributes) {
                 $query->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
                     ->orWhere([['start_date', '>', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
                     ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<', $attributes['end_date']]]);
             }]);
 
             // get Absent for calendar schedule: (nguyennd)
-            $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
                 $query->whereNotIn('absent_type_id', [6, 7])->where(function ($q2) use ($attributes) {
                     $q2->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
                         ->orWhere([['start_date', '>=', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
@@ -202,7 +202,7 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
             }]);
 
             if (!empty($attributes['is_mobile'])) {
-                $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->whereHas('schedules', function ($query) use ($attributes) {
+                $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('schedules', function ($query) use ($attributes) {
                     $query->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
                         ->orWhere([['start_date', '>', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
                         ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<', $attributes['end_date']]]);
@@ -212,9 +212,9 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
         }
 
         if (!empty($attributes['limit'])) {
-            $scheduleUser = $this->userRepositoryEloquent->paginate($attributes['limit']);
+            $scheduleUser = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $scheduleUser = $this->userRepositoryEloquent->get();
+            $scheduleUser = $this->employeeRepositoryEloquent->get();
         }
 
         return $scheduleUser;
@@ -371,7 +371,7 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
         $dateEndYear = $dateEndYear->endOfYear();
         $oldschedule = $this->model()::whereNotIn('id', [$id])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
-        })->where('shift_id', $schedule->shift_id)->where('user_id', $schedule->user_id)->get();
+        })->where('shift_id', $schedule->shift_id)->where('employee_id', $schedule->employee_id)->get();
 
         foreach ($oldschedule as $value) {
             if ($value->start_date->format("Y-m-d") >= Carbon::parse($startDate)->format('Y-m-d')) {
@@ -479,29 +479,29 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
     }
 
     /**
-     * Get user time workshift
+     * Get employee time workshift
      *
      * @param  Schedule  $schedule
      * @param  Date  $startDate
      * @return object
      */
-    public static function getUserTimeWorkShift($userId, $startDate, $endDate)
+    public static function getUserTimeWorkShift($employeeId, $startDate, $endDate)
     {
         $listDayRequest = [];
         $workDate = [];
-        $userTimeWorkShift = [];
+        $employeeTimeWorkShift = [];
         $diffDay = Carbon::parse($endDate)->diffInDays(Carbon::parse($startDate));
 
         for ($i = 0; $i <= $diffDay; $i++) {
             $listDayRequest[] = Carbon::parse($startDate)->addDays($i)->toDateString();
         }
-        $user = User::where('id', $userId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
+        $employee = User::where('id', $employeeId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
             $query->where([['start_date', '<=', $startDate], ['end_date', '>=', $endDate]])
                 ->orwhere([['start_date', '>', $startDate], ['start_date', '<=', $endDate]])
                 ->orwhere([['end_date', '>=', $startDate], ['end_date', '<', $endDate]]);
         }])->first();
 
-        foreach ($user->schedules as $value) {
+        foreach ($employee->schedules as $value) {
             $listDaySchedule = self::getDayRepeat($value);
             $listDayException = ScheduleExceptionService::getDayException($value->id);
             $workDate = array_diff($listDaySchedule, $listDayException);
@@ -516,16 +516,16 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
             }
 
             foreach ($workDate as $day) {
-                $userTimeWorkShift[$day] = $shiftDetail;
+                $employeeTimeWorkShift[$day] = $shiftDetail;
             }
         }
 
-        foreach ($userTimeWorkShift as $key => $value) {
+        foreach ($employeeTimeWorkShift as $key => $value) {
             if (!in_array($key, $listDayRequest)) {
-                unset($userTimeWorkShift[$key]);
+                unset($employeeTimeWorkShift[$key]);
             }
         }
 
-        return $userTimeWorkShift;
+        return $employeeTimeWorkShift;
     }
 }

@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class WorkHourController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $workHourRepository;
 
@@ -33,9 +33,9 @@ class WorkHourController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->workHourRepository->filterWorkHour($request->all());
+        $employees = $this->workHourRepository->filterWorkHour($request->all());
 
-        return $this->success($users, trans('lang::messages.common.getListSuccess'));
+        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
 
     /**

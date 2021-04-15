@@ -31,7 +31,7 @@ class Timekeeping extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'device_id', 'type', 'attended_at', 'tracking_type',
+        'employee_id', 'device_id', 'type', 'attended_at', 'tracking_type',
     ];
 
     protected $dateTimeFields = [
@@ -51,7 +51,7 @@ class Timekeeping extends UuidModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(User::class);
     }

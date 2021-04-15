@@ -17,7 +17,7 @@ class DecisionRewardTransformer extends BaseTransformer
 {
     use ApprovalTransformerTrait;
 
-    protected $defaultIncludes = ['approval', 'decisionRewardDetails', 'userCreate'];
+    protected $defaultIncludes = ['approval', 'decisionRewardDetails', 'employeeCreate'];
 
     /**
      * Include transferDetails
@@ -34,10 +34,10 @@ class DecisionRewardTransformer extends BaseTransformer
      */
     public function includeUserCreate(DecisionReward $decisionReward)
     {
-        if (empty($decisionReward->userCreate)) {
+        if (empty($decisionReward->employeeCreate)) {
             return;
         }
 
-        return $this->item($decisionReward->userCreate, new UserTransformer, 'UserCreate');
+        return $this->item($decisionReward->employeeCreate, new UserTransformer, 'UserCreate');
     }
 }

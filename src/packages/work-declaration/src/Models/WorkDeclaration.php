@@ -13,7 +13,7 @@ class WorkDeclaration extends UuidModel
      */
     protected $table = 'work_declarations';
 
-    protected $fillable = ['user_id'];
+    protected $fillable = ['employee_id'];
 
     /**
      * Define relations workDeclarationDetails
@@ -26,7 +26,7 @@ class WorkDeclaration extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class);
     }

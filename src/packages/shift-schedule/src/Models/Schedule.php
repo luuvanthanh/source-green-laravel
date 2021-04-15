@@ -19,7 +19,7 @@ class Schedule extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'shift_id', 'start_date', 'end_date',
+        'employee_id', 'shift_id', 'start_date', 'end_date',
     ];
 
     protected $dateTimeFields = [
@@ -45,11 +45,11 @@ class Schedule extends UuidModel
     protected $hidden = [];
 
     /**
-     * Define relations user
+     * Define relations employee
      */
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'user_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
     }
 
     /**

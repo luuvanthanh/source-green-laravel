@@ -18,7 +18,7 @@ class AddSubTimeDetailTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['user'];
+    protected $availableIncludes = ['employee'];
     protected $defaultIncludes = [];
 
     /**
@@ -41,10 +41,10 @@ class AddSubTimeDetailTransformer extends BaseTransformer
      */
     public function includeUser(AddSubTimeDetail $addSubTimeDetail)
     {
-        if (empty($addSubTimeDetail->user)) {
+        if (empty($addSubTimeDetail->employee)) {
             return;
         }
 
-        return $this->item($addSubTimeDetail->user, new UserTransformer, 'User');
+        return $this->item($addSubTimeDetail->employee, new UserTransformer, 'User');
     }
 }

@@ -13,16 +13,17 @@ class CreateRevokeShiftsTable extends Migration
      */
     public function up()
     {
-        Schema::create('revoke_shifts', function (Blueprint $table) {
+        Schema::create('RevokeShifts', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('shift_id', 36);
-            $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('cascade');
-            $table->bigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
-            $table->date('date_violation');
-            $table->string('status_work_declaration')->default('INIT');
-            $table->timestamps();
+            $table->string('ShiftId', 36);
+            $table->foreign('ShiftId')->references('id')->on('Shifts')->onDelete('cascade');
+            $table->string('EmployeeId', 36);
+            $table->foreign('EmployeeId')->references('id')->on('Employees')->onDelete('SET NULL');
+            $table->date('DateViolation');
+            $table->string('StatusWorkDeclaration')->default('INIT');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -33,6 +34,6 @@ class CreateRevokeShiftsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('revoke_shifts');
+        Schema::dropIfExists('RevokeShifts');
     }
 }

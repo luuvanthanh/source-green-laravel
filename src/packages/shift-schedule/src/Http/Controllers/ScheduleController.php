@@ -106,7 +106,7 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Get list schedule user.
+     * Get list schedule employee.
      *
      * @param  Request $request
      *

@@ -20,7 +20,7 @@ class FingerprintRepositoryEloquent extends BaseRepository implements Fingerprin
      */
     protected $fieldSearchable = [
         'id',
-        'user.full_name' => 'like',
+        'employee.full_name' => 'like',
         'status',
     ];
     /**
@@ -53,7 +53,7 @@ class FingerprintRepositoryEloquent extends BaseRepository implements Fingerprin
         $deleted = parent::delete($id);
 
         // if ($deleted) {
-        //     $fingerprintTimekeepers = $model->user->rankPositionInformation->store->fingerprintTimekeepers;
+        //     $fingerprintTimekeepers = $model->employee->rankPositionInformation->store->fingerprintTimekeepers;
         //     \ZK\Services\WorkOnDevice::deleteFingerprint($model, $fingerprintTimekeepers);
         // }
 

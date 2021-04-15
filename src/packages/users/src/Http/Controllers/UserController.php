@@ -12,17 +12,17 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
-    protected $userRepository;
+    protected $employeeRepository;
 
     /**
      * UserController constructor.
-     * @param UserRepository $userRepository
+     * @param UserRepository $employeeRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $employeeRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
 
     /**
@@ -37,12 +37,12 @@ class UserController extends Controller
         }
 
         if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $users = $this->userRepository->all();
+            $employees = $this->employeeRepository->all();
         } else {
-            $users = $this->userRepository->paginate($limit);
+            $employees = $this->employeeRepository->paginate($limit);
         }
 
-        return $this->success($users, trans('lang::messages.common.getListSuccess'));
+        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -53,9 +53,9 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $request)
     {
-        $user = $this->userRepository->create($request->all());
+        $employee = $this->employeeRepository->create($request->all());
 
-        return $this->success($user, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($employee, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -65,9 +65,9 @@ class UserController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $user = $this->userRepository->find($id);
+        $employee = $this->employeeRepository->find($id);
 
-        return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($employee, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -79,8 +79,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $user = $this->userRepository->update($request->all(), $id);
+        $employee = $this->employeeRepository->update($request->all(), $id);
 
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
 }

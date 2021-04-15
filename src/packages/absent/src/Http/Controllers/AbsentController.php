@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class AbsentController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $absentRepository;
 
@@ -96,7 +96,7 @@ class AbsentController extends Controller
     }
 
     /**
-     * Get Absent by user
+     * Get Absent by employee
      * @param Request $request
      * @return Response
      */
@@ -111,9 +111,9 @@ class AbsentController extends Controller
         $data = $request->all();
         $data['limit'] = $limit;
 
-        $users = $this->absentRepository->getAbsent($data);
+        $employees = $this->absentRepository->getAbsent($data);
 
-        return $this->success($users, trans('lang::messages.common.getListSuccess'));
+        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
 
 }

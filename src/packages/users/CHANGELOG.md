@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `users` will be documented in this file
+All notable changes to `employees` will be documented in this file
 
 ## 1.0.0 - 201X-XX-XX
 

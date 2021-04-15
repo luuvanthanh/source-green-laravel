@@ -16,24 +16,24 @@ use GGPHP\Users\Transformers\UserTransformer;
 class RevokeShiftTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['user', 'shift', 'timekeeping'];
+    protected $availableIncludes = ['employee', 'shift', 'timekeeping'];
 
     /**
-     * Include user
+     * Include employee
      * @param RevokeShift $revokeShift
      * @return \League\Fractal\Resource\Item
      */
     public function includeUser(RevokeShift $revokeShift)
     {
-        if (empty($revokeShift->user)) {
+        if (empty($revokeShift->employee)) {
             return;
         }
 
-        return $this->item($revokeShift->user, new UserTransformer, 'User');
+        return $this->item($revokeShift->employee, new UserTransformer, 'User');
     }
 
     /**
-     * Include user
+     * Include employee
      * @param RevokeShift $revokeShift
      * @return \League\Fractal\Resource\Item
      */

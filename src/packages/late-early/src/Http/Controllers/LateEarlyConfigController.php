@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 class LateEarlyConfigController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $lateEarlyConfigRepository;
 

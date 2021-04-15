@@ -14,7 +14,7 @@ class RevokeShift extends UuidModel
     protected $table = 'revoke_shifts';
 
     protected $fillable = [
-        'shift_id', 'user_id', 'date_violation', 'status_work_declaration',
+        'shift_id', 'employee_id', 'date_violation', 'status_work_declaration',
     ];
 
     protected $dateTimeFields = [
@@ -28,7 +28,7 @@ class RevokeShift extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class);
     }
@@ -46,7 +46,7 @@ class RevokeShift extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->user->timekeeping()->whereDate('attended_at', $this->date_violation);
+        return $this->employee->timekeeping()->whereDate('attended_at', $this->date_violation);
     }
 
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEducationalLevelsTable extends Migration
+class CreateAbsentTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateEducationalLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('educational_levels', function (Blueprint $table) {
+        Schema::create('AbsentTypes', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('code');
-            $table->string('name');
-            $table->timestamps();
+            $table->string('Name');
+            $table->string('Status');
+            $table->string('Type');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -29,6 +31,6 @@ class CreateEducationalLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('educational_levels');
+        Schema::dropIfExists('AbsentTypes');
     }
 }

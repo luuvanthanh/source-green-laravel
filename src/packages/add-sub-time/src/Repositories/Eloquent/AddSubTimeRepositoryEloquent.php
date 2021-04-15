@@ -21,19 +21,19 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
      * @var array
      */
     protected $fieldSearchable = [
-        'user_id',
-        'user.full_name' => 'like',
+        'employee_id',
+        'employee.full_name' => 'like',
         'type',
     ];
 
-    protected $userRepositoryEloquent;
+    protected $employeeRepositoryEloquent;
 
     public function __construct(
-        UserRepositoryEloquent $userRepositoryEloquent,
+        UserRepositoryEloquent $employeeRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
-        $this->userRepositoryEloquent = $userRepositoryEloquent;
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
     }
 
     /**
@@ -100,9 +100,9 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
 
     public function generalAddSubTime($attributes)
     {
-        $users = $this->userRepositoryEloquent->model->query();
+        $employees = $this->employeeRepositoryEloquent->model->query();
 
-        $users->whereHas('addSubTime', function ($query) use ($attributes) {
+        $employees->whereHas('addSubTime', function ($query) use ($attributes) {
             if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
                 $query->whereHas('addSubTimeDetail', function ($q) use ($attributes) {
                     $q->whereDate('start_date', '>=', $attributes['start_time'])->whereDate('end_date', '<=', $attributes['end_time']);
@@ -110,7 +110,7 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
             }
         });
 
-        $users->with(['addSubTime' => function ($query) use ($attributes) {
+        $employees->with(['addSubTime' => function ($query) use ($attributes) {
             if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
                 $query->whereHas('addSubTimeDetail', function ($q) use ($attributes) {
                     $q->whereDate('start_date', '>=', $attributes['start_time'])->whereDate('end_date', '<=', $attributes['end_time']);
@@ -119,12 +119,12 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
         }]);
 
         if (!empty($attributes['limit'])) {
-            $users = $users->paginate($attributes['limit']);
+            $employees = $employees->paginate($attributes['limit']);
         } else {
-            $users = $users->get();
+            $employees = $employees->get();
         }
 
-        return $this->userRepositoryEloquent->parserResult($users);
+        return $this->employeeRepositoryEloquent->parserResult($employees);
     }
 
 }

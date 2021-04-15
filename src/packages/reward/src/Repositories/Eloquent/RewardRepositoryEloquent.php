@@ -21,14 +21,14 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
         'id',
     ];
 
-    protected $userRepositoryEloquent;
+    protected $employeeRepositoryEloquent;
 
     public function __construct(
-        UserRepositoryEloquent $userRepositoryEloquent,
+        UserRepositoryEloquent $employeeRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
-        $this->userRepositoryEloquent = $userRepositoryEloquent;
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
     }
 
     /**
@@ -65,10 +65,10 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
      */
     public function getRewardUserList($attributes)
     {
-        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->query();
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->query();
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->userRepositoryEloquent->model->whereHas('reward', function ($query) use ($attributes) {
+            $this->employeeRepositoryEloquent->model->whereHas('reward', function ($query) use ($attributes) {
                 $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
             })->with(['reward' => function ($query) use ($attributes) {
                 $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
@@ -76,9 +76,9 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
         }
 
         if (!empty($attributes['limit'])) {
-            $rewards = $this->userRepositoryEloquent->paginate($attributes['limit']);
+            $rewards = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $rewards = $this->userRepositoryEloquent->get();
+            $rewards = $this->employeeRepositoryEloquent->get();
         }
 
         return $rewards;
@@ -91,9 +91,9 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
     public function getRewardByUser($attributes)
     {
 
-        $this->model = $this->model->where('user_id', $attributes['user_id']);
+        $this->model = $this->model->where('employee_id', $attributes['employee_id']);
 
-        $this->model = $this->model->whereHas('user', function ($query) use ($attributes) {
+        $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
             $query->tranferHistory($attributes);
         });
 

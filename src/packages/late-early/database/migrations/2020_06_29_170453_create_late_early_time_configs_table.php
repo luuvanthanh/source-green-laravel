@@ -13,14 +13,15 @@ class CreateLateEarlyTimeConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::create('late_early_time_configs', function (Blueprint $table) {
+        Schema::create('LateEarlyTimeConfigs', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->time('from_time');
-            $table->time('to_time');
-            $table->string('description');
-            $table->string('type');
-            $table->timestamps();
+            $table->time('FromTime');
+            $table->time('ToTime');
+            $table->string('Description');
+            $table->string('Type');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -31,6 +32,6 @@ class CreateLateEarlyTimeConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('late_early_time_configs');
+        Schema::dropIfExists('LateEarlyTimeConfigs');
     }
 }

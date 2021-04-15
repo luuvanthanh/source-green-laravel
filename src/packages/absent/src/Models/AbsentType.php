@@ -8,7 +8,7 @@ class AbsentType extends UuidModel
 {
     public $incrementing = false;
 
-    protected $table = 'absent_types';
+    protected $table = 'AbsentTypes';
 
     /**
      * Status on,off for absent type
@@ -28,7 +28,7 @@ class AbsentType extends UuidModel
     const ABSENT_LATE = 'ABSENT_LATE';
 
     protected $fillable = [
-        'name', 'status', 'type',
+        'Name', 'Status', 'Type',
     ];
 
     /**

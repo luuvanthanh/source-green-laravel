@@ -13,12 +13,12 @@ class CreateProbationaryContractParameterValueTable extends Migration
      */
     public function up()
     {
-        Schema::create('probationary_contract_parameter_value', function (Blueprint $table) {
-            $table->integer('value');
-            $table->string('probationary_contract_id', 36);
-            $table->string('parameter_value_id', 36);
-            $table->foreign('probationary_contract_id')->references('id')->on('probationary_contracts');
-            $table->foreign('parameter_value_id')->references('id')->on('parameter_values');
+        Schema::create('ProbationaryContractParameterValue', function (Blueprint $table) {
+            $table->integer('Value');
+            $table->string('ProbationaryContractId', 36);
+            $table->string('ParameterValueId', 36);
+            $table->foreign('ProbationaryContractId')->references('id')->on('ProbationaryContracts');
+            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
         });
     }
 
@@ -29,6 +29,6 @@ class CreateProbationaryContractParameterValueTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('probationary_contract_parameter_value');
+        Schema::dropIfExists('ProbationaryContractParameterValue');
     }
 }

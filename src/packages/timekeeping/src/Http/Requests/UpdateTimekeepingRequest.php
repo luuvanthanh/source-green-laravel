@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateTimekeepingRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -27,7 +27,7 @@ class UpdateTimekeepingRequest extends FormRequest
         $trackingType = implode(',', config('constants-timekeeping.TRACKING_TYPE.COLLECTIONS'));
 
         return [
-            'user_id' => 'required|exists:employees,id',
+            'employee_id' => 'required|exists:employees,id',
             'device_id' => 'required|exists:fingerprint_timekeepers,id',
             'type' => 'required|string|in:' . $type,
             'tracking_type' => 'required|string|in:' . $trackingType,

@@ -17,14 +17,14 @@ use Prettus\Repository\Eloquent\BaseRepository;
  */
 class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepository
 {
-    protected $userRepositoryEloquent, $excelExporterServices;
+    protected $employeeRepositoryEloquent, $excelExporterServices;
 
     public function __construct(
-        UserRepositoryEloquent $userRepositoryEloquent,
+        UserRepositoryEloquent $employeeRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
-        $this->userRepositoryEloquent = $userRepositoryEloquent;
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
     }
 
     protected $fieldSearchable = [
@@ -32,7 +32,7 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
         'status',
         'absent_type_id',
         'absent_reason_id',
-        'user.full_name' => 'like',
+        'employee.full_name' => 'like',
         'sabbaticalLeave',
     ];
     /**
@@ -74,8 +74,8 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
             $this->model = $this->model->where('absent_type_id', $attributes['absent_type_id']);
         }
 
-        if (!empty($attributes['user_id'])) {
-            $this->model = $this->model->where('user_id', $attributes['user_id']);
+        if (!empty($attributes['employee_id'])) {
+            $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
@@ -102,10 +102,10 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
      */
     public function getAbsent($attributes, $parse = true)
     {
-        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->query();
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->query();
 
         if (!empty($attributes['is_absent'])) {
-            $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->whereHas('absent', function ($query) use ($attributes) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('absent', function ($query) use ($attributes) {
                 if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
                     $query->whereDate('start_date', '>=', $attributes['start_date'])->whereDate('start_date', '<=', $attributes['end_date']);
                 }
@@ -121,7 +121,7 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
             });
         }
 
-        $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
                 $query->whereDate('start_date', '>=', $attributes['start_date'])->whereDate('start_date', '<=', $attributes['end_date']);
             }
@@ -132,16 +132,16 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
 
         }]);
 
-        if (!empty($attributes['user_id'])) {
-            $this->userRepositoryEloquent->model->whereIn('id', explode(',', $attributes['user_id']));
+        if (!empty($attributes['employee_id'])) {
+            $this->employeeRepositoryEloquent->model->whereIn('id', explode(',', $attributes['employee_id']));
         }
 
         if (!empty($attributes['limit'])) {
-            $users = $this->userRepositoryEloquent->paginate($attributes['limit']);
+            $employees = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $users = $this->userRepositoryEloquent->get();
+            $employees = $this->employeeRepositoryEloquent->get();
         }
 
-        return $users;
+        return $employees;
     }
 }

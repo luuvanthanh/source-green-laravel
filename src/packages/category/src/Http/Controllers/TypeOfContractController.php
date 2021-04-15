@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class TypeOfContractController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $typeOfContractRepository;
 

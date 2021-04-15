@@ -2,13 +2,13 @@
 
 namespace GGPHP\Fingerprint\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use GGPHP\Fingerprint\Models\Fingerprint;
+use Illuminate\Foundation\Http\FormRequest;
 
 class FingerprintUpdateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */

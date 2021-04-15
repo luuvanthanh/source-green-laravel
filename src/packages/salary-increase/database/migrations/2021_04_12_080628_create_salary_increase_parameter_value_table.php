@@ -13,12 +13,12 @@ class CreateSalaryIncreaseParameterValueTable extends Migration
      */
     public function up()
     {
-        Schema::create('salary_increase_parameter_value', function (Blueprint $table) {
-            $table->integer('value');
-            $table->string('salary_increase_id', 36);
-            $table->string('parameter_value_id', 36);
-            $table->foreign('salary_increase_id')->references('id')->on('salary_increases');
-            $table->foreign('parameter_value_id')->references('id')->on('parameter_values');
+        Schema::create('SalaryIncreaseParameterValue', function (Blueprint $table) {
+            $table->integer('Value');
+            $table->string('SalaryIncreaseId', 36);
+            $table->string('ParameterValueId', 36);
+            $table->foreign('SalaryIncreaseId')->references('id')->on('SalaryIncreases');
+            $table->foreign('ParameterValueId')->references('id')->on('ParameterValues');
         });
     }
 
@@ -29,6 +29,6 @@ class CreateSalaryIncreaseParameterValueTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('salary_increase_parameter_value');
+        Schema::dropIfExists('SalaryIncreaseParameterValue');
     }
 }

@@ -13,14 +13,15 @@ class CreateParameterFormulasTable extends Migration
      */
     public function up()
     {
-        Schema::create('parameter_formulas', function (Blueprint $table) {
+        Schema::create('ParameterFormulas', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('code');
-            $table->string('name');
-            $table->date('apply_date');
-            $table->string('recipe')->nullable();
-            $table->timestamps();
+            $table->string('Code');
+            $table->string('Name');
+            $table->date('ApplyDate');
+            $table->string('Recipe')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -31,6 +32,6 @@ class CreateParameterFormulasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameter_formulas');
+        Schema::dropIfExists('ParameterFormulas');
     }
 }

@@ -13,21 +13,22 @@ class CreateWorkDeclarationDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_declaration_details', function (Blueprint $table) {
+        Schema::create('WorkDeclarationDetails', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('work_declaration_id', 36);
-            $table->foreign('work_declaration_id')->references('id')->on('work_declarations')->onDelete('cascade');
-            $table->string('model_id', 36)->nullable();
-            $table->string('model_type')->nullable();
-            $table->string('reason')->nullable();
-            $table->integer('work_number')->nullable();
-            $table->date('month')->nullable();
-            $table->json('time');
-            $table->string('shift_id', 36)->nullable();
-            $table->foreign('shift_id')->references('id')->on('shifts');
-            $table->date('work_date')->nullable();
-            $table->timestamps();
+            $table->string('WorkDeclarationId', 36);
+            $table->foreign('WorkDeclarationId')->references('id')->on('WorkDeclarations')->onDelete('cascade');
+            $table->string('ModelId', 36)->nullable();
+            $table->string('ModelType')->nullable();
+            $table->string('Reason')->nullable();
+            $table->integer('WorkNumber')->nullable();
+            $table->date('Month')->nullable();
+            $table->json('Time');
+            $table->string('ShiftId', 36)->nullable();
+            $table->foreign('ShiftId')->references('id')->on('Shifts');
+            $table->date('WorkDate')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -38,6 +39,6 @@ class CreateWorkDeclarationDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_declaration_details');
+        Schema::dropIfExists('WorkDeclarationDetails');
     }
 }

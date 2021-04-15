@@ -33,15 +33,15 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::post('oauth/token', [
                 'uses' => 'AccessTokenController@issueToken',
-                'as' => 'users.login',
+                'as' => 'employees.login',
             ]);
             \Route::post('password/forgot/request', [
                 'uses' => 'ForgotPasswordController@getResetToken',
-                'as' => 'users.getResetToken',
+                'as' => 'employees.getResetToken',
             ]);
             \Route::post('password/forgot/reset', [
                 'uses' => 'ResetPasswordController@reset',
-                'as' => 'users.getResetToken',
+                'as' => 'employees.getResetToken',
             ]);
         });
     }
@@ -54,7 +54,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forUser()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            //users
+            //employees
             \Route::get('employees', [
                 'uses' => 'UserController@index',
                 'as' => 'employees.index',
@@ -72,12 +72,12 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('employees/{id}', [
                 'uses' => 'UserController@show',
-                'as' => 'users.show',
+                'as' => 'employees.show',
             ]);
 
             \Route::get('me', [
                 'uses' => 'AuthController@authenticated',
-                'as' => 'users.me.show',
+                'as' => 'employees.me.show',
             ]);
 
         });
@@ -88,7 +88,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::post('/auth/login', [
                 'uses' => 'AuthController@loginByRFID',
-                'as' => 'kiosk.users.login',
+                'as' => 'kiosk.employees.login',
             ]);
         });
     }

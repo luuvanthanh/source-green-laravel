@@ -1,18 +1,18 @@
 # Very short description of the package
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/kun391/users.svg?style=flat-square)](https://packagist.org/packages/kun391/users)
-[![Build Status](https://img.shields.io/travis/kun391/users/master.svg?style=flat-square)](https://travis-ci.org/kun391/users)
-[![Quality Score](https://img.shields.io/scrutinizer/g/kun391/users.svg?style=flat-square)](https://scrutinizer-ci.com/g/kun391/users)
-[![Total Downloads](https://img.shields.io/packagist/dt/kun391/users.svg?style=flat-square)](https://packagist.org/packages/kun391/users)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/kun391/employees.svg?style=flat-square)](https://packagist.org/packages/kun391/employees)
+[![Build Status](https://img.shields.io/travis/kun391/employees/master.svg?style=flat-square)](https://travis-ci.org/kun391/employees)
+[![Quality Score](https://img.shields.io/scrutinizer/g/kun391/employees.svg?style=flat-square)](https://scrutinizer-ci.com/g/kun391/employees)
+[![Total Downloads](https://img.shields.io/packagist/dt/kun391/employees.svg?style=flat-square)](https://packagist.org/packages/kun391/employees)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with employees and contributors.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require kun391/users
+composer require kun391/employees
 ```
 
 ## Usage

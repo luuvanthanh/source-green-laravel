@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class RevokeShiftController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $revokeShiftRepository;
 

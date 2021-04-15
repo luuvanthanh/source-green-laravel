@@ -39,7 +39,7 @@ class UpsertFingerprintOnDevice implements ShouldQueue
                 $zk = new \ZK\Driver\ZKLib($device->ip, $device->port);
                 //connect to device
                 $zk->connect();
-                //set user from server to device
+                //set employee from server to device
                 $zk->setFingerprint($this->uid, $this->fingerprints);
                 //disconnect
                 $zk->disconnect();

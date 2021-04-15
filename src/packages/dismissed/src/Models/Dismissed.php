@@ -4,7 +4,6 @@ namespace GGPHP\Dismissed\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Dismissed\Models\DismissedDetail;
-use GGPHP\Users\Models\User;
 
 class Dismissed extends UuidModel
 {
@@ -45,7 +44,7 @@ class Dismissed extends UuidModel
     protected $hidden = [];
 
     /**
-     * Get educations of user
+     * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

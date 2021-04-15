@@ -3,25 +3,25 @@
 namespace ZK\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class SyncUserToDevice implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $user;
+    public $employee;
     public $devices;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($user, $devices)
+    public function __construct($employee, $devices)
     {
-        $this->user = $user;
+        $this->employee = $employee;
         $this->devices = $devices;
     }
 
@@ -37,8 +37,8 @@ class SyncUserToDevice implements ShouldQueue
                 $zk = new \ZK\Driver\ZKLib($device->ip, $device->port);
                 //connect to device
                 $zk->connect();
-                //set user from server to device
-                $zk->setUser($this->user->id, $this->user->id, $this->user->full_name, '', \ZK\Driver\Util::LEVEL_USER);
+                //set employee from server to device
+                $zk->setUser($this->employee->id, $this->employee->id, $this->employee->full_name, '', \ZK\Driver\Util::LEVEL_USER);
                 //disconnect
                 $zk->disconnect();
             }

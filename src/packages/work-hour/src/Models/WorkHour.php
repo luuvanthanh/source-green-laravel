@@ -19,7 +19,7 @@ class WorkHour extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'date', 'hours', 'reason',
+        'employee_id', 'date', 'hours', 'reason',
     ];
 
     protected $dateTimeFields = [
@@ -39,7 +39,7 @@ class WorkHour extends UuidModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class);
     }
@@ -48,9 +48,9 @@ class WorkHour extends UuidModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function userCreate()
+    public function employeeCreate()
     {
-        return $this->belongsTo(User::class, 'user_create');
+        return $this->belongsTo(User::class, 'employee_create');
     }
 
     /**

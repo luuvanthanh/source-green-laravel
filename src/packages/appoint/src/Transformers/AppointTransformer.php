@@ -39,11 +39,11 @@ class AppointTransformer extends BaseTransformer
      */
     public function includeUserCreate(Appoint $appoint)
     {
-        if (empty($appoint->userCreate)) {
+        if (empty($appoint->employeeCreate)) {
             return;
         }
 
-        return $this->item($appoint->userCreate, new UserTransformer, 'UserCreate');
+        return $this->item($appoint->employeeCreate, new UserTransformer, 'UserCreate');
     }
 
     /**

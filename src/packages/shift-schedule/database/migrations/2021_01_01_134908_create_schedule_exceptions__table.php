@@ -13,15 +13,16 @@ class CreateScheduleExceptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedule_exceptions', function (Blueprint $table) {
+        Schema::create('ScheduleExceptions', function (Blueprint $table) {
             $table->string('id', 36)->index()->unique();
             $table->primary('id');
-            $table->string('schedule_id', 36);
-            $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade');
-            $table->date('date');
-            $table->string('shift_id', 36);
-            $table->foreign('shift_id')->references('id')->on('shifts')->onDelete('cascade');
-            $table->timestamps();
+            $table->string('ScheduleId', 36);
+            $table->foreign('ScheduleId')->references('id')->on('Schedules')->onDelete('cascade');
+            $table->date('Date');
+            $table->string('ShiftId', 36);
+            $table->foreign('ShiftId')->references('id')->on('Shifts')->onDelete('cascade');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -32,6 +33,6 @@ class CreateScheduleExceptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schedule_exceptions');
+        Schema::dropIfExists('ScheduleExceptions');
     }
 }

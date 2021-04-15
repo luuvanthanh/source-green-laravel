@@ -55,7 +55,7 @@ class PositionLevelRepositoryEloquent extends BaseRepository implements Position
     }
 
     /**
-     * updateOrCreate education of user
+     * updateOrCreate education of employee
      * @param array $attributes
      * @return mixed|void
      */
@@ -64,11 +64,11 @@ class PositionLevelRepositoryEloquent extends BaseRepository implements Position
         $startDate = Carbon::parse($attributes['start_date']);
         $attributes['after_start_date'] = $startDate->subDay();
 
-        $afterTranfer = PositionLevel::where('end_date', null)->where('user_id', $attributes['user_id'])->update(['end_date' => $attributes['after_start_date']]);
+        $afterTranfer = PositionLevel::where('end_date', null)->where('employee_id', $attributes['employee_id'])->update(['end_date' => $attributes['after_start_date']]);
 
         $tranfer = PositionLevel::create($attributes);
 
-        $user = User::find($attributes['user_id']);
+        $employee = User::find($attributes['employee_id']);
 
         return parent::find($tranfer->id);
     }
@@ -78,7 +78,7 @@ class PositionLevelRepositoryEloquent extends BaseRepository implements Position
         $tranfer = PositionLevel::find($id);
         $afterStartDate = $tranfer->start_date->subDay();
 
-        $afterTranfer = PositionLevel::where('end_date', $afterStartDate)->where('user_id', $tranfer->user_id)->update(['end_date' => null]);
+        $afterTranfer = PositionLevel::where('end_date', $afterStartDate)->where('employee_id', $tranfer->employee_id)->update(['end_date' => null]);
 
         return $tranfer->delete();
     }
@@ -89,7 +89,7 @@ class PositionLevelRepositoryEloquent extends BaseRepository implements Position
         $startDate = Carbon::parse($attributes['start_date']);
         $attributes['after_start_date'] = $startDate->subDay();
 
-        $afterTranfer = PositionLevel::where('end_date', $tranfer->start_date->subDay())->where('user_id', $tranfer->user_id)->update(['end_date' => $attributes['after_start_date']]);
+        $afterTranfer = PositionLevel::where('end_date', $tranfer->start_date->subDay())->where('employee_id', $tranfer->employee_id)->update(['end_date' => $attributes['after_start_date']]);
 
         $tranfer->update($attributes);
 
@@ -98,7 +98,7 @@ class PositionLevelRepositoryEloquent extends BaseRepository implements Position
 
     public function getForUser(array $attributes, $id)
     {
-        $result = $this->model->where('user_id', $id)->where('end_date', null)->first();
+        $result = $this->model->where('employee_id', $id)->where('end_date', null)->first();
 
         return parent::parserResult($result);
     }

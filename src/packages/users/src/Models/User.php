@@ -94,13 +94,13 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
-     * Get educations of user
+     * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function timekeeping()
     {
-        return $this->hasMany(Timekeeping::class, 'user_id');
+        return $this->hasMany(Timekeeping::class, 'employee_id');
     }
 
     /**
@@ -132,7 +132,7 @@ class User extends CoreModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function addSubTime()
     {
-        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTime::class, 'user_id');
+        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTime::class, 'employee_id');
     }
 
     /**
