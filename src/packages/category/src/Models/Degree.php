@@ -11,10 +11,10 @@ class Degree extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'degrees';
+    protected $table = 'Degrees';
 
     protected $fillable = [
-        'code', 'name',
+        'Code', 'Name',
     ];
 
 }

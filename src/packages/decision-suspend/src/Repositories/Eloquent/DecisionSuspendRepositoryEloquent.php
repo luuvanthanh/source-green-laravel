@@ -21,8 +21,8 @@ class DecisionSuspendRepositoryEloquent extends BaseRepository implements Decisi
      */
     protected $fieldSearchable = [
         'id',
-        'decision_number' => 'like',
-        'employee_id',
+        'DecisionNumber' => 'like',
+        'EmployeeId',
         'employee.full_name' => 'like',
 
     ];

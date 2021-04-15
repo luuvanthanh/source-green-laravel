@@ -24,7 +24,7 @@ class DecisionSuspendUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:decisionSuspends,decision_number',
+            'DecisionNumber' => 'unique:decisionSuspends,DecisionNumber',
         ];
     }
 }

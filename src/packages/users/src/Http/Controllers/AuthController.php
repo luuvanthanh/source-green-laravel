@@ -63,7 +63,7 @@ class AuthController extends Controller
      */
     public function changePassword(ChangePasswordRequest $request)
     {
-        $employee = $this->employeeRepository->update(['password' => Hash::make($request->password)], $request->employee_id);
+        $employee = $this->employeeRepository->update(['password' => Hash::make($request->password)], $request->EmployeeId);
 
         return $this->success($employee, trans('lang::messages.auth.changePasswordSuccess'));
     }

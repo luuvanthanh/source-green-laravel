@@ -38,7 +38,7 @@ class DeleteFingerprintOnDevice implements ShouldQueue
                 //connect to device
                 $zk->connect();
                 //set employee from server to device
-                $zk->removeFingerprint($this->fingerprint->employee_id, [$this->fingerprint->finger_index]);
+                $zk->removeFingerprint($this->fingerprint->EmployeeId, [$this->fingerprint->finger_index]);
                 //disconnect
                 $zk->disconnect();
             }

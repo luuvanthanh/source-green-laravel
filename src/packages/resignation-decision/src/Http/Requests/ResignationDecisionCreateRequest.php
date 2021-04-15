@@ -24,9 +24,9 @@ class ResignationDecisionCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:resignation_decisions,decision_number',
-            'decision_date' => 'required',
-            'employee_id' => 'required',
+            'DecisionNumber' => 'unique:resignation_decisions,DecisionNumber',
+            'DecisionDate' => 'required',
+            'EmployeeId' => 'required',
             'time_apply' => 'required',
             'pay_end_date' => 'required',
         ];

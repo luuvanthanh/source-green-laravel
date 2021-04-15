@@ -31,11 +31,11 @@ class Timekeeping extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'device_id', 'type', 'attended_at', 'tracking_type',
+        'EmployeeId', 'DeviceId', 'Type', 'AttendedAt', 'TrackingType',
     ];
 
     protected $dateTimeFields = [
-        'attended_at',
+        'AttendedAt',
     ];
 
     /**
@@ -44,7 +44,7 @@ class Timekeeping extends UuidModel
      * @var array
      */
     protected $casts = [
-        'attended_at' => 'datetime',
+        'AttendedAt' => 'datetime',
     ];
 
     /**
@@ -62,6 +62,6 @@ class Timekeeping extends UuidModel
      */
     public function fingerprintTimekeeper()
     {
-        return $this->belongsTo(FingerprintTimekeeper::class, 'device_id');
+        return $this->belongsTo(FingerprintTimekeeper::class, 'DeviceId');
     }
 }

@@ -25,7 +25,7 @@ class DivisionUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'position_id' => 'array',
+            'PositionId' => 'array',
         ];
     }
 }

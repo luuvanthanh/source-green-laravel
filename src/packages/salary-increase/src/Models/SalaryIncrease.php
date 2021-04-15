@@ -12,7 +12,7 @@ class SalaryIncrease extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'salary_increases';
+    protected $table = 'SalaryIncreases';
 
     /**
      * The attributes that are mass assignable.
@@ -20,12 +20,12 @@ class SalaryIncrease extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason', 'employee_id', 'time_apply', 'note',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'Note',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
-        'time_apply',
+        'DecisionDate',
+        'TimeApply',
     ];
 
     /**
@@ -34,8 +34,8 @@ class SalaryIncrease extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
-        'time_apply' => 'datetime',
+        'DecisionDate' => 'datetime',
+        'TimeApply' => 'datetime',
     ];
 
     /**
@@ -50,7 +50,7 @@ class SalaryIncrease extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 
     /**

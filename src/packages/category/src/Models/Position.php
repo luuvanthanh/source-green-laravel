@@ -11,7 +11,7 @@ class Position extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'positions';
+    protected $table = 'Positions';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Position extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'code', 'name',
+        'Code', 'Name',
     ];
 
     /**

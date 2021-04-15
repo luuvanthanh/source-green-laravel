@@ -11,10 +11,10 @@ class ParamaterValue extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'parameter_values';
+    protected $table = 'ParameterValues';
 
     protected $fillable = [
-        'code', 'name', 'apply_date', 'value_default', 'note', 'type',
+        'Code', 'Name', 'ApplyDate', 'ValueDefault', 'Note', 'Type',
     ];
 
     /**

@@ -74,8 +74,8 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
             $this->model = $this->model->where('absent_type_id', $attributes['absent_type_id']);
         }
 
-        if (!empty($attributes['employee_id'])) {
-            $this->model = $this->model->where('employee_id', $attributes['employee_id']);
+        if (!empty($attributes['EmployeeId'])) {
+            $this->model = $this->model->where('EmployeeId', $attributes['EmployeeId']);
         }
 
         if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
@@ -132,8 +132,8 @@ class AbsentRepositoryEloquent extends BaseRepository implements AbsentRepositor
 
         }]);
 
-        if (!empty($attributes['employee_id'])) {
-            $this->employeeRepositoryEloquent->model->whereIn('id', explode(',', $attributes['employee_id']));
+        if (!empty($attributes['EmployeeId'])) {
+            $this->employeeRepositoryEloquent->model->whereIn('id', explode(',', $attributes['EmployeeId']));
         }
 
         if (!empty($attributes['limit'])) {

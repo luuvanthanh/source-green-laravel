@@ -11,7 +11,7 @@ class WorkHour extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'work_hours';
+    protected $table = 'WorkHours';
 
     /**
      * The attributes that are mass assignable.
@@ -19,11 +19,11 @@ class WorkHour extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'date', 'hours', 'reason',
+        'EmployeeId', 'Date', 'Hours', 'Reason',
     ];
 
     protected $dateTimeFields = [
-        'date',
+        'Date',
     ];
 
     /**
@@ -32,7 +32,7 @@ class WorkHour extends UuidModel
      * @var array
      */
     protected $casts = [
-        'date' => 'datetime',
+        'Date' => 'datetime',
     ];
 
     /**
@@ -42,15 +42,6 @@ class WorkHour extends UuidModel
     public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class);
-    }
-
-    /**
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function employeeCreate()
-    {
-        return $this->belongsTo(User::class, 'employee_create');
     }
 
     /**

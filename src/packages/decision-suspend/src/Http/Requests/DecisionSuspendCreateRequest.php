@@ -24,9 +24,9 @@ class DecisionSuspendCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:decision_suspends,decision_number',
-            'decision_date' => 'required',
-            'employee_id' => 'required',
+            'DecisionNumber' => 'unique:decision_suspends,DecisionNumber',
+            'DecisionDate' => 'required',
+            'EmployeeId' => 'required',
             'from' => 'required',
             'to' => 'required',
         ];

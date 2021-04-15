@@ -8,24 +8,24 @@ class LabourContract extends UuidModel
 {
     public $incrementing = false;
 
-    protected $table = 'labour_contracts';
+    protected $table = 'LabourContracts';
 
     protected $fillable = [
-        'contract_number', 'contract_date', 'type_of_contract_id', 'employee_id', 'year',
-        'month', 'division_id', 'contract_from', 'contract_to', 'position_id', 'work',
-        'work_time', 'branch_id',
+        'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'Year',
+        'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
+        'WorkTime', 'BranchId',
     ];
 
     protected $dateTimeFields = [
-        'contract_date',
-        'contract_from',
-        'contract_to',
+        'ContractDate',
+        'ContractFrom',
+        'ContractTo',
     ];
 
     protected $casts = [
-        'contract_date' => 'datetime',
-        'contract_from' => 'datetime',
-        'contract_to' => 'datetime',
+        'ContractDate' => 'datetime',
+        'ContractFrom' => 'datetime',
+        'ContractTo' => 'datetime',
     ];
 
     /**
@@ -33,7 +33,7 @@ class LabourContract extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
     /**
@@ -41,7 +41,7 @@ class LabourContract extends UuidModel
      */
     public function typeOfContract()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\TypeOfContract::class, 'type_of_contract_id');
+        return $this->belongsTo(\GGPHP\Category\Models\TypeOfContract::class, 'TypeOfContractId');
     }
 
     /**
@@ -49,7 +49,7 @@ class LabourContract extends UuidModel
      */
     public function division()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\Division::class, 'division_id');
+        return $this->belongsTo(\GGPHP\Category\Models\Division::class, 'DivisionId');
     }
 
     /**
@@ -57,7 +57,7 @@ class LabourContract extends UuidModel
      */
     public function position()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\Position::class, 'position_id');
+        return $this->belongsTo(\GGPHP\Category\Models\Position::class, 'PositionId');
     }
 
     /**
@@ -65,7 +65,7 @@ class LabourContract extends UuidModel
      */
     public function branch()
     {
-        return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'branch_id');
+        return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'BranchId');
     }
 
     /**
@@ -73,6 +73,6 @@ class LabourContract extends UuidModel
      */
     public function parameterValues()
     {
-        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'labour_contract_parameter_value', 'labour_contract_id', 'parameter_value_id')->withPivot('value');
+        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'LabourContractParameterValue', 'LabourContractId', 'ParameterValueId')->withPivot('Value');
     }
 }

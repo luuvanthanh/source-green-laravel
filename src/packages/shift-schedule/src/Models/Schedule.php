@@ -19,12 +19,12 @@ class Schedule extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'shift_id', 'start_date', 'end_date',
+        'EmployeeId', 'ShiftId', 'StartDate', 'EndDate',
     ];
 
     protected $dateTimeFields = [
-        'start_date',
-        'end_date',
+        'StartDate',
+        'EndDate',
     ];
 
     /**
@@ -33,8 +33,8 @@ class Schedule extends UuidModel
      * @var array
      */
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
 
     /**
@@ -49,7 +49,7 @@ class Schedule extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
     /**

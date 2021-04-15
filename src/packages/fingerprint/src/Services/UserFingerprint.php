@@ -12,7 +12,7 @@ class UserFingerprint
     {
         // find or create role admin
         return $employee->fingerprints()->updateOrCreate(
-            ['employee_id' => $employee->id, 'finger_index' => $attributes['finger_index']],
+            ['EmployeeId' => $employee->id, 'finger_index' => $attributes['finger_index']],
             $attributes
         );
     }

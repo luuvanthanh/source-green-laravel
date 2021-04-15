@@ -24,15 +24,15 @@ class TransferCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:transfers,decision_number',
-            'decision_date' => 'required',
+            'DecisionNumber' => 'unique:transfers,DecisionNumber',
+            'DecisionDate' => 'required',
             'reason' => 'required',
             'type' => 'required',
             'data' => 'required|array',
-            'data.*.employee_id' => 'required',
-            'data.*.branch_id' => 'required',
-            'data.*.division_id' => 'required',
-            'data.*.position_id' => 'required',
+            'data.*.EmployeeId' => 'required',
+            'data.*.BranchId' => 'required',
+            'data.*.DivisionId' => 'required',
+            'data.*.PositionId' => 'required',
             'data.*.note' => 'required',
         ];
     }

@@ -74,7 +74,7 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeShift(Absent $absent)
     {
-        $employeeHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($absent->employee_id, $absent->start_date->format('Y-m-d'), $absent->start_date->format('Y-m-d'));
+        $employeeHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($absent->EmployeeId, $absent->start_date->format('Y-m-d'), $absent->start_date->format('Y-m-d'));
 
         if (empty($employeeHasWorkShift)) {
             return;

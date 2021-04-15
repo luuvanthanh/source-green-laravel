@@ -11,10 +11,10 @@ class TrainingSchool extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'training_schools';
+    protected $table = 'TrainingSchools';
 
     protected $fillable = [
-        'code', 'name', 'adress',
+        'Code', 'Name', 'Adress',
     ];
 
 }

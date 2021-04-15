@@ -12,7 +12,7 @@ class TransferDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'transfer_details';
+    protected $table = 'TransferDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -20,8 +20,8 @@ class TransferDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'transfer_id', 'employee_id', 'branch_id', 'division_id',
-        'position_id', 'note',
+        'transfer_id', 'EmployeeId', 'BranchId', 'DivisionId',
+        'PositionId', 'Note',
     ];
 
     /**
@@ -36,7 +36,7 @@ class TransferDetail extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 
     /**
@@ -44,7 +44,7 @@ class TransferDetail extends UuidModel
      */
     public function position()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'position_id');
+        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'Id', 'PositionId');
     }
 
     /**
@@ -52,6 +52,6 @@ class TransferDetail extends UuidModel
      */
     public function division()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'division_id');
+        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'Id', 'DivisionId');
     }
 }

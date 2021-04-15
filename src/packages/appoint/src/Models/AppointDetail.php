@@ -12,7 +12,7 @@ class AppointDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'appoint_details';
+    protected $table = 'AppointDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -20,8 +20,8 @@ class AppointDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'appoint_id', 'employee_id', 'branch_id', 'division_id',
-        'position_id', 'note',
+        'AppointId', 'EmployeeId', 'BranchId', 'DivisionId',
+        'PositionId', 'Note',
     ];
 
     /**
@@ -36,7 +36,7 @@ class AppointDetail extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 
     /**
@@ -44,7 +44,7 @@ class AppointDetail extends UuidModel
      */
     public function position()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'position_id');
+        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'PositionId');
     }
 
     /**
@@ -52,7 +52,7 @@ class AppointDetail extends UuidModel
      */
     public function division()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'division_id');
+        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'DivisionId');
     }
 
     /**
@@ -60,6 +60,6 @@ class AppointDetail extends UuidModel
      */
     public function branch()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'id', 'branch_id');
+        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'id', 'BranchId');
     }
 }

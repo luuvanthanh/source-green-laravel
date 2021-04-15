@@ -54,7 +54,7 @@ class PositionRepositoryEloquent extends BaseRepository implements PositionRepos
 
         if (!empty($attributes['season'])) {
             foreach ($attributes['season'] as $value) {
-                $value['position_id'] = $position->id;
+                $value['PositionId'] = $position->id;
                 $position->positionSeason()->create($value);
             }
         }
@@ -74,9 +74,9 @@ class PositionRepositoryEloquent extends BaseRepository implements PositionRepos
         $position->update($attributes);
         if (!empty($attributes['season'])) {
             foreach ($attributes['season'] as $value) {
-                $value['position_id'] = $position->id;
+                $value['PositionId'] = $position->id;
                 $position->positionSeason()->updateOrCreate(
-                    ['position_id' => $position->id, 'season_id' => $value['season_id']],
+                    ['PositionId' => $position->id, 'season_id' => $value['season_id']],
                     $value
                 );
             }

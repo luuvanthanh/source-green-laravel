@@ -11,10 +11,10 @@ class TrainingMajor extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'training_majors';
+    protected $table = 'TrainingMajors';
 
     protected $fillable = [
-        'code', 'name',
+        'Code', 'Name',
     ];
 
 }

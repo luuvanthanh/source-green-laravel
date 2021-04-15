@@ -11,10 +11,10 @@ class ParamaterFormula extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'parameter_formulas';
+    protected $table = 'ParameterFormulas';
 
     protected $fillable = [
-        'code', 'name', 'apply_date', 'recipe',
+        'Code', 'Name', 'ApplyDate', 'Recipe',
     ];
 
     /**

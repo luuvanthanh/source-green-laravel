@@ -24,10 +24,10 @@ class SalaryIncreaseCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decision_number' => 'unique:salary_increases,decision_number',
-            'decision_date' => 'required',
+            'DecisionNumber' => 'unique:salary_increases,DecisionNumber',
+            'DecisionDate' => 'required',
             'reason' => 'required',
-            'employee_id' => 'required',
+            'EmployeeId' => 'required',
             'time_apply' => 'required',
             'note' => 'required',
         ];

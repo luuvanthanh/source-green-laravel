@@ -11,9 +11,9 @@ class WorkDeclarationDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'work_declaration_details';
+    protected $table = 'WorkDeclarationDetails';
 
-    protected $fillable = ['work_declaration_id', 'model_id', 'model_type', 'reason', 'time', 'work_number', 'month', 'shift_id', 'work_date'];
+    protected $fillable = ['WorkDeclarationId', 'ModelId', 'ModelType', 'Reason', 'Time', 'WorkNumber', 'Month', 'ShiftId', 'WorkDate'];
 
     const MODEL = [
         "INVALID" => "GGPHP\WorkDeclaration\Models\WorkDeclaration",
@@ -22,11 +22,11 @@ class WorkDeclarationDetail extends UuidModel
     ];
 
     protected $dateTimeFields = [
-        'date',
+        'WorkDate',
     ];
 
     protected $casts = [
-        'date' => 'datetime',
+        'WorkDate' => 'datetime',
     ];
 
     /**
@@ -44,7 +44,7 @@ class WorkDeclarationDetail extends UuidModel
      */
     public function shift()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'id', 'shift_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'Id', 'ShiftId');
     }
 
     /**
@@ -60,6 +60,6 @@ class WorkDeclarationDetail extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->workDeclaration->employee->timekeeping()->whereDate('attended_at', $this->date);
+        return $this->workDeclaration->employee->timekeeping()->whereDate('AttendedAt', $this->date);
     }
 }

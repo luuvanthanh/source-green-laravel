@@ -11,7 +11,7 @@ class PositionLevel extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'position_levels';
+    protected $table = 'PositionLevels';
 
     /**
      * The attributes that are mass assignable.
@@ -19,13 +19,13 @@ class PositionLevel extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'branch_id', 'position_id', 'division_id',
-        'start_date', 'end_date', 'type',
+        'EmployeeId', 'BranchId', 'PositionId', 'DivisionId',
+        'StartDate', 'EndDate', 'Type',
     ];
 
     protected $dateTimeFields = [
-        'start_date',
-        'end_date',
+        'StartDate',
+        'EndDate',
     ];
 
     /**
@@ -34,8 +34,8 @@ class PositionLevel extends UuidModel
      * @var array
      */
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
     /**
      * The attributes that should be hidden for arrays.
@@ -49,7 +49,7 @@ class PositionLevel extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
     /**
@@ -57,7 +57,7 @@ class PositionLevel extends UuidModel
      */
     public function branch()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'id', 'branch_id');
+        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'id', 'BranchId');
     }
 
     /**
@@ -65,7 +65,7 @@ class PositionLevel extends UuidModel
      */
     public function position()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'position_id');
+        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'PositionId');
     }
 
     /**
@@ -73,6 +73,6 @@ class PositionLevel extends UuidModel
      */
     public function division()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'division_id');
+        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'DivisionId');
     }
 }

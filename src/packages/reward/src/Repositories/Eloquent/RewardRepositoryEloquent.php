@@ -91,7 +91,7 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
     public function getRewardByUser($attributes)
     {
 
-        $this->model = $this->model->where('employee_id', $attributes['employee_id']);
+        $this->model = $this->model->where('EmployeeId', $attributes['EmployeeId']);
 
         $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
             $query->tranferHistory($attributes);

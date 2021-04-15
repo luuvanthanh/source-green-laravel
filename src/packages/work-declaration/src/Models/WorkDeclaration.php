@@ -11,9 +11,9 @@ class WorkDeclaration extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'work_declarations';
+    protected $table = 'WorkDeclarations';
 
-    protected $fillable = ['employee_id'];
+    protected $fillable = ['EmployeeId'];
 
     /**
      * Define relations workDeclarationDetails

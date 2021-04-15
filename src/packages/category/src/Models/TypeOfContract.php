@@ -11,10 +11,10 @@ class TypeOfContract extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'type_of_contracts';
+    protected $table = 'TypeOfContracts';
 
     protected $fillable = [
-        'code', 'type', 'name', 'year', 'month',
+        'Code', 'Type', 'Name', 'Year', 'Month',
     ];
 
     /**
@@ -22,7 +22,7 @@ class TypeOfContract extends UuidModel
      */
     public function parameterValues()
     {
-        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'type_of_contract_parameter_value', 'type_of_contract_id', 'parameter_value_id');
+        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'TypeOfContractParameteValue', 'TypeOfContractId', 'ParameterValueId');
     }
 
     /**
@@ -30,6 +30,6 @@ class TypeOfContract extends UuidModel
      */
     public function parameterFormulas()
     {
-        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterFormula::class, 'type_of_contract_parameter_formula', 'type_of_contract_id', 'parameter_formula_id');
+        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterFormula::class, 'TypeOfContractParameterFormula', 'TypeOfContractId', 'ParameterFormulaId');
     }
 }

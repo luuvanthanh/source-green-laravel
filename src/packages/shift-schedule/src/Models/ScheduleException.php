@@ -11,7 +11,7 @@ class ScheduleException extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'schedule_exceptions';
+    protected $table = 'ScheduleExceptions';
 
     /**
      * The attributes that are mass assignable.
@@ -19,11 +19,11 @@ class ScheduleException extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'date', 'shift_id', 'schedule_id',
+        'Date', 'ShiftId', 'ScheduleId',
     ];
 
     protected $dateTimeFields = [
-        'date',
+        'Date',
     ];
 
     /**
@@ -32,7 +32,7 @@ class ScheduleException extends UuidModel
      * @var array
      */
     protected $casts = [
-        'date' => 'datetime',
+        'Date' => 'datetime',
     ];
 
     /**
@@ -47,7 +47,7 @@ class ScheduleException extends UuidModel
      */
     public function schedule()
     {
-        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'schedule_id');
+        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'ScheduleId');
     }
 
 }

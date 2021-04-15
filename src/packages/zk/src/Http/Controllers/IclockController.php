@@ -30,7 +30,7 @@ class IclockController extends Controller
             $return = 'OK';
             if (in_array($modelSync->subject_type, ['GGPHP\MagneticCard\Models\MagneticCard'])) {
                 $obj = json_decode($modelSync->payload);
-                $employee = User::find($obj->employee_id);
+                $employee = User::find($obj->EmployeeId);
                 $array = [
                     $modelSync->id,
                     $employee->id,
@@ -268,10 +268,10 @@ class IclockController extends Controller
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
 
-                $keyAttributes = ['employee_id', 'attended_at', 'tracking_type', 'type'];
+                $keyAttributes = ['EmployeeId', 'attended_at', 'tracking_type', 'type'];
                 $attributes = array_combine($keyAttributes, $attributes);
 
-                $employee = User::find($attributes['employee_id']);
+                $employee = User::find($attributes['EmployeeId']);
 
                 if (!$employee) {
                     continue;

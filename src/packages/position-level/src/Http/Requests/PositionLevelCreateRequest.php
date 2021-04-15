@@ -26,10 +26,10 @@ class PositionLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => 'required',
-            'position_id' => 'required',
-            'division_id' => 'required',
-            'branch_id' => 'required',
+            'EmployeeId' => 'required',
+            'PositionId' => 'required',
+            'DivisionId' => 'required',
+            'BranchId' => 'required',
             'start_date' => [
                 'required',
                 'date',
@@ -37,9 +37,9 @@ class PositionLevelCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $now = Carbon::now();
                     $today = $now->toDateString();
-                    $employeeId = request()->employee_id;
+                    $employeeId = request()->EmployeeId;
 
-                    $tranfer = PositionLevel::where('employee_id', $employeeId)->where('start_date', '>', $today)->first();
+                    $tranfer = PositionLevel::where('EmployeeId', $employeeId)->where('start_date', '>', $today)->first();
 
                     if (!is_null($tranfer)) {
                         return $fail('Bạn đã tạo điều chuyển, vui lòng xem lại.');

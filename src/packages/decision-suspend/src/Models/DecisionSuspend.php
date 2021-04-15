@@ -11,7 +11,7 @@ class DecisionSuspend extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'decision_suspends';
+    protected $table = 'DecisionSuspends';
 
     /**
      * The attributes that are mass assignable.
@@ -19,13 +19,13 @@ class DecisionSuspend extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason', 'employee_id', 'from', 'to', 'note',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'From', 'To', 'Note',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
-        'from',
-        'to',
+        'DecisionDate',
+        'From',
+        'To',
     ];
 
     /**
@@ -34,9 +34,9 @@ class DecisionSuspend extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
-        'from' => 'datetime',
-        'to' => 'datetime',
+        'DecisionDate' => 'datetime',
+        'From' => 'datetime',
+        'To' => 'datetime',
     ];
 
     /**
@@ -44,7 +44,7 @@ class DecisionSuspend extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
 }

@@ -3,7 +3,6 @@
 namespace GGPHP\Reward\Models;
 
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Users\Models\User;
 
 class DecisionReward extends UuidModel
 {
@@ -12,7 +11,7 @@ class DecisionReward extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'decision_rewards';
+    protected $table = 'DecisionRewards';
 
     /**
      * The attributes that are mass assignable.
@@ -20,11 +19,11 @@ class DecisionReward extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason', 'type',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'Type',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
+        'DecisionDate',
     ];
 
     /**
@@ -33,7 +32,7 @@ class DecisionReward extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
+        'DecisionDate' => 'datetime',
     ];
 
     /**
@@ -43,15 +42,7 @@ class DecisionReward extends UuidModel
      */
     public function decisionRewardDetails()
     {
-        return $this->hasMany(DecisionRewardDetail::class, 'decision_reward_id');
-    }
-
-    /**
-     * Define relations employee
-     */
-    public function employeeCreate()
-    {
-        return $this->belongsTo(User::class, 'employee_create');
+        return $this->hasMany(DecisionRewardDetail::class, 'DecisionRewardId');
     }
 
 }

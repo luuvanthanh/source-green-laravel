@@ -96,9 +96,9 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             };
         }]);
 
-        if (!empty($attribute['employee_id'])) {
+        if (!empty($attribute['EmployeeId'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
-                $query->whereIn('employee_id', explode(',', $attribute['employee_id']));
+                $query->whereIn('EmployeeId', explode(',', $attribute['EmployeeId']));
             });
         }
 
@@ -648,13 +648,13 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             $getConfigEarly = LateEarlyTimeConfig::where('type', LateEarlyTimeConfig::EARLY)->pluck('id')->toArray();
             $getConfigLate = LateEarlyTimeConfig::where('type', LateEarlyTimeConfig::LATE)->pluck('id')->toArray();
 
-            $existLate = LateEarly::where('employee_id', $this->employee->id)
+            $existLate = LateEarly::where('EmployeeId', $this->employee->id)
                 ->whereDate('date', $date)
                 ->whereIn('time_config_type', $getConfigLate)
                 ->where('time_slot', $attribute['timeSlot'])
                 ->first();
 
-            $existEarly = LateEarly::where('employee_id', $this->employee->id)
+            $existEarly = LateEarly::where('EmployeeId', $this->employee->id)
                 ->whereDate('date', $date)
                 ->whereIn('time_config_type', $getConfigEarly)
                 ->where('time_slot', $attribute['timeSlot'])
@@ -930,7 +930,7 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
     public function export($request, $results = [])
     {
         if ($request->type != Timekeeping::MONTH) {
-            $results = $this->timekeepingReport($request->employee_id, $request->position_id, $request->store_id, $request->start_date, $request->end_date, $request->limit, false, $request->type, $request->work_form_id, $request->is_filter, null, $request->full_name, $request->is_shift);
+            $results = $this->timekeepingReport($request->EmployeeId, $request->PositionId, $request->store_id, $request->start_date, $request->end_date, $request->limit, false, $request->type, $request->work_form_id, $request->is_filter, null, $request->full_name, $request->is_shift);
         }
 
         switch ($request->type) {
@@ -1143,9 +1143,9 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             }]);
         }
 
-        if (!empty($attribute['employee_id'])) {
+        if (!empty($attribute['EmployeeId'])) {
             $query->whereHas('timekeeping', function ($query) use ($attribute) {
-                $query->whereIn('employee_id', explode(',', $attribute['employee_id']));
+                $query->whereIn('EmployeeId', explode(',', $attribute['EmployeeId']));
             });
         }
 
@@ -1232,9 +1232,9 @@ class TimekeepingRepositoryEloquent extends BaseRepository implements Timekeepin
             }]);
         }
 
-        if (!empty($attribute['employee_id'])) {
+        if (!empty($attribute['EmployeeId'])) {
             $query->whereHas('timekeeping', function ($query) use ($attribute) {
-                $query->whereIn('employee_id', explode(',', $attribute['employee_id']));
+                $query->whereIn('EmployeeId', explode(',', $attribute['EmployeeId']));
             });
         }
 

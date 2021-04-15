@@ -10,16 +10,21 @@ class Reward extends UuidModel
     public $incrementing = false;
 
     /**
+     * Declare the table name
+     */
+    protected $table = 'Rewards';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'decision_number', 'decision_date', 'reason', 'type', 'money', 'time_apply', 'note',
+        'EmployeeId', 'DecisionNumber', 'DecisionDate', 'Reason', 'Type', 'Money', 'TimeApply', 'Note',
     ];
 
     protected $dateTimeFields = [
-        'date',
+        'DecisionDate',
     ];
 
     /**
@@ -28,7 +33,7 @@ class Reward extends UuidModel
      * @var array
      */
     protected $casts = [
-        'date' => 'datetime',
+        'DecisionDate' => 'datetime',
     ];
 
     /**
@@ -36,6 +41,6 @@ class Reward extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 }

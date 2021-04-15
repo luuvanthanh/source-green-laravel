@@ -133,11 +133,11 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
 
         if (isset($attributes['repeat_by'])) {
             $attributes['schedule_id'] = $schedule->id;
-            ScheduleRepeatService::add(\Arr::except($attributes, ['start_date', 'employee_id', 'shift_id']));
+            ScheduleRepeatService::add(\Arr::except($attributes, ['start_date', 'EmployeeId', 'shift_id']));
         }
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
-        $oldschedule = $this->model()::whereNotIn('id', [$schedule->id])->where('employee_id', $attributes['employee_id'])->where(function ($query) use ($attributes, $dateEndYear) {
+        $oldschedule = $this->model()::whereNotIn('id', [$schedule->id])->where('EmployeeId', $attributes['EmployeeId'])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
         })->get();
 
@@ -371,7 +371,7 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
         $dateEndYear = $dateEndYear->endOfYear();
         $oldschedule = $this->model()::whereNotIn('id', [$id])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
-        })->where('shift_id', $schedule->shift_id)->where('employee_id', $schedule->employee_id)->get();
+        })->where('shift_id', $schedule->shift_id)->where('EmployeeId', $schedule->EmployeeId)->get();
 
         foreach ($oldschedule as $value) {
             if ($value->start_date->format("Y-m-d") >= Carbon::parse($startDate)->format('Y-m-d')) {

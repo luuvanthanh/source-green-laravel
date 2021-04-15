@@ -12,7 +12,7 @@ class Dismissed extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'dismisseds';
+    protected $table = 'Dismisseds';
 
     /**
      * The attributes that are mass assignable.
@@ -20,11 +20,11 @@ class Dismissed extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason',
+        'DecisionNumber', 'DecisionDate', 'Reason',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
+        'DecisionDate',
     ];
 
     /**
@@ -33,7 +33,7 @@ class Dismissed extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
+        'DecisionDate' => 'datetime',
     ];
 
     /**
@@ -50,7 +50,7 @@ class Dismissed extends UuidModel
      */
     public function dismissedDetails()
     {
-        return $this->hasMany(DismissedDetail::class, 'dismissed_id');
+        return $this->hasMany(DismissedDetail::class, 'DismissedId');
     }
 
 }

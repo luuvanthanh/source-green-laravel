@@ -21,7 +21,7 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
      * @var array
      */
     protected $fieldSearchable = [
-        'employee_id',
+        'EmployeeId',
         'employee.full_name' => 'like',
         'type',
     ];

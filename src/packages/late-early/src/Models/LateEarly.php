@@ -23,19 +23,24 @@ class LateEarly extends UuidModel
     const AUTOMATIC_APPROVE = 'AUTOMATIC_APPROVE';
     const INVALID = 'INVALID';
 
+    /**
+     * Declare the table name
+     */
+    protected $table = 'LateEarlies';
+
     protected $fillable = [
-        'time_config_type', 'time', 'date', 'status', 'employee_id', 'approval_id',
-        'time_shift', 'shift_code', 'time_slot', 'time_violation',
+        'TimeConfigType', 'Time', 'Date', 'Status', 'EmployeeId',
+        'TimeShift', 'ShiftCode', 'TimeSlot', 'TimeViolation',
     ];
 
     protected $presenter = LateEarlyPresenter::class;
 
     protected $dateTimeFields = [
-        'date',
+        'Date',
     ];
 
     protected $casts = [
-        'date' => 'datetime',
+        'Date' => 'datetime',
     ];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -50,7 +55,7 @@ class LateEarly extends UuidModel
      */
     public function lateEarlyConfig()
     {
-        return $this->belongsTo(LateEarlyTimeConfig::class, 'time_config_type');
+        return $this->belongsTo(LateEarlyTimeConfig::class, 'TimeConfigType');
     }
 
     /**
@@ -58,7 +63,7 @@ class LateEarly extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->employee->timekeeping()->whereDate('attended_at', $this->date);
+        return $this->employee->timekeeping()->whereDate('AttendedAt', $this->date);
     }
 
     /**
@@ -76,6 +81,6 @@ class LateEarly extends UuidModel
      */
     public function workDeclarationDetail()
     {
-        return $this->morphOne(\GGPHP\WorkDeclaration\Models\WorkDeclarationDetail::class, 'model');
+        return $this->morphOne(\GGPHP\WorkDeclaration\Models\WorkDeclarationDetail::class, 'Model');
     }
 }

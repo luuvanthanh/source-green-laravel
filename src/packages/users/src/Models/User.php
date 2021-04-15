@@ -101,7 +101,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function timekeeping()
     {
-        return $this->hasMany(Timekeeping::class, 'employee_id');
+        return $this->hasMany(Timekeeping::class, 'EmployeeId');
     }
 
     /**
@@ -133,7 +133,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function addSubTime()
     {
-        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTime::class, 'employee_id');
+        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTime::class, 'EmployeeId');
     }
 
     /**

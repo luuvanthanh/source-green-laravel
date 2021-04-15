@@ -39,11 +39,11 @@ class ReportTimekeepingController extends Controller
     {
         $isFilter = $request->is_filter;
         $store = $request->store_id;
-        $position = $request->position_id;
+        $position = $request->PositionId;
         $work_form_id = $request->work_form_id;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-        $employeeId = $request->employee_id;
+        $employeeId = $request->EmployeeId;
         $type = $request->type;
         $year = $request->year;
         $employeesByStore = [];

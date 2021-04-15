@@ -11,10 +11,10 @@ class EducationalLevel extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'educational_levels';
+    protected $table = 'EducationalLevels';
 
     protected $fillable = [
-        'code', 'name',
+        'Code', 'Name',
     ];
 
 }

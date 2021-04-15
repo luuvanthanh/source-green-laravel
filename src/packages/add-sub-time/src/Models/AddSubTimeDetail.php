@@ -8,7 +8,7 @@ class AddSubTimeDetail extends UuidModel
 {
     public $incrementing = false;
 
-    protected $table = 'add_sub_time_details';
+    protected $table = 'AddSubTimeDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -16,17 +16,17 @@ class AddSubTimeDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'additional_time_id', 'employee_id', 'start_date', 'end_date', 'days', 'hours', 'reason',
+        'AdditionalTimeId', 'EmployeeId', 'StartDate', 'EndDate', 'Days', 'Hours', 'Reason',
     ];
 
     protected $dateTimeFields = [
-        'start_date',
-        'end_date',
+        'StartDate',
+        'EndDate',
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
 
     /**
@@ -42,6 +42,6 @@ class AddSubTimeDetail extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 }

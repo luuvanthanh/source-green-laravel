@@ -11,7 +11,7 @@ class Config extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'configs';
+    protected $table = 'Configs';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Config extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'name', 'code', 'value',
+        'Name', 'Code', 'Value',
     ];
 
     /**

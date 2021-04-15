@@ -14,7 +14,7 @@ class Shift extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'shifts';
+    protected $table = 'Shifts';
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class Shift extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'shift_code', 'description', 'status',
+        'ShiftCode', 'Description', 'Status',
     ];
 
     /**
@@ -49,8 +49,8 @@ class Shift extends UuidModel
     {
         $shiftDetail = $this->shiftDetail->map(function ($item, $key) {
             return [
-                'start_time' => $item['start_time'],
-                'end_time' => $item['end_time'],
+                'StartTime' => $item['StartTime'],
+                'EndTime' => $item['EndTime'],
             ];
         });
 

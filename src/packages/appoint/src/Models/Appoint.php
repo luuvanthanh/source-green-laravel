@@ -12,7 +12,7 @@ class Appoint extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'appoints';
+    protected $table = 'Appoints';
 
     /**
      * The attributes that are mass assignable.
@@ -20,11 +20,11 @@ class Appoint extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason',
+        'DecisionNumber', 'DecisionDate', 'Reason',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
+        'DecisionDate',
     ];
 
     /**
@@ -33,7 +33,7 @@ class Appoint extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
+        'DecisionDate' => 'datetime',
     ];
 
     /**
@@ -50,7 +50,7 @@ class Appoint extends UuidModel
      */
     public function appointDetails()
     {
-        return $this->hasMany(AppointDetail::class, 'appoint_id');
+        return $this->hasMany(AppointDetail::class, 'AppointId');
     }
 
 }

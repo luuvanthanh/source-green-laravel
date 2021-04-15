@@ -11,7 +11,7 @@ class ShiftDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'shift_details';
+    protected $table = 'ShiftDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class ShiftDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'shift_id', 'start_time', 'end_time',
+        'ShiftId', 'StartTime', 'EndTime',
     ];
 
     /**

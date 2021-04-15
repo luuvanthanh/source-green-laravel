@@ -17,7 +17,7 @@ class FingerprintTimekeeper extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'fingerprint_timekeepers';
+    protected $table = 'FingerprintTimekeepers';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +25,7 @@ class FingerprintTimekeeper extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'name', 'serial_number', 'ip', 'port', 'status',
+        'Name', 'SerialNumber', 'Ip', 'Port', 'Status',
     ];
 
     /**
@@ -33,6 +33,6 @@ class FingerprintTimekeeper extends UuidModel
      */
     public function syncTime()
     {
-        return $this->hasOne(\ZK\Models\ZKSyncTime::class, 'device_id');
+        return $this->hasOne(\ZK\Models\ZKSyncTime::class, 'DeviceId');
     }
 }

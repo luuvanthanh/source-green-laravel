@@ -11,18 +11,18 @@ class RevokeShift extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'revoke_shifts';
+    protected $table = 'RevokeShifts';
 
     protected $fillable = [
-        'shift_id', 'employee_id', 'date_violation', 'status_work_declaration',
+        'ShiftId', 'EmployeeId', 'DateViolation', 'StatusWorkDeclaration',
     ];
 
     protected $dateTimeFields = [
-        'date_violation',
+        'DateViolation',
     ];
 
     protected $casts = [
-        'date_violation' => 'datetime',
+        'DateViolation' => 'datetime',
     ];
 
     /**
@@ -38,7 +38,7 @@ class RevokeShift extends UuidModel
      */
     public function shift()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'id', 'shift_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'Id', 'ShiftId');
     }
 
     /**
@@ -46,7 +46,7 @@ class RevokeShift extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->employee->timekeeping()->whereDate('attended_at', $this->date_violation);
+        return $this->employee->timekeeping()->whereDate('AttendedAt', $this->date_violation);
     }
 
 }

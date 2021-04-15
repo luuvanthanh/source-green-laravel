@@ -27,7 +27,7 @@ class CreatTimekeepingRequest extends FormRequest
         $trackingType = implode(',', config('constants-timekeeping.TRACKING_TYPE.COLLECTIONS'));
 
         return [
-            'employee_id' => 'required|exists:employees,id',
+            'EmployeeId' => 'required|exists:employees,id',
             'device_id' => 'required|exists:fingerprint_timekeepers,id',
             'type' => 'required|string|in:' . $type,
             'tracking_type' => 'required|string|in:' . $trackingType,

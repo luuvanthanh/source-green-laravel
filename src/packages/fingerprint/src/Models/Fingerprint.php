@@ -17,7 +17,7 @@ class Fingerprint extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'fingerprints';
+    protected $table = 'Fingerprints';
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +25,7 @@ class Fingerprint extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'employee_id', 'finger', 'size', 'valid', 'finger_index', 'status', 'device_id',
+        'EmployeeId', 'Finger', 'Size', 'Valid', 'FingerIndex', 'Status', 'DeviceId',
     ];
 
     /**

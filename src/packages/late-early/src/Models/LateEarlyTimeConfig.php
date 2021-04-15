@@ -9,10 +9,15 @@ class LateEarlyTimeConfig extends UuidModel
     public $incrementing = false;
 
     /**
+     * Declare the table name
+     */
+    protected $table = 'LateEarlyTimeConfigs';
+
+    /**
      * Define const late, early
      */
     const LATE = 'LATE';
     const EARLY = 'EARLY';
 
-    protected $fillable = ['from_time', 'to_time', 'description', 'type', 'created_at', 'updated_at', 'type'];
+    protected $fillable = ['FromTime', 'ToTime', 'Description', 'Type'];
 }

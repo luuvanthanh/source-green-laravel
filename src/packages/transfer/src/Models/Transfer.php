@@ -12,7 +12,7 @@ class Transfer extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'transfers';
+    protected $table = 'Transfers';
 
     /**
      * The attributes that are mass assignable.
@@ -20,11 +20,11 @@ class Transfer extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason',
+        'DecisionNumber', 'DecisionDate', 'Reason',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
+        'DecisionDate',
     ];
 
     /**
@@ -33,7 +33,7 @@ class Transfer extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
+        'DecisionDate' => 'datetime',
     ];
 
     /**
@@ -50,6 +50,6 @@ class Transfer extends UuidModel
      */
     public function transferDetails()
     {
-        return $this->hasMany(TransferDetail::class, 'transfer_id');
+        return $this->hasMany(TransferDetail::class, 'TransferId');
     }
 }

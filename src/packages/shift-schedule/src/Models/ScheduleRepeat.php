@@ -11,7 +11,7 @@ class ScheduleRepeat extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'schedule_repeats';
+    protected $table = 'ScheduleRepeats';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class ScheduleRepeat extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'schedule_id', 'repeat_by', 'count', 'interval', 'by_week_day',
+        'ScheduleId', 'RepeatBy', 'Count', 'Interval', 'ByWeekDay',
     ];
 
     /**
@@ -34,7 +34,7 @@ class ScheduleRepeat extends UuidModel
      */
     public function schedule()
     {
-        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'schedule_id');
+        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'ScheduleId');
     }
 
     /**

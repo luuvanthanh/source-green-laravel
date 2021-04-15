@@ -9,7 +9,7 @@ return [
     'reference_tables' => [
     'employees' => [
     'type' => 'bigInteger',
-    'fieldName' => 'employee_id'
+    'fieldName' => 'EmployeeId'
     ],
     'fingerprint_timekeepers' => [
     'type' => 'integer',

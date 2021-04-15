@@ -9,7 +9,7 @@ use Illuminate\Support\Arr;
 
 class ZKSync extends Model
 {
-    protected $table = 'zk_syncs';
+    protected $table = 'ZkSyncs';
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +17,7 @@ class ZKSync extends Model
      * @var array
      */
     protected $fillable = [
-        'payload', 'action',
+        'Payload', 'Action',
     ];
 
     public function subject(): MorphTo
@@ -28,7 +28,7 @@ class ZKSync extends Model
     public function scopeForSubject(Builder $query, Model $subject): Builder
     {
         return $query
-            ->where('subject_type', $subject->getMorphClass())
-            ->where('subject_id', $subject->getKey());
+            ->where('SubjectType', $subject->getMorphClass())
+            ->where('SubjectId', $subject->getKey());
     }
 }

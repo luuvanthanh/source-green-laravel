@@ -12,7 +12,7 @@ class DecisionRewardDetail extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'decision_reward_details';
+    protected $table = 'DecisionRewardDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +20,7 @@ class DecisionRewardDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_reward_id', 'employee_id', 'money', 'time_apply', 'note',
+        'DecisionRewardId', 'EmployeeId', 'Money', 'TimeApply', 'Note',
     ];
 
     /**
@@ -28,6 +28,6 @@ class DecisionRewardDetail extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 }

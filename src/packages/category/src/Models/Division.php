@@ -11,7 +11,7 @@ class Division extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'divisions';
+    protected $table = 'Divisions';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Division extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'code', 'name',
+        'Code', 'Name',
     ];
 
     /**

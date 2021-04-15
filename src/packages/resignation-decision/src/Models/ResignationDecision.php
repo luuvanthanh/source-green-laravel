@@ -11,7 +11,7 @@ class ResignationDecision extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'resignation_decisions';
+    protected $table = 'ResignationDecisions';
 
     /**
      * The attributes that are mass assignable.
@@ -19,13 +19,13 @@ class ResignationDecision extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'decision_number', 'decision_date', 'reason', 'employee_id', 'time_apply', 'pay_end_date', 'note',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'PayEndDate', 'Note',
     ];
 
     protected $dateTimeFields = [
-        'decision_date',
-        'time_apply',
-        'pay_end_date',
+        'DecisionDate',
+        'TimeApply',
+        'PayEndDate',
     ];
 
     /**
@@ -34,9 +34,9 @@ class ResignationDecision extends UuidModel
      * @var array
      */
     protected $casts = [
-        'decision_date' => 'datetime',
-        'time_apply' => 'datetime',
-        'pay_end_date' => 'datetime',
+        'DecisionDate' => 'datetime',
+        'TimeApply' => 'datetime',
+        'PayEndDate' => 'datetime',
     ];
 
     /**
@@ -44,7 +44,7 @@ class ResignationDecision extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'employee_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
 }
