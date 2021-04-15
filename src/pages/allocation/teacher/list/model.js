@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -10,86 +8,22 @@ export default {
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
-    }),
-    SET_ERROR: (state, { payload }) => ({
-      ...state,
-      error: {
-        isError: true,
-        data: {
-          ...payload,
-        },
-      },
-    }),
-    UPDATE_DATA: (state, { payload }) => ({
-      ...state,
-      data: state.data.map((item) =>
-        item.id === payload.id ? { ...item, status: payload.status } : item,
-      ),
-    }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        const response = yield saga.call(services.getStudents, payload);
+        callback(response);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
       }
     },
-    *REMOVE({ payload }, saga) {
+    *GET_TEACHERS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        const response = yield saga.call(services.getTeachers, payload);
+        callback(response);
       } catch (error) {
-        if (!isEmpty(error?.data?.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, xóa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *UPDATE_CONFIG({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.activeStatus, payload);
-        if (response) {
-          yield saga.put({
-            type: 'UPDATE_DATA',
-            payload: response.parsePayload,
-          });
-        }
-      } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
+        callback(null, error);
       }
     },
   },

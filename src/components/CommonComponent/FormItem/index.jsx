@@ -38,7 +38,8 @@ const renderChildren = (
   disabledMinutes,
   allowClear,
   picker,
-  radioInline
+  radioInline,
+  disabledKeys
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -251,7 +252,12 @@ const renderChildren = (
   radio: (
     <Radio.Group className="radio-custom">
       {data.map((item, index) => (
-        <Radio key={index} value={item.value} className={classnames({ 'd-inline-block': radioInline })}>
+        <Radio
+          key={index}
+          value={item.value}
+          className={classnames({ 'd-inline-block': radioInline })}
+          disabled={(disabledKeys || []).includes(item.value)}
+        >
           {item.label}
         </Radio>
       ))}
@@ -280,6 +286,7 @@ export default function FormItem({
   allowClear,
   picker,
   radioInline,
+  disabledKeys,
   ...rest
 }) {
   return (
@@ -302,7 +309,8 @@ export default function FormItem({
           disabledMinutes,
           allowClear,
           picker,
-          radioInline
+          radioInline,
+          disabledKeys
         )[type]
       }
     </Form.Item>

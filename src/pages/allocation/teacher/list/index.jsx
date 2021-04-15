@@ -1,17 +1,19 @@
-import React, { PureComponent } from 'react';
-import { connect, history, NavLink } from 'umi';
-import { Modal, Form, List, Avatar } from 'antd';
-import classnames from 'classnames';
+import { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import { debounce } from 'lodash';
-import styles from '@/assets/styles/Common/common.scss';
+import { connect, NavLink } from 'umi';
+import { Form, List, Avatar } from 'antd';
+import classnames from 'classnames';
 import { UserOutlined } from '@ant-design/icons';
+import { Scrollbars } from 'react-custom-scrollbars';
+import PropTypes from 'prop-types';
+
 import Text from '@/components/CommonComponent/Text';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable'
+
+import { variables } from '@/utils';
+import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -28,34 +30,24 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ allocationTeacherList, loading }) => ({
+const mapStateToProps = ({ loading }) => ({
   loading,
-  data: allocationTeacherList.data,
-  pagination: allocationTeacherList.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
-  formRef = React.createRef();
-
-  constructor(props) {
-    super(props);
-    const {
-      location: { query },
-    } = props;
+  constructor() {
+    super();
     this.state = {
-      visible: false,
-      search: {
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
-      objects: {},
+      branches: [],
+      classes: [],
+      students: [],
+      teachers: []
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    this.onLoad();
+    this.fetchBranches();
   }
 
   componentWillUnmount() {
@@ -76,81 +68,71 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  /**
-   * Function load data
-   */
-  onLoad = () => {
-    const { search, status } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
-      type: 'allocationTeacherList/GET_DATA',
+  fetchBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            branches: res?.items || []
+          })
+        }
+      }
+    })
+  }
+
+  fetchClasses = (branchId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_CLASSES',
       payload: {
-        ...search,
-        status,
+        branch: branchId
       },
-    });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
-  };
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            classes: res?.items || []
+          })
+        }
+      }
+    })
+  }
 
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
+  changeClass = (classId) => {
+    const { dispatch } = this.props;
+    const payload = { class: classId }
 
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
-  };
+    dispatch({
+      type: 'allocationTeacherList/GET_STUDENTS',
+      payload,
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            students: res?.items.map(item => item?.student) || []
+          })
+        }
+      }
+    })
 
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelect = (e, type) => {
-    this.debouncedSearch(e, type);
-  };
-
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
+    dispatch({
+      type: 'allocationTeacherList/GET_TEACHERS',
+      payload,
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            teachers: res?.items.map(item => item?.teacher) || []
+          })
+        }
+      }
+    })
+  }
 
   render() {
-    const {
-      match: { params },
-      loading: { effects },
-    } = this.props;
-    const loading = effects['allocationTeacherList/GET_DATA'];
+    const { students, branches, classes, teachers } = this.state
+
     return (
-      <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
+      <Form layout="vertical" ref={this.formRef}>
         <Helmet title="Danh sách" />
         <div
           className={classnames(
@@ -186,18 +168,23 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="position"
-                    rules={[variables.RULES.EMPTY]}
-                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
+                    allowClear={false}
+                    name="branch"
                     type={variables.SELECT}
+                    placeholder="Chọn cơ sở"
+                    allowClear={false}
+                    onChange={this.fetchClasses}
+                    data={branches}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
                     name="class"
-                    rules={[variables.RULES.EMPTY]}
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    onChange={this.changeClass}
+                    allowClear={false}
+                    placeholder="Chọn lớp"
                     type={variables.SELECT}
+                    data={classes}
                   />
                 </div>
               </div>
@@ -211,32 +198,17 @@ class Index extends PureComponent {
                       Danh sách trẻ
                     </Text>
                   </div>
-                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
                     <List
                       className={stylesAllocation.list}
-                      dataSource={[
-                        { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      ]}
-                      renderItem={(item) => (
-                        <List.Item key={item.id}>
+                      dataSource={students}
+                      renderItem={({ id, fullName, age }, index) => (
+                        <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
-                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                            <AvatarTable />
                             <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>Su beo</h3>
-                              <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                              <h3 className={stylesAllocation['title']}>{fullName}</h3>
+                              <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
                             </div>
                           </div>
                         </List.Item>
@@ -252,32 +224,17 @@ class Index extends PureComponent {
                       Danh sách giáo viên
                     </Text>
                   </div>
-                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
                     <List
                       className={stylesAllocation.list}
-                      dataSource={[
-                        { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                        { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      ]}
-                      renderItem={(item) => (
-                        <List.Item key={item.id}>
+                      dataSource={teachers}
+                      renderItem={({ id, fullName }, index) => (
+                        <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
-                            <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                            <AvatarTable />
                             <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>Lê Xuân Thanh</h3>
-                              <p className={stylesAllocation['norm']}>Giáo viên</p>
+                              <h3 className={stylesAllocation['title']}>{fullName}</h3>
+                              <p className={stylesAllocation['norm']}></p>
                             </div>
                           </div>
                         </List.Item>

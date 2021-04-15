@@ -1,19 +1,19 @@
-import React, { PureComponent } from 'react';
-import { connect, history, NavLink } from 'umi';
-import { Modal, Form, Tabs, List, Avatar, Checkbox } from 'antd';
-import classnames from 'classnames';
+import { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
-import moment from 'moment';
-import styles from '@/assets/styles/Common/common.scss';
-import { UserOutlined } from '@ant-design/icons';
+import { connect, NavLink } from 'umi';
+import { Form, List, Checkbox } from 'antd';
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
+
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import AvatarTable from '@/components/CommonComponent/AvatarTable'
+
 import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
+import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 let isMounted = true;
 /**
@@ -30,11 +30,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ allocationArrangeClass, loading }) => ({
+
+const mapStateToProps = ({ loading }) => ({
   loading,
-  data: allocationArrangeClass.data,
-  pagination: allocationArrangeClass.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -42,16 +40,22 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    const {
-      location: { query },
-    } = props;
     this.state = {
       search: {},
+      categories: {
+        students: [],
+        branches: [],
+        classes: []
+      },
+      selectedStudents: []
     };
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.fetchStudents()
+    this.fetchBranches()
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -71,14 +75,119 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  toggleCheckbox = (id) => e => {
+    const { checked } = e.target
+    this.setStateData(({ selectedStudents }) => ({
+      selectedStudents: checked
+        ? [
+          ...selectedStudents,
+          id
+        ]
+        : selectedStudents.filter(
+          selected => selected !== id
+        )
+    }))
+  }
+
+  selectBranch = (value) => {
+    this.fetchClasses(value)
+  }
+
+  fetchStudents = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_STUDENTS',
+      payload: {
+        classStatus: 'NO_CLASS',
+        ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX)
+      },
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              students: res?.items || []
+            }
+          }))
+        }
+      }
+    })
+  }
+
+  fetchBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              branches: res?.items || []
+            }
+          }))
+        }
+      }
+    })
+  }
+
+  fetchClasses = (branchId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_CLASSES',
+      payload: {
+        branch: branchId
+      },
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              classes: res?.items || []
+            }
+          }))
+        }
+      }
+    })
+  }
+
+  finishForm = ({ classId, joinDate }) => {
+    const { selectedStudents } = this.state
+    const { dispatch } = this.props
+    const requestData = selectedStudents.map(studentId => ({
+      studentId,
+      classId,
+      joinDate,
+    }))
+    dispatch({
+      type: 'allocationArrangeClass/ADD',
+      payload: requestData,
+      callback: () => {
+        this.formRef?.current?.resetFields();
+        this.setStateData(prev => ({
+          // xóa học sinh thủ công
+          categories: {
+            ...prev?.categories,
+            students: prev?.categories?.students.filter(
+              student => !selectedStudents.includes(student?.id)
+            )
+          },
+          selectedStudents: []
+        }))
+        // gọi lại danh sách học sinh từ API
+        // this.fetchStudents
+      }
+    })
+  }
+
   render() {
-    const {
-      match: { params },
-      loading: { effects },
-    } = this.props;
-    const loading = effects['allocationArrangeClass/GET_DATA'];
+    const { loading: { effects } } = this.props
+    const { categories: { students, branches, classes }, selectedStudents } = this.state
+
+    const submitLoading = effects['allocationArrangeClass/ADD']
+
     return (
-      <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
+      <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
         <Helmet title="Trẻ chưa xếp lớp" />
         <div
           className={classnames(
@@ -118,33 +227,19 @@ class Index extends PureComponent {
                     Danh sách trẻ chưa xếp lớp
                   </Text>
                 </div>
+
                 <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
                   <List
                     className={stylesAllocation.list}
-                    dataSource={[
-                      { id: 1, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 2, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 3, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 4, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 5, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 6, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 7, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 8, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 9, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 10, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 11, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 12, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 13, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                      { id: 14, name: 'Trần Văn Phú', age: '30 tháng tuổi' },
-                    ]}
-                    renderItem={(item) => (
-                      <List.Item key={item.id}>
-                        <Checkbox className={stylesAllocation.checkbox} />
+                    dataSource={students}
+                    renderItem={({ id, fullName, age }) => (
+                      <List.Item key={id}>
+                        <Checkbox className={stylesAllocation.checkbox} onChange={this.toggleCheckbox(id)} />
                         <div className={stylesAllocation['group-info']}>
-                          <Avatar shape="square" size={40} icon={<UserOutlined />} />
+                          <AvatarTable />
                           <div className={stylesAllocation['info']}>
-                            <h3 className={stylesAllocation['title']}>Su beo</h3>
-                            <p className={stylesAllocation['norm']}>32 tháng tuổi</p>
+                            <h3 className={stylesAllocation['title']}>{fullName}</h3>
+                            <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
                           </div>
                         </div>
                       </List.Item>
@@ -152,17 +247,27 @@ class Index extends PureComponent {
                   />
                 </Scrollbars>
               </div>
+
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                   <Text color="dark" size="normal">
-                    Đã chọn 2 bé
+                    Đã chọn {selectedStudents.length} bé
                   </Text>
-                  <Button color="success" size="large" className="ml-auto">
+
+                  <Button
+                    disabled={!selectedStudents.length}
+                    loading={submitLoading}
+                    color="success"
+                    size="large"
+                    className="ml-auto"
+                    htmlType="submit"
+                  >
                     Xếp lớp
                   </Button>
                 </div>
               </div>
             </div>
+
             <div className={stylesAllocation['right-container']}>
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
@@ -175,39 +280,37 @@ class Index extends PureComponent {
                     <div className="col-lg-6">
                       <FormItem
                         label="Cơ sở"
-                        name="position"
-                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                        type={variables.INPUT}
+                        name="branch"
+                        rules={[variables.RULES.EMPTY]}
+                        type={variables.SELECT}
+                        data={branches}
+                        onChange={this.selectBranch}
+                        allowClear={false}
                       />
                     </div>
+                  </div>
+                  <hr />
+
+                  {!!classes.length && (
+                    <>
+                      <div className="row mt-3">
+                        <div className="col-lg-12">
+                          <FormItem
+                            label="Chọn lớp để xếp"
+                            name="classId"
+                            type={variables.RADIO}
+                            data={classes.map(({ id, name }) => ({ value: id, label: name }))}
+                            rules={[variables.RULES.EMPTY]}
+                          />
+                        </div>
+                      </div>
+                      <hr />
+                    </>
+                  )}
+
+                  <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem
-                        label="Lớp"
-                        name="class"
-                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                        type={variables.INPUT_PASSWORD}
-                      />
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row mt-3">
-                    <div className="col-lg-12">
-                      <FormItem
-                        label="Chọn lớp để xếp"
-                        name="radio"
-                        type={variables.RADIO}
-                        data={[
-                          { value: '1', label: 'Lớp preschool 1' },
-                          { value: '2', label: 'Lớp preschool 2' },
-                          { value: '3', label: 'Lớp preschool 3' },
-                        ]}
-                      />
-                    </div>
-                  </div>
-                  <hr />
-                  <div className="row mt-3">
-                    <div className="col-lg-12">
-                      <FormItem label="Ngày vào lớp" name="date" type={variables.DATE_PICKER} />
+                      <FormItem label="Ngày vào lớp" name="joinDate" type={variables.DATE_PICKER} />
                     </div>
                   </div>
                 </div>
