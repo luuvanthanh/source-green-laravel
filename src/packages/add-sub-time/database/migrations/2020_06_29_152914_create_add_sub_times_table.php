@@ -14,9 +14,9 @@ class CreateAddSubTimesTable extends Migration
     public function up()
     {
         Schema::create('AddSubTimes', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('EmployeeId', 36);
+            $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->string('Type');
             $table->timestamp('CreationTime', 0)->nullable();

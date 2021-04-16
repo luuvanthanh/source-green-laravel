@@ -14,25 +14,25 @@ class CreateLabourContractsTable extends Migration
     public function up()
     {
         Schema::create('LabourContracts', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('ContractNumber');
             $table->date('ContractDate');
-            $table->string('TypeOfContractId');
+            $table->uuid('TypeOfContractId');
             $table->foreign('TypeOfContractId')->references('Id')->on('TypeOfContracts');
-            $table->string('EmployeeId', 36);
+            $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->integer('Year');
             $table->integer('Month');
-            $table->string('DivisionId', 36);
+            $table->uuid('DivisionId');
             $table->foreign('DivisionId')->references('Id')->on('Divisions');
             $table->date('ContractFrom');
             $table->date('ContractTo');
-            $table->string('PositionId', 36);
+            $table->uuid('PositionId');
             $table->foreign('PositionId')->references('Id')->on('Positions');
             $table->string('Work');
             $table->string('WorkTime');
-            $table->string('BranchId', 36);
+            $table->uuid('BranchId');
             $table->foreign('BranchId')->references('Id')->on('Branches');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

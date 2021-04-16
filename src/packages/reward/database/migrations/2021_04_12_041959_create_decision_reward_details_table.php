@@ -14,11 +14,11 @@ class CreateDecisionRewardDetailsTable extends Migration
     public function up()
     {
         Schema::create('DecisionRewardDetails', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('EmployeeId', 36);
+            $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
-            $table->string('DecisionRewardId', 36)->unsigned();
+            $table->uuid('DecisionRewardId')->unsigned();
             $table->foreign('DecisionRewardId')->references('Id')->on('DecisionRewards')->onDelete('cascade');
             $table->integer('Money');
             $table->date('TimeApply')->nullable();

@@ -14,13 +14,13 @@ class CreateSchedulesTable extends Migration
     public function up()
     {
         Schema::create('Schedules', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->date('StartDate');
             $table->date('EndDate');
-            $table->string('ShiftId', 36);
+            $table->uuid('ShiftId');
             $table->foreign('ShiftId')->references('Id')->on('Shifts')->onDelete('cascade');
-            $table->string('EmployeeId', 36);
+            $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

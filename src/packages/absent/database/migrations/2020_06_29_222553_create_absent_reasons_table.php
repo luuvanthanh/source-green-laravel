@@ -14,10 +14,10 @@ class CreateAbsentReasonsTable extends Migration
     public function up()
     {
         Schema::create('AbsentReasons', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Name');
-            $table->string('AbsentTypeId', 36)->unsigned();
+            $table->uuid('AbsentTypeId');
             $table->foreign('AbsentTypeId')->references('Id')->on('AbsentTypes')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

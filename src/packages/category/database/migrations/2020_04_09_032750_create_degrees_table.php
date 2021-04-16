@@ -14,7 +14,7 @@ class CreateDegreesTable extends Migration
     public function up()
     {
         Schema::create('Degrees', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');

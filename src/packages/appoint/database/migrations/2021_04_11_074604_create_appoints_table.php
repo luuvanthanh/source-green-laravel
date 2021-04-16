@@ -14,7 +14,7 @@ class CreateAppointsTable extends Migration
     public function up()
     {
         Schema::create('Appoints', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->string('DecisionNumber');
             $table->string('DecisionDate');

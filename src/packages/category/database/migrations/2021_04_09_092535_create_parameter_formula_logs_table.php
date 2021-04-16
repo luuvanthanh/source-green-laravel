@@ -14,11 +14,11 @@ class CreateParameterFormulaLogsTable extends Migration
     public function up()
     {
         Schema::create('ParameterFormulaLogs', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('ParameterFormulaId', 36);
+            $table->uuid('ParameterFormulaId');
             $table->foreign('ParameterFormulaId')->references('Id')->on('ParameterFormulas');
-            $table->string('EditEmployee', 36);
+            $table->uuid('EditEmployee');
             $table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('EditDate');
             $table->date('ApplyDate')->nullable();

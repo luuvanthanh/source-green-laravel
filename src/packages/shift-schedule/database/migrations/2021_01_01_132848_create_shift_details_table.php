@@ -14,11 +14,11 @@ class CreateShiftDetailsTable extends Migration
     public function up()
     {
         Schema::create('ShiftDetails', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->time('StartTime');
             $table->time('EndTime');
-            $table->string('ShiftId', 36);
+            $table->uuid('ShiftId');
             $table->foreign('ShiftId')->references('Id')->on('Shifts')->onDelete('cascade');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

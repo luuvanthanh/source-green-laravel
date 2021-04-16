@@ -27,15 +27,15 @@ class ShiftCreateRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'shift_code' => [
+            'ShiftCode' => [
                 'required',
                 'string',
-                Rule::unique('shifts')->where(function ($query) {
-                    $query->where(['status' => Shift::ON]);
+                Rule::unique('Shifts')->where(function ($query) {
+                    $query->where(['Status' => Shift::ON]);
                 }),
             ],
-            'description' => 'string',
-            'time' => ['required', 'array',
+            'Description' => 'string',
+            'Time' => ['required', 'array',
                 function ($attribute, $value, $fail) {
                     for ($i = 1; $i < count($value); $i++) {
                         if ($value[$i]['start_time'] <= $value[$i - 1]['end_time']) {

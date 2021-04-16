@@ -14,11 +14,11 @@ class CreateParameterValueLogsTable extends Migration
     public function up()
     {
         Schema::create('ParameterValueLogs', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('ParameterValueId', 36);
+            $table->uuid('ParameterValueId');
             $table->foreign('ParameterValueId')->references('Id')->on('ParameterValues');
-            $table->string('EditEmployee', 36);
+            $table->uuid('EditEmployee');
             $table->foreign('EditEmployee')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->date('EditDate');
             $table->string('ValueDefault')->nullable();

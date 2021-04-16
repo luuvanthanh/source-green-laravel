@@ -37,7 +37,7 @@ class Shift extends UuidModel
      */
     public function shiftDetail()
     {
-        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ShiftDetail::class);
+        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ShiftDetail::class, 'ShiftId');
     }
 
     /**

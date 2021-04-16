@@ -14,15 +14,15 @@ class CreatePositionLevelsTable extends Migration
     public function up()
     {
         Schema::create('PositionLevels', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('EmployeeId', 36);
+            $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
-            $table->string('BranchId', 36);
+            $table->uuid('BranchId');
             $table->foreign('BranchId')->references('Id')->on('Branches');
-            $table->string('PositionId', 36);
+            $table->uuid('PositionId');
             $table->foreign('PositionId')->references('Id')->on('Positions');
-            $table->string('DivisionId', 36);
+            $table->uuid('DivisionId');
             $table->foreign('DivisionId')->references('Id')->on('Divisions');
             $table->date('StartDate');
             $table->date('EndDate')->nullable();

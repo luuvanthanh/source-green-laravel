@@ -16,7 +16,7 @@ class CreateEmployeesTable extends Migration
         Schema::create('Employees', function (Blueprint $table) {
             $table->bigIncrements("FingerprintId");
             $table->dropPrimary("Employees_FingerprintId_primary");
-            $table->string('Id', 36)->unique();
+            $table->uuid('Id')->unique();
             $table->primary('Id');
             $table->string('FullName')->nullable();
             $table->date('DateOfBirth')->nullable();
@@ -33,15 +33,15 @@ class CreateEmployeesTable extends Migration
             $table->string('Religion')->nullable();
             $table->string('Gender')->nullable();
             $table->string('TaxCode')->nullable();
-            $table->string('DegreeId', 36)->nullable();
+            $table->uuid('DegreeId')->nullable();
             $table->foreign('DegreeId')->references('Id')->on('Degrees');
-            $table->string('TrainingMajorId', 36)->nullable();
+            $table->uuid('TrainingMajorId')->nullable();
             $table->foreign('TrainingMajorId')->references('Id')->on('TrainingMajors');
-            $table->string('TrainingSchoolId', 36)->nullable();
+            $table->uuid('TrainingSchoolId')->nullable();
             $table->foreign('TrainingSchoolId')->references('Id')->on('TrainingSchools');
             $table->date('DateOff')->nullable();
             $table->date('Address')->nullable();
-            $table->string('EducationalLevelId', 36)->nullable();
+            $table->uuid('EducationalLevelId')->nullable();
             $table->foreign('EducationalLevelId')->references('Id')->on('EducationalLevels');
             $table->date('WorkDate')->nullable();
             $table->string('HealthInsuranceBookNumber')->nullable();

@@ -24,9 +24,9 @@ class AddTableZkSyncsTable extends Migration
             $table->timestamp('LastModificationTime', 0)->nullable();
         });
         Schema::create('ZkDeviceSyncTimes', function (Blueprint $table) {
-            $table->string('Id', 36)->index()->unique();
+            $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('DeviceId', 36);
+            $table->uuid('DeviceId');
             $table->foreign('DeviceId')->references('Id')->on('FingerprintTimekeepers')->onDelete('cascade');
             $table->bigInteger('ZkSyncId')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();

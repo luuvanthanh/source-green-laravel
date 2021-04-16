@@ -12,7 +12,7 @@ class ShiftDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
-            $value['shift_id'] = $id;
+            $value['ShiftId'] = $id;
             $shiftDetail = ShiftDetail::create($value);
         }
         return true;

@@ -61,11 +61,21 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
      */
     public function create(array $attributes)
     {
-        $attributes['status'] = Shift::ON;
-        $shift = $this->model()::create($attributes);
-        ShiftDetailServices::add($shift->id, $attributes['time']);
+        $attributes['Status'] = Shift::ON;
+        \DB::beginTransaction();
+        try {
+            $shift = $this->model()::create($attributes);
+            ShiftDetailServices::add($shift->Id, $attributes['Time']);
 
-        return parent::find($shift->id);
+            \DB::commit();
+
+        } catch (\Throwable $th) {
+            dd($th);
+            \DB::rollback();
+
+        }
+
+        return parent::find($shift->Id);
     }
 
     /**
