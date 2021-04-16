@@ -20,6 +20,7 @@ import AttendanceLayout from './Attendance';
 import TimetableLayout from './Timetable';
 import NotificationLayout from './Notification';
 import MediaLayout from './Media';
+import HealthLayout from './Health';
 
 const Layouts = {
   public: PublicLayout,
@@ -38,6 +39,7 @@ const Layouts = {
   timetable: TimetableLayout,
   notification: NotificationLayout,
   media: MediaLayout,
+  health: HealthLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -95,6 +97,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/ghi-nhan(?=\/|$)/i.test(pathname)) {
         return 'media';
+      }
+      if (/^\/suc-khoe(?=\/|$)/i.test(pathname)) {
+        return 'health';
       }
       return 'public';
     };

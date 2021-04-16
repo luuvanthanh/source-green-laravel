@@ -941,6 +941,42 @@ export default [
         ],
       },
       // MEDIA
+      // HEALTH
+      {
+        path: '/suc-khoe',
+        component: './health/layout',
+        routes: [
+          {
+            path: '/suc-khoe',
+            redirect: '/suc-khoe/hom-nay',
+          },
+          {
+            path: '/suc-khoe/hom-nay',
+            component: './health',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/suc-khoe/lich-su',
+            component: './health/history',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/suc-khoe/hom-nay/:id/chi-tiet',
+            component: './health/update',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/suc-khoe/lich-su/:id/chi-tiet',
+            component: './health/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // HEALTH
       {
         path: '/404',
         component: './404',

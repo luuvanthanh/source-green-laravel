@@ -757,6 +757,24 @@ export async function getLeftMenuMedia() {
     },
   ];
 }
+export async function getLeftMenuHealth() {
+  return [
+    {
+      title: 'Sức khỏe hôm nay',
+      key: 'today',
+      url: ['/suc-khoe/hom-nay', '/suc-khoe/hom-nay/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [],
+    },
+    {
+      title: 'Lịch sử',
+      key: 'history',
+      url: ['/suc-khoe/lich-su', '/suc-khoe/lich-su/:id/chi-tiet'],
+      icon: 'icon icon-clock',
+      permission: [],
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }

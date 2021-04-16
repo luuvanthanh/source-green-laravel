@@ -255,7 +255,10 @@ const renderChildren = (
         <Radio
           key={index}
           value={item.value}
-          className={classnames({ 'd-inline-block': radioInline })}
+          className={classnames({
+            'd-inline-block': radioInline,
+            'my-0': radioInline,
+          })}
           disabled={(disabledKeys || []).includes(item.value)}
         >
           {item.label}
