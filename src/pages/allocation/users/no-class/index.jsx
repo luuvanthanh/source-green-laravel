@@ -28,10 +28,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ allocationUsersTransfers, loading }) => ({
+const mapStateToProps = ({ allocationUsersNoClass, loading }) => ({
   loading,
-  data: allocationUsersTransfers.data,
-  pagination: allocationUsersTransfers.pagination,
+  data: allocationUsersNoClass.data,
+  pagination: allocationUsersNoClass.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -73,7 +73,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const loading = effects['allocationUsersTransfers/GET_DATA'];
+    const loading = effects['allocationUsersNoClass/GET_DATA'];
     return (
       <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
         <Helmet title="Điều chuyển nhân viên" />
@@ -122,38 +122,7 @@ class Index extends PureComponent {
                     Danh sách nhân viên
                   </Text>
                 </div>
-                <div className="pt20 pl20 pr20">
-                  <div className="row">
-                    <div className="col-lg-4">
-                      <FormItem
-                        label="Cơ sở"
-                        name="branch"
-                        type={variables.SELECT}
-                        data={[]}
-                        allowClear={false}
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <FormItem
-                        label="Bộ phận"
-                        name="class"
-                        type={variables.SELECT}
-                        data={[]}
-                        allowClear={false}
-                      />
-                    </div>
-                    <div className="col-lg-4">
-                      <FormItem
-                        label="Chức vụ"
-                        name="position"
-                        type={variables.SELECT}
-                        data={[]}
-                        allowClear={false}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
+                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
                   <List
                     className={stylesAllocation.list}
                     dataSource={[
@@ -201,7 +170,7 @@ class Index extends PureComponent {
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
                   <Text color="dark" size="large-medium">
-                    Thông tin điều chuyển
+                    Thông tin xếp lớp
                   </Text>
                 </div>
                 <div className={stylesAllocation['content-form']}>
@@ -263,7 +232,7 @@ class Index extends PureComponent {
               <div className={stylesAllocation['footer-content']}>
                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
                   <Button color="success" size="large" className="ml-auto">
-                    Điểu chuyển
+                    Xếp lớp
                   </Button>
                 </div>
               </div>

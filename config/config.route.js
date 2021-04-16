@@ -812,6 +812,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/phan-bo/nhan-vien/chua-xep-lop',
+            component: './allocation/users/no-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // ALLOCATION

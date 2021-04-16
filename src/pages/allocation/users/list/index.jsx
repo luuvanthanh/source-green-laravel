@@ -314,9 +314,7 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Nhân viên phân bổ" />
-        <div
-          className={classnames(styles['content-form'], styles['content-form-children'])}
-        >
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Nhân viên</Text>
@@ -337,6 +335,13 @@ class Index extends PureComponent {
                 className={classnames(stylesAllocation['link'])}
               >
                 Điều chuyển
+              </NavLink>
+              <NavLink
+                to="/phan-bo/nhan-vien/chua-xep-lop"
+                activeClassName={stylesAllocation['active']}
+                className={classnames(stylesAllocation['link'])}
+              >
+                Nhân viên chưa sắp xếp
               </NavLink>
             </div>
           </div>
