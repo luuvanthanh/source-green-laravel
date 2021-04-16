@@ -941,6 +941,24 @@ export default [
         ],
       },
       // MEDIA
+      // HEALTH
+      {
+        path: '/suc-khoe',
+        component: './health/layout',
+        routes: [
+          {
+            path: '/suc-khoe',
+            redirect: '/suc-khoe/hom-nay',
+          },
+          {
+            path: '/suc-khoe/hom-nay',
+            component: './health',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // HEALTH
       {
         path: '/404',
         component: './404',

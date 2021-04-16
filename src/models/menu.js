@@ -13,6 +13,7 @@ import {
   getLeftMenuTimeTable,
   getLeftMenuNotification,
   getLeftMenuMedia,
+  getLeftMenuHealth,
 } from '@/services/menu';
 
 export default {
@@ -32,6 +33,7 @@ export default {
     menuLeftTimeTable: [],
     menuLeftNotification: [],
     menuLeftMedia: [],
+    menuLeftHealth: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -52,6 +54,7 @@ export default {
       const menuLeftTimeTable = yield call(getLeftMenuTimeTable);
       const menuLeftNotification = yield call(getLeftMenuNotification);
       const menuLeftMedia = yield call(getLeftMenuMedia);
+      const menuLeftHealth = yield call(getLeftMenuHealth);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -69,6 +72,7 @@ export default {
           menuLeftTimeTable,
           menuLeftNotification,
           menuLeftMedia,
+          menuLeftHealth,
         },
       });
     },
