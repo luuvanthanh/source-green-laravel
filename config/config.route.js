@@ -962,6 +962,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/suc-khoe/hom-nay/:id/chi-tiet',
+            component: './health/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/suc-khoe/lich-su/:id/chi-tiet',
+            component: './health/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HEALTH

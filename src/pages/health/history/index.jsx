@@ -109,7 +109,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
-            onClick={() => history.push('/suc-khoe/hom-nay/1/chi-tiet')}
+            onClick={() => history.push('/suc-khoe/lich-su/1/chi-tiet')}
           >
             Chi tiết
           </Button>
