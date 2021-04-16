@@ -551,7 +551,11 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Tablet giáo viên',
       key: 'tablet',
-      url: ['/cau-hinh/tablet-giao-vien', '/cau-hinh/tablet-giao-vien/tao-moi', '/cau-hinh/tablet-giao-vien/:id/chi-tiet'],
+      url: [
+        '/cau-hinh/tablet-giao-vien',
+        '/cau-hinh/tablet-giao-vien/tao-moi',
+        '/cau-hinh/tablet-giao-vien/:id/chi-tiet',
+      ],
       icon: 'icon icon-tablet',
       permission: [],
       pro: true,
@@ -670,7 +674,11 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Nhân viên',
       key: 'users',
-      url: ['/phan-bo/nhan-vien/danh-sach', '/phan-bo/nhan-vien/dieu-chuyen'],
+      url: [
+        '/phan-bo/nhan-vien/danh-sach',
+        '/phan-bo/nhan-vien/dieu-chuyen',
+        '/phan-bo/nhan-vien/chua-xep-lop',
+      ],
       icon: 'icon icon-man',
       permission: [],
       pro: true,
