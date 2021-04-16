@@ -964,7 +964,7 @@ export default [
           },
           {
             path: '/suc-khoe/hom-nay/:id/chi-tiet',
-            component: './health/details',
+            component: './health/update',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
