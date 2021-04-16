@@ -34,11 +34,12 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ exchangeDetails, loading, menu }) => ({
+const mapStateToProps = ({ exchangeDetails, loading, menu, user }) => ({
   loading,
   details: exchangeDetails.details,
   error: exchangeDetails.error,
   menuData: menu.menuLeftExchange,
+  user: user.user,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -161,6 +162,7 @@ class Index extends PureComponent {
 
   onSend = () => {
     const {
+      user,
       match: { params },
       dispatch,
     } = this.props;
@@ -174,7 +176,7 @@ class Index extends PureComponent {
         type: 'exchangeDetails/ADD',
         payload: {
           communicationId: params.id,
-          type: 'TEACHER',
+          type: user?.role?.toUpperCase(),
           description,
         },
         callback: (response) => {
