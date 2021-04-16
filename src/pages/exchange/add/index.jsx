@@ -36,8 +36,8 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ exchangeAdd, loading, menu, user }) => ({
-  user: user.user,
   loading,
+  user: user.user,
   categories: exchangeAdd.categories,
   menuData: menu.menuLeftExchange,
 });

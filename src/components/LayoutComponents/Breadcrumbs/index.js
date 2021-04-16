@@ -61,7 +61,7 @@ class Breadcrumbs extends React.Component {
       const listItemPath = pathname.split('/');
       return listItemPath
         .map((item, index) => {
-          return validator.isUUID(item) ? ':id' : item;
+          return validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item;
         })
         .join('/');
     }

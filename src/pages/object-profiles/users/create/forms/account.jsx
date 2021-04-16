@@ -64,6 +64,7 @@ const Index = memo(
       if (!isEmpty(details) && params.id) {
         formRef.current.setFieldsValue({
           ...details,
+          ...details.user,
         });
       }
     }, [details]);

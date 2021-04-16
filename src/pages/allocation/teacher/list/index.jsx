@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import Text from '@/components/CommonComponent/Text';
 import FormItem from '@/components/CommonComponent/FormItem';
-import AvatarTable from '@/components/CommonComponent/AvatarTable'
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import { variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -41,7 +41,7 @@ class Index extends PureComponent {
       branches: [],
       classes: [],
       students: [],
-      teachers: []
+      teachers: [],
     };
     setIsMounted(true);
   }
@@ -75,33 +75,33 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: res?.items || []
-          })
+            branches: res?.items || [],
+          });
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   fetchClasses = (branchId) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: branchId
+        branch: branchId,
       },
       callback: (res) => {
         if (res) {
           this.setStateData({
-            classes: res?.items || []
-          })
+            classes: res?.items || [],
+          });
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   changeClass = (classId) => {
     const { dispatch } = this.props;
-    const payload = { class: classId }
+    const payload = { class: classId };
 
     dispatch({
       type: 'allocationTeacherList/GET_STUDENTS',
@@ -109,11 +109,11 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            students: res?.items.map(item => item?.student) || []
-          })
+            students: res?.items.map((item) => item?.student) || [],
+          });
         }
-      }
-    })
+      },
+    });
 
     dispatch({
       type: 'allocationTeacherList/GET_TEACHERS',
@@ -121,15 +121,15 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            teachers: res?.items.map(item => item?.teacher) || []
-          })
+            teachers: res?.items.map((item) => item?.teacher) || [],
+          });
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   render() {
-    const { students, branches, classes, teachers } = this.state
+    const { students, branches, classes, teachers } = this.state;
 
     return (
       <Form layout="vertical" ref={this.formRef}>
@@ -146,6 +146,13 @@ class Index extends PureComponent {
           {/* TABS LINK */}
           <div className="d-flex align-items-center mt-3 mb-3">
             <div className={stylesAllocation['tabs-link']}>
+              <NavLink
+                to="/phan-bo/giao-vien/chua-xep-lop"
+                activeClassName={stylesAllocation['active']}
+                className={classnames(stylesAllocation['link'])}
+              >
+                Giáo viên chưa xếp lớp
+              </NavLink>
               <NavLink
                 to="/phan-bo/giao-vien/danh-sach"
                 activeClassName={stylesAllocation['active']}

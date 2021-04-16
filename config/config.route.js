@@ -765,6 +765,12 @@ export default [
             authority: [],
           },
           {
+            path: '/phan-bo/giao-vien/chua-xep-lop',
+            component: './allocation/teacher/no-class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/phan-bo/giao-vien/danh-sach',
             component: './allocation/teacher/list',
             wrappers: ['@/wrappers/auth'],
@@ -863,6 +869,12 @@ export default [
           {
             path: '/thong-bao/tao-moi',
             component: './notification/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/thong-bao/:id/chi-tiet',
+            component: './notification/details',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

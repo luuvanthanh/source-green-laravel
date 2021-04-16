@@ -300,6 +300,7 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['OPusers/GET_DATA'];
@@ -313,7 +314,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/tao-moi?type=info`)}
+              onClick={() => history.push(`${pathname}/tao-moi?type=general`)}
             >
               Tạo hồ sơ
             </Button>
