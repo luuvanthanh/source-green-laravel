@@ -315,3 +315,35 @@
   top: 13px;
   color: $text-success;
 }
+
+.popover-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 600px;
+  .item {
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 10px 0;
+  }
+  .norm {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: $text;
+    margin-top: 10px;
+  }
+  .icon {
+    padding-right: 0;
+  }
+  img {
+    height: 40px;
+    width: 40px;
+    transition: 0.3s all;
+    &:hover {
+      transform: scale(1.3);
+    }
+  }
+}

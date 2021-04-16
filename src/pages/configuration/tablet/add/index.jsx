@@ -26,12 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, classesAdd }) => ({
+const mapStateToProps = ({ menu, loading, tabletAdd }) => ({
   menuConfiguration: menu.menuConfiguration,
   loading,
-  details: classesAdd.details,
-  branches: classesAdd.branches,
-  error: classesAdd.error,
+  details: tabletAdd.details,
+  error: tabletAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -51,14 +50,10 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'classesAdd/GET_DETAILS',
+        type: 'tabletAdd/GET_DETAILS',
         payload: params,
       });
     }
-    dispatch({
-      type: 'classesAdd/GET_BRANCHES',
-      payload: params,
-    });
   }
 
   componentDidUpdate(prevProps) {
@@ -101,7 +96,7 @@ class Index extends PureComponent {
       id: get(params, 'id'),
     };
     dispatch({
-      type: params?.id ? 'classesAdd/UPDATE' : 'classesAdd/ADD',
+      type: params?.id ? 'tabletAdd/UPDATE' : 'tabletAdd/ADD',
       payload: params?.id ? payload : omit(payload, 'id'),
       callback: (response, error) => {
         if (response) {
@@ -126,15 +121,14 @@ class Index extends PureComponent {
   render() {
     const {
       error,
-      branches,
       menuConfiguration,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['classesAdd/ADD'] || effects['classesAdd/UPDATE'];
-    const loading = effects['classesAdd/GET_DETAILS'];
+    const loadingSubmit = effects['tabletAdd/ADD'] || effects['tabletAdd/UPDATE'];
+    const loading = effects['tabletAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo lớp" menu={menuConfiguration} />
+        <Breadcrumbs last="Tạo tablet giáo viên" menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -143,7 +137,7 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+            <div className={classnames(styles['content-form'], 'pt-0')}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -151,42 +145,49 @@ class Index extends PureComponent {
                 <div className="row mt-3">
                   <div className="col-lg-6">
                     <FormItem
-                      label="MÃ"
-                      name="code"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="TÊN"
-                      name="name"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem label="NĂM" name="year" rules={[]} type={variables.INPUT_COUNT} />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={branches}
+                      data={[]}
                       label="CƠ SỞ"
                       name="branchId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={[]}
+                      label="KHỐI"
+                      name="departmentId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={[]}
+                      label="LỚP"
+                      name="classId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="TÊN THIẾT BỊ"
+                      name="device"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.INPUT}
+                    />
+                  </div>
                 </div>
                 <div className="row">
                   <div className="col-lg-12">
                     <FormItem
-                      label="GHI CHÚ"
-                      name="description"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
+                      label="MAC ADRESS"
+                      name="macAdress"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.INPUT}
                     />
                   </div>
                 </div>

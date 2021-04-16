@@ -406,7 +406,7 @@ export async function getLeftMenuConfiguration() {
       title: 'Vai trò',
       key: 'roles',
       url: ['/cau-hinh/vai-tro', '/cau-hinh/vai-tro/tao-moi', '/cau-hinh/vai-tro/:id/chi-tiet'],
-      icon: 'icon icon-setting',
+      icon: 'icon icon-list',
       permission: [],
       pro: true,
     },
@@ -414,7 +414,7 @@ export async function getLeftMenuConfiguration() {
       title: 'Môn học',
       key: 'subjects',
       url: ['/cau-hinh/mon-hoc', '/cau-hinh/mon-hoc/tao-moi', '/cau-hinh/mon-hoc/:id/chi-tiet'],
-      icon: 'icon icon-setting',
+      icon: 'icon icon-list',
       permission: [],
       pro: true,
     },
@@ -422,7 +422,7 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Danh mục Lớp',
       key: 'categoriesClass',
-      icon: 'icon icon-setting',
+      icon: 'icon icon-list',
       permission: [],
       children: [
         {
@@ -444,7 +444,7 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Danh mục',
       key: 'categories',
-      icon: 'icon icon-setting',
+      icon: 'icon icon-list',
       permission: [],
       children: [
         {
@@ -548,12 +548,19 @@ export async function getLeftMenuConfiguration() {
       ],
       pro: true,
     },
-
+    {
+      title: 'Tablet giáo viên',
+      key: 'tablet',
+      url: ['/cau-hinh/tablet-giao-vien', '/cau-hinh/tablet-giao-vien/tao-moi', '/cau-hinh/tablet-giao-vien/:id/chi-tiet'],
+      icon: 'icon icon-tablet',
+      permission: [],
+      pro: true,
+    },
     {
       title: 'Lịch học',
       key: 'schedules',
       url: ['/cau-hinh/lich-hoc', '/cau-hinh/lich-hoc/tao-moi', '/cau-hinh/lich-hoc/:id/chi-tiet'],
-      icon: 'icon icon-setting',
+      icon: 'icon icon-list',
       permission: [],
       pro: true,
     },

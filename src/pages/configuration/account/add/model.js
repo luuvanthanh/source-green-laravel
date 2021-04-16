@@ -1,6 +1,7 @@
 import { isEmpty, get } from 'lodash';
 import { notification } from 'antd';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'configurationAccountAdd',
@@ -12,6 +13,9 @@ export default {
       data: {},
     },
     details: {},
+    roles: [],
+    parents: [],
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -37,51 +41,69 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_ROLES: (state, { payload }) => ({
+      ...state,
+      roles: payload.items,
+    }),
+    SET_PARENTS: (state, { payload }) => ({
+      ...state,
+      parents: payload.items,
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.items,
+    }),
   },
   effects: {
+    *GET_ROLES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getRoles, payload);
+        yield saga.put({
+          type: 'SET_ROLES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_PARENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParents, payload);
+        yield saga.put({
+          type: 'SET_PARENTS',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.put({
-          type: 'INIT_STATE',
-        });
         yield saga.call(services.add, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
-        callback(null, error);
+        callback(null, error?.data?.error);
       }
     },
-    *UPDATE({ payload, callback }, saga) {
+    *ADD_EMPLOYEES_ACCOUNTS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
+        yield saga.call(services.addEmployeesAccounts, payload);
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
-        callback(null, error);
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_PARENTS_ACCOUNTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addParentAccounts, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
     *GET_DETAILS({ payload }, saga) {

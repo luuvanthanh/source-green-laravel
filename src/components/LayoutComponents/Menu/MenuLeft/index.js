@@ -1,15 +1,15 @@
 import _ from 'lodash';
 import React from 'react';
 import store from 'store';
-import { Helper } from '@/utils';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { connect, Link, withRouter } from 'umi';
-import { Menu, Layout, Badge } from 'antd';
+import { Menu, Layout, Badge, Popover } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
 import validator from 'validator';
+import { dataSource } from '@/services/menuHome.json';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
@@ -277,6 +277,22 @@ class MenuLeft extends React.Component {
         };
 
     const menu = this.generateMenuItems();
+    const content = (
+      <Scrollbars autoHeight autoHeightMax={'50vh'}>
+        <div className={styles['popover-container']}>
+          {dataSource.map((item, index) => (
+            <Link to={item.url} className={styles.item} key={index}>
+              <div className={styles['item-image']}>
+                <img src={item.src} alt="notification" className={styles.icon} />
+              </div>
+              <div className={styles['item-content']}>
+                <p className={styles['norm']}>{item.title}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </Scrollbars>
+    );
     return (
       <Sider
         {...menuSettings}
@@ -292,7 +308,16 @@ class MenuLeft extends React.Component {
               />
               {!isMenuCollapsed && <h1 className={styles.title}>{info?.title || 'Điểm danh'}</h1>}
             </div>
-            {!isMenuCollapsed && <span className="icon-toggle"></span>}
+            {!isMenuCollapsed && (
+              <Popover
+                placement="rightTop"
+                className={styles['popover-custom']}
+                content={content}
+                trigger="click"
+              >
+                <span className="icon-toggle"></span>
+              </Popover>
+            )}
           </Link>
         </div>
         <Scrollbars

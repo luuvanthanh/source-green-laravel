@@ -734,6 +734,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/cau-hinh/tablet-giao-vien',
+            component: './configuration/tablet',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tablet-giao-vien/tao-moi',
+            component: './configuration/tablet/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/cau-hinh/tablet-giao-vien/:id/chi-tiet',
+            component: './configuration/tablet/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CONFIGURATION
