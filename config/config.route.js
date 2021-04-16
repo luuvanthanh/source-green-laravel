@@ -38,6 +38,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu',
+            component: './criteria/criteria-datatypes',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu/tao-moi',
+            component: './criteria/criteria-datatypes/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu/:id/chi-tiet',
+            component: './criteria/criteria-datatypes/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi',
+            component: './criteria/criteria-groups',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi/tao-moi',
+            component: './criteria/criteria-groups/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi/:id/chi-tiet',
+            component: './criteria/criteria-groups/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA

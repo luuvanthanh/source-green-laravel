@@ -635,6 +635,36 @@ export async function getLeftMenuCriteria() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Cấu hình',
+      key: 'categories',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Kiểu dữ liệu',
+          key: 'criteria-datatypes',
+          url: [
+            '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu',
+            '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu/tao-moi',
+            '/tieu-chi-danh-gia/cau-hinh/kieu-du-lieu/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Nhóm tiêu chí',
+          key: 'criteria-groups',
+          url: [
+            '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi',
+            '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi/tao-moi',
+            '/tieu-chi-danh-gia/cau-hinh/nhom-tieu-chi/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuChildren() {

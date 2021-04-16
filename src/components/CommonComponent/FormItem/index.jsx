@@ -39,7 +39,7 @@ const renderChildren = (
   allowClear,
   picker,
   radioInline,
-  disabledKeys
+  disabledKeys,
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -127,9 +127,11 @@ const renderChildren = (
   tags: (
     <Select
       dataSet={data}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
+      filterOption={(input, option) => {
+        if (Helper.slugify(option?.children)) {
+          return Helper.slugify(option?.children)?.indexOf(Helper.slugify(input)) >= 0;
+        }
+      }}
       maxTagCount={maxTagCount}
       mode="tags"
       onChange={onChange}
@@ -313,7 +315,7 @@ export default function FormItem({
           allowClear,
           picker,
           radioInline,
-          disabledKeys
+          disabledKeys,
         )[type]
       }
     </Form.Item>

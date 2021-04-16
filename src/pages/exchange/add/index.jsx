@@ -225,7 +225,6 @@ class Index extends PureComponent {
     const { description, students, studentId, files, loadingStudents, hasMore } = this.state;
     const loading = effects['exchangeAdd/GET_DATA'];
     const loadingSubmit = effects['exchangeAdd/ADD'];
-    console.log(this.props.user);
     const props = {
       beforeUpload: (file) => {
         return null;
