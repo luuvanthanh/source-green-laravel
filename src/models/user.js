@@ -5,7 +5,6 @@ import { last } from 'lodash';
 import Cookies from 'universal-cookie';
 import { AbilityBuilder } from '@casl/ability';
 import ability from '@/utils/ability';
-import jwt_decode from "jwt-decode";
 
 const permission = ['QLTK', 'QLTK_VIEW', 'QLTK_NEW', 'QLTK_EDIT', 'QLTK_DELETE'];
 const splitPermission = (string) => {
@@ -35,7 +34,6 @@ const UserModel = {
             type: 'SET_USER',
             payload: {
               ...me,
-              ...jwt_decode(response.access_token),
               authorized: true,
               permissions: permission,
             },
@@ -74,7 +72,6 @@ const UserModel = {
             type: 'SET_USER',
             payload: {
               ...response,
-              ...jwt_decode(payload.access_token),
               authorized: true,
               permissions: permission,
             },

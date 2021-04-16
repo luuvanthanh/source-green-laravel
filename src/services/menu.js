@@ -651,7 +651,11 @@ export async function getLeftMenuAllocation() {
     {
       title: 'Giáo viên',
       key: 'teacher',
-      url: ['/phan-bo/giao-vien/danh-sach', '/phan-bo/giao-vien/dieu-chuyen'],
+      url: [
+        '/phan-bo/giao-vien/danh-sach',
+        '/phan-bo/giao-vien/dieu-chuyen',
+        '/phan-bo/giao-vien/chua-xep-lop',
+      ],
       icon: 'icon icon-woman',
       permission: [],
       pro: true,
@@ -711,7 +715,7 @@ export async function getLeftMenuNotification() {
     {
       title: 'Danh sách',
       key: 'notification',
-      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi'],
+      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi', '/thong-bao/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,

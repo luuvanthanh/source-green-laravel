@@ -31,10 +31,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ allocationTeacherTransfers, loading }) => ({
+const mapStateToProps = ({ allocationTeacherNoClass, loading }) => ({
   loading,
-  data: allocationTeacherTransfers.data,
-  pagination: allocationTeacherTransfers.pagination,
+  data: allocationTeacherNoClass.data,
+  pagination: allocationTeacherNoClass.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -76,14 +76,14 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const loading = effects['allocationTeacherTransfers/GET_DATA'];
+    const loading = effects['allocationTeacherNoClass/GET_DATA'];
     return (
       <Form layout="vertical" initialValues={{}} colon={false} ref={this.formRef}>
         <Helmet title="Điều chuyển giáo viên" />
         <div
           className={classnames(
             styles['content-form'],
-            styles['content-form-allocationTeacherTransfers'],
+            styles['content-form-allocationTeacherNoClass'],
           )}
         >
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -122,7 +122,7 @@ class Index extends PureComponent {
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
                   <Text color="dark" size="large-medium">
-                    Danh sách giáo viên
+                    Danh sách giáo viên chưa xếp lớp
                   </Text>
                 </div>
                 <Scrollbars autoHeight autoHeightMax={window.innerHeight - 444}>
@@ -160,6 +160,9 @@ class Index extends PureComponent {
                   <Text color="dark" size="normal">
                     Đã chọn 1 giáo viên
                   </Text>
+                  <Button color="success" size="large" className="ml-auto">
+                    Xếp lớp
+                  </Button>
                 </div>
               </div>
             </div>
@@ -167,7 +170,7 @@ class Index extends PureComponent {
               <div className={stylesAllocation['content']}>
                 <div className={stylesAllocation['heading']}>
                   <Text color="dark" size="large-medium">
-                    Thông tin điều chuyển
+                    Danh sách cơ sở/lớp
                   </Text>
                 </div>
                 <div className={stylesAllocation['content-form']}>
@@ -185,13 +188,12 @@ class Index extends PureComponent {
                       />
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className={stylesAllocation['footer-content']}>
-                <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-                  <Button color="success" size="large" className="ml-auto">
-                    Điểu chuyển
-                  </Button>
+                  <hr />
+                  <div className="row mt-3">
+                    <div className="col-lg-12">
+                      <FormItem label="Ngày vào lớp" name="date" type={variables.DATE_PICKER} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
