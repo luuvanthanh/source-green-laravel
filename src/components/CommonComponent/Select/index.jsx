@@ -9,7 +9,7 @@ export default function SelectCustom({ options, dataSet, ...rest }) {
     <Select
       {...rest}
       filterOption={(input, option) =>
-        Helper.slugify(option.children).indexOf(Helper.slugify(input)) >= 0
+        Helper.slugify(option.children)?.indexOf(Helper.slugify(input)) >= 0
       }
       notFoundContent={<NoData simple />}
     >
