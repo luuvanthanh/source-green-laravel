@@ -153,7 +153,7 @@ class Index extends PureComponent {
                     <FormItem
                       label="MÃ"
                       name="code"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -161,7 +161,7 @@ class Index extends PureComponent {
                     <FormItem
                       label="TÊN"
                       name="name"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
