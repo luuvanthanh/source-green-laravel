@@ -95,6 +95,10 @@ export default {
         yield saga.call(services.addEmployeesAccounts, payload);
         callback(payload);
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -103,6 +107,10 @@ export default {
         yield saga.call(services.addParentAccounts, payload);
         callback(payload);
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },

@@ -147,7 +147,6 @@ class Index extends PureComponent {
           history.goBack();
         }
         if (error) {
-          console.log(error?.validationErrors);
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
               this.formRef.current.setFields([
