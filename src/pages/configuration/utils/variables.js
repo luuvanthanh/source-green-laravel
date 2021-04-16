@@ -43,6 +43,8 @@ export const variables = {
     COMMON: 'Tham số dùng chung',
     DECLARE: 'Tham số khai báo hàng tháng',
   },
+  PARENT: 'PARENT',
+  EMPLOYEES: 'EMPLOYEES',
 };
 
 export default variables;

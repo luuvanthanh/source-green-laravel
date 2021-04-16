@@ -18,7 +18,10 @@ export default class Helpers {
     if (type === variables.STATUS.EXPIRE) {
       return <Tag color="danger">{variables.STATUS_NAME.EXPIRE}</Tag>;
     }
-    return <Tag color="danger">{variables.STATUS_NAME.VALID}</Tag>;
+    if (type === variables.STATUS.VALID) {
+      return <Tag color="danger">{variables.STATUS_NAME.VALID}</Tag>;
+    }
+    return <Tag color="success">{variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
   static getStartDate = (date, choose) => {

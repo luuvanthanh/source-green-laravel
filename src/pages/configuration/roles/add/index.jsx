@@ -139,10 +139,7 @@ class Index extends PureComponent {
         >
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
-              <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI VAI TRÒ</Text>
-              </div>
-              <div className={styles['content-children']}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   Thông tin vai trò
                 </Text>

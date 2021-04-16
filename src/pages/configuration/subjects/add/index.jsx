@@ -70,28 +70,9 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs last="Tạo môn học" menu={menuConfiguration} />
-        <Form
-          className={styles['layout-form']}
-          layout="vertical"
-          initialValues={{
-            criteria: [
-              {
-                itemsCriterias: [
-                  {
-                    children: [{}],
-                  },
-                ],
-              },
-            ],
-          }}
-          colon={false}
-          ref={this.formRef}
-        >
+        <Form className={styles['layout-form']} layout="vertical" colon={false} ref={this.formRef}>
           <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">TẠO MỚI MÔN HỌC, CHI NHÁNH</Text>
-            </div>
-            <div className={styles['content-children']}>
+            <div className={classnames(styles['content-children'], 'mt10')}>
               <Text color="dark" size="large-medium">
                 THÔNG TIN CHUNG
               </Text>

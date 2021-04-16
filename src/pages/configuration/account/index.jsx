@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar, Switch } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -16,7 +15,6 @@ import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,11 +30,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ configurationAccount, loading }) => ({
-  data: configurationAccount.data,
-  pagination: configurationAccount.pagination,
   loading,
+  data: configurationAccount.data,
+  error: configurationAccount.error,
+  pagination: configurationAccount.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -84,7 +82,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -92,10 +90,12 @@ class Index extends PureComponent {
       type: 'configurationAccount/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
   };
 
   /**
@@ -168,71 +168,21 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: false,
+    pageSizeOptions: false,
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'configurationAccount/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
 
   /**
    * Function header table
@@ -243,17 +193,24 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'Mã ID',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => 'TK01',
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
         title: 'Tên tài khoản',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => 'Tài khoản 1',
+        render: (record) => record.userName,
+      },
+      {
+        title: 'Email',
+        key: 'email',
+        className: 'min-width-130',
+        render: (record) => record.email,
       },
       {
         title: 'Vai trò',
@@ -266,22 +223,7 @@ class Index extends PureComponent {
         key: 'status',
         className: 'min-width-120',
         width: 120,
-        render: (record) => HelperModules.tagStatus('VERIFIED'),
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
+        render: (record) => HelperModules.tagStatus(record.status),
       },
     ];
   };
@@ -289,6 +231,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      error,
       pagination,
       match: { params },
       loading: { effects },
@@ -358,6 +301,8 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
+              error={error}
+              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',

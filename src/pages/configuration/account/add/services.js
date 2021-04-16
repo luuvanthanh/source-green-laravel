@@ -1,7 +1,9 @@
-import request from '@/utils/requestLavarel';
+import requestLavarel from '@/utils/requestLavarel';
+import request from '@/utils/request';
+import { Helper, variables } from '@/utils';
 
 export function add(data) {
-  return request('/v1/shifts', {
+  return requestLavarel('/v1/shifts', {
     method: 'POST',
     data: {
       description: data.description,
@@ -14,7 +16,7 @@ export function add(data) {
 }
 
 export function update(data) {
-  return request(`/v1/shifts/${data.id}`, {
+  return requestLavarel(`/v1/shifts/${data.id}`, {
     method: 'PUT',
     data: {
       description: data.description,
@@ -28,10 +30,44 @@ export function update(data) {
 }
 
 export function details(id) {
-  return request(`/v1/shifts/${id}`, {
+  return requestLavarel(`/v1/shifts/${id}`, {
     method: 'GET',
     params: {
       include: 'shiftDetail',
+    },
+  });
+}
+
+export function addParentAccounts(data) {
+  return request('/parent-accounts', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function addEmployeesAccounts(data) {
+  return request('/employee-accounts', {
+    method: 'POST',
+    data,
+  });
+}
+
+export function getParents(params) {
+  return request(`/parents`, {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getEmployees(params) {
+  return request(`/employees`, {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
 }

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import styles from './index.scss';
 import Slider from 'react-slick';
-import { dataSource } from './data.json';
+import { dataSource } from '@/services/menuHome.json';
 
 @connect(({ user, loading }) => ({ user, loading }))
 class Index extends PureComponent {
