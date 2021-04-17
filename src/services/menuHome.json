@@ -71,6 +71,11 @@
         "url": "/suc-khoe"
       },
       {
+        "title": "Quản trị nhân sự",
+        "src": "/images/home/hrm.svg",
+        "url": "/quan-ly-nhan-su"
+      },
+      {
         "title": "Cấu hình",
         "src": "/images/home/gear.svg",
         "url": "/cau-hinh"
