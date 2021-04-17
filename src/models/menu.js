@@ -14,6 +14,7 @@ import {
   getLeftMenuNotification,
   getLeftMenuMedia,
   getLeftMenuHealth,
+  getLeftMenuHRM,
 } from '@/services/menu';
 
 export default {
@@ -34,6 +35,7 @@ export default {
     menuLeftNotification: [],
     menuLeftMedia: [],
     menuLeftHealth: [],
+    menuLeftHRM: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -55,6 +57,7 @@ export default {
       const menuLeftNotification = yield call(getLeftMenuNotification);
       const menuLeftMedia = yield call(getLeftMenuMedia);
       const menuLeftHealth = yield call(getLeftMenuHealth);
+      const menuLeftHRM = yield call(getLeftMenuHRM);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -73,6 +76,7 @@ export default {
           menuLeftNotification,
           menuLeftMedia,
           menuLeftHealth,
+          menuLeftHRM,
         },
       });
     },

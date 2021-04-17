@@ -209,12 +209,42 @@ export async function getLeftMenuProfile() {
         },
       ],
     },
+    {
+      title: 'Cấu hình',
+      key: 'categories',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Cơ sở',
+          key: 'branches',
+          url: [
+            '/ho-so-doi-tuong/cau-hinh/co-so',
+            '/ho-so-doi-tuong/cau-hinh/co-so/tao-moi',
+            '/ho-so-doi-tuong/cau-hinh/co-so/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Lớp học',
+          key: 'class',
+          url: [
+            '/ho-so-doi-tuong/cau-hinh/lop-hoc',
+            '/ho-so-doi-tuong/cau-hinh/lop-hoc/tao-moi',
+            '/ho-so-doi-tuong/cau-hinh/lop-hoc/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuSchedules() {
   return [
     {
-      title: 'Lịch làm việc',
+      title: 'Lịch học',
       key: 'schedules',
       url: ['/diem-danh/hoc-sinh'],
       icon: 'icon icon-clock',
@@ -222,7 +252,7 @@ export async function getLeftMenuSchedules() {
       pro: true,
       children: [
         {
-          title: 'Chia ca',
+          title: 'Lịch học trẻ',
           key: 'schedules',
           url: ['/diem-danh/hoc-sinh'],
           permission: [],
@@ -236,7 +266,7 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'Cấu hình',
+          title: 'Cấu hình lịch học',
           key: 'config',
           url: [
             '/diem-danh/cau-hinh',
@@ -249,28 +279,28 @@ export async function getLeftMenuSchedules() {
       ],
     },
     {
-      title: 'Công',
+      title: 'Điểm danh',
       key: 'works',
       icon: 'icon icon-open-book',
       permission: [],
       pro: true,
       children: [
         {
-          title: 'Tổng hợp công',
+          title: 'TH điểm danh',
           key: 'total',
           url: ['/diem-danh/tong-hop-cong'],
           permission: [],
           pro: true,
         },
         {
-          title: 'Tổng hợp công giờ',
+          title: 'TH điểm danh theo giờ',
           key: 'hours',
           url: ['/diem-danh/tong-hop-cong-gio'],
           permission: [],
           pro: true,
         },
         {
-          title: 'Công thêm',
+          title: 'Thêm buổi học',
           key: 'additional-times',
           url: [
             '/diem-danh/cong-them',
@@ -281,7 +311,7 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'Công trừ',
+          title: 'Trừ buổi học',
           key: 'subtraction-times',
           url: [
             '/diem-danh/cong-tru',
@@ -418,115 +448,12 @@ export async function getLeftMenuConfiguration() {
       permission: [],
       pro: true,
     },
-
-    {
-      title: 'Danh mục Lớp',
-      key: 'categoriesClass',
-      icon: 'icon icon-list',
-      permission: [],
-      children: [
-        {
-          title: 'Cơ sở',
-          key: 'branches',
-          url: ['/cau-hinh/co-so', '/cau-hinh/co-so/tao-moi', '/cau-hinh/co-so/:id/chi-tiet'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Lớp học',
-          key: 'class',
-          url: ['/cau-hinh/lop-hoc', '/cau-hinh/lop-hoc/tao-moi', '/cau-hinh/lop-hoc/:id/chi-tiet'],
-          permission: [],
-          pro: true,
-        },
-      ],
-    },
     {
       title: 'Danh mục',
       key: 'categories',
       icon: 'icon icon-list',
       permission: [],
       children: [
-        {
-          title: 'Bộ phận',
-          key: 'divisions',
-          url: ['/cau-hinh/bo-phan', '/cau-hinh/bo-phan/tao-moi', '/cau-hinh/bo-phan/:id/chi-tiet'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Chức vụ',
-          key: 'positions',
-          url: ['/cau-hinh/chuc-vu', '/cau-hinh/chuc-vu/tao-moi', '/cau-hinh/chuc-vu/:id/chi-tiet'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Trường đào tạo',
-          key: 'training-schools',
-          url: [
-            '/cau-hinh/truong-dao-tao',
-            '/cau-hinh/truong-dao-tao/tao-moi',
-            '/cau-hinh/truong-dao-tao/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Bằng cấp',
-          key: 'degrees',
-          url: [
-            '/cau-hinh/bang-cap',
-            '/cau-hinh/bang-cap/tao-moi',
-            '/cau-hinh/bang-cap/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Ngành đào tạo',
-          key: 'training-majors',
-          url: [
-            '/cau-hinh/nganh-dao-tao',
-            '/cau-hinh/nganh-dao-tao/tao-moi',
-            '/cau-hinh/nganh-dao-tao/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Trình độ học vấn',
-          key: 'educational-levels',
-          url: [
-            '/cau-hinh/trinh-do-hoc-van',
-            '/cau-hinh/trinh-do-hoc-van/tao-moi',
-            '/cau-hinh/trinh-do-hoc-van/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Tham số giá trị',
-          key: 'paramater-values',
-          url: [
-            '/cau-hinh/tham-so-gia-tri',
-            '/cau-hinh/tham-so-gia-tri/tao-moi',
-            '/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Tham số công thức',
-          key: 'paramater-formulas',
-          url: [
-            '/cau-hinh/tham-so-cong-thuc',
-            '/cau-hinh/tham-so-cong-thuc/tao-moi',
-            '/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
         {
           title: 'Loại công việc',
           key: 'job-types',
@@ -813,6 +740,117 @@ export async function getLeftMenuHealth() {
       url: ['/suc-khoe/lich-su', '/suc-khoe/lich-su/:id/chi-tiet'],
       icon: 'icon icon-clock',
       permission: [],
+    },
+  ];
+}
+export async function getLeftMenuHRM() {
+  return [
+    {
+      title: 'Nhân viên',
+      key: 'users',
+      url: [
+        '/quan-ly-nhan-su/nhan-vien',
+        '/quan-ly-nhan-su/nhan-vien/tao-moi',
+        '/quan-ly-nhan-su/nhan-vien/:id/chi-tiet',
+      ],
+      icon: 'icon icon-man',
+      permission: [],
+    },
+    {
+      title: 'Cấu hình',
+      key: 'categories',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Bộ phận',
+          key: 'divisions',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/bo-phan',
+            '/quan-ly-nhan-su/cau-hinh/bo-phan/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/bo-phan/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Chức vụ',
+          key: 'positions',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/chuc-vu',
+            '/quan-ly-nhan-su/cau-hinh/chuc-vu/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/chuc-vu/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Trường đào tạo',
+          key: 'training-schools',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/truong-dao-tao',
+            '/quan-ly-nhan-su/cau-hinh/truong-dao-tao/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/truong-dao-tao/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Bằng cấp',
+          key: 'degrees',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/bang-cap',
+            '/quan-ly-nhan-su/cau-hinh/bang-cap/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/bang-cap/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Ngành đào tạo',
+          key: 'training-majors',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao',
+            '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Trình độ học vấn',
+          key: 'educational-levels',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/trinh-do-hoc-van',
+            '/quan-ly-nhan-su/cau-hinh/trinh-do-hoc-van/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/trinh-do-hoc-van/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tham số giá trị',
+          key: 'paramater-values',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
     },
   ];
 }

@@ -21,6 +21,7 @@ import TimetableLayout from './Timetable';
 import NotificationLayout from './Notification';
 import MediaLayout from './Media';
 import HealthLayout from './Health';
+import HRMLayout from './HRM';
 
 const Layouts = {
   public: PublicLayout,
@@ -40,6 +41,7 @@ const Layouts = {
   notification: NotificationLayout,
   media: MediaLayout,
   health: HealthLayout,
+  hrm: HRMLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -61,6 +63,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/trang-chu(?=\/|$)/i.test(pathname)) {
         return 'public';
+      }
+      if (/^\/quan-ly-nhan-su(?=\/|$)/i.test(pathname)) {
+        return 'hrm';
       }
       if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
         return 'exchange';
