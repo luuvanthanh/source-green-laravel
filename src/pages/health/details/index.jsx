@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect ,useRef} from 'react';
 import { List } from 'antd';
 import { Helmet } from 'react-helmet';
 import { connect } from 'umi';
@@ -23,6 +23,8 @@ const mapStateToProps = ({ loading, user, medicalItemsDetails }) => ({
 });
 const Index = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const loading = effects[`healthDetail/GET_DETAILS`];
+  const mounted = useRef(false);
+  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
   useEffect(() => {
     mounted.current = true;

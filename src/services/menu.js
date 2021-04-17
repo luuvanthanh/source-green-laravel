@@ -663,6 +663,17 @@ export async function getLeftMenuCriteria() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Thuộc nhóm tiêu chí',
+          key: 'criteria-group-properties',
+          url: [
+            '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi',
+            '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi/tao-moi',
+            '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
     },
   ];

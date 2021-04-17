@@ -1,3 +1,5 @@
+@import '@/assets/styles/mixins.scss';
+
 .ant-timeline {
   .ant-timeline-item {
     &-last {
@@ -6,3 +8,9 @@
   }
 }
 
+.fc-event-main {
+  background-color: $background-success;
+  .fc-event-title {
+    color: $text-white;
+  }
+}

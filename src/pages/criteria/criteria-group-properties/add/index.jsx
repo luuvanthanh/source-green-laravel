@@ -26,11 +26,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, criteriaDatatypesAdd }) => ({
+const mapStateToProps = ({ menu, loading, criteriaGroupPropertiesAdd }) => ({
   menuData: menu.menuLeftCriteria,
   loading,
-  details: criteriaDatatypesAdd.details,
-  error: criteriaDatatypesAdd.error,
+  details: criteriaGroupPropertiesAdd.details,
+  criteriaGroups: criteriaGroupPropertiesAdd.criteriaGroups,
+  criteriaDataTypes: criteriaGroupPropertiesAdd.criteriaDataTypes,
+  error: criteriaGroupPropertiesAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -52,10 +54,18 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'criteriaDatatypesAdd/GET_DETAILS',
+        type: 'criteriaGroupPropertiesAdd/GET_DETAILS',
         payload: params,
       });
     }
+    dispatch({
+      type: 'criteriaGroupPropertiesAdd/GET_CRITERIA_GROUPS',
+      payload: params,
+    });
+    dispatch({
+      type: 'criteriaGroupPropertiesAdd/GET_CRITERIA_DATATYPES',
+      payload: params,
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -64,19 +74,8 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      if (details.type === 'select') {
-        this.formRef.current.setFieldsValue({
-          ...details,
-          value: JSON.parse(details.value),
-        });
-      } else {
-        this.formRef.current.setFieldsValue({
-          ...details,
-        });
-      }
-
-      this.setStateData({
-        type: details.type,
+      this.formRef.current.setFieldsValue({
+        ...details,
       });
     }
   }
@@ -99,19 +98,6 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  onChangeType = (type) => {
-    this.setStateData(
-      {
-        type,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          value: undefined,
-        });
-      },
-    );
-  };
-
   onFinish = (values) => {
     const {
       dispatch,
@@ -122,14 +108,8 @@ class Index extends PureComponent {
       ...values,
       id: get(params, 'id'),
     };
-    if (type === 'select') {
-      payload = {
-        ...payload,
-        value: JSON.stringify(values.value),
-      };
-    }
     dispatch({
-      type: params?.id ? 'criteriaDatatypesAdd/UPDATE' : 'criteriaDatatypesAdd/ADD',
+      type: params?.id ? 'criteriaGroupPropertiesAdd/UPDATE' : 'criteriaGroupPropertiesAdd/ADD',
       payload: params?.id ? payload : omit(payload, 'id'),
       callback: (response, error) => {
         if (response) {
@@ -156,15 +136,17 @@ class Index extends PureComponent {
       error,
       menuData,
       dataSelect,
+      criteriaGroups,
+      criteriaDataTypes,
       loading: { effects },
     } = this.props;
     const { type } = this.state;
     const loadingSubmit =
-      effects['criteriaDatatypesAdd/ADD'] || effects['criteriaDatatypesAdd/UPDATE'];
-    const loading = effects['criteriaDatatypesAdd/GET_DETAILS'];
+      effects['criteriaGroupPropertiesAdd/ADD'] || effects['criteriaGroupPropertiesAdd/UPDATE'];
+    const loading = effects['criteriaGroupPropertiesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo kiểu dữ liệu" menu={menuData} />
+        <Breadcrumbs last="Tạo thuộc nhóm tiêu chí" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -179,62 +161,35 @@ class Index extends PureComponent {
                   THÔNG TIN CHUNG
                 </Text>
                 <div className="row mt-3">
-                  <div className="col-lg-6">
+                  <div className="col-lg-12">
                     <FormItem
-                      label="MÃ"
-                      name="key"
+                      label="TÊN"
+                      name="property"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
+                </div>
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      data={[
-                        {
-                          id: 'textbox',
-                          name: 'textbox',
-                        },
-                        {
-                          id: 'select',
-                          name: 'select',
-                        },
-                        {
-                          id: 'number',
-                          name: 'number',
-                        },
-                      ]}
-                      label="LOẠI"
-                      name="type"
+                      data={criteriaDataTypes.map((item) => ({
+                        id: item.id,
+                        name: item.key,
+                      }))}
+                      label="KIỂU DỮ LIỆU"
+                      name="criteriaDataTypeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
-                      onChange={this.onChangeType}
                     />
                   </div>
-                </div>
-                <div className="row">
-                  {type === 'textbox' && (
-                    <div className="col-lg-6">
-                      <FormItem label="GIÁ TRỊ" name="value" type={variables.INPUT} />
-                    </div>
-                  )}
-                  {type === 'select' && (
-                    <div className="col-lg-6">
-                      <FormItem label="GIÁ TRỊ" name="value" type={variables.SELECT_TAGS} />
-                    </div>
-                  )}
-                  {type === 'number' && (
-                    <div className="col-lg-6">
-                      <FormItem label="GIÁ TRỊ" name="value" type={variables.INPUT_COUNT} />
-                    </div>
-                  )}
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="Hiển thị ghi chú"
-                      name="isHasNote"
-                      type={variables.SWITCH}
-                      valuePropName="checked"
+                      data={criteriaGroups}
+                      label="NHÓM TIÊU CHÍ"
+                      name="criteriaGroupId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
                     />
                   </div>
                 </div>

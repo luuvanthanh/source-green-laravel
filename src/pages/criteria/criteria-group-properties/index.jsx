@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ criteriaDatatypes, loading }) => ({
-  data: criteriaDatatypes.data,
-  error: criteriaDatatypes.error,
-  pagination: criteriaDatatypes.pagination,
+const mapStateToProps = ({ criteriaGroupProperties, loading }) => ({
+  data: criteriaGroupProperties.data,
+  error: criteriaGroupProperties.error,
+  pagination: criteriaGroupProperties.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -87,7 +87,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'criteriaDatatypes/GET_DATA',
+      type: 'criteriaGroupProperties/GET_DATA',
       payload: {
         ...search,
       },
@@ -182,7 +182,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'criteriaDatatypes/REMOVE',
+          type: 'criteriaGroupProperties/REMOVE',
           payload: {
             id,
             pagination: {
@@ -213,48 +213,22 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'MÃ',
+        title: 'TÊN',
+        key: 'property',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.property}</Text>,
+      },
+      {
+        title: 'KIỂU DỮ LIỆU',
         key: 'key',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.key}</Text>,
+        render: (record) => <Text size="normal">{record?.criteriaDataType?.key}</Text>,
       },
       {
-        title: 'LOẠI',
-        key: 'type',
+        title: 'NHÓM TIÊU CHÍ',
+        key: 'criteriaGroup',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.type}</Text>,
-      },
-      {
-        title: 'GIÁ TRỊ',
-        key: 'value',
-        className: 'min-width-150',
-        render: (record) => {
-          const isJson = Helper.isJSON(record.value);
-          if (isJson) {
-            const data = JSON.parse(record.value);
-            return (
-              <div>
-                {data.map((item, index) => (
-                  <Tag color="geekblue" key={index}>
-                    {item}
-                  </Tag>
-                ))}
-              </div>
-            );
-          }
-          return record.value;
-        },
-      },
-      {
-        title: 'HIỂN THỊ GHI CHÚ',
-        key: 'isHasNote',
-        className: 'min-width-150',
-        render: (record) => {
-          if (record.isHasNote) {
-            return <Tag color="success">Có</Tag>;
-          }
-          return <Tag color="danger">Không</Tag>;
-        },
+        render: (record) => <Text size="normal">{record?.criteriaGroup?.name}</Text>,
       },
       {
         key: 'action',
@@ -285,13 +259,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['criteriaDatatypes/GET_DATA'];
+    const loading = effects['criteriaGroupProperties/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách kiểu dữ liệu" />
+        <Helmet title="Danh sách thuộc nhóm tiêu chí" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH KIỂU DỮ LIỆU</Text>
+            <Text color="dark">DANH SÁCH THUỘC NHÓM TIÊU CHÍ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
