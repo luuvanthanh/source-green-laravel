@@ -74,6 +74,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi',
+            component: './criteria/criteria-group-properties',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi/tao-moi',
+            component: './criteria/criteria-group-properties/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/thuoc-nhom-tieu-chi/:id/chi-tiet',
+            component: './criteria/criteria-group-properties/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA
