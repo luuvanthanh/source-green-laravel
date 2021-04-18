@@ -730,7 +730,7 @@ export async function getLeftMenuHealth() {
     {
       title: 'Sức khỏe hôm nay',
       key: 'today',
-      url: ['/suc-khoe/hom-nay', '/suc-khoe/hom-nay/:id/chi-tiet'],
+      url: ['/suc-khoe/hom-nay', '/suc-khoe/hom-nay/tao-moi', '/suc-khoe/hom-nay/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [],
     },

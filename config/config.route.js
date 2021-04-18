@@ -1083,6 +1083,12 @@ export default [
             authority: [],
           },
           {
+            path: '/suc-khoe/hom-nay/tao-moi',
+            component: './health/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/suc-khoe/hom-nay/:id/chi-tiet',
             component: './health/update',
             wrappers: ['@/wrappers/auth'],
