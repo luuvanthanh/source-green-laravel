@@ -12,6 +12,9 @@ export default {
       status: null,
       isError: false,
     },
+    degrees: [],
+    trainningMajors: [],
+    trainningSchool: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -22,6 +25,18 @@ export default {
         status: null,
         isError: false,
       },
+    }),
+    SET_DEGREES: (state, { payload }) => ({
+      ...state,
+      degrees: payload.parsePayload,
+    }),
+    SET_TRAINNING_MAJORS: (state, { payload }) => ({
+      ...state,
+      trainningMajors: payload.parsePayload,
+    }),
+    SET_TRAINNING_SCHOOLS: (state, { payload }) => ({
+      ...state,
+      trainningSchool: payload.parsePayload,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -124,6 +139,48 @@ export default {
         const response = yield saga.call(services.detailsAccount, payload);
         yield saga.put({
           type: 'SET_DETAILS_ACCOUNT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DEGREES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDegrees, payload);
+        yield saga.put({
+          type: 'SET_DEGREES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TRAINNING_MAJORS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTrainingMajors, payload);
+        yield saga.put({
+          type: 'SET_TRAINNING_MAJORS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TRAINNING_SCHOOLS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTrainingSchools, payload);
+        yield saga.put({
+          type: 'SET_TRAINNING_SCHOOLS',
           payload: response,
         });
       } catch (error) {

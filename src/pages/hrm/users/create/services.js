@@ -1,8 +1,35 @@
 import request from '@/utils/requestLavarel';
-import { omit, pickBy } from 'lodash';
-const removeParams = (params) => {
-  return omit(pickBy(params, (value) => value !== null && value !== undefined));
-};
+import { Helper, variables } from '@/utils';
+
+export function getDegrees(params = {}) {
+  return request('/v1/degrees', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getTrainingMajors(params = {}) {
+  return request('/v1/training-majors', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getTrainingSchools(params = {}) {
+  return request('/v1/training-schools', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
 
 export function add(data = {}) {
   return request('/v1/employees', {

@@ -6,10 +6,6 @@ export const menu = [
     label: 'Thông tin cơ bản',
   },
   {
-    key: 'level',
-    label: 'Trình độ chuyên môn',
-  },
-  {
     key: 'certificate',
     label: 'Chứng chỉ chuyên ngành',
   },

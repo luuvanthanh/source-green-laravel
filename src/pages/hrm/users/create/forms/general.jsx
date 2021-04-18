@@ -2,8 +2,8 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
-import { connect, history, withRouter } from 'umi';
-
+import { history, useParams } from 'umi';
+import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -19,14 +19,26 @@ const genders = [
 ];
 
 const marginProps = { style: { marginBottom: 12 } };
-const mapStateToProps = ({ loading, HRMusersAdd }) => ({
-  loading,
-  details: HRMusersAdd.details,
-  error: HRMusersAdd.error,
-});
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+const General = memo(({}) => {
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
+  const {
+    error,
+    degrees,
+    details,
+    loading: { effects },
+    trainningMajors,
+    trainningSchool,
+  } = useSelector(({ loading, HRMusersAdd }) => ({
+    loading,
+    details: HRMusersAdd.details,
+    degrees: HRMusersAdd.degrees,
+    trainningMajors: HRMusersAdd.trainningMajors,
+    trainningSchool: HRMusersAdd.trainningSchool,
+    error: HRMusersAdd.error,
+  }));
+  const dispatch = useDispatch();
+  const params = useParams();
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
@@ -34,7 +46,11 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     effects[`HRMusersAdd/ADD`] ||
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
-  const loading = effects[`HRMusersAdd/GET_DETAILS`];
+  const loading =
+    effects[`HRMusersAdd/GET_DETAILS`] ||
+    effects[`HRMusersAdd/GET_DEGREES`] ||
+    effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
+    effects[`HRMusersAdd/GET_TRAINNING_SCHOOLS`];
 
   /**
    * Function submit form modal
@@ -97,6 +113,36 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     }
   }, [params.id]);
 
+  /**
+   * Load Items Degres
+   */
+  useEffect(() => {
+    dispatch({
+      type: 'HRMusersAdd/GET_DEGREES',
+      payload: params,
+    });
+  }, []);
+
+  /**
+   * Load Items Trainning Majors
+   */
+  useEffect(() => {
+    dispatch({
+      type: 'HRMusersAdd/GET_TRAINNING_MAJORS',
+      payload: params,
+    });
+  }, []);
+
+  /**
+   * Load Items Trainning School
+   */
+  useEffect(() => {
+    dispatch({
+      type: 'HRMusersAdd/GET_TRAINNING_SCHOOLS',
+      payload: params,
+    });
+  }, []);
+
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
@@ -116,8 +162,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
 
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
-      <Loading loading={loading} isError={error.isError} params={{ error }}>
-        <Pane className="card">
+      <Pane className="card">
+        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin cơ bản
@@ -241,11 +287,22 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem name="TaxCode" label="Mã số thuế" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem data={[]} name="DegreeId" label="Bằng cấp" type={variables.SELECT} />
+                <FormItem
+                  data={degrees.map((item) => ({
+                    id: item.id,
+                    name: item.Name,
+                  }))}
+                  name="DegreeId"
+                  label="Bằng cấp"
+                  type={variables.SELECT}
+                />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  data={[]}
+                  data={trainningMajors.map((item) => ({
+                    id: item.id,
+                    name: item.Name,
+                  }))}
                   name="TrainingMajorId"
                   label="Chuyên ngành đào tạo"
                   type={variables.SELECT}
@@ -255,7 +312,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
-                  data={[]}
+                  data={trainningSchool.map((item) => ({
+                    id: item.id,
+                    name: item.Name,
+                  }))}
                   name="TrainingSchoolId"
                   label="Trường đào tạo"
                   type={variables.SELECT}
@@ -272,10 +332,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               Lưu
             </Button>
           </Pane>
-        </Pane>
-      </Loading>
+        </Loading>
+      </Pane>
     </Form>
   );
 });
 
-export default withRouter(connect(mapStateToProps)(General));
+export default General;
