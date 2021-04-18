@@ -83,7 +83,7 @@ export function details(data = {}) {
 }
 
 export function addAccount(data = {}) {
-  return request(`/employees/${data.id}/account`, {
+  return request(`/employee-accounts`, {
     method: 'POST',
     data,
   });
