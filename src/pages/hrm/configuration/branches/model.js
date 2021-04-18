@@ -3,29 +3,33 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'HRMusers',
+  namespace: 'hrmbranches',
   state: {
     data: [],
     pagination: {
-      total: 0
-    }
+      total: 0,
+    },
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -44,28 +48,12 @@ export default {
         });
       }
     },
-    *ADD({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
     *REMOVE({ payload }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
         yield saga.put({
           type: 'GET_DATA',
-          payload: payload.pagination
+          payload: payload.pagination,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -80,7 +68,7 @@ export default {
         }
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },

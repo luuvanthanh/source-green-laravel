@@ -94,56 +94,30 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'paramaterFormulasAdd/UPDATE',
-        payload: {
-          ...values,
-          id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    dispatch({
+      type: params.id ? 'paramaterFormulasAdd/UPDATE' : 'paramaterFormulasAdd/ADD',
+      payload: {
+        ...values,
+        id: params.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'paramaterFormulasAdd/ADD',
-        payload: {
-          ...values,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
@@ -175,7 +149,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="code"
+                      name="Code"
                       rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -183,23 +157,23 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="name"
+                      name="Name"
                       rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                 </div>
-                <div className="row mt-3">
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       label="NGÀY ÁP DỤNG"
-                      name="apply_date"
+                      name="ApplyDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
                     />
                   </div>
                   <div className="col-lg-6">
-                    <FormItem label="CÔNG THỨC" name="recipe" rules={[]} type={variables.INPUT} />
+                    <FormItem label="CÔNG THỨC" name="Recipe" rules={[]} type={variables.INPUT} />
                   </div>
                 </div>
               </div>

@@ -29,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ divisions, loading }) => ({
-  data: divisions.data,
-  error: divisions.error,
-  pagination: divisions.pagination,
+const mapStateToProps = ({ hrmbranches, loading }) => ({
+  data: hrmbranches.data,
+  error: hrmbranches.error,
+  pagination: hrmbranches.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -87,7 +87,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'divisions/GET_DATA',
+      type: 'hrmbranches/GET_DATA',
       payload: {
         ...search,
       },
@@ -185,7 +185,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'divisions/REMOVE',
+          type: 'hrmbranches/REMOVE',
           payload: {
             id,
             pagination: {
@@ -256,13 +256,13 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['divisions/GET_DATA'];
+    const loading = effects['hrmbranches/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách bộ phận" />
+        <Helmet title="Danh sách cơ sở" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH BỘ PHẬN</Text>
+            <Text color="dark">DANH SÁCH CƠ SỞ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

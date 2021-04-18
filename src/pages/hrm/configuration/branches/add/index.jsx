@@ -8,7 +8,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
@@ -26,11 +26,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, degreesAdd }) => ({
-  loading,
+const mapStateToProps = ({ menu, loading, hrmbranchesAdd }) => ({
   menuData: menu.menuLeftHRM,
-  details: degreesAdd.details,
-  error: degreesAdd.error,
+  loading,
+  details: hrmbranchesAdd.details,
+  error: hrmbranchesAdd.error,
 });
 
 @connect(mapStateToProps)
@@ -50,7 +50,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'degreesAdd/GET_DETAILS',
+        type: 'hrmbranchesAdd/GET_DETAILS',
         payload: params,
       });
     }
@@ -96,7 +96,7 @@ class Index extends PureComponent {
       id: params.id,
     };
     dispatch({
-      type: params.id ? 'degreesAdd/UPDATE' : 'degreesAdd/ADD',
+      type: params.id ? 'hrmbranchesAdd/UPDATE' : 'hrmbranchesAdd/ADD',
       payload,
       callback: (response, error) => {
         if (response) {
@@ -124,11 +124,11 @@ class Index extends PureComponent {
       menuData,
       loading: { effects },
     } = this.props;
-    const loadingSubmit = effects['degreesAdd/ADD'] || effects['degreesAdd/UPDATE'];
-    const loading = effects['degreesAdd/GET_DETAILS'];
+    const loadingSubmit = effects['hrmbranchesAdd/ADD'] || effects['hrmbranchesAdd/UPDATE'];
+    const loading = effects['hrmbranchesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo bằng cấp" menu={menuData} />
+        <Breadcrumbs last="Tạo cơ sở" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"

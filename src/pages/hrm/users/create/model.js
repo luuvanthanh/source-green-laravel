@@ -25,7 +25,7 @@ export default {
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
       error: {
         status: null,
         isError: false,
@@ -105,15 +105,6 @@ export default {
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.details, payload);
-        if (response.status === variables.STATUS_204) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: {
-              status: variables.STATUS_204,
-            },
-          });
-          return;
-        }
         yield saga.put({
           type: 'SET_DETAILS',
           payload: response,

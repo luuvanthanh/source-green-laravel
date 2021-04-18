@@ -7,11 +7,11 @@ export function get(data = {}) {
     params: {
       limit: data.limit,
       page: data.page,
-      orderBy: 'id',
+      orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
       search: Helper.convertParamSearchConvert({
-        name: data.name,
+        Name: data.name,
       }),
     },
   });

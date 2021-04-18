@@ -1,21 +1,25 @@
-import request from '@/utils/request';
+import request from '@/utils/requestLavarel';
+import { omit, pickBy } from 'lodash';
+const removeParams = (params) => {
+  return omit(pickBy(params, (value) => value !== null && value !== undefined));
+};
 
 export function add(data = {}) {
-  return request('/employees', {
+  return request('/v1/employees', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/employees/${data.id}`, {
+  return request(`/v1/employees/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
 export function details(data = {}) {
-  return request(`/employees/${data.id}`, {
+  return request(`/v1/employees/${data.id}`, {
     method: 'GET',
   });
 }
