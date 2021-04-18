@@ -29,7 +29,15 @@ const Index = memo(
     const onFinish = (values) => {
       dispatch({
         type: 'HRMusersAdd/ADD_ACCOUNT',
-        payload: { ...details, ...values, id: params.id },
+        payload: {
+          employeeId: params.id,
+          account: {
+            userName: values.userName,
+            password: values.password,
+            email: values.email,
+            roleId: values.roleId,
+          },
+        },
         callback: (response, error) => {
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {

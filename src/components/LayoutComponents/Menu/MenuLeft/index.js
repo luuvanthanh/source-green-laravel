@@ -321,7 +321,8 @@ class MenuLeft extends React.Component {
           </Link>
         </div>
         <Scrollbars
-          autoHide
+          autoHeight
+          autoHeightMax={'calc(100vh - 100px)'}
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
             <div
