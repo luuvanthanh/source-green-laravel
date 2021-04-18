@@ -18,7 +18,7 @@ const MainLayout = memo(({ children = null }) => {
     isMenuShadow,
     isMenuTop,
     menuData,
-  } = useSelector(({ settings, menu }) => ({ ...settings, menuData: menu.menuLeftHRM }));
+  } = useSelector(({ settings, menu }) => ({ ...settings, menuData: menu.menuLeftHealth }));
 
   return (
     <Layout

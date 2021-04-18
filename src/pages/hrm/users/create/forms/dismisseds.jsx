@@ -61,16 +61,16 @@ const Index = memo(() => {
       dispatch({
         type: 'HRMusersAdd/ADD_DIMISSEDS',
         payload: {
-          DecisionNumber: values.DecisionNumber,
-          DecisionDate: values.DecisionDate,
-          Reason: values.Reason,
-          Data: [
+          decisionNumber: values.decisionNumber,
+          decisionDate: values.decisionDate,
+          reason: values.reason,
+          data: [
             {
-              EmployeeId: params.id,
-              BranchId: values.BranchId,
-              DivisionId: values.DivisionId,
-              PositionId: values.PositionId,
-              Note: values.Note,
+              employeeId: params.id,
+              branchId: values.branchId,
+              divisionId: values.divisionId,
+              positionId: values.positionId,
+              note: values.note,
             },
           ],
         },
@@ -184,7 +184,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 label="Số quyết định"
-                name="DecisionNumber"
+                name="decisionNumber"
                 type={variables.INPUT}
                 rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
               />
@@ -192,7 +192,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 label="Ngày quyết định"
-                name="DecisionDate"
+                name="decisionDate"
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
               />
@@ -202,7 +202,7 @@ const Index = memo(() => {
             <Pane className="col-lg-12">
               <FormItem
                 label="Lý do"
-                name="Reason"
+                name="reason"
                 type={variables.INPUT}
                 rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
               />
@@ -211,30 +211,30 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-6">
               <FormItem
-                data={branches.map((item) => ({ id: item.id, name: item.Name }))}
+                data={branches}
                 label="Cơ sở"
-                name="BranchId"
+                name="branchId"
                 type={variables.SELECT}
               />
             </Pane>
             <Pane className="col-lg-6">
               <FormItem
-                data={divisions.map((item) => ({ id: item.id, name: item.Name }))}
+                data={divisions}
                 label="Bộ phận"
-                name="DivisionId"
+                name="divisionId"
                 type={variables.SELECT}
               />
             </Pane>
             <Pane className="col-lg-6">
               <FormItem
-                data={positions.map((item) => ({ id: item.id, name: item.Name }))}
+                data={positions}
                 label="Chức vụ"
-                name="PositionId"
+                name="positionId"
                 type={variables.SELECT}
               />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Ghi chú" name="Note" type={variables.INPUT} />
+              <FormItem label="Ghi chú" name="note" type={variables.INPUT} />
             </Pane>
           </Pane>
         </Form>
