@@ -14,7 +14,7 @@ class TrainingSchool extends UuidModel
     protected $table = 'TrainingSchools';
 
     protected $fillable = [
-        'Code', 'Name', 'Adress',
+        'Code', 'Name', 'Address',
     ];
 
 }

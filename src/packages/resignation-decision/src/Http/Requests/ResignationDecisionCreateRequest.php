@@ -24,11 +24,11 @@ class ResignationDecisionCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'DecisionNumber' => 'unique:resignation_decisions,DecisionNumber',
-            'DecisionDate' => 'required',
-            'EmployeeId' => 'required',
-            'time_apply' => 'required',
-            'pay_end_date' => 'required',
+            'decisionNumber' => 'unique:ResignationDecisions,DecisionNumber',
+            'decisionDate' => 'required',
+            'employeeId' => 'required',
+            'timeApply' => 'required',
+            'payEndDate' => 'required',
         ];
     }
 }

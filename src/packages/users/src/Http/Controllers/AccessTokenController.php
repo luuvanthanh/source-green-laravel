@@ -47,7 +47,7 @@ class AccessTokenController extends ATController
             }
 
             if (!empty($request->getParsedBody()['player_id'])) {
-                $this->employeeRepository->addPlayer($request->getParsedBody()['player_id'], $employee->id);
+                $this->employeeRepository->addPlayer($request->getParsedBody()['player_id'], $employee->Id);
             }
 
             return Response::json(collect($data));

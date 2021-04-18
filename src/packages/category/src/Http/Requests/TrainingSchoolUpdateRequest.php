@@ -4,7 +4,7 @@ namespace GGPHP\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryUpdateRequest extends FormRequest
+class TrainingSchoolUpdateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.

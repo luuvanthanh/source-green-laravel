@@ -41,8 +41,8 @@ class ReportTimekeepingController extends Controller
         $store = $request->store_id;
         $position = $request->PositionId;
         $work_form_id = $request->work_form_id;
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+        $StartDate = $request->StartDate;
+        $EndDate = $request->EndDate;
         $employeeId = $request->EmployeeId;
         $type = $request->type;
         $year = $request->year;
@@ -59,18 +59,18 @@ class ReportTimekeepingController extends Controller
             // get 12 month of year
             $months = [];
             for ($i = 1; $i <= 12; $i++) {
-                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['start_date'] = date("$year-m-d", strtotime(date("$year") . "-" . $i . "-01"));
-                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['end_date'] = date("$year-m-t", strtotime(date("$year") . "-" . $i));
+                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['StartDate'] = date("$year-m-d", strtotime(date("$year") . "-" . $i . "-01"));
+                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['EndDate'] = date("$year-m-t", strtotime(date("$year") . "-" . $i));
             }
 
             $resultTimekeepingMonth = [];
 
             foreach ($months as $key => &$month) {
 
-                $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $month['start_date'], $month['end_date'], $limit, true, $type, $work_form_id, $isFilter, $full_name, $is_shift);
+                $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $month['StartDate'], $month['EndDate'], $limit, true, $type, $work_form_id, $isFilter, $full_name, $is_shift);
 
                 foreach ($employeesByStore as &$value) {
-                    $resultTimekeepingMonth[$value->id][$key] = [
+                    $resultTimekeepingMonth[$value->Id][$key] = [
                         'hourRedundantMonth' => gmdate("H:i", $value->totalHourRedundantWorks),
                         'hourRedundantMonthFormat' => $value->totalHourRedundantWorks,
                         'timekeepingMonth' => $value->totalWorks,
@@ -79,9 +79,9 @@ class ReportTimekeepingController extends Controller
             }
 
             foreach ($employeesByStore as &$item) {
-                if (array_key_exists($item->id, $resultTimekeepingMonth)) {
+                if (array_key_exists($item->Id, $resultTimekeepingMonth)) {
                     // Sum total timekeeping, hour redundant
-                    $collection = collect($resultTimekeepingMonth[$item->id]);
+                    $collection = collect($resultTimekeepingMonth[$item->Id]);
 
                     $totalTimekeeping = 0;
                     $totalHourRedundant = 0;
@@ -94,7 +94,7 @@ class ReportTimekeepingController extends Controller
                         return !empty($value['hourRedundantMonthFormat']) ? $value['hourRedundantMonthFormat'] : 0;
                     });
 
-                    $item->timeKeepingReport = $resultTimekeepingMonth[$item->id];
+                    $item->timeKeepingReport = $resultTimekeepingMonth[$item->Id];
                     $item->totalTimekeepingByMonth = $totalTimekeeping;
                     $item->totalHourRedundantByMonth = gmdate("H:i", $totalHourRedundant);
                 }
@@ -109,9 +109,9 @@ class ReportTimekeepingController extends Controller
 
             $employeesByStore = $this->employeeRepository->parserResult($response);
 
-        } elseif ($start_date && $end_date) {
+        } elseif ($StartDate && $EndDate) {
 
-            $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $start_date, $end_date, $limit, true, $type, $work_form_id, $isFilter, null, $full_name, $is_shift);
+            $employeesByStore = $this->timekeepingRepository->timekeepingReport($employeeId, $position, $store, $StartDate, $EndDate, $limit, true, $type, $work_form_id, $isFilter, null, $full_name, $is_shift);
         }
 
         return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));

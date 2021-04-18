@@ -2,17 +2,17 @@
 
 namespace GGPHP\FingerprintTimekeeper\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper;
 use GGPHP\FingerprintTimekeeper\Repositories\Contracts\FingerprintTimekeeperRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ImageRepositoryEloquent.
  *
  * @package namespace GGPHP\RolePermission\Repositories\Eloquent;
  */
-class FingerprintTimekeeperRepositoryEloquent extends BaseRepository implements FingerprintTimekeeperRepository
+class FingerprintTimekeeperRepositoryEloquent extends CoreRepositoryEloquent implements FingerprintTimekeeperRepository
 {
     /**
      * Specify Model class name

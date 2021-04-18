@@ -24,11 +24,11 @@ class ScheduleCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_date' => [
+            'startDate' => [
                 'required', 'date',
             ],
-            'EmployeeId' => 'required|exists:employees,id',
-            'shift_id' => 'required|exists:shifts,id',
+            'employeeId' => 'required|exists:Employees,Id',
+            'shiftId' => 'required|exists:Shifts,Id',
         ];
     }
 

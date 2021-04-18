@@ -12,7 +12,7 @@ class DismissedDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
-            $value['dismissed_id'] = $id;
+            $value['DismissedId'] = $id;
             $shiftDetail = DismissedDetail::create($value);
         }
 

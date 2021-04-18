@@ -9,6 +9,9 @@ use Illuminate\Support\Arr;
 
 class ZKSync extends Model
 {
+    const CREATED_AT = 'CreationTime';
+    const UPDATED_AT = 'LastModificationTime';
+
     protected $table = 'ZkSyncs';
 
     /**
@@ -22,7 +25,7 @@ class ZKSync extends Model
 
     public function subject(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo('Subject', 'SubjectType', 'SubjectId');
     }
 
     public function scopeForSubject(Builder $query, Model $subject): Builder

@@ -14,7 +14,7 @@
         "cloudcreativity/laravel-json-api": "^2.0",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",
         "cviebrock/eloquent-sluggable": "^7.0",
-        "doctrine/dbal": "^2.10",
+        "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
@@ -82,6 +82,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files": [
+            "app/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

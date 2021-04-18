@@ -2,6 +2,7 @@
 
 namespace GGPHP\Dismissed\Transformers;
 
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\Category\Transformers\PositionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;

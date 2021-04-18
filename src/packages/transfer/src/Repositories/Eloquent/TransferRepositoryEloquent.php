@@ -2,26 +2,26 @@
 
 namespace GGPHP\Transfer\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Presenters\TransferPresenter;
 use GGPHP\Transfer\Repositories\Contracts\TransferRepository;
 use GGPHP\Transfer\Services\TransferDetailServices;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class TransferRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class TransferRepositoryEloquent extends BaseRepository implements TransferRepository
+class TransferRepositoryEloquent extends CoreRepositoryEloquent implements TransferRepository
 {
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
+        'Id',
     ];
 
     /**
@@ -57,20 +57,21 @@ class TransferRepositoryEloquent extends BaseRepository implements TransferRepos
         \DB::beginTransaction();
         try {
             $tranfer = Transfer::create($attributes);
-            TransferDetailServices::add($tranfer->id, $attributes['data']);
+            TransferDetailServices::add($tranfer->Id, $attributes['data']);
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 
-        return parent::find($tranfer->id);
+        return parent::find($tranfer->Id);
     }
 
     public function getTransfer(array $attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['limit'])) {

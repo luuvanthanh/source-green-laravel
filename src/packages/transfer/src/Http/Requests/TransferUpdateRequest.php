@@ -24,7 +24,7 @@ class TransferUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'DecisionNumber' => 'unique:transfers,DecisionNumber',
+            'decisionNumber' => 'unique:transfers,DecisionNumber',
         ];
     }
 }

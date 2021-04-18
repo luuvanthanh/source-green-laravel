@@ -14,8 +14,8 @@ class ScheduleRepeatService
      */
     public static function add(array $attributes)
     {
-        if (!empty($attributes['by_week_day']) && is_array($attributes['by_week_day'])) {
-            $attributes['by_week_day'] = implode(",", $attributes['by_week_day']);
+        if (!empty($attributes['ByWeekDay']) && is_array($attributes['ByWeekDay'])) {
+            $attributes['ByWeekDay'] = implode(",", $attributes['ByWeekDay']);
         }
 
         $scheduleRepeat = ScheduleRepeat::create($attributes);

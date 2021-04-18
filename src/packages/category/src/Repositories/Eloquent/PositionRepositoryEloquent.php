@@ -5,19 +5,19 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\Position;
 use GGPHP\Category\Presenters\PositionPresenter;
 use GGPHP\Category\Repositories\Contracts\PositionRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class PositionRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class PositionRepositoryEloquent extends BaseRepository implements PositionRepository
+class PositionRepositoryEloquent extends CoreRepositoryEloquent implements PositionRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
+        'Id',
+        'Name' => 'like',
     ];
 
     /**
@@ -52,41 +52,6 @@ class PositionRepositoryEloquent extends BaseRepository implements PositionRepos
     {
         $position = Position::create($attributes);
 
-        if (!empty($attributes['season'])) {
-            foreach ($attributes['season'] as $value) {
-                $value['PositionId'] = $position->id;
-                $position->positionSeason()->create($value);
-            }
-        }
-
-        if (!empty($attributes['permission'])) {
-            $permission = explode(',', $attributes['permission']);
-            $position->syncPermissions($permission);
-        }
-
-        return parent::find($position->id);
-    }
-
-    public function update(array $attributes, $id)
-    {
-        $position = Position::find($id);
-
-        $position->update($attributes);
-        if (!empty($attributes['season'])) {
-            foreach ($attributes['season'] as $value) {
-                $value['PositionId'] = $position->id;
-                $position->positionSeason()->updateOrCreate(
-                    ['PositionId' => $position->id, 'season_id' => $value['season_id']],
-                    $value
-                );
-            }
-        }
-
-        if (!empty($attributes['permission'])) {
-            $permission = explode(',', $attributes['permission']);
-            $position->syncPermissions($permission);
-        }
-
-        return parent::find($id);
+        return parent::find($position->Id);
     }
 }

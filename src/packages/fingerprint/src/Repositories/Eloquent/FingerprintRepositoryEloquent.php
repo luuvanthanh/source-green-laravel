@@ -2,25 +2,25 @@
 
 namespace GGPHP\Fingerprint\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Fingerprint\Models\Fingerprint;
 use GGPHP\Fingerprint\Presenters\FingerprintPresenter;
 use GGPHP\Fingerprint\Repositories\Contracts\FingerprintRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class FingerprintRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class FingerprintRepositoryEloquent extends BaseRepository implements FingerprintRepository
+class FingerprintRepositoryEloquent extends CoreRepositoryEloquent implements FingerprintRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
-        'employee.full_name' => 'like',
+        'Id',
+        'Employee.FullName' => 'like',
         'status',
     ];
     /**
@@ -67,8 +67,8 @@ class FingerprintRepositoryEloquent extends BaseRepository implements Fingerprin
      */
     public function getAll(array $attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('CreationTime', '>=', $attributes['startDate'])->where('CreationTime', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['limit'])) {

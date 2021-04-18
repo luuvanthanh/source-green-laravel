@@ -24,8 +24,8 @@ class BranchCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'Name' => 'required',
-            'Code' => 'required',
+            'name' => 'required',
+            'code' => 'required',
         ];
     }
 }

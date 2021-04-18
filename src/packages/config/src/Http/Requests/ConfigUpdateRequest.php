@@ -24,7 +24,7 @@ class ConfigUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
+            'Name' => 'string',
         ];
     }
 }

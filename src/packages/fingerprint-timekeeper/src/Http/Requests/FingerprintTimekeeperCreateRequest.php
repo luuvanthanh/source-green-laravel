@@ -27,7 +27,7 @@ class FingerprintTimekeeperCreateRequest extends FormRequest
             'name' => 'required|string',
             'ip' => 'required|string',
             'port' => 'required|numeric',
-            'serial_number' => 'required|string',
+            'serialNumber' => 'required|string',
         ];
     }
 }

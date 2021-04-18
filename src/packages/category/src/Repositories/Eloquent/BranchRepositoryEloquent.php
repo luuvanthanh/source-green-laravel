@@ -5,19 +5,19 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Presenters\BranchPresenter;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class BranchRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class BranchRepositoryEloquent extends BaseRepository implements BranchRepository
+class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
+        'Id',
+        'Name' => 'like',
     ];
 
     /**

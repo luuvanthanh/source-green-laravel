@@ -2,28 +2,28 @@
 
 namespace GGPHP\DecisionSuspend\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\DecisionSuspend\Models\DecisionSuspend;
 use GGPHP\DecisionSuspend\Presenters\DecisionSuspendPresenter;
 use GGPHP\DecisionSuspend\Repositories\Contracts\DecisionSuspendRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class DecisionSuspendRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class DecisionSuspendRepositoryEloquent extends BaseRepository implements DecisionSuspendRepository
+class DecisionSuspendRepositoryEloquent extends CoreRepositoryEloquent implements DecisionSuspendRepository
 {
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
+        'Id',
         'DecisionNumber' => 'like',
         'EmployeeId',
-        'employee.full_name' => 'like',
+        'Employee.FullName' => 'like',
 
     ];
 
@@ -57,7 +57,6 @@ class DecisionSuspendRepositoryEloquent extends BaseRepository implements Decisi
 
     public function getDecisionSuspend(array $attributes)
     {
-
         if (!empty($attributes['limit'])) {
             $decisionSuspend = $this->paginate($attributes['limit']);
         } else {

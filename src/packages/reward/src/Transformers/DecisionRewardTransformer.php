@@ -2,7 +2,6 @@
 
 namespace GGPHP\Reward\Transformers;
 
-use GGPHP\Core\Traits\ApprovalTransformerTrait;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Reward\Models\DecisionReward;
 use GGPHP\Reward\Transformers\DecisionRewardDetailTransformer;
@@ -15,9 +14,8 @@ use GGPHP\Users\Transformers\UserTransformer;
  */
 class DecisionRewardTransformer extends BaseTransformer
 {
-    use ApprovalTransformerTrait;
 
-    protected $defaultIncludes = ['approval', 'decisionRewardDetails', 'employeeCreate'];
+    protected $defaultIncludes = ['decisionRewardDetails', 'employeeCreate'];
 
     /**
      * Include transferDetails
@@ -32,7 +30,7 @@ class DecisionRewardTransformer extends BaseTransformer
      * Include UserCreate
      * @param  DecisionReward $transfer
      */
-    public function includeUserCreate(DecisionReward $decisionReward)
+    public function includeEmployeeCreate(DecisionReward $decisionReward)
     {
         if (empty($decisionReward->employeeCreate)) {
             return;

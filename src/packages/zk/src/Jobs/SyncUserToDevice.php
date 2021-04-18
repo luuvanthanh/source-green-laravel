@@ -38,7 +38,7 @@ class SyncUserToDevice implements ShouldQueue
                 //connect to device
                 $zk->connect();
                 //set employee from server to device
-                $zk->setUser($this->employee->id, $this->employee->id, $this->employee->full_name, '', \ZK\Driver\Util::LEVEL_USER);
+                $zk->setUser($this->employee->Id, $this->employee->Id, $this->employee->FullName, '', \ZK\Driver\Util::LEVEL_USER);
                 //disconnect
                 $zk->disconnect();
             }

@@ -20,11 +20,11 @@ class CreateAddSubTimeDetailsTable extends Migration
             $table->foreign('AddSubTimeId')->references('Id')->on('AddSubTimes')->onDelete('cascade');
             $table->uuid('EmployeeId');
             $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->integer('days')->nullable();
-            $table->integer('hours')->nullable();
-            $table->text('reason')->nullable();
+            $table->date('StartDate');
+            $table->date('EndDate');
+            $table->integer('Days')->nullable();
+            $table->integer('Hours')->nullable();
+            $table->text('Reason')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

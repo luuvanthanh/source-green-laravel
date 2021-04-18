@@ -12,7 +12,7 @@ class AppointDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
-            $value['appoint_id'] = $id;
+            $value['AppointId'] = $id;
             $shiftDetail = AppointDetail::create($value);
         }
 

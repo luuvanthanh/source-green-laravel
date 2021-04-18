@@ -2,6 +2,7 @@
 
 namespace GGPHP\ShiftSchedule\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ShiftSchedule\Models\Schedule;
 use GGPHP\ShiftSchedule\Models\Shift;
 use GGPHP\ShiftSchedule\Models\ShiftDetail;
@@ -9,21 +10,20 @@ use GGPHP\ShiftSchedule\Presenters\ShiftPresenter;
 use GGPHP\ShiftSchedule\Repositories\Contracts\ShiftRepository;
 use GGPHP\ShiftSchedule\Services\ShiftDetailServices;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ShiftRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
+class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'shift_code' => 'like',
-        'status',
+        'ShiftCode' => 'like',
+        'Status',
     ];
 
     /**
@@ -65,7 +65,8 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
         \DB::beginTransaction();
         try {
             $shift = $this->model()::create($attributes);
-            ShiftDetailServices::add($shift->Id, $attributes['Time']);
+
+            ShiftDetailServices::add($shift->Id, $attributes['time']);
 
             \DB::commit();
 
@@ -88,7 +89,7 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
         $shift = $this->model::find($id);
         $shift = $shift->update($attributes);
 
-        if (!empty($attributes['time'])) {
+        if (!empty($attributes['Time'])) {
             ShiftDetailServices::update($id, $attributes['time']);
         }
 
@@ -103,7 +104,7 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
     public function activeStatusShift(array $attributes, $id)
     {
         $shift = $this->model::find($id);
-        $shift = $shift->update(['status' => $attributes['status']]);
+        $shift = $shift->update(['Status' => $attributes['status']]);
 
         return parent::find($id);
     }
@@ -115,8 +116,8 @@ class ShiftRepositoryEloquent extends BaseRepository implements ShiftRepository
      */
     public function delete($id)
     {
-        Schedule::where('shift_id', $id)->delete();
-        ShiftDetail::where('shift_id', $id)->delete();
+        Schedule::where('ShiftId', $id)->delete();
+        ShiftDetail::where('ShiftId', $id)->delete();
 
         return parent::delete($id);
     }

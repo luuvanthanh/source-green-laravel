@@ -5,21 +5,21 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\TypeOfContract;
 use GGPHP\Category\Presenters\TypeOfContractPresenter;
 use GGPHP\Category\Repositories\Contracts\TypeOfContractRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class TypeOfContractRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class TypeOfContractRepositoryEloquent extends BaseRepository implements TypeOfContractRepository
+class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements TypeOfContractRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
-        'code' => 'like',
-        'type',
+        'Id',
+        'Name' => 'like',
+        'Code' => 'like',
+        'Type',
     ];
 
     /**
@@ -56,16 +56,16 @@ class TypeOfContractRepositoryEloquent extends BaseRepository implements TypeOfC
         try {
             $tranfer = TypeOfContract::create($attributes);
 
-            $tranfer->parameterValues()->attach($attributes['param_value']);
+            $tranfer->parameterValues()->attach($attributes['paramValue']);
 
-            $tranfer->parameterFormulas()->attach($attributes['param_formula']);
+            $tranfer->parameterFormulas()->attach($attributes['paramFormula']);
 
             \DB::commit();
         } catch (\Exception $e) {
-
+            dd($e);
             \DB::rollback();
         }
 
-        return parent::find($tranfer->id);
+        return parent::find($tranfer->Id);
     }
 }

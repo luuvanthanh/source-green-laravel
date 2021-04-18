@@ -5,19 +5,19 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\Division;
 use GGPHP\Category\Presenters\DivisionPresenter;
 use GGPHP\Category\Repositories\Contracts\DivisionRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class DivisionRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class DivisionRepositoryEloquent extends BaseRepository implements DivisionRepository
+class DivisionRepositoryEloquent extends CoreRepositoryEloquent implements DivisionRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
+        'Id',
+        'Name' => 'like',
     ];
 
     /**

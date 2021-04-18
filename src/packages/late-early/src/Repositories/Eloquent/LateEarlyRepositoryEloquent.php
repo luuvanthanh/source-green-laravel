@@ -4,6 +4,7 @@ namespace GGPHP\LateEarly\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Config\Models\Config;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\LateEarly\Models\LateEarlyTimeConfig;
 use GGPHP\LateEarly\Presenters\LateEarlyPresenter;
@@ -15,18 +16,18 @@ use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRepository
+class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements LateEarlyRepository
 {
     protected $fieldSearchable = [
-        'lateEarlyConfig.type', 'status',
-        'employee.full_name' => 'like',
+        'LateEarlyConfig.Type',
+        'Status',
+        'Employee.FullName' => 'like',
         'EmployeeId',
     ];
 
@@ -78,14 +79,14 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
     {
         $this->model = $this->model->query();
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['type'])) {
             $this->model = $this->model->whereHas('lateEarlyConfig', function ($queryTypeLateEarly) use ($attributes) {
-                $type = explode(',', $attributes['type']);
-                $queryTypeLateEarly->whereIn('type', [$type]);
+                $type = explode(',', $attributes['Type']);
+                $queryTypeLateEarly->whereIn('Type', [$type]);
             });
         }
 
@@ -108,25 +109,23 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->query();
 
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('lateEarly', function ($query) use ($attributes) {
-            if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-                $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             }
 
-            if (!empty($attributes['EmployeeId'])) {
-                $query->whereIn('EmployeeId', explode(',', $attributes['EmployeeId']));
+            if (!empty($attributes['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attributes['employeeId']));
             }
 
-            $query->lateEarlyDeclineAutoApprove();
         })->with(['lateEarly' => function ($query) use ($attributes) {
-            if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-                $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             }
 
-            if (!empty($attributes['EmployeeId'])) {
-                $query->whereIn('EmployeeId', explode(',', $attributes['EmployeeId']));
+            if (!empty($attributes['employeeId'])) {
+                $query->whereIn('EmployeeId', explode(',', $attributes['employeeId']));
             }
 
-            $query->lateEarlyDeclineAutoApprove();
         }]);
 
         if (!empty($attributes['limit'])) {
@@ -145,17 +144,17 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
 
         foreach ($employees as $employee) {
             $checkRankPosition = $employee->listRankPositionInformationHistory->filter(function ($item) use ($date) {
-                $start_date = $item->start_date->format('Y-m-d');
-                $end_date = !is_null($item->end_date) ? $item->end_date->format('Y-m-d') : null;
+                $StartDate = $item->StartDate->format('Y-m-d');
+                $EndDate = !is_null($item->EndDate) ? $item->EndDate->format('Y-m-d') : null;
 
-                return ($start_date <= $date && $end_date >= $date) || ($start_date <= $date && $end_date == null);
+                return ($StartDate <= $date && $EndDate >= $date) || ($StartDate <= $date && $EndDate == null);
             })->first();
 
-            $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->id, $date, $date);
+            $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $date, $date);
 
             if (!empty($employeeTimeWorkShift)) {
                 $timeDeadline = $this->checkTimeAllow($date, end($employeeTimeWorkShift[$date]));
-                $timekeepings = $employee->timekeeping()->whereDate('attended_at', date($date))->get();
+                $timekeepings = $employee->timekeeping()->whereDate('AttendedAt', date($date))->get();
 
                 $timeShift = [];
                 $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now()->format('H:i:ss');
@@ -164,7 +163,7 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                     $timeShift[] = $value['start_time'] . ' - ' . $value['end_time'];
                 }
 
-                $shift = Shift::findOrFail($employeeTimeWorkShift[$date][0]['shift_id']);
+                $shift = Shift::findOrFail($employeeTimeWorkShift[$date][0]['ShiftId']);
 
                 foreach ($employeeTimeWorkShift[$date] as $key => $value) {
 
@@ -185,24 +184,24 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                         }
 
                         $timeKeepingAfterTimeStart = $employee->timekeeping()
-                            ->where([['attended_at', '>=', $timeAllow['validBeforeStartTime']], ['attended_at', '<=', $formatStartTime]])
-                            ->where('EmployeeId', $employee->id)->get();
+                            ->where([['AttendedAt', '>=', $timeAllow['validBeforeStartTime']], ['AttendedAt', '<=', $formatStartTime]])
+                            ->where('EmployeeId', $employee->Id)->get();
 
                         $timeKeepingBeforTimeStart = $employee->timekeeping()
-                            ->where([['attended_at', '<=', $timeAllow['validAfterStartTime']], ['attended_at', '>', $formatStartTime]])
-                            ->where('EmployeeId', $employee->id)->orderBy('attended_at')->get();
+                            ->where([['AttendedAt', '<=', $timeAllow['validAfterStartTime']], ['AttendedAt', '>', $formatStartTime]])
+                            ->where('EmployeeId', $employee->Id)->orderBy('AttendedAt')->get();
 
                         if (empty(count($timeKeepingAfterTimeStart)) && !empty(count($timeKeepingBeforTimeStart))) {
                             //kiểm tra tồn tại đi trễ
                             $existLate = LateEarly::whereHas('lateEarlyConfig', function ($query) use ($employee, $date) {
                                 $query->where('type', LateEarlyTimeConfig::LATE);
-                            })->where('EmployeeId', $employee->id)
-                                ->whereDate('date', $date)
+                            })->where('EmployeeId', $employee->Id)
+                                ->whereDate('Date', $date)
                                 ->whereIn('time_slot', [$value['start_time'] . '-' . $value['end_time']])
                                 ->get();
 
                             if (empty(count($existLate))) {
-                                $timeAttendLate = Carbon::parse($timeKeepingBeforTimeStart[0]->attended_at)->format('H:i:s');
+                                $timeAttendLate = Carbon::parse($timeKeepingBeforTimeStart[0]->AttendedAt)->format('H:i:s');
 
                                 $timeLate = strtotime($timeAttendLate) - strtotime($startTime);
 
@@ -216,7 +215,7 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                                 $statusLate = $timeLate > $this->setTimeLate() ? LateEarly::AUTOMATIC_APPROVE : LateEarly::PENDING;
 
                                 $dataLate = [
-                                    'time_config_type' => $configLateEarly->id,
+                                    'time_config_type' => $configLateEarly->Id,
                                     'time' => gmdate("H:i:s", ($timeLate)),
                                     'date' => $date,
                                     'time_violation' => $timeAttendLate,
@@ -224,7 +223,7 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                                     'time_shift' => implode(',', $timeShift),
                                     'shift_code' => $shift->shift_code,
                                     'time_slot' => $value['start_time'] . '-' . $value['end_time'],
-                                    'EmployeeId' => $employee->id,
+                                    'EmployeeId' => $employee->Id,
                                     'work_store' => $shift->store_id,
                                     'store_id' => $checkRankPosition->store_id,
                                 ];
@@ -238,22 +237,22 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                     if ($nowHours > $value['end_time']) {
                         $typeEarly = LateEarly::EARLY;
                         $timeKeepingAfterTimeEnd = $employee->timekeeping()
-                            ->where([['attended_at', '>=', $timeAllow['validBeforeEndTime']], ['attended_at', '<', $formatEndTime]])
-                            ->where('EmployeeId', $employee->id)->orderBy('attended_at')->get();
+                            ->where([['AttendedAt', '>=', $timeAllow['validBeforeEndTime']], ['AttendedAt', '<', $formatEndTime]])
+                            ->where('EmployeeId', $employee->Id)->orderBy('AttendedAt')->get();
 
                         if (!empty(count($timeKeepingAfterTimeEnd))) {
 
                             //kiểm tra tồn tại về sớm
                             $existEarly = LateEarly::whereHas('lateEarlyConfig', function ($query) use ($employee, $date) {
                                 $query->where('type', LateEarlyTimeConfig::EARLY);
-                            })->where('EmployeeId', $employee->id)
-                                ->whereDate('date', $date)
+                            })->where('EmployeeId', $employee->Id)
+                                ->whereDate('Date', $date)
                                 ->whereIn('time_slot', [$value['start_time'] . '-' . $value['end_time']])
                                 ->get();
 
                             if (empty(count($existEarly))) {
 
-                                $timeAttendEarly = Carbon::parse($timeKeepingAfterTimeEnd[0]->attended_at)->format('H:i:s');
+                                $timeAttendEarly = Carbon::parse($timeKeepingAfterTimeEnd[0]->AttendedAt)->format('H:i:s');
 
                                 $timeEarly = strtotime($value['end_time']) - strtotime($timeAttendEarly);
 
@@ -267,7 +266,7 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                                 $statusEarly = LateEarly::PENDING;
 
                                 $dataLate = [
-                                    'time_config_type' => $configLateEarly->id,
+                                    'time_config_type' => $configLateEarly->Id,
                                     'time' => gmdate("H:i:s", ($timeEarly)),
                                     'date' => $date,
                                     'time_violation' => $timeAttendEarly,
@@ -275,7 +274,7 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                                     'time_shift' => implode(',', $timeShift),
                                     'shift_code' => $shift->shift_code,
                                     'time_slot' => $value['start_time'] . '-' . $value['end_time'],
-                                    'EmployeeId' => $employee->id,
+                                    'EmployeeId' => $employee->Id,
                                     'work_store' => $shift->store_id,
                                     'store_id' => $checkRankPosition->store_id,
                                 ];
@@ -288,24 +287,24 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
                     // không xác định
                     // cham cong trong thoi gian khong xac dinh trong khung gio lam viec
                     $timekeepingInvalid = $employee->timekeeping()
-                        ->where([['attended_at', '>', $timeAllow['validAfterStartTime']], ['attended_at', '<', $timeAllow['validBeforeEndTime']]])
-                        ->where('EmployeeId', $employee->id)
-                        ->orderBy('attended_at')
+                        ->where([['AttendedAt', '>', $timeAllow['validAfterStartTime']], ['AttendedAt', '<', $timeAllow['validBeforeEndTime']]])
+                        ->where('EmployeeId', $employee->Id)
+                        ->orderBy('AttendedAt')
                         ->get();
 
                     if (count($timekeepingInvalid) > 0) {
                         // TODO: kiem tra ton tai record Invalid
-                        $existInvalid = LateEarly::where('EmployeeId', $employee->id)
+                        $existInvalid = LateEarly::where('EmployeeId', $employee->Id)
                             ->where('status', LateEarly::INVALID)
-                            ->whereDate('date', $date)
+                            ->whereDate('Date', $date)
                             ->get();
 
                         if (count($existInvalid) == 0) {
                             $data['date'] = $date;
-                            $data['EmployeeId'] = $employee->id;
+                            $data['EmployeeId'] = $employee->Id;
                             $data['shift_code'] = $shift->shift_code;
                             $data['work_store'] = $shift->store_id;
-                            $data['time_violation'] = Carbon::parse($timekeepingInvalid[0]->attended_at)->format('H:i:s');
+                            $data['time_violation'] = Carbon::parse($timekeepingInvalid[0]->AttendedAt)->format('H:i:s');
                             $data['time_shift'] = implode(',', $timeShift);
                             $data['time_slot'] = $value['start_time'] . '-' . $value['end_time'];
                             $data['status'] = LateEarly::INVALID;
@@ -355,14 +354,14 @@ class LateEarlyRepositoryEloquent extends BaseRepository implements LateEarlyRep
      */
     public function invalidTimekeeping($attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
         }
 
         $this->model = $this->model->where('status', LateEarly::INVALID);
 
-        if (!empty($attributes['EmployeeId'])) {
-            $this->model = $this->model->whereIn('EmployeeId', explode(',', $attributes['EmployeeId']));
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->whereIn('EmployeeId', explode(',', $attributes['employeeId']));
         }
 
         if (!empty($attributes['status_work_declaration'])) {

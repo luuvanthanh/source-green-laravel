@@ -5,19 +5,19 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\EducationalLevel;
 use GGPHP\Category\Presenters\EducationalLevelPresenter;
 use GGPHP\Category\Repositories\Contracts\EducationalLevelRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class EducationalLevelRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class EducationalLevelRepositoryEloquent extends BaseRepository implements EducationalLevelRepository
+class EducationalLevelRepositoryEloquent extends CoreRepositoryEloquent implements EducationalLevelRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
+        'Id',
+        'Name' => 'like',
     ];
 
     /**

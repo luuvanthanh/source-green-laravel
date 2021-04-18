@@ -29,12 +29,12 @@ class ActiveStatusShiftRequest extends FormRequest
         $checkUnique = [];
 
         if ($request->status === Shift::ON) {
-            $checkUnique = Rule::unique('shifts')->where(function ($query) use ($request) {
-                $query->where(['shift_code' => $request->shift_code, 'status' => Shift::ON]);
+            $checkUnique = Rule::unique('Shifts')->where(function ($query) use ($request) {
+                $query->where(['shiftCode' => $request->shift_code, 'Status' => Shift::ON]);
             });
         }
         return [
-            'shift_code' => [
+            'shiftCode' => [
                 'required', $checkUnique,
             ],
         ];

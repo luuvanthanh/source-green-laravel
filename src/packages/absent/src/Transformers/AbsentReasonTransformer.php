@@ -25,6 +25,6 @@ class AbsentReasonTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($absentReason->absentType, new AbsentTypeTransformer(), 'AbsentType');
+        return $this->item($absentReason->absentType, new AbsentTypeTransformer, 'AbsentType');
     }
 }

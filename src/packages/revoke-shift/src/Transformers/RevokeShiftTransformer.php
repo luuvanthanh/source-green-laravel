@@ -23,13 +23,13 @@ class RevokeShiftTransformer extends BaseTransformer
      * @param RevokeShift $revokeShift
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(RevokeShift $revokeShift)
+    public function includeEmployee(RevokeShift $revokeShift)
     {
         if (empty($revokeShift->employee)) {
             return;
         }
 
-        return $this->item($revokeShift->employee, new UserTransformer, 'User');
+        return $this->item($revokeShift->employee, new UserTransformer, 'Employee');
     }
 
     /**

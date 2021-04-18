@@ -8,7 +8,7 @@ class AddSubTime extends UuidModel
 {
     public $incrementing = false;
 
-    protected $table = 'add_sub_times';
+    protected $table = 'AddSubTimes';
 
     /**
      * Status AddSubTime
@@ -30,7 +30,7 @@ class AddSubTime extends UuidModel
      */
     public function addSubTimeDetail()
     {
-        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTimeDetail::class);
+        return $this->hasMany(\GGPHP\AddSubTime\Models\AddSubTimeDetail::class, 'AddSubTimeId');
     }
 
     /**

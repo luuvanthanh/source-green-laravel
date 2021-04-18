@@ -2,23 +2,23 @@
 
 namespace GGPHP\Reward\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Reward\Models\Reward;
 use GGPHP\Reward\Presenters\RewardPresenter;
 use GGPHP\Reward\Repositories\Contracts\RewardRepository;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class UserRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class RewardRepositoryEloquent extends BaseRepository implements RewardRepository
+class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardRepository
 {
     protected $fieldSearchable = [
-        'id',
+        'Id',
     ];
 
     protected $employeeRepositoryEloquent;
@@ -67,11 +67,11 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
     {
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->query();
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->employeeRepositoryEloquent->model->whereHas('reward', function ($query) use ($attributes) {
-                $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             })->with(['reward' => function ($query) use ($attributes) {
-                $query->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
             }]);
         }
 
@@ -91,28 +91,10 @@ class RewardRepositoryEloquent extends BaseRepository implements RewardRepositor
     public function getRewardByUser($attributes)
     {
 
-        $this->model = $this->model->where('EmployeeId', $attributes['EmployeeId']);
-
-        $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
-            $query->tranferHistory($attributes);
-        });
+        $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
 
         $rewards = !empty($attribute['limit']) ? $this->paginate($attribute['limit']) : $this->get();
 
         return $rewards;
-    }
-
-    /**
-     * Cancel Fault.
-     *
-     * @param object $entity
-     * @param array $images
-     * @param string $collection
-     */
-    public function addMediaToEntity($entity, $images = [], $collection = 'files')
-    {
-        foreach ($images as $image_path) {
-            $entity->addMediaFromDisk($image_path['path'])->usingName($image_path['file_name'])->preservingOriginal()->toMediaCollection($collection);
-        }
     }
 }

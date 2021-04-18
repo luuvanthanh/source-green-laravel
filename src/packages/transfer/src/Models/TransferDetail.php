@@ -20,7 +20,7 @@ class TransferDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'transfer_id', 'EmployeeId', 'BranchId', 'DivisionId',
+        'TransferId', 'EmployeeId', 'BranchId', 'DivisionId',
         'PositionId', 'Note',
     ];
 

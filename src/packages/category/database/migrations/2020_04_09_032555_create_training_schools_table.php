@@ -18,7 +18,7 @@ class CreateTrainingSchoolsTable extends Migration
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
-            $table->string('Adress')->nullanle();
+            $table->string('Address')->nullanle();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

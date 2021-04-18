@@ -36,7 +36,7 @@ class ProbationaryContractTransformer extends BaseTransformer
         $parameterValues = $model->parameterValues;
 
         return [
-            "parameter_values" => $parameterValues,
+            "parameterValues" => $parameterValues,
         ];
     }
 

@@ -29,8 +29,8 @@ class TypeOfContractCreateRequest extends FormRequest
             "name" => 'required',
             "year" => 'required',
             "month" => 'required',
-            "param_value" => 'required|array',
-            "param_formula" => 'required|array',
+            "paramValue" => 'required|array',
+            "paramFormula" => 'required|array',
         ];
     }
 }

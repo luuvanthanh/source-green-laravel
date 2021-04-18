@@ -19,12 +19,12 @@ class DecisionRewardDetailTransformer extends BaseTransformer
     /**
      * Define relations employee
      */
-    public function includeUser(DecisionRewardDetail $decisionRewardDetail)
+    public function includeEmployee(DecisionRewardDetail $decisionRewardDetail)
     {
         if (empty($decisionRewardDetail->employee)) {
             return;
         }
 
-        return $this->item($decisionRewardDetail->employee, new UserTransformer, 'User');
+        return $this->item($decisionRewardDetail->employee, new UserTransformer, 'Employee');
     }
 }

@@ -4,8 +4,6 @@ namespace GGPHP\Appoint\Transformers;
 
 use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\RolePermission\Transformers\StoreTransformer;
-use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class AppointTransformer.
@@ -31,31 +29,5 @@ class AppointTransformer extends BaseTransformer
     public function includeAppointDetails(Appoint $appoint)
     {
         return $this->collection($appoint->appointDetails, new AppointDetailTransformer, 'AppointDetail');
-    }
-
-    /**
-     * Include UserCreate
-     * @param  Suggest $appoint
-     */
-    public function includeUserCreate(Appoint $appoint)
-    {
-        if (empty($appoint->employeeCreate)) {
-            return;
-        }
-
-        return $this->item($appoint->employeeCreate, new UserTransformer, 'UserCreate');
-    }
-
-    /**
-     * Include store
-     * @param  Appoint $appoint
-     */
-    public function includeStore(Appoint $appoint)
-    {
-        if (empty($appoint->store)) {
-            return;
-        }
-
-        return $this->item($appoint->store, new StoreTransformer, 'Store');
     }
 }

@@ -30,13 +30,13 @@ class AbsentTransformer extends BaseTransformer
      * @param Absent $absent
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(Absent $absent)
+    public function includeEmployee(Absent $absent)
     {
         if (empty($absent->employee)) {
             return;
         }
 
-        return $this->item($absent->employee, new UserTransformer(), 'User');
+        return $this->item($absent->employee, new UserTransformer, 'Employee');
     }
 
     /**
@@ -74,13 +74,13 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeShift(Absent $absent)
     {
-        $employeeHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($absent->EmployeeId, $absent->start_date->format('Y-m-d'), $absent->start_date->format('Y-m-d'));
+        $employeeHasWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($absent->EmployeeId, $absent->StartDate->format('Y-m-d'), $absent->StartDate->format('Y-m-d'));
 
         if (empty($employeeHasWorkShift)) {
             return;
         }
 
-        $shift = Shift::find($employeeHasWorkShift[$absent->start_date->format('Y-m-d')][0]['shift_id']);
+        $shift = Shift::find($employeeHasWorkShift[$absent->StartDate->format('Y-m-d')][0]['ShiftId']);
 
         return $this->item($shift, new ShiftTransformer, 'Shift');
     }
@@ -92,10 +92,10 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeEarly(Absent $absent)
     {
-        $startDate = $absent->start_date->format('Y-m-d');
+        $startDate = $absent->StartDate->format('Y-m-d');
 
-        $early = $absent->employee->lateEarly()->whereDate('date', $startDate)->whereHas('lateEarlyConfig', function ($query) {
-            $query->where('type', LateEarlyTimeConfig::EARLY);
+        $early = $absent->employee->lateEarly()->whereDate('Date', $startDate)->whereHas('lateEarlyConfig', function ($query) {
+            $query->where('Type', LateEarlyTimeConfig::EARLY);
         })->get();
 
         return $this->collection($early, new LateEarlyTransformer, 'Early');
@@ -108,9 +108,9 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeTimekeeping(Absent $absent)
     {
-        $startDate = $absent->start_date->format('Y-m-d');
+        $startDate = $absent->StartDate->format('Y-m-d');
 
-        $timekeeping = $absent->employee->timekeeping()->whereDate('attended_at', $startDate)->get();
+        $timekeeping = $absent->employee->timekeeping()->whereDate('AttendedAt', $startDate)->get();
 
         return $this->collection($timekeeping, new TimekeepingTransformer, 'Timekeeping');
     }

@@ -24,14 +24,13 @@ class CreateFingerprintsTable extends Migration
             $table->integer('FingerIndex')->nullable();
             $table->string('DeviceId');
             $table->string('Status')->default('ON');
-            $table->timestamp('Deleted_At')->nullable();
+            $table->timestamp('DeletedAt')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
 
             if (empty($referenceTables)) {
                 return;
             }
-
             foreach ($referenceTables as $tableName => $field) {
                 if (Schema::hasTable($tableName)) {
                     $table->{$field['type']}($field['fieldName'])->unsigned()->nullable();

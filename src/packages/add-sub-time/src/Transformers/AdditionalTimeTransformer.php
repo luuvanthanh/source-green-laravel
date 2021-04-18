@@ -50,12 +50,12 @@ class AddSubTimeTransformer extends BaseTransformer
      * @param AddSubTime $addSubTime
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(AddSubTime $addSubTime)
+    public function includeEmployee(AddSubTime $addSubTime)
     {
         if (empty($addSubTime->employee)) {
             return;
         }
 
-        return $this->item($addSubTime->employee, new UserTransformer, 'User');
+        return $this->item($addSubTime->employee, new UserTransformer, 'Employee');
     }
 }

@@ -5,20 +5,20 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\ParamaterFormula;
 use GGPHP\Category\Presenters\ParamaterFormulaPresenter;
 use GGPHP\Category\Repositories\Contracts\ParamaterFormulaRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ParamaterFormulaRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class ParamaterFormulaRepositoryEloquent extends BaseRepository implements ParamaterFormulaRepository
+class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implements ParamaterFormulaRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
-        'code' => 'like',
+        'Id',
+        'Name' => 'like',
+        'Code' => 'like',
     ];
 
     /**

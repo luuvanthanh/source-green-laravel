@@ -36,6 +36,6 @@ class AbsentType extends UuidModel
      */
     public function absentReason()
     {
-        return $this->hasMany(AbsentReason::class);
+        return $this->hasMany(AbsentReason::class, 'Id', 'AbsentTypeId');
     }
 }

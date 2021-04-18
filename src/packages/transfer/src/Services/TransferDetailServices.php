@@ -12,7 +12,7 @@ class TransferDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
-            $value['transfer_id'] = $id;
+            $value['TransferId'] = $id;
             $shiftDetail = TransferDetail::create($value);
         }
 

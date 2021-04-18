@@ -3,6 +3,7 @@
 namespace GGPHP\Appoint\Transformers;
 
 use GGPHP\Appoint\Models\AppointDetail;
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Category\Transformers\DivisionTransformer;
 use GGPHP\Category\Transformers\PositionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;

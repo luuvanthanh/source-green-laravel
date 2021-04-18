@@ -46,7 +46,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         if (!empty($request->player_id)) {
-            $this->employeeRepository->deletePlayer($request->player_id, $request->employee()->id);
+            $this->employeeRepository->deletePlayer($request->player_id, $request->employee()->Id);
         }
 
         $request->employee()->token()->revoke();

@@ -12,7 +12,7 @@ class DecisionRewardDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
-            $value['decision_reward_id'] = $id;
+            $value['DecisionRewardId'] = $id;
             $shiftDetail = DecisionRewardDetail::create($value);
         }
 

@@ -16,7 +16,7 @@ class AddSubTimeDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'AdditionalTimeId', 'EmployeeId', 'StartDate', 'EndDate', 'Days', 'Hours', 'Reason',
+        'AddSubTimeId', 'EmployeeId', 'StartDate', 'EndDate', 'Days', 'Hours', 'Reason',
     ];
 
     protected $dateTimeFields = [
@@ -34,7 +34,7 @@ class AddSubTimeDetail extends UuidModel
      */
     public function addSubTime()
     {
-        return $this->belongsTo(AddSubTime::class);
+        return $this->belongsTo(AddSubTime::class, 'AddSubTimeId');
     }
 
     /**

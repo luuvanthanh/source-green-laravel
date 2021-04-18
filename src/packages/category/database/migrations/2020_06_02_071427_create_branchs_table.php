@@ -18,7 +18,7 @@ class CreateBranchsTable extends Migration
             $table->primary('Id');
             $table->string('Code');
             $table->string('Name');
-            $table->string('Adress')->nullable();
+            $table->string('Address')->nullable();
             $table->string('PhoneNumber')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();

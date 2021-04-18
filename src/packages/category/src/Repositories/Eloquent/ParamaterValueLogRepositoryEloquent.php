@@ -5,18 +5,18 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\ParamaterValueLog;
 use GGPHP\Category\Presenters\ParamaterValueLogPresenter;
 use GGPHP\Category\Repositories\Contracts\ParamaterValueLogRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ParamaterValueLogRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class ParamaterValueLogRepositoryEloquent extends BaseRepository implements ParamaterValueLogRepository
+class ParamaterValueLogRepositoryEloquent extends CoreRepositoryEloquent implements ParamaterValueLogRepository
 {
     protected $fieldSearchable = [
-        'id',
+        'Id',
     ];
 
     /**

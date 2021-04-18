@@ -12,12 +12,12 @@ class IclockController extends Controller
     public function sentToDevice()
     {
         $sn = request()->get('SN');
-        $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where('serial_number', $sn)->first();
+        $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where('SerialNumber', $sn)->first();
         $syncTime = $device->syncTime()->firstOrCreate([]);
-        if (!$syncTime->zk_sync_id) {
+        if (!$syncTime->ZkSyncId) {
             $modelSync = \ZK\Models\ZKSync::first();
         } else {
-            $modelSync = \ZK\Models\ZKSync::where('id', '>', $syncTime->zk_sync_id)->first();
+            $modelSync = \ZK\Models\ZKSync::where('id', '>', $syncTime->ZkSyncId)->first();
         }
 
         if (!$modelSync) {
@@ -28,13 +28,13 @@ class IclockController extends Controller
 
         if (!$model) {
             $return = 'OK';
-            if (in_array($modelSync->subject_type, ['GGPHP\MagneticCard\Models\MagneticCard'])) {
-                $obj = json_decode($modelSync->payload);
+            if (in_array($modelSync->SubjectType, ['GGPHP\MagneticCard\Models\MagneticCard'])) {
+                $obj = json_decode($modelSync->Payload);
                 $employee = User::find($obj->EmployeeId);
                 $array = [
                     $modelSync->id,
-                    $employee->id,
-                    $employee->full_name,
+                    $employee->FingerprintId,
+                    $employee->FullName,
                     0,
                     rand(9999, 5),
                     0,
@@ -52,7 +52,7 @@ class IclockController extends Controller
 
         $return = '';
 
-        if (!in_array($modelSync->subject_type, array_values(config('zk.subject_supporteds')))) {
+        if (!in_array($modelSync->SubjectType, array_values(config('zk.subject_supporteds')))) {
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
 
@@ -67,12 +67,12 @@ class IclockController extends Controller
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
 
-        switch ($modelSync->subject_type) {
+        switch ($modelSync->SubjectType) {
             case config('zk.subject_supporteds')['USER']:
                 $array = [
                     $modelSync->id,
-                    $employee->id,
-                    $employee->full_name,
+                    $employee->FingerprintId,
+                    $employee->FullName,
                     0,
                     rand(9999, 5),
                     0,
@@ -83,24 +83,25 @@ class IclockController extends Controller
                 $return = vsprintf($template, $array);
                 break;
             case config('zk.subject_supporteds')['FINGERPRINT']:
+                \Log::info('abc', []);
                 if ($modelSync->action === 'deleted') {
                     $array = [
                         $modelSync->id,
-                        $model->employee->id,
-                        $model->finger_index,
+                        $model->employee->FingerprintId,
+                        $model->FingerIndex,
                     ];
                     $template = "C:%d:DATA DEL_FP PIN=%d\tFID=%d\r\n";
                 } else {
                     $template = "C:YUEOI:DATA DEL_FP PIN=%d\tFID=%d\r\nC:%d:DATA UPDATE FINGERTMP PIN=%d\tFID=%d\tSize=%d\tValid=%d\tTMP=%s\r\n";
                     $array = [
-                        $model->employee->id,
-                        $model->finger_index,
+                        $model->employee->FingerprintId,
+                        $model->FingerIndex,
                         $modelSync->id,
-                        $model->employee->id,
-                        $model->finger_index,
-                        (int) $model->size,
-                        $model->valid,
-                        (string) $model->finger,
+                        $model->employee->FingerprintId,
+                        $model->FingerIndex,
+                        (int) $model->Size,
+                        $model->Valid,
+                        (string) $model->Finger,
                     ];
                 }
 
@@ -115,6 +116,7 @@ class IclockController extends Controller
 
     public function deviceGetCommand()
     {
+
         $dataFromClient = (array) request()->getContent();
         $data = preg_split('/\n/', $dataFromClient[0]);
 
@@ -138,9 +140,9 @@ class IclockController extends Controller
                 continue;
             }
             $sn = request()->get('SN');
-            $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where('serial_number', $sn)->first();
-            $syncTime = $device->syncTime;
-            $syncTime->zk_sync_id = $sync->id;
+            $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where('SerialNumber', $sn)->first();
+            $syncTime = $device->SyncTime;
+            $syncTime->ZkSyncId = $sync->id;
             $syncTime->save();
         }
         return response('ok', 200)->header('Content-Type', 'text/plain');
@@ -184,7 +186,7 @@ class IclockController extends Controller
     public function receiveFromDevice()
     {
         $serialNumber = request()->get('SN');
-        $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where(['serial_number' => $serialNumber])->firstOrFail();
+        $device = \GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper::where(['SerialNumber' => $serialNumber])->firstOrFail();
 
         if (empty($device)) {
             return response('ok', 200)->header('Content-Type', 'text/plain');
@@ -214,7 +216,7 @@ class IclockController extends Controller
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
 
-                            $employee = User::find($attributes['PIN']);
+                            $employee = User::where('FingerprintId', $attributes['PIN'])->first();
 
                             if (!$employee) {
                                 break;
@@ -239,7 +241,7 @@ class IclockController extends Controller
                             }, array_values($arrayAttributes));
                             $attributes = \Arr::collapse($result);
                             //find employee
-                            $employee = User::find($attributes['PIN']);
+                            $employee = User::where('FingerprintId', $attributes['PIN'])->first();
 
                             if (!$employee) {
                                 break;
@@ -247,11 +249,11 @@ class IclockController extends Controller
 
                             //call service add fingerprint to employee
                             \GGPHP\Fingerprint\Services\UserFingerprint::addOrUpdate($employee, [
-                                'valid' => $attributes['Valid'],
-                                'size' => $attributes['Size'],
-                                'finger' => $attributes['TMP'],
-                                'finger_index' => $attributes['FID'],
-                                'device_id' => $device->id,
+                                'Valid' => $attributes['Valid'],
+                                'Size' => $attributes['Size'],
+                                'Finger' => $attributes['TMP'],
+                                'FingerIndex' => $attributes['FID'],
+                                'DeviceId' => $device->Id,
                             ]);
 
                             break;
@@ -267,24 +269,24 @@ class IclockController extends Controller
             if (empty($attributes)) {
 
                 $attributes = array_slice(preg_split('/\t/', $value), 0, 4);
-
-                $keyAttributes = ['EmployeeId', 'attended_at', 'tracking_type', 'type'];
+                \Log::info('ac', $attributes);
+                $keyAttributes = ['EmployeeId', 'AttendedAt', 'TrackingType', 'Type'];
                 $attributes = array_combine($keyAttributes, $attributes);
 
-                $employee = User::find($attributes['EmployeeId']);
+                $employee = User::where('FingerprintId', $attributes['EmployeeId'])->first();
 
                 if (!$employee) {
                     continue;
                 }
 
-                $fields = \Arr::only($attributes, ['type', 'attended_at', 'tracking_type']);
+                $fields = \Arr::only($attributes, ['Type', 'AttendedAt', 'TrackingType']);
 
-                if (empty(\GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['type']])) {
+                if (empty(\GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['Type']])) {
                     continue;
                 }
 
-                $fields['type'] = \GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['type']];
-                \GGPHP\Timekeeping\Services\UserAttendence::attend($employee, array_merge(['device_id' => $device->id], $fields));
+                $fields['Type'] = \GGPHP\Timekeeping\Models\Timekeeping::TYPE_COLLECTION[$fields['Type']];
+                \GGPHP\Timekeeping\Services\UserAttendence::attend($employee, array_merge(['DeviceId' => $device->Id], $fields));
             }
         }
         return response('ok', 200)->header('Content-Type', 'text/plain');

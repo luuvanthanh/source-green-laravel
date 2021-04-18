@@ -2,25 +2,25 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class UserRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class UserRepositoryEloquent extends BaseRepository implements UserRepository
+class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
-        'full_name' => 'like',
+        'Id',
+        'FullName' => 'like',
     ];
 
     /**

@@ -26,7 +26,7 @@ class WorkDeclarationDetailTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "time" => json_decode($model->time),
+            "Time" => json_decode($model->Time),
         ];
     }
 

@@ -24,11 +24,11 @@ class FingerprintTransformer extends BaseTransformer
      * Include User
      * @param  Fingerprint $fingerprint
      */
-    public function includeUser(Fingerprint $fingerprint)
+    public function includeEmployee(Fingerprint $fingerprint)
     {
         if (empty($fingerprint->employee)) {
             return;
         }
-        return $this->item($fingerprint->employee, new UserTransformer, 'User');
+        return $this->item($fingerprint->employee, new UserTransformer, 'Employee');
     }
 }

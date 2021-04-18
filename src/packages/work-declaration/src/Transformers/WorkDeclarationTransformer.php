@@ -31,13 +31,13 @@ class WorkDeclarationTransformer extends BaseTransformer
      * @param WorkDeclaration $workDeclaration
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(WorkDeclaration $workDeclaration)
+    public function includeEmployee(WorkDeclaration $workDeclaration)
     {
         if (empty($workDeclaration->employee)) {
             return;
         }
 
-        return $this->item($workDeclaration->employee, new UserTransformer, 'User');
+        return $this->item($workDeclaration->employee, new UserTransformer, 'Employee');
     }
 
 }

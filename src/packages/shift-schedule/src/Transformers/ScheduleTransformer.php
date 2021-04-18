@@ -38,12 +38,12 @@ class ScheduleTransformer extends BaseTransformer
      * Include User
      * @param  Schedule $schedule
      */
-    public function includeUser(Schedule $schedule)
+    public function includeEmployee(Schedule $schedule)
     {
         if (empty($schedule->employee)) {
             return;
         }
-        return $this->item($schedule->employee, new UserTransformer, 'User');
+        return $this->item($schedule->employee, new UserTransformer, 'Employee');
     }
 
     /**

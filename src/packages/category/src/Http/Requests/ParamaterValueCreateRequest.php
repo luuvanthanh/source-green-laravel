@@ -26,8 +26,8 @@ class ParamaterValueCreateRequest extends FormRequest
         return [
             "code" => 'required|string',
             "name" => 'required|string',
-            "apply_date" => 'required',
-            "value_default" => 'required',
+            "applyDate" => 'required',
+            "valueDefault" => 'required',
             "note" => 'required',
             "type" => 'required',
         ];

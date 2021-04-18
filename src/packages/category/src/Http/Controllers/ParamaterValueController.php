@@ -33,16 +33,8 @@ class ParamaterValueController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $paramaterValues = $this->paramaterValueRepository->all();
-        } else {
-            $paramaterValues = $this->paramaterValueRepository->paginate($limit);
-        }
+        $paramaterValues = $this->paramaterValueRepository->getParamaterValue($request->all());
 
         return $this->success($paramaterValues, trans('lang::messages.common.getListSuccess'));
     }

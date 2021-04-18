@@ -24,10 +24,8 @@ class LabourContractUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'EmployeeId' => 'exists:employees,id',
-            'contract_number' => 'string',
-            'sign_date' => 'date',
-            'expiration_date' => 'date',
+            'employeeId' => 'exists:Employees,Id',
+            'contractNumber' => 'string',
         ];
     }
 }

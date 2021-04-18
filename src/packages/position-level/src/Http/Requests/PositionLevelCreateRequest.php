@@ -26,11 +26,11 @@ class PositionLevelCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'EmployeeId' => 'required',
-            'PositionId' => 'required',
-            'DivisionId' => 'required',
-            'BranchId' => 'required',
-            'start_date' => [
+            'employeeId' => 'required',
+            'positionId' => 'required',
+            'divisionId' => 'required',
+            'branchId' => 'required',
+            'startDate' => [
                 'required',
                 'date',
                 'after:today',
@@ -39,7 +39,7 @@ class PositionLevelCreateRequest extends FormRequest
                     $today = $now->toDateString();
                     $employeeId = request()->EmployeeId;
 
-                    $tranfer = PositionLevel::where('EmployeeId', $employeeId)->where('start_date', '>', $today)->first();
+                    $tranfer = PositionLevel::where('EmployeeId', $employeeId)->where('StartDate', '>', $today)->first();
 
                     if (!is_null($tranfer)) {
                         return $fail('Bạn đã tạo điều chuyển, vui lòng xem lại.');

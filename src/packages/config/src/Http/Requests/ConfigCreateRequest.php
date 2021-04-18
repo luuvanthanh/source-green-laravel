@@ -24,7 +24,9 @@ class ConfigCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:configs,name',
+            'name' => 'required|string|unique:Configs,Name',
+            'code' => 'required',
+            'value' => 'required',
         ];
     }
 }

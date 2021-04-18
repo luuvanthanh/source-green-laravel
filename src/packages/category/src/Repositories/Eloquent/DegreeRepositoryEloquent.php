@@ -5,19 +5,19 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\Degree;
 use GGPHP\Category\Presenters\DegreePresenter;
 use GGPHP\Category\Repositories\Contracts\DegreeRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class DegreeRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class DegreeRepositoryEloquent extends BaseRepository implements DegreeRepository
+class DegreeRepositoryEloquent extends CoreRepositoryEloquent implements DegreeRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
+        'Id',
+        'Name' => 'like',
     ];
 
     /**

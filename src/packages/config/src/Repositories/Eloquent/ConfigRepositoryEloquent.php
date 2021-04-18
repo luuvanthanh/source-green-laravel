@@ -5,23 +5,23 @@ namespace GGPHP\Config\Repositories\Eloquent;
 use GGPHP\Config\Models\Config;
 use GGPHP\Config\Presenters\ConfigPresenter;
 use GGPHP\Config\Repositories\Contracts\ConfigRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ConfigRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ConfigRepositoryEloquent extends BaseRepository implements ConfigRepository
+class ConfigRepositoryEloquent extends CoreRepositoryEloquent implements ConfigRepository
 {
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
-        'name',
+        'Id',
+        'Name',
     ];
 
     /**

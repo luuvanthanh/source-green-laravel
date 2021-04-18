@@ -24,12 +24,12 @@ class DecisionRewardCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'DecisionNumber' => 'unique:decision_rewards,DecisionNumber',
-            'DecisionDate' => 'required',
+            'decisionNumber' => 'unique:decision_rewards,DecisionNumber',
+            'decisionDate' => 'required',
             'reason' => 'required',
             'type' => 'required',
             'data' => 'required|array',
-            'data.*.EmployeeId' => 'required',
+            'data.*.employeeId' => 'required',
             'data.*.money' => 'required',
             'data.*.note' => 'required',
         ];

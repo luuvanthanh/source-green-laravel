@@ -5,20 +5,20 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\TrainingMajor;
 use GGPHP\Category\Presenters\TrainingMajorPresenter;
 use GGPHP\Category\Repositories\Contracts\TrainingMajorRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class TrainingMajorRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class TrainingMajorRepositoryEloquent extends BaseRepository implements TrainingMajorRepository
+class TrainingMajorRepositoryEloquent extends CoreRepositoryEloquent implements TrainingMajorRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
-        'code' => 'like',
+        'Id',
+        'Name' => 'like',
+        'Code' => 'like',
     ];
 
     /**

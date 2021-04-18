@@ -5,20 +5,20 @@ namespace GGPHP\Category\Repositories\Eloquent;
 use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Category\Presenters\ParamaterValuePresenter;
 use GGPHP\Category\Repositories\Contracts\ParamaterValueRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ParamaterValueRepositoryEloquent.
  *
  * @package namespace GGPHP\Category\Repositories\Eloquent;
  */
-class ParamaterValueRepositoryEloquent extends BaseRepository implements ParamaterValueRepository
+class ParamaterValueRepositoryEloquent extends CoreRepositoryEloquent implements ParamaterValueRepository
 {
     protected $fieldSearchable = [
-        'id',
-        'name' => 'like',
-        'code' => 'like',
+        'Id',
+        'Name' => 'like',
+        'Code' => 'like',
     ];
 
     /**
@@ -49,4 +49,18 @@ class ParamaterValueRepositoryEloquent extends BaseRepository implements Paramat
         return ParamaterValuePresenter::class;
     }
 
+    public function getParamaterValue(array $attributes)
+    {
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('Type', $attributes['type']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $paramaterValue = $this->paginate($attributes['limit']);
+        } else {
+            $paramaterValue = $this->get();
+        }
+
+        return $paramaterValue;
+    }
 }

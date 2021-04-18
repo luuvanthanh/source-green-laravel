@@ -11,7 +11,7 @@ class Schedule extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'schedules';
+    protected $table = 'Schedules';
 
     /**
      * The attributes that are mass assignable.
@@ -57,7 +57,7 @@ class Schedule extends UuidModel
      */
     public function scheduleRepeat()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\ScheduleRepeat::class, 'schedule_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\ScheduleRepeat::class, 'ScheduleId');
     }
 
     /**
@@ -65,7 +65,7 @@ class Schedule extends UuidModel
      */
     public function scheduleException()
     {
-        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ScheduleException::class, 'schedule_id');
+        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ScheduleException::class, 'ScheduleId');
     }
 
     /**
@@ -73,6 +73,6 @@ class Schedule extends UuidModel
      */
     public function shift()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'id', 'shift_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'Id', 'ShiftId');
     }
 }

@@ -3,25 +3,25 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProbationaryContractRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ProbationaryContractRepositoryEloquent extends BaseRepository implements ProbationaryContractRepository
+class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent implements ProbationaryContractRepository
 {
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
+        'Id',
         'EmployeeId',
     ];
 
@@ -62,31 +62,31 @@ class ProbationaryContractRepositoryEloquent extends BaseRepository implements P
                     $now = Carbon::now();
                     $addMonth = Carbon::now()->addMonth();
 
-                    $this->model = $this->model->where('contract_from', '<=', $now->format('Y-m-d'))->where('contract_to', '>', $addMonth->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractFrom', '<=', $now->format('Y-m-d'))->where('ContractTo', '>', $addMonth->format('Y-m-d'));
                     break;
                 case 'GAN_HET_HAN':
                     $now = Carbon::now();
                     $addMonth = Carbon::now()->addMonth();
 
-                    $this->model = $this->model->where('contract_to', '>=', $now->format('Y-m-d'))->where('contract_to', '<=', $addMonth->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractTo', '>=', $now->format('Y-m-d'))->where('ContractTo', '<=', $addMonth->format('Y-m-d'));
                     break;
                 case 'DA_HET_HAN':
                     $now = Carbon::now();
 
-                    $this->model = $this->model->where('contract_to', '<', $now->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractTo', '<', $now->format('Y-m-d'));
                     break;
                 case 'CHUA_DEN_HAN':
                     $now = Carbon::now();
 
-                    $this->model = $this->model->where('contract_from', '>', $now->format('Y-m-d'));
+                    $this->model = $this->model->where('ContractFrom', '>', $now->format('Y-m-d'));
                     break;
                 default:
                     break;
             }
         }
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->where('contract_date', '>=', Carbon::parse($attributes['start_date'])->format('Y-m-d'))->where('contract_date', '<=', Carbon::parse($attributes['end_date'])->format('Y-m-d'));
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('ContractDate', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('ContractDate', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
         }
 
         if (!empty($attributes['limit'])) {
@@ -104,7 +104,7 @@ class ProbationaryContractRepositoryEloquent extends BaseRepository implements P
         try {
             $tranfer = ProbationaryContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['parameter_value_id'], ['value' => $value['value']]);
+                $tranfer->parameterValues()->attach($value['parameterValueId'], ['value' => $value['value']]);
             }
 
             \DB::commit();
@@ -113,6 +113,6 @@ class ProbationaryContractRepositoryEloquent extends BaseRepository implements P
             \DB::rollback();
         }
 
-        return parent::find($tranfer->id);
+        return parent::find($tranfer->Id);
     }
 }

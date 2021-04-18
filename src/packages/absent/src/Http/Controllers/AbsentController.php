@@ -9,7 +9,6 @@ use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class AbsentController extends Controller
 {
@@ -76,7 +75,6 @@ class AbsentController extends Controller
     public function update(AbsentUpdateRequest $request, $id)
     {
         $credentials = $request->all();
-        $credentials['approval_id'] = Auth::id();
         $absent = $this->absentRepository->update($credentials, $id);
 
         return $this->success($absent, trans('lang::messages.common.modifySuccess'));
@@ -102,18 +100,9 @@ class AbsentController extends Controller
      */
     public function absentByUser(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
+        $absents = $this->absentRepository->getAbsent($data);
 
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        $data = $request->all();
-        $data['limit'] = $limit;
-
-        $employees = $this->absentRepository->getAbsent($data);
-
-        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
+        return $this->success($absents, trans('lang::messages.common.getListSuccess'));
     }
 
 }

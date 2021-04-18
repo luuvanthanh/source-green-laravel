@@ -2,18 +2,18 @@
 
 namespace GGPHP\LateEarly\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\LateEarly\Models\LateEarlyTimeConfig;
 use GGPHP\LateEarly\Presenters\LateEarlyConfigPresenter;
 use GGPHP\LateEarly\Repositories\LateEarly\LateEarlyConfigRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class LateEarlyConfigRepositoryEloquent extends BaseRepository implements LateEarlyConfigRepository
+class LateEarlyConfigRepositoryEloquent extends CoreRepositoryEloquent implements LateEarlyConfigRepository
 {
     protected $fieldSearchable = ['type'];
     /**
@@ -51,26 +51,26 @@ class LateEarlyConfigRepositoryEloquent extends BaseRepository implements LateEa
      */
     public function createOrUpdateLateEarlyConfig($attributes)
     {
-        if (!empty($attributes['create_rows'])) {
-            foreach ($attributes['create_rows'] as $value) {
+        if (!empty($attributes['createRows'])) {
+            foreach ($attributes['createRows'] as $value) {
                 $lateEarlyConfig = $this->model()::create($value);
             }
         }
 
-        if (!empty($attributes['update_rows'])) {
-            foreach ($attributes['update_rows'] as $value) {
-                $lateEarlyConfig = $this->model()::find($value['id']);
+        if (!empty($attributes['updateRows'])) {
+            foreach ($attributes['updateRows'] as $value) {
+                $lateEarlyConfig = $this->model()::find($value['Id']);
                 if ($lateEarlyConfig) {
                     $lateEarlyConfig->update($value);
                 }
             }
         }
 
-        if (!empty($attributes['delete_ids'])) {
-            LateEarlyTimeConfig::whereIn('id', $attributes['delete_ids'])->delete();
+        if (!empty($attributes['deleteIds'])) {
+            LateEarlyTimeConfig::whereIn('Id', $attributes['deleteIds'])->delete();
         }
 
-        $this->model = $this->model()::where('type', $attributes['type']);
+        $this->model = $this->model()::where('Type', $attributes['type']);
         return $this->get();
     }
 }

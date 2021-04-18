@@ -24,19 +24,19 @@ class ProbationaryContractCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'EmployeeId' => 'required|exists:employees,id',
-            'contract_number' => 'required|string',
-            'contract_date' => 'required|date',
-            'type_of_contract_id' => 'required|exists:type_of_contracts,id',
-            'salary_ratio' => 'required',
+            'employeeId' => 'required|exists:Employees,Id',
+            'contractNumber' => 'required|string',
+            'contractDate' => 'required|date',
+            'typeOfContractId' => 'required|exists:type_of_contracts,Id',
+            'salaryRatio' => 'required',
             'month' => 'required',
-            'DivisionId' => 'required|exists:divisions,id',
-            'contract_from' => 'required|date',
-            'contract_to' => 'required|date',
-            'PositionId' => 'required|exists:positions,id',
+            'divisionId' => 'required|exists:divisions,Id',
+            'contractFrom' => 'required|date',
+            'contractTo' => 'required|date',
+            'positionId' => 'required|exists:positions,Id',
             'work' => 'required|string',
-            'work_time' => 'required|string',
-            'BranchId' => 'required|exists:branches,id',
+            'workTime' => 'required|string',
+            'branchId' => 'required|exists:branches,Id',
         ];
     }
 }

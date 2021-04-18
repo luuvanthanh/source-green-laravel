@@ -20,7 +20,7 @@ class WorkHourTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [
-            "hours" => json_decode($model->hours),
+            "Hours" => json_decode($model->Hours),
         ];
     }
 
@@ -28,12 +28,12 @@ class WorkHourTransformer extends BaseTransformer
      * Include User
      * @param  WorkHour $workHour
      */
-    public function includeUser(WorkHour $workHour)
+    public function includeEmployee(WorkHour $workHour)
     {
         if (empty($workHour->employee)) {
             return;
         }
 
-        return $this->item($workHour->employee, new UserTransformer, 'User');
+        return $this->item($workHour->employee, new UserTransformer, 'Employee');
     }
 }

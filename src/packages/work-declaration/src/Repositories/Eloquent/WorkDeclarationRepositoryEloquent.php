@@ -2,22 +2,22 @@
 
 namespace GGPHP\WorkDeclaration\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\WorkDeclaration\Models\WorkDeclaration;
 use GGPHP\WorkDeclaration\Presenters\WorkDeclarationPresenter;
 use GGPHP\WorkDeclaration\Repositories\Contracts\WorkDeclarationRepository;
 use GGPHP\WorkDeclaration\Services\WorkDeclarationDetailService;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class WorkDeclarationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class WorkDeclarationRepositoryEloquent extends BaseRepository implements WorkDeclarationRepository
+class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implements WorkDeclarationRepository
 {
     protected $fieldSearchable = [
-        'id',
+        'Id',
         'EmployeeId',
     ];
 
@@ -53,15 +53,15 @@ class WorkDeclarationRepositoryEloquent extends BaseRepository implements WorkDe
     {
         $workDeclaration = WorkDeclaration::create($attributes);
 
-        WorkDeclarationDetailService::add($workDeclaration->id, $attributes['data']);
+        WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
 
-        return parent::find($workDeclaration->id);
+        return parent::find($workDeclaration->Id);
     }
 
     public function getWorkDeclaration(array $attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->where('created_at', '>=', $attributes['start_date'])->where('created_at', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('CreationTime', '>=', $attributes['startDate'])->where('CreationTime', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['is_filter'])) {
@@ -70,8 +70,8 @@ class WorkDeclarationRepositoryEloquent extends BaseRepository implements WorkDe
             });
         }
 
-        if (!empty($attributes['EmployeeId'])) {
-            $employeeId = explode(',', $attributes['EmployeeId']);
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 

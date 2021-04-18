@@ -51,14 +51,14 @@ class UserTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         $attributes = [
-            'totalRealTimekeeping' => $model->totalRealTimekeeping,
-            'totalHourRedundantTimekeeping' => $model->totalHourRedundantTimekeeping,
+            'TotalRealTimekeeping' => $model->TotalRealTimekeeping,
+            'TotalHourRedundantTimekeeping' => $model->TotalHourRedundantTimekeeping,
             'totalAdditionalTimes' => $model->additionalTimes,
             'totalAdditionalHours' => $model->additionalHours,
             'totalSubtractionTimes' => $model->subtractionTimes,
             'totalSubtractionHours' => $model->subtractionHours,
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
-            'workHourRedundant' => $model->workHourRedundant,
+            'WorkHourRedundant' => $model->WorkHourRedundant,
             'totalAnnualAbsent' => $model->totalAnnualAbsent,
             'totalUnpaidAbsent' => $model->totalUnpaidAbsent,
             'totalTimekeepingWork' => round($model->totalWorks, 2),
@@ -73,17 +73,17 @@ class UserTransformer extends BaseTransformer
         if (!is_null(\Request::route())) {
             // Absent calculator
             if (request()->type === 'month') {
-                $countAnnualAbsentsByMonth = $model->calculatorAbsent(request()->start_date, request()->end_date, AbsentType::ANNUAL_LEAVE);
-                $countUnpaidLeaveByMonth = $model->calculatorAbsent(request()->start_date, request()->end_date, AbsentType::UNPAID_LEAVE);
-                $countAwolLeaveByMonth = $model->calculatorAbsent(request()->start_date, request()->end_date, AbsentType::AWOL);
+                $countAnnualAbsentsByMonth = $model->calculatorAbsent(request()->StartDate, request()->EndDate, AbsentType::ANNUAL_LEAVE);
+                $countUnpaidLeaveByMonth = $model->calculatorAbsent(request()->StartDate, request()->EndDate, AbsentType::UNPAID_LEAVE);
+                $countAwolLeaveByMonth = $model->calculatorAbsent(request()->StartDate, request()->EndDate, AbsentType::AWOL);
                 $attributes['annualAbsentsByMonth'] = $countAnnualAbsentsByMonth;
                 $attributes['unpaidLeaveByMonth'] = $countUnpaidLeaveByMonth;
                 $attributes['countAwolLeaveByMonth'] = $countAwolLeaveByMonth;
-            } elseif (request()->type === 'year' || isset(request()->id) || \Request::route()->getName() == 'employees.me.show') {
+            } elseif (request()->type === 'year' || isset(request()->Id) || \Request::route()->getName() == 'employees.me.show') {
 
                 $currentYear = Carbon::now()->format('Y-m-d');
 
-                $attributes['absentYear'] = $model->countAbsents(request()->start_date ? request()->start_date : $currentYear, request()->end_date);
+                $attributes['absentYear'] = $model->countAbsents(request()->StartDate ? request()->StartDate : $currentYear, request()->EndDate);
             }
 
             if (\Request::route()->getName() == 'reviews.employee-review-productivity.show-mobile') {

@@ -34,7 +34,7 @@ trait RFIDLogin
                         'expires_in' => '',
                         'access_token' => $token,
                         'refresh_token' => '',
-                        'EmployeeId' => $employee->id,
+                        'EmployeeId' => $employee->Id,
                     ]);
                 }
             }

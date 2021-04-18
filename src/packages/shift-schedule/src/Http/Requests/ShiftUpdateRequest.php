@@ -30,13 +30,13 @@ class ShiftUpdateRequest extends FormRequest
     {
         $store_id = $request->store_id;
         return [
-            'shift_code' => [
+            'shiftCode' => [
                 'string',
-                Rule::unique('shifts')->ignore($this->id)->where(function ($query) use ($store_id) {
-                    $query->where(['status' => Shift::ON]);
+                Rule::unique('Shifts')->ignore($this->Id)->where(function ($query) use ($store_id) {
+                    $query->where(['Status' => Shift::ON]);
                 }),
             ],
-            'shift_id' => [
+            'shiftId' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $accessUpdate = $this->checkAccessUpdate($value);
@@ -51,12 +51,12 @@ class ShiftUpdateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     for ($i = 1; $i < count($value); $i++) {
 
-                        if ($value[$i]['start_time'] <= $value[$i - 1]['end_time']) {
+                        if ($value[$i]['StartTime'] <= $value[$i - 1]['EndTime']) {
                             return $fail('Thời gian không hợp lệ.');
                         }
 
-                        if ($value[$i]['start_time'] > $value[$i]['end_time']) {
-                            if ($value[$i]['end_time'] > $value[0]['start_time']) {
+                        if ($value[$i]['StartTime'] > $value[$i]['EndTime']) {
+                            if ($value[$i]['EndTime'] > $value[0]['StartTime']) {
                                 return $fail('Thời gian không hợp lệ.');
                             }
                         }
@@ -71,12 +71,12 @@ class ShiftUpdateRequest extends FormRequest
      *
      * @return boolean
      */
-    private function checkAccessUpdate($shift_id)
+    private function checkAccessUpdate($ShiftId)
     {
         $now = Carbon::now();
         $today = $now->toDateString();
 
-        $scheduleDetail = Schedule::where('shift_id', $shift_id)->whereDate('start_date', '<=', date($today))->get();
+        $scheduleDetail = Schedule::where('ShiftId', $ShiftId)->whereDate('StartDate', '<=', date($today))->get();
         if (empty(count($scheduleDetail))) {
             return true;
         }

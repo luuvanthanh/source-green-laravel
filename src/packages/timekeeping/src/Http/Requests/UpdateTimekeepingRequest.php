@@ -27,11 +27,11 @@ class UpdateTimekeepingRequest extends FormRequest
         $trackingType = implode(',', config('constants-timekeeping.TRACKING_TYPE.COLLECTIONS'));
 
         return [
-            'EmployeeId' => 'required|exists:employees,id',
-            'device_id' => 'required|exists:fingerprint_timekeepers,id',
+            'employeeId' => 'required|exists:Employees,Id',
+            'deviceId' => 'required|exists:fingerprint_timekeepers,Id',
             'type' => 'required|string|in:' . $type,
-            'tracking_type' => 'required|string|in:' . $trackingType,
-            'attended_at' => 'required|date|date_format:Y-m-d H:i:s',
+            'trackingType' => 'required|string|in:' . $trackingType,
+            'attendedAt' => 'required|date|date_format:Y-m-d H:i:s',
         ];
     }
 }

@@ -25,7 +25,6 @@ class DivisionCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'PositionId' => 'array',
         ];
     }
 }

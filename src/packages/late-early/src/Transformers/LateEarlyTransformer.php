@@ -23,13 +23,13 @@ class LateEarlyTransformer extends BaseTransformer
      * @param LateEarly $lateEarly
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(LateEarly $lateEarly)
+    public function includeEmployee(LateEarly $lateEarly)
     {
         if (empty($lateEarly->employee)) {
             return;
         }
 
-        return $this->item($lateEarly->employee, new UserTransformer, 'User');
+        return $this->item($lateEarly->employee, new UserTransformer, 'Employee');
     }
 
     /**

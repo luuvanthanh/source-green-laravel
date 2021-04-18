@@ -21,20 +21,7 @@ class RewardTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $files = null;
-        $media = $model->getMedia('files');
-
-        if (!empty(count($media))) {
-            foreach ($media as $value) {
-                $files[] = [
-                    "path" => $value->getPath(),
-                    "file_name" => $value->name,
-                ];
-            }
-        }
-
         return [
-            'files' => $files,
         ];
     }
 }

@@ -24,7 +24,7 @@ class ResignationDecisionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'DecisionNumber' => 'unique:resignationDecisions,DecisionNumber',
+            'decisionNumber' => 'unique:ResignationDecisions,DecisionNumber',
         ];
     }
 }

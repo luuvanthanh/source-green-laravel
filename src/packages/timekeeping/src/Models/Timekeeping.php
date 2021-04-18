@@ -10,6 +10,8 @@ class Timekeeping extends UuidModel
 {
     public $incrementing = false;
 
+    protected $table = 'Timekeepings';
+
     const CHECK_IN = 'CHECK_IN';
     const CHECK_OUT = 'CHECK_OUT';
     const TYPE_FINGERPRINT = '1';

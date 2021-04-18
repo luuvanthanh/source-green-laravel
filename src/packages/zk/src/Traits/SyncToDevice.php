@@ -17,10 +17,10 @@ trait SyncToDevice
         static::eventsToBeRecorded()->each(function ($eventName) {
             return static::$eventName(function (Model $model) use ($eventName) {
                 $data = $model->toArray();
-                $data['id'] = $model->id;
+                $data['Id'] = $model->Id;
                 $model->activities()->create([
-                    'action' => $eventName,
-                    'payload' => json_encode($data),
+                    'Action' => $eventName,
+                    'Payload' => json_encode($data),
                 ]);
             });
         });
@@ -28,7 +28,7 @@ trait SyncToDevice
 
     public function activities(): MorphMany
     {
-        return $this->morphMany(ZKSync::class, 'subject');
+        return $this->morphMany(ZKSync::class, 'Subject', 'SubjectType', 'SubjectId');
     }
 
     /*

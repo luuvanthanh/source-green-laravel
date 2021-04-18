@@ -40,6 +40,6 @@ class Fingerprint extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class);
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 }

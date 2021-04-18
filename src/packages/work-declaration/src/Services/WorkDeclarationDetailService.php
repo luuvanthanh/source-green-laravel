@@ -17,25 +17,25 @@ class WorkDeclarationDetailService
     public static function add($idWorkDeclaration, array $attributes)
     {
         foreach ($attributes as $value) {
-            switch ($value['type']) {
+            switch ($value['Type']) {
                 case 'invalid':
-                    $value['time'] = json_encode($value['time']);
-                    $value['work_declaration_id'] = $idWorkDeclaration;
-                    $value['model_type'] = WorkDeclarationDetail::MODEL['INVALID'];
-                    WorkDeclaration::where('id', $value['model_id'])->update(['status_work_declaration' => 'PROCESS']);
+                    $value['Time'] = json_encode($value['Time']);
+                    $value['WorkDeclarationId'] = $idWorkDeclaration;
+                    $value['ModelType'] = WorkDeclarationDetail::MODEL['INVALID'];
+                    WorkDeclaration::where('Id', $value['ModelId'])->update(['StatusWorkDeclaration' => 'PROCESS']);
                     WorkDeclarationDetail::create($value);
                     break;
                 case 'revoke_shift':
-                    $value['time'] = json_encode($value['time']);
-                    $value['work_declaration_id'] = $idWorkDeclaration;
-                    $value['model_type'] = WorkDeclarationDetail::MODEL['REVOKESHIFT'];
-                    RevokeShift::where('id', $value['model_id'])->update(['status_work_declaration' => 'PROCESS']);
+                    $value['Time'] = json_encode($value['Time']);
+                    $value['WorkDeclarationId'] = $idWorkDeclaration;
+                    $value['ModelType'] = WorkDeclarationDetail::MODEL['REVOKESHIFT'];
+                    RevokeShift::where('Id', $value['ModelId'])->update(['StatusWorkDeclaration' => 'PROCESS']);
                     WorkDeclarationDetail::create($value);
                     break;
                 case 'default':
-                    $value['time'] = json_encode($value['time']);
-                    $value['work_declaration_id'] = $idWorkDeclaration;
-                    $value['model_type'] = WorkDeclarationDetail::MODEL['DEFAULT'];
+                    $value['Time'] = json_encode($value['Time']);
+                    $value['WorkDeclarationId'] = $idWorkDeclaration;
+                    $value['ModelType'] = WorkDeclarationDetail::MODEL['DEFAULT'];
                     WorkDeclarationDetail::create($value);
                     break;
             }
@@ -53,8 +53,8 @@ class WorkDeclarationDetailService
     public static function update(array $attributes)
     {
         foreach ($attributes as $value) {
-            $workDeclarationDetail = WorkDeclarationDetail::findOrFail($value['id']);
-            $value['time'] = json_encode($value['time']);
+            $workDeclarationDetail = WorkDeclarationDetail::findOrFail($value['Id']);
+            $value['Time'] = json_encode($value['Time']);
             $workDeclarationDetail->update($value);
         }
 

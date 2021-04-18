@@ -27,11 +27,11 @@ class PositionLevelDeleteRequest extends FormRequest
     {
 
         return [
-            'start_date' => [
+            'startDate' => [
                 function ($attribute, $value, $fail) {
                     $now = Carbon::now();
                     $today = $now->toDateString();
-                    $startDate = PositionLevel::find(request('id'))->start_date->toDateString();
+                    $startDate = PositionLevel::find(request('id'))->StartDate->toDateString();
 
                     if ($today >= $startDate) {
                         return $fail('Điều chuyển đã được áp dụng, không được xóa');

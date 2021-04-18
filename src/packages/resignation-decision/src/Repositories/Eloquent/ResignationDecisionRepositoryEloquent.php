@@ -2,28 +2,28 @@
 
 namespace GGPHP\ResignationDecision\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\ResignationDecision\Presenters\ResignationDecisionPresenter;
 use GGPHP\ResignationDecision\Repositories\Contracts\ResignationDecisionRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ResignationDecisionRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ResignationDecisionRepositoryEloquent extends BaseRepository implements ResignationDecisionRepository
+class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent implements ResignationDecisionRepository
 {
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
+        'Id',
         'DecisionNumber' => 'like',
         'EmployeeId',
-        'employee.full_name' => 'like',
+        'Employee.FullName' => 'like',
 
     ];
 

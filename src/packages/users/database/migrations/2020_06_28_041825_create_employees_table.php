@@ -21,8 +21,8 @@ class CreateEmployeesTable extends Migration
             $table->string('FullName')->nullable();
             $table->date('DateOfBirth')->nullable();
             $table->date('PlaceOfBirth')->nullable();
-            $table->date('Email')->nullable();
-            $table->date('PhoneNumber')->nullable();
+            $table->string('Email')->nullable();
+            $table->string('PhoneNumber')->nullable();
             $table->string('Code');
             $table->string('PermanentAddress')->nullable();
             $table->string('Nationality')->nullable();
@@ -45,7 +45,7 @@ class CreateEmployeesTable extends Migration
             $table->foreign('EducationalLevelId')->references('Id')->on('EducationalLevels');
             $table->date('WorkDate')->nullable();
             $table->string('HealthInsuranceBookNumber')->nullable();
-            $table->string('HospitalAdress')->nullable();
+            $table->string('HospitalAddress')->nullable();
             $table->string('SocialInsuranceBooknumber')->nullable();
             $table->string('BankName')->nullable();
             $table->string('BankNumberOfAccount')->nullable();

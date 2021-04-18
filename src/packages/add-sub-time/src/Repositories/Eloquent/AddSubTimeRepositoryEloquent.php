@@ -5,25 +5,25 @@ namespace GGPHP\AddSubTime\Repositories\Eloquent;
 use GGPHP\AddSubTime\Models\AddSubTime;
 use GGPHP\AddSubTime\Presenters\AddSubTimePresenter;
 use GGPHP\AddSubTime\Repositories\Contracts\AddSubTimeRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class AddSubTimeRepositoryEloquent.
  *
  * @package namespace GGPHP\AddSubTime\Repositories\Eloquent;
  */
-class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeRepository
+class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements AddSubTimeRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
         'EmployeeId',
-        'employee.full_name' => 'like',
-        'type',
+        'Employee.FullName' => 'like',
+        'Type',
     ];
 
     protected $employeeRepositoryEloquent;
@@ -69,23 +69,31 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
      */
     public function createAddSubTime($attributes)
     {
-        $addSubTime = $this->model()::create($attributes);
-        $addSubTime->addSubTimeDetail()->createMany($attributes['data']);
+        \DB::beginTransaction();
+        try {
+            $addSubTime = $this->model()::create($attributes);
+            $addSubTime->addSubTimeDetail()->createMany($attributes['data']);
 
-        return $this->parserResult($addSubTime);
+            \DB::commit();
+        } catch (\Exception $e) {
+            dd($e);
+            \DB::rollback();
+        }
+
+        return $this->find($addSubTime->Id);
     }
 
     public function filterAdditionalByMonth($attributes)
     {
         $this->model = $this->model->query();
 
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
-        if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+        if (!empty($attributes['startTime']) && !empty($attributes['endTime'])) {
             $this->model = $this->model->whereHas('addSubTimeDetail', function ($queryDetail) use ($attributes) {
-                $queryDetail->whereDate('start_date', '>=', $attributes['start_time'])->whereDate('end_date', '<=', $attributes['end_time']);
+                $queryDetail->whereDate('StartDate', '>=', $attributes['startTime'])->whereDate('EndDate', '<=', $attributes['endTime']);
             });
         }
 
@@ -103,17 +111,17 @@ class AddSubTimeRepositoryEloquent extends BaseRepository implements AddSubTimeR
         $employees = $this->employeeRepositoryEloquent->model->query();
 
         $employees->whereHas('addSubTime', function ($query) use ($attributes) {
-            if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+            if (!empty($attributes['startTime']) && !empty($attributes['endTime'])) {
                 $query->whereHas('addSubTimeDetail', function ($q) use ($attributes) {
-                    $q->whereDate('start_date', '>=', $attributes['start_time'])->whereDate('end_date', '<=', $attributes['end_time']);
+                    $q->whereDate('StartDate', '>=', $attributes['startTime'])->whereDate('EndDate', '<=', $attributes['endTime']);
                 });
             }
         });
 
         $employees->with(['addSubTime' => function ($query) use ($attributes) {
-            if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+            if (!empty($attributes['startTime']) && !empty($attributes['endTime'])) {
                 $query->whereHas('addSubTimeDetail', function ($q) use ($attributes) {
-                    $q->whereDate('start_date', '>=', $attributes['start_time'])->whereDate('end_date', '<=', $attributes['end_time']);
+                    $q->whereDate('StartDate', '>=', $attributes['startTime'])->whereDate('EndDate', '<=', $attributes['endTime']);
                 });
             }
         }]);

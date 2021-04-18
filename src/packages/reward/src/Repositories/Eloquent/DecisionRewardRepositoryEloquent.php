@@ -2,22 +2,22 @@
 
 namespace GGPHP\Reward\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Reward\Models\DecisionReward;
 use GGPHP\Reward\Presenters\DecisionRewardPresenter;
 use GGPHP\Reward\Repositories\Contracts\DecisionRewardRepository;
 use GGPHP\Reward\Services\DecisionRewardDetailServices;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class DecisionRewardRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class DecisionRewardRepositoryEloquent extends BaseRepository implements DecisionRewardRepository
+class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements DecisionRewardRepository
 {
     protected $fieldSearchable = [
-        'id',
+        'Id',
     ];
 
     /**
@@ -53,21 +53,21 @@ class DecisionRewardRepositoryEloquent extends BaseRepository implements Decisio
         \DB::beginTransaction();
         try {
             $decisionReward = DecisionReward::create($attributes);
-            DecisionRewardDetailServices::add($decisionReward->id, $attributes['data']);
+            DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
 
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
         }
 
-        return parent::find($decisionReward->id);
+        return parent::find($decisionReward->Id);
 
     }
 
     public function getDecisionReward(array $attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->model = $this->model->whereDate('date', '>=', $attributes['start_date'])->whereDate('date', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['limit'])) {

@@ -24,7 +24,6 @@ class SalaryIncreaseUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'DecisionNumber' => 'unique:salaryIncreases,DecisionNumber',
         ];
     }
 }

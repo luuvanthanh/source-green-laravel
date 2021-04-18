@@ -17,7 +17,7 @@ class WorkDeclarationDetail extends UuidModel
 
     const MODEL = [
         "INVALID" => "GGPHP\WorkDeclaration\Models\WorkDeclaration",
-        "REVOKESHIFT" => "GGPHP\Absent\Models\RevokeShift",
+        "REVOKESHIFT" => "GGPHP\RevokeShift\Models\RevokeShift",
         "DEFAULT" => "Default",
     ];
 

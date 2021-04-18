@@ -2,21 +2,21 @@
 
 namespace GGPHP\WorkHour\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\WorkHour\Models\WorkHour;
 use GGPHP\WorkHour\Presenters\WorkHourPresenter;
 use GGPHP\WorkHour\Repositories\Contracts\WorkHourRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class WorkHourRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class WorkHourRepositoryEloquent extends BaseRepository implements WorkHourRepository
+class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkHourRepository
 {
     protected $fieldSearchable = [
-        'id',
+        'Id',
     ];
 
     /**
@@ -50,8 +50,8 @@ class WorkHourRepositoryEloquent extends BaseRepository implements WorkHourRepos
     public function filterWorkHour(array $attributes)
     {
 
-        if (!empty($attributes['start_date']) && !empty($attributes['start_date'])) {
-            $this->model = $this->model->where('date', '>=', $attributes['start_date'])->where('date', '<=', $attributes['end_date']);
+        if (!empty($attributes['startDate']) && !empty($attributes['startDate'])) {
+            $this->model = $this->model->where('date', '>=', $attributes['startDate'])->where('date', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -65,21 +65,21 @@ class WorkHourRepositoryEloquent extends BaseRepository implements WorkHourRepos
 
     public function create(array $attributes)
     {
-        $attributes['hours'] = json_encode($attributes['hours']);
+        $attributes['Hours'] = json_encode($attributes['Hours']);
 
         $workHour = WorkHour::create($attributes);
 
-        return parent::find($workHour->id);
+        return parent::find($workHour->Id);
     }
 
     public function update(array $attributes, $id)
     {
         $workHour = WorkHour::findOrFail($id);
 
-        $attributes['hours'] = json_encode($attributes['hours']);
+        $attributes['Hours'] = json_encode($attributes['Hours']);
         $workHour->update($attributes);
 
-        return parent::find($workHour->id);
+        return parent::find($workHour->Id);
     }
 
 }

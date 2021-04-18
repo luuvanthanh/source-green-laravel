@@ -30,7 +30,7 @@ class Absent extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 
     /**
@@ -38,7 +38,7 @@ class Absent extends UuidModel
      */
     public function absentType()
     {
-        return $this->belongsTo(AbsentType::class);
+        return $this->belongsTo(AbsentType::class, 'AbsentTypeId');
     }
 
     /**
@@ -46,6 +46,6 @@ class Absent extends UuidModel
      */
     public function absentReason()
     {
-        return $this->belongsTo(AbsentReason::class);
+        return $this->belongsTo(AbsentReason::class, 'AbsentReasonId');
     }
 }
