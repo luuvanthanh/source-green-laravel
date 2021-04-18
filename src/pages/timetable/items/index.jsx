@@ -222,7 +222,6 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
-    console.log(data)
     const { search } = this.state;
     const loading = effects['timeTables/GET_DATA'];
     const loadingSubmit = effects['timeTables/ADD'] || effects['timeTables/UPDATE'];

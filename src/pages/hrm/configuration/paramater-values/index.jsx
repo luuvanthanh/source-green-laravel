@@ -248,39 +248,39 @@ class Index extends PureComponent {
         title: 'TÊN',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.name}</Text>,
+        render: (record) => <Text size="normal">{record.Name}</Text>,
       },
       {
         title: 'MÃ',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        render: (record) => <Text size="normal">{record.Code}</Text>,
       },
       {
         title: 'NGÀY ÁP DỤNG',
         key: 'apply_date',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getDate(record.apply_date)}</Text>,
+        render: (record) => <Text size="normal">{Helper.getDate(record.ApplyDate)}</Text>,
       },
       {
         title: 'GIÁ MẶC ĐỊNH',
         key: 'value_default',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getPrice(record.value_default)}</Text>,
+        render: (record) => <Text size="normal">{Helper.getPrice(record.ValueDefault)}</Text>,
       },
       {
         title: 'LOẠI',
         key: 'type',
         className: 'min-width-150',
         render: (record) => (
-          <Text size="normal">{variablesModules.PARAMATER_VALUES_NAME[record.type]}</Text>
+          <Text size="normal">{variablesModules.PARAMATER_VALUES_NAME[record.Type]}</Text>
         ),
       },
       {
         title: 'GHI CHÚ',
         key: 'note',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.note}</Text>,
+        render: (record) => <Text size="normal">{record.Note}</Text>,
       },
       {
         key: 'action',

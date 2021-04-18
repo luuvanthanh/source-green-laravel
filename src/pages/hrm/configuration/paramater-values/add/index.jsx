@@ -94,56 +94,31 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'paramaterValuesAdd/UPDATE',
-        payload: {
-          ...values,
-          id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    const payload = {
+      ...values,
+      id: params.id,
+    };
+    dispatch({
+      type: params.id ? 'paramaterValuesAdd/UPDATE' : 'paramaterValuesAdd/ADD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'paramaterValuesAdd/ADD',
-        payload: {
-          ...values,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
@@ -174,50 +149,50 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="code"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      name="Code"
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="name"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      name="Name"
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                 </div>
-                <div className="row mt-3">
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       label="NGÀY ÁP DỤNG"
-                      name="apply_date"
+                      name="ApplyDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      label="NGÀY ÁP DỤNG"
-                      name="value_default"
+                      label="GIÁ TRỊ"
+                      name="ValueDefault"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.INPUT_NUMBER}
                     />
                   </div>
                 </div>
-                <div className="row mt-3">
-                  <div className="col-lg-6">
-                    <FormItem label="GHI CHÚ" name="note" rules={[]} type={variables.INPUT} />
-                  </div>
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={variablesModules.TYPES_PARAMATER_VALUES}
                       label="LOẠI"
-                      name="type"
+                      name="Type"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem label="GHI CHÚ" name="Note" rules={[]} type={variables.INPUT} />
                   </div>
                 </div>
               </div>

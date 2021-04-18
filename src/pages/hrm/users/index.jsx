@@ -242,7 +242,7 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
+        render: (record) => <Text size="normal">{record.FullName}</Text>,
       },
       {
         title: 'Số điện thoại',
@@ -283,7 +283,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/ho-so-doi-tuong/nhan-vien/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`/quan-ly-nhan-su/nhan-vien/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>

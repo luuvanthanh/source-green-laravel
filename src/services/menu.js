@@ -763,6 +763,17 @@ export async function getLeftMenuHRM() {
       permission: [],
       children: [
         {
+          title: 'Cơ sở',
+          key: 'branches',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/co-so',
+            '/quan-ly-nhan-su/cau-hinh/co-so/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/co-so/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
           title: 'Bộ phận',
           key: 'divisions',
           url: [

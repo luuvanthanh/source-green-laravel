@@ -675,6 +675,24 @@ export default [
             redirect: '/quan-ly-nhan-su/nhan-vien',
           },
           {
+            path: '/quan-ly-nhan-su/cau-hinh/co-so',
+            component: './hrm/configuration/branches',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/co-so/tao-moi',
+            component: './hrm/configuration/branches/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/co-so/:id/chi-tiet',
+            component: './hrm/configuration/branches/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/quan-ly-nhan-su/cau-hinh/bo-phan',
             component: './hrm/configuration/divisions',
             wrappers: ['@/wrappers/auth'],

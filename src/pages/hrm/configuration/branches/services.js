@@ -2,7 +2,7 @@ import request from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/degrees', {
+  return request('/v1/branches', {
     method: 'GET',
     params: {
       limit: data.limit,
@@ -18,7 +18,7 @@ export function get(data = {}) {
 }
 
 export function remove(id) {
-  return request(`/v1/degrees/${id}`, {
+  return request(`/v1/branches/${id}`, {
     method: 'DELETE',
     parse: true,
   });
