@@ -693,6 +693,24 @@ export default [
             authority: [],
           },
           {
+            path: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong',
+            component: './hrm/configuration/type-of-contracts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong/tao-moi',
+            component: './hrm/configuration/type-of-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong/:id/chi-tiet',
+            component: './hrm/configuration/type-of-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/quan-ly-nhan-su/cau-hinh/bo-phan',
             component: './hrm/configuration/divisions',
             wrappers: ['@/wrappers/auth'],

@@ -818,7 +818,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Ngành đào tạo',
+          title: 'Chuyên ngành đào tạo',
           key: 'training-majors',
           url: [
             '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao',
@@ -857,6 +857,17 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
             '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
             '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Loại hợp đồng',
+          key: 'type-of-contracts',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/loai-hop-dong',
+            '/quan-ly-nhan-su/cau-hinh/loai-hop-dong/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/loai-hop-dong/:id/chi-tiet',
           ],
           permission: [],
           pro: true,
