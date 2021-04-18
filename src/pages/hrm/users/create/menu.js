@@ -6,6 +6,14 @@ export const menu = [
     label: 'Thông tin cơ bản',
   },
   {
+    key: 'dismisseds',
+    label: 'Miễn nhiệm',
+  },
+  {
+    key: 'appoints',
+    label: 'Bổ nhiệm',
+  },
+  {
     key: 'certificate',
     label: 'Chứng chỉ chuyên ngành',
   },
@@ -26,7 +34,7 @@ export const menu = [
     label: 'Thông tin ngân hàng',
   },
   {
-    key: 'rank',
+    key: 'transfers',
     label: 'Cấp bậc, chức vụ',
   },
   {

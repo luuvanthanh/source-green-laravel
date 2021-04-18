@@ -6,7 +6,6 @@ export function getRoles(params = {}) {
   return requestLogin('/api/identity/roles', {
     method: 'GET',
     params: {
-      ...params,
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
