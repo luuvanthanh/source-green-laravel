@@ -13,7 +13,7 @@ import ContactForm from './forms/contact';
 import HealthForm from './forms/health';
 import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
-import RankForm from './forms/rank';
+import TransfersForm from './forms/transfers';
 import ContractForm from './forms/contract';
 import MinutesOfAgreementForm from './forms/minutesOfAgreement';
 import InsurranceForm from './forms/insurrance';
@@ -24,6 +24,8 @@ import SalaryForm from './forms/salary';
 import RewardForm from './forms/reward';
 import MagneticCardsForm from './forms/magnetic-cards';
 import AccountForm from './forms/account';
+import DismissedsForm from './forms/dismisseds';
+import AppointsForm from './forms/appoints';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -41,7 +43,7 @@ const forms = {
   health: <HealthForm />,
   bank: <BankForm />,
   timework: <TimeworkForm />,
-  rank: <RankForm />,
+  transfers: <TransfersForm />,
   contract: <ContractForm />,
   minutesOfAgreement: <MinutesOfAgreementForm />,
   insurrance: <InsurranceForm />,
@@ -51,7 +53,9 @@ const forms = {
   salary: <SalaryForm />,
   reward: <RewardForm />,
   magneticCards: <MagneticCardsForm />,
-  account: <AccountForm />
+  account: <AccountForm />,
+  dismisseds: <DismissedsForm />,
+  appoints: <AppointsForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

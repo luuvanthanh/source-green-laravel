@@ -1,8 +1,9 @@
-import request from '@/utils/requestLavarel';
+import requestLavarel from '@/utils/requestLavarel';
+import request from '@/utils/request';
 import { Helper, variables } from '@/utils';
 
 export function getDegrees(params = {}) {
-  return request('/v1/degrees', {
+  return requestLavarel('/v1/degrees', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,
@@ -12,7 +13,7 @@ export function getDegrees(params = {}) {
 }
 
 export function getTrainingMajors(params = {}) {
-  return request('/v1/training-majors', {
+  return requestLavarel('/v1/training-majors', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,
@@ -22,7 +23,37 @@ export function getTrainingMajors(params = {}) {
 }
 
 export function getTrainingSchools(params = {}) {
-  return request('/v1/training-schools', {
+  return requestLavarel('/v1/training-schools', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getBranches(params = {}) {
+  return requestLavarel('/v1/branches', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getDivisions(params = {}) {
+  return requestLavarel('/v1/divisions', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getPositions(params = {}) {
+  return requestLavarel('/v1/positions', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,
@@ -32,21 +63,21 @@ export function getTrainingSchools(params = {}) {
 }
 
 export function add(data = {}) {
-  return request('/v1/employees', {
+  return requestLavarel('/v1/employees', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/v1/employees/${data.id}`, {
+  return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
 export function details(data = {}) {
-  return request(`/v1/employees/${data.id}`, {
+  return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'GET',
   });
 }
@@ -70,3 +101,21 @@ export function updateStatus(data = {}) {
     data,
   });
 }
+
+// dismisseds
+export function addDismisseds(data = {}) {
+  return requestLavarel('/v1/dismisseds', {
+    method: 'POST',
+    data,
+  });
+}
+// dismisseds
+
+// transfers
+export function addTransfers(data = {}) {
+  return requestLavarel('/v1/transfers', {
+    method: 'POST',
+    data,
+  });
+}
+// transfers
