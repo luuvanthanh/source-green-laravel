@@ -71,9 +71,7 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
             \DB::commit();
 
         } catch (\Throwable $th) {
-            dd($th);
             \DB::rollback();
-
         }
 
         return parent::find($shift->Id);
