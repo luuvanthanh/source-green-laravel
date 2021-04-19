@@ -20,3 +20,8 @@
     }
   }
 }
+.d-inline-block {
+  &.ant-radio-wrapper {
+    padding: 10px 0;
+  }
+}
