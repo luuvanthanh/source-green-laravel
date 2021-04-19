@@ -1089,7 +1089,7 @@ export default [
             authority: [],
           },
           {
-            path: '/suc-khoe/hom-nay/:id/chinh-sua',
+            path: '/suc-khoe/hom-nay/:id/chi-tiet',
             component: './health/update',
             wrappers: ['@/wrappers/auth'],
             authority: [],
