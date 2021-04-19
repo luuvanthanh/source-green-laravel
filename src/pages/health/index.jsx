@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, head, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -47,6 +47,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        reportDate: moment().format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
@@ -217,26 +218,45 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         className: 'min-width-150',
-        render: () => <Text size="normal">Lake View</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {get(record, 'studentCriteriaResponses[0].student.class.branch.name')}
+          </Text>
+        ),
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: () => <Text size="normal">Preschool 1</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'studentCriteriaResponses[0].student.class.name')}</Text>
+        ),
       },
       {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-200',
-        render: (record) => (
-          <div className="d-flex align-items-center">
-            <AvatarTable fileImage={record.fileImage} />
-            <Text size="normal" className="ml-2">
-              {record.studentName}
-            </Text>
-          </div>
-        ),
+        render: (record) => {
+          if (Helper.isJSON(record.fileImage)) {
+            const files = JSON.parse(record.fileImage);
+            return (
+              <div className="d-flex align-items-center">
+                <AvatarTable fileImage={!isEmpty(files) && head(files)} />
+                <Text size="normal" className="ml-2">
+                  {record.studentName}
+                </Text>
+              </div>
+            );
+          }
+          return (
+            <div className="d-flex align-items-center">
+              <AvatarTable fileImage={record.fileImage} />
+              <Text size="normal" className="ml-2">
+                {record.studentName}
+              </Text>
+            </div>
+          );
+        },
       },
       {
         key: 'action',
@@ -247,7 +267,14 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/suc-khoe/hom-nay/${record.id}/chi-tiet`)}
+              onClick={() =>
+                history.push(
+                  `/suc-khoe/hom-nay/${record.studentId}/chi-tiet?reportDate=${get(
+                    record,
+                    'studentCriteriaResponses[0].reportDate',
+                  )}`,
+                )
+              }
             >
               Chi tiết
             </Button>
