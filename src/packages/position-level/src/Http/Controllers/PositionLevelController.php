@@ -59,16 +59,8 @@ class PositionLevelController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $positionLevel = $this->positionLevelRepository->all();
-        } else {
-            $positionLevel = $this->positionLevelRepository->paginate($limit);
-        }
+        $positionLevel = $this->positionLevelRepository->getPositionLevel($request->all());
 
         return $this->success($positionLevel, trans('lang::messages.common.getListSuccess'));
     }

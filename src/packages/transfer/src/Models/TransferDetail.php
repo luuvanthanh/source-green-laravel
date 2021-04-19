@@ -54,4 +54,12 @@ class TransferDetail extends UuidModel
     {
         return $this->hasOne(\GGPHP\Category\Models\Division::class, 'Id', 'DivisionId');
     }
+
+    /**
+     * Define relations division
+     */
+    public function branch()
+    {
+        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'Id', 'BranchId');
+    }
 }

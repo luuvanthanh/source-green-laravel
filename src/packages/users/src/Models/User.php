@@ -262,4 +262,13 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $count;
     }
 
+    /**
+     * Get profiles of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function positionLevel()
+    {
+        return $this->hasMany(PositionLevel::class, 'EmployeeId');
+    }
 }

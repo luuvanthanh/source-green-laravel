@@ -102,4 +102,19 @@ class PositionLevelRepositoryEloquent extends CoreRepositoryEloquent implements 
 
         return parent::parserResult($result);
     }
+
+    public function getPositionLevel(array $attributes)
+    {
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $positionLevel = $this->paginate($attributes['limit']);
+        } else {
+            $positionLevel = $this->get();
+        }
+
+        return $positionLevel;
+    }
 }

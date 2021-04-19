@@ -8,6 +8,7 @@ use GGPHP\Absent\Models\AbsentType;
 use GGPHP\Absent\Transformers\AbsentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
+use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
 use GGPHP\Profiles\Transformers\SabbaticalLeaveTransformer;
 use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
 use GGPHP\Timekeeping\Transformers\TimekeepingTransformer;
@@ -38,7 +39,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly',
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
     ];
 
     /**
@@ -154,6 +155,15 @@ class UserTransformer extends BaseTransformer
     public function includeLateEarly(User $employee)
     {
         return $this->collection(empty($employee->lateEarly) ? [] : $employee->lateEarly, new LateEarlyTransformer(), 'LateEarly');
+    }
+
+    /** Include SubtractionTime
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includePositionLevel(User $employee)
+    {
+        return $this->collection(empty($employee->positionLevel) ? [] : $employee->positionLevel, new PositionLevelTransformer, 'PositionLevel');
     }
 
 }
