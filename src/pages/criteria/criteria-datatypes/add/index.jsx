@@ -122,7 +122,7 @@ class Index extends PureComponent {
       ...values,
       id: get(params, 'id'),
     };
-    if (type === 'select') {
+    if (type === 'radioButton' || type === 'select') {
       payload = {
         ...payload,
         value: JSON.stringify(values.value),
@@ -172,8 +172,8 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -195,8 +195,8 @@ class Index extends PureComponent {
                           name: 'textbox',
                         },
                         {
-                          id: 'radio',
-                          name: 'radio',
+                          id: 'radioButton',
+                          name: 'radioButton',
                         },
                         {
                           id: 'select',
@@ -226,7 +226,7 @@ class Index extends PureComponent {
                       <FormItem label="GIÁ TRỊ" name="value" type={variables.SELECT_TAGS} />
                     </div>
                   )}
-                  {type === 'radio' && (
+                  {type === 'radioButton' && (
                     <div className="col-lg-6">
                       <FormItem label="GIÁ TRỊ" name="value" type={variables.SELECT_TAGS} />
                     </div>
@@ -255,7 +255,7 @@ class Index extends PureComponent {
                   onClick={() => history.goBack()}
                   size="large"
                   className="mr-3"
-                  loading={loadingSubmit}
+                  loading={loadingSubmit || loading}
                 >
                   HỦY
                 </Button>
@@ -264,13 +264,13 @@ class Index extends PureComponent {
                   htmlType="submit"
                   icon="save"
                   size="large"
-                  loading={loadingSubmit}
+                  loading={loadingSubmit || loading}
                 >
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );

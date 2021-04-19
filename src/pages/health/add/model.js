@@ -33,19 +33,20 @@ export default {
   effects: {
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getStudents);
+        const response = yield saga.call(services.getStudents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
       }
     },
-    *GET_CRITERIA_GROUP_PROPERTIES({ payload }, saga) {
+    *GET_CRITERIA_GROUP_PROPERTIES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getCriteriaGroupProperties, payload);
         yield saga.put({
           type: 'SET_CRITERIA_GROUP_PROPERTIES',
           payload: response,
         });
+        callback(response);
       } catch (error) {
         callback(null, error);
       }
@@ -62,6 +63,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },
