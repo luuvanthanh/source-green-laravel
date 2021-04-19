@@ -1,5 +1,4 @@
-// import { notification } from 'antd';
-// import { get } from 'lodash';
+
 import * as services from './services';
 
 export default {
@@ -8,7 +7,11 @@ export default {
     data: [],
     pagination: {
       total: 0
-    }
+    },
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: state => ({ ...state, isError: false, data: [] }),
