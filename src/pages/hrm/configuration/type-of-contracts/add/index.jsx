@@ -135,6 +135,7 @@ class Index extends PureComponent {
       loading: { effects },
       paramaterValues,
       paramaterFormulas,
+      match: { params },
     } = this.props;
     const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
     const loading =
@@ -143,7 +144,10 @@ class Index extends PureComponent {
       effects['typeOfContractsAdd/GET_PARAMATER_FORMULAS'];
     return (
       <>
-        <Breadcrumbs last="Tạo loại hợp đồng" menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa loại hợp đồng' : 'Tạo loại hợp đồng'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -161,7 +165,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -169,7 +173,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -179,7 +183,7 @@ class Index extends PureComponent {
                   <div className="col-lg-4">
                     <FormItem
                       label="LOẠI"
-                      name="Type"
+                      name="type"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -187,7 +191,7 @@ class Index extends PureComponent {
                   <div className="col-lg-4">
                     <FormItem
                       label="NĂM"
-                      name="Year"
+                      name="year"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -195,7 +199,7 @@ class Index extends PureComponent {
                   <div className="col-lg-4">
                     <FormItem
                       label="THÁNG"
-                      name="Month"
+                      name="month"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -204,18 +208,18 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      data={paramaterValues.map((item) => ({ id: item.id, name: item.Name }))}
+                      data={paramaterValues}
                       label="THAM SỐ GIÁ TRỊ"
-                      name="ParamValue"
+                      name="paramValue"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      data={paramaterFormulas.map((item) => ({ id: item.id, name: item.Name }))}
+                      data={paramaterFormulas}
                       label="THAM SỐ CÔNG THỨC"
-                      name="ParamFormula"
+                      name="paramFormula"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />

@@ -13,6 +13,8 @@ export default {
       isError: false,
       data: {},
     },
+    branches: [],
+    classes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -29,6 +31,14 @@ export default {
           ...payload,
         },
       },
+    }),
+    SET_BRACHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.items,
+    }),
+    SET_CLASSES: (state, { payload }) => ({
+      ...state,
+      classes: payload.items,
     }),
   },
   effects: {
@@ -50,6 +60,24 @@ export default {
           payload: error.data,
         });
       }
+    },
+    *GET_BRACHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRACHES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_CLASSES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getClasses, payload);
+        yield saga.put({
+          type: 'SET_CLASSES',
+          payload: response,
+        });
+      } catch (error) {}
     },
   },
   subscriptions: {},

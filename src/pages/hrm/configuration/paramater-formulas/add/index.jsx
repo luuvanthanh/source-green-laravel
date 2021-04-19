@@ -125,13 +125,17 @@ class Index extends PureComponent {
       error,
       menuData,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loadingSubmit =
       effects['paramaterFormulasAdd/ADD'] || effects['paramaterFormulasAdd/UPDATE'];
     const loading = effects['paramaterFormulasAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo tham số công thức" menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa tham số công thức' : 'Tạo tham số công thức'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -149,16 +153,16 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      name="code"
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      name="name"
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -167,13 +171,18 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="NGÀY ÁP DỤNG"
-                      name="ApplyDate"
+                      name="applyDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
                     />
                   </div>
                   <div className="col-lg-6">
-                    <FormItem label="CÔNG THỨC" name="Recipe" rules={[]} type={variables.INPUT} />
+                    <FormItem
+                      label="CÔNG THỨC"
+                      name="recipe"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                    />
                   </div>
                 </div>
               </div>

@@ -248,39 +248,39 @@ class Index extends PureComponent {
         title: 'TÊN',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Name}</Text>,
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         title: 'MÃ',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Code}</Text>,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'NGÀY ÁP DỤNG',
         key: 'apply_date',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getDate(record.ApplyDate)}</Text>,
+        render: (record) => <Text size="normal">{Helper.getDate(record.applyDate)}</Text>,
       },
       {
         title: 'GIÁ MẶC ĐỊNH',
         key: 'value_default',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getPrice(record.ValueDefault)}</Text>,
+        render: (record) => <Text size="normal">{Helper.getPrice(record.valueDefault)}</Text>,
       },
       {
         title: 'LOẠI',
         key: 'type',
         className: 'min-width-150',
         render: (record) => (
-          <Text size="normal">{variablesModules.PARAMATER_VALUES_NAME[record.Type]}</Text>
+          <Text size="normal">{variablesModules.PARAMATER_VALUES_NAME[record.type]}</Text>
         ),
       },
       {
         title: 'GHI CHÚ',
         key: 'note',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Note}</Text>,
+        render: (record) => <Text size="normal">{record.note}</Text>,
       },
       {
         key: 'action',
@@ -324,7 +324,7 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              accessKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
+              activeKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.TYPES_PARAMATER_VALUES.map((item) => (

@@ -149,10 +149,18 @@ const General = memo(
           ...details.student,
           dayOfBirth: details?.student?.dayOfBirth && moment(details?.student?.dayOfBirth),
           registerDate: details?.student?.registerDate && moment(details?.student?.registerDate),
-          branchId: details?.class?.branchId,
+          branchId: details?.student?.class?.branchId,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
         mountedSet(setFileImage, details?.student?.fileImage);
+        if (details?.student?.class?.branchId) {
+          dispatch({
+            type: 'OPchildrenAdd/GET_CLASSES',
+            payload: {
+              branch: details?.student?.class?.branchId,
+            },
+          });
+        }
       }
     }, [details]);
 
@@ -171,6 +179,7 @@ const General = memo(
                       callback={(res) => {
                         mountedSet(setFileImage, res.fileInfo.url);
                       }}
+                      fileImage={fileImage}
                     />
                   </Form.Item>
                 </Pane>

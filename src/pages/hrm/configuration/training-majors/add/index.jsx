@@ -27,8 +27,8 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, loading, trainingMajorsAdd }) => ({
-  menuData: menu.menuLeftHRM,
   loading,
+  menuData: menu.menuLeftHRM,
   details: trainingMajorsAdd.details,
   error: trainingMajorsAdd.error,
 });
@@ -123,12 +123,16 @@ class Index extends PureComponent {
       error,
       menuData,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loadingSubmit = effects['trainingMajorsAdd/ADD'] || effects['trainingMajorsAdd/UPDATE'];
     const loading = effects['trainingMajorsAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo ngành đạo tạo" menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa chuyên ngành đạo tạo' : 'Tạo chuyên ngành đạo tạo'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -146,7 +150,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -154,7 +158,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
