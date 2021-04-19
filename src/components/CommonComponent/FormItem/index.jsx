@@ -40,6 +40,7 @@ const renderChildren = (
   picker,
   radioInline,
   disabledKeys,
+  options
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -91,6 +92,7 @@ const renderChildren = (
       onSearch={onSearch}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      options={options}
     />
   ),
   selectAdd: (
@@ -252,7 +254,7 @@ const renderChildren = (
     </Checkbox.Group>
   ),
   radio: (
-    <Radio.Group className="radio-custom">
+    <Radio.Group className="radio-custom" onChange={onChange}>
       {data.map((item, index) => (
         <Radio
           key={index}
@@ -292,6 +294,7 @@ export default function FormItem({
   picker,
   radioInline,
   disabledKeys,
+  options,
   ...rest
 }) {
   return (
@@ -316,6 +319,7 @@ export default function FormItem({
           picker,
           radioInline,
           disabledKeys,
+          options
         )[type]
       }
     </Form.Item>

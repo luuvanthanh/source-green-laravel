@@ -1,8 +1,16 @@
 import request from '@/utils/request';
+import { isArray } from 'lodash';
 
-export const upload = (file) => {
+export const upload = (files) => {
   const formData = new FormData();
-  formData.append('files', file);
+
+  if (isArray(files)) {
+    for (const file of files) {
+      formData.append('files', file);
+    }
+  } else {
+    formData.append('files', files);
+  }
 
   return request(`/api/files`, {
     prefix: API_UPLOAD,

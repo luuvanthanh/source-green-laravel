@@ -1,8 +1,7 @@
-
 import * as services from './services';
 
 export default {
-  namespace: 'media',
+  namespace: 'mediaBrowser',
   state: {
     data: [],
     pagination: {
@@ -10,7 +9,7 @@ export default {
     },
     error: {
       isError: false,
-      data: {},
+      data: {}
     },
   },
   reducers: {
@@ -49,6 +48,12 @@ export default {
           payload: error.data
         });
       }
+    },
+    *CLASSIFY({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.classify, payload);
+        callback && callback(response)
+      } catch (error) {}
     },
   },
   subscriptions: {},
