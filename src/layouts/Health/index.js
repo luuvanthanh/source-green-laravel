@@ -33,8 +33,8 @@ const MainLayout = memo(({ children = null }) => {
       <Menu
         menu={menuData}
         info={{
-          icon: '/images/home/hrm.svg',
-          title: 'Quản lý nhân sự',
+          icon: '/images/home/tumblr.svg',
+          title: 'Sức khỏe',
         }}
       />
       <Settings />

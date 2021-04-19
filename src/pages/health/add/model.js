@@ -8,28 +8,44 @@ export default {
       data: {},
     },
     details: {},
+    criteriaGroupProperties: [],
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
+    }),
+    SET_CRITERIA_GROUP_PROPERTIES: (state, { payload }) => ({
+      ...state,
+      criteriaGroupProperties: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getStudents);
         callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_CRITERIA_GROUP_PROPERTIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCriteriaGroupProperties, payload);
+        yield saga.put({
+          type: 'SET_CRITERIA_GROUP_PROPERTIES',
+          payload: response,
+        });
       } catch (error) {
         callback(null, error);
       }

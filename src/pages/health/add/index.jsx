@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { List, Radio, Avatar, Form, message, Spin } from 'antd';
 import { Helmet } from 'react-helmet';
 import { connect } from 'umi';
+import { isEmpty, head } from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -37,13 +38,13 @@ const Index = memo(({ dispatch, loading: { effects }, match: { params }, details
   const [searchStudents, setSearchStudents] = useState({});
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
-   /**
+  /**
    * Function change radio
    * @param {string} radio value of editor
    */
-    const onChangeRadio = (e, id) => {
-      mountedSet(setStudentId, id);
-    };
+  const onChangeRadio = (e, id) => {
+    mountedSet(setStudentId, id);
+  };
 
   useEffect(() => {
     mounted.current = true;
@@ -119,6 +120,13 @@ const Index = memo(({ dispatch, loading: { effects }, match: { params }, details
     });
   };
 
+  useEffect(() => {
+    dispatch({
+      type: 'healthAdd/GET_CRITERIA_GROUP_PROPERTIES',
+      payload: {},
+    });
+  }, []);
+
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
       <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
@@ -159,22 +167,34 @@ const Index = memo(({ dispatch, loading: { effects }, match: { params }, details
                     <Radio.Group value={studentId}>
                       <List
                         dataSource={student}
-                        renderItem={({ id, fullName, age, fileImage }) => (
-                          <ListItem key={id} className={styles.listItem}>
-                            <Radio value={id} onChange={(event) => onChangeRadio(event, id)} />
-                            <Pane className={styles.userInformation}>
-                              <Avatar
-                                shape="square"
-                                size={40}
-                                src={fileImage ? `${API_UPLOAD}${fileImage}` : null}
+                        renderItem={(item) => {
+                          let fileImage = '';
+                          if (Helper.isJSON(item.fileImage)) {
+                            const files = JSON.parse(item.fileImage);
+                            if (!isEmpty(files)) {
+                              fileImage = head(files);
+                            }
+                          }
+                          return (
+                            <ListItem key={item.id} className={styles.listItem}>
+                              <Radio
+                                value={item.id}
+                                onChange={(event) => onChangeRadio(event, item.id)}
                               />
-                              <Pane>
-                                <h3>{fullName}</h3>
-                                <p>{age} tháng tuổi</p>
+                              <Pane className={styles.userInformation}>
+                                <Avatar
+                                  shape="square"
+                                  size={40}
+                                  src={fileImage ? `${API_UPLOAD}${fileImage}` : null}
+                                />
+                                <Pane>
+                                  <h3>{item.fullName}</h3>
+                                  <p>{item.age} tháng tuổi</p>
+                                </Pane>
                               </Pane>
-                            </Pane>
-                          </ListItem>
-                        )}
+                            </ListItem>
+                          );
+                        }}
                       >
                         {loadingStudents && hasMore && (
                           <div className="demo-loading-container">

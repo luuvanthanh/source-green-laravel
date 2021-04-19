@@ -103,8 +103,39 @@ export function updateStatus(data = {}) {
 }
 
 // dismisseds
+export function getDismisseds(params = {}) {
+  return requestLavarel('/v1/dismisseds', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
 export function addDismisseds(data = {}) {
   return requestLavarel('/v1/dismisseds', {
+    method: 'POST',
+    data,
+  });
+}
+// dismisseds
+
+// dismisseds
+export function getAppoints(params = {}) {
+  return requestLavarel('/v1/appoints', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function addAppoints(data = {}) {
+  return requestLavarel('/v1/appoints', {
     method: 'POST',
     data,
   });
@@ -116,6 +147,16 @@ export function addTransfers(data = {}) {
   return requestLavarel('/v1/transfers', {
     method: 'POST',
     data,
+  });
+}
+export function getTransfers(params = {}) {
+  return requestLavarel('/v1/transfers', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
   });
 }
 // transfers

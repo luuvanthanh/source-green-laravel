@@ -26,5 +26,3 @@ export function getStudents(params = {}) {
     },
   });
 }
-
-export default get;

@@ -4,7 +4,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
-import { find, omit } from 'lodash';
+import { find, omit, isEmpty, head } from 'lodash';
 import { history, useParams } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -13,7 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
 import { useSelector, useDispatch } from 'dva';
 
-import variables from '@/utils/variables';
+import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/information.module.scss';
 import variablesModules from '../../utils/variables';
 
@@ -153,18 +153,34 @@ const Index = memo(({}) => {
                   <List
                     loading={loadingStudents}
                     dataSource={student}
-                    renderItem={({ id, fullName, age, fileImage }) => (
-                      <ListItem key={id} className={styles.listItem}>
-                        <Radio value={id} onChange={(event) => onChangeRadio(event, id)} />
-                        <Pane className={styles.userInformation}>
-                          <Avatar shape="square" size={40} src={`${API_UPLOAD}${fileImage}`} />
-                          <Pane>
-                            <h3>{fullName}</h3>
-                            <p>{age} tháng tuổi</p>
+                    renderItem={(item) => {
+                      let fileImage = '';
+                      if (Helper.isJSON(item.fileImage)) {
+                        const files = JSON.parse(item.fileImage);
+                        if (!isEmpty(files)) {
+                          fileImage = head(files);
+                        }
+                      }
+                      return (
+                        <ListItem key={item.id} className={styles.listItem}>
+                          <Radio
+                            value={item.id}
+                            onChange={(event) => onChangeRadio(event, item.id)}
+                          />
+                          <Pane className={styles.userInformation}>
+                            <Avatar
+                              shape="square"
+                              size={40}
+                              src={fileImage ? `${API_UPLOAD}${fileImage}` : null}
+                            />
+                            <Pane>
+                              <h3>{item.fullName}</h3>
+                              <p>{item.age} tháng tuổi</p>
+                            </Pane>
                           </Pane>
-                        </Pane>
-                      </ListItem>
-                    )}
+                        </ListItem>
+                      );
+                    }}
                   />
                 </Radio.Group>
               </Scrollbars>

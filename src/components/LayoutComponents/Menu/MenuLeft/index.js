@@ -296,7 +296,7 @@ class MenuLeft extends React.Component {
     return (
       <Sider
         {...menuSettings}
-        className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
+        className={isLightTheme ? `${styles.menu} ${styles.light} light` : styles.menu}
       >
         <div className={styles.logo}>
           <Link to="/" className={styles.logoContainer}>

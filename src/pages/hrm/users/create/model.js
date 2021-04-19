@@ -18,6 +18,9 @@ export default {
     divisions: [],
     branches: [],
     positions: [],
+    dismisseds: [],
+    apoints: [],
+    transfers: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -52,6 +55,18 @@ export default {
     SET_POSITIONS: (state, { payload }) => ({
       ...state,
       positions: payload.parsePayload,
+    }),
+    SET_DISMISSEDS: (state, { payload }) => ({
+      ...state,
+      dismisseds: payload.parsePayload,
+    }),
+    SET_APPOINTS: (state, { payload }) => ({
+      ...state,
+      apoints: payload.parsePayload,
+    }),
+    SET_TRANSFERS: (state, { payload }) => ({
+      ...state,
+      transfers: payload.parsePayload,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -253,17 +268,69 @@ export default {
         yield saga.call(services.addDismisseds, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
+      }
+    },
+    *GET_DISMISSEDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDismisseds, payload);
+        yield saga.put({
+          type: 'SET_DISMISSEDS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     // dismisseds
+    // appoints
+    *ADD_APPOINTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addAppoints, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_APPOINTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getAppoints, payload);
+        yield saga.put({
+          type: 'SET_APPOINTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // appoints
     // transfers
     *ADD_TRANSFERS({ payload, callback }, saga) {
       try {
         yield saga.call(services.addTransfers, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
+      }
+    },
+    *GET_TRANSFERS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTransfers, payload);
+        yield saga.put({
+          type: 'SET_TRANSFERS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     // transfers
