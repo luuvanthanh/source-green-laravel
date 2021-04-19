@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from 'react'
+import { memo, useRef, useState, useCallback } from 'react'
 import { Form } from 'antd'
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -20,6 +20,8 @@ const Index = memo(() => {
   const history = useHistory()
 
   const [visibleUpload, setVisibleUpload] = useState(false)
+
+  const onOk = useCallback(() => setVisibleUpload(false), [])
 
   return (
     <>
@@ -66,7 +68,7 @@ const Index = memo(() => {
                   <Pane className="row">
                     {new Array(8).fill(null).map((v, index) => (
                       <Pane
-                        className={csx("col-lg-2 my10", styles.imageWrapper)}
+                        className={csx("col-lg-2 col-md-4 col-sm-6 my10", styles.imageWrapper)}
                         key={index}
                       >
                         <img
@@ -99,7 +101,11 @@ const Index = memo(() => {
         </Pane>
       </Pane>
 
-      <UploadModal visible={visibleUpload} onCancel={() => setVisibleUpload(false)} />
+      <UploadModal
+        visible={visibleUpload}
+        onCancel={() => setVisibleUpload(false)}
+        onOk={onOk}
+      />
     </>
   )
 })

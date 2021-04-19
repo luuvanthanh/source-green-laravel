@@ -121,6 +121,12 @@
   color: rgba($color: $text-dark, $alpha: 0.75);
 }
 
+:global(.ant-tooltip) {
+  .icon {
+    color: #fff;
+  }
+}
+
 .navigation {
   border: 0;
   padding: rem(5) 0 rem(30) !important;

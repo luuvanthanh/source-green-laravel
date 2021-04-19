@@ -13,14 +13,16 @@ export const imageUploadProps = {
     const { type, size } = file;
 
     if (!allowImageTypes.includes(type)) {
-      return message.error(warningType);
+      message.error(warningType);
+      return null;
     }
 
     if (size > maxSize) {
-      return message.error(warningSize);
+      message.error(warningSize);
+      return null;
     }
 
-    return null;
+    return file;
   },
   showUploadList: false,
   fileList: [],
