@@ -9,9 +9,10 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Loading from '@/components/CommonComponent/Loading';
-import { variables } from '@/utils/variables';
+import { variables, Helper } from '@/utils';
 import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -26,7 +27,7 @@ const mapStateToProps = ({ loading, OPParentsAdd }) => ({
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
-  const [fileImage, setFileImage] = useState(null);
+  const [files, setFiles] = useState([]);
   const mounted = useRef(false);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
@@ -44,8 +45,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     dispatch({
       type: params.id ? 'OPParentsAdd/UPDATE' : 'OPParentsAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage }
-        : { ...values, fileImage },
+        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
+        : { ...values, fileImage: JSON.stringify(files) },
       callback: (response, error) => {
         if (response) {
           history.push(`/ho-so-doi-tuong/phu-huynh/${response?.id}/chi-tiet?type=general`);
@@ -103,7 +104,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         ...details,
         boD: moment(details.boD),
       });
-      mountedSet(setFileImage, details.fileImage);
+      if (Helper.isJSON(details?.fileImage)) {
+        mountedSet(setFiles, JSON.parse(details?.fileImage));
+      }
     }
   }, [details]);
 
@@ -111,6 +114,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     mounted.current = true;
     return () => (mounted.current = false);
   }, []);
+
+  const uploadFiles = (file) => {
+    mountedSet(setFiles, (prev) => [...prev, file]);
+  };
 
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
@@ -122,12 +129,11 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             </Heading>
             <Pane className="row">
               <Pane className="col">
-                <Form.Item name="avatar" label="Hình ảnh phụ huynh">
-                  <ImageUpload
-                    callback={(res) => {
-                      mountedSet(setFileImage, res.fileInfo.url);
-                    }}
-                    fileImage={fileImage}
+                <Form.Item name="avatar" label="Hình ảnh học sinh">
+                  <MultipleImageUpload
+                    files={files}
+                    callback={(files) => uploadFiles(files)}
+                    removeFiles={(files) => mountedSet(setFiles, files)}
                   />
                 </Form.Item>
               </Pane>
@@ -236,9 +242,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 onClick={updateStatus}
                 loading={loadingSubmit}
               >
-                {details?.status === variablesModules.STATUS.STORE
-                  ? 'Khôi phục'
-                  : 'Lưu trữ hồ sơ'}
+                {details?.status === variablesModules.STATUS.STORE ? 'Khôi phục' : 'Lưu trữ hồ sơ'}
               </Button>
             )}
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>

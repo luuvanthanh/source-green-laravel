@@ -11,12 +11,12 @@ import styles from './styles.module.scss';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
-const ImageUpload = memo(({ callback }) => {
+const ImageUpload = memo(({ callback, removeFiles, files }) => {
   const _mounted = useRef(false);
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(files);
   const [showFullPreviewUrl, setShowFullPreviewUrl] = useState();
 
   const uploadAction = useCallback((file) => {
@@ -35,8 +35,21 @@ const ImageUpload = memo(({ callback }) => {
   const uploadProps = useMemo(
     () => ({
       ...otherProps,
+      multiple: true,
       beforeUpload: (file) => beforeUpload(file),
       customRequest({ file }) {
+        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const maxSize = 5 * 2 ** 20;
+        const { type, size } = file;
+
+        if (!allowImageTypes.includes(type)) {
+          return;
+        }
+
+        if (size > maxSize) {
+          return;
+        }
+
         uploadAction(file);
       },
     }),
@@ -47,6 +60,10 @@ const ImageUpload = memo(({ callback }) => {
     _mounted.current = true;
     return () => (_mounted.current = false);
   }, []);
+
+  useEffect(() => {
+    _mountedSet(setImages, files);
+  }, [files]);
 
   return (
     <>
@@ -72,7 +89,10 @@ const ImageUpload = memo(({ callback }) => {
               <Pane className={styles.actions}>
                 <EyeOutlined onClick={() => setShowFullPreviewUrl(`${API_UPLOAD}/${item}`)} />
                 <DeleteOutlined
-                  onClick={() => setImages((prev) => prev.filter((image) => image !== item))}
+                  onClick={() => {
+                    setImages((prev) => prev.filter((image) => image !== item));
+                    removeFiles && removeFiles(images.filter((image) => image !== item));
+                  }}
                 />
               </Pane>
             </Pane>

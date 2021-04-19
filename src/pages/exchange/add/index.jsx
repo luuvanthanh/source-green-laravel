@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Modal, Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import { UserOutlined } from '@ant-design/icons';
@@ -47,9 +47,7 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    const {
-      location: { query },
-    } = props;
+    const { user } = props;
     this.state = {
       description: null,
       students: [],
@@ -61,6 +59,7 @@ class Index extends PureComponent {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
         totalCount: 0,
+        parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
       },
     };
     setIsMounted(true);
@@ -277,22 +276,35 @@ class Index extends PureComponent {
                         className={stylesAllocation.list}
                         dataSource={students}
                         loading={loadingStudents}
-                        renderItem={(item) => (
-                          <List.Item key={item.id}>
-                            <Radio
-                              className={stylesAllocation.radio}
-                              value={item.id}
-                              onChange={(event) => this.onChangeRadio(event, item)}
-                            />
-                            <div className={stylesAllocation['group-info']}>
-                              <Avatar shape="square" size={40} icon={<UserOutlined />} />
-                              <div className={stylesAllocation['info']}>
-                                <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
-                                <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                        renderItem={(item) => {
+                          let fileImage = '';
+                          if (Helper.isJSON(item.fileImage)) {
+                            const files = JSON.parse(item.fileImage);
+                            if (!isEmpty(files)) {
+                              fileImage = head(files);
+                            }
+                          }
+                          return (
+                            <List.Item key={item.id}>
+                              <Radio
+                                className={stylesAllocation.radio}
+                                value={item.id}
+                                onChange={(event) => this.onChangeRadio(event, item)}
+                              />
+                              <div className={stylesAllocation['group-info']}>
+                                <Avatar
+                                  shape="square"
+                                  size={40}
+                                  src={fileImage && `${API_UPLOAD}${fileImage}`}
+                                />
+                                <div className={stylesAllocation['info']}>
+                                  <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
+                                  <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
+                                </div>
                               </div>
-                            </div>
-                          </List.Item>
-                        )}
+                            </List.Item>
+                          );
+                        }}
                       >
                         {loadingStudents && hasMore && (
                           <div className="demo-loading-container">

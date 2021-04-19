@@ -6,6 +6,7 @@ export function get(params = {}) {
   return request('/criteria-group-properties', {
     method: 'GET',
     params: {
+      groupName: 'Sức khỏe',
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
     },
