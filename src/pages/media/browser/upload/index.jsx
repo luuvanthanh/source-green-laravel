@@ -1,5 +1,5 @@
-import { memo, useState } from 'react'
-import { Modal, Upload, notification } from 'antd'
+import { memo, useState, useEffect, useRef } from 'react'
+import { Modal, Upload, Form } from 'antd'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { isEqual, size } from 'lodash'
 import { useDispatch } from 'dva'
@@ -8,17 +8,29 @@ import csx from 'classnames'
 import Pane from '@/components/CommonComponent/Pane'
 import Button from '@/components/CommonComponent/Button'
 import Text from '@/components/CommonComponent/Text'
+import FormItem from '@/components/CommonComponent/FormItem'
 
 import { imageUploadProps } from '@/utils/upload'
 import styles from './style.module.scss'
 import imageStyles from '../style.module.scss'
+import { variables, Helper } from '@/utils'
 
 const { Dragger } = Upload
 
+const uploadTypes = [
+  { value: 'AUTO', label: 'Tự động phân loại' },
+  { value: 'TARGET', label: 'Cụ thể đối tượng' },
+]
+const DEFAULT_TYPE = 'AUTO'
+
 const Index = memo(({ onOk, ...props }) => {
+  const formRef = useRef()
+
   const dispatch = useDispatch()
 
   const [fileList, setFileList] = useState([])
+  const [students, setStudents] = useState([])
+  const [type, setType] = useState(DEFAULT_TYPE)
 
   const addFile = (file) => {
     const { beforeUpload } = imageUploadProps
@@ -38,7 +50,13 @@ const Index = memo(({ onOk, ...props }) => {
       payload: fileList,
       showNotification: false,
       callback: ({ results = []}) => {
-        recordedUpload(results.map(result => result?.fileInfo))
+        const files = results.map(result => result?.fileInfo)
+        if (type === 'AUTO') {
+          recordedUpload(files)
+        }
+        if (type === 'TARGET') {
+          recorded(files)
+        }
       }
     })
   }
@@ -53,6 +71,43 @@ const Index = memo(({ onOk, ...props }) => {
       }
     })
   }
+
+  const recorded = (infoFiles) => {
+    const { getFieldsValue } = formRef?.current
+
+    const req = {
+      ...getFieldsValue(),
+      files: infoFiles
+    }
+
+    dispatch({
+      type: 'mediaUpload/CREATE',
+      payload: req,
+      callback: () => {
+        setFileList([])
+        onOk()
+      }
+    })
+  }
+
+
+  const fetchStudents = () => {
+    dispatch({
+      type: 'categories/GET_STUDENTS',
+      payload: {
+        ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX)
+      },
+      callback: (res) => {
+        if (res) {
+          setStudents(res?.items)
+        }
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchStudents()
+  }, [])
 
   return (
     <Modal
@@ -70,6 +125,47 @@ const Index = memo(({ onOk, ...props }) => {
       }
       width={700}
     >
+      <Form
+        layout="vertical"
+        initialValues={{
+          uploadType: DEFAULT_TYPE
+        }}
+        ref={formRef}
+      >
+        <Pane>
+          <FormItem
+            name="uploadType"
+            label="Loại tải lên"
+            type={variables.RADIO}
+            radioInline
+            data={uploadTypes}
+            onChange={({ target: { value } }) => setType(value)}
+          />
+        </Pane>
+
+        {type === 'TARGET' && (
+          <>
+            <Pane>
+              <FormItem
+                label="Tên trẻ"
+                name="studentId"
+                type={variables.SELECT}
+                data={students}
+                options={['id', 'fullName']}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane>
+              <FormItem
+                label="Mô tả"
+                name="description"
+                type={variables.INPUT}
+              />
+            </Pane>
+          </>
+        )}
+      </Form>
+
       <Dragger
         {...imageUploadProps}
         beforeUpload={addFile}

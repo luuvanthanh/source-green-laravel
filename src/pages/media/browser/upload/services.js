@@ -6,3 +6,10 @@ export function upload(data) {
     data
   });
 }
+
+export function create(data) {
+  return request('/posts', {
+    method: 'POST',
+    data
+  });
+}

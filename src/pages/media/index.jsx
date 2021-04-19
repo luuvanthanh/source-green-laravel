@@ -48,13 +48,13 @@ const Index = memo(() => {
       key: 'index',
       className: 'min-width-70',
       align: 'center',
-      render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index)
+      render: (text, record, index) => Helper.serialOrder(search?.page, index)
     },
     {
       title: 'Thời gian',
       key: 'creationTime',
       className: 'min-width-140',
-      render: () => <Text size="normal">
+      render: (record) => <Text size="normal">
         {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
       </Text>
     },
@@ -80,7 +80,7 @@ const Index = memo(() => {
       title: 'Phụ huynh',
       key: 'parent',
       className: 'min-width-70',
-      render: () => <Text size="normal">{record?.father?.fullName || record?.mother?.fullName}</Text>
+      render: (record) => <Text size="normal">{record?.father?.fullName || record?.mother?.fullName}</Text>
     },
     {
       title: 'Học sinh',
@@ -105,6 +105,8 @@ const Index = memo(() => {
       )
     },
   ], [])
+
+  console.log(data)
 
   const paginationProps = useMemo(() => ({
     size: 'default',

@@ -1,49 +1,25 @@
-import { memo, } from 'react'
+import { memo, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import moment from 'moment'
-import { useMatch } from 'umi'
+import { useRouteMatch } from 'umi'
+import { useSelector, useDispatch } from 'dva'
 
 import Pane from '@/components/CommonComponent/Pane'
 import Heading from '@/components/CommonComponent/Heading'
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Loading from '@/components/CommonComponent/Loading';
 
-import variables from '@/utils/variables'
+import { variables, Helper } from '@/utils'
 import styles from '@/assets/styles/Common/information.module.scss'
 
-const mockData = {
-  createTime: '2021/3/15 10:30',
-  id: 'GN01',
-  title: 'Bé vận động',
-  images: [
-    'https://picsum.photos/300/200',
-    'https://picsum.photos/300/200',
-  ],
-  parents: [{
-    name: 'Nguyễn Anh'
-  }],
-  student: {
-    name: 'Su beo'
-  },
-  position: {
-    name: 'Lake view'
-  },
-  class: {
-    name: 'Preschool'
-  },
-  employee: {
-    name: 'Lê Thị Vân',
-    position: 'Cơ sở 1'
-  }
-}
-
 const Index = memo(() => {
-  const [{ details, error }, loading] = useSelector(({ mediaItemsDetails, loading }) => [mediaItemsDetails, loading?.effects])
+  const dispatch = useDispatch()
+  const [{ details, error }, loading] = useSelector(({ mediaDetails, loading }) => [mediaDetails, loading?.effects])
 
-  const { params } = useMatch()
+  const { params } = useRouteMatch()
 
   const fetchDetailsMedia = () => {
     dispatch({
-      type: 'mediaItemsDetails/GET_DATA',
+      type: 'mediaDetails/GET_DETAILS',
       payload: params
     })
   }
@@ -54,7 +30,7 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Loangding loading={loading['mediaItemsDetails/GET_DATA']} isError={error.isError} params={{ error, type: 'container' }}>
+      <Loading loading={loading['mediaDetails/GET_DETAILS']} isError={error.isError} params={{ error, type: 'container' }}>
         <Helmet title="Chi tiết ghi nhận" />
         <Pane className="row" style={{ marginBottom: 20 }}>
           <Pane className="col">
@@ -66,15 +42,14 @@ const Index = memo(() => {
           <Pane className="border-bottom" style={{ padding: 20 }}>
             <Pane style={{ marginBottom: 10 }}>
               <Heading type="form-sub-title">
-                {moment(mockData?.createTime).format(variables.DATE_FORMAT.DATE_TIME_VI)}
                 {Helper.getDate(details, variables.DATE_FORMAT.DATE_TIME)}
               </Heading>
             </Pane>
-            {/* <Pane style={{ marginBottom: 10 }}>
+            <Pane style={{ marginBottom: 10 }}>
               <Heading type="form-sub-title">
                 Mã ID: {details?.id}
               </Heading>
-            </Pane> */}
+            </Pane>
             <Pane style={{ marginBottom: 20 }}>
               <Heading type="page-title">{details?.description}</Heading>
             </Pane>
@@ -108,7 +83,7 @@ const Index = memo(() => {
                 <Pane className={styles.userInformation}>
                   <AvatarTable fileImage={details?.student?.fileImage} />
                   <Pane>
-                    <h3>{details?.student?.fullName}</h3>
+                    <h3>{details?.student?.fullName || 'Su Beo'}</h3>
                   </Pane>
                 </Pane>
               </Pane>
@@ -129,7 +104,7 @@ const Index = memo(() => {
                   <span className={styles.circleIcon}>
                     <span className={'icon-open-book'} />
                   </span>
-                  <span className={styles.infoText}>{details?.class?.name}</span>
+                  <span className={styles.infoText}>{details?.class?.name || 'Preschool 2'}</span>
                 </Pane>
               </Pane>
             </Pane>
@@ -140,17 +115,17 @@ const Index = memo(() => {
               <Pane className="col-lg-3">
                 <label className={styles.infoLabel}>Nhân viên</label>
                 <Pane className={styles.userInformation}>
-                  <AvatarTable fileImage={details?.studentTransporter?.fileImage} />
+                  <AvatarTable fileImage={details?.teacher?.fileImage} />
                   <Pane>
-                    <h3>{mockData?.studentTransporter?.fullName}</h3>
-                    {/* <p>{mockData?.employee?.position}</p> */}
+                    <h3>{details?.teacher?.fullName || 'Lê Thị Vân'}</h3>
+                    {/* <p>{details?.teacher?.position}</p> */}
                   </Pane>
                 </Pane>
               </Pane>
             </Pane>
           </Pane>
         </Pane>
-      </Loangding>
+      </Loading>
     </Pane >
   )
 })

@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'mediaItemsDetails',
+  namespace: 'mediaDetails',
   state: {
     error: {
       isError: false,
