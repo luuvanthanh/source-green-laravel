@@ -147,9 +147,9 @@ const General = memo(({}) => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
         ...details,
-        DateOfBirth: details.DateOfBirth && moment(details.DateOfBirth),
-        DateOfIssueIdCard: details.DateOfIssueIdCard && moment(details.DateOfIssueIdCard),
-        DateOff: details.DateOff && moment(details.DateOff),
+        dateOfBirth: details.dateOfBirth && moment(details.dateOfBirth),
+        dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
+        dateOff: details.dateOff && moment(details.dateOff),
       });
       mountedSet(setFileImage, details.fileImage);
     }

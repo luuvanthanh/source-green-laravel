@@ -11,6 +11,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import variablesModules from '../../../utils/variables';
+import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
+import { Helper } from '@/utils';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -26,8 +28,8 @@ const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, branches, classes }) => {
     const formRef = useRef();
-    const [fileImage, setFileImage] = useState(null);
     const [dayOfBirth, setDayOfBirth] = useState(null);
+    const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -67,14 +69,14 @@ const General = memo(
                 ...details.student,
                 ...values,
                 id: params.id,
-                fileImage,
+                fileImage: JSON.stringify(files),
                 age,
               },
             }
           : {
               student: {
                 ...values,
-                fileImage,
+                fileImage: JSON.stringify(files),
                 age,
               },
             },
@@ -152,7 +154,6 @@ const General = memo(
           branchId: details?.student?.class?.branchId,
         });
         mountedSet(setDayOfBirth(moment(details?.student?.dayOfBirth)));
-        mountedSet(setFileImage, details?.student?.fileImage);
         if (details?.student?.class?.branchId) {
           dispatch({
             type: 'OPchildrenAdd/GET_CLASSES',
@@ -161,8 +162,15 @@ const General = memo(
             },
           });
         }
+        if (Helper.isJSON(details?.student?.fileImage)) {
+          mountedSet(setFiles, JSON.parse(details?.student?.fileImage));
+        }
       }
     }, [details]);
+
+    const uploadFiles = (file) => {
+      mountedSet(setFiles, (prev) => [...prev, file]);
+    };
 
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
@@ -175,11 +183,10 @@ const General = memo(
               <Pane className="row">
                 <Pane className="col">
                   <Form.Item name="avatar" label="Hình ảnh học sinh">
-                    <ImageUpload
-                      callback={(res) => {
-                        mountedSet(setFileImage, res.fileInfo.url);
-                      }}
-                      fileImage={fileImage}
+                    <MultipleImageUpload
+                      files={files}
+                      callback={(files) => uploadFiles(files)}
+                      removeFiles={(files) => mountedSet(setFiles, files)}
                     />
                   </Form.Item>
                 </Pane>

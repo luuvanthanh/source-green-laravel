@@ -234,7 +234,13 @@ class Index extends PureComponent {
         key: 'name',
         className: 'min-width-100',
         align: 'center',
-        render: (record) => <AvatarTable fileImage={record.fileImage} />,
+        render: (record) => {
+          if (Helper.isJSON(record.fileImage)) {
+            const files = JSON.parse(record.fileImage);
+            return <AvatarTable fileImage={!isEmpty(files) && head(files)} />;
+          }
+          return <AvatarTable fileImage={record.fileImage} />;
+        },
       },
       {
         title: 'Họ và Tên',

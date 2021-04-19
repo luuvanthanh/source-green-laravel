@@ -74,7 +74,7 @@ export const variables = {
     // TODO: rename
     DATE_TIME_VI: 'HH:mm, DD/MM/YYYY',
     DATE_VI: 'DD/MM/YYYY',
-    DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss'
+    DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -92,7 +92,11 @@ export const variables = {
     format: { targetValue: 'HH:mm:ss' },
     attributes: ['hour', 'minute', 'second'],
   },
-  EMPTY_DATA_TEXT: 'Chưa có dữ liệu'
+  EMPTY_DATA_TEXT: 'Chưa có dữ liệu',
+  ROLES: {
+    PARENT: 'PARENT',
+    TEACHER: 'TEACHER',
+  },
 };
 
 export default variables;
