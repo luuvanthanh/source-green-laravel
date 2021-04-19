@@ -33,6 +33,14 @@ const renderChildren = (
   onSearch,
   onBlur,
   dropdownRender,
+  onSelect,
+  disabledHours,
+  disabledMinutes,
+  allowClear,
+  picker,
+  radioInline,
+  disabledKeys,
+  options
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -73,7 +81,7 @@ const renderChildren = (
   ),
   select: (
     <Select
-      allowClear
+      allowClear={allowClear}
       dataSet={data}
       filterOption={(input, option) =>
         Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
@@ -84,6 +92,7 @@ const renderChildren = (
       onSearch={onSearch}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      options={options}
     />
   ),
   selectAdd: (
@@ -120,9 +129,11 @@ const renderChildren = (
   tags: (
     <Select
       dataSet={data}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
+      filterOption={(input, option) => {
+        if (Helper.slugify(option?.children)) {
+          return Helper.slugify(option?.children)?.indexOf(Helper.slugify(input)) >= 0;
+        }
+      }}
       maxTagCount={maxTagCount}
       mode="tags"
       onChange={onChange}
@@ -163,6 +174,16 @@ const renderChildren = (
       placeholder="dd/mm/yyyy"
     />
   ),
+  monthPicker: (
+    <DatePicker
+      disabled={disabled}
+      disabledDate={disabledDate}
+      format={'[Tháng] MM/YYYY'}
+      onChange={onChange}
+      placeholder="Chọn"
+      picker={picker}
+    />
+  ),
   dateTimePicker: (
     <DatePicker
       disabled={disabled}
@@ -178,6 +199,15 @@ const renderChildren = (
       format={variables.DATE_FORMAT.HOUR}
       onBlur={onBlur}
       placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
+    />
+  ),
+  timePicker: (
+    <TimePicker
+      format={variables.DATE_FORMAT.HOUR}
+      onSelect={onSelect}
+      disabledHours={disabledHours}
+      disabledMinutes={disabledMinutes}
+      placeholder="Chọn"
     />
   ),
   treeSelect: (
@@ -215,7 +245,7 @@ const renderChildren = (
     />
   ),
   checkbox: (
-    <Checkbox.Group>
+    <Checkbox.Group onChange={onChange}>
       {data.map((item, index) => (
         <Checkbox key={index} value={item.value}>
           {item.label}
@@ -224,9 +254,17 @@ const renderChildren = (
     </Checkbox.Group>
   ),
   radio: (
-    <Radio.Group>
+    <Radio.Group className="radio-custom" onChange={onChange}>
       {data.map((item, index) => (
-        <Radio key={index} value={item.value}>
+        <Radio
+          key={index}
+          value={item.value}
+          className={classnames({
+            'd-inline-block': radioInline,
+            'my-0': radioInline,
+          })}
+          disabled={(disabledKeys || []).includes(item.value)}
+        >
           {item.label}
         </Radio>
       ))}
@@ -249,10 +287,18 @@ export default function FormItem({
   onSearch,
   onBlur,
   dropdownRender,
+  onSelect,
+  disabledHours,
+  disabledMinutes,
+  allowClear,
+  picker,
+  radioInline,
+  disabledKeys,
+  options,
   ...rest
 }) {
   return (
-    <Form.Item {...rest} label={<span>{label}</span>} rules={rules}>
+    <Form.Item {...rest} label={label && <span>{label}</span>} rules={rules}>
       {
         renderChildren(
           placeholder,
@@ -266,6 +312,14 @@ export default function FormItem({
           onSearch,
           onBlur,
           dropdownRender,
+          onSelect,
+          disabledHours,
+          disabledMinutes,
+          allowClear,
+          picker,
+          radioInline,
+          disabledKeys,
+          options
         )[type]
       }
     </Form.Item>
@@ -288,6 +342,9 @@ FormItem.propTypes = {
   onSearch: PropTypes.func,
   onBlur: PropTypes.func,
   dropdownRender: PropTypes.any,
+  onSelect: PropTypes.func,
+  allowClear: PropTypes.bool,
+  picker: PropTypes.string,
 };
 
 FormItem.defaultProps = {
@@ -308,6 +365,9 @@ FormItem.defaultProps = {
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
+  onSelect: () => {},
+  allowClear: true,
+  picker: null,
 };
 
 FormItem.displayName = 'Form';

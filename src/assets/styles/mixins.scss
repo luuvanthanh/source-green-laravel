@@ -1,7 +1,7 @@
 // Colors
 $white: #fff;
 
-$text: #74708d;
+$text: #3e4247;
 $text-white: #ffffff;
 $text-dark: #000000;
 $text-darken: #615d7c;
@@ -11,31 +11,33 @@ $text-danger: #ff4d4f;
 $text-lighten: #c0bdd0;
 $text-primary: #1890ff;
 $text-darken-more: #514d6a;
-$text-success: #27A600;
-$text-green: #169B4B;
-$text-purple: #0000FF;
+$text-success: #27a600;
+$text-green: #169b4b;
+$text-purple: #0000ff;
+$text-form-label: #36383A;
 
 // background
-$background-success: #27A600;
+$background-success: #27a600;
 $background-white: #fff;
 $background-danger: #ff4d4f;
 $background-dark: #001525;
 $background-yellow: #de5e00;
 $background-primary: #1890ff;
 $background-gray: #e5e5e5;
-$background-green: #169B4B;
-$background-purple: #0000FF;
+$background-green: #169b4b;
+$background-purple: #0000ff;
 
 // border
 $border-primary: rgba(24, 144, 255, 0.5);
-$border-success: #27A600;
+$border-success: #27a600;
 $border-danger: #ff4d4f;
 $border-yellow: #de5e00;
-$border-lighten: #D9D9D9;
+$border-lighten: #d9d9d9;
 $border-dark: #514d6a;
 $border-gray: #d9d9d9;
-$border-green: #169B4B;
-$border-purple: #0000FF;
+$border-white: #ffffff;
+$border-green: #169b4b;
+$border-purple: #0000ff;
 
 // icon sidebar
 $icon-sidebar: #c4c4c4;
@@ -69,7 +71,7 @@ $warning: #f39834;
 $secondary: #6a7a84;
 
 // Font Family
-$base__font-family: 'Roboto', sans-serif !important;
+$base__font-family: "Roboto", sans-serif !important;
 
 // Font Size
 $base__font-size: 13 !default;

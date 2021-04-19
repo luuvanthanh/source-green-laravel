@@ -33,7 +33,10 @@
 
 .ant-checkbox-checked {
   .ant-checkbox-inner {
-    background-color: #1890FF;
-    border-color: #1890FF;
+    background-color: $background-success;
+    border-color: $border-success;
+  }
+  &::after {
+    border: 1px solid $border-success;
   }
 }

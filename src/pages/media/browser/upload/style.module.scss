@@ -1,0 +1,9 @@
+.icon {
+  display: inline-block;
+  margin-bottom: 20px;
+
+  &::before {
+    font-size: 40px;
+  }
+}
+

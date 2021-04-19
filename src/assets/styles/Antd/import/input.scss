@@ -1,5 +1,5 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN INPUT */
@@ -11,5 +11,60 @@
 .input-number {
   &.ant-input-number {
     width: 100%;
+  }
+}
+
+.input-login {
+  .ant-input {
+    height: 44px;
+    border-radius: 6px;
+    border: 1px solid #d6ebdf;
+  }
+}
+
+.input-password {
+  .ant-input-password {
+    height: 44px;
+    border-radius: 6px;
+    border: 1px solid #d6ebdf;
+    .ant-input {
+      height: auto;
+    }
+  }
+}
+
+.radio-custom {
+  .ant-radio-wrapper {
+    // display: block;
+    // margin: 10px 0;
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+
+    .ant-radio {
+      > input {
+        width: 22px;
+        height: 22px;
+      }
+
+      .ant-radio-inner {
+        width: 24px;
+        height: 24px;
+
+        &::after {
+          width: 16px;
+          height: 16px;
+          border-radius: 20px;
+        }
+      }
+    }
   }
 }

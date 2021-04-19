@@ -1,0 +1,10 @@
+@import "@/assets/styles/mixins.scss";
+.ant-tabs {
+  .ant-tabs-ink-bar {
+    background: $background-success;
+  }
+  .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: $text-success;
+    font-weight: unset;
+  }
+}

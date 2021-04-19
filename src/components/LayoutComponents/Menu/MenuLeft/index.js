@@ -1,20 +1,21 @@
 import _ from 'lodash';
 import React from 'react';
 import store from 'store';
-import { Helper } from '@/utils';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { connect, Link, withRouter } from 'umi';
-import { Menu, Layout, Badge } from 'antd';
+import { Menu, Layout, Badge, Popover } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
+import validator from 'validator';
+import { dataSource } from '@/services/menuHome.json';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
 const mapStateToProps = ({ menu, settings, badges, user }) => ({
-  menuData: menu.menuLeftData,
+  menuData: menu.menuLeftSchedules,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
@@ -29,7 +30,7 @@ class MenuLeft extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      menuData: props.menuData,
+      menuData: props.menu || props.menuData,
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
     };
@@ -67,7 +68,7 @@ class MenuLeft extends React.Component {
       const listItemPath = pathname.split('/');
       return listItemPath
         .map((item) => {
-          return Number.parseInt(item, 10) ? ':id' : item;
+          return validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item;
         })
         .join('/');
     }
@@ -205,8 +206,8 @@ class MenuLeft extends React.Component {
           if (menuItem.children) {
             const subMenuTitle = (
               <span key={menuItem.key}>
-                <span className={styles.title}>{menuItem.title}</span>
                 {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+                <span className={styles.title}>{menuItem.title}</span>
                 {menuItem.pro && (
                   <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
                 )}
@@ -238,8 +239,8 @@ class MenuLeft extends React.Component {
         if (menuItem.children) {
           const subMenuTitle = (
             <span key={menuItem.key}>
-              <span className={styles.title}>{menuItem.title}</span>
               {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
+              <span className={styles.title}>{menuItem.title}</span>
               {menuItem.pro && (
                 <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
               )}
@@ -259,7 +260,7 @@ class MenuLeft extends React.Component {
 
   render() {
     const { selectedKeys, openedKeys } = this.state;
-    const { isMobileView, isMenuCollapsed, isLightTheme } = this.props;
+    const { isMobileView, isMenuCollapsed, isLightTheme, info } = this.props;
     const menuSettings = isMobileView
       ? {
           width: 256,
@@ -276,18 +277,52 @@ class MenuLeft extends React.Component {
         };
 
     const menu = this.generateMenuItems();
+    const content = (
+      <Scrollbars autoHeight autoHeightMax={'50vh'}>
+        <div className={styles['popover-container']}>
+          {dataSource.map((item, index) => (
+            <Link to={item.url} className={styles.item} key={index}>
+              <div className={styles['item-image']}>
+                <img src={item.src} alt="notification" className={styles.icon} />
+              </div>
+              <div className={styles['item-content']}>
+                <p className={styles['norm']}>{item.title}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </Scrollbars>
+    );
     return (
       <Sider
         {...menuSettings}
-        className={isLightTheme ? `${styles.menu} ${styles.light}` : styles.menu}
+        className={isLightTheme ? `${styles.menu} ${styles.light} light` : styles.menu}
       >
         <div className={styles.logo}>
-          <div className={styles.logoContainer}>
-            <img alt="Clean UI React Admin Template" src="/logo-admin.png" />
-          </div>
+          <Link to="/" className={styles.logoContainer}>
+            <div className={styles['block-menu']}>
+              <img
+                alt="Clean UI React Admin Template"
+                className={styles.image}
+                src={info?.icon || '/images/home/note.svg'}
+              />
+              {!isMenuCollapsed && <h1 className={styles.title}>{info?.title || 'Điểm danh'}</h1>}
+            </div>
+            {!isMenuCollapsed && (
+              <Popover
+                placement="rightTop"
+                className={styles['popover-custom']}
+                content={content}
+                trigger="click"
+              >
+                <span className="icon-toggle"></span>
+              </Popover>
+            )}
+          </Link>
         </div>
         <Scrollbars
-          autoHide
+          autoHeight
+          autoHeightMax={'calc(100vh - 100px)'}
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
             <div

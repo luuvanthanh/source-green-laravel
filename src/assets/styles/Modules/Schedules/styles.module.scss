@@ -1,0 +1,13 @@
+@import "@/assets/styles/mixins.scss";
+
+.form-item-advance {
+    position: relative;
+    .icon-delete {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        &:hover {
+            color: $danger;
+        }
+    }
+}

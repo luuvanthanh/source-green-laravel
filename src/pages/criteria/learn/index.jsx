@@ -54,9 +54,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {
-    this.onLoad();
-  }
+  // componentDidMount() {
+  //   this.onLoad();
+  // }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -325,52 +325,14 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách tiêu chí - đánh giá" />
-        <Modal
-          centered
-          footer={[
-            <div className={classnames('d-flex', 'justify-content-end')} key="action">
-              <Button
-                color="white"
-                icon="cross"
-                loading={loadingSubmit}
-                onClick={this.handleCancel}
-                size="medium"
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                loading={loadingSubmit}
-                onClick={this.onFinish}
-                size="medium"
-              >
-                LƯU
-              </Button>
-            </div>,
-          ]}
-          onCancel={this.handleCancel}
-          title={
-            !isEmpty(objects) ? 'CHỈNH SỬA TIÊU CHÍ - ĐÁNH GIÁ' : 'THÊM MỚI TIÊU CHÍ - ĐÁNH GIÁ'
-          }
-          visible={visible}
-        >
-          <Form layout="vertical" ref={this.formRef}>
-            <div className="row">
-              <div className="col-lg-12">
-                <FormItem
-                  label="TÊN"
-                  name="name"
-                  rules={[variables.RULES.EMPTY_INPUT]}
-                  type={variables.INPUT}
-                />
-              </div>
-            </div>
-          </Form>
-        </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className={styles.search}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">DANH SÁCH TIÊU CHÍ - ĐÁNH GIÁ</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm mới
+            </Button>
+          </div>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
@@ -383,7 +345,6 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    label="TÌM KIẾM"
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa"
@@ -392,19 +353,10 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH TIÊU CHÍ - ĐÁNH GIÁ</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
-          </div>
-          <div className={styles['block-table']}>
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={[{ id: 1 }]}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{

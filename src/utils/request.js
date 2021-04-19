@@ -11,11 +11,7 @@ const request = extend({
 });
 
 const removeParams = (params) => {
-  return omit(
-    pickBy(params, (value) => value !== null && value !== undefined),
-    'page',
-    'limit',
-  );
+  return omit(pickBy(params, (value) => value !== null && value !== undefined));
 };
 
 // request options

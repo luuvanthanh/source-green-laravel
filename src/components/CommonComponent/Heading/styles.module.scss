@@ -1,0 +1,25 @@
+@import '@/assets/styles/mixins.scss';
+
+@mixin title( $font-weight, $font-size, $line-height, $color) {
+  font: $font-weight #{$font-size}/#{$line-height} $base__font-family;
+  font-style: normal;
+  color: $color;
+  margin-bottom: 0;
+}
+
+.page-title {
+  @include title(700, 20px, 30px, rgba($color: $black, $alpha: .85));
+}
+
+.form-title {
+  @include title(700, 16px, 20px, $text-form-label);
+}
+
+.form-sub-title {
+  @include title(600, 14px, 20px, #36383A);
+}
+
+.form-block-title {
+  @include title(600, 14px, 20px, $text-success);
+  text-transform: uppercase;
+}

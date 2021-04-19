@@ -6,11 +6,13 @@
 
 .ant-layout {
   background: transparent;
-  min-height: 100vh;
+  height: 100%;
 }
 
 .ant-layout-header {
   padding: 0;
+  height: 60px;
+  line-height: 60px;
 }
 
 .ant-layout-footer {
@@ -24,4 +26,8 @@
 
 .ant-layout-sider {
   transition: all 0.3s;
+}
+
+.ant-layout-content {
+  height: 100%;
 }

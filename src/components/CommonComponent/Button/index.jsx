@@ -23,9 +23,14 @@ const ICON_BUTTON = {
   project: <span className="icon-project" />,
   printer: <span className="icon-printer" />,
   checkCircle: <span className="icon-check-circle" />,
+  plan: <span className="icon-plan" />,
+  checkmark: <span className="icon-checkmark" />,
+  cancel: <span className="icon-cancel" />,
+  phone: <span className="icon-phone" />,
 };
 export default function ButtonCustom({
   children,
+  ghost,
   icon,
   color,
   size,
@@ -47,7 +52,10 @@ export default function ButtonCustom({
             styles.button,
             styles[`${color}`],
             styles[`size-${size}`],
-            className
+            {
+              [styles.ghost]: ghost
+            },
+            className,
           )}
         >
           {color && ICON_BUTTON[icon]}
@@ -68,7 +76,10 @@ export default function ButtonCustom({
           styles.notChildren,
           styles[`${color}`],
           styles[`size-${size}`],
-          className
+          {
+            [styles.ghost]: ghost
+          },
+          className,
         )}
       >
         {ICON_BUTTON[icon]}

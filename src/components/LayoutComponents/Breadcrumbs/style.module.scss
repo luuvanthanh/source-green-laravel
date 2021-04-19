@@ -1,21 +1,38 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .breadcrumbs {
-  background-color: $white;
-  border-bottom: 1px solid $gray-border;
   padding: rem(10) rem(20);
+  :global(.text-muted) {
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+    color: #7a7e84;
+  }
 }
 
 .path {
-  color: $black;
   font-size: rem(18);
+  color: $black;
 }
 
 .arrow {
   display: inline-block;
   margin: 0 rem(10);
   &:after {
-    content: '·';
     display: inline-block;
+    content: "\e91b";
+    font-family: "icomoon";
+    color: #7a7e84;
+    font-size: 12px;
   }
+}
+.title {
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 20px;
+  color: #3e4247;
 }

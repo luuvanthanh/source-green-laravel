@@ -1,12 +1,4 @@
-import {
-  isArray,
-  pickBy,
-  isEmpty,
-  get as getLodash,
-  toString,
-  omit,
-  size,
-} from 'lodash';
+import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
@@ -17,12 +9,16 @@ import { Helper } from '.';
 export default class Helpers {
   static getPrice = (value, number = 0) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        ',',
-      )} đ`;
+      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ`;
     }
     return null;
+  };
+
+  static convertIncludes = (include = []) => {
+    if (!isEmpty(include)) {
+      return include.join(',');
+    }
+    return undefined;
   };
 
   static getPercent = (value) => {
@@ -53,9 +49,7 @@ export default class Helpers {
       text.toLowerCase();
       const newText = text
         .split('')
-        .map((letter, i) =>
-          letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i)),
-        );
+        .map((letter, i) => letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i)));
       return (
         newText
           .toString() // Cast to string
@@ -88,8 +82,7 @@ export default class Helpers {
    * @static
    * @memberof Helpers
    */
-  static get = (obj = {}, path = '', defaultValue) =>
-    getLodash(obj, path, defaultValue);
+  static get = (obj = {}, path = '', defaultValue) => getLodash(obj, path, defaultValue);
 
   /**
    *Set a date and return it
@@ -122,9 +115,7 @@ export default class Helpers {
     }
     const formatOrigin = Helpers.get(format, 'originValue');
     const formatTarget = Helpers.get(format, 'targetValue');
-    let result = formatOrigin
-      ? moment(originValue, formatOrigin)
-      : moment(originValue);
+    let result = formatOrigin ? moment(originValue, formatOrigin) : moment(originValue);
     if (isUTC) {
       result = result.utcOffset(0);
     }
@@ -171,9 +162,7 @@ export default class Helpers {
     }
     const defaultFormat = variables.DATE_FORMAT.DATE;
     let format = Helpers.get(options, 'format');
-    let isValid = format
-      ? moment(value, format).isValid()
-      : moment(value).isValid();
+    let isValid = format ? moment(value, format).isValid() : moment(value).isValid();
     const {
       same = {
         value: null,
@@ -252,6 +241,67 @@ export default class Helpers {
   };
 
   /**
+   *Set a date and return it
+   * @param {*} originValue the origin value
+   * @param {*} targetValue the target value
+   * @param {object} format the formats
+   * @param {string} format.originValue the format of the originValue
+   * @param {string} format.targetValue the format of the targetValue
+   * @param {array} attributes the attributes which are set for a new value
+   * @param {object} add an object data which defines input for "moment.add()" method
+   * @param {object} subtract an object data which defines input for "moment.subtract()" method
+   * @returns {moment} the moment instace
+   * @static
+   * @memberof Helpers
+   */
+  static setDate = ({
+    originValue = null,
+    targetValue = null,
+    format = {
+      originValue: undefined,
+      targetValue: undefined,
+    },
+    attributes = ['year', 'month', 'date'],
+    add = {},
+    subtract = {},
+    isUTC = false,
+  }) => {
+    if (!originValue && (!targetValue || isEmpty(add) || isEmpty(subtract))) {
+      return undefined;
+    }
+    const formatOrigin = Helpers.get(format, 'originValue');
+    const formatTarget = Helpers.get(format, 'targetValue');
+    let result = formatOrigin ? moment(originValue, formatOrigin) : moment(originValue);
+    if (isUTC) {
+      result = result.utcOffset(0);
+    }
+    if (targetValue) {
+      const options = {};
+      attributes.forEach((attr) => {
+        options[attr] = formatTarget
+          ? moment(targetValue, formatTarget).get(attr)
+          : moment(targetValue).get(attr);
+      });
+      result = result.set(options);
+    }
+    if (!isEmpty(add)) {
+      const keys = Object.keys(add);
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        result = moment(result).add(add[key], `${key}`);
+      }
+    }
+    if (!isEmpty(subtract)) {
+      const keys = Object.keys(subtract);
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        result = moment(result).subtract(subtract[key], `${key}`);
+      }
+    }
+    return result;
+  };
+
+  /**
    *Get the datetime by format from utc
    * @param {*} obj.value the datetime value
    * @param {string} obj.format the format which will be used to convert the value
@@ -298,7 +348,58 @@ export default class Helpers {
         };
       }
     });
-    return objects;
+    if (!isEmpty(objects)) {
+      return objects;
+    }
+    return undefined;
+  };
+
+  static convertParamSearchConvert = (search, type = '') => {
+    const arr = [];
+    if (type === variables.QUERY_STRING) {
+      Object.keys(
+        pickBy(search, (value) => {
+          if (isArray(value)) {
+            return !isEmpty(value.filter((item) => item))
+              ? value.filter((item) => item)
+              : undefined;
+          }
+          return value;
+        }),
+      ).forEach((key) => {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            pickBy(search, (value) => value),
+            key,
+          )
+        ) {
+          if (isArray(pickBy(search, (value) => value)[key])) {
+            arr.push(`${key}=${pickBy(search, (value) => value)[key].filter((item) => item)}`);
+          } else {
+            arr.push(`${key}=${pickBy(search, (value) => value)[key]}`);
+          }
+        }
+      });
+      return arr.join('&');
+    }
+    Object.keys(pickBy(search, (value) => value)).forEach((key) => {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          pickBy(search, (value) => {
+            if (isArray(value)) {
+              return !isEmpty(value.filter((item) => item))
+                ? value.filter((item) => item)
+                : undefined;
+            }
+            return value;
+          }),
+          key,
+        )
+      ) {
+        arr.push(`${key}:${pickBy(search, (value) => value)[key]}`);
+      }
+    });
+    return arr.join(';');
   };
 
   static disabledDate = (current) => {
@@ -321,11 +422,7 @@ export default class Helpers {
     };
   };
 
-  static convertTreeSelect = (
-    items = [],
-    keyValue = 'value',
-    keyLabel = 'label',
-  ) => {
+  static convertTreeSelect = (items = [], keyValue = 'value', keyLabel = 'label') => {
     return items.map((item) => ({
       [`${keyValue}`]: item.id,
       [`${keyLabel}`]: item.name,
@@ -353,10 +450,7 @@ export default class Helpers {
         /^[\],:{}\s]*$/.test(
           text
             .replace(/\\["\\/bfnrtu]/g, '@')
-            .replace(
-              /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g,
-              ']',
-            )
+            .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g, ']')
             .replace(/(?:^|:|,)(?:\s*\[)+/g, ''),
         )
       ) {
@@ -471,5 +565,50 @@ export default class Helpers {
           description: 'Bạn đã tải excel không thành công',
         });
       });
+  };
+
+  static sttList(page, index, size = variables.PAGINATION.SIZE) {
+    const num = (page - 1) * size + index + 1;
+    return num;
+  }
+
+  static getTwoDate = (startDate, endDate, format = variables.DATE_FORMAT.DATE_SLASH) => {
+    if (startDate && endDate) {
+      return `${moment(startDate).format(format)} - ${moment(endDate).format(format)}`;
+    }
+    if (startDate) return moment(startDate).format(format);
+    if (endDate) return moment(endDate).format(format);
+    return null;
+  };
+
+  static convertArrayDays = (start_date = moment(), end_date = moment()) => {
+    const days = [];
+    let day = moment(start_date);
+    while (day <= moment(end_date)) {
+      days.push(day.toDate());
+      day = day.clone().add(1, 'd');
+    }
+    return days.map((item) => moment(item));
+  };
+
+  static toFixed = (num) => {
+    return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
+  };
+
+  static getDates(startDate, stopDate) {
+    var dateArray = [];
+    var currentDate = moment(startDate).startOf('day');
+    var stopDate = moment(stopDate).startOf('day');
+    while (currentDate <= stopDate) {
+      dateArray.push(moment(currentDate));
+      currentDate = moment(currentDate).add(1, 'days');
+    }
+    return dateArray;
+  }
+
+  static joinDateTime = (date, time) => {
+    return `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
+      variables.DATE_FORMAT.TIME_FULL,
+    )}`;
   };
 }
