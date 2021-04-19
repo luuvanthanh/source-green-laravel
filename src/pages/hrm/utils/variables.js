@@ -45,6 +45,19 @@ export const variables = {
   },
   PARENT: 'PARENT',
   EMPLOYEES: 'EMPLOYEES',
+  DATE_OF_WEEK: {
+    0: 'su',
+    1: 'mo',
+    2: 'tu',
+    3: 'th',
+    4: 'we',
+    5: 'fr',
+    6: 'sa',
+  },
+  TYPE_EARLY_LATE: {
+    LATE: 'LATE',
+    EARLY: 'EARLY',
+  },
 };
 
 export default variables;

@@ -101,7 +101,12 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        const response = yield saga.call(services.add, payload);
+        console.log(response)
+        yield saga.call(services.addPositionLevels, {
+          ...payload,
+          employeeId: response?.parsePayload?.id,
+        });
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);

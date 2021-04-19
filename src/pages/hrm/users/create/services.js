@@ -69,6 +69,13 @@ export function add(data = {}) {
   });
 }
 
+export function addPositionLevels(data = {}) {
+  return requestLavarel('/v1/position-levels', {
+    method: 'POST',
+    data,
+  });
+}
+
 export function update(data = {}) {
   return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'PUT',

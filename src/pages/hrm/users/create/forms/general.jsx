@@ -29,12 +29,18 @@ const General = memo(({}) => {
     loading: { effects },
     trainningMajors,
     trainningSchool,
+    branches,
+    divisions,
+    positions,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     details: HRMusersAdd.details,
     degrees: HRMusersAdd.degrees,
     trainningMajors: HRMusersAdd.trainningMajors,
     trainningSchool: HRMusersAdd.trainningSchool,
+    branches: HRMusersAdd.branches,
+    divisions: HRMusersAdd.divisions,
+    positions: HRMusersAdd.positions,
     error: HRMusersAdd.error,
   }));
   const dispatch = useDispatch();
@@ -47,6 +53,9 @@ const General = memo(({}) => {
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
   const loading =
+    effects[`HRMusersAdd/GET_BRANCHES`] ||
+    effects[`HRMusersAdd/GET_DIVISIONS`] ||
+    effects[`HRMusersAdd/GET_POSITIONS`] ||
     effects[`HRMusersAdd/GET_DETAILS`] ||
     effects[`HRMusersAdd/GET_DEGREES`] ||
     effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
@@ -67,12 +76,12 @@ const General = memo(({}) => {
           history.goBack();
         }
         if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
               formRef.current.setFields([
                 {
-                  name: head(item.members),
-                  errors: [item.message],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
             });
@@ -141,6 +150,42 @@ const General = memo(({}) => {
       type: 'HRMusersAdd/GET_TRAINNING_SCHOOLS',
       payload: params,
     });
+  }, []);
+
+  /**
+   * Load Items Branches
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_BRANCHES',
+        payload: params,
+      });
+    }
+  }, []);
+
+  /**
+   * Load Items Divisions
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_DIVISIONS',
+        payload: params,
+      });
+    }
+  }, []);
+
+  /**
+   * Load Items Positions
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_POSITIONS',
+        payload: params,
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -312,6 +357,47 @@ const General = memo(({}) => {
               </Pane>
             </Pane>
           </Pane>
+          {!params.id && (
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Pane className="row">
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={branches}
+                    label="Cơ sở"
+                    name="branchId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={divisions}
+                    label="Bộ phận"
+                    name="divisionId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={positions}
+                    label="Chức vụ"
+                    name="positionId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    label="Thời gian bắt đầu"
+                    name="startDate"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+              </Pane>
+            </Pane>
+          )}
 
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
