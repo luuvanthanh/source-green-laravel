@@ -126,12 +126,16 @@ class Index extends PureComponent {
       error,
       menuData,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loadingSubmit = effects['paramaterValuesAdd/ADD'] || effects['paramaterValuesAdd/UPDATE'];
     const loading = effects['paramaterValuesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo tham số giá trị" menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa tham số giá trị' : 'Tạo tham số giá trị'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -149,7 +153,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -157,7 +161,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -167,7 +171,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="NGÀY ÁP DỤNG"
-                      name="ApplyDate"
+                      name="applyDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
                     />
@@ -175,7 +179,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="GIÁ TRỊ"
-                      name="ValueDefault"
+                      name="valueDefault"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.INPUT_NUMBER}
                     />
@@ -186,13 +190,18 @@ class Index extends PureComponent {
                     <FormItem
                       data={variablesModules.TYPES_PARAMATER_VALUES}
                       label="LOẠI"
-                      name="Type"
+                      name="type"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
                   <div className="col-lg-6">
-                    <FormItem label="GHI CHÚ" name="Note" rules={[]} type={variables.INPUT} />
+                    <FormItem
+                      label="GHI CHÚ"
+                      name="note"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
                   </div>
                 </div>
               </div>

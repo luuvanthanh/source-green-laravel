@@ -35,6 +35,8 @@ const getIsMounted = () => isMounted;
 const { confirm } = Modal;
 const mapStateToProps = ({ medicalItems, loading }) => ({
   data: medicalItems.data,
+  branches: medicalItems.branches,
+  classes: medicalItems.classes,
   pagination: medicalItems.pagination,
   error: medicalItems.error,
   loading,
@@ -51,6 +53,8 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        diseaseName: query?.diseaseName,
+        branchId: query?.branchId,
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -62,6 +66,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -99,6 +104,24 @@ class Index extends PureComponent {
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
+    });
+  };
+
+  /**
+   * Function load branches
+   */
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    if (search.branchId) {
+      dispatch({
+        type: 'medicalItems/GET_CLASSES',
+        payload: search,
+      });
+    }
+    dispatch({
+      type: 'medicalItems/GET_BRACHES',
+      payload: {},
     });
   };
 
@@ -155,6 +178,22 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    const { dispatch } = this.props;
+    this.debouncedSearch(e, type);
+    dispatch({
+      type: 'medicalItems/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -208,6 +247,10 @@ class Index extends PureComponent {
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    onShowSizeChange: (current, size) => {
+      this.changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**
@@ -299,6 +342,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
         title: 'STT',
@@ -323,13 +369,17 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'life',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
+        render: (record) => (
+          <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
+        ),
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
+        render: (record) => (
+          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
+        ),
       },
       {
         title: 'Tiêu đề',
@@ -341,7 +391,11 @@ class Index extends PureComponent {
         title: 'Phụ huynh',
         key: 'parents',
         className: 'min-width-150',
-        render: (record) => <Text size="normal"></Text>,
+        render: (record) => (
+          <Text size="normal">
+            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
+          </Text>
+        ),
       },
       {
         title: 'Dành cho bé',
@@ -364,7 +418,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/y-te/thong-ke/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -379,14 +433,15 @@ class Index extends PureComponent {
     const {
       data,
       error,
-      match: { params },
+      classes,
+      branches,
       pagination,
+      match: { params },
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
+    const { search } = this.state;
     const loading = effects['medicalItems/GET_DATA'];
-    const loadingSubmit = effects['medicalItems/ADD'] || effects['medicalItems/UPDATE'];
     return (
       <>
         <Helmet title="Thống kê y tế" />
@@ -404,7 +459,7 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              accessKey={search?.status || variablesModules.STATUS.NEW}
+              activeKey={search?.status || variablesModules.STATUS.PENDING}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
@@ -414,8 +469,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -431,17 +486,17 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    data={[{ id: null, name: 'Tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -464,6 +519,13 @@ class Index extends PureComponent {
               params={{
                 header: this.header(),
                 type: 'table',
+              }}
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: () => {
+                    history.push(`${pathname}/${record.id}/chi-tiet`);
+                  },
+                };
               }}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}

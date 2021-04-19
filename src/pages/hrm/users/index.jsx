@@ -222,6 +222,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
         title: 'Mã ID',
@@ -242,13 +245,13 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.FullName}</Text>,
+        render: (record) => <Text size="normal">{record.fullName}</Text>,
       },
       {
         title: 'Số điện thoại',
-        key: 'phone',
+        key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone}</Text>,
+        render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
       },
       {
         title: 'Cơ sở',
@@ -283,7 +286,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/quan-ly-nhan-su/nhan-vien/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>

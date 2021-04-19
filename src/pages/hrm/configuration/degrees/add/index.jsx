@@ -123,12 +123,13 @@ class Index extends PureComponent {
       error,
       menuData,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loadingSubmit = effects['degreesAdd/ADD'] || effects['degreesAdd/UPDATE'];
     const loading = effects['degreesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo bằng cấp" menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa bằng cấp' : 'Tạo bằng cấp'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -146,7 +147,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -154,7 +155,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />

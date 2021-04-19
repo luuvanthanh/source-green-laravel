@@ -61,7 +61,7 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params?.id) {
       this.formRef.current.setFieldsValue({
         ...details,
       });
@@ -122,13 +122,14 @@ class Index extends PureComponent {
     const {
       error,
       menuData,
+      match: { params },
       loading: { effects },
     } = this.props;
     const loadingSubmit = effects['hrmbranchesAdd/ADD'] || effects['hrmbranchesAdd/UPDATE'];
     const loading = effects['hrmbranchesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo cơ sở" menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa cơ sở' : 'Tạo cơ sở'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -146,7 +147,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -154,7 +155,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />

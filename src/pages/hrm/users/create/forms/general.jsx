@@ -183,7 +183,7 @@ const General = memo(({}) => {
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="FullName"
+                  name="fullName"
                   label="Tên nhân viên"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
@@ -191,7 +191,7 @@ const General = memo(({}) => {
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="Code"
+                  name="code"
                   label="Mã nhân viên"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
@@ -199,7 +199,7 @@ const General = memo(({}) => {
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="DateOfBirth"
+                  name="dateOfBirth"
                   label="Ngày sinh"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
@@ -210,7 +210,7 @@ const General = memo(({}) => {
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="PhoneNumber"
+                  name="phoneNumber"
                   label="Số điện thoại"
                   type={variables.INPUT}
                   rules={[variables.RULES.PHONE]}
@@ -218,7 +218,7 @@ const General = memo(({}) => {
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="Email"
+                  name="email"
                   label="Email"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMAIL]}
@@ -229,7 +229,7 @@ const General = memo(({}) => {
               <Pane className="col-lg-4">
                 <FormItem
                   data={genders}
-                  name="Gender"
+                  name="gender"
                   label="Giới tính"
                   type={variables.SELECT}
                   rules={[variables.RULES.EMPTY]}
@@ -237,7 +237,7 @@ const General = memo(({}) => {
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="IdCard"
+                  name="idCard"
                   label="Số CMND"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
@@ -245,7 +245,7 @@ const General = memo(({}) => {
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="DateOfIssueIdCard"
+                  name="dateOfIssueIdCard"
                   label="Ngày cấp"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
@@ -256,17 +256,17 @@ const General = memo(({}) => {
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="PlaceOfIssueIdCard"
+                  name="placeOfIssueIdCard"
                   label="Nơi cấp"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
                 />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name="Nation" label="Dân tộc" type={variables.INPUT} />
+                <FormItem name="nation" label="Dân tộc" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name="Religion" label="Tôn giáo" type={variables.INPUT} />
+                <FormItem name="religion" label="Tôn giáo" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
@@ -284,26 +284,15 @@ const General = memo(({}) => {
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
-                <FormItem name="TaxCode" label="Mã số thuế" type={variables.INPUT} />
+                <FormItem name="taxCode" label="Mã số thuế" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem data={degrees} name="degreeId" label="Bằng cấp" type={variables.SELECT} />
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  data={degrees.map((item) => ({
-                    id: item.id,
-                    name: item.Name,
-                  }))}
-                  name="DegreeId"
-                  label="Bằng cấp"
-                  type={variables.SELECT}
-                />
-              </Pane>
-              <Pane className="col-lg-4">
-                <FormItem
-                  data={trainningMajors.map((item) => ({
-                    id: item.id,
-                    name: item.Name,
-                  }))}
-                  name="TrainingMajorId"
+                  data={trainningMajors}
+                  name="trainingMajorId"
                   label="Chuyên ngành đào tạo"
                   type={variables.SELECT}
                 />
@@ -312,17 +301,14 @@ const General = memo(({}) => {
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
-                  data={trainningSchool.map((item) => ({
-                    id: item.id,
-                    name: item.Name,
-                  }))}
-                  name="TrainingSchoolId"
+                  data={trainningSchool}
+                  name="trainingSchoolId"
                   label="Trường đào tạo"
                   type={variables.SELECT}
                 />
               </Pane>
               <Pane className="col-lg-4">
-                <FormItem name="DateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
+                <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
               </Pane>
             </Pane>
           </Pane>

@@ -5,12 +5,13 @@ import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
 import { find, omit } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { history, useParams } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
+import { useSelector, useDispatch } from 'dva';
 
 import variables from '@/utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
@@ -19,17 +20,24 @@ import variablesModules from '../../utils/variables';
 const { Item: ListItem } = List;
 const { List: FormList, Item: FormItemAntd } = Form;
 
-const mapStateToProps = ({ loading, menu, user }) => ({
-  user: user.user,
-  loading,
-});
-const Index = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+const Index = memo(({}) => {
   const formRef = useRef();
+  const {
+    user,
+    loading: { effects },
+    error,
+  } = useSelector(({ loading, menu, user }) => ({
+    user: user.user,
+    loading,
+  }));
+  const dispatch = useDispatch();
+  const params = useParams();
   const loading =
     effects[`medicalItemsAdd/GET_DETAILS`] || effects[`medicalItemsAdd/GET_EMPLOYEES`];
   const loadingSubmit = effects[`medicalItemsAdd/ADD`] || effects[`medicalItemsAdd/UPDATE`];
   const loadingStudents = effects[`medicalItemsAdd/GET_STUDENTS`];
   const mounted = useRef(false);
+
   const mountedSet = (action, value) => {
     if (mounted.current) {
       action(value);
@@ -319,4 +327,4 @@ const Index = memo(({ dispatch, loading: { effects }, match: { params }, details
   );
 });
 
-export default withRouter(connect(mapStateToProps)(Index));
+export default Index;

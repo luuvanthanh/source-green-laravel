@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request('/medicals', {
@@ -11,4 +11,21 @@ export function get(params = {}) {
   });
 }
 
-export default get;
+export function getBranches(params = {}) {
+  return request('/branches', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getClasses(params = {}) {
+  return request('/classes', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}

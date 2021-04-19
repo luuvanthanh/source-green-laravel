@@ -91,56 +91,30 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'positionsAdd/UPDATE',
-        payload: {
-          ...values,
-          id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    dispatch({
+      type: params.id ? 'positionsAdd/UPDATE' : 'positionsAdd/ADD',
+      payload: {
+        ...values,
+        id: params.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'positionsAdd/ADD',
-        payload: {
-          ...values,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
@@ -148,12 +122,13 @@ class Index extends PureComponent {
       error,
       menuData,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loadingSubmit = effects['positionsAdd/ADD'] || effects['positionsAdd/UPDATE'];
     const loading = effects['positionsAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo chức vụ" menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa chức vụ' : 'Tạo chức vụ'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -171,7 +146,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="MÃ"
-                      name="Code"
+                      name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
@@ -179,7 +154,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       label="TÊN"
-                      name="Name"
+                      name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />

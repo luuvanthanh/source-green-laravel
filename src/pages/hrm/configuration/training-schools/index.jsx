@@ -219,19 +219,19 @@ class Index extends PureComponent {
         title: 'TÊN',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Name}</Text>,
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         title: 'MÃ',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Code}</Text>,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'ĐỊA CHỈ',
-        key: 'adress',
+        key: 'address',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.Adress}</Text>,
+        render: (record) => <Text size="normal">{record.address}</Text>,
       },
       {
         key: 'action',
