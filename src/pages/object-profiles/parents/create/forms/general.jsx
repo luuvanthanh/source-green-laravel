@@ -178,7 +178,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   name="phone"
                   label="Số điện thoại"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                 />
               </Pane>
               <Pane className="col-lg-4">
@@ -186,7 +186,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   name="anotherPhone"
                   label="Số điện thoại khác"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY]}
+                  rules={[variables.RULES.PHONE]}
                 />
               </Pane>
             </Pane>

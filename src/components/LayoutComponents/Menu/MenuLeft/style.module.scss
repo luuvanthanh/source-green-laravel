@@ -64,6 +64,19 @@
     color: inherit;
     background: $gray-border;
   }
+  &:global(.ant-layout-sider-dark) {
+    :global(.ant-layout-sider-children) {
+      background-color: $background-white;
+    }
+  }
+}
+
+:not(.light) {
+  &:global(.ant-layout-sider-dark) {
+    :global(.ant-layout-sider-children) {
+      background-color: $background-dark;
+    }
+  }
 }
 
 .logo {

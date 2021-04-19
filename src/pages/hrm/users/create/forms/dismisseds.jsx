@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -15,12 +15,14 @@ import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
+
   const {
     details,
     loading: { effects },
     branches,
     divisions,
     positions,
+    dismisseds,
     error,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
@@ -28,8 +30,16 @@ const Index = memo(() => {
     branches: HRMusersAdd.branches,
     divisions: HRMusersAdd.divisions,
     positions: HRMusersAdd.positions,
+    dismisseds: HRMusersAdd.dismisseds,
     error: HRMusersAdd.error,
   }));
+  const loadingSubmit =
+    effects[`HRMusersAdd/ADD_DIMISSEDS`] || effects[`HRMusersAdd/UPDATE_DIMISSEDS`];
+  const loading =
+    effects[`HRMusersAdd/GET_BRANCHES`] ||
+    effects[`HRMusersAdd/GET_DIVISIONS`] ||
+    effects[`HRMusersAdd/GET_POSITIONS`] ||
+    effects[`HRMusersAdd/GET_DISMISSEDS`];
   const dispatch = useDispatch();
   const params = useParams();
   const formRef = useRef();
@@ -74,6 +84,28 @@ const Index = memo(() => {
             },
           ],
         },
+        callback: (response, error) => {
+          if (response) {
+            dispatch({
+              type: 'HRMusersAdd/GET_DISMISSEDS',
+              payload: params,
+            });
+            mountedSet(setVisible, false);
+          }
+          if (error) {
+            console.log(error.data);
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRefModal.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
       });
     });
   };
@@ -87,31 +119,63 @@ const Index = memo(() => {
         title: 'STT',
         key: 'text',
         width: 100,
+        align: 'center',
         render: (text, record, index) => index + 1,
       },
       {
-        title: 'Số BH',
+        title: 'Số QĐ',
         key: 'insurrance_number',
-        className: 'min-width-150',
-        render: (record) => get(record, 'insurrance_number'),
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => get(record, 'decisionNumber'),
       },
       {
-        title: 'Ngày bắt đầu',
-        key: 'start_time',
-        className: 'min-width-150',
-        render: (record) => Helper.getDate(get(record, 'start_time'), variables.DATE_FORMAT.DATE),
+        title: 'Ngày QĐ',
+        key: 'decisionDate',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày kết thúc',
-        key: 'end_time',
+        title: 'Lý do',
+        key: 'reason',
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => get(record, 'reason'),
+      },
+      {
+        title: 'Cơ sở',
+        key: 'branch',
         className: 'min-width-150',
-        render: (record) => Helper.getDate(get(record, 'end_time'), variables.DATE_FORMAT.DATE),
+        width: 150,
+        render: (record) => get(record, 'dismissedDetails[0].branch.name'),
+      },
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => get(record, 'dismissedDetails[0].division.name'),
+      },
+      {
+        title: 'Chức vụ',
+        key: 'position',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => get(record, 'dismissedDetails[0].position.name'),
+      },
+      {
+        title: 'Ghi chú',
+        key: 'note',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => get(record, 'dismissedDetails[0].note'),
       },
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 180,
-        className: 'min-width-180',
+        width: 130,
+        className: 'min-width-130',
         fixed: 'right',
         align: 'center',
         render: (record) => (
@@ -159,6 +223,16 @@ const Index = memo(() => {
     });
   }, []);
 
+  /**
+   * Load Items dismisseds
+   */
+  useEffect(() => {
+    dispatch({
+      type: 'HRMusersAdd/GET_DISMISSEDS',
+      payload: params,
+    });
+  }, []);
+
   return (
     <>
       <Modal
@@ -170,10 +244,22 @@ const Index = memo(() => {
         onCancel={cancelModal}
         footer={
           <Pane className="d-flex justify-content-end align-items-center">
-            <Button key="cancel" color="white" icon="fe-x" onClick={cancelModal}>
+            <Button
+              key="cancel"
+              color="white"
+              icon="fe-x"
+              onClick={cancelModal}
+              loading={loadingSubmit || loading}
+            >
               Hủy
             </Button>
-            <Button key="choose" color="success" icon="fe-save" onClick={save}>
+            <Button
+              key="choose"
+              color="success"
+              icon="fe-save"
+              onClick={save}
+              loading={loadingSubmit || loading}
+            >
               Lưu
             </Button>
           </Pane>
@@ -215,6 +301,7 @@ const Index = memo(() => {
                 label="Cơ sở"
                 name="branchId"
                 type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
             <Pane className="col-lg-6">
@@ -223,6 +310,7 @@ const Index = memo(() => {
                 label="Bộ phận"
                 name="divisionId"
                 type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
             <Pane className="col-lg-6">
@@ -231,10 +319,16 @@ const Index = memo(() => {
                 label="Chức vụ"
                 name="positionId"
                 type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Ghi chú" name="note" type={variables.INPUT} />
+              <FormItem
+                label="Ghi chú"
+                name="note"
+                type={variables.INPUT}
+                rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+              />
             </Pane>
           </Pane>
         </Form>
@@ -255,8 +349,11 @@ const Index = memo(() => {
             <Table
               bordered
               columns={header()}
-              dataSource={[{ id: 1 }]}
+              dataSource={dismisseds}
               pagination={false}
+              loading={loading}
+              className="table-edit"
+              isEmpty
               params={{
                 header: header(),
                 type: 'table',

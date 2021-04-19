@@ -11,3 +11,13 @@ export function getStudents(params = {}) {
     },
   });
 }
+
+export function getCriteriaGroupProperties(params = {}) {
+  return request('/criteria-group-properties', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      groupName: 'Sức khỏe',
+    },
+  });
+}

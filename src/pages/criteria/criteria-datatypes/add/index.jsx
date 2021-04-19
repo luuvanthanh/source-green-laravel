@@ -195,6 +195,10 @@ class Index extends PureComponent {
                           name: 'textbox',
                         },
                         {
+                          id: 'radio',
+                          name: 'radio',
+                        },
+                        {
                           id: 'select',
                           name: 'select',
                         },
@@ -218,6 +222,11 @@ class Index extends PureComponent {
                     </div>
                   )}
                   {type === 'select' && (
+                    <div className="col-lg-6">
+                      <FormItem label="GIÁ TRỊ" name="value" type={variables.SELECT_TAGS} />
+                    </div>
+                  )}
+                  {type === 'radio' && (
                     <div className="col-lg-6">
                       <FormItem label="GIÁ TRỊ" name="value" type={variables.SELECT_TAGS} />
                     </div>

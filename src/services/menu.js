@@ -169,18 +169,6 @@ export async function getLeftMenuProfile() {
       pro: true,
     },
     {
-      title: 'Nhân viên',
-      key: 'users',
-      url: [
-        '/ho-so-doi-tuong/nhan-vien',
-        '/ho-so-doi-tuong/nhan-vien/tao-moi',
-        '/ho-so-doi-tuong/nhan-vien/:id/chi-tiet',
-      ],
-      icon: 'icon icon-man',
-      permission: [],
-      pro: true,
-    },
-    {
       title: 'Hồ sơ đã lưu trữ',
       key: 'stores',
       icon: 'icon icon-fileText',
@@ -197,13 +185,6 @@ export async function getLeftMenuProfile() {
           title: 'Phụ huynh',
           key: 'storeParents',
           url: ['/ho-so-doi-tuong/phu-huynh/luu-tru'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Nhân viên',
-          key: 'storeEmployees',
-          url: ['/ho-so-doi-tuong/nhan-vien/luu-tru'],
           permission: [],
           pro: true,
         },

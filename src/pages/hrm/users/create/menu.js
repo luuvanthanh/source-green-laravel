@@ -14,6 +14,10 @@ export const menu = [
     label: 'Bổ nhiệm',
   },
   {
+    key: 'transfers',
+    label: 'Cấp bậc, chức vụ',
+  },
+  {
     key: 'certificate',
     label: 'Chứng chỉ chuyên ngành',
   },
@@ -32,10 +36,6 @@ export const menu = [
   {
     key: 'bank',
     label: 'Thông tin ngân hàng',
-  },
-  {
-    key: 'transfers',
-    label: 'Cấp bậc, chức vụ',
   },
   {
     key: 'timework',
