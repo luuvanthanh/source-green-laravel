@@ -66,7 +66,7 @@ const Index = memo(() => {
       type: 'mediaBrowser/CLASSIFY',
       payload: images,
       callback: (res) => {
-        console.log(res)
+        // console.log(res)
       }
     })
   }
@@ -150,7 +150,7 @@ const Index = memo(() => {
         </Pane>
 
         <Pane>
-          {/* <Button
+          <Button
             loading={loading['mediaBrowser/CLASSIFY']}
             className="mx-auto"
             color="success"
@@ -158,7 +158,7 @@ const Index = memo(() => {
             onClick={classify}
           >
             Lọc hình ảnh
-          </Button> */}
+          </Button>
         </Pane>
       </Pane>
 
