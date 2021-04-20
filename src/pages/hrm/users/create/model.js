@@ -1,4 +1,4 @@
-import { variables } from '@/utils';
+// import { variables } from '@/utils';
 import * as services from './services';
 import * as categories from '@/services/categories';
 
@@ -22,7 +22,8 @@ export default {
     apoints: [],
     transfers: [],
     contractTypes: [],
-    contracts: []
+    contracts: [],
+    probationaryContracts: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -97,6 +98,10 @@ export default {
     SET_CONTRACTS: (state, { payload }) => ({
       ...state,
       contracts: payload.parsePayload,
+    }),
+    SET_PROBATIONARY_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      probationaryContracts: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -387,6 +392,30 @@ export default {
       }
     },
     // contract
+    // probationary contract
+    *ADD_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addProbationaryContract, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_PROBATIONARY_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getProbationaryContracts, payload);
+        yield saga.put({
+          type: 'SET_PROBATIONARY_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // probationary contract
   },
   subscriptions: {},
 };

@@ -15,7 +15,7 @@ import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
 import TransfersForm from './forms/transfers';
 import ContractForm from './forms/contract';
-import MinutesOfAgreementForm from './forms/minutesOfAgreement';
+import ProbationaryContractForm from '././forms/probationaryContract';
 import InsurranceForm from './forms/insurrance';
 import InsurranceHealthForm from './forms/InsurranceHealth';
 import DaysOffForm from './forms/daysOff';
@@ -45,7 +45,7 @@ const forms = {
   timework: <TimeworkForm />,
   transfers: <TransfersForm />,
   contract: <ContractForm />,
-  minutesOfAgreement: <MinutesOfAgreementForm />,
+  probationaryContract: <ProbationaryContractForm />,
   insurrance: <InsurranceForm />,
   healthInsurrance: <InsurranceHealthForm />,
   daysOff: <DaysOffForm />,

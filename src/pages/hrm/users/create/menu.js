@@ -46,8 +46,8 @@ export const menu = [
     label: 'Hợp đồng lao động',
   },
   {
-    key: 'minutesOfAgreement',
-    label: 'Biên bản thỏa thuận',
+    key: 'probationaryContract',
+    label: 'Hợp đồng thử việc',
   },
   {
     key: 'insurrance',

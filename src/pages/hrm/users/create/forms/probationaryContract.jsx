@@ -1,10 +1,10 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size } from 'lodash';
-import moment from 'moment';
+import { find } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
 import csx from 'classnames';
+import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -33,7 +33,7 @@ const Index = memo(() => {
       branches,
       divisions,
       positions,
-      contracts
+      probationaryContracts
     },
     loading
   ] = useSelector(
@@ -54,115 +54,6 @@ const Index = memo(() => {
     const currentType = find(contractTypes, { id: value });
     mountedSet(setContractDetails, currentType || {});
   };
-
-  const columns = useMemo(() => [
-    {
-      title: 'Số hợp đồng',
-      key: 'contract_number',
-      dataIndex: 'contractNumber',
-      className: 'min-width-120',
-    },
-    {
-      title: 'Ngày hợp đồng',
-      key: 'date',
-      dataIndex: 'contractDate',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Loại hợp đồng',
-      key: 'contract_category',
-      dataIndex: 'typeOfContract',
-      className: 'min-width-120',
-      render: (value) => value?.name,
-    },
-    {
-      title: 'Số năm/tháng hợp đồng',
-      key: 'contract_category',
-      className: 'min-width-150',
-      render: (record) => `${record.year} năm ${record.month} tháng`,
-    },
-    {
-      title: 'Thời hạn HĐ từ',
-      key: 'date',
-      dataIndex: 'contractFrom',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Thời hạn HĐ đến',
-      key: 'deadline',
-      dataIndex: 'contractTo',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Thời gian làm việc',
-      key: 'work_time',
-      dataIndex: 'workTime',
-      className: 'min-width-150',
-    },
-    {
-      title: 'Công việc phải làm',
-      key: 'work',
-      dataIndex: 'work',
-      className: 'min-width-150',
-    },
-    {
-      title: 'Lương cơ bản',
-      key: 'salary',
-      dataIndex: 'parameterValues[0]',
-      className: 'min-width-150',
-      render: (value) => Helper.getPrice(value?.pivot?.value),
-    },
-    {
-      title: 'Tổng phụ cấp',
-      key: 'payment',
-      dataIndex: 'parameterValues',
-      className: 'min-width-150',
-      render: (value) => Helper.getPrice((value || []).reduce(
-        (result, item, index) =>
-          !!index
-            ? result + (item?.pivot?.value)
-            : result,
-        0)),
-    },
-    {
-      title: 'Nơi làm việc',
-      key: 'branch',
-      dataIndex: 'branch',
-      className: 'min-width-150',
-      render: (value) => value?.name,
-    },
-    {
-      title: 'Chức danh',
-      key: 'position',
-      dataIndex: 'position',
-      className: 'min-width-150',
-      render: (value) => value?.name,
-    },
-    // {
-    //   title: 'Thao tác',
-    //   key: 'actions',
-    //   width: 180,
-    //   className: 'min-width-180',
-    //   fixed: 'right',
-    //   align: 'center',
-    //   render: (record) => (
-    //     <ul className="list-unstyled list-inline">
-    //       <li className="list-inline-item">
-    //         <Button color="primary" icon="edit" />
-    //       </li>
-    //       <li className="list-inline-item">
-    //         <Button color="danger" icon="remove" className="ml-2" />
-    //       </li>
-    //       <li className="list-inline-item">
-    //         <Button color="success" icon="export" />
-    //       </li>
-    //     </ul>
-    //   ),
-    // },
-  ], []);
 
   const parameterFormulasColumns = useMemo(() => [
     {
@@ -236,6 +127,110 @@ const Index = memo(() => {
     },
   ], []);
 
+  const columns = useMemo(() => [
+    {
+      title: 'Số hợp đồng',
+      key: 'contract_number',
+      dataIndex: 'contractNumber',
+      className: 'min-width-120',
+    },
+    {
+      title: 'Ngày hợp đồng',
+      key: 'date',
+      dataIndex: 'contractDate',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Loại hợp đồng',
+      key: 'contract_category',
+      dataIndex: 'typeOfContract',
+      className: 'min-width-120',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Số tháng thử việc',
+      key: 'contract_category',
+      dataIndex: 'month',
+      className: 'min-width-150',
+    },
+    {
+      title: 'Thời hạn HĐ từ',
+      key: 'date',
+      dataIndex: 'contractFrom',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Thời hạn HĐ đến',
+      key: 'deadline',
+      dataIndex: 'contractTo',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Tỷ lệ lương',
+      key: 'contract_category',
+      dataIndex: 'salaryRatio',
+      className: 'min-width-150',
+      render: (value) =>  Helper.getPercent(value * 100),
+    },
+    {
+      title: 'Lương cơ bản',
+      key: 'salary',
+      dataIndex: 'parameterValues[0]',
+      className: 'min-width-150',
+      render: (value) => Helper.getPrice(value?.pivot?.value),
+    },
+    {
+      title: 'Tổng phụ cấp',
+      key: 'payment',
+      dataIndex: 'parameterValues',
+      className: 'min-width-150',
+      render: (value) => Helper.getPrice((value || []).reduce(
+        (result, item, index) =>
+          !!index
+            ? result + (item?.pivot?.value)
+            : result,
+        0)),
+    },
+    {
+      title: 'Nơi làm việc',
+      key: 'branch',
+      dataIndex: 'branch',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Chức danh',
+      key: 'position',
+      dataIndex: 'position',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    // {
+    //   title: 'Thao tác',
+    //   key: 'actions',
+    //   width: 180,
+    //   className: 'min-width-180',
+    //   fixed: 'right',
+    //   align: 'center',
+    //   render: (record) => (
+    //     <ul className="list-unstyled list-inline">
+    //       <li className="list-inline-item">
+    //         <Button color="primary" icon="edit" />
+    //       </li>
+    //       <li className="list-inline-item">
+    //         <Button color="danger" icon="remove" className="ml-2" />
+    //       </li>
+    //       <li className="list-inline-item">
+    //         <Button color="success" icon="export" />
+    //       </li>
+    //     </ul>
+    //   ),
+    // },
+  ], []);
+
   const finishForm = () => {
     const formValues = formRefModal?.current?.getFieldsValue();
 
@@ -252,14 +247,14 @@ const Index = memo(() => {
     };
 
     dispatch({
-      type: 'HRMusersAdd/ADD_CONTRACT',
+      type: 'HRMusersAdd/ADD_PROBATIONARY_CONTRACT',
       payload: reqData,
       callback: (res, err) => {
         if (res) {
           formValues?.current?.resetFields();
           mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
-          fetchContracts();
+          fetchProbationaryContracts();
         }
         if (err) {
           const { data } = err;
@@ -278,32 +273,29 @@ const Index = memo(() => {
     });
   };
 
-  const fetchContracts = () => {
+  const fetchProbationaryContracts = () => {
     dispatch({
-      type: 'HRMusersAdd/GET_CONTRACTS', payload: {
+      type: 'HRMusersAdd/GET_PROBATIONARY_CONTRACTS', payload: {
         employeeId
       }
     });
   };
 
   const formUpdate = (value, values) => {
-    const { month, year, contractFrom } = values;
+    const { month, contractFrom } = values;
 
     if (moment.isMoment(contractFrom)) {
       formRefModal?.current?.setFieldsValue({
         contractTo:
           moment(contractFrom)
             .add(month || 0, 'months')
-            .add(year || 0, 'years')
       });
     }
   };
 
   useEffect(() => {
     mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
+    return () => mounted.current = false;
   }, []);
 
   useEffect(() => {
@@ -314,25 +306,25 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
-    fetchContracts();
+    fetchProbationaryContracts();
   }, []);
 
   return (
     <>
       <Modal
         visible={visible}
-        title="Hợp đồng lao động"
+        title="Hợp đồng thử việc"
         centered
         className={styles['modal-fullscreen']}
         onCancel={cancelModal}
         footer={
           <Pane className="d-flex justify-content-end">
             <Button
+              disabled={loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT']}
               key="cancel"
               color="white"
               icon="fe-x"
               onClick={cancelModal}
-              disabled={loading['HRMusersAdd/ADD_CONTRACT']}
             >
               Hủy
             </Button>
@@ -346,8 +338,7 @@ const Index = memo(() => {
               key="choose"
               color="success"
               icon="fe-save"
-              htmlType="submit"
-              loading={loading['HRMusersAdd/ADD_CONTRACT']}
+              loading={loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT']}
               onClick={finishForm}
             >
               Lưu
@@ -387,6 +378,7 @@ const Index = memo(() => {
                 name="typeOfContractId"
                 type={variables.SELECT}
                 onChange={changeContract}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
           </Pane>
@@ -394,32 +386,12 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
-                label="Số năm hợp đồng"
-                name="year"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Số tháng hợp đồng"
+                label="Số tháng thử việc"
                 name="month"
                 type={variables.INPUT_COUNT}
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
-                data={divisions}
-                label="Bộ phận"
-                name="divisionId"
-                type={variables.SELECT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-          </Pane>
-
-          <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
                 label="Thời hạn HĐ từ"
@@ -435,6 +407,26 @@ const Index = memo(() => {
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
                 disabled
+              />
+            </Pane>
+          </Pane>
+
+          <Pane className="row">
+            <Pane className="col-lg-4">
+              <FormItem
+                label="Tỷ lệ thử việc"
+                name="salaryRatio"
+                type={variables.INPUT_COUNT}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem
+                data={divisions}
+                label="Bộ phận"
+                name="divisionId"
+                type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
             <Pane className="col-lg-4">
@@ -515,13 +507,13 @@ const Index = memo(() => {
 
       <Pane className="card">
         <Pane style={{ padding: 20 }} className="pb-0">
-          <Heading type="form-title">Hợp đồng lao động</Heading>
+          <Heading type="form-title">Hợp đồng thử việc</Heading>
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table
             bordered
             columns={columns}
-            dataSource={contracts}
+            dataSource={probationaryContracts}
             pagination={false}
             params={{
               header: columns,
