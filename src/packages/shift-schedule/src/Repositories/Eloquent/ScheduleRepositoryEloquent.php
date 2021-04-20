@@ -203,6 +203,11 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             }]);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereIn('Id', $employeeId);
+        }
+
         if (!empty($attributes['limit'])) {
             $scheduleUser = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {

@@ -39,7 +39,7 @@ class RouteRegistrar extends CoreRegistrar
 
             \Route::get('timekeeping-report', [
                 'comment' => 'Tổng hợp công',
-                'uses' => 'ReportTimekeepingController@getTimekeepingReport',
+                'uses' => 'TimekeepingController@getTimekeepingReport',
                 'as' => 'timekeeping.summary',
                 'group' => 'Công',
             ]);

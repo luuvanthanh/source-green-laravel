@@ -73,6 +73,13 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
             $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->whereHas('appointDetails', function ($query) use ($attributes) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('EmployeeId', $employeeId);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $appoint = $this->paginate($attributes['limit']);
         } else {

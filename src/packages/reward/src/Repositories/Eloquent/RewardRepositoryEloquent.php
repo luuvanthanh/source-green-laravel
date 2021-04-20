@@ -75,6 +75,11 @@ class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardR
             }]);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->employeeRepositoryEloquent->model = $this->model->employeeRepositoryEloquent->whereIn('Id', $employeeId);
+        }
+
         if (!empty($attributes['limit'])) {
             $rewards = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
@@ -90,8 +95,10 @@ class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardR
      */
     public function getRewardByUser($attributes)
     {
-
-        $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
 
         $rewards = !empty($attribute['limit']) ? $this->paginate($attribute['limit']) : $this->get();
 

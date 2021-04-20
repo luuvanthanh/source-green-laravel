@@ -85,6 +85,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             }
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->model = $this->model->where('ContractDate', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('ContractDate', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
         }

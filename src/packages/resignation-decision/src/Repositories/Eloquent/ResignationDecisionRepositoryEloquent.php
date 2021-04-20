@@ -57,6 +57,10 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
 
     public function getResignationDecision(array $attributes)
     {
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
 
         if (!empty($attributes['limit'])) {
             $resignationDecision = $this->paginate($attributes['limit']);

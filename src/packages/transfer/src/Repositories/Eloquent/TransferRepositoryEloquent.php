@@ -74,6 +74,13 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->whereHas('transferDetails', function ($query) use ($attributes) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('EmployeeId', $employeeId);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $transfer = $this->paginate($attributes['limit']);
         } else {

@@ -74,6 +74,11 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             $this->model = $this->model->whereDate('CreationTime', '>=', $attributes['startDate'])->whereDate('CreationTime', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
         if (!empty($attributes['limit'])) {
             $salaryIncrease = $this->paginate($attributes['limit']);
         } else {

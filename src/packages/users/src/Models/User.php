@@ -53,15 +53,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function getTotalRealTimekeepingAttribute()
     {
-        return isset($this->attributes['TotalRealTimekeeping']) ? $this->attributes['TotalRealTimekeeping'] : 0;
-    }
-
-    /**
-     * getTotalRealTimekeeping
-     */
-    public function getLateEarlyConfigAttribute()
-    {
-        return isset($this->attributes['lateEarlyConfig']) ? $this->attributes['lateEarlyConfig'] : [];
+        return isset($this->attributes['totalRealTimekeeping']) ? $this->attributes['totalRealTimekeeping'] : 0;
     }
 
     /**
@@ -69,7 +61,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function getTotalHourRedundantTimekeepingAttribute()
     {
-        return isset($this->attributes['TotalHourRedundantTimekeeping']) ? $this->attributes['TotalHourRedundantTimekeeping'] : 0;
+        return isset($this->attributes['totalHourRedundantTimekeeping']) ? $this->attributes['totalHourRedundantTimekeeping'] : 0;
     }
 
     /**
@@ -77,7 +69,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function getWorkHourRedundantAttribute()
     {
-        return isset($this->attributes['WorkHourRedundant']) ? $this->attributes['WorkHourRedundant'] : 0;
+        return isset($this->attributes['workHourRedundant']) ? $this->attributes['workHourRedundant'] : 0;
     }
 
     /**
@@ -144,123 +136,6 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function revokeShifts()
     {
         return $this->hasMany(\GGPHP\RevokeShift\Models\RevokeShift::class, 'EmployeeId');
-    }
-
-    /**
-     * Count Annual Absents
-     * @param null $StartDate
-     * @param null $EndDate
-     * @param string $type
-     * @return array
-     */
-    public function countAbsents($StartDate = null, $EndDate = null, $type = null)
-    {
-        // tong hop theo nam
-        if (is_null($type)) {
-            $months = [];
-            $year = Carbon::parse($StartDate)->format('Y');
-
-            for ($i = 1; $i <= 12; $i++) {
-                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['StartDate'] = date("$year-m-d", strtotime(date("$year") . "-" . $i . "-01"));
-                $months[date("$year-m", strtotime(date("$year") . "-" . $i . "-01"))]['EndDate'] = date("$year-m-t", strtotime(date("$year") . "-" . $i));
-            }
-
-            $resultAbsentYear = [];
-
-            foreach ($months as $key => &$month) {
-                $absents = $this->calculatorAbsent($month['StartDate'], $month['EndDate'], AbsentType::ANNUAL_LEAVE);
-                $unpaid = $this->calculatorAbsent($month['StartDate'], $month['EndDate'], AbsentType::UNPAID_LEAVE);
-                $awol = $this->calculatorAbsent($month['StartDate'], $month['EndDate'], AbsentType::AWOL);
-
-                $resultAbsentYear[$key] = [
-                    'absents' => $absents,
-                    'unpaids' => $unpaid,
-                    'awol' => $awol,
-                ];
-            }
-
-            $collection = collect($resultAbsentYear);
-
-            $annualAbsent = 0;
-            $unpaidLeave = 0;
-            $awolLeave = 0;
-
-            $annualAbsent += $collection->sum(function ($value) {
-                return $value['absents'];
-            });
-
-            $unpaidLeave += $collection->sum(function ($value) {
-                return $value['unpaids'];
-            });
-
-            $awolLeave += $collection->sum(function ($value) {
-                return $value['awol'];
-            });
-
-            $remaining = $this->sabbaticalLeaves ? $this->sabbaticalLeaves->annual_leave - $annualAbsent : 0;
-
-            $response = [
-                'resultAbsents' => $resultAbsentYear,
-                'annualAbsent' => $annualAbsent,
-                'unpaidLeave' => $unpaidLeave,
-                'remaining' => $remaining,
-                'awolLeave' => $awolLeave,
-            ];
-            return $response;
-        }
-    }
-
-    /**
-     * @param null $StartDate
-     * @param null $EndDate
-     * @param null $type
-     * @return int
-     */
-    public function calculatorAbsent($StartDate = null, $EndDate = null, $type = null)
-    {
-        $count = 0;
-
-        $query = $this->absent()->join('absent_types', 'absent_types.id', '=', 'absents.AbsentTypeId');
-        if (!empty($type)) {
-            $query->where('absent_types.type', $type);
-            if ($type === AbsentType::AWOL) {
-
-            } else {
-                $query->approved();
-            }
-        }
-
-        if ($StartDate && $EndDate) {
-            $query->where(function ($q) use ($StartDate, $EndDate) {
-                $q->where(function ($q1) use ($StartDate, $EndDate) {
-                    $q1->where('absents.StartDate', '>=', $StartDate);
-                    $q1->where('absents.StartDate', '<=', $EndDate);
-                });
-                $q->orWhere(function ($q2) use ($StartDate, $EndDate) {
-                    $q2->where('absents.EndDate', '>=', $StartDate);
-                    $q2->where('absents.EndDate', '<=', $EndDate);
-                });
-            });
-        }
-
-        $absents = $query->get();
-        if ($absents->isNotEmpty()) {
-            foreach ($absents as $item) {
-                $monthStart = Carbon::parse($StartDate)->format('Y-m');
-                $monthEnd = Carbon::parse($EndDate)->format('Y-m');
-                if (Carbon::parse($item->StartDate)->format('Y-m') == $monthStart && Carbon::parse($item->EndDate)->format('Y-m') == $monthStart) {
-                    $count += Carbon::parse($item->EndDate)->diffInDays($item->StartDate) + 1;
-                } elseif (Carbon::parse($item->EndDate)->format('Y-m') > $monthStart) {
-                    $endOfMonth = Carbon::parse($item->StartDate)->endOfMonth();
-                    $count += $endOfMonth->diffInDays(Carbon::parse($item->StartDate)) + 1;
-                } elseif ($monthStart > Carbon::parse($item->StartDate)->format('Y-m')) {
-                    $startOfMonth = Carbon::parse($item->EndDate)->startOfMonth();
-                    $count += Carbon::parse($item->EndDate)->diffInDays($startOfMonth) + 1;
-                }
-
-            }
-        }
-        return $count;
     }
 
     /**

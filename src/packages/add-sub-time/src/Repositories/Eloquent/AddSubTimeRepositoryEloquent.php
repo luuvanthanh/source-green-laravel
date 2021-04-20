@@ -94,6 +94,11 @@ class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements Add
         if (!empty($attributes['startTime']) && !empty($attributes['endTime'])) {
             $this->model = $this->model->whereHas('addSubTimeDetail', function ($queryDetail) use ($attributes) {
                 $queryDetail->whereDate('StartDate', '>=', $attributes['startTime'])->whereDate('EndDate', '<=', $attributes['endTime']);
+
+                if (!empty($attributes['employeeId'])) {
+                    $employeeId = explode(',', $attributes['employeeId']);
+                    $queryDetail->whereIn('EmployeeId', $employeeId);
+                }
             });
         }
 

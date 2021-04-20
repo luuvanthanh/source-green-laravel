@@ -70,6 +70,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             $this->model = $this->model->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $this->model = $this->model->whereHas('decisionRewardDetails', function ($query) use ($attributes) {
+                $employeeId = explode(',', $attributes['employeeId']);
+                $query->whereIn('EmployeeId', $employeeId);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $decisionReward = $this->paginate($attributes['limit']);
         } else {

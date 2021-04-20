@@ -106,7 +106,8 @@ class PositionLevelRepositoryEloquent extends CoreRepositoryEloquent implements 
     public function getPositionLevel(array $attributes)
     {
         if (!empty($attributes['employeeId'])) {
-            $this->model = $this->model->where('EmployeeId', $attributes['employeeId']);
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
         if (!empty($attributes['limit'])) {

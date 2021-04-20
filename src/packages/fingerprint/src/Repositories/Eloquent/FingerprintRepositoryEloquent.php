@@ -71,6 +71,11 @@ class FingerprintRepositoryEloquent extends CoreRepositoryEloquent implements Fi
             $this->model = $this->model->where('CreationTime', '>=', $attributes['startDate'])->where('CreationTime', '<=', $attributes['endDate']);
         }
 
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->where('EmployeeId', $employeeId);
+        }
+
         if (!empty($attributes['limit'])) {
             $fingerprint = $this->paginate($attributes['limit']);
         } else {
