@@ -34,8 +34,33 @@ class SalaryIncreaseTransformer extends BaseTransformer
     {
         $parameterValues = $model->parameterValues;
 
+        foreach ($parameterValues as $key => $value) {
+            foreach ($value as $keyItem => $item) {
+                $newkeyItem = dashesToCamelCase($keyItem, false);
+
+                if ($keyItem != $newkeyItem) {
+                    $value[$newkeyItem] = $value[$keyItem];
+                    unset($value[$keyItem]);
+                }
+
+                if ($keyItem === 'pivot') {
+                    foreach ($item as $keyPivot => $itemPivot) {
+                        $newkeyPivot = dashesToCamelCase($keyPivot, false);
+
+                        if ($keyPivot != $newkeyPivot) {
+                            $item[$newkeyPivot] = $item[$keyPivot];
+                            unset($item[$keyPivot]);
+                        }
+                    }
+                    $value[$keyItem] = $item;
+                }
+            }
+
+            $parameterValues[$key] = $value;
+        }
+
         return [
-            "parameter_values" => $parameterValues,
+            "parameterValues" => $parameterValues,
         ];
     }
 

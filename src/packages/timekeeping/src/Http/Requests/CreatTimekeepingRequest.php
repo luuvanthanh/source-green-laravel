@@ -28,7 +28,7 @@ class CreatTimekeepingRequest extends FormRequest
 
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'deviceId' => 'required|exists:fingerprint_timekeepers,Id',
+            'deviceId' => 'required|exists:FingerprintTimekeepers,Id',
             'type' => 'required|string|in:' . $type,
             'trackingType' => 'required|string|in:' . $trackingType,
             'attendedAt' => 'required|date|date_format:Y-m-d H:i:s',

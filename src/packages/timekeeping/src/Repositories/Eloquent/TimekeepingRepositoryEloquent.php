@@ -179,6 +179,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
     {
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
+        $type = !empty($attributes['type']) ? $attributes['type'] : null;
 
         $this->employee = $employee;
         $employeeTimekeeping = [];
@@ -279,8 +280,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                             "Type" => "KXD",
                         ];
                     } else {
-                        $quotaWork = 8;
-                        $this->quotaWork = 8;
+                        $quotaWork = 0;
+                        foreach ($value as $item) {
+                            $quotaWork += (strtotime($item['EndTime']) - strtotime($item['StartTime'])) / 3600;
+                        }
+
+                        $this->quotaWork = $quotaWork;
                         $resultTimekeeping[$key] = $this->calculatorTimekeeping($quotaWork, $key, $value, $timeKeepingByDate[$key], $type, $dataAutoApproval);
 
                         $employee->reportTimkeepingPage = [$resultTimekeeping];
@@ -310,6 +315,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $employee->totalHourRedundantTimekeeping = $totalHourRedundantTimekeeping > 0 ? gmdate("H:i", $totalHourRedundantTimekeeping) : '00:00';
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser);
         $responseTimeKeepingUser = $this->getRecordRevokeShift($employee, $startDate, $endDate, $responseTimeKeepingUser);
+        $workWeclaration = $this->getWorkDeclarations($employee, $startDate, $endDate);
+        $workHourSupport = $this->getWorkHourSupport($employee, $startDate, $endDate);
 
         $quotaWork = $this->quotaWork;
 
@@ -328,7 +335,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $totalHoursMinutesPartTime += $minute;
                 }
             }
-            $employee->TotalTimekeepingDate = $totalTimekeepingWork;
+            $employee->totalTimekeepingDate = $totalTimekeepingWork;
 
             // ngay cong thuc te, gio du sau khi chia
             if ($totalHourRedundantTimekeeping >= ($quotaWork * 3600)) {
@@ -345,8 +352,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $totalTimekeepingWork = $totalTimekeepingWork >= 1 ? $totalTimekeepingWork : 0;
 
             // thuc cong
-            $totalWorks = ($employee->totalRealTimekeeping + $employee->TotalAnnualAbsent + $additionalTimes - $subtractionTimes) > 0
-            ? $employee->totalRealTimekeeping + $employee->TotalAnnualAbsent + $additionalTimes - $subtractionTimes
+            $totalWorks = ($employee->totalRealTimekeeping + $employee->totalAnnualAbsent + $additionalTimes - $subtractionTimes) > 0
+            ? $employee->totalRealTimekeeping + $employee->totalAnnualAbsent + $additionalTimes - $subtractionTimes
             : $totalTimekeepingWork;
 
             $totalHoursAdd = $additionalHours * 3600 + $hourRedundantAfterSub;
@@ -364,6 +371,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $totalWorks = floor($totalWorks);
 
             }
+
             if ($hourRedundant > $quotaWork * 3600) {
                 $hourSub = $hourRedundant / ($quotaWork * 3600);
                 $hourRedundant = ($hourSub - floor($hourSub)) * 3600;
@@ -506,9 +514,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $resultCalculatorHours = 0;
 
         foreach ($value as $key => $item) {
-            $totalShiftTime += strtotime($item['end_time']) - strtotime($item['start_time']);
-            if (isset($value[$key]['start_time']) && isset($value[$key + 1]['end_time'])) {
-                $totalBreakTime += strtotime($value[$key + 1]['start_time']) - strtotime($value[$key]['end_time']);
+
+            $totalShiftTime += strtotime($item['EndTime']) - strtotime($item['StartTime']);
+            if (isset($value[$key]['StartTime']) && isset($value[$key + 1]['EndTime'])) {
+                $totalBreakTime += strtotime($value[$key + 1]['StartTime']) - strtotime($value[$key]['EndTime']);
             }
 
             // cham cong họp le trong khoan 1h
@@ -521,16 +530,16 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             : 0;
 
             if ($employeeTrackingStartTime > 0 && $employeeTrackingEndTime > 0) {
-                $workShiftStartTime = strtotime($item['start_time']);
-                $workShiftEndTime = strtotime($item['end_time']);
+                $workShiftStartTime = strtotime($item['StartTime']);
+                $workShiftEndTime = strtotime($item['EndTime']);
 
                 $attributeApplyRule = [
-                    'totalShiftTime' => strtotime($item['end_time']) - strtotime($item['start_time']),
+                    'totalShiftTime' => strtotime($item['EndTime']) - strtotime($item['StartTime']),
                     'workShiftStartTime' => $workShiftStartTime,
                     'workShiftEndTime' => $workShiftEndTime,
                     'employeeTrackingStartTime' => $employeeTrackingStartTime,
                     'employeeTrackingEndTime' => $employeeTrackingEndTime,
-                    'timeSlot' => $item['start_time'] . '-' . $item['end_time'],
+                    'timeSlot' => $item['StartTime'] . '-' . $item['EndTime'],
                 ];
 
                 $resultCalculator += $this->applyRule($attributeApplyRule, $date, $dataAutoApproval);
@@ -569,8 +578,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $employeeTracking[$date][$key][Timekeeping::CHECK_IN] = null;
         $employeeTracking[$date][$key][Timekeeping::CHECK_OUT] = null;
 
-        $durationAllow[$date]['validTimeStart'] = $this->getDurationsAllow($date, $item['start_time'], Timekeeping::ALLOW_START_TIME, $key);
-        $durationAllow[$date]['validTimeEnd'] = $this->getDurationsAllow($date, $item['end_time'], Timekeeping::ALLOW_END_TIME, $key);
+        $durationAllow[$date]['validTimeStart'] = $this->getDurationsAllow($date, $item['StartTime'], Timekeeping::ALLOW_START_TIME, $key);
+        $durationAllow[$date]['validTimeEnd'] = $this->getDurationsAllow($date, $item['EndTime'], Timekeeping::ALLOW_END_TIME, $key);
 
         foreach ($timeKeepingByDate as $time) {
 
@@ -630,7 +639,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
             // ony late
             if (!empty($existLate) && empty($existEarly)) {
-                // dd(1);
                 $time = $attribute['workShiftEndTime'] - $attribute['employeeTrackingStartTime'];
             }
 
@@ -678,14 +686,14 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $response = [];
 
         if ($key >= 1) {
-            $minutesBeforeStart = Config::where('code', 'DURATION_ALLOW_BEFORE_STARTTIME_SECOND')->first()->Value;
+            $minutesBeforeStart = Config::where('Code', 'DURATION_ALLOW_BEFORE_STARTTIME_SECOND')->first()->Value;
         } else {
-            $minutesBeforeStart = Config::where('code', 'DURATION_ALLOW_BEFORE_STARTTIME')->first()->Value;
+            $minutesBeforeStart = Config::where('Code', 'DURATION_ALLOW_BEFORE_STARTTIME')->first()->Value;
         }
 
-        $minutesAfterStart = Config::where('code', 'DURATION_ALLOW_AFTERT_STARTTIME')->first()->Value;
-        $minutesBeforeEnd = Config::where('code', 'DURATION_ALLOW_BEFORE_ENDTIME')->first()->Value;
-        $minutesAfterEnd = Config::where('code', 'DURATION_ALLOW_AFTERT_ENDTIME')->first()->Value;
+        $minutesAfterStart = Config::where('Code', 'DURATION_ALLOW_AFTERT_STARTTIME')->first()->Value;
+        $minutesBeforeEnd = Config::where('Code', 'DURATION_ALLOW_BEFORE_ENDTIME')->first()->Value;
+        $minutesAfterEnd = Config::where('Code', 'DURATION_ALLOW_AFTERT_ENDTIME')->first()->Value;
 
         if ($type === Timekeeping::ALLOW_START_TIME) {
             $response[] = Carbon::parse($date . '' . $valueWorkShift)->subMinutes($minutesBeforeStart)->toDateTimeString();
@@ -718,7 +726,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
     public function calculatorAbsents(&$employee, $startDate, $endDate, $responseTimeKeepingUser)
     {
         $totalUnpaidAbsent = 0;
-        $TotalAnnualAbsent = 0;
+        $totalAnnualAbsent = 0;
         $totalOffAbsent = 0;
 
         $absentType = AbsentType::whereIn('Type', [AbsentType::ANNUAL_LEAVE, AbsentType::UNPAID_LEAVE])->pluck('Id')->toArray();
@@ -750,7 +758,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
             if ($absent->absentType->Type == AbsentType::ANNUAL_LEAVE) {
 
-                $TotalAnnualAbsent += Carbon::parse($end)->diffInDays($start) + 1;
+                $totalAnnualAbsent += Carbon::parse($end)->diffInDays($start) + 1;
                 // for report page
                 $employee->annualAbsentForReport = Carbon::parse($start)->format('Y-m-d');
 
@@ -828,9 +836,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
         }
 
-        $employee->TotalAnnualAbsent = $TotalAnnualAbsent;
-        $employee->TotalUnpaidAbsent = $totalUnpaidAbsent;
-        $employee->TotalOffAbsent = $totalOffAbsent;
+        $employee->totalAnnualAbsent = $totalAnnualAbsent;
+        $employee->totalUnpaidAbsent = $totalUnpaidAbsent;
+        $employee->totalOffAbsent = $totalOffAbsent;
 
         return $responseTimeKeepingUser;
     }
@@ -864,5 +872,59 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         return $responseTimeKeepingUser;
+    }
+
+    /**
+     * Calculator WorkDeclarations
+     * @param object $employee
+     * @param string $startDate
+     * @param string $endDate
+     */
+    public function getWorkDeclarations(&$employee, $startDate, $endDate)
+    {
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($startDate);
+
+        $workDeclarations = $employee->workDeclarations()->whereHas('workDeclarationDetails', function ($q) use ($startDate, $endDate) {
+            $q->where('Month', '>=', $startDate->format('Y-m-d'))->where('Month', '<=', $endDate->format('Y-m-d'));
+        })->with(['workDeclarationDetails' => function ($q) use ($startDate, $endDate) {
+            $q->where('Month', '>=', $startDate->format('Y-m-d'))->where('Month', '<=', $endDate->format('Y-m-d'));
+        }])->get();
+
+        $totalWorkDeclarations = 0;
+
+        if (!empty($workDeclarations)) {
+
+            foreach ($workDeclarations as $workDeclaration) {
+                foreach ($workDeclaration->workDeclarationDetails as $detail) {
+                    if (!empty($detail->WorkNumber)) {
+                        $totalWorkDeclarations += $detail->WorkNumber;
+                    }
+                }
+            }
+        }
+
+        $employee->totalWorkDeclarations = $totalWorkDeclarations;
+    }
+
+    public function getWorkHourSupport(&$employee, $startDate, $endDate)
+    {
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+
+        $workHourSupports = $employee->workHours()->where('Date', '>=', $startDate->format('Y-m-d'))->where('Date', '<=', $endDate->format('Y-m-d'))
+            ->get();
+
+        $totalWorkHourSupport = 0;
+
+        if (!empty($workHourSupports)) {
+            foreach ($workHourSupports as $workHourSupport) {
+                foreach (json_decode($workHourSupport->Hours) as $value) {
+                    $totalWorkHourSupport += strtotime($value->Out) - strtotime($value->In);
+                }
+            }
+        }
+
+        $employee->totalWorkHourSupport = gmdate('H:i', $totalWorkHourSupport);
     }
 }

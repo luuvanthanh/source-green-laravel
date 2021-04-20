@@ -20,7 +20,7 @@ class WorkDeclaration extends UuidModel
      */
     public function workDeclarationDetails()
     {
-        return $this->hasMany(\GGPHP\WorkDeclaration\Models\WorkDeclarationDetail::class);
+        return $this->hasMany(\GGPHP\WorkDeclaration\Models\WorkDeclarationDetail::class, 'WorkDeclarationId');
     }
 
     /**
@@ -28,7 +28,7 @@ class WorkDeclaration extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class);
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
 }

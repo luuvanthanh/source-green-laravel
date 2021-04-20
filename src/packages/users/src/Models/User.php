@@ -49,46 +49,6 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     ];
 
     /**
-     * getTotalRealTimekeeping
-     */
-    public function getTotalRealTimekeepingAttribute()
-    {
-        return isset($this->attributes['totalRealTimekeeping']) ? $this->attributes['totalRealTimekeeping'] : 0;
-    }
-
-    /**
-     * getTotalHourRedundantTimekeeping
-     */
-    public function getTotalHourRedundantTimekeepingAttribute()
-    {
-        return isset($this->attributes['totalHourRedundantTimekeeping']) ? $this->attributes['totalHourRedundantTimekeeping'] : 0;
-    }
-
-    /**
-     * getWorkHourRedundant
-     */
-    public function getWorkHourRedundantAttribute()
-    {
-        return isset($this->attributes['workHourRedundant']) ? $this->attributes['workHourRedundant'] : 0;
-    }
-
-    /**
-     * gettimekeepingByMonthAttribute
-     */
-    public function getTotalTimekeepingByMonthAttribute()
-    {
-        return isset($this->attributes['totalTimekeepingByMonth']) ? $this->attributes['totalTimekeepingByMonth'] : 0;
-    }
-
-    /**
-     * gethourRedundantByMonthAttribute
-     */
-    public function getTotalHourRedundantByMonthAttribute()
-    {
-        return isset($this->attributes['totalHourRedundantByMonth']) ? $this->attributes['totalHourRedundantByMonth'] : 0;
-    }
-
-    /**
      * Get educations of employee
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -146,5 +106,20 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function positionLevel()
     {
         return $this->hasMany(PositionLevel::class, 'EmployeeId');
+    }
+
+    public function workHours()
+    {
+        return $this->hasMany(\GGPHP\WorkHour\Models\WorkHour::class, 'EmployeeId');
+    }
+
+    /**
+     * Get profiles of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function workDeclarations()
+    {
+        return $this->hasMany(\GGPHP\WorkDeclaration\Models\WorkDeclaration::class, 'EmployeeId');
     }
 }

@@ -56,16 +56,15 @@ class UserTransformer extends BaseTransformer
             'totalSubtractionTimes' => $model->subtractionTimes,
             'totalSubtractionHours' => $model->subtractionHours,
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
-            'workHourRedundant' => $model->workHourRedundant,
             'totalAnnualAbsent' => $model->totalAnnualAbsent,
             'totalUnpaidAbsent' => $model->totalUnpaidAbsent,
             'totalTimekeepingWork' => round($model->totalWorks, 2),
             'totalHourRedundantWorks' => $model->totalHourRedundantWorks,
             'totalHourRedundantWorksFormatDate' => $model->totalHourRedundantWorksFormatDate,
             'totalTimekeepingDate' => $model->totalTimekeepingDate,
-            'totalTimekeepingByMonth' => $model->totalTimekeepingByMonth,
-            'totalHourRedundantByMonth' => $model->totalHourRedundantByMonth,
             'workBirthday' => $model->workBirthday,
+            'totalWorkDeclarations' => $model->totalWorkDeclarations,
+            'totalWorkHourSupport' => $model->totalWorkHourSupport,
         ];
 
         return $attributes;
