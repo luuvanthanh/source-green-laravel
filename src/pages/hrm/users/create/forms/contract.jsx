@@ -33,6 +33,7 @@ const Index = memo(() => {
       branches,
       divisions,
       positions,
+      contracts
     },
     loading
   ] = useSelector(
@@ -58,121 +59,114 @@ const Index = memo(() => {
     mountedSet(setContractDetails, currentType || {});
   };
 
-  /**
-   * Function header table
-   */
-  const header = () => {
-    const columns = [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) => index + 1,
-      },
-      {
-        title: 'Số hợp đồng',
-        key: 'contract_number',
-        className: 'min-width-120',
-        render: (record) => get(record, 'contract_number'),
-      },
-      {
-        title: 'Loại hợp đồng',
-        key: 'contract_category',
-        className: 'min-width-120',
-        render: (record) => get(record, 'labourContractCategory.name'),
-      },
-      {
-        title: 'Ngày ký',
-        key: 'date',
-        className: 'min-width-150',
-        render: (record) => Helper.getDate(record.sign_date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'date',
-        className: 'min-width-150',
-        render: (record) => Helper.getDate(record.start_date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ngày hết hạn',
-        key: 'deadline',
-        className: 'min-width-150',
-        render: (record) => Helper.getDate(record.expiration_date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Thời gian làm việc',
-        key: 'work_time',
-        className: 'min-width-150',
-        render: (record) => get(record, 'work_time'),
-      },
-      {
-        title: 'Công việc phải làm',
-        key: 'work',
-        className: 'min-width-150',
-        render: (record) => get(record, 'work'),
-      },
-      {
-        title: 'Mức lương chính',
-        key: 'salary',
-        className: 'min-width-150',
-        render: (record) => get(record, 'salary'),
-      },
-      {
-        title: 'Hình thức thanh toán',
-        key: 'payment',
-        className: 'min-width-150',
-        render: (record) => get(record, 'payment'),
-      },
-      {
-        title: 'Hình thức trả lương',
-        key: 'payment_form',
-        className: 'min-width-150',
-        render: (record) => get(record, 'payment_form'),
-      },
-      {
-        title: 'Đảm nhận vị trí',
-        key: 'professional_titles',
-        className: 'min-width-150',
-        render: (record) => get(record, 'professional_titles'),
-      },
-      {
-        title: 'Chức danh chuyên môn',
-        key: 'position',
-        className: 'min-width-150',
-        render: (record) => get(record, 'position'),
-      },
-      {
-        title: 'Bảo hiểm xã hội và bảo hiểm y tế',
-        key: 'insurrance',
-        className: 'min-width-150',
-        render: (record) => get(record, 'insurrance'),
-      },
-      // {
-      //   title: 'Thao tác',
-      //   key: 'actions',
-      //   width: 180,
-      //   className: 'min-width-180',
-      //   fixed: 'right',
-      //   align: 'center',
-      //   render: (record) => (
-      //     <ul className="list-unstyled list-inline">
-      //       <li className="list-inline-item">
-      //         <Button color="primary" icon="edit" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="danger" icon="remove" className="ml-2" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="success" icon="export" />
-      //       </li>
-      //     </ul>
-      //   ),
-      // },
-    ];
-    return columns;
-  };
+  const columns = useMemo(() => [
+    {
+      title: 'Số hợp đồng',
+      key: 'contract_number',
+      dataIndex: 'contractNumber',
+      className: 'min-width-120',
+    },
+    {
+      title: 'Ngày hợp đồng',
+      key: 'date',
+      dataIndex: 'contractDate',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Loại hợp đồng',
+      key: 'contract_category',
+      dataIndex: 'typeOfContract',
+      className: 'min-width-120',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Số năm/tháng hợp đồng',
+      key: 'contract_category',
+      className: 'min-width-150',
+      render: (record) => `${record.year} năm ${record.month} tháng`,
+    },
+    {
+      title: 'Thời hạn HĐ từ',
+      key: 'date',
+      dataIndex: 'contractFrom',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Thời hạn HĐ đến',
+      key: 'deadline',
+      dataIndex: 'contractTo',
+      className: 'min-width-150',
+      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Thời gian làm việc',
+      key: 'work_time',
+      dataIndex: 'workTime',
+      className: 'min-width-150',
+    },
+    {
+      title: 'Công việc phải làm',
+      key: 'work',
+      dataIndex: 'work',
+      className: 'min-width-150',
+    },
+    {
+      title: 'Lương cơ bản',
+      key: 'salary',
+      dataIndex: 'parameterValues[0]',
+      className: 'min-width-150',
+      render: (value) => Helper.getPrice(value?.pivot?.value),
+    },
+    {
+      title: 'Tổng phụ cấp',
+      key: 'payment',
+      dataIndex: 'parameterValues',
+      className: 'min-width-150',
+      render: (value) => Helper.getPrice((value || []).reduce(
+        (result, item, index) =>
+          !!index
+            ? result + (item?.pivot?.value)
+            : result,
+        0)),
+    },
+    {
+      title: 'Nơi làm việc',
+      key: 'branch',
+      dataIndex: 'branch',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    {
+      title: 'Chức danh',
+      key: 'position',
+      dataIndex: 'position',
+      className: 'min-width-150',
+      render: (value) => value?.name,
+    },
+    // {
+    //   title: 'Thao tác',
+    //   key: 'actions',
+    //   width: 180,
+    //   className: 'min-width-180',
+    //   fixed: 'right',
+    //   align: 'center',
+    //   render: (record) => (
+    //     <ul className="list-unstyled list-inline">
+    //       <li className="list-inline-item">
+    //         <Button color="primary" icon="edit" />
+    //       </li>
+    //       <li className="list-inline-item">
+    //         <Button color="danger" icon="remove" className="ml-2" />
+    //       </li>
+    //       <li className="list-inline-item">
+    //         <Button color="success" icon="export" />
+    //       </li>
+    //     </ul>
+    //   ),
+    // },
+  ], []);
 
   const parameterFormulasColumns = useMemo(() => [
     {
@@ -269,6 +263,7 @@ const Index = memo(() => {
           formValues?.current?.resetFields();
           mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
+          fetchContracts();
         }
         if (err) {
           const { data } = err;
@@ -287,6 +282,10 @@ const Index = memo(() => {
     });
   };
 
+  const fetchContracts = () => {
+    dispatch({ type: 'HRMusersAdd/GET_CONTRACTS' });
+  };
+
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -299,6 +298,10 @@ const Index = memo(() => {
     dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
     dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
     dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+  }, []);
+
+  useEffect(() => {
+    fetchContracts();
   }, []);
 
   return (
@@ -503,15 +506,15 @@ const Index = memo(() => {
           <Pane style={{ padding: 20 }} className="pb-0">
             <Table
               bordered
-              columns={header()}
-              dataSource={[{ id: 1 }]}
+              columns={columns}
+              dataSource={contracts}
               pagination={false}
               params={{
-                header: header(),
+                header: columns,
                 type: 'table',
               }}
               bordered={false}
-              rowKey={(record) => record.id}
+              rowKey="id"
               scroll={{ x: '100%' }}
             />
           </Pane>
