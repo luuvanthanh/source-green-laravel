@@ -27,16 +27,16 @@ class ProbationaryContractCreateRequest extends FormRequest
             'employeeId' => 'required|exists:Employees,Id',
             'contractNumber' => 'required|string',
             'contractDate' => 'required|date',
-            'typeOfContractId' => 'required|exists:type_of_contracts,Id',
+            'typeOfContractId' => 'required|exists:TypeOfContracts,Id',
             'salaryRatio' => 'required',
             'month' => 'required',
-            'divisionId' => 'required|exists:divisions,Id',
+            'divisionId' => 'required|exists:Divisions,Id',
             'contractFrom' => 'required|date',
             'contractTo' => 'required|date',
-            'positionId' => 'required|exists:positions,Id',
+            'positionId' => 'required|exists:Positions,Id',
             'work' => 'required|string',
             'workTime' => 'required|string',
-            'branchId' => 'required|exists:branches,Id',
+            'branchId' => 'required|exists:Branches,Id',
         ];
     }
 }
