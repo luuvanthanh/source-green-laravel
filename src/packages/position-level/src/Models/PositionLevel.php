@@ -57,7 +57,7 @@ class PositionLevel extends UuidModel
      */
     public function branch()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'id', 'BranchId');
+        return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'Id', 'BranchId');
     }
 
     /**
@@ -65,7 +65,7 @@ class PositionLevel extends UuidModel
      */
     public function position()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'id', 'PositionId');
+        return $this->hasOne(\GGPHP\Category\Models\Position::class, 'Id', 'PositionId');
     }
 
     /**
@@ -73,6 +73,6 @@ class PositionLevel extends UuidModel
      */
     public function division()
     {
-        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'id', 'DivisionId');
+        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'Id', 'DivisionId');
     }
 }
