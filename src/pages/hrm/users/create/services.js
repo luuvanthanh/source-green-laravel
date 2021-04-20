@@ -167,3 +167,52 @@ export function getTransfers(params = {}) {
   });
 }
 // transfers
+
+// contract
+export function getContractTypes(params = {}) {
+  return requestLavarel('/v1/type-of-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      include: 'parameterValues,parameterFormulas',
+    },
+  });
+}
+export function addContract(data) {
+  return requestLavarel('/v1/labours-contracts', {
+    method: 'POST',
+    data,
+  });
+}
+export function getContracts(params) {
+  return requestLavarel('/v1/labours-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+      include: 'typeOfContract,position,branch',
+    },
+  });
+}
+// contract
+
+// probationary contract
+export function addProbationaryContract(data) {
+  return requestLavarel('/v1/probationary-contracts', {
+    method: 'POST',
+    data,
+  });
+}
+export function getProbationaryContracts(params) {
+  return requestLavarel('/v1/probationary-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+      include: 'typeOfContract,position,branch',
+    },
+  });
+}
+// probationary contract

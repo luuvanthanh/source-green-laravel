@@ -1,4 +1,4 @@
-import { variables } from '@/utils';
+// import { variables } from '@/utils';
 import * as services from './services';
 import * as categories from '@/services/categories';
 
@@ -21,6 +21,9 @@ export default {
     dismisseds: [],
     apoints: [],
     transfers: [],
+    contractTypes: [],
+    contracts: [],
+    probationaryContracts: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -87,6 +90,18 @@ export default {
         status: null,
         isError: false,
       },
+    }),
+    SET_CONTRACT_TYPES: (state, { payload }) => ({
+      ...state,
+      contractTypes: payload.parsePayload
+    }),
+    SET_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      contracts: payload.parsePayload,
+    }),
+    SET_PROBATIONARY_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      probationaryContracts: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -339,6 +354,68 @@ export default {
       }
     },
     // transfers
+    // contract
+    *GET_CONTRACT_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getContractTypes, payload);
+        yield saga.put({
+          type: 'SET_CONTRACT_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addContract, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getContracts, payload);
+        yield saga.put({
+          type: 'SET_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // contract
+    // probationary contract
+    *ADD_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addProbationaryContract, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_PROBATIONARY_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getProbationaryContracts, payload);
+        yield saga.put({
+          type: 'SET_PROBATIONARY_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // probationary contract
   },
   subscriptions: {},
 };
