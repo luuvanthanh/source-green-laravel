@@ -592,6 +592,7 @@ export default class Helpers {
   };
 
   static toFixed = (num) => {
+    if (!num) return;
     return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
   };
 
