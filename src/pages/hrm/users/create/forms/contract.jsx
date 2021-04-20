@@ -1,35 +1,49 @@
-import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal, Tabs } from 'antd';
-import { get } from 'lodash';
+import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { Form, Modal, Tabs, InputNumber } from 'antd';
+import { get, find } from 'lodash';
+import moment from 'moment';
+import { useSelector, useDispatch } from 'dva';
+import { useRouteMatch } from 'umi';
+import csx from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
-import moment from 'moment';
 import Table from '@/components/CommonComponent/Table';
+
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
 const { TabPane } = Tabs;
 const Index = memo(() => {
-  const [visible, setVisible] = useState(false);
-  const formRef = useRef();
   const mounted = useRef(false);
-  const formRefModal = useRef();
   const mountedSet = (action, value) => {
     if (mounted.current) {
       action(value);
     }
   };
+  const formRef = useRef();
+  const formRefModal = useRef();
 
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+  const dispatch = useDispatch();
+  const [
+    {
+      contractTypes,
+      branches,
+      divisions,
+      positions,
+    },
+    loading
+  ] = useSelector(
+    ({ HRMusersAdd, loading }) =>
+      [HRMusersAdd, loading?.effects]
+  );
+
+  const { params: { id: employeeId } } = useRouteMatch();
+
+  const [visible, setVisible] = useState(false);
+  const [contractDetails, setContractDetails] = useState({});
 
   const handleOk = () => {
     mountedSet(setVisible, true);
@@ -37,6 +51,11 @@ const Index = memo(() => {
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
+  };
+
+  const changeContract = (value) => {
+    const currentType = find(contractTypes, { id: value });
+    mountedSet(setContractDetails, currentType || {});
   };
 
   /**
@@ -130,85 +149,157 @@ const Index = memo(() => {
         className: 'min-width-150',
         render: (record) => get(record, 'insurrance'),
       },
-      {
-        title: 'Thao tác',
-        key: 'actions',
-        width: 180,
-        className: 'min-width-180',
-        fixed: 'right',
-        align: 'center',
-        render: (record) => (
-          <ul className="list-unstyled list-inline">
-            <li className="list-inline-item">
-              <Button color="primary" icon="edit" />
-            </li>
-            <li className="list-inline-item">
-              <Button color="danger" icon="remove" className="ml-2" />
-            </li>
-            <li className="list-inline-item">
-              <Button color="success" icon="export" />
-            </li>
-          </ul>
-        ),
-      },
+      // {
+      //   title: 'Thao tác',
+      //   key: 'actions',
+      //   width: 180,
+      //   className: 'min-width-180',
+      //   fixed: 'right',
+      //   align: 'center',
+      //   render: (record) => (
+      //     <ul className="list-unstyled list-inline">
+      //       <li className="list-inline-item">
+      //         <Button color="primary" icon="edit" />
+      //       </li>
+      //       <li className="list-inline-item">
+      //         <Button color="danger" icon="remove" className="ml-2" />
+      //       </li>
+      //       <li className="list-inline-item">
+      //         <Button color="success" icon="export" />
+      //       </li>
+      //     </ul>
+      //   ),
+      // },
     ];
     return columns;
   };
 
-  const headerEdit = (type = 'paramaterValues') => {
-    if (type === 'paramaterFormulas') {
-      return [
-        {
-          title: 'STT',
-          key: 'text',
-          width: 60,
-          className: 'min-width-60',
-          align: 'center',
-          render: (text, record, index) => index + 1,
-        },
-        {
-          title: 'Loại tham số',
-          key: 'type',
-          className: 'min-width-120',
-          render: (record) => 'Lương chính thức',
-        },
-        {
-          title: 'Công thức',
-          key: 'recipe',
-          className: 'min-width-120',
-          render: (record) => 'LCB * NGAY_CONG',
-        },
-      ];
-    }
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) => index + 1,
-      },
-      {
-        title: 'Loại tham số',
-        key: 'type',
-        className: 'min-width-120',
-        render: (record) => 'Lương cơ bản',
-      },
-      {
-        title: 'Số tiền',
-        key: 'values',
-        className: 'min-width-120',
-        render: (record) => Helper.getPrice(100000000),
-      },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        className: 'min-width-120',
-        render: (record) => Helper.getDate(moment()),
-      },
-    ];
+  const parameterFormulasColumns = useMemo(() => [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: 'Loại tham số',
+      key: 'name',
+      dataIndex: 'name',
+      className: 'min-width-120',
+    },
+    {
+      title: 'Công thức',
+      key: 'recipe',
+      dataIndex: 'recipe',
+      className: 'min-width-120',
+    },
+  ], []);
+
+  const changeValue = useCallback((id) => (value) => {
+    mountedSet(setContractDetails, prev => ({
+      ...prev,
+      parameterValues: prev.parameterValues.map((item) => item.id === id ? ({
+        ...item,
+        valueDefault: value
+      }) : item)
+    }));
+  });
+
+  const parameterValuesColumns = useMemo(() => [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: 'Loại tham số',
+      key: 'name',
+      dataIndex: 'name',
+      className: 'min-width-120',
+    },
+    {
+      title: 'Số tiền',
+      key: 'values',
+      dataIndex: 'valueDefault',
+      className: 'min-width-120',
+      render: (value, record) => (
+        <InputNumber
+          defaultValue={value}
+          className={csx('input-number', styles['input-number-container'])}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          onChange={changeValue(record.id)}
+          placeholder="Nhập"
+        />
+      ),
+    },
+    {
+      title: 'Ngày hiệu lực',
+      key: 'application_date',
+      dataIndex: 'applyDate',
+      className: 'min-width-120',
+      render: (value) => Helper.getDate(moment(value)),
+    },
+  ], []);
+
+  const finishForm = () => {
+    const formValues = formRefModal?.current?.getFieldsValue();
+
+    const reqData = {
+      ...formValues,
+      employeeId,
+      contractDate: moment(formValues.contractDate),
+      contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
+      contractTo: formValues.contractTo && moment(formValues.contractTo),
+      detail: (contractDetails?.parameterValues || []).map(({ id, valueDefault }) => ({
+        parameterValueId: id,
+        value: ++valueDefault
+      }))
+    };
+
+    dispatch({
+      type: 'HRMusersAdd/ADD_CONTRACT',
+      payload: reqData,
+      callback: (res, err) => {
+        if (res) {
+          formValues?.current?.resetFields();
+          mountedSet(setContractDetails, {});
+          mountedSet(setVisible, false);
+        }
+        if (err) {
+          const { data } = err;
+          if (data?.status === 400 && !!size(data?.errors)) {
+            for (const item of data?.errors) {
+              formRefModal?.current?.setFields([
+                {
+                  name: item?.source?.pointer,
+                  errors: [item?.details],
+                }
+              ]);
+            }
+          }
+        }
+      }
+    });
   };
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch({ type: 'HRMusersAdd/GET_BRANCHES' });
+    dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
+    dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
+    dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+  }, []);
 
   return (
     <>
@@ -221,10 +312,29 @@ const Index = memo(() => {
         onCancel={cancelModal}
         footer={
           <Pane className="d-flex justify-content-end align-items-center">
-            <Button key="cancel" color="white" icon="fe-x" onClick={cancelModal}>
+            <Button
+              key="cancel"
+              color="white"
+              icon="fe-x"
+              onClick={cancelModal}
+              loading={loading['HRMusersAdd/ADD_CONTRACT']}
+            >
               Hủy
             </Button>
-            <Button key="choose" color="success" icon="fe-save">
+            <Button
+              disabled={
+                loading['categories/GET_BRANCHES']
+                || loading['HRMusersAdd/GET_DIVISIONS']
+                || loading['HRMusersAdd/GET_POSITIONS']
+                || loading['HRMusersAdd/GET_CONTRACT_TYPES']
+              }
+              key="choose"
+              color="success"
+              icon="fe-save"
+              htmlType="submit"
+              loading={loading['HRMusersAdd/ADD_CONTRACT']}
+              onClick={finishForm}
+            >
               Lưu
             </Button>
           </Pane>
@@ -234,62 +344,112 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
-                data={[]}
                 label="Số hợp đồng"
-                name="contract_number"
+                name="contractNumber"
                 type={variables.INPUT}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem label="Ngày hợp đồng" name="contract_date" type={variables.DATE_PICKER} />
+              <FormItem
+                label="Ngày hợp đồng"
+                name="contractDate"
+                type={variables.DATE_PICKER}
+                rules={[variables.RULES.EMPTY]}
+              />
             </Pane>
             <Pane className="col-lg-4">
               <FormItem
-                data={[]}
+                data={contractTypes}
                 label="Loại hợp đồng"
-                name="labours_contract_category_id"
+                name="typeOfContractId"
+                type={variables.SELECT}
+                onChange={changeContract}
+              />
+            </Pane>
+          </Pane>
+
+          <Pane className="row">
+            <Pane className="col-lg-4">
+              <FormItem
+                label="Số năm hợp đồng"
+                name="year"
+                type={variables.INPUT_COUNT}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem
+                label="Số tháng hợp đồng"
+                name="month"
+                type={variables.INPUT_COUNT}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem
+                data={divisions}
+                label="Bộ phận"
+                name="divisionId"
+                type={variables.SELECT}
                 type={variables.SELECT}
               />
             </Pane>
           </Pane>
           <Pane className="row">
-            <Pane className="col-lg-6">
+            <Pane className="col-lg-4">
               <FormItem
-                data={[]}
-                label="Số năm hợp đồng"
-                name="contract_year"
-                type={variables.INPUT_COUNT}
+                label="Thời hạn HĐ từ"
+                name="contractFrom"
+                type={variables.DATE_PICKER}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
-            <Pane className="col-lg-6">
+            <Pane className="col-lg-4">
               <FormItem
-                data={[]}
-                label="Số tháng hợp đồng"
-                name="contract_month"
-                type={variables.INPUT_COUNT}
+                label="Thời hạn HĐ đến"
+                name="contractTo"
+                type={variables.DATE_PICKER}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
-          </Pane>
-          <Pane className="row">
-            <Pane className="col-lg-6">
-              <FormItem label="Thời hạn HĐ từ" name="start_date" type={variables.DATE_PICKER} />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem label="Thời hạn HĐ đến" name="end_date" type={variables.DATE_PICKER} />
+            <Pane className="col-lg-4">
+              <FormItem
+                data={positions}
+                label="Chức danh"
+                name="positionId"
+                type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
+              />
             </Pane>
           </Pane>
           <hr className={styles['dot-bottom']} />
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem label="Công việc cụ thể" name="work" type={variables.INPUT} />
+              <FormItem
+                label="Công việc cụ thể"
+                name="work" type={variables.INPUT}
+                rules={[variables.RULES.EMPTY]}
+              />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem label="Thời gian làm việc" name="work_time" type={variables.INPUT} />
+              <FormItem
+                label="Thời gian làm việc"
+                name="workTime"
+                type={variables.INPUT}
+                rules={[variables.RULES.EMPTY]}
+              />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-12">
-              <FormItem label="Nơi làm việc" name="position" type={variables.INPUT} />
+              <FormItem
+                data={branches}
+                label="Nơi làm việc"
+                name="branchId"
+                type={variables.SELECT}
+                rules={[variables.RULES.EMPTY]}
+              />
             </Pane>
           </Pane>
 
@@ -298,25 +458,26 @@ const Index = memo(() => {
             <TabPane tab="Tham số giá trị" key="paramaterValues">
               <Table
                 bordered
-                columns={headerEdit('paramaterValues')}
-                dataSource={[{ id: 1 }]}
+                columns={parameterValuesColumns}
+                dataSource={contractDetails?.parameterValues || []}
                 pagination={false}
                 params={{
-                  header: headerEdit('paramaterValues'),
+                  header: parameterValuesColumns,
                   type: 'table',
                 }}
-                rowKey={(record) => record.id}
+                rowKey="id"
                 scroll={{ x: '100%' }}
               />
             </TabPane>
+
             <TabPane tab="Tham số công thức" key="paramaterFormulas">
               <Table
                 bordered
-                columns={headerEdit('paramaterFormulas')}
-                dataSource={[{ id: 1 }]}
+                columns={parameterFormulasColumns}
+                dataSource={contractDetails?.parameterFormulas || []}
                 pagination={false}
                 params={{
-                  header: headerEdit('paramaterFormulas'),
+                  header: parameterFormulasColumns,
                   type: 'table',
                 }}
                 rowKey={(record) => record.id}
@@ -326,6 +487,7 @@ const Index = memo(() => {
           </Tabs>
         </Form>
       </Modal>
+
       <Form
         layout="vertical"
         ref={formRef}

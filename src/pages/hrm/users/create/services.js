@@ -167,3 +167,20 @@ export function getTransfers(params = {}) {
   });
 }
 // transfers
+
+// contract
+export function getContractTypes(params = {}) {
+  return requestLavarel('/v1/type-of-contracts', {
+    method: 'GET',
+    params: {
+      include: 'parameterValues,parameterFormulas'
+    },
+  });
+}
+export function addContract(data) {
+  return requestLavarel('/v1/labours-contracts', {
+    method: 'POST',
+    data,
+  });
+}
+// contract

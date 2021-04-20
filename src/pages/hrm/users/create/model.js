@@ -21,6 +21,7 @@ export default {
     dismisseds: [],
     apoints: [],
     transfers: [],
+    contractTypes: []
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -87,6 +88,10 @@ export default {
         status: null,
         isError: false,
       },
+    }),
+    SET_CONTRACT_TYPES: (state, { payload }) => ({
+      ...state,
+      contractTypes: payload.parsePayload
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -339,6 +344,30 @@ export default {
       }
     },
     // transfers
+    // contract
+      *GET_CONTRACT_TYPES({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getContractTypes, payload);
+          yield saga.put({
+            type: 'SET_CONTRACT_TYPES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *ADD_CONTRACT({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.addContract, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
+        }
+      },
+    // contract
   },
   subscriptions: {},
 };
