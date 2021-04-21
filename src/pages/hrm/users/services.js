@@ -11,6 +11,7 @@ export function get(params = {}) {
       orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
+      include: Helper.convertIncludes(['positionLevel']),
     },
   });
 }

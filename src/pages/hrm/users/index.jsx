@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form, Avatar } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { get, debounce } from 'lodash';
 import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -257,25 +257,25 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'position',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].branch.name')}</Text>
+        ),
       },
       {
         title: 'Bộ phận',
         key: 'division',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hành chính nhân sự</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].division.name')}</Text>
+        ),
       },
       {
         title: 'Chức vụ',
         key: 'position',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Ghi danh</Text>,
-      },
-      {
-        title: 'Hình thức làm việc',
-        key: 'work',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Chính thức</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].position.name')}</Text>
+        ),
       },
       {
         key: 'action',
