@@ -27,6 +27,9 @@ const ICON_BUTTON = {
   checkmark: <span className="icon-checkmark" />,
   cancel: <span className="icon-cancel" />,
   phone: <span className="icon-phone" />,
+  cloud: <span className="icon-cloud" />,
+  cloudUpload: <span className="icon-cloud" />,
+  cloudDownload: <span className="icon-cloud" />,
 };
 export default function ButtonCustom({
   children,
@@ -53,7 +56,7 @@ export default function ButtonCustom({
             styles[`${color}`],
             styles[`size-${size}`],
             {
-              [styles.ghost]: ghost
+              [styles.ghost]: ghost,
             },
             className,
           )}
@@ -77,7 +80,7 @@ export default function ButtonCustom({
           styles[`${color}`],
           styles[`size-${size}`],
           {
-            [styles.ghost]: ghost
+            [styles.ghost]: ghost,
           },
           className,
         )}

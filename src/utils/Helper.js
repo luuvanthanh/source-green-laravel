@@ -410,10 +410,10 @@ export default class Helpers {
     return current && current >= moment().endOf('day');
   };
 
-  static serialOrder(page, index, size = variables.PAGINATION.PAGE_SIZE) {
+  static serialOrder = (page, index, size = variables.PAGINATION.PAGE_SIZE) => {
     const num = (page - 1) * size + index + 1;
     return num;
-  }
+  };
 
   static getPagination = (page, limit) => {
     return {
