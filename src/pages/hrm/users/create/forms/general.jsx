@@ -393,6 +393,7 @@ const General = memo(({}) => {
                     name="startDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => current < moment()}
                   />
                 </Pane>
               </Pane>
