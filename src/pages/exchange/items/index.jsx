@@ -321,13 +321,17 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'life',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
+        render: (record) => (
+          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
+        ),
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
+        render: (record) => (
+          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
+        ),
       },
       {
         title: 'Tiêu đề',
@@ -339,13 +343,17 @@ class Index extends PureComponent {
         title: 'Phụ huynh',
         key: 'parents',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Nguyễn Văn A</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
+          </Text>
+        ),
       },
       {
         title: 'Dành cho bé',
         key: 'student',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.fullName}</Text>,
+        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
       },
       {
         title: 'Trạng thái',
