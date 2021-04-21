@@ -38,7 +38,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ exchangeAdd, loading, menu, user }) => ({
   loading,
   user: user.user,
-  categories: exchangeAdd.categories,
+  branches: exchangeAdd.branches,
+  classes: exchangeAdd.classes,
   menuData: menu.menuLeftExchange,
 });
 @connect(mapStateToProps)
@@ -67,6 +68,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.loadStudents();
+    this.loadBranches();
   }
 
   componentWillUnmount() {
@@ -134,7 +136,56 @@ class Index extends PureComponent {
     });
   };
 
+  /**
+   * Function get list students
+   */
+  loadBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_BRANCHES',
+      payload: {},
+    });
+  };
+
+  onChangeBranch = (branch) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_CLASSES',
+      payload: {
+        branch,
+      },
+    });
+  };
+
+  onChangeClass = (value) => {
+    const { searchStudents } = this.state;
+    const { dispatch, user } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_STUDENTS',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        class: value,
+        parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData({
+            students: response.items,
+            searchStudents: {
+              ...searchStudents,
+              page: variables.PAGINATION.PAGE,
+              limit: variables.PAGINATION.PAGE_SIZE,
+              totalCount: response.totalCount,
+            },
+          });
+        }
+      },
+    });
+  };
+
   customRequest = ({ file }) => {
+    console.log(file);
     this.props.dispatch({
       type: 'upload/UPLOAD',
       payload: file,
@@ -215,8 +266,8 @@ class Index extends PureComponent {
 
   render() {
     const {
-      dispatch,
-      categories,
+      classes,
+      branches,
       menuData,
       match: { params },
       loading: { effects },
@@ -230,6 +281,7 @@ class Index extends PureComponent {
       },
       customRequest: this.customRequest,
       showUploadList: false,
+      multiple: true,
       fileList: [],
     };
     return (
@@ -255,10 +307,22 @@ class Index extends PureComponent {
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem label="Cơ sở" name="position" type={variables.SELECT} />
+                      <FormItem
+                        label="Cơ sở"
+                        data={branches}
+                        name="branchId"
+                        type={variables.SELECT}
+                        onChange={this.onChangeBranch}
+                      />
                     </div>
                     <div className="col-lg-6">
-                      <FormItem label="Lớp" name="class" type={variables.SELECT} />
+                      <FormItem
+                        label="Lớp"
+                        data={classes}
+                        name="classId"
+                        type={variables.SELECT}
+                        onChange={this.onChangeClass}
+                      />
                     </div>
                   </div>
                   <hr />

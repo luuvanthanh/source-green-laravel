@@ -64,7 +64,7 @@ const Index = memo(
     useEffect(() => {
       if (!isEmpty(details) && params.id) {
         formRef.current.setFieldsValue({
-          ...details,
+          ...details.user,
         });
       }
     }, [details]);
