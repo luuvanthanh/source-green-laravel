@@ -29,6 +29,13 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use InteractsWithMedia;
     use SyncToDevice;
 
+    const STATUS = [
+        "WORKKING" => 0,
+        'INACTIVITY' => 1,
+        'MATERNITY' => 2,
+        'STORE' => 3,
+    ];
+
     /**
      * Declare the table name
      */

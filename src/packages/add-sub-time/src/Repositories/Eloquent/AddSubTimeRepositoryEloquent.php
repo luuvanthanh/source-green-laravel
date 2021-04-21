@@ -5,6 +5,7 @@ namespace GGPHP\AddSubTime\Repositories\Eloquent;
 use GGPHP\AddSubTime\Models\AddSubTime;
 use GGPHP\AddSubTime\Presenters\AddSubTimePresenter;
 use GGPHP\AddSubTime\Repositories\Contracts\AddSubTimeRepository;
+use GGPHP\AddSubTime\Services\AddSubTimeServices;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
@@ -72,7 +73,7 @@ class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements Add
         \DB::beginTransaction();
         try {
             $addSubTime = $this->model()::create($attributes);
-            $addSubTime->addSubTimeDetail()->createMany($attributes['data']);
+            AddSubTimeServices::add($addSubTime->Id, $attributes['data']);
 
             \DB::commit();
         } catch (\Exception $e) {

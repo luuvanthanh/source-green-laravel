@@ -23,18 +23,18 @@ class AbsentCreateRequest extends FormRequest
         return [
             'absentTypeId' => [
                 'required',
-                'exists:absent_types,Id',
+                'exists:AbsentTypes,Id',
             ],
-            'absentReasonId' => 'required|exists:absent_reasons,Id',
+            'absentReasonId' => 'required|exists:AbsentReasons,Id',
             'employeeId' => 'required|exists:Employees,Id',
             'startDate' => [
                 'date',
                 'date_format:Y-m-d',
                 function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('AbsentTypeId') == $quitWorkType->Id) {
+                    if (request('absentTypeId') == $quitWorkType->Id) {
                         return true;
                     }
-                    if (request('AbsentTypeId') == $type->Id) {
+                    if (request('absentTypeId') == $type->Id) {
                         $accessWeekend = $this->checkWeekend($value);
                         if ($accessWeekend === true) {
                             return true;
@@ -44,7 +44,7 @@ class AbsentCreateRequest extends FormRequest
                     return true;
                 },
                 function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('AbsentTypeId') == $quitWorkType->Id) {
+                    if (request('absentTypeId') == $quitWorkType->Id) {
                         return true;
                     }
 
@@ -60,10 +60,10 @@ class AbsentCreateRequest extends FormRequest
             'endDate' => [
                 'date',
                 'date_format:Y-m-d',
-                'after_or_equal:StartDate',
+                'after_or_equal:startDate',
                 function ($attribute, $value, $fail) use ($type, $quitWorkType) {
 
-                    if (request('AbsentTypeId') == $type->Id) {
+                    if (request('absentTypeId') == $type->Id) {
                         $accessWeekend = $this->checkWeekend($value);
                         if ($accessWeekend === true) {
                             return true;
@@ -100,8 +100,8 @@ class AbsentCreateRequest extends FormRequest
         $annualLeaveType = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
         $unpaidLeaveType = AbsentType::where('Type', AbsentType::UNPAID_LEAVE)->first();
 
-        $startDate = request()->StartDate;
-        $endDate = request()->EndDate;
+        $startDate = request()->startDate;
+        $endDate = request()->endDate;
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate . ' +1 day');
 
@@ -136,12 +136,12 @@ class AbsentCreateRequest extends FormRequest
     public function checkMaxAbsentEarlyLateInMonth($value)
     {
         $employeeId = request()->EmployeeId;
-        $startDate = Carbon::parse(request()->StartDate);
-        $endDate = Carbon::parse(request()->EndDate);
+        $startDate = Carbon::parse(request()->startDate);
+        $endDate = Carbon::parse(request()->endDate);
         $early = AbsentType::where('Type', AbsentType::ABSENT_EARLY)->first();
         $late = AbsentType::where('Type', AbsentType::ABSENT_LATE)->first();
 
-        $check = Absent::whereIn('AbsentTypeId', [$early->Id, $late->Id])->where(function ($q) use ($employeeId, $startDate, $endDate, $early, $late) {
+        $check = Absent::whereIn('absentTypeId', [$early->Id, $late->Id])->where(function ($q) use ($employeeId, $startDate, $endDate, $early, $late) {
             $q->where([['StartDate', '<=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '>=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['StartDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['StartDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]])
                 ->orWhere([['EndDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]]);

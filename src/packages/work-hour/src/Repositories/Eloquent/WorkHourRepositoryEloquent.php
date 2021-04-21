@@ -70,7 +70,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
     public function create(array $attributes)
     {
-        $attributes['Hours'] = json_encode($attributes['Hours']);
+        $attributes['hours'] = json_encode($attributes['hours']);
 
         $workHour = WorkHour::create($attributes);
 
@@ -81,7 +81,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     {
         $workHour = WorkHour::findOrFail($id);
 
-        $attributes['Hours'] = json_encode($attributes['Hours']);
+        $attributes['hours'] = json_encode($attributes['hours']);
         $workHour->update($attributes);
 
         return parent::find($workHour->Id);

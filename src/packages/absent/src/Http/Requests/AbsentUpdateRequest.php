@@ -25,7 +25,7 @@ class AbsentUpdateRequest extends FormRequest
                 'absentReasonId' => 'required|exists:AbsentReason,Id',
                 'employeeId' => 'required|exists:Employees,Id',
                 'startDate' => 'date|date_format:Y-m-d',
-                'endDate' => 'date|date_format:Y-m-d|after_or_equal:StartDate',
+                'endDate' => 'date|date_format:Y-m-d|after_or_equal:startDate',
             ];
         }
     }

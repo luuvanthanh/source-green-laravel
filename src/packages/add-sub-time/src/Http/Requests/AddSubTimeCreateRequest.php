@@ -29,7 +29,7 @@ class AddSubTimeCreateRequest extends FormRequest
             'data' => 'array',
             'data.*.startDate' => 'required|date|date_format:Y-m-d',
             'data.*.employeeId' => 'required|exists:Employees,Id',
-            'data.*.endDate' => 'required|date|date_format:Y-m-d|after_or_equal:Data.*.StartDate',
+            'data.*.endDate' => 'required|date|date_format:Y-m-d|after_or_equal:data.*.startDate',
             'data.*.days' => 'nullable|numeric',
             'data.*.hours' => 'nullable|numeric',
             'data.*.reason' => 'required|string',

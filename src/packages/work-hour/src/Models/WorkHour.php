@@ -41,15 +41,7 @@ class WorkHour extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class);
-    }
-
-    /**
-     * Define relations Store
-     */
-    public function store()
-    {
-        return $this->belongsTo(\GGPHP\RolePermission\Models\Store::class);
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
 }

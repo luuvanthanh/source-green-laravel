@@ -51,9 +51,16 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function create(array $attributes)
     {
-        $workDeclaration = WorkDeclaration::create($attributes);
+        \DB::beginTransaction();
+        try {
+            $workDeclaration = WorkDeclaration::create($attributes);
 
-        WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
+            WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
+            \DB::commit();
+        } catch (\Throwable $th) {
+            dd($th);
+            \DB::rollback();
+        }
 
         return parent::find($workDeclaration->Id);
     }

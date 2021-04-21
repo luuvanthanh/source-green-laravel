@@ -61,7 +61,6 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

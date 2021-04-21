@@ -5,6 +5,7 @@ namespace GGPHP\Users\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Users\Http\Requests\UserCreateRequest;
 use GGPHP\Users\Http\Requests\UserUpdateRequest;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -53,7 +54,13 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $request)
     {
-        $employee = $this->employeeRepository->create($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $employee = $this->employeeRepository->create();
 
         return $this->success($employee, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }

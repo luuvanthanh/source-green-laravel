@@ -238,9 +238,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         foreach ($periodDate as $key => $date) {
             if (!array_key_exists($date->format('Y-m-d'), $employeeTimeWorkShift)) {
                 $responseTimeKeepingUser[] = [
-                    "Date" => $date->format('Y-m-d'),
-                    "TimekeepingReport" => 0,
-                    "Type" => "KC",
+                    "date" => $date->format('Y-m-d'),
+                    "timekeepingReport" => 0,
+                    "type" => "KC",
                 ];
             }
         }
@@ -275,9 +275,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     if (!empty($existInvalid) && Carbon::parse($existInvalid->Date)->format('Y-m-d') == $key) {
                         $responseTimeKeepingUser[] = [
-                            "Date" => $key,
-                            "TimekeepingReport" => 0,
-                            "Type" => "KXD",
+                            "date" => $key,
+                            "timekeepingReport" => 0,
+                            "type" => "KXD",
                         ];
                     } else {
                         $quotaWork = 0;
@@ -289,9 +289,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $resultTimekeeping[$key] = $this->calculatorTimekeeping($quotaWork, $key, $value, $timeKeepingByDate[$key], $type, $dataAutoApproval);
 
                         $employee->reportTimkeepingPage = [$resultTimekeeping];
-                        $result['Date'] = $key;
-                        $result['TimekeepingReport'] = $resultTimekeeping[$key]['TotalTimeKeeping'];
-                        $result['Type'] = null;
+                        $result['date'] = $key;
+                        $result['timekeepingReport'] = $resultTimekeeping[$key]['TotalTimeKeeping'];
+                        $result['type'] = null;
 
                         $responseTimeKeepingUser[] = $result;
 
@@ -325,12 +325,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $totalHoursMinutesPartTime = 0;
 
             foreach ($responseTimeKeepingUser as &$item) {
-                $totalTimekeepingWork += $item['TimekeepingReport'];
+                $totalTimekeepingWork += $item['timekeepingReport'];
                 // format hour when type is part_time
                 if ($type && ($type == $this->model()::PART_TIME || $type == 'PART_TIME_SECOND')) {
-                    $item['TimekeepingReport'] = gmdate("H:i", $item['TimekeepingReport']);
+                    $item['timekeepingReport'] = gmdate("H:i", $item['timekeepingReport']);
 
-                    list($hour, $minute) = explode(':', date('H:i', strtotime($item['TimekeepingReport'])));
+                    list($hour, $minute) = explode(':', date('H:i', strtotime($item['timekeepingReport'])));
                     $totalHoursMinutesPartTime += $hour * 60;
                     $totalHoursMinutesPartTime += $minute;
                 }
@@ -767,15 +767,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     if ($checkValue !== false) {
                         $responseTimeKeepingUser[$checkValue] = [
-                            "Date" => $date->format('Y-m-d'),
-                            "TimekeepingReport" => 0,
-                            "Type" => "NPN",
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => 0,
+                            "type" => "NPN",
                         ];
                     } else {
                         $responseTimeKeepingUser[] = [
-                            "Date" => $date->format('Y-m-d'),
-                            "TimekeepingReport" => 0,
-                            "Type" => "NPN",
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => 0,
+                            "type" => "NPN",
                         ];
                     }
                 }
@@ -789,15 +789,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     if ($checkValue !== false) {
                         $responseTimeKeepingUser[$checkValue] = [
-                            "Date" => $date->format('Y-m-d'),
-                            "TimekeepingReport" => 0,
-                            "Type" => "NKL",
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => 0,
+                            "type" => "NKL",
                         ];
                     } else {
                         $responseTimeKeepingUser[] = [
                             "Fate" => $date->format('Y-m-d'),
-                            "TimekeepingReport" => 0,
-                            "Type" => "NKL",
+                            "timekeepingReport" => 0,
+                            "type" => "NKL",
                         ];
                     }
                 }
@@ -863,9 +863,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 if (!$checkValue) {
                     $responseTimeKeepingUser[] = [
-                        "Date" => $revokeShift->DateViolation->format('Y-m-d'),
-                        "TimekeepingReport" => 0,
-                        "Type" => "BC",
+                        "date" => $revokeShift->DateViolation->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "BC",
                     ];
                 }
             }
