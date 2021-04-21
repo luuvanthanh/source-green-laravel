@@ -185,7 +185,6 @@ class Index extends PureComponent {
   };
 
   customRequest = ({ file }) => {
-    console.log(file);
     this.props.dispatch({
       type: 'upload/UPLOAD',
       payload: file,
