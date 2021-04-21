@@ -218,6 +218,7 @@ class Index extends PureComponent {
     });
   };
 
+
   /**
    * Function header table
    */

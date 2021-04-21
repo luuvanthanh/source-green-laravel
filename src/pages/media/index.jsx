@@ -1,37 +1,40 @@
-import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
+import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd'
-import { useLocation, useHistory } from 'umi'
-import { useSelector, useDispatch } from 'dva'
-import moment from 'moment'
-import { debounce } from 'lodash'
+import { Form } from 'antd';
+import { useLocation, useHistory } from 'umi';
+import { useSelector, useDispatch } from 'dva';
+import moment from 'moment';
+import { debounce } from 'lodash';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import Button from '@/components/CommonComponent/Button'
-import FormItem from '@/components/CommonComponent/FormItem'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
-import { variables, Helper } from '@/utils'
+import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
-  let mounted = useRef(false)
-  const mountedSet = (f) => (v) => mounted?.current && f(v)
+  let mounted = useRef(false);
+  const mountedSet = (f) => (v) => mounted?.current && f(v);
 
-  const dispatch = useDispatch()
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, media }) => [media, effects])
+  const dispatch = useDispatch();
+  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, media }) => [
+    media,
+    effects,
+  ]);
 
-  const history = useHistory()
-  const { query, pathname } = useLocation()
+  const history = useHistory();
+  const { query, pathname } = useLocation();
 
-  const filterRef = useRef()
+  const filterRef = useRef();
 
   const [category, setCategory] = useState({
     branches: [],
-    classes: []
-  })
+    classes: [],
+  });
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -40,53 +43,57 @@ const Index = memo(() => {
     description: query?.description,
     branchId: query?.branchId,
     classId: query?.classId,
-  })
+  });
 
-  const columns = useMemo(() => [
+  const columns = [
     {
       title: 'STT',
       key: 'index',
       className: 'min-width-70',
       align: 'center',
-      render: (text, record, index) => Helper.serialOrder(search?.page, index)
+      render: (text, record, index) => Helper.serialOrder(search?.page, index),
     },
     {
       title: 'Thời gian',
       key: 'creationTime',
       className: 'min-width-140',
-      render: (record) => <Text size="normal">
-        {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-      </Text>
+      render: (record) => (
+        <Text size="normal">
+          {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+        </Text>
+      ),
     },
     {
       title: 'Cơ sở',
-      key: 'position',
+      key: 'branch',
       className: 'min-width-70',
-      render: (record) => <Text size="normal">{record?.student?.class?.branch?.name}</Text>
+      render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>,
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-70',
-      render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>
+      render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>,
     },
     {
       title: 'Mô tả',
       key: 'description',
       className: 'min-width-150',
-      render: (record) => <Text size="normal">{record?.description}</Text>
+      render: (record) => <Text size="normal">{record?.description}</Text>,
     },
     {
       title: 'Phụ huynh',
       key: 'parent',
       className: 'min-width-70',
-      render: (record) => <Text size="normal">{record?.father?.fullName || record?.mother?.fullName}</Text>
+      render: (record) => (
+        <Text size="normal">{record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}</Text>
+      ),
     },
     {
       title: 'Học sinh',
       key: 'student',
       className: 'min-width-70',
-      render: (record) => <Text size="normal">{record?.student?.fullName}</Text>
+      render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
     },
     {
       key: 'action',
@@ -102,98 +109,104 @@ const Index = memo(() => {
             Chi tiết
           </Button>
         </div>
-      )
+      ),
     },
-  ], [])
+  ];
 
-  const paginationProps = useMemo(() => ({
-    size: 'default',
-    total: pagination?.total || 0,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(search.page),
-    current: Number(search.page),
-    hideOnSinglePage: (pagination?.total || 0) <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, limit) => {
-      setSearch(prev => ({
-        ...prev,
-        page,
-        limit
-      }))
-      // callback
+  const paginationProps = useMemo(
+    () => ({
+      size: 'default',
+      total: pagination?.total || 0,
+      pageSize: variables.PAGINATION.PAGE_SIZE,
+      defaultCurrent: Number(search.page),
+      current: Number(search.page),
+      hideOnSinglePage: (pagination?.total || 0) <= 10,
+      showSizeChanger: false,
+      pageSizeOptions: false,
+      onChange: (page, limit) => {
+        setSearch((prev) => ({
+          ...prev,
+          page,
+          limit,
+        }));
+        // callback
+      },
+    }),
+    [pagination],
+  );
+
+  const changeFilter = debounce(
+    (name) => (value) => {
+      setSearch((prevSearch) => ({
+        ...prevSearch,
+        [name]: value,
+      }));
     },
-  }), [pagination])
-
-  const changeFilter = debounce((name) => (value) => {
-    setSearch(prevSearch => ({
-      ...prevSearch,
-      [name]: value
-    }))
-  }, 300)
+    300,
+  );
 
   const changeFilterDate = (values) => {
-    setSearch(prevSearch => ({
+    setSearch((prevSearch) => ({
       ...prevSearch,
       sentDateFrom: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
       sentDateTo: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
-    }))
-  }
+    }));
+  };
 
   const fetchMedia = useCallback(() => {
     dispatch({
       type: 'media/GET_DATA',
-      payload: search
-    })
+      payload: search,
+    });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search)
-    })
-  }, [search])
+      query: Helper.convertParamSearch(search),
+    });
+  }, [search]);
 
   const fetchBranches = () => {
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
         if (res) {
-          mountedSet(setCategory)(prev => ({
+          mountedSet(setCategory)((prev) => ({
             ...prev,
-            branches: res?.items || []
-          }))
+            branches: res?.items || [],
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   const fetchClasses = (branchId) => {
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: branchId
+        branch: branchId,
       },
       callback: (res) => {
         if (res) {
-          mountedSet(setCategory)(prev => ({
+          mountedSet(setCategory)((prev) => ({
             ...prev,
-            classes: res?.items || []
-          }))
+            classes: res?.items || [],
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   useEffect(() => {
-    mounted.current = true
-    return () => mounted.current = false
-  }, [])
+    mounted.current = true;
+    return () => (mounted.current = false);
+  }, []);
 
   useEffect(() => {
-    fetchMedia()
-  }, [fetchMedia])
+    fetchMedia();
+  }, [fetchMedia]);
 
   useEffect(() => {
-    fetchBranches()
-  }, [])
+    fetchBranches();
+  }, []);
 
   return (
     <>
@@ -213,7 +226,7 @@ const Index = memo(() => {
                 rangeTime: [
                   search?.sentDateFrom ? moment(search?.sentDateFrom) : null,
                   search?.sentDateTo ? moment(search?.sentDateTo) : null,
-                ]
+                ],
               }}
             >
               <Pane className="row">
@@ -238,7 +251,7 @@ const Index = memo(() => {
                     name="classId"
                     type={variables.SELECT}
                     data={category?.classes || []}
-                    onChange={value => changeFilter('classId')(value)}
+                    onChange={(value) => changeFilter('classId')(value)}
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -264,7 +277,7 @@ const Index = memo(() => {
         </Pane>
       </Pane>
     </>
-  )
-})
+  );
+});
 
-export default Index
+export default Index;
