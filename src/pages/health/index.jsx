@@ -272,7 +272,7 @@ class Index extends PureComponent {
                   `/suc-khoe/hom-nay/${record.studentId}/chi-tiet?reportDate=${get(
                     record,
                     'studentCriteriaResponses[0].reportDate',
-                  )}`,
+                  )}&studentId=${get(record, 'studentId')}`,
                 )
               }
             >

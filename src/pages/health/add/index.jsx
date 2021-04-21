@@ -24,12 +24,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 const { Item: ListItem } = List;
 const Index = memo(({}) => {
   const {
-    details,
     loading: { effects },
-    branches,
-    divisions,
-    positions,
-    transfers,
     error,
     criteriaGroupProperties,
     menuData,
@@ -170,7 +165,7 @@ const Index = memo(({}) => {
     <>
       <Helmet title="Tạo mới sức khỏe" />
       <Breadcrumbs last="Tạo mới sức khỏe" menu={menuData} />
-      <Pane style={{ padding: 20, paddingBottom: 0 }}>
+      <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 10 }}>
         <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
           <Pane className="row">
             <Pane className="col-lg-6">
