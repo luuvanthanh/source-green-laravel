@@ -7,10 +7,10 @@ export default {
       isError: false,
       data: {},
     },
-    details: {},
+    details: [],
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
@@ -20,10 +20,10 @@ export default {
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DETAILS({ payload }, saga) {
