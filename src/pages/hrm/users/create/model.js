@@ -117,7 +117,6 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.add, payload);
-        console.log(response)
         yield saga.call(services.addPositionLevels, {
           ...payload,
           employeeId: response?.parsePayload?.id,

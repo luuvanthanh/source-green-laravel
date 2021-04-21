@@ -617,7 +617,6 @@ class Index extends PureComponent {
     const loadingSubmit = effects['schedulesChildren/ADD'];
     const loadingRemoveAll = effects['schedulesChildren/REMOVE'];
     const loadingRemoveOnly = effects['schedulesChildren/REMOVE_ONLY'];
-    console.log(data);
     return (
       <>
         <Helmet title="Danh sách học sinh" />

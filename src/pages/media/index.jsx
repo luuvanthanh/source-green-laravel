@@ -106,8 +106,6 @@ const Index = memo(() => {
     },
   ], [])
 
-  console.log(data)
-
   const paginationProps = useMemo(() => ({
     size: 'default',
     total: pagination?.total || 0,

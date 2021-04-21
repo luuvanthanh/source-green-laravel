@@ -93,7 +93,6 @@ const Index = memo(() => {
             mountedSet(setVisible, false);
           }
           if (error) {
-            console.log(error.data);
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {
                 formRefModal.current.setFields([
