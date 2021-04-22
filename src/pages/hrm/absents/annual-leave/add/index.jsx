@@ -9,6 +9,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Loading from '@/components/CommonComponent/Loading';
 
 let isMounted = true;
 /**
@@ -27,6 +28,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, absentsAdd, loading }) => ({
   loading,
+  error: absentsAdd.error,
   categories: absentsAdd.categories,
   menuLeftSchedules: menu.menuLeftHRM,
 });
@@ -104,14 +106,20 @@ class Index extends PureComponent {
 
   render() {
     const {
+      error,
       menuLeftSchedules,
       categories,
       loading: { effects },
+      match: { params },
     } = this.props;
+    const loading = effects['absentsAdd/GET_DETAILS'] || effects['absentsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['absentsAdd/GET_DATA'];
     return (
       <>
-        <Breadcrumbs last="Tạo nghỉ phép" menu={menuLeftSchedules} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa nghỉ phép' : 'Tạo nghỉ phép'}
+          menu={menuLeftSchedules}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -119,87 +127,87 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">TẠO ĐƠN NGHỈ PHÉP</Text>
-            </div>
-            <div className={styles['content-children']}>
-              <Text color="dark" size="large-medium">
-                THÔNG TIN CHUNG
-              </Text>
-              <div className="row mt-3">
-                <div className="col-lg-6">
-                  <FormItem
-                    data={categories?.absentTypes || []}
-                    label="LOẠI NGHỈ PHÉP"
-                    name="absentTypeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
+                <Text color="dark" size="large-medium">
+                  THÔNG TIN CHUNG
+                </Text>
+                <div className="row mt-3">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={categories?.absentTypes || []}
+                      label="LOẠI NGHỈ PHÉP"
+                      name="absentTypeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={
+                        categories?.users.map((item) => ({
+                          id: item.id,
+                          name: item.fullName,
+                        })) || []
+                      }
+                      label="NHÂN VIÊN"
+                      name="employeeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
                 </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    data={
-                      categories?.users.map((item) => ({
-                        id: item.id,
-                        name: item.fullName,
-                      })) || []
-                    }
-                    label="NHÂN VIÊN"
-                    name="employeeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="THỜI GIAN BẮT ĐẦU"
+                      name="startDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="THỜI GIAN KẾT THÚC"
+                      name="endDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      data={categories?.absentReasons || []}
+                      label="LÝ DO NGHỈ PHÉP"
+                      name="absentReasonId"
+                      type={variables.SELECT}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-lg-6">
-                  <FormItem
-                    label="THỜI GIAN BẮT ĐẦU"
-                    name="startDate"
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    label="THỜI GIAN KẾT THÚC"
-                    name="endDate"
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
+              <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
+                <Button
+                  color="gray"
+                  icon="prev"
+                  onClick={() => history.goBack()}
+                  size="large"
+                  className="mr-3"
+                  loading={loadingSubmit}
+                >
+                  HỦY
+                </Button>
+                <Button
+                  color="green"
+                  icon="save"
+                  htmlType="submit"
+                  size="large"
+                  loading={loadingSubmit}
+                >
+                  LƯU
+                </Button>
               </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <FormItem
-                    data={categories?.absentReasons || []}
-                    label="LÝ DO NGHỈ PHÉP"
-                    name="absentReasonId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-              <Button
-                color="gray"
-                icon="prev"
-                onClick={() => history.goBack()}
-                size="large"
-                className="mr-3"
-                loading={loadingSubmit}
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                htmlType="submit"
-                size="large"
-                loading={loadingSubmit}
-              >
-                LƯU
-              </Button>
-            </div>
+            </Loading>
           </div>
         </Form>
       </>

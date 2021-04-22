@@ -61,6 +61,7 @@ class Index extends PureComponent {
         limit: variables.PAGINATION.PAGE_SIZE,
         totalCount: 0,
         parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+        classStatus: 'HAS_CLASS',
       },
     };
     setIsMounted(true);
@@ -163,6 +164,7 @@ class Index extends PureComponent {
     dispatch({
       type: 'exchangeAdd/GET_STUDENTS',
       payload: {
+        ...searchStudents,
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
         class: value,

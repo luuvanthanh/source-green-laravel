@@ -1,4 +1,4 @@
-import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
+import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size, head } from 'lodash';
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
@@ -611,5 +611,14 @@ export default class Helpers {
     return `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
+  };
+
+  static getPathAvatarJson = (fileImage) => {
+    if (Helper.isJSON(fileImage)) {
+      const files = JSON.parse(fileImage);
+      if (!isEmpty(files) && isArray(files)) return head(files);
+      return null;
+    }
+    return null;
   };
 }
