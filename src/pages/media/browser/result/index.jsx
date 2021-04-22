@@ -113,8 +113,6 @@ const Index = memo(() => {
     setClassifyData(data);
   }, [data]);
 
-console.log(classifyData)
-
   return (
     <>
       <Helmet title="Duyệt hình" />
