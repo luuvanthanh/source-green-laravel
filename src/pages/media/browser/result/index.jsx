@@ -172,7 +172,7 @@ const Index = memo(() => {
                     label="Mô tả"
                     onChange={changeDesctiption(post?.id)}
                     type={variables.INPUT}
-                    // rules={[variables.RULES.EMPTY]}
+                    rules={[variables.RULES.EMPTY]}
                     placeholder="Nhập mô tả"
                     name={['description', index]}
                   />
