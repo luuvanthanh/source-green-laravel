@@ -256,3 +256,34 @@ export function getProbationaryContracts(params) {
   });
 }
 // probationary contract
+
+// decision-rewards
+export function addDecisionRewards(data = {}) {
+  return requestLavarel('/v1/decision-rewards', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateDecisionRewards(data = {}) {
+  return requestLavarel(`/v1/decision-rewards/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeDecisionRewards(data = {}) {
+  return requestLavarel(`/v1/decision-rewards/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getDecisionRewards(params = {}) {
+  return requestLavarel('/v1/decision-rewards', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// decision-rewards

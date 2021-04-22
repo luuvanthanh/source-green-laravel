@@ -18,6 +18,10 @@ export const menu = [
     label: 'Cấp bậc, chức vụ',
   },
   {
+    key: 'decision-rewards',
+    label: 'Quyết định, Khen thưởng kỹ luật',
+  },
+  {
     key: 'certificate',
     label: 'Chứng chỉ chuyên ngành',
   },

@@ -24,6 +24,7 @@ export default {
     contractTypes: [],
     contracts: [],
     probationaryContracts: [],
+    decisionRewards: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -82,6 +83,14 @@ export default {
     SET_REMOVE_TRANSFERS: (state, { payload }) => ({
       ...state,
       transfers: state.transfers.filter((item) => item.id !== payload.id),
+    }),
+    SET_DECISION_REWARDS: (state, { payload }) => ({
+      ...state,
+      decisionRewards: payload.parsePayload,
+    }),
+    SET_REMOVE_DECISION_REWARDS: (state, { payload }) => ({
+      ...state,
+      decisionRewards: state.dismisseds.filter((item) => item.id !== payload.id),
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -480,6 +489,48 @@ export default {
       }
     },
     // probationary contract
+
+    // decision-rewards
+    *ADD_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addDecisionRewards, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateDecisionRewards, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeDecisionRewards, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_DECISION_REWARDS',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
+    *GET_DECISION_REWARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDecisionRewards, payload);
+        yield saga.put({
+          type: 'SET_DECISION_REWARDS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // decision-rewards
   },
   subscriptions: {},
 };
