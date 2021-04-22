@@ -236,27 +236,16 @@ class Index extends PureComponent {
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
+        key: 'name',
         className: 'min-width-200',
         render: (record) => {
-          if (Helper.isJSON(record.fileImage)) {
-            const files = JSON.parse(record.fileImage);
-            return (
-              <div className="d-flex align-items-center">
-                <AvatarTable fileImage={!isEmpty(files) && head(files)} />
-                <Text size="normal" className="ml-2">
-                  {record.studentName}
-                </Text>
-              </div>
-            );
-          }
           return (
-            <div className="d-flex align-items-center">
-              <AvatarTable fileImage={record.fileImage} />
-              <Text size="normal" className="ml-2">
-                {record.studentName}
-              </Text>
-            </div>
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(
+                get(record, 'studentCriteriaResponses[0].student.fileImage'),
+              )}
+              fullName={record.studentName}
+            />
           );
         },
       },

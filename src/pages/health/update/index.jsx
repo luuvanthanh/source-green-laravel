@@ -69,7 +69,6 @@ const Index = memo(({}) => {
             formRef.current.setFieldsValue({
               data: response.map((item) => ({
                 ...item,
-                reportDate: item.reportDate && moment(item.reportDate),
                 criteriaGroupPropertyId: item.criteriaGroupProperty.id,
                 studentId: item.student.id,
                 value: item.value,
@@ -98,7 +97,7 @@ const Index = memo(({}) => {
       payload: values.data.map((item) => ({
         id: item.id,
         studentCriteriaRequest: {
-          reportDate: item.reportDate,
+          reportDate: moment(),
           criteriaGroupPropertyId: item.criteriaGroupPropertyId,
           studentId: item.studentId,
           value: toString(item.value),
