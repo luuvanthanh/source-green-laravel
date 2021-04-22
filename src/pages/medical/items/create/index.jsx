@@ -308,6 +308,7 @@ const Index = memo(({}) => {
                               <FormItemAntd label="Đính kèm hình ảnh" name={[name, 'files']}>
                                 <MultipleImageUpload
                                   callback={(event) => uploadFiles(event, index)}
+                                  files={[]}
                                 />
                               </FormItemAntd>
                             </Pane>
