@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useState, useRef } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useLocation } from 'umi';
+import { useHistory } from 'umi'; // useLocation
 import { Helmet } from 'react-helmet';
 import { size } from 'lodash';
 import csx from 'classnames';
@@ -30,7 +30,7 @@ const Index = memo(() => {
     effects,
   ]);
 
-  const { query } = useLocation();
+  // const { query } = useLocation();
 
   const [classifyData, setClassifyData] = useState([]);
 
@@ -38,7 +38,7 @@ const Index = memo(() => {
     dispatch({
       type: 'mediaResult/GET_DATA',
       payload: {
-        sentDateFrom: query?.uploadDate,
+        // sentDateFrom: query?.uploadDate,
         status: localVariables.CLASSIFY_STATUS.VALIDATING,
         maxResultCount: variables.PAGINATION.SIZEMAX
       }
