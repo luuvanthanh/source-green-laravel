@@ -24,7 +24,7 @@ class DecisionRewardCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decisionNumber' => 'unique:decision_rewards,DecisionNumber',
+            'decisionNumber' => 'unique:DecisionRewards,DecisionNumber',
             'decisionDate' => 'required',
             'reason' => 'required',
             'type' => 'required',

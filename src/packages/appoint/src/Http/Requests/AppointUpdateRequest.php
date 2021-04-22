@@ -24,7 +24,7 @@ class AppointUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decisionNumber' => 'unique:appoints,DecisionNumber',
+            'decisionNumber' => 'unique:Appoints,DecisionNumber',
         ];
     }
 }

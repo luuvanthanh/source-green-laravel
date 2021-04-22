@@ -30,7 +30,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use SyncToDevice;
 
     const STATUS = [
-        "WORKKING" => 0,
+        "WORKING" => 0,
         'INACTIVITY' => 1,
         'MATERNITY' => 2,
         'STORE' => 3,
@@ -52,7 +52,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId',
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage',
     ];
 
     /**

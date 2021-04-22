@@ -48,6 +48,14 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        $status = null;
+
+        foreach (User::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
         $attributes = [
             'totalRealTimekeeping' => $model->totalRealTimekeeping,
             'totalHourRedundantTimekeeping' => $model->totalHourRedundantTimekeeping,
@@ -65,6 +73,7 @@ class UserTransformer extends BaseTransformer
             'workBirthday' => $model->workBirthday,
             'totalWorkDeclarations' => $model->totalWorkDeclarations,
             'totalWorkHourSupport' => $model->totalWorkHourSupport,
+            'Status' => $status,
         ];
 
         return $attributes;

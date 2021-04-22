@@ -920,7 +920,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         if (!empty($workHourSupports)) {
             foreach ($workHourSupports as $workHourSupport) {
                 foreach (json_decode($workHourSupport->Hours) as $value) {
-                    $totalWorkHourSupport += strtotime($value->Out) - strtotime($value->In);
+                    $totalWorkHourSupport += strtotime($value->out) - strtotime($value->in);
                 }
             }
         }

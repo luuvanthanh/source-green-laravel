@@ -60,7 +60,7 @@ class UserController extends Controller
             $attributes['status'] = User::STATUS[$attributes['status']];
         }
 
-        $employee = $this->employeeRepository->create();
+        $employee = $this->employeeRepository->create($attributes);
 
         return $this->success($employee, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
