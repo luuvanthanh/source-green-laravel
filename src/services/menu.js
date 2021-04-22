@@ -721,6 +721,17 @@ export async function getLeftMenuHRM() {
       permission: [],
     },
     {
+      title: 'QĐ Khen thưởng/ Kỷ luật',
+      key: 'decision-rewards',
+      url: [
+        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
+        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
+        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
+      ],
+      icon: 'icon icon-open-book',
+      permission: [],
+    },
+    {
       title: 'Lịch làm việc',
       key: 'schedules',
       icon: 'icon icon-clock',

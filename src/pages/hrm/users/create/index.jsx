@@ -26,6 +26,7 @@ import MagneticCardsForm from './forms/magnetic-cards';
 import AccountForm from './forms/account';
 import DismissedsForm from './forms/dismisseds';
 import AppointsForm from './forms/appoints';
+import DecisionRewardsForm from './forms/decision-rewards';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -56,6 +57,7 @@ const forms = {
   account: <AccountForm />,
   dismisseds: <DismissedsForm />,
   appoints: <AppointsForm />,
+  ['decision-rewards']: <DecisionRewardsForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
