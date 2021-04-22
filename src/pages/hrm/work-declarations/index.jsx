@@ -246,8 +246,8 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (record) =>
           Helper.getDate(
-            get(record, 'workDeclarationDetails[0].date'),
-            variables.DATE_FORMAT.DATE_BEFORE_TIME,
+            get(record, 'workDeclarationDetails[0].creationTime'),
+            variables.DATE_FORMAT.DATE_TIME,
           ),
       },
       {

@@ -21,7 +21,7 @@ const genList = (current, pageSize) => {
       callNo: Math.floor(Math.random() * 1000),
       status: Math.floor(Math.random() * 10) % 4,
       updatedAt: new Date(),
-      createdAt: new Date(),
+      creationTime: new Date(),
       progress: Math.ceil(Math.random() * 100),
     });
   }
@@ -134,7 +134,7 @@ function postRule(req, res, u, b) {
           callNo: Math.floor(Math.random() * 1000),
           status: Math.floor(Math.random() * 10) % 2,
           updatedAt: new Date(),
-          createdAt: new Date(),
+          creationTime: new Date(),
           progress: Math.ceil(Math.random() * 100),
         };
         tableListDataSource.unshift(newRule);

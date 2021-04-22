@@ -63,6 +63,14 @@ export default {
       ...state,
       dismisseds: payload.parsePayload,
     }),
+    SET_REMOVE_DIMISSEDS: (state, { payload }) => ({
+      ...state,
+      dismisseds: state.dismisseds.filter((item) => item.id !== payload.id),
+    }),
+    SET_REMOVE_APPOINTS: (state, { payload }) => ({
+      ...state,
+      apoints: state.apoints.filter((item) => item.id !== payload.id),
+    }),
     SET_APPOINTS: (state, { payload }) => ({
       ...state,
       apoints: payload.parsePayload,
@@ -70,6 +78,10 @@ export default {
     SET_TRANSFERS: (state, { payload }) => ({
       ...state,
       transfers: payload.parsePayload,
+    }),
+    SET_REMOVE_TRANSFERS: (state, { payload }) => ({
+      ...state,
+      transfers: state.transfers.filter((item) => item.id !== payload.id),
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -93,7 +105,7 @@ export default {
     }),
     SET_CONTRACT_TYPES: (state, { payload }) => ({
       ...state,
-      contractTypes: payload.parsePayload
+      contractTypes: payload.parsePayload,
     }),
     SET_CONTRACTS: (state, { payload }) => ({
       ...state,
@@ -123,7 +135,7 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
     *ADD_ACCOUNT({ payload, callback }, saga) {
@@ -290,6 +302,23 @@ export default {
         callback(null, error);
       }
     },
+    *UPDATE_DIMISSEDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateDismisseds, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_DIMISSEDS({ payload }, saga) {
+      try {
+        yield saga.call(services.removeDismisseds, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_DIMISSEDS',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
     *GET_DISMISSEDS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDismisseds, payload);
@@ -310,6 +339,25 @@ export default {
       try {
         yield saga.call(services.addAppoints, payload);
         callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_APPOINTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateAppoints, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_APPOINTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeAppoints, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_APPOINTS',
+          payload: payload,
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -337,6 +385,23 @@ export default {
       } catch (error) {
         callback(null, error);
       }
+    },
+    *UPDATE_TRANSFERS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateTransfers, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_TRANSFERS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addTransfers, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_TRANSFERS',
+          payload: payload,
+        });
+      } catch (error) {}
     },
     *GET_TRANSFERS({ payload }, saga) {
       try {

@@ -1,7 +1,8 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -11,10 +12,14 @@ import Table from '@/components/CommonComponent/Table';
 import { history, useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 
+const { confirm } = Modal;
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
+  const [objects, setObjects] = useState({});
+
   const {
     details,
     loading: { effects },
@@ -65,11 +70,24 @@ const Index = memo(() => {
     mountedSet(setVisible, false);
   };
 
+  const onEdit = (record) => {
+    mountedSet(setVisible, true);
+    mountedSet(setObjects, record);
+    if (formRefModal.current) {
+      formRefModal.current.setFieldsValue({
+        ...record,
+        ...head(record.appointDetails),
+        decisionDate: record.decisionDate && moment(record.decisionDate),
+      });
+    }
+  };
+
   const save = () => {
     formRefModal.current.validateFields().then((values) => {
       dispatch({
-        type: 'HRMusersAdd/ADD_APPOINTS',
+        type: objects.id ? 'HRMusersAdd/UPDATE_APPOINTS' : 'HRMusersAdd/ADD_APPOINTS',
         payload: {
+          id: objects.id,
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
           reason: values.reason,
@@ -108,7 +126,31 @@ const Index = memo(() => {
     });
   };
 
-   /**
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  const onRemove = (id) => {
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'HRMusersAdd/REMOVE_APPOINTS',
+          payload: {
+            id,
+          },
+        });
+      },
+      onCancel() {},
+    });
+  };
+
+  /**
    * Function header table
    */
   const header = () => {
@@ -123,8 +165,8 @@ const Index = memo(() => {
       {
         title: 'Số QĐ',
         key: 'insurrance_number',
-        className: 'min-width-100',
-        width: 100,
+        className: 'min-width-150',
+        width: 150,
         render: (record) => get(record, 'decisionNumber'),
       },
       {
@@ -179,10 +221,15 @@ const Index = memo(() => {
         render: (record) => (
           <ul className="list-unstyled list-inline">
             <li className="list-inline-item">
-              <Button color="primary" icon="edit" />
+              <Button color="primary" icon="edit" onClick={() => onEdit(record)} />
             </li>
             <li className="list-inline-item">
-              <Button color="danger" icon="remove" className="ml-2" />
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => onRemove(record.id)}
+              />
             </li>
           </ul>
         ),
@@ -263,7 +310,15 @@ const Index = memo(() => {
           </Pane>
         }
       >
-        <Form layout="vertical" ref={formRefModal} initialValues={{}}>
+        <Form
+          layout="vertical"
+          ref={formRefModal}
+          initialValues={{
+            ...objects,
+            ...head(objects.appointDetails),
+            decisionDate: objects.decisionDate && moment(objects.decisionDate),
+          }}
+        >
           <Pane className="row">
             <Pane className="col-lg-6">
               <FormItem
