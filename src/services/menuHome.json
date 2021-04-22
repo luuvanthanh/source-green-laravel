@@ -76,6 +76,11 @@
         "url": "/quan-ly-nhan-su"
       },
       {
+        "title": "Chính sách phí",
+        "src": "/images/home/diploma.svg",
+        "url": "/chinh-sach-phi"
+      },
+      {
         "title": "Cấu hình",
         "src": "/images/home/gear.svg",
         "url": "/cau-hinh"

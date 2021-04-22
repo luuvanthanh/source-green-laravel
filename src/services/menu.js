@@ -1011,6 +1011,45 @@ export async function getLeftMenuHRM() {
     },
   ];
 }
+export async function getLeftMenuFeePolicy() {
+  return [
+    {
+      title: 'Danh mục nhóm đối tượng',
+      key: 'target',
+      url: ['/chinh-sach-phi/nhom-doi-tuong', '/chinh-sach-phi/nhom-doi-tuong/tao-moi', '/chinh-sach-phi/nhom-doi-tuong/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [],
+    },
+    {
+      title: 'Danh mục lớp',
+      key: 'class',
+      url: ['/chinh-sach-phi/lop', '/chinh-sach-phi/lop/tao-moi', '/chinh-sach-phi/lop/:id/chi-tiet'],
+      icon: 'icon icon-open-book',
+      permission: [],
+    },
+    {
+      title: 'Danh mục hình thức đóng phí',
+      key: 'format',
+      url: ['/chinh-sach-phi/hinh-thuc', '/chinh-sach-phi/hinh-thuc/tao-moi', '/chinh-sach-phi/hinh-thuc/:id/chi-tiet'],
+      icon: 'icon icon-send-money',
+      permission: [],
+    },
+    {
+      title: 'Danh mục phí',
+      key: 'fee',
+      url: ['/chinh-sach-phi/phi', '/chinh-sach-phi/phi/tao-moi', '/chinh-sach-phi/phi/:id/chi-tiet'],
+      icon: 'icon icon-budget',
+      permission: [],
+    },
+    {
+      title: 'Chính sách đóng phí',
+      key: 'policy',
+      url: ['/chinh-sach-phi/chinh-sach', '/chinh-sach-phi/chinh-sach/tao-moi', '/chinh-sach-phi/chinh-sach/:id/chi-tiet'],
+      icon: 'icon icon-fee-policy',
+      permission: [],
+    },
+  ];
+}
 export async function getTopMenuData() {
   return [];
 }

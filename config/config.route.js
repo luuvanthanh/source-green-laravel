@@ -1104,6 +1104,23 @@ export default [
         ],
       },
       // HEALTH
+      // FEE POLICY
+      {
+        path: '/chinh-sach-phi',
+        routes: [
+          {
+            path: '/chinh-sach-phi',
+            redirect: '/chinh-sach-phi/nhom-doi-tuong',
+          },
+          {
+            path: '/chinh-sach-phi/nhom-doi-tuong',
+            component: './fee-policy/target',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // FEE POLICY
       {
         path: '/404',
         component: './404',
