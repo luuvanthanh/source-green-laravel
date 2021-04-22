@@ -891,6 +891,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/thoi-viec',
+            component: './hrm/resignation-decisions',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/thoi-viec/tao-moi',
+            component: './hrm/resignation-decisions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
+            component: './hrm/resignation-decisions/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

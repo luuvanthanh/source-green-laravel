@@ -3,8 +3,8 @@ import { connect, history } from 'umi';
 import { Modal, Form, Typography } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ decisionRewards, loading }) => ({
-  data: decisionRewards.data,
-  pagination: decisionRewards.pagination,
+const mapStateToProps = ({ resignationDecisions, loading }) => ({
+  data: resignationDecisions.data,
+  pagination: resignationDecisions.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -91,7 +91,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'decisionRewards/GET_DATA',
+      type: 'resignationDecisions/GET_DATA',
       payload: {
         ...search,
         status,
@@ -208,7 +208,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'decisionRewards/REMOVE',
+          type: 'resignationDecisions/REMOVE',
           payload: {
             id,
             pagination: {
@@ -274,11 +274,11 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Mức thưởng, Mức phạt',
-        key: 'momeny',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => Helper.getPrice(record.momeny),
+        title: 'Ngày kết thúc thanh toán lương',
+        key: 'payEndDate',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(get(record, 'payEndDate'), variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Ngày áp dụng',
@@ -321,16 +321,21 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['decisionRewards/GET_DATA'];
+    const loading = effects['resignationDecisions/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách QĐ khen thưởng và kỷ luật" />
-        <div className={classnames(styles['content-form'], styles['content-form-decisionRewards'])}>
+        <Helmet title="Danh sách thôi việc" />
+        <div
+          className={classnames(
+            styles['content-form'],
+            styles['content-form-resignationDecisions'],
+          )}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách QĐ khen thưởng và kỷ luật</Text>
+            <Text color="dark">Danh sách thôi việc</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo quyết định
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
