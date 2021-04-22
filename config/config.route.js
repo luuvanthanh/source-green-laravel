@@ -1102,14 +1102,14 @@ export default [
             authority: [],
           },
           {
-            path: '/ghi-nhan/duyet-hinh/ket-qua',
-            component: './media/browser/result',
+            path: '/ghi-nhan/dang-hinh',
+            component: './media/browser',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
             path: '/ghi-nhan/duyet-hinh',
-            component: './media/browser',
+            component: './media/browser/result',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

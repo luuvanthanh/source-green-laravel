@@ -672,9 +672,17 @@ export async function getLeftMenuNotification() {
 export async function getLeftMenuMedia() {
   return [
     {
+      title: 'Đăng hình',
+      key: 'upload',
+      url: ['/ghi-nhan/dang-hinh'],
+      icon: 'icon icon-drawer',
+      permission: [],
+      pro: true,
+    },
+    {
       title: 'Duyệt hình',
       key: 'browser',
-      url: ['/ghi-nhan/duyet-hinh', '/ghi-nhan/duyet-hinh/ket-qua'],
+      url: ['/ghi-nhan/duyet-hinh'],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,

@@ -73,8 +73,8 @@ const Index = memo(() => {
       payload: images,
       callback: () => {
         history.push({
-          pathname: '/ghi-nhan/duyet-hinh/ket-qua',
-          query: Helper.convertParamSearch(search),
+          pathname: '/ghi-nhan/duyet-hinh',
+          // query: Helper.convertParamSearch(search),
         })
       },
     });
