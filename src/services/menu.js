@@ -732,6 +732,17 @@ export async function getLeftMenuHRM() {
       permission: [],
     },
     {
+      title: 'Thôi việc',
+      key: 'resignation-decisions',
+      url: [
+        '/quan-ly-nhan-su/thoi-viec',
+        '/quan-ly-nhan-su/thoi-viec/tao-moi',
+        '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
+      ],
+      icon: 'icon icon-open-book',
+      permission: [],
+    },
+    {
       title: 'Lịch làm việc',
       key: 'schedules',
       icon: 'icon icon-clock',

@@ -274,7 +274,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['workHours/GET_DATA'];
-    console.log(data);
     return (
       <>
         <Helmet title="Công giờ hỗ trợ" />
