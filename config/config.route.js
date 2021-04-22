@@ -909,6 +909,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/tam-hoan-cong-viec',
+            component: './hrm/decision-suspends',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
+            component: './hrm/decision-suspends/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
+            component: './hrm/decision-suspends/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

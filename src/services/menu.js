@@ -743,6 +743,17 @@ export async function getLeftMenuHRM() {
       permission: [],
     },
     {
+      title: 'Tạm hoãn công việc',
+      key: 'decision-suspends',
+      url: [
+        '/quan-ly-nhan-su/tam-hoan-cong-viec',
+        '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
+        '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
+      ],
+      icon: 'icon icon-open-book',
+      permission: [],
+    },
+    {
       title: 'Lịch làm việc',
       key: 'schedules',
       icon: 'icon icon-clock',
