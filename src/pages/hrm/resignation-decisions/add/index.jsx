@@ -147,7 +147,7 @@ class Index extends PureComponent {
       effects['resignationDecisionsAdd/ADD'] || effects['resignationDecisionsAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last={params.id ? 'Tạo thôi việc' : 'Tạo thôi việc'} menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa thôi việc' : 'Tạo thôi việc'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
