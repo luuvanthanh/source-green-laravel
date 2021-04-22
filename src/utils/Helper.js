@@ -621,4 +621,14 @@ export default class Helpers {
     }
     return null;
   };
+
+  static convertSelectUsers = (items) => {
+    if (!isEmpty(items)) {
+      return items.map((item) => ({
+        id: item.id,
+        name: item.fullName,
+      }));
+    }
+    return [];
+  };
 }

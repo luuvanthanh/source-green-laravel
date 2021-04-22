@@ -36,7 +36,7 @@ const mapStateToProps = ({ workHoursAdd, loading, menu }) => ({
   error: workHoursAdd.error,
   details: workHoursAdd.details,
   categories: workHoursAdd.categories,
-  menuData: menu.menuLeftSchedules,
+  menuData: menu.menuLeftHRM,
 });
 
 @connect(mapStateToProps)
@@ -145,16 +145,6 @@ class Index extends PureComponent {
     return [];
   };
 
-  convertSelectUsers = (items) => {
-    if (!isEmpty(items)) {
-      return items.map((item) => ({
-        id: item.id,
-        name: item.full_name,
-      }));
-    }
-    return [];
-  };
-
   onChange = (value) => {
     const { categories } = this.props;
     const shift = categories.shifts.find((item) => item.id === value);
@@ -213,17 +203,14 @@ class Index extends PureComponent {
         >
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
-              <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI CÔNG GIỜ HỖ TRỢ</Text>
-              </div>
-              <div className={styles['content-children']}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>
                 <div className="row mt-3">
                   <div className="col-lg-12">
                     <FormItem
-                      data={this.convertSelectUsers(categories.users)}
+                      data={Helper.convertSelectUsers(categories.users)}
                       label="NHÂN VIÊN"
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}

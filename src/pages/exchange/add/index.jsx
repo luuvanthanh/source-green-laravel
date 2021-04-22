@@ -342,13 +342,6 @@ class Index extends PureComponent {
                         dataSource={students}
                         loading={loadingStudents}
                         renderItem={(item) => {
-                          let fileImage = '';
-                          if (Helper.isJSON(item.fileImage)) {
-                            const files = JSON.parse(item.fileImage);
-                            if (!isEmpty(files)) {
-                              fileImage = head(files);
-                            }
-                          }
                           return (
                             <List.Item key={item.id}>
                               <Radio
@@ -360,7 +353,10 @@ class Index extends PureComponent {
                                 <Avatar
                                   shape="square"
                                   size={40}
-                                  src={fileImage && `${API_UPLOAD}${fileImage}`}
+                                  src={
+                                    Helper.getPathAvatarJson(item.fileImage) &&
+                                    `${API_UPLOAD}${Helper.getPathAvatarJson(item.fileImage)}`
+                                  }
                                 />
                                 <div className={stylesAllocation['info']}>
                                   <h3 className={stylesAllocation['title']}>{item.fullName}</h3>

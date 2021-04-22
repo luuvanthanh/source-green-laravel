@@ -113,7 +113,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const loading = effects['absentsAdd/GET_DETAILS'] || effects['absentsAdd/GET_CATEGORIES'];
-    const loadingSubmit = effects['absentsAdd/GET_DATA'];
+    const loadingSubmit = effects['absentsAdd/ADD'];
     return (
       <>
         <Breadcrumbs
@@ -182,6 +182,7 @@ class Index extends PureComponent {
                       label="LÝ DO NGHỈ PHÉP"
                       name="absentReasonId"
                       type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </div>
                 </div>

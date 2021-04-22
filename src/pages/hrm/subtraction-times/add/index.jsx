@@ -29,7 +29,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, subtractionTimesAdd, loading }) => ({
   loading,
   categories: subtractionTimesAdd.categories,
-  menuLeftSchedules: menu.menuLeftSchedules,
+  menuData: menu.menuLeftHRM,
 });
 
 @connect(mapStateToProps)
@@ -77,99 +77,56 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'subtractionTimesAdd/UPDATE',
-        payload: {
-          user_id: values.user_id,
-          type: 'SUB',
-          data: [
-            {
-              user_id: values.user_id,
-              days: values.days,
-              hours: values.hours,
-              reason: values.reason,
-              end_date: moment(values.month)
-                .endOf('month')
-                .format(variables.DATE_FORMAT.DATE_AFTER),
-              start_date: moment(values.month)
-                .startOf('month')
-                .format(variables.DATE_FORMAT.DATE_AFTER),
-            },
-          ],
-          id: params.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
+    dispatch({
+      type: params.id ? 'subtractionTimesAdd/UPDATE' : 'subtractionTimesAdd/ADD',
+      payload: {
+        employeeId: values.employeeId,
+        type: 'SUB',
+        data: [
+          {
+            employeeId: values.employeeId,
+            days: values.days,
+            hours: values.hours,
+            reason: values.reason,
+            endDate: moment(values.month).endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+            startDate: moment(values.month)
+              .startOf('month')
+              .format(variables.DATE_FORMAT.DATE_AFTER),
+          },
+        ],
+        id: params.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    } else {
-      dispatch({
-        type: 'subtractionTimesAdd/ADD',
-        payload: {
-          user_id: values.user_id,
-          type: 'SUB',
-          data: [
-            {
-              user_id: values.user_id,
-              days: values.days,
-              hours: values.hours,
-              reason: values.reason,
-              end_date: moment(values.month)
-                .endOf('month')
-                .format(variables.DATE_FORMAT.DATE_AFTER),
-              start_date: moment(values.month)
-                .startOf('month')
-                .format(variables.DATE_FORMAT.DATE_AFTER),
-            },
-          ],
-        },
-        callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    }
+        }
+      },
+    });
   };
 
   render() {
     const {
       categories,
-      menuLeftSchedules,
+      menuData,
       loading: { effects },
     } = this.props;
     const loadingSubmit =
       effects['subtractionTimesAdd/ADD'] || effects['subtractionTimesAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo công trừ" menu={menuLeftSchedules} />
+        <Breadcrumbs last="Tạo công trừ" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -177,24 +134,16 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">TẠO CÔNG TRỪ</Text>
-            </div>
-            <div className={styles['content-children']}>
+            <div className={classnames(styles['content-children'], 'mt10')}>
               <Text color="dark" size="large-medium">
                 THÔNG TIN CHUNG
               </Text>
               <div className="row mt-3">
                 <div className="col-lg-6">
                   <FormItem
-                    data={
-                      categories?.users.map((item) => ({
-                        id: item.id,
-                        name: item.full_name,
-                      })) || []
-                    }
+                    data={Helper.convertSelectUsers(categories?.users)}
                     label="NHÂN VIÊN"
-                    name="user_id"
+                    name="employeeId"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
                   />
