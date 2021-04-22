@@ -127,6 +127,20 @@ export function addDismisseds(data = {}) {
     data,
   });
 }
+
+export function updateDismisseds(data = {}) {
+  return requestLavarel(`/v1/dismisseds/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function removeDismisseds(data = {}) {
+  return requestLavarel(`/v1/dismisseds/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
 // dismisseds
 
 // dismisseds
@@ -147,12 +161,38 @@ export function addAppoints(data = {}) {
     data,
   });
 }
+
+export function updateAppoints(data = {}) {
+  return requestLavarel(`/v1/appoints/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function removeAppoints(data = {}) {
+  return requestLavarel(`/v1/appoints/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
 // dismisseds
 
 // transfers
 export function addTransfers(data = {}) {
   return requestLavarel('/v1/transfers', {
     method: 'POST',
+    data,
+  });
+}
+export function updateTransfers(data = {}) {
+  return requestLavarel(`/v1/transfers/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeTransfers(data = {}) {
+  return requestLavarel(`/v1/transfers/${data.id}`, {
+    method: 'DELETE',
     data,
   });
 }

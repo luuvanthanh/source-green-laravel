@@ -236,9 +236,14 @@ class Index extends PureComponent {
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'Số điện thoại',

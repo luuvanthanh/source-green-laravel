@@ -12,6 +12,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -46,6 +47,7 @@ const General = memo(({}) => {
   const dispatch = useDispatch();
   const params = useParams();
   const mounted = useRef(false);
+  const [files, setFiles] = useState([]);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
@@ -69,8 +71,8 @@ const General = memo(({}) => {
     dispatch({
       type: params.id ? 'HRMusersAdd/UPDATE' : 'HRMusersAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage }
-        : { ...values, fileImage },
+        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
+        : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -205,6 +207,10 @@ const General = memo(({}) => {
     return () => (mounted.current = false);
   }, []);
 
+  const uploadFiles = (file) => {
+    mountedSet(setFiles, (prev) => [...prev, file]);
+  };
+
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <Pane className="card">
@@ -216,11 +222,10 @@ const General = memo(({}) => {
             <Pane className="row">
               <Pane className="col">
                 <Form.Item name="avatar" label="Hình ảnh nhân viên">
-                  <ImageUpload
-                    callback={(res) => {
-                      mountedSet(setFileImage, res.fileInfo.url);
-                    }}
-                    fileImage={fileImage}
+                  <MultipleImageUpload
+                    files={files}
+                    callback={(files) => uploadFiles(files)}
+                    removeFiles={(files) => mountedSet(setFiles, files)}
                   />
                 </Form.Item>
               </Pane>

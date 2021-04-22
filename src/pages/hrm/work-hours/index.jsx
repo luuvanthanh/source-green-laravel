@@ -242,10 +242,10 @@ class Index extends PureComponent {
       },
       {
         title: 'Ngày tạo',
-        key: 'createdAt',
+        key: 'creationTime',
         width: 120,
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record.createdAt, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Ngày hỗ trợ',
@@ -274,6 +274,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['workHours/GET_DATA'];
+    console.log(data);
     return (
       <>
         <Helmet title="Công giờ hỗ trợ" />
@@ -290,7 +291,7 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 endDate: search.endDate ? moment(search.endDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                startDate: search.startDate ? moment(search.startDate) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -313,8 +314,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
+                    name="startDate"
+                    onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>

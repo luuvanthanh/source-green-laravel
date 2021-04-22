@@ -274,7 +274,6 @@ class Index extends PureComponent {
     const loading = effects['exchangeDetails/GET_DATA'];
     const loadingSend = effects['exchangeDetails/ADD'];
     const loadingSave = effects['exchangeDetails/UPDATE'];
-    console.log(details);
     return (
       <Form layout="vertical" ref={this.formRef}>
         <Loading loading={loading} isError={error.isError} params={{ error }}>
