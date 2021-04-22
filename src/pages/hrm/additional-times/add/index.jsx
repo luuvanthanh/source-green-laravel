@@ -29,7 +29,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, additionalTimesAdd, loading }) => ({
   loading,
   categories: additionalTimesAdd.categories,
-  menuLeftSchedules: menu.menuLeftSchedules,
+  menuData: menu.menuLeftHRM,
 });
 
 @connect(mapStateToProps)
@@ -119,13 +119,13 @@ class Index extends PureComponent {
   render() {
     const {
       categories,
-      menuLeftSchedules,
+      menuData,
       loading: { effects },
     } = this.props;
     const loadingSubmit = effects['additionalTimesAdd/ADD'] || effects['additionalTimesAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo công thêm" menu={menuLeftSchedules} />
+        <Breadcrumbs last="Tạo công thêm" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -133,22 +133,14 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">TẠO CÔNG THÊM</Text>
-            </div>
-            <div className={styles['content-children']}>
+            <div className={classnames(styles['content-children'], 'mt10')}>
               <Text color="dark" size="large-medium">
                 THÔNG TIN CHUNG
               </Text>
               <div className="row mt-3">
                 <div className="col-lg-6">
                   <FormItem
-                    data={
-                      categories?.users.map((item) => ({
-                        id: item.id,
-                        name: item.full_name,
-                      })) || []
-                    }
+                    data={Helper.convertSelectUsers(categories?.users)}
                     label="NHÂN VIÊN"
                     name="employeeId"
                     rules={[variables.RULES.EMPTY]}
