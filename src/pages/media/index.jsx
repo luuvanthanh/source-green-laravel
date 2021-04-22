@@ -14,6 +14,7 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
+import localVariables from './utils/variables';
 import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
@@ -156,7 +157,10 @@ const Index = memo(() => {
   const fetchMedia = useCallback(() => {
     dispatch({
       type: 'media/GET_DATA',
-      payload: search,
+      payload: {
+        ...search,
+        status: localVariables.CLASSIFY_STATUS.POST
+      },
     });
     history.push({
       pathname,
