@@ -16,6 +16,7 @@ import NoData from '@/components/CommonComponent/NoData';
 import UploadModal from './upload';
 
 import { Helper, variables } from '@/utils';
+import localVariables from '../utils/variables';
 import styles from './style.module.scss';
 
 const Index = memo(() => {
@@ -35,7 +36,6 @@ const Index = memo(() => {
     uploadDate: query?.uploadDate,
   });
   const [images, setImages] = useState([]);
-  // const [classifyImages, setClassifyImages] = useState([])
 
   const removeImage = (removeId) => () => {
     setImages((prevImages) => prevImages.filter((image) => image.id !== removeId));
@@ -56,7 +56,10 @@ const Index = memo(() => {
   const fetchMedia = useCallback(() => {
     dispatch({
       type: 'mediaBrowser/GET_DATA',
-      payload: search,
+      payload: {
+        ...search,
+        status: localVariables.CLASSIFY_STATUS.PENDING,
+      }
     });
     history.push({
       pathname,
@@ -68,8 +71,11 @@ const Index = memo(() => {
     dispatch({
       type: 'mediaBrowser/CLASSIFY',
       payload: images,
-      callback: (res) => {
-        // console.log(res)
+      callback: () => {
+        history.push({
+          pathname: '/ghi-nhan/duyet-hinh/ket-qua',
+          query: Helper.convertParamSearch(search),
+        })
       },
     });
   };
@@ -150,6 +156,7 @@ const Index = memo(() => {
 
         <Pane>
           <Button
+            disabled={!size(images)}
             loading={loading['mediaBrowser/CLASSIFY']}
             className="mx-auto"
             color="success"
