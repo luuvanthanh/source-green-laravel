@@ -218,7 +218,6 @@ class Index extends PureComponent {
     });
   };
 
-
   /**
    * Function header table
    */
@@ -233,23 +232,17 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        align: 'center',
-        render: (record) => {
-          if (Helper.isJSON(record.fileImage)) {
-            const files = JSON.parse(record.fileImage);
-            return <AvatarTable fileImage={!isEmpty(files) && head(files)} />;
-          }
-          return <AvatarTable fileImage={record.fileImage} />;
-        },
-      },
-      {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => {
+          return (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record.fileImage)}
+              fullName={record.fullName}
+            />
+          );
+        },
       },
       {
         title: 'Tuổi (tháng)',

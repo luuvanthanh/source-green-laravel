@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -237,9 +238,8 @@ class Index extends PureComponent {
       {
         title: 'Họ và Tên',
         key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.fullName}</Text>,
+        className: 'min-width-200',
+        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
       },
       {
         title: 'Số lần chấm',

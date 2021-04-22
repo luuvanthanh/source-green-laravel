@@ -235,17 +235,10 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        align: 'center',
-        render: (record) => <AvatarTable fileImage={record.fileImage} />,
-      },
-      {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
+        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
       },
       {
         title: 'Số điện thoại',

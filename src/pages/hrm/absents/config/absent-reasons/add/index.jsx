@@ -136,13 +136,14 @@ class Index extends PureComponent {
       menuData,
       categories,
       loading: { effects },
+      match: { params },
     } = this.props;
     const loading =
       effects['absentReasonsAdd/GET_DETAILS'] || effects['absentReasonsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['absentReasonsAdd/ADD'] || effects['absentReasonsAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo lý do" menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa lý do' : 'Tạo lý do'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -150,12 +151,9 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
           ref={this.formRef}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
-              <div className="d-flex justify-content-between">
-                <Text color="dark">TẠO MỚI LÝ DO</Text>
-              </div>
-              <div className={styles['content-children']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>
@@ -202,8 +200,8 @@ class Index extends PureComponent {
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );

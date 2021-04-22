@@ -14,6 +14,10 @@ export default {
       absentReasons: [],
       users: [],
     },
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),

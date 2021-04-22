@@ -18,6 +18,7 @@ import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import stylesChildren from './styles.modules.scss';
 import { REPEAT, CHOOSE } from './data.json';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -478,18 +479,8 @@ class Index extends PureComponent {
       {
         title: 'Họ và Tên',
         key: 'fullName',
-        className: 'min-width-120',
-        fixed: 'left',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
-      },
-      {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
-        fixed: 'left',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
+        className: 'pl10 min-width-200',
+        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
       },
     ];
     const arrayHeaderDate = Helper.convertArrayDays(search.startDate, search.endDate).map(

@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,8 +13,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -232,25 +232,18 @@ class Index extends PureComponent {
       },
       {
         title: 'Ngày cấp',
-        key: 'createdAt',
+        key: 'creationTime',
         width: 120,
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record?.createdAt, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        width: 100,
-        align: 'center',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Họ và Tên',
         key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable fileImage={record.fileImage} fullName={record?.employee?.fullName} />
+        ),
       },
       {
         title: 'Mã vân tay',
