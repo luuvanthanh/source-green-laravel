@@ -710,49 +710,84 @@ export async function getLeftMenuHealth() {
 export async function getLeftMenuHRM() {
   return [
     {
-      title: 'Nhân viên',
+      title: 'Nhân sự',
       key: 'users',
-      url: [
-        '/quan-ly-nhan-su/nhan-vien',
-        '/quan-ly-nhan-su/nhan-vien/tao-moi',
-        '/quan-ly-nhan-su/nhan-vien/:id/chi-tiet',
-      ],
       icon: 'icon icon-man',
       permission: [],
-    },
-    {
-      title: 'QĐ Khen thưởng/ Kỷ luật',
-      key: 'decision-rewards',
-      url: [
-        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
-        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
-        '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
+      children: [
+        {
+          title: 'Nhân viên',
+          key: 'employee',
+          url: [
+            '/quan-ly-nhan-su/nhan-vien',
+            '/quan-ly-nhan-su/nhan-vien/tao-moi',
+            '/quan-ly-nhan-su/nhan-vien/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Miễn nhiệm',
+          key: 'dismisseds',
+          url: [
+            '/quan-ly-nhan-su/mien-nhiem',
+            '/quan-ly-nhan-su/mien-nhiem/tao-moi',
+            '/quan-ly-nhan-su/mien-nhiem/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Bổ nhiệm',
+          key: 'appoints',
+          url: [
+            '/quan-ly-nhan-su/bo-nhiem',
+            '/quan-ly-nhan-su/bo-nhiem/tao-moi',
+            '/quan-ly-nhan-su/bo-nhiem/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Điều chuyển',
+          key: 'transfers',
+          url: [
+            '/quan-ly-nhan-su/dieu-chuyen',
+            '/quan-ly-nhan-su/dieu-chuyen/tao-moi',
+            '/quan-ly-nhan-su/dieu-chuyen/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'QĐ Khen thưởng/ Kỷ luật',
+          key: 'decision-rewards',
+          url: [
+            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
+            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
+            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Thôi việc',
+          key: 'resignation-decisions',
+          url: [
+            '/quan-ly-nhan-su/thoi-viec',
+            '/quan-ly-nhan-su/thoi-viec/tao-moi',
+            '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Tạm hoãn công việc',
+          key: 'decision-suspends',
+          url: [
+            '/quan-ly-nhan-su/tam-hoan-cong-viec',
+            '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
+            '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
+          ],
+          permission: [],
+        },
       ],
-      icon: 'icon icon-open-book',
-      permission: [],
     },
-    {
-      title: 'Thôi việc',
-      key: 'resignation-decisions',
-      url: [
-        '/quan-ly-nhan-su/thoi-viec',
-        '/quan-ly-nhan-su/thoi-viec/tao-moi',
-        '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
-      ],
-      icon: 'icon icon-open-book',
-      permission: [],
-    },
-    {
-      title: 'Tạm hoãn công việc',
-      key: 'decision-suspends',
-      url: [
-        '/quan-ly-nhan-su/tam-hoan-cong-viec',
-        '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
-        '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
-      ],
-      icon: 'icon icon-open-book',
-      permission: [],
-    },
+
     {
       title: 'Lịch làm việc',
       key: 'schedules',
