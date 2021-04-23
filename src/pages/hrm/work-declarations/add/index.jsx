@@ -98,25 +98,23 @@ class Index extends PureComponent {
       type: params.id ? 'workDeclarationsAdd/UPDATE' : 'workDeclarationsAdd/ADD',
       payload: {
         employeeId: values.employeeId,
-        data: [
-          {
-            type: 'default',
-            reason: values.reason,
-            shiftId: values.shiftId,
-            date: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: values.date,
-                targetValue: '23:59:59',
-              }),
-              isUTC: false,
-            }),
-            time: values.time.map((item) => ({
-              in: moment(item.in).format(variables.DATE_FORMAT.HOUR),
-              out: moment(item.out).format(variables.DATE_FORMAT.HOUR),
-            })),
-          },
-        ],
+        date: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.date,
+            targetValue: '23:59:59',
+          }),
+          isUTC: false,
+        }),
+        time: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: values.time,
+            targetValue: '23:59:59',
+          }),
+          format: variables.DATE_FORMAT.TIME_FULL,
+          isUTC: false,
+        }),
         id: get(params, 'id'),
       },
       callback: (response, error) => {
@@ -139,47 +137,10 @@ class Index extends PureComponent {
     });
   };
 
-  convertSelectShift = (items) => {
-    if (!isEmpty(items)) {
-      return items.map((item) => ({
-        id: item.id,
-        name: `${item.shiftCode} (${item.shiftDetail
-          .map((itemShift) => `${itemShift.startTime} - ${itemShift.endTime}`)
-          .join(', ')})`,
-      }));
-    }
-    return [];
-  };
-
-  onChange = (value) => {
-    const { categories } = this.props;
-    const shift = categories.shifts.find((item) => item.id === value);
-    if (shift) {
-      this.formRef.current.setFieldsValue({
-        time: shift.shiftDetail,
-      });
-    }
-  };
-
-  onChangeTimePicker = (timeChoose, index, type = 'in') => {
+  onChangeTimePicker = (e) => {
     if (this.formRef.current) {
-      const { time } = this.formRef.current.getFieldsValue();
       this.formRef.current.setFieldsValue({
-        time: time.map((item, indexTime) => {
-          if (indexTime === index && type === 'in') {
-            return {
-              ...item,
-              in: timeChoose,
-            };
-          }
-          if (indexTime === index && type === 'out') {
-            return {
-              ...item,
-              out: timeChoose,
-            };
-          }
-          return item;
-        }),
+        time: e,
       });
     }
   };
@@ -196,8 +157,8 @@ class Index extends PureComponent {
       effects['workDeclarationsAdd/ADD'] || effects['workDeclarationsAdd/UPDATE'];
     return (
       <>
-        <Helmet title="Tạo mới khai báo công" />
-        <Breadcrumbs last="Tạo mới khai báo công" menu={menuData} />
+        <Helmet title="Tạo mới công bổ sung" />
+        <Breadcrumbs last="Tạo mới công bổ sung" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -224,74 +185,24 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
                     <FormItem
-                      label="THỜI GIAN"
+                      label="NGÀY"
                       name="date"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
                     />
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
                     <FormItem
-                      label="LÝ DO"
-                      name="reason"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <FormItem
-                      data={this.convertSelectShift(categories.shifts)}
-                      label="CA LÀM VIỆC"
-                      name="shiftId"
+                      label="GIỜ"
+                      name="time"
                       rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
-                      onChange={this.onChange}
+                      type={variables.TIME_PICKER}
+                      onSelect={this.onChangeTimePicker}
                     />
                   </div>
                 </div>
-                <Form.List name="time">
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map((field, index) => (
-                        <div
-                          className={classnames(
-                            'row',
-                            stylesModule['form-item'],
-                            stylesModule['form-item-advance'],
-                          )}
-                          key={field.key}
-                        >
-                          <div className="col-lg-6">
-                            <FormItem
-                              onSelect={(value) => this.onChangeTimePicker(value, index, 'in')}
-                              label="VÀO"
-                              name={[field.name, 'in']}
-                              fieldKey={[field.fieldKey, 'in']}
-                              rules={[variables.RULES.EMPTY]}
-                              type={variables.TIME_PICKER}
-                            />
-                          </div>
-                          <div className="col-lg-6">
-                            <FormItem
-                              onSelect={(value) => this.onChangeTimePicker(value, index, 'out')}
-                              label="RA"
-                              name={[field.name, 'out']}
-                              fieldKey={[field.fieldKey, 'out']}
-                              rules={[variables.RULES.EMPTY]}
-                              type={variables.TIME_PICKER}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </Form.List>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button

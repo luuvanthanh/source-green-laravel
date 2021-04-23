@@ -13,6 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -234,38 +235,28 @@ class Index extends PureComponent {
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
-        title: 'Thời gian',
+        title: 'Ngày công',
+        key: 'date',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Giờ chấm',
         key: 'time',
         width: 150,
         className: 'min-width-150',
-        render: (record) =>
-          Helper.getDate(
-            get(record, 'workDeclarationDetails[0].creationTime'),
-            variables.DATE_FORMAT.DATE_TIME,
-          ),
-      },
-      {
-        title: 'Ca làm việc',
-        key: 'shift',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) =>
-          `${get(record, 'workDeclarationDetails[0].time[0].in')} ${get(
-            record,
-            'workDeclarationDetails[0].time[0].out',
-          )}`,
-      },
-      {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-200',
-        render: (record) => get(record, 'workDeclarationDetails[0].reason'),
+        render: (record) => record.time,
       },
     ];
   };
@@ -282,15 +273,15 @@ class Index extends PureComponent {
     const loading = effects['workDeclarations/GET_DATA'];
     return (
       <>
-        <Helmet title="Khai báo công" />
+        <Helmet title="Công bổ sung" />
         <div
           className={classnames(styles['content-form'], styles['content-form-workDeclarations'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Khai báo công</Text>
+            <Text color="dark">Công bổ sung</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo khai báo công
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

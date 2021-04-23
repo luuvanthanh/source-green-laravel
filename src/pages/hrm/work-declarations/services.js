@@ -26,11 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes([
-        'employee',
-        'workDeclarationDetails.model.employee',
-        'workDeclarationDetails.model.timekeeping',
-      ]),
+      include: Helper.convertIncludes(['employee']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
       }),

@@ -36,6 +36,7 @@ const mapStateToProps = ({ workHoursAdd, loading, menu }) => ({
   error: workHoursAdd.error,
   details: workHoursAdd.details,
   categories: workHoursAdd.categories,
+  absentTypes: workHoursAdd.absentTypes,
   menuData: menu.menuLeftHRM,
 });
 
@@ -85,6 +86,10 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'workHoursAdd/GET_CATEGORIES',
+      payload: {},
+    });
+    dispatch({
+      type: 'workHoursAdd/GET_ABSENT_TYPES',
       payload: {},
     });
   };
@@ -183,14 +188,15 @@ class Index extends PureComponent {
       error,
       menuData,
       categories,
+      absentTypes,
       loading: { effects },
     } = this.props;
     const loading = effects['workHoursAdd/GET_DETAILS'];
     const loadingSubmit = effects['workHoursAdd/ADD'] || effects['workHoursAdd/UPDATE'];
     return (
       <>
-        <Helmet title="Tạo mới công giờ hỗ trợ" />
-        <Breadcrumbs last="Tạo mới công giờ hỗ trợ" menu={menuData} />
+        <Helmet title="Tạo mới phiếu ĐK giờ làm thêm" />
+        <Breadcrumbs last="Tạo mới phiếu ĐK giờ làm thêm" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -208,7 +214,16 @@ class Index extends PureComponent {
                   THÔNG TIN CHUNG
                 </Text>
                 <div className="row mt-3">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={absentTypes}
+                      label="LOẠI"
+                      name="absentTypeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
                     <FormItem
                       data={Helper.convertSelectUsers(categories.users)}
                       label="NHÂN VIÊN"
