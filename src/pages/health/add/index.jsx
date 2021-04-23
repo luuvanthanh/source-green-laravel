@@ -28,12 +28,16 @@ const Index = memo(({}) => {
     error,
     criteriaGroupProperties,
     menuData,
+    branches,
+    classes,
   } = useSelector(({ loading, user, healthAdd, menu }) => ({
     user: user.user,
     loading,
     details: healthAdd.details,
     error: healthAdd.error,
     criteriaGroupProperties: healthAdd.criteriaGroupProperties,
+    branches: healthAdd.branches,
+    classes: healthAdd.classes,
     menuData: menu.menuLeftHealth,
   }));
   const dispatch = useDispatch();
@@ -49,8 +53,10 @@ const Index = memo(({}) => {
   const [hasMore, setHasMore] = useState(true);
   const [searchStudents, setSearchStudents] = useState({
     totalCount: 0,
+    classStatus: 'HAS_CLASS',
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
+    class: null,
   });
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
@@ -75,6 +81,41 @@ const Index = memo(({}) => {
       });
     }
   }, [params.id]);
+
+  const onChangeBranches = (value) => {
+    dispatch({
+      type: 'healthAdd/GET_CLASSES',
+      payload: {
+        branch: value,
+      },
+    });
+  };
+
+  const onChangeClasses = (value) => {
+    dispatch({
+      type: 'healthAdd/GET_STUDENTS',
+      payload: {
+        ...searchStudents,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        class: value,
+      },
+      callback: (response, error) => {
+        if (response) {
+          mountedSet(setStudents, response.items);
+          mountedSet(setSearchStudents, {
+            ...searchStudents,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+            totalCount: response.totalCount,
+          });
+        }
+        if (error) {
+          message.error('Lỗi hệ thống.');
+        }
+      },
+    });
+  };
 
   const onFinish = (values) => {
     dispatch({
@@ -161,6 +202,13 @@ const Index = memo(({}) => {
     });
   }, []);
 
+  useEffect(() => {
+    dispatch({
+      type: 'healthAdd/GET_BRANCHES',
+      payload: {},
+    });
+  }, []);
+
   return (
     <>
       <Helmet title="Tạo mới sức khỏe" />
@@ -178,10 +226,22 @@ const Index = memo(({}) => {
                   <Pane className={csx('border-bottom')}>
                     <Pane className={csx('row')}>
                       <Pane className="col-lg-6">
-                        <FormItem label="Cơ sở" name="position" type={variables.SELECT} />
+                        <FormItem
+                          data={branches}
+                          label="Cơ sở"
+                          name="position"
+                          type={variables.SELECT}
+                          onChange={onChangeBranches}
+                        />
                       </Pane>
                       <Pane className="col-lg-6">
-                        <FormItem label="Lớp" name="class" type={variables.SELECT} />
+                        <FormItem
+                          data={classes}
+                          label="Lớp"
+                          name="class"
+                          type={variables.SELECT}
+                          onChange={onChangeClasses}
+                        />
                       </Pane>
                     </Pane>
                   </Pane>
