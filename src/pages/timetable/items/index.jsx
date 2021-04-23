@@ -39,6 +39,8 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ timeTables, loading }) => ({
   data: timeTables.data,
+  branches: timeTables.branches,
+  classes: timeTables.classes,
   pagination: timeTables.pagination,
   loading,
 });
@@ -58,6 +60,8 @@ class Index extends PureComponent {
         fromDate: query.fromDate ? moment(query.fromDate) : moment().startOf('month'),
         toDate: query.toDate ? moment(query.toDate) : moment().endOf('month'),
         type: query.type || 'dayGridMonth',
+        branchId: query.branchId,
+        classId: query.classId,
       },
     };
     setIsMounted(true);
@@ -71,6 +75,7 @@ class Index extends PureComponent {
       calendarApi.gotoDate(moment(search.toDate).format(variables.DATE_FORMAT.DATE_AFTER));
     }
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -115,6 +120,22 @@ class Index extends PureComponent {
     });
   };
 
+  loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'timeTables/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'timeTables/GET_BRANCHES',
+      payload: {},
+    });
+  };
+
   /**
    * Function debounce search
    * @param {string} value value of object search
@@ -152,12 +173,36 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'timeTables/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -217,6 +262,8 @@ class Index extends PureComponent {
 
   render() {
     const {
+      branches,
+      classes,
       data,
       match: { params },
       loading: { effects },
@@ -264,19 +311,19 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    data={[]}
+                    data={branches}
                     label="CƠ SỞ"
-                    name="department"
-                    onChange={(event) => this.onChange(event, 'department')}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={[]}
+                    data={classes}
                     label="LỚP"
-                    name="level"
-                    onChange={(event) => this.onChange(event, 'level')}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                   />
                 </div>
