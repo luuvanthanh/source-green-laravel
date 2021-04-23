@@ -72,7 +72,7 @@ const Index = memo(() => {
 
   const removeImage = (postId, image) => {
     dispatch({
-      type: 'mediaResult/REMOVE',
+      type: 'mediaResult/REMOVE_IMAGE',
       payload: {
         postId,
         fileId: image?.id
@@ -81,13 +81,9 @@ const Index = memo(() => {
         setClassifyData(prev => prev.map(post => post.id === postId ? ({
           ...post,
           files: (post?.files || []).filter(file => file.id !== image.id),
-          // removeFiles: [
-          //   ...post?.removeFiles || [],
-          //   image
-          // ]
         }) : post));
       }
-    })
+    });
   };
 
   const changeDesctiption = (postId) => e => {
@@ -113,6 +109,16 @@ const Index = memo(() => {
       callback: () => {
         fetchMedia();
       },
+    });
+  };
+
+  const removePost = (id) => {
+    dispatch({
+      type: 'mediaResult/REMOVE',
+      payload: { id },
+      callback: () => {
+        setClassifyData(prev => prev.filter(post => post.id !== id));
+      }
     });
   };
 
@@ -146,8 +152,6 @@ const Index = memo(() => {
   useEffect(() => {
     setClassifyData(data);
   }, [data]);
-
-  console.log(groupIds)
 
   return (
     <>
@@ -185,7 +189,7 @@ const Index = memo(() => {
                   color="dark"
                   type="link"
                 >
-                  Xóa tất cả kết quả lọc hình
+                  Xóa tất cả ghi nhận
                 </Button>
                 <Button
                   disabled={loading['mediaResult/GET_DATA']}
@@ -236,8 +240,9 @@ const Index = memo(() => {
                         className="mr20"
                         color="danger"
                         type="link"
+                        onClick={() => removePost(post?.id)}
                       >
-                        Xóa hết tất cả hình
+                        Xóa ghi nhận
                       </Button>
                       <Pane className="mr20">
                         <label className={csx(infoStyles.infoLabel, 'mb-0')}>Thời gian tải lên:</label>

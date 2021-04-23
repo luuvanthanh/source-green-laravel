@@ -74,6 +74,22 @@ export default {
         });
       }
     },
+    *REMOVE_IMAGE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.removeImage, payload);
+        callback && callback(response)
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback && callback(null, error)
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thất bại',
+        });
+      }
+    },
     *REMOVE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.remove, payload);

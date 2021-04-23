@@ -14,7 +14,13 @@ export function validate(data) {
   });
 }
 
-export function remove({ postId, fileId }) {
+export function remove({ id }) {
+  return request(`/posts/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function removeImage({ postId, fileId }) {
   return request(`/posts/${postId}/files/${fileId}`, {
     method: 'DELETE',
   });
