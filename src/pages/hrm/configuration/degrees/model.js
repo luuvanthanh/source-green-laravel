@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -60,12 +59,10 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
+        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

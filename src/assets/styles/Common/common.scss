@@ -726,3 +726,10 @@
     margin-left: 6px;
   }
 }
+
+.checkbox {
+  &--large {
+    transform: scale(1.5);
+    transform-origin: left center;
+  }
+}

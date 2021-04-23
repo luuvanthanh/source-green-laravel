@@ -137,8 +137,8 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -183,8 +183,8 @@ class Index extends PureComponent {
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );

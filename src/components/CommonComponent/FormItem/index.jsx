@@ -255,6 +255,10 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
+  checkboxSingle: (
+    <Checkbox onChange={onChange} className={styles['checkbox--large']}>
+    </Checkbox>
+  ),
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? data.map((item, index) => (

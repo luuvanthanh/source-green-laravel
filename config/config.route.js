@@ -1212,6 +1212,71 @@ export default [
         ],
       },
       // HEALTH
+      // FEE POLICY
+      {
+        path: '/chinh-sach-phi',
+        routes: [
+          {
+            path: '/chinh-sach-phi',
+            redirect: '/chinh-sach-phi/nhom-doi-tuong',
+          },
+          {
+            path: '/chinh-sach-phi/nhom-doi-tuong',
+            component: './fee-policy/target',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
+            component: './fee-policy/target/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/lop',
+            component: './fee-policy/class',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/lop/tao-moi',
+            component: './fee-policy/class/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/hinh-thuc',
+            component: './fee-policy/format',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/hinh-thuc/tao-moi',
+            component: './fee-policy/format/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/phi',
+            component: './fee-policy/fee',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/phi/tao-moi',
+            component: './fee-policy/fee/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/chinh-sach',
+            component: './fee-policy/policy',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // FEE POLICY
       {
         path: '/404',
         component: './404',

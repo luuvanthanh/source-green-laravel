@@ -25,6 +25,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-budget:before {
+  content: "\e933";
+}
+.icon-fee-policy:before {
+  content: "\e934";
+}
+.icon-send-money:before {
+  content: "\e935";
+}
 .icon-woman:before {
   content: "\e921";
 }

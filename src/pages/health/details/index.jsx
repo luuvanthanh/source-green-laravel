@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { history, useParams, useLocation } from 'umi';
+import classnames from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -70,7 +71,7 @@ const Index = memo(({}) => {
                   <Pane className="border-bottom" style={{ padding: 20 }}>
                     <Heading type="form-title">
                       Sức khỏe hôm nay - Ngày{' '}
-                      {moment(get(head(details), 'creationTime')).format(
+                      {moment(get(head(details.studentCriterias), 'creationTime')).format(
                         variables.DATE_FORMAT.DATE_VI,
                       )}
                     </Heading>
@@ -91,12 +92,14 @@ const Index = memo(({}) => {
                     <Pane className={styles.userInformation}>
                       <AvatarTable
                         fileImage={
-                          Helper.isJSON(get(head(details), 'student.fileImage')) &&
-                          head(JSON.parse(get(head(details), 'student.fileImage')))
+                          Helper.isJSON(get(head(details.studentCriterias), 'student.fileImage')) &&
+                          head(JSON.parse(get(head(details.studentCriterias), 'student.fileImage')))
                         }
                       />
                       <Pane>
-                        <h3>{get(head(details), 'student.fullName') || 'Subeo'}</h3>
+                        <h3>
+                          {get(head(details.studentCriterias), 'student.fullName') || 'Subeo'}
+                        </h3>
                       </Pane>
                     </Pane>
                   </Pane>
@@ -110,7 +113,7 @@ const Index = memo(({}) => {
                             <span className={'icon-school'} />
                           </span>
                           <span className={styles.infoText}>
-                            {get(head(details), 'student.class.branch.name')}
+                            {get(head(details.studentCriterias), 'student.class.branch.name')}
                           </span>
                         </Pane>
                       </Pane>
@@ -122,7 +125,7 @@ const Index = memo(({}) => {
                             <span className={'icon-open-book'} />
                           </span>
                           <span className={styles.infoText}>
-                            {get(head(details), 'student.class.name')}
+                            {get(head(details.studentCriterias), 'student.class.name')}
                           </span>
                         </Pane>
                       </Pane>
@@ -132,21 +135,35 @@ const Index = memo(({}) => {
 
                 <Pane className="card">
                   <List
-                    dataSource={details?.medicalLogs || []}
+                    dataSource={details?.changeLogs || []}
                     renderItem={(item) => (
-                      <ListItem key={item.id} className={styles.listItem}>
-                        <Pane style={{ padding: 20, width: '100%' }} className="row">
-                          <Pane className="col-md-5">
-                            <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
-                              {Helper.getDate(item, variables.DATE_FORMAT.DATE_TIME)}
-                            </Heading>
-                          </Pane>
-                          <Pane className="col-md-7">
-                            <Pane>
-                              {variablesModules?.MEDICAL_ACTION_TYPE[`${item.actionType}`]}
+                      <ListItem
+                        key={item.id}
+                        className={classnames(styles.listItem, 'flex-column')}
+                      >
+                        {item.studentCritetiaEntityChanges.map((itemChange, indexChange) => (
+                          <Pane
+                            style={{ padding: 20, width: '100%' }}
+                            className="row"
+                            key={indexChange}
+                          >
+                            <Pane className="col-md-5">
+                              <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
+                                {Helper.getDate(
+                                  itemChange.changeTime,
+                                  variables.DATE_FORMAT.DATE_TIME,
+                                )}
+                              </Heading>
+                            </Pane>
+                            <Pane className="col-md-7">
+                              <Pane>
+                                {item.editor.userName}{' '}
+                                {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}{' '}
+                                {itemChange.criteriaGroupPropertypeName}
+                              </Pane>
                             </Pane>
                           </Pane>
-                        </Pane>
+                        ))}
                       </ListItem>
                     )}
                   />
@@ -159,7 +176,7 @@ const Index = memo(({}) => {
                     <Heading type="form-title">Chi tiết</Heading>
                   </Pane>
 
-                  {details.map((item) => (
+                  {details.studentCriterias.map((item) => (
                     <Pane className="border-bottom p20" key={item.id}>
                       <Heading type="form-block-title" className="mb10">
                         {item?.criteriaGroupProperty?.property}
