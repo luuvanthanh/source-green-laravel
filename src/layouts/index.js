@@ -22,6 +22,7 @@ import NotificationLayout from './Notification';
 import MediaLayout from './Media';
 import HealthLayout from './Health';
 import HRMLayout from './HRM';
+import FeePolicyLayout from './Fee-Policy';
 
 const Layouts = {
   public: PublicLayout,
@@ -42,6 +43,7 @@ const Layouts = {
   media: MediaLayout,
   health: HealthLayout,
   hrm: HRMLayout,
+  feePolicy: FeePolicyLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -105,6 +107,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/suc-khoe(?=\/|$)/i.test(pathname)) {
         return 'health';
+      }
+      if (/^\/chinh-sach-phi(?=\/|$)/i.test(pathname)) {
+        return 'feePolicy';
       }
       return 'public';
     };
