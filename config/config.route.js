@@ -1274,6 +1274,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/chinh-sach-phi/chinh-sach/:id/chi-tiet',
+            component: './fee-policy/policy/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // FEE POLICY
