@@ -113,5 +113,13 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\Clover\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     // });
 });

@@ -77,6 +77,8 @@
             "GGPHP\\SalaryIncrease\\": "packages/salary-increase/src/",
             "GGPHP\\ResignationDecision\\": "packages/resignation-decision/src/",
             "GGPHP\\DecisionSuspend\\": "packages/decision-suspend/src/",
+            "GGPHP\\Clover\\": "packages/clover/src",
+            "GGPHP\\InOutHistories\\": "packages/in-out-histories/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

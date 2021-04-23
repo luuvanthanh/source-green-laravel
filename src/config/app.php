@@ -203,6 +203,8 @@ return [
         GGPHP\SalaryIncrease\Providers\SalaryIncreaseServiceProvider::class,
         GGPHP\ResignationDecision\Providers\ResignationDecisionServiceProvider::class,
         GGPHP\DecisionSuspend\Providers\DecisionSuspendServiceProvider::class,
+        GGPHP\Clover\Providers\CloverServiceProvider::class,
+        GGPHP\InOutHistories\Providers\InOutHistoriesServiceProvider::class,
     ],
 
     /*
