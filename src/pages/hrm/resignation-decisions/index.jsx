@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -14,8 +14,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -247,10 +247,14 @@ class Index extends PureComponent {
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
         title: 'Số QĐ',
