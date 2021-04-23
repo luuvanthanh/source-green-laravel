@@ -36,6 +36,8 @@ const { confirm } = Modal;
 const mapStateToProps = ({ exchangeItems, loading }) => ({
   data: exchangeItems.data,
   pagination: exchangeItems.pagination,
+  classes: exchangeItems.classes,
+  branches: exchangeItems.branches,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,6 +52,12 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        title: query?.title,
+        branchId: query?.branchId,
+        classId: query?.classId,
+        fromDate:
+          query?.fromDate && moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        toDate: query?.toDate && moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.NEW,
@@ -60,6 +68,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -78,6 +87,22 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'exchangeItems/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'exchangeItems/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -135,6 +160,24 @@ class Index extends PureComponent {
   }, 200);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          fromDate,
+          toDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -157,6 +200,21 @@ class Index extends PureComponent {
    * @param {object} e value of select
    * @param {string} type key of object search
    */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'exchangeItems/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
   };
@@ -168,6 +226,18 @@ class Index extends PureComponent {
    */
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e, type) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -385,6 +455,8 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      classes,
+      branches,
       pagination,
       match: { params },
       loading: { effects },
@@ -415,6 +487,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                date: search.fromDate &&
+                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -422,33 +496,33 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    name="title"
+                    onChange={(event) => this.onChange(event, 'title')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở ' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>
