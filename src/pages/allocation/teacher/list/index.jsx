@@ -1,9 +1,8 @@
 import { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
-import { Form, List, Avatar } from 'antd';
+import { Form, List } from 'antd';
 import classnames from 'classnames';
-import { UserOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
 
@@ -11,7 +10,7 @@ import Text from '@/components/CommonComponent/Text';
 import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
 
@@ -35,6 +34,8 @@ const mapStateToProps = ({ loading }) => ({
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
+  formRef = React.createRef();
+
   constructor() {
     super();
     this.state = {
@@ -84,6 +85,11 @@ class Index extends PureComponent {
 
   fetchClasses = (branchId) => {
     const { dispatch } = this.props;
+    this.formRef?.current?.resetFields(['class']);
+    this.setStateData({
+      teachers: [],
+      students: []
+    })
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
@@ -106,10 +112,15 @@ class Index extends PureComponent {
     dispatch({
       type: 'allocationTeacherList/GET_STUDENTS',
       payload,
-      callback: (res) => {
+      callback: (res, error) => {
         if (res) {
           this.setStateData({
             students: res?.items.map((item) => item?.student) || [],
+          });
+        }
+        if (error) {
+          this.setStateData({
+            students: [],
           });
         }
       },
@@ -118,10 +129,15 @@ class Index extends PureComponent {
     dispatch({
       type: 'allocationTeacherList/GET_TEACHERS',
       payload,
-      callback: (res) => {
+      callback: (res, error) => {
         if (res) {
           this.setStateData({
-            teachers: res?.items.map((item) => item?.teacher) || [],
+            teachers: res?.items.map((item) => item?.employee) || [],
+          });
+        }
+        if (error) {
+          this.setStateData({
+            teachers: [],
           });
         }
       },
@@ -130,7 +146,6 @@ class Index extends PureComponent {
 
   render() {
     const { students, branches, classes, teachers } = this.state;
-
     return (
       <Form layout="vertical" ref={this.formRef}>
         <Helmet title="Danh sách" />
@@ -200,7 +215,7 @@ class Index extends PureComponent {
             <div className={stylesAllocation['main-container']}>
               <div className={stylesAllocation['left-container']}>
                 <div className={stylesAllocation['content']}>
-                  <div className={stylesAllocation['heading']}>
+                  <div className={stylesAllocation['heading-list']}>
                     <Text color="dark" size="large-medium">
                       Danh sách trẻ
                     </Text>
@@ -209,10 +224,10 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={students}
-                      renderItem={({ id, fullName, age }, index) => (
+                      renderItem={({ id, fullName, age, fileImage }, index) => (
                         <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
-                            <AvatarTable />
+                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
                             <div className={stylesAllocation['info']}>
                               <h3 className={stylesAllocation['title']}>{fullName}</h3>
                               <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
@@ -226,7 +241,7 @@ class Index extends PureComponent {
               </div>
               <div className={stylesAllocation['right-container']}>
                 <div className={stylesAllocation['content']}>
-                  <div className={stylesAllocation['heading']}>
+                  <div className={stylesAllocation['heading-list']}>
                     <Text color="dark" size="large-medium">
                       Danh sách giáo viên
                     </Text>
@@ -235,10 +250,10 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={teachers}
-                      renderItem={({ id, fullName }, index) => (
+                      renderItem={({ id, fullName, fileImage }, index) => (
                         <List.Item key={id + index}>
                           <div className={stylesAllocation['group-info']}>
-                            <AvatarTable />
+                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
                             <div className={stylesAllocation['info']}>
                               <h3 className={stylesAllocation['title']}>{fullName}</h3>
                               <p className={stylesAllocation['norm']}></p>
