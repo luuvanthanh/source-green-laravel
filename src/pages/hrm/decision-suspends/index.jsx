@@ -14,6 +14,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -247,10 +248,14 @@ class Index extends PureComponent {
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
         title: 'Số QĐ',
@@ -274,18 +279,18 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Ngày kết thúc thanh toán lương',
-        key: 'payEndDate',
+        title: 'Ngày bắt đầu',
+        key: 'from',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'payEndDate'), variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(get(record, 'from'), variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày áp dụng',
-        key: 'timeApply',
+        title: 'Ngày kết thúc',
+        key: 'to',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(get(record, 'to'), variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Ghi chú',
@@ -326,10 +331,7 @@ class Index extends PureComponent {
       <>
         <Helmet title="Danh sách tạm hoãn công việc" />
         <div
-          className={classnames(
-            styles['content-form'],
-            styles['content-form-decisionSuspends'],
-          )}
+          className={classnames(styles['content-form'], styles['content-form-decisionSuspends'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
