@@ -23,6 +23,11 @@ class AvatarTable extends Component {
         </div>
       );
     }
+    if (fileImage && !fullName) {
+      return (
+        <Avatar shape="square" size={40} src={`${API_UPLOAD}${fileImage}`} />
+      );
+    }
     return <Avatar size={size} shape="square" icon={<UserOutlined />} />;
   }
 }

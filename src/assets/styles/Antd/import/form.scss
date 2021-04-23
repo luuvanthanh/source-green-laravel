@@ -86,3 +86,21 @@ form .ant-cascader-picker:only-child {
 .ql-editor {
   min-height: 200px;
 }
+
+.title-green {
+  .ant-form-item-label {
+    label {
+      text-transform: uppercase;
+      color: $text-success;
+      font-weight: 600;
+    }
+  }
+}
+
+.no-data {
+  text-align: center;
+  color: rgba($color: $black, $alpha: 0.25);
+  font-size: 14px;
+  line-height: 1.5715;
+  font-weight: normal;
+}
