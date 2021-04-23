@@ -1118,6 +1118,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
+            component: './fee-policy/target/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // FEE POLICY
