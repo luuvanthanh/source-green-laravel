@@ -14,7 +14,7 @@ use GGPHP\WorkDeclaration\Models\WorkDeclaration;
 class WorkDeclarationTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['employee', 'workDeclarationDetails'];
+    protected $availableIncludes = ['employee'];
 
     /**
      * Include Store

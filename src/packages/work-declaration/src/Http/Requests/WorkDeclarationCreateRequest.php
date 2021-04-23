@@ -16,10 +16,12 @@ class WorkDeclarationCreateRequest extends FormRequest
 
         return [
             "employeeId" => "required|exists:Employees,Id",
-            "data" => "required|array",
-            "data.*.type" => "required|string",
-            "data.*.reason" => "required|string",
-            "data.*.time" => "required|array",
+            "date" => "required",
+            "time" => "required",
+            // "data" => "required|array",
+            // "data.*.type" => "required|string",
+            // "data.*.reason" => "required|string",
+            // "data.*.time" => "required|array",
         ];
     }
 }

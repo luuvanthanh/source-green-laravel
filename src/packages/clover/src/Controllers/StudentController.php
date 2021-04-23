@@ -43,4 +43,16 @@ class StudentController extends Controller
 
         return $this->success($students, trans('lang::messages.common.getListSuccess'));
     }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
+    public function show(Request $request, $id)
+    {
+        $employee = $this->studentRepository->find($id);
+
+        return $this->success($employee, trans('lang::messages.common.getInfoSuccess'));
+    }
 }

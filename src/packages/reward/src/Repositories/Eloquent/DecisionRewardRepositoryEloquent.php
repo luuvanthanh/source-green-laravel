@@ -57,6 +57,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
+
             \DB::rollback();
         }
 
@@ -67,7 +68,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
     public function getDecisionReward(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-            $this->model = $this->model->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
+            $this->model = $this->model->whereDate('DecisionDate', '>=', $attributes['startDate'])->whereDate('DecisionDate', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['employeeId'])) {

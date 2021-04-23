@@ -69,9 +69,9 @@ class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardR
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->employeeRepositoryEloquent->model->whereHas('reward', function ($query) use ($attributes) {
-                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
+                $query->whereDate('DecisionDate', '>=', $attributes['startDate'])->whereDate('DecisionDate', '<=', $attributes['endDate']);
             })->with(['reward' => function ($query) use ($attributes) {
-                $query->whereDate('Date', '>=', $attributes['startDate'])->whereDate('Date', '<=', $attributes['endDate']);
+                $query->whereDate('DecisionDate', '>=', $attributes['startDate'])->whereDate('DecisionDate', '<=', $attributes['endDate']);
             }]);
         }
 
@@ -98,6 +98,10 @@ class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardR
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('Type', $attributes['type']);
         }
 
         $rewards = !empty($attribute['limit']) ? $this->paginate($attribute['limit']) : $this->get();

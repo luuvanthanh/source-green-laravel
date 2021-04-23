@@ -205,6 +205,7 @@ return [
         GGPHP\DecisionSuspend\Providers\DecisionSuspendServiceProvider::class,
         GGPHP\Clover\Providers\CloverServiceProvider::class,
         GGPHP\InOutHistories\Providers\InOutHistoriesServiceProvider::class,
+        GGPHP\BusinessCard\Providers\BusinessCardServiceProvider::class,
     ],
 
     /*

@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Users\Http\Requests;
+namespace GGPHP\BusinessCard\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserUpdateRequest extends FormRequest
+class CreatBusinessCardRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -25,6 +25,11 @@ class UserUpdateRequest extends FormRequest
     {
 
         return [
+            'employeeId' => 'required|exists:Employees,Id',
+            'absentTypeId' => 'required',
+            'startDate' => 'required',
+            'endDate' => 'required',
+            'detail' => 'required|array',
         ];
     }
 }

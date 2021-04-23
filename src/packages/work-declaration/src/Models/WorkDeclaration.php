@@ -13,7 +13,7 @@ class WorkDeclaration extends UuidModel
      */
     protected $table = 'WorkDeclarations';
 
-    protected $fillable = ['EmployeeId'];
+    protected $fillable = ['EmployeeId', 'Date', 'Time'];
 
     /**
      * Define relations workDeclarationDetails

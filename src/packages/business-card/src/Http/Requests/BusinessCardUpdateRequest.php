@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Users\Http\Requests;
+namespace GGPHP\BusinessCard\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserUpdateRequest extends FormRequest
+class BusinessCardUpdateRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,7 +23,6 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
         ];
     }

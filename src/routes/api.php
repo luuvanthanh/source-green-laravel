@@ -15,9 +15,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'middleware' => []], function () {
 
-    \GGPHP\Users\RouteRegistrar::routes(function ($router) {
-        $router->forGuest();
-        $router->forKiosk();
+    Route::group(['prefix' => 'ai', 'middleware' => []], function () {
+        \GGPHP\Users\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
+
+        \GGPHP\Clover\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
     });
 
     \GGPHP\Timekeeping\RouteRegistrar::routes(function ($router) {
@@ -41,6 +46,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Users\RouteRegistrar::routes(function ($router) {
         $router->forUser();
     });
+
     \GGPHP\ShiftSchedule\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
@@ -118,6 +124,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     });
 
     \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\BusinessCard\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
 

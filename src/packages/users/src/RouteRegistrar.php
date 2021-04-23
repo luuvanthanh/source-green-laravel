@@ -18,9 +18,8 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function all()
     {
-        $this->forGuest();
         $this->forUser();
-        $this->forKiosk();
+        $this->forAi();
     }
 
     /**
@@ -31,18 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forGuest()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('oauth/token', [
-                'uses' => 'AccessTokenController@issueToken',
-                'as' => 'employees.login',
-            ]);
-            \Route::post('password/forgot/request', [
-                'uses' => 'ForgotPasswordController@getResetToken',
-                'as' => 'employees.getResetToken',
-            ]);
-            \Route::post('password/forgot/reset', [
-                'uses' => 'ResetPasswordController@reset',
-                'as' => 'employees.getResetToken',
-            ]);
+
         });
     }
 
@@ -75,21 +63,22 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'employees.show',
             ]);
 
-            \Route::get('me', [
-                'uses' => 'AuthController@authenticated',
-                'as' => 'employees.me.show',
-            ]);
-
         });
     }
 
-    public function forKiosk()
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAi()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('/auth/login', [
-                'uses' => 'AuthController@loginByRFID',
-                'as' => 'kiosk.employees.login',
+            \Route::get('employees', [
+                'uses' => 'UserController@index',
+                'as' => 'employees.index',
             ]);
+
         });
     }
 }

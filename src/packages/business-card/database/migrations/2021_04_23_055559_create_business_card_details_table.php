@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInOutHistoriesTable extends Migration
+class CreateBusinessCardDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,16 @@ class CreateInOutHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('InOutHistories', function (Blueprint $table) {
+        Schema::create('BusinessCardDetails', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->uuid('StudentId');
-            $table->dateTime('AttendedAt');
+            $table->uuid('BusinessCardId');
+            $table->foreign('BusinessCardId')->references('Id')->on('BusinessCards')->onDelete('cascade');
+            $table->date('Date')->nullable();
+            $table->boolean('IsHalfTime')->default(false);
+            $table->float('Number')->nullable();
+            $table->time('StartTime')->nullable();
+            $table->time('EndTime')->nullable();
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });
@@ -30,6 +35,6 @@ class CreateInOutHistoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('InOutHistories');
+        Schema::dropIfExists('BusinessCardDetails');
     }
 }

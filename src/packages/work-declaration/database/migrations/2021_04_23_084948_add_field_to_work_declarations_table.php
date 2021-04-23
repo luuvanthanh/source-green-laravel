@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldImageToInOutHistoriesTable extends Migration
+class AddFieldToWorkDeclarationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddFieldImageToInOutHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::table('InOutHistories', function (Blueprint $table) {
-            $table->string('FileImage', 1000)->nullable();
+        Schema::table('WorkDeclarations', function (Blueprint $table) {
+            $table->date('Date')->nullable();
+            $table->time('Time')->nullable();
         });
     }
 
@@ -25,8 +26,9 @@ class AddFieldImageToInOutHistoriesTable extends Migration
      */
     public function down()
     {
-        Schema::table('InOutHistories', function (Blueprint $table) {
-            $table->dropColumn('FileImage')->nullable();
+        Schema::table('WorkDeclarations', function (Blueprint $table) {
+            $table->dropColumn('Date');
+            $table->dropColumn('Time');
         });
     }
 }

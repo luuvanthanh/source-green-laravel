@@ -6,7 +6,6 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\WorkDeclaration\Models\WorkDeclaration;
 use GGPHP\WorkDeclaration\Presenters\WorkDeclarationPresenter;
 use GGPHP\WorkDeclaration\Repositories\Contracts\WorkDeclarationRepository;
-use GGPHP\WorkDeclaration\Services\WorkDeclarationDetailService;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -18,7 +17,7 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
 {
     protected $fieldSearchable = [
         'Id',
-        'EmployeeId',
+        'employee.FullName',
     ];
 
     /**
@@ -55,7 +54,7 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
         try {
             $workDeclaration = WorkDeclaration::create($attributes);
 
-            WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
+            // WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
             \DB::commit();
         } catch (\Throwable $th) {
             dd($th);
@@ -68,13 +67,7 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
     public function getWorkDeclaration(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-            $this->model = $this->model->where('CreationTime', '>=', $attributes['startDate'])->where('CreationTime', '<=', $attributes['endDate']);
-        }
-
-        if (!empty($attributes['is_filter'])) {
-            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
-                $query->tranferHistory($attributes);
-            });
+            $this->model = $this->model->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['employeeId'])) {
@@ -89,16 +82,5 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
         }
 
         return $workDeclaration;
-    }
-
-    public function update(array $attributes, $id)
-    {
-        $workDeclaration = WorkDeclaration::findOrFail($id);
-
-        $workDeclaration->update($attributes);
-
-        WorkDeclarationDetailService::update($attributes['data']);
-
-        return parent::find($id);
     }
 }
