@@ -263,7 +263,7 @@ const General = memo(({}) => {
                   name="phoneNumber"
                   label="Số điện thoại"
                   type={variables.INPUT}
-                  rules={[variables.RULES.PHONE]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                 />
               </Pane>
               <Pane className="col-lg-4">
@@ -271,7 +271,7 @@ const General = memo(({}) => {
                   name="email"
                   label="Email"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMAIL]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                 />
               </Pane>
             </Pane>
