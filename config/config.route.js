@@ -1148,6 +1148,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/chinh-sach-phi/phi',
+            component: './fee-policy/fee',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chinh-sach-phi/phi/tao-moi',
+            component: './fee-policy/fee/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // FEE POLICY

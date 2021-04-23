@@ -18,8 +18,8 @@ import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
   // const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, feePolicyFormat }) => [
-    feePolicyFormat,
+  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, feePolicyFee }) => [
+    feePolicyFee,
     effects,
   ]);
 
@@ -36,22 +36,28 @@ const Index = memo(() => {
 
   const columns = [
     {
-      title: 'Mã hình thức',
+      title: 'Mã phí',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) => <Text size="normal">HOCKY1</Text>,
+      render: (text, record, index) => <Text size="normal">HP</Text>,
     },
     {
-      title: 'Tên hình thức',
+      title: 'Tên phí',
       key: 'name',
       className: 'min-width-200',
-      render: (text, record, index) => <Text size="normal">Theo học kỳ 1</Text>,
+      render: (text, record, index) => <Text size="normal">Tiền học phí</Text>,
+    },
+    {
+      title: 'Độ ưu tiên',
+      key: 'piority',
+      className: 'min-width-70',
+      render: (record) => <Text size="normal">3</Text>,
     },
     {
       title: 'Loại',
       key: 'type',
       className: 'min-width-70',
-      render: (record) => <Text size="normal">HK</Text>,
+      render: (record) => <Text size="normal">K</Text>,
     },
     {
       key: 'action',
@@ -62,7 +68,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
-            onClick={() => history.push(`/chinh-sach-phi/hinh-thuc/${record?.id}/chi-tiet`)}
+            onClick={() => history.push(`/chinh-sach-phi/phi/${record?.id}/chi-tiet`)}
           >
             Chi tiết
           </Button>
@@ -104,15 +110,15 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Hình thức đóng phí" />
+      <Helmet title="Danh mục phí" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
-          <Heading type="page-title">Hình thức đóng phí</Heading>
+          <Heading type="page-title">Danh mục phí</Heading>
           <Button
             className="ml-auto"
             color="success"
             icon="plus"
-            onClick={() => history.push(`/chinh-sach-phi/hinh-thuc/tao-moi`)}
+            onClick={() => history.push(`/chinh-sach-phi/phi/tao-moi`)}
           >
             Tạo mới
           </Button>
