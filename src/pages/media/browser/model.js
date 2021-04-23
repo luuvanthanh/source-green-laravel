@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -54,6 +55,22 @@ export default {
         const response = yield saga.call(services.classify, payload);
         callback && callback(response)
       } catch (error) {}
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.remove, payload);
+        callback && callback(response)
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback && callback(null, error)
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thất bại',
+        });
+      }
     },
   },
   subscriptions: {},

@@ -38,7 +38,18 @@ const Index = memo(() => {
   const [images, setImages] = useState([]);
 
   const removeImage = (removeId) => () => {
-    setImages((prevImages) => prevImages.filter((image) => image.id !== removeId));
+    dispatch({
+      type: 'mediaBrowser/REMOVE',
+      payload: {
+        id: removeId
+      },
+      callback: () => {
+        setImages((prevImages) => prevImages.filter(
+          (image) => image.id !== removeId)
+        );
+      }
+    });
+
   };
 
   const onOk = useCallback(() => {
@@ -75,7 +86,7 @@ const Index = memo(() => {
         history.push({
           pathname: '/ghi-nhan/duyet-hinh',
           // query: Helper.convertParamSearch(search),
-        })
+        });
       },
     });
   };

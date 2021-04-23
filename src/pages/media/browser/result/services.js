@@ -14,4 +14,10 @@ export function validate(data) {
   });
 }
 
+export function remove({ postId, fileId }) {
+  return request(`/posts/${postId}/files/${fileId}`, {
+    method: 'DELETE',
+  });
+}
+
 export default get;

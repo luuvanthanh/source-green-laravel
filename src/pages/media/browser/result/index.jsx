@@ -1,12 +1,12 @@
 import { memo, useCallback, useEffect, useState, useRef } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory } from 'umi'; // useLocation
+import { useHistory, useLocation } from 'umi';
 import { Helmet } from 'react-helmet';
 import { size } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form } from 'antd';
+import { Form, Checkbox } from 'antd';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -17,12 +17,12 @@ import FormItem from '@/components/CommonComponent/FormItem';
 
 import infoStyles from '@/assets/styles/Common/information.module.scss';
 import styles from '../style.module.scss';
-import variables from '@/utils/variables';
+import { variables, Helper } from '@/utils';
 import localVariables from '../../utils/variables';
 
 const Index = memo(() => {
-  const history = useHistory();
   const formRef = useRef();
+  const filterRef = useRef();
 
   const dispatch = useDispatch();
   const [{ data }, loading] = useSelector(({ loading: { effects }, mediaResult }) => [
@@ -30,30 +30,64 @@ const Index = memo(() => {
     effects,
   ]);
 
-  // const { query } = useLocation();
+  const history = useHistory();
+  const { query, pathname } = useLocation();
 
   const [classifyData, setClassifyData] = useState([]);
+  const [search, setSearch] = useState({
+    search: query?.search,
+    sentDateFrom: query?.sentDateFrom,
+    sentDateTo: query?.sentDateTo,
+  });
+  const [groupIds, setGroupIds] = useState([]);
+
+  const changeFilterDate = (values) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      sentDateFrom: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+      sentDateTo: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+    }));
+  };
+
+  const groupSelect = (id) => ({ target: { checked } }) => {
+    setGroupIds(prev => checked ? [
+      ...prev, id
+    ] : prev.filter(selectId => selectId !== id));
+  };
 
   const fetchMedia = useCallback(() => {
     dispatch({
       type: 'mediaResult/GET_DATA',
       payload: {
-        // sentDateFrom: query?.uploadDate,
+        ...search,
         status: localVariables.CLASSIFY_STATUS.VALIDATING,
-        maxResultCount: variables.PAGINATION.SIZEMAX
+        maxResultCount: variables.PAGINATION.SIZEMAX,
       }
     });
-  }, []);
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
+  }, [search]);
 
   const removeImage = (postId, image) => {
-    setClassifyData(prev => prev.map(post => post.id === postId ? ({
-      ...post,
-      files: (post?.files || []).filter(file => file.id !== image.id),
-      removeFiles: [
-        ...post?.removeFiles || [],
-        image
-      ]
-    }) : post));
+    dispatch({
+      type: 'mediaResult/REMOVE',
+      payload: {
+        postId,
+        fileId: image?.id
+      },
+      callback: () => {
+        setClassifyData(prev => prev.map(post => post.id === postId ? ({
+          ...post,
+          files: (post?.files || []).filter(file => file.id !== image.id),
+          // removeFiles: [
+          //   ...post?.removeFiles || [],
+          //   image
+          // ]
+        }) : post));
+      }
+    })
   };
 
   const changeDesctiption = (postId) => e => {
@@ -113,22 +147,64 @@ const Index = memo(() => {
     setClassifyData(data);
   }, [data]);
 
+  console.log(groupIds)
+
   return (
     <>
       <Helmet title="Duyệt hình" />
       <Pane className="p20">
-        <Pane className="d-flex mb20">
+        <Pane className="mb20">
           <Heading type="page-title">Kết quả lọc hình ảnh</Heading>
-          <Button
-            disabled={loading['mediaResult/GET_DATA']}
-            className="ml-auto"
-            color="success"
-            icon="send"
-            onClick={postAll}
-            loading={loading['mediaResult/VALIDATE_ALL']}
+        </Pane>
+
+        <Pane className="mb20">
+          <Form
+            layout="vertical"
+            ref={filterRef}
+            initialValues={{
+              rangeTime: [
+                search?.sentDateFrom ? moment(search?.sentDateFrom) : null,
+                search?.sentDateTo ? moment(search?.sentDateTo) : null,
+              ],
+            }}
           >
-            Gửi tất cả
-          </Button>
+            <Pane className="row">
+              <Pane className="col-lg-3">
+                <FormItem
+                  name="rangeTime"
+                  type={variables.RANGE_PICKER}
+                  onChange={changeFilterDate}
+                  className="mb-0"
+                />
+              </Pane>
+
+              <Pane className="col-lg-9 d-flex justify-content-end">
+                <Button
+                  disabled={loading['mediaResult/GET_DATA']}
+                  className="mr20"
+                  color="dark"
+                  type="link"
+                >
+                  Xóa tất cả kết quả lọc hình
+                </Button>
+                <Button
+                  disabled={loading['mediaResult/GET_DATA']}
+                  className="mr20"
+                  color="primary"
+                >
+                  Gộp ghi nhận
+                </Button>
+                <Button
+                  disabled={loading['mediaResult/GET_DATA']}
+                  color="success"
+                  onClick={postAll}
+                  loading={loading['mediaResult/VALIDATE_ALL']}
+                >
+                  Gửi tất cả
+                </Button>
+              </Pane>
+            </Pane>
+          </Form>
         </Pane>
 
         <Loading loading={loading['mediaResult/GET_DATA']} isEmpty={!size(classifyData)}>
@@ -139,13 +215,14 @@ const Index = memo(() => {
               description: classifyData.map(item => item.description)
             }}
           >
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 180}>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 214}>
               {(classifyData || []).map((post, index) => (
                 <Pane className={csx("card p20 mb-0", {
-                  mt15: !!index
+                  mt15: !!index,
+                  'border border-primary': groupIds.includes(post?.id)
                 })} key={post?.id}>
                   <Pane className="mb15 row">
-                    <Pane className="col">
+                    <Pane className="col-lg-3">
                       <Pane className={infoStyles.userInformation}>
                         <AvatarTable fileImage={post?.student?.fileImage} />
                         <Pane>
@@ -154,17 +231,31 @@ const Index = memo(() => {
                         </Pane>
                       </Pane>
                     </Pane>
-                    <Pane className="col d-flex justify-content-end align-items-center">
-                      <Pane className="mr10">
-                        <label className={infoStyles.infoLabel}>Thời gian tải lên:</label>
+                    <Pane className="col-lg-9 d-flex justify-content-end align-items-center">
+                      <Button
+                        className="mr20"
+                        color="danger"
+                        type="link"
+                      >
+                        Xóa hết tất cả hình
+                      </Button>
+                      <Pane className="mr20">
+                        <label className={csx(infoStyles.infoLabel, 'mb-0')}>Thời gian tải lên:</label>
                         <span className={infoStyles.infoText}>{moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME_VI)}</span>
                       </Pane>
                       <Button
+                        className="mr20"
                         color="success"
                         onClick={() => createPost(post, index)}
                       >
                         Gửi
                       </Button>
+                      <Pane className="px5">
+                        <Checkbox
+                          style={{ transform: 'scale(1.5)' }}
+                          onChange={groupSelect(post?.id)}
+                        />
+                      </Pane>
                     </Pane>
                   </Pane>
 

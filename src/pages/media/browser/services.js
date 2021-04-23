@@ -13,3 +13,9 @@ export function classify(data) {
     data
   });
 }
+
+export function remove({ id }) {
+  return request(`/recorded-files/${id}`, {
+    method: 'DELETE',
+  });
+}
