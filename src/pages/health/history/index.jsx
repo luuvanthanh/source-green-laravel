@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get } from 'lodash';
+import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -33,6 +33,8 @@ const mapStateToProps = ({ healthHistories, loading }) => ({
   loading,
   data: healthHistories.data,
   pagination: healthHistories.pagination,
+  branches: healthHistories.branches,
+  classes: healthHistories.classes,
   criteriaGroupProperties: healthHistories.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -47,6 +49,8 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        branchId: query.branchId,
+        classId: query.classId,
         reportDate: query.reportDate
           ? moment(query.reportDate).format(variables.DATE_FORMAT.DATE_AFTER)
           : moment().format(variables.DATE_FORMAT.DATE_AFTER),
@@ -101,11 +105,23 @@ class Index extends PureComponent {
       query: Helper.convertParamSearch(search),
     });
   };
-
   /**
    * Function load data
    */
   loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'healthHistories/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'healthHistories/GET_BRANCHES',
+      payload: {},
+    });
     this.props.dispatch({
       type: 'healthHistories/GET_CRITERIA_GROUP_PROPERTIES',
       payload: {},
@@ -145,6 +161,21 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'healthHistories/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -279,10 +310,11 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      branches,
+      classes,
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['healthHistories/GET_DATA'];
@@ -314,17 +346,18 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="reportDate"
-                    onChange={(event) => this.onChangeDate(event, 'reportDate')}
-                    type={variables.DATE_PICKER}
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>

@@ -33,6 +33,8 @@ const mapStateToProps = ({ health, loading }) => ({
   loading,
   data: health.data,
   pagination: health.pagination,
+  branches: health.branches,
+  classes: health.classes,
   criteriaGroupProperties: health.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -47,6 +49,8 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        branchId: query.branchId,
+        classId: query.classId,
         reportDate: moment().format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -104,6 +108,19 @@ class Index extends PureComponent {
    * Function load data
    */
   loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'health/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'health/GET_BRANCHES',
+      payload: {},
+    });
     this.props.dispatch({
       type: 'health/GET_CRITERIA_GROUP_PROPERTIES',
       payload: {},
@@ -143,6 +160,21 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'health/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -279,6 +311,8 @@ class Index extends PureComponent {
 
   render() {
     const {
+      branches,
+      classes,
       data,
       pagination,
       match: { params },
@@ -319,9 +353,17 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                   />
                 </div>
