@@ -158,7 +158,8 @@ const Index = memo(({}) => {
                             <Pane className="col-md-7">
                               <Pane>
                                 {item.editor.userName}{' '}
-                                {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}
+                                {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}{' '}
+                                {itemChange.criteriaGroupPropertypeName}
                               </Pane>
                             </Pane>
                           </Pane>
