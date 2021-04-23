@@ -908,28 +908,6 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Công thêm',
-          key: 'additional-times',
-          url: [
-            '/quan-ly-nhan-su/cong-them',
-            '/quan-ly-nhan-su/cong-them/tao-moi',
-            '/quan-ly-nhan-su/cong-them/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Công trừ',
-          key: 'subtraction-times',
-          url: [
-            '/quan-ly-nhan-su/cong-tru',
-            '/quan-ly-nhan-su/cong-tru/tao-moi',
-            '/quan-ly-nhan-su/cong-tru/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
           title: 'Không xác định công',
           key: 'timekeeping-invalid',
           url: ['/quan-ly-nhan-su/khong-xac-dinh-cong'],
