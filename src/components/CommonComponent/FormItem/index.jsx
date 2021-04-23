@@ -17,6 +17,8 @@ import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { SearchOutlined } from '@ant-design/icons';
 import { variables, Helper } from '@/utils';
+import Text from '@/components/CommonComponent/Text';
+import * as _ from 'lodash';
 
 const filter = (inputValue, path) =>
   path.some((option) => Helper.slugify(option?.name).indexOf(Helper.slugify(inputValue)) > -1);
@@ -162,7 +164,7 @@ const renderChildren = (
       disabled={disabled}
       format={['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
-      placeholder={placeholder || ['dd/mm/yyyy', 'dd/mm/yyyy']}
+      placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
     />
   ),
   datePicker: (
@@ -171,7 +173,7 @@ const renderChildren = (
       disabledDate={disabledDate}
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
-      placeholder="dd/mm/yyyy"
+      placeholder="ngày/tháng/năm"
     />
   ),
   monthPicker: (
@@ -190,7 +192,7 @@ const renderChildren = (
       disabledDate={disabledDate}
       format={variables.DATE_FORMAT.DATE_TIME}
       onBlur={onBlur}
-      placeholder="dd/mm/yyyy"
+      placeholder="ngày/tháng/năm"
       showTime={{ format: 'HH:mm' }}
     />
   ),
@@ -255,7 +257,7 @@ const renderChildren = (
   ),
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
-      {data.map((item, index) => (
+      {!_.isEmpty(data) ? data.map((item, index) => (
         <Radio
           key={index}
           value={item.value}
@@ -267,7 +269,9 @@ const renderChildren = (
         >
           {item.label}
         </Radio>
-      ))}
+      )) : (
+        <Text className="no-data">Không có dữ liệu</Text>
+      )}
     </Radio.Group>
   ),
   switch: <Switch onChange={onChange} />,

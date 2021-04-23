@@ -46,6 +46,14 @@ export default {
         callback(null, error);
       }
     },
+    *GET_TEACHERS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getTeachers, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };
