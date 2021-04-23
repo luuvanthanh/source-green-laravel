@@ -198,9 +198,12 @@ class Index extends PureComponent {
   });
 
   getStudentCriteria = (items, key) => {
-    const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
-    if (itemCriteria) {
-      return itemCriteria.value;
+    if (items) {
+      const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
+      if (itemCriteria) {
+        return itemCriteria.value;
+      }
+      return null;
     }
     return null;
   };
@@ -218,19 +221,13 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">
-            {get(record, 'studentCriteriaResponses[0].student.class.branch.name')}
-          </Text>
-        ),
+        render: (record) => <Text size="normal">{get(record, 'student.class.branch.name')}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{get(record, 'studentCriteriaResponses[0].student.class.name')}</Text>
-        ),
+        render: (record) => <Text size="normal">{get(record, 'student.class.name')}</Text>,
       },
       {
         title: 'Họ và Tên',
@@ -239,8 +236,8 @@ class Index extends PureComponent {
         render: (record) => {
           return (
             <AvatarTable
-              fileImage={Helper.getPathAvatarJson(get(record, 'studentCriteriaResponses[0].student.fileImage'))}
-              fullName={record.studentName}
+              fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+              fullName={record?.student?.fullName}
             />
           );
         },
@@ -256,10 +253,10 @@ class Index extends PureComponent {
               ghost
               onClick={() =>
                 history.push(
-                  `/suc-khoe/hom-nay/${record.studentId}/chi-tiet?reportDate=${get(
+                  `/suc-khoe/hom-nay/${record?.student?.id}/chi-tiet?reportDate=${get(
                     record,
-                    'studentCriteriaResponses[0].reportDate',
-                  )}&studentId=${get(record, 'studentId')}`,
+                    'studentCriterias[0].reportDate',
+                  )}&studentId=${record?.student?.id}`,
                 )
               }
             >
@@ -274,9 +271,7 @@ class Index extends PureComponent {
       key: item.property,
       className: 'min-width-150',
       render: (record) => (
-        <Text size="normal">
-          {this.getStudentCriteria(record.studentCriteriaResponses, item.id)}
-        </Text>
+        <Text size="normal">{this.getStudentCriteria(record.studentCriterias, item.id)}</Text>
       ),
     }));
     return [...columns.slice(0, 3), ...columnsCategories, ...columns.slice(3)];
@@ -343,7 +338,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               bordered={false}
-              rowKey={(record) => record.id || record.studentId}
+              rowKey={(record) => record.id || record?.student?.id}
               scroll={{ x: '100%' }}
             />
           </div>
