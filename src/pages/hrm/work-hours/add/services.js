@@ -7,6 +7,12 @@ export function getUsers() {
   });
 }
 
+export function getAbsentTypes() {
+  return request(`/v1/absent-types`, {
+    method: 'GET',
+  });
+}
+
 export function add(data) {
   return request('/v1/work-hours', {
     method: 'POST',

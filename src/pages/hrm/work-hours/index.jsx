@@ -52,7 +52,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        endDate: HelperModules.getStartDate(query?.endDate, query?.choose),
+        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
       objects: {},
     };
@@ -248,6 +248,12 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE),
       },
       {
+        title: 'Loại',
+        key: 'absentType',
+        className: 'min-width-120',
+        render: (record) => record?.absentType?.name,
+      },
+      {
         title: 'Ngày hỗ trợ',
         key: 'date',
         width: 120,
@@ -257,8 +263,8 @@ class Index extends PureComponent {
       {
         title: 'Giờ',
         key: 'hours',
-        width: 120,
-        className: 'min-width-120',
+        width: 170,
+        className: 'min-width-170',
         render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
       },
     ];
@@ -276,13 +282,13 @@ class Index extends PureComponent {
     const loading = effects['workHours/GET_DATA'];
     return (
       <>
-        <Helmet title="Công giờ hỗ trợ" />
+        <Helmet title="Phiếu ĐK giờ làm thêm" />
         <div className={classnames(styles['content-form'], styles['content-form-workHours'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Công giờ hỗ trợ</Text>
+            <Text color="dark">Phiếu ĐK giờ làm thêm</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo công giờ hỗ trợ
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

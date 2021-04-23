@@ -26,7 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['employee', 'decisionRewardDetail.user']),
+      include: Helper.convertIncludes(['employee', 'absentType']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
       }),

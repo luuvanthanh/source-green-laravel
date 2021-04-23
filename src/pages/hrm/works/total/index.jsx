@@ -496,7 +496,7 @@ class Index extends PureComponent {
         render: (record) => record.totalTimekeepingWork,
       },
       {
-        title: 'Công giờ hỗ trợ',
+        title: 'Phiếu ĐK giờ làm thêm',
         key: 'totalWorkHourSupport',
         align: 'center',
         width: 80,
