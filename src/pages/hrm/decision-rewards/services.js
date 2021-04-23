@@ -29,6 +29,7 @@ export function get(data = {}) {
       include: Helper.convertIncludes(['employee']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
+        'type.FullName': data.type,
       }),
     },
   });
