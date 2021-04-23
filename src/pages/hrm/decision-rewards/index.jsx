@@ -49,6 +49,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        type: query?.type,
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -348,7 +349,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -356,14 +357,25 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[
+                      { id: 'REWARD', name: 'Khen thưởng' },
+                      { id: 'DISCIPLINE', name: 'Kỷ luật' },
+                    ]}
+                    name="type"
+                    type={variables.SELECT}
+                    onChange={(event) => this.onChangeSelect(event, 'type')}
+                  />
+                </div>
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
