@@ -177,7 +177,8 @@ class Index extends PureComponent {
             categories: {
               ...categories,
               classes: res?.items || []
-            }
+            },
+            hasMore: res?.items?.length <= variables.PAGINATION.PAGE_SIZE ? false : true
           }))
         }
       }
@@ -283,7 +284,7 @@ class Index extends PureComponent {
 
     return (
       <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
-        <Helmet title="Trẻ chưa xếp lớp" />
+        <Helmet title="Giáo viên chưa xếp lớp" />
         <div
           className={classnames(
             styles['content-form'],
@@ -343,7 +344,7 @@ class Index extends PureComponent {
                     </div>
                   </div>
                 </div>
-                {loadingTeacher && hasMore ? (
+                {loadingTeacher ? (
                   <div className="text-center p20">
                     <Spin />
                   </div>
