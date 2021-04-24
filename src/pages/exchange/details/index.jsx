@@ -143,18 +143,22 @@ class Index extends PureComponent {
    * Function change status
    * @param {uid} id id of items
    */
-  onChangeStatus = (e) => {
-    const {
-      match: { params },
-      dispatch,
-      details,
-    } = this.props;
-    if (params.id) {
+  onChangeStatus = (status) => {
+    const { dispatch, details } = this.props;
+    if (status === variablesModules.STATUS.CLOSED) {
+      dispatch({
+        type: 'exchangeDetails/CLOSE',
+        payload: {
+          ...details,
+        },
+        callback: () => {},
+      });
+    } else {
       dispatch({
         type: 'exchangeDetails/UPDATE_COMMUNICATION',
         payload: {
           ...details,
-          status: e,
+          status,
         },
         callback: () => {},
       });
