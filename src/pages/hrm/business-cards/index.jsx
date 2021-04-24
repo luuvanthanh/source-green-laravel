@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ decisionRewards, loading }) => ({
-  data: decisionRewards.data,
-  pagination: decisionRewards.pagination,
+const mapStateToProps = ({ businessCards, loading }) => ({
+  data: businessCards.data,
+  pagination: businessCards.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -92,7 +92,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'decisionRewards/GET_DATA',
+      type: 'businessCards/GET_DATA',
       payload: {
         ...search,
         status,
@@ -209,7 +209,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'decisionRewards/REMOVE',
+          type: 'businessCards/REMOVE',
           payload: {
             id,
             pagination: {
@@ -252,58 +252,36 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'decisionRewardDetails[0].employee.fileImage'),
-            )}
-            fullName={get(record, 'decisionRewardDetails[0].employee.fullName')}
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
           />
         ),
       },
       {
-        title: 'Số QĐ',
-        key: 'insurrance_number',
+        title: 'LOẠI',
+        key: 'absentType',
         className: 'min-width-100',
         width: 100,
-        render: (record) => get(record, 'decisionNumber'),
+        render: (record) => get(record, 'absentType.name'),
       },
       {
-        title: 'Ngày QĐ',
-        key: 'decisionDate',
+        title: 'Ngày bắt đầu',
+        key: 'startDate',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Ngày kết thúc',
+        key: 'endDate',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(record.endDate, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Lý do',
         key: 'reason',
-        className: 'min-width-100',
-        width: 100,
         render: (record) => get(record, 'reason'),
-      },
-      {
-        title: 'Mức thưởng, Mức phạt',
-        key: 'momeny',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => Helper.getPrice(get(record, 'decisionRewardDetails[0].money')),
-      },
-      {
-        title: 'Ngày áp dụng',
-        key: 'timeApply',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) =>
-          Helper.getDate(
-            get(record, 'decisionRewardDetails[0].timeApply'),
-            variables.DATE_FORMAT.DATE,
-          ),
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'decisionRewardDetails[0].note'),
       },
       {
         key: 'action',
@@ -332,16 +310,16 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['decisionRewards/GET_DATA'];
+    const loading = effects['businessCards/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách QĐ khen thưởng và kỷ luật" />
-        <div className={classnames(styles['content-form'], styles['content-form-decisionRewards'])}>
+        <Helmet title="Danh sách đơn đi công tác" />
+        <div className={classnames(styles['content-form'], styles['content-form-businessCards'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách QĐ khen thưởng và kỷ luật</Text>
+            <Text color="dark">Danh sách đơn đi công tác</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo quyết định
+              Tạo đơn
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

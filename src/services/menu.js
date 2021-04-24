@@ -781,6 +781,16 @@ export async function getLeftMenuHRM() {
           ],
           permission: [],
         },
+        {
+          title: 'Đơn đi công tác',
+          key: 'business-cards',
+          url: [
+            '/quan-ly-nhan-su/don-di-cong-tac',
+            '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
+            '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
+          ],
+          permission: [],
+        },
       ],
     },
 

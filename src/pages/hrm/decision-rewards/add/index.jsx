@@ -55,7 +55,9 @@ class Index extends PureComponent {
     if (params.id) {
       dispatch({
         type: 'decisionRewardsAdd/GET_DETAILS',
-        payload: {},
+        payload: {
+          id: params.id,
+        },
       });
     }
     this.loadCategories();

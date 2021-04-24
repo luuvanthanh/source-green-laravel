@@ -2,7 +2,7 @@ import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/decision-rewards', {
+  return request('/v1/business-cards', {
     method: 'GET',
     params: {
       limit: data.limit,
@@ -26,7 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['employee']),
+      include: Helper.convertIncludes(['employee', 'absentType']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
         type: data.type,
@@ -36,7 +36,7 @@ export function get(data = {}) {
 }
 
 export function remove(id) {
-  return request(`/v1/decision-rewards/${id}`, {
+  return request(`/v1/business-cards/${id}`, {
     method: 'DELETE',
     parse: true,
   });

@@ -981,6 +981,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/don-di-cong-tac',
+            component: './hrm/business-cards',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
+            component: './hrm/business-cards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
+            component: './hrm/business-cards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM
