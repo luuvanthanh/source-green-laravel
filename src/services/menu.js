@@ -604,18 +604,6 @@ export async function getLeftMenuAllocation() {
       pro: true,
     },
     {
-      title: 'Nhân viên',
-      key: 'users',
-      url: [
-        '/phan-bo/nhan-vien/danh-sach',
-        '/phan-bo/nhan-vien/dieu-chuyen',
-        '/phan-bo/nhan-vien/chua-xep-lop',
-      ],
-      icon: 'icon icon-man',
-      permission: [],
-      pro: true,
-    },
-    {
       title: 'Lịch sử',
       key: 'clock',
       url: ['/phan-bo/lich-su'],

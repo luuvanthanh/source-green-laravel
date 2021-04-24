@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import AvatarTable from '@/components/CommonComponent/AvatarTable'
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -47,7 +47,7 @@ class Index extends PureComponent {
       categories: {
         teachers: [],
         branches: [],
-        classes: []
+        classes: [],
       },
       selectedTeachers: [],
       loadingTeacher: false,
@@ -57,13 +57,13 @@ class Index extends PureComponent {
         totalCount: 0,
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
-      }
+      },
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    this.fetchBranches()
+    this.fetchBranches();
   }
 
   componentWillUnmount() {
@@ -84,26 +84,21 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  toggleCheckbox = (id) => e => {
-    const { checked } = e.target
+  toggleCheckbox = (id) => (e) => {
+    const { checked } = e.target;
     this.setStateData(({ selectedTeachers }) => ({
       selectedTeachers: checked
-        ? [
-          ...selectedTeachers,
-          id
-        ]
-        : selectedTeachers.filter(
-          selected => selected !== id
-        )
-    }))
-  }
+        ? [...selectedTeachers, id]
+        : selectedTeachers.filter((selected) => selected !== id),
+    }));
+  };
 
   selectBranch = async (value) => {
-    await this.setStateData(prev => ({
+    await this.setStateData((prev) => ({
       categories: {
         ...prev?.categories,
         classes: [],
-        teachers: []
+        teachers: [],
       },
       searchTeachers: {
         totalCount: 0,
@@ -113,11 +108,11 @@ class Index extends PureComponent {
       selectedTeachers: [],
       hasMore: true,
       loadingLoadMore: false,
-    }))
+    }));
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
     this.fetchTeachers(value);
-  }
+  };
 
   fetchTeachers = () => {
     this.setStateData({ loadingTeacher: true });
@@ -134,18 +129,18 @@ class Index extends PureComponent {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              teachers: res?.parsePayload || []
+              teachers: res?.parsePayload || [],
             },
             loadingTeacher: false,
             searchTeachers: {
               ...searchTeachers,
               totalCount: res.pagination.total,
-            }
-          }))
+            },
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   fetchBranches = () => {
     const { dispatch } = this.props;
@@ -156,59 +151,61 @@ class Index extends PureComponent {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              branches: res?.items || []
-            }
-          }))
+              branches: res?.items || [],
+            },
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   fetchClasses = (branchId) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: branchId
+        branch: branchId,
       },
       callback: (res) => {
         if (res) {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              classes: res?.items || []
-            }
-          }))
+              classes: res?.items || [],
+            },
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   finishForm = ({ classId, startDate }) => {
-    const { selectedTeachers } = this.state
-    const { dispatch } = this.props
-    const requestData = selectedTeachers.map(employeeId => ({
+    const { selectedTeachers } = this.state;
+    const { dispatch } = this.props;
+    const requestData = selectedTeachers.map((employeeId) => ({
       employeeId,
       classId,
-      startDate: startDate ? Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: startDate,
-          targetValue: '00:00:00',
-        }),
-        isUTC: false,
-      }) : undefined,
-    }))
+      startDate: startDate
+        ? Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: startDate,
+              targetValue: '00:00:00',
+            }),
+            isUTC: false,
+          })
+        : undefined,
+    }));
     dispatch({
       type: 'allocationTeacherNoClass/ADD',
       payload: requestData,
       callback: async () => {
         this.formRef?.current?.resetFields();
-        await this.setStateData(prev => ({
+        await this.setStateData((prev) => ({
           categories: {
             ...prev?.categories,
             classes: [],
-            teachers: []
+            teachers: [],
           },
           searchTeachers: {
             totalCount: 0,
@@ -218,19 +215,19 @@ class Index extends PureComponent {
           selectedTeachers: [],
           hasMore: true,
           loadingLoadMore: false,
-        }))
+        }));
         // gọi lại danh sách giáo viên từ API
         this.fetchTeachers();
-      }
-    })
-  }
+      },
+    });
+  };
 
   handleInfiniteOnLoad = () => {
     const { searchTeachers, categories } = this.state;
     const { dispatch } = this.props;
 
     if (_.isEmpty(categories.teachers)) {
-      return
+      return;
     }
 
     this.setStateData({ loadingLoadMore: true });
@@ -239,7 +236,7 @@ class Index extends PureComponent {
       message.warning('Danh sách đã hiển thị tất cả.');
       this.setStateData({
         hasMore: false,
-        loadingLoadMore: false
+        loadingLoadMore: false,
       });
       return;
     }
@@ -256,19 +253,19 @@ class Index extends PureComponent {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              teachers: categories.teachers.concat(res.parsePayload)
+              teachers: categories.teachers.concat(res.parsePayload),
             },
             loadingLoadMore: false,
             searchTeachers: {
               ...searchTeachers,
               page: searchTeachers.page + 1,
-            }
-          }))
+            },
+          }));
         }
         if (error) {
           this.setStateData({
             hasMore: false,
-            loadingLoadMore: false
+            loadingLoadMore: false,
           });
           message.error('Lỗi hệ thống.');
         }
@@ -277,8 +274,16 @@ class Index extends PureComponent {
   };
 
   render() {
-    const { loading: { effects } } = this.props
-    const { categories: { teachers, branches, classes }, selectedTeachers, loadingTeacher, loadingLoadMore, hasMore } = this.state
+    const {
+      loading: { effects },
+    } = this.props;
+    const {
+      categories: { teachers, branches, classes },
+      selectedTeachers,
+      loadingTeacher,
+      loadingLoadMore,
+      hasMore,
+    } = this.state;
     const submitLoading = effects['allocationTeacherNoClass/ADD'];
 
     return (
@@ -348,45 +353,49 @@ class Index extends PureComponent {
                     <Spin />
                   </div>
                 ) : (
-                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
-                      <InfiniteScroll
-                        hasMore={!loadingLoadMore && hasMore}
-                        initialLoad={loadingLoadMore}
-                        loadMore={this.handleInfiniteOnLoad}
-                        pageStart={0}
-                        useWindow={false}
-                      >
-                        <List
-                          className={stylesAllocation.list}
-                          dataSource={teachers}
-                          renderItem={({ id, fullName, fileImage, positionLevel }) => (
-                            <List.Item key={id}>
-                              <Checkbox
-                                className={stylesAllocation.checkbox}
-                                onChange={this.toggleCheckbox(id)}
-                                checked={!_.isEmpty(selectedTeachers) ? selectedTeachers.includes(id) : false}
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                    <InfiniteScroll
+                      hasMore={!loadingLoadMore && hasMore}
+                      initialLoad={loadingLoadMore}
+                      loadMore={this.handleInfiniteOnLoad}
+                      pageStart={0}
+                      useWindow={false}
+                    >
+                      <List
+                        className={stylesAllocation.list}
+                        dataSource={teachers}
+                        renderItem={({ id, fullName, fileImage, positionLevel }) => (
+                          <List.Item key={id}>
+                            <Checkbox
+                              className={stylesAllocation.checkbox}
+                              onChange={this.toggleCheckbox(id)}
+                              checked={
+                                !_.isEmpty(selectedTeachers) ? selectedTeachers.includes(id) : false
+                              }
+                            />
+                            <div className={stylesAllocation['group-info']}>
+                              <AvatarTable
+                                fileImage={Helper.getPathAvatarJson(fileImage)}
+                                fullName={fullName}
+                                description={
+                                  !_.isEmpty(positionLevel)
+                                    ? _.map(positionLevel, 'position.name').join(', ')
+                                    : ''
+                                }
                               />
-                              <div className={stylesAllocation['group-info']}>
-                                <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                <div className={stylesAllocation['info']}>
-                                  <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                                  <p className={stylesAllocation['norm']}>{!_.isEmpty(positionLevel) ? _.map(positionLevel, 'position.name').join(', ') : ''}</p>
-                                </div>
-                              </div>
-                            </List.Item>
-                          )}
-                        >
-                          {
-                            loadingLoadMore && (
-                              <div className="text-center p20">
-                                <Spin />
-                              </div>
-                            )
-                          }
-                        </List>
-                      </InfiniteScroll>
-                    </Scrollbars>
-                  )}
+                            </div>
+                          </List.Item>
+                        )}
+                      >
+                        {loadingLoadMore && (
+                          <div className="text-center p20">
+                            <Spin />
+                          </div>
+                        )}
+                      </List>
+                    </InfiniteScroll>
+                  </Scrollbars>
+                )}
               </div>
 
               <div className={stylesAllocation['footer-content']}>
@@ -425,7 +434,11 @@ class Index extends PureComponent {
                         name="classId"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.RADIO}
-                        data={!_.isEmpty(classes) ? classes.map(({ id, name }) => ({ value: id, label: name })) : []}
+                        data={
+                          !_.isEmpty(classes)
+                            ? classes.map(({ id, name }) => ({ value: id, label: name }))
+                            : []
+                        }
                       />
                     </div>
                   </div>

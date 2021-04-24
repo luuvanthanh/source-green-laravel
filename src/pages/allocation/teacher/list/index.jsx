@@ -13,6 +13,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import { isEmpty } from 'lodash';
 
 let isMounted = true;
 /**
@@ -88,8 +89,8 @@ class Index extends PureComponent {
     this.formRef?.current?.resetFields(['class']);
     this.setStateData({
       teachers: [],
-      students: []
-    })
+      students: [],
+    });
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
@@ -212,60 +213,64 @@ class Index extends PureComponent {
               </div>
             </div>
             {/* MAIN CONTAINER */}
-            <div className={stylesAllocation['main-container']}>
-              <div className={stylesAllocation['left-container']}>
-                <div className={stylesAllocation['content']}>
-                  <div className={stylesAllocation['heading-list']}>
-                    <Text color="dark" size="large-medium">
-                      Danh sách trẻ
-                    </Text>
+            {!isEmpty(students) ||
+              (!isEmpty(teachers) && (
+                <div className={stylesAllocation['main-container']}>
+                  <div className={stylesAllocation['left-container']}>
+                    <div className={stylesAllocation['content']}>
+                      <div className={stylesAllocation['heading-list']}>
+                        <Text color="dark" size="large-medium">
+                          Danh sách trẻ
+                        </Text>
+                      </div>
+                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
+                        <List
+                          className={stylesAllocation.list}
+                          dataSource={students}
+                          renderItem={({ id, fullName, age, fileImage }, index) => (
+                            <List.Item key={id + index}>
+                              <div className={stylesAllocation['group-info']}>
+                                <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                <div className={stylesAllocation['info']}>
+                                  <h3 className={stylesAllocation['title']}>{fullName}</h3>
+                                  <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
+                                </div>
+                              </div>
+                            </List.Item>
+                          )}
+                        />
+                      </Scrollbars>
+                    </div>
                   </div>
-                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
-                    <List
-                      className={stylesAllocation.list}
-                      dataSource={students}
-                      renderItem={({ id, fullName, age, fileImage }, index) => (
-                        <List.Item key={id + index}>
-                          <div className={stylesAllocation['group-info']}>
-                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                            <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                              <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
-                            </div>
-                          </div>
-                        </List.Item>
-                      )}
-                    />
-                  </Scrollbars>
-                </div>
-              </div>
-              <div className={stylesAllocation['right-container']}>
-                <div className={stylesAllocation['content']}>
-                  <div className={stylesAllocation['heading-list']}>
-                    <Text color="dark" size="large-medium">
-                      Danh sách giáo viên
-                    </Text>
+                  <div className={stylesAllocation['right-container']}>
+                    <div className={stylesAllocation['content']}>
+                      <div className={stylesAllocation['heading-list']}>
+                        <Text color="dark" size="large-medium">
+                          Danh sách giáo viên
+                        </Text>
+                      </div>
+                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
+                        <List
+                          className={stylesAllocation.list}
+                          dataSource={teachers}
+                          renderItem={({ id, fullName, fileImage }, index) => (
+                            <List.Item key={id + index}>
+                              <div className={stylesAllocation['group-info']}>
+                                <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                <div className={stylesAllocation['info']}>
+                                  <h3 className={stylesAllocation['title']}>{fullName}</h3>
+                                  <p className={stylesAllocation['norm']}></p>
+                                </div>
+                              </div>
+                            </List.Item>
+                          )}
+                        />
+                      </Scrollbars>
+                    </div>
                   </div>
-                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 340}>
-                    <List
-                      className={stylesAllocation.list}
-                      dataSource={teachers}
-                      renderItem={({ id, fullName, fileImage }, index) => (
-                        <List.Item key={id + index}>
-                          <div className={stylesAllocation['group-info']}>
-                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                            <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                              <p className={stylesAllocation['norm']}></p>
-                            </div>
-                          </div>
-                        </List.Item>
-                      )}
-                    />
-                  </Scrollbars>
                 </div>
-              </div>
-            </div>
+              ))}
+
             {/* MAIN CONTAINER */}
           </div>
         </div>

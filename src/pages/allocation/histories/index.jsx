@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Typography, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -31,10 +31,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ allocationHistories, loading }) => ({
-  data: allocationHistories.data,
-  pagination: allocationHistories.pagination,
+const { Paragraph } = Typography;
+const mapStateToProps = ({ AllocationHistories, loading }) => ({
+  data: AllocationHistories.data,
+  pagination: AllocationHistories.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,6 +49,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        action: query?.action,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -88,7 +89,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'allocationHistories/GET_DATA',
+      type: 'AllocationHistories/GET_DATA',
       payload: {
         ...search,
         status,
@@ -167,86 +168,38 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'allocationHistories/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
 
   /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     return [
       {
         title: 'Thời gian',
         key: 'code',
         width: 150,
         className: 'min-width-130',
-        render: (record) => '15:31, 10/1/2021',
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          </Text>
+        ),
       },
       {
         title: 'Tên tài khoản',
@@ -258,27 +211,16 @@ class Index extends PureComponent {
         title: 'Hành động',
         key: 'action',
         className: 'min-width-130',
-        render: (record) => 'Xếp lớp',
+        render: (record) => variablesModules.ACTION_TYPE[record.action],
       },
       {
         title: 'Nội dung',
         key: 'status',
         className: 'min-width-120',
-        render: (record) => 'Xếp trẻ Su Beo, Nguyễn Văn Đức vào lớp preschool 2, cơ sở 1',
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
+          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+            {record.content}
+          </Paragraph>
         ),
       },
     ];
@@ -292,12 +234,12 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['allocationHistories/GET_DATA'];
+    const loading = effects['AllocationHistories/GET_DATA'];
     return (
       <>
-        <Helmet title="Lịch sử phân bổ" />
+        <Helmet title="Lịch sử y tế" />
         <div
-          className={classnames(styles['content-form'], styles['content-form-allocationHistories'])}
+          className={classnames(styles['content-form'], styles['content-form-AllocationHistories'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -307,8 +249,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -324,16 +264,15 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
+                    name="action"
+                    data={variablesModules.ACTION_TYPE_STATUS}
+                    onChange={(event) => this.onChangeSelect(event, 'action')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
                     name="startDate"
-                    data={[]}
                     onChange={(event) => this.onChangeSelect(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
