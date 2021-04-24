@@ -437,6 +437,7 @@ class Index extends PureComponent {
                     size="large"
                     className="ml-auto"
                     loading={loadingSubmit}
+                    disabled={!studentId}
                   >
                     Gửi trao đổi
                   </Button>
