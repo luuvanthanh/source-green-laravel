@@ -19,6 +19,30 @@ export const variables = {
     ALL: 'ALL',
     TOTAL: 'TOTAL',
   },
+  ACTION_TYPE_STATUS: [
+    {
+      id: 'ARRAGECLASS',
+      name: 'Xếp lớp',
+    },
+    {
+      id: 'TRANSFERCLASS',
+      name: 'Điều chuyển lớp',
+    },
+    {
+      id: 'ARRAGEDEPARTMENT',
+      name: 'Xếp phòng ban',
+    },
+    {
+      id: 'TRANSFERDEPARTMENT',
+      name: 'Điều chuyển phòng ban',
+    },
+  ],
+  ACTION_TYPE: {
+    ARRAGECLASS: 'Xếp lớp',
+    TRANSFERCLASS: 'Điều chuyển lớp',
+    ARRAGEDEPARTMENT: 'Xếp phòng ban',
+    TRANSFERDEPARTMENT: 'Điều chuyển phòng ban',
+  },
 };
 
 export default variables;
