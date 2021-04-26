@@ -1,20 +1,17 @@
 import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'AllocationHistories',
+  namespace: 'feePolicyPolicyDetails',
   state: {
-    data: [],
-    pagination: {},
+    error: {
+      isError: false,
+      data: {},
+    },
+    details: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
-    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -24,19 +21,18 @@ export default {
         },
       },
     }),
+    SET_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload,
+    }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
+          type: 'SET_DETAILS',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

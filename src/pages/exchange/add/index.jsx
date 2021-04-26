@@ -3,15 +3,12 @@ import { connect, history } from 'umi';
 import { Modal, Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import { isEmpty, get, head } from 'lodash';
-import moment from 'moment';
+import { isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
-import { UserOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -440,6 +437,7 @@ class Index extends PureComponent {
                     size="large"
                     className="ml-auto"
                     loading={loadingSubmit}
+                    disabled={!studentId}
                   >
                     Gửi trao đổi
                   </Button>

@@ -3,7 +3,7 @@ import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'AllocationHistories',
+  namespace: 'businessCards',
   state: {
     data: [],
     pagination: {},
@@ -29,14 +29,29 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
         yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE({ payload }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        yield saga.put({
+          type: 'GET_DATA',
+          payload: payload.pagination,
+        });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
         yield saga.put({

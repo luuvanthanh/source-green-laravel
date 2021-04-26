@@ -45,4 +45,9 @@ export function remove(id) {
   });
 }
 
-export default get;
+export function closes(data) {
+  return request(`/communications/${data.id}/close`, {
+    method: 'PUT',
+    parse: true,
+  });
+}
