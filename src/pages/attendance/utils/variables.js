@@ -8,7 +8,7 @@ export const variables = {
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
-    VERIFIED: 'Đang học',
+    VERIFIED: 'Đang hoạt động',
     PENDING: 'Làm thủ tục',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
@@ -19,10 +19,32 @@ export const variables = {
     ALL: 'ALL',
     TOTAL: 'TOTAL',
   },
-  TYPE_EARLY_LATE: {
-    LATE: 'LATE',
-    EARLY: 'EARLY',
+  TYPES_PARAMATER_VALUES: [
+    {
+      id: 'CONTRACT',
+      name: 'Tham số theo hợp đồng',
+    },
+    {
+      id: 'COMMON',
+      name: 'Tham số dùng chung',
+    },
+    {
+      id: 'DECLARE',
+      name: 'Tham số khai báo hàng tháng',
+    },
+  ],
+  PARAMATER_VALUES: {
+    CONTRACT: 'CONTRACT',
+    COMMON: 'COMMON',
+    DECLARE: 'DECLARE',
   },
+  PARAMATER_VALUES_NAME: {
+    CONTRACT: 'Tham số theo hợp đồng',
+    COMMON: 'Tham số dùng chung',
+    DECLARE: 'Tham số khai báo hàng tháng',
+  },
+  PARENT: 'PARENT',
+  EMPLOYEES: 'EMPLOYEES',
   DATE_OF_WEEK: {
     0: 'su',
     1: 'mo',
@@ -31,6 +53,10 @@ export const variables = {
     4: 'we',
     5: 'fr',
     6: 'sa',
+  },
+  TYPE_EARLY_LATE: {
+    LATE: 'LATE',
+    EARLY: 'EARLY',
   },
 };
 
