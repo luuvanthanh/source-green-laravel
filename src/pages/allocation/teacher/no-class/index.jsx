@@ -49,6 +49,7 @@ class Index extends PureComponent {
         branches: [],
         classes: [],
       },
+      branchId: '',
       selectedTeachers: [],
       loadingTeacher: false,
       hasMore: true,
@@ -108,13 +109,14 @@ class Index extends PureComponent {
       selectedTeachers: [],
       hasMore: true,
       loadingLoadMore: false,
+      branchId: value,
     }));
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
     this.fetchTeachers(value);
   };
 
-  fetchTeachers = () => {
+  fetchTeachers = (branchId) => {
     this.setStateData({ loadingTeacher: true });
     const { dispatch } = this.props;
     const { searchTeachers } = this.state;
@@ -122,6 +124,8 @@ class Index extends PureComponent {
       type: 'categories/GET_TEACHERS',
       payload: {
         ...searchTeachers,
+        hasClass: 'false',
+        branchId,
         include: Helper.convertIncludes(['positionLevel']),
       },
       callback: (res) => {
@@ -181,7 +185,7 @@ class Index extends PureComponent {
   };
 
   finishForm = ({ classId, startDate }) => {
-    const { selectedTeachers } = this.state;
+    const { selectedTeachers, branchId } = this.state;
     const { dispatch } = this.props;
     const requestData = selectedTeachers.map((employeeId) => ({
       employeeId,
@@ -201,11 +205,10 @@ class Index extends PureComponent {
       type: 'allocationTeacherNoClass/ADD',
       payload: requestData,
       callback: async () => {
-        this.formRef?.current?.resetFields();
+        this.formRef?.current?.resetFields(['classId']);
         await this.setStateData((prev) => ({
           categories: {
             ...prev?.categories,
-            classes: [],
             teachers: [],
           },
           searchTeachers: {
@@ -218,7 +221,7 @@ class Index extends PureComponent {
           loadingLoadMore: false,
         }));
         // gọi lại danh sách giáo viên từ API
-        this.fetchTeachers();
+        this.fetchTeachers(branchId);
       },
     });
   };
