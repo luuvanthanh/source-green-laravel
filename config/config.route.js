@@ -92,6 +92,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/chuong-trinh-hoc',
+            component: './criteria/study-program',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA
