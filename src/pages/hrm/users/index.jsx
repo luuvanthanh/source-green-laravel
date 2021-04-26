@@ -35,6 +35,9 @@ const { confirm } = Modal;
 const mapStateToProps = ({ HRMusers, loading }) => ({
   data: HRMusers.data,
   pagination: HRMusers.pagination,
+  branches: HRMusers.branches,
+  divisions: HRMusers.divisions,
+  positions: HRMusers.positions,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,9 +52,10 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        ...query,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        keyWord: query?.keyWord,
+        fullName: query?.fullName,
       },
       objects: {},
     };
@@ -60,6 +64,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -98,6 +103,29 @@ class Index extends PureComponent {
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
+    });
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'HRMusers/GET_BRANCHES',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'HRMusers/GET_DIVISIONS',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'HRMusers/GET_POSITIONS',
+      payload: {
+        ...search,
+      },
     });
   };
 
@@ -298,6 +326,9 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      branches,
+      positions,
+      divisions,
       pagination,
       match: { params },
       loading: { effects },
@@ -329,43 +360,35 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    name="fullName"
+                    onChange={(event) => this.onChange(event, 'fullName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={positions}
+                    name="positionId"
+                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả bộ phận' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    data={divisions}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả chức vụ' }]}
-                    name="position"
-                    onChange={(event) => this.onChangeSelect(event, 'position')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-2">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả hình thức làm việc' }]}
-                    name="form"
-                    onChange={(event) => this.onChangeSelect(event, 'form')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
