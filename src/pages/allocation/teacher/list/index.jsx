@@ -108,7 +108,10 @@ class Index extends PureComponent {
 
   changeClass = (classId) => {
     const { dispatch } = this.props;
-    const payload = { class: classId };
+    const payload = {
+      class: classId,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX)
+    };
 
     dispatch({
       type: 'allocationTeacherList/GET_STUDENTS',
