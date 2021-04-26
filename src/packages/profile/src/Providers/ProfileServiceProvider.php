@@ -2,8 +2,10 @@
 
 namespace GGPHP\Profile\Providers;
 
+use GGPHP\Profile\Repositories\Contracts\InsurranceRepository;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
+use GGPHP\Profile\Repositories\Eloquent\InsurranceRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\LabourContractRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\ProbationaryContractRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
@@ -31,5 +33,6 @@ class ProfileServiceProvider extends ServiceProvider
     {
         $this->app->bind(LabourContractRepository::class, LabourContractRepositoryEloquent::class);
         $this->app->bind(ProbationaryContractRepository::class, ProbationaryContractRepositoryEloquent::class);
+        $this->app->bind(InsurranceRepository::class, InsurranceRepositoryEloquent::class);
     }
 }

@@ -34,6 +34,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //probationary_contract
             \Route::resource('probationary-contracts', 'ProbationaryContractController');
+
+            //insurrances
+            \Route::resource('insurrances', 'InsurranceController');
         });
     }
 }
