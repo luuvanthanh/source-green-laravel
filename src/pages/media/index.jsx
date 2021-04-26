@@ -67,13 +67,13 @@ const Index = memo(() => {
     {
       title: 'Cơ sở',
       key: 'branch',
-      className: 'min-width-70',
+      className: 'min-width-120',
       render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>,
     },
     {
       title: 'Lớp',
       key: 'class',
-      className: 'min-width-70',
+      className: 'min-width-120',
       render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>,
     },
     {
@@ -85,7 +85,7 @@ const Index = memo(() => {
     {
       title: 'Phụ huynh',
       key: 'parent',
-      className: 'min-width-70',
+      className: 'min-width-120',
       render: (record) => (
         <Text size="normal">{record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}</Text>
       ),
@@ -93,7 +93,7 @@ const Index = memo(() => {
     {
       title: 'Học sinh',
       key: 'student',
-      className: 'min-width-70',
+      className: 'min-width-120',
       render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
     },
     {

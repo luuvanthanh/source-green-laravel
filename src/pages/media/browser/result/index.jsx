@@ -50,9 +50,7 @@ const Index = memo(() => {
   };
 
   const groupSelect = (id) => ({ target: { checked } }) => {
-    setGroupIds(prev => checked ? [
-      ...prev, id
-    ] : prev.filter(selectId => selectId !== id));
+    setGroupIds((prev) => (checked ? [...prev, id] : prev.filter((selectId) => selectId !== id)));
   };
 
   const fetchMedia = useCallback(() => {
@@ -62,7 +60,7 @@ const Index = memo(() => {
         ...search,
         status: localVariables.CLASSIFY_STATUS.VALIDATING,
         maxResultCount: variables.PAGINATION.SIZEMAX,
-      }
+      },
     });
     history.push({
       pathname,
@@ -75,30 +73,44 @@ const Index = memo(() => {
       type: 'mediaResult/REMOVE_IMAGE',
       payload: {
         postId,
-        fileId: image?.id
+        fileId: image?.id,
       },
       callback: () => {
-        setClassifyData(prev => prev.map(post => post.id === postId ? ({
-          ...post,
-          files: (post?.files || []).filter(file => file.id !== image.id),
-        }) : post));
-      }
+        setClassifyData((prev) =>
+          prev.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  files: (post?.files || []).filter((file) => file.id !== image.id),
+                }
+              : post,
+          ),
+        );
+      },
     });
   };
 
-  const changeDesctiption = (postId) => e => {
-    setClassifyData(prev => prev.map(post => post.id === postId ? ({
-      ...post,
-      description: e?.target?.value,
-    }) : post));
+  const changeDesctiption = (postId) => (e) => {
+    setClassifyData((prev) =>
+      prev.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              description: e?.target?.value,
+            }
+          : post,
+      ),
+    );
   };
 
   const createPost = ({ id, description, removeFiles }, index) => {
     if (!description) {
-      formRef?.current?.setFields([{
-        name: ['description', index],
-        errors: [variables.RULES.EMPTY.message]
-      }]);
+      formRef?.current?.setFields([
+        {
+          name: ['description', index],
+          errors: [variables.RULES.EMPTY.message],
+        },
+      ]);
       return;
     }
 
@@ -117,8 +129,32 @@ const Index = memo(() => {
       type: 'mediaResult/REMOVE',
       payload: { id },
       callback: () => {
-        setClassifyData(prev => prev.filter(post => post.id !== id));
-      }
+        setClassifyData((prev) => prev.filter((post) => post.id !== id));
+      },
+    });
+  };
+
+  const removeAllPost = () => {
+    dispatch({
+      type: 'mediaResult/REMOVE_ALL',
+      payload: classifyData.map((item) => item.id),
+      callback: (response) => {
+        if (response) {
+          setClassifyData([]);
+        }
+      },
+    });
+  };
+
+  const merge = () => {
+    dispatch({
+      type: 'mediaResult/MERGE',
+      payload: classifyData.map((item) => item.id),
+      callback: (response) => {
+        // if (response) {
+        //   setClassifyData([]);
+        // }
+      },
     });
   };
 
@@ -128,14 +164,11 @@ const Index = memo(() => {
       return;
     }
 
-    const req = classifyData.map(
-      ({ id, description, removeFiles }) =>
-      ({
-        id,
-        description,
-        removeFiles
-      })
-    );
+    const req = classifyData.map(({ id, description, removeFiles }) => ({
+      id,
+      description,
+      removeFiles,
+    }));
     dispatch({
       type: 'mediaResult/VALIDATE_ALL',
       payload: req,
@@ -188,6 +221,7 @@ const Index = memo(() => {
                   className="mr20"
                   color="dark"
                   type="link"
+                  onClick={removeAllPost}
                 >
                   Xóa tất cả ghi nhận
                 </Button>
@@ -195,6 +229,7 @@ const Index = memo(() => {
                   disabled={loading['mediaResult/GET_DATA']}
                   className="mr20"
                   color="primary"
+                  onClick={merge}
                 >
                   Gộp ghi nhận
                 </Button>
@@ -216,22 +251,30 @@ const Index = memo(() => {
             layout="vertical"
             ref={formRef}
             initialValues={{
-              description: classifyData.map(item => item.description)
+              description: classifyData.map((item) => item.description),
             }}
           >
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 214}>
               {(classifyData || []).map((post, index) => (
-                <Pane className={csx("card p20 mb-0", {
-                  mt15: !!index,
-                  'border border-primary': groupIds.includes(post?.id)
-                })} key={post?.id}>
+                <Pane
+                  className={csx('card p20 mb-0', {
+                    mt15: !!index,
+                    'border border-primary': groupIds.includes(post?.id),
+                  })}
+                  key={post?.id}
+                >
                   <Pane className="mb15 row">
                     <Pane className="col-lg-3">
                       <Pane className={infoStyles.userInformation}>
-                        <AvatarTable fileImage={post?.student?.fileImage} />
+                        <AvatarTable
+                          fileImage={Helper.getPathAvatarJson(post?.student?.fileImage)}
+                        />
                         <Pane>
                           <h3>{post?.student?.fullName}</h3>
-                          <p>{post?.studentMaster?.student?.class?.branch?.name} - {post?.studentMaster?.student?.class?.name}</p>
+                          <p>
+                            {post?.studentMaster?.student?.class?.branch?.name} -{' '}
+                            {post?.studentMaster?.student?.class?.name}
+                          </p>
                         </Pane>
                       </Pane>
                     </Pane>
@@ -245,8 +288,12 @@ const Index = memo(() => {
                         Xóa ghi nhận
                       </Button>
                       <Pane className="mr20">
-                        <label className={csx(infoStyles.infoLabel, 'mb-0')}>Thời gian tải lên:</label>
-                        <span className={infoStyles.infoText}>{moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME_VI)}</span>
+                        <label className={csx(infoStyles.infoLabel, 'mb-0')}>
+                          Thời gian tải lên:
+                        </label>
+                        <span className={infoStyles.infoText}>
+                          {moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME_VI)}
+                        </span>
                       </Pane>
                       <Button
                         className="mr20"
@@ -275,10 +322,7 @@ const Index = memo(() => {
 
                   <Pane className="row">
                     {(post?.files || []).map((image) => (
-                      <Pane
-                        className={csx("col-lg-2 my10", styles.imageWrapper)}
-                        key={image?.id}
-                      >
+                      <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
                         <img
                           className="d-block w-100"
                           src={`${API_UPLOAD}${image?.url}`}

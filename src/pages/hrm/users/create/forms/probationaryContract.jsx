@@ -111,8 +111,6 @@ const Index = memo(() => {
     }));
   };
 
-  console.log(paramaterValues);
-
   const parameterValuesColumns = [
     {
       title: 'STT',

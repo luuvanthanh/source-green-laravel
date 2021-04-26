@@ -1,10 +1,10 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 .button {
   border-radius: 3px;
   padding: 0 17px;
   line-height: 22px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -299,6 +299,11 @@
   }
   &:global(.ant-btn-link) {
     color: $background-dark;
+    &:focus,
+    &:active {
+      background-color: transparent !important;
+      border: none;
+    }
   }
 }
 
@@ -327,6 +332,10 @@
   }
   &:global(.ant-btn-link) {
     color: $background-gray;
+    &:focus,
+    &:active {
+      background-color: transparent !important;
+    }
   }
 }
 

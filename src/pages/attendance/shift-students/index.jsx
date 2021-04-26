@@ -384,7 +384,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['shiftStudents/GET_DATA'];
-    console.log(data);
     return (
       <>
         <Helmet title="Cấu hình lịch học" />
