@@ -119,17 +119,18 @@ class Index extends PureComponent {
     this.setStateData({ loadingTeacher: true });
     const { dispatch } = this.props;
     const payload = {
-      class: classId,
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX)
+      classId,
+      hasClass: true,
+      include: Helper.convertIncludes(['positionLevel']),
     };
 
     dispatch({
-      type: 'allocationTeacherList/GET_TEACHERS',
+      type: 'categories/GET_TEACHERS',
       payload,
       callback: (res, error) => {
         if (res) {
           this.setStateData({
-            teachers: res?.items.map((item) => item?.employee) || [],
+            teachers: res?.parsePayload || [],
             loadingTeacher: false
           });
         }
