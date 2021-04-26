@@ -20,6 +20,7 @@ import { Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Item: ListItem } = List;
 const Index = memo(({}) => {
@@ -256,37 +257,23 @@ const Index = memo(({}) => {
                     >
                       <Radio.Group value={studentId}>
                         <List
+                          loading={loadingStudents && hasMore}
                           dataSource={students}
-                          renderItem={(item) => {
-                            let fileImage = '';
-                            if (Helper.isJSON(item.fileImage)) {
-                              const files = JSON.parse(item.fileImage);
-                              if (!isEmpty(files)) {
-                                fileImage = head(files);
-                              }
-                            }
-                            return (
-                              <ListItem key={item.id} className={styles.listItem}>
-                                <Radio
-                                  value={item.id}
-                                  onChange={(event) => onChangeRadio(event, item.id)}
-                                />
-                                <Pane className={styles.userInformation}>
-                                  <Avatar
-                                    shape="square"
-                                    size={40}
-                                    src={fileImage ? `${API_UPLOAD}${fileImage}` : null}
-                                  />
-                                  <Pane>
-                                    <h3>{item.fullName}</h3>
-                                    <p>{item.age} tháng tuổi</p>
-                                  </Pane>
-                                </Pane>
-                              </ListItem>
-                            );
-                          }}
+                          renderItem={(item) => (
+                            <ListItem key={item.id} className={styles.listItem}>
+                              <Radio
+                                value={item.id}
+                                onChange={(event) => onChangeRadio(event, item.id)}
+                              />
+                              <AvatarTable
+                                fileImage={Helper.getPathAvatarJson(item.fileImage)}
+                                fullName={item.fullName}
+                                description={`${item.age} tháng tuổi`}
+                              />
+                            </ListItem>
+                          )}
                         >
-                          {loadingStudents && hasMore && (
+                          {loadingStudents && !hasMore && (
                             <div className="demo-loading-container">
                               <Spin />
                             </div>

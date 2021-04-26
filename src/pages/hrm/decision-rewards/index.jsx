@@ -276,8 +276,8 @@ class Index extends PureComponent {
       {
         title: 'Lý do',
         key: 'reason',
-        className: 'min-width-100',
-        width: 100,
+        className: 'min-width-200',
+        width: 200,
         render: (record) => get(record, 'reason'),
       },
       {
