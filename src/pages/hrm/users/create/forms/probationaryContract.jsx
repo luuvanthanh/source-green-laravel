@@ -11,6 +11,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import Select from '@/components/CommonComponent/Select';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -28,7 +29,15 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { contractTypes, branches, divisions, positions, probationaryContracts },
+    {
+      contractTypes,
+      branches,
+      divisions,
+      positions,
+      probationaryContracts,
+      paramaterValues,
+      paramaterFormulas,
+    },
     loading,
   ] = useSelector(({ HRMusersAdd, loading }) => [HRMusersAdd, loading?.effects]);
 
@@ -88,47 +97,53 @@ const Index = memo(() => {
     }));
   });
 
-  const parameterValuesColumns = useMemo(
-    () => [
-      {
-        title: 'STT',
-        key: 'index',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) => index + 1,
-      },
-      {
-        title: 'Loại tham số',
-        key: 'name',
-        dataIndex: 'name',
-        className: 'min-width-120',
-      },
-      {
-        title: 'Số tiền',
-        key: 'values',
-        dataIndex: 'valueDefault',
-        className: 'min-width-120',
-        render: (value, record) => (
-          <InputNumber
-            defaultValue={value}
-            className={csx('input-number', styles['input-number-container'])}
-            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            onChange={changeValue(record.id)}
-            placeholder="Nhập"
-          />
-        ),
-      },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        dataIndex: 'applyDate',
-        className: 'min-width-120',
-        render: (value) => Helper.getDate(moment(value)),
-      },
-    ],
-    [],
-  );
+  const onChangeParameterValues = (id, value) => {
+    const paramater = paramaterValues.find((item) => item.id === value);
+    mountedSet(setContractDetails, (prev) => ({
+      ...prev,
+      parameterValues: prev.parameterValues.map((item) =>
+        item.id === id
+          ? {
+              ...paramater,
+            }
+          : item,
+      ),
+    }));
+  };
+
+  console.log(paramaterValues);
+
+  const parameterValuesColumns = [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: 'Loại tham số',
+      key: 'name',
+      dataIndex: 'name',
+      className: 'min-width-120',
+    },
+    {
+      title: 'Số tiền',
+      key: 'values',
+      dataIndex: 'valueDefault',
+      className: 'min-width-120',
+      render: (value, record) => (
+        <InputNumber
+          defaultValue={value}
+          className={csx('input-number', styles['input-number-container'])}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          onChange={changeValue(record.id)}
+          placeholder="Nhập"
+        />
+      ),
+    },
+  ];
 
   const columns = useMemo(
     () => [
@@ -309,6 +324,8 @@ const Index = memo(() => {
     dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
     dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
     dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+    dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
+    dispatch({ type: 'HRMusersAdd/GET_PARAMATER_FORMULAS' });
   }, []);
 
   useEffect(() => {
@@ -491,6 +508,11 @@ const Index = memo(() => {
                 }}
                 rowKey="id"
                 scroll={{ x: '100%' }}
+                footer={() => (
+                  <Button color="success" ghost icon="plus">
+                    Thêm dòng
+                  </Button>
+                )}
               />
             </TabPane>
 
@@ -506,6 +528,11 @@ const Index = memo(() => {
                 }}
                 rowKey="id"
                 scroll={{ x: '100%' }}
+                footer={() => (
+                  <Button color="success" ghost icon="plus">
+                    Thêm dòng
+                  </Button>
+                )}
               />
             </TabPane>
           </Tabs>

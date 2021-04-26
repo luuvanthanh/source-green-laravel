@@ -25,6 +25,8 @@ export default {
     contracts: [],
     probationaryContracts: [],
     decisionRewards: [],
+    paramaterValues: [],
+    paramaterFormulas: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -124,6 +126,14 @@ export default {
       ...state,
       probationaryContracts: payload.parsePayload,
     }),
+    SET_PARAMATER_VALUES: (state, { payload }) => ({
+      ...state,
+      paramaterValues: payload.parsePayload,
+    }),
+    SET_PARAMATER_FORMULAS: (state, { payload }) => ({
+      ...state,
+      paramaterFormulas: payload.parsePayload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -200,6 +210,34 @@ export default {
         const response = yield saga.call(services.detailsAccount, payload);
         yield saga.put({
           type: 'SET_DETAILS_ACCOUNT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARAMATER_VALUES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParamaterValues, payload);
+        yield saga.put({
+          type: 'SET_PARAMATER_VALUES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARAMATER_FORMULAS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParamaterFormulas, payload);
+        yield saga.put({
+          type: 'SET_PARAMATER_FORMULAS',
           payload: response,
         });
       } catch (error) {

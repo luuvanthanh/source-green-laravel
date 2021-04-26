@@ -6,6 +6,7 @@ export function getUsers(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      include: Helper.convertIncludes(['positionLevel']),
     },
   });
 }

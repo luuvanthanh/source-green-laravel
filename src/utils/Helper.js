@@ -626,7 +626,7 @@ export default class Helpers {
     if (!isEmpty(items)) {
       return items.map((item) => ({
         id: item.id,
-        name: item.fullName,
+        name: `${item.fullName} (${getLodash(item, 'positionLevel[0].division.name')})`,
       }));
     }
     return [];

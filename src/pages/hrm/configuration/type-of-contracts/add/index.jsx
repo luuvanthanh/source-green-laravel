@@ -180,7 +180,7 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-4">
+                  <div className="col-lg-6">
                     <FormItem
                       label="LOẠI"
                       name="type"
@@ -188,17 +188,19 @@ class Index extends PureComponent {
                       type={variables.INPUT}
                     />
                   </div>
-                  <div className="col-lg-4">
+                  <div className="col-lg-6">
                     <FormItem
-                      label="NĂM"
+                      label="SỐ NĂM"
                       name="year"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
-                  <div className="col-lg-4">
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
                     <FormItem
-                      label="THÁNG"
+                      label="SỐ THÁNG"
                       name="month"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
