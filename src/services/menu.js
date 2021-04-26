@@ -991,7 +991,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Chuyên ngành đào tạo',
+          title: 'Ngành đào tạo',
           key: 'training-majors',
           url: [
             '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao',
@@ -1002,7 +1002,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Trình độ học vấn',
+          title: 'Trình độ văn hóa',
           key: 'educational-levels',
           url: [
             '/quan-ly-nhan-su/cau-hinh/trinh-do-hoc-van',

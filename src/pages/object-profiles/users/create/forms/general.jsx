@@ -228,7 +228,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 <FormItem
                   data={[]}
                   name="trainingMajorsId"
-                  label="Chuyên ngành đào tạo"
+                  label="Ngành đào tạo"
                   type={variables.SELECT}
                 />
               </Pane>
@@ -242,9 +242,11 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   type={variables.SELECT}
                 />
               </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name="dayoff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
-              </Pane>
+              {params.id && (
+                <Pane className="col-lg-4">
+                  <FormItem name="dayoff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
+                </Pane>
+              )}
             </Pane>
           </Pane>
 

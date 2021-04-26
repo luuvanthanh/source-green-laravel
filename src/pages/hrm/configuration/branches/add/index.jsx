@@ -161,6 +161,24 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="ĐỊA CHỈ"
+                      name="address"
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="SĐT"
+                      name="phoneNumber"
+                      rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button

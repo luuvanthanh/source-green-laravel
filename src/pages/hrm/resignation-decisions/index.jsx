@@ -246,17 +246,6 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
-      },
-      {
         title: 'Số QĐ',
         key: 'insurrance_number',
         className: 'min-width-100',
@@ -278,11 +267,15 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Ngày kết thúc thanh toán lương',
-        key: 'payEndDate',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'payEndDate'), variables.DATE_FORMAT.DATE),
+        title: 'Nhân viên',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
         title: 'Ngày áp dụng',
@@ -290,6 +283,13 @@ class Index extends PureComponent {
         className: 'min-width-120',
         width: 120,
         render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Ngày kết thúc thanh toán lương',
+        key: 'payEndDate',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(get(record, 'payEndDate'), variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Ghi chú',

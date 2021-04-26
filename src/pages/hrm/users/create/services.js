@@ -287,3 +287,29 @@ export function getDecisionRewards(params = {}) {
   });
 }
 // decision-rewards
+
+// paramater-values
+export function getParamaterValues(params = {}) {
+  return requestLavarel('/v1/paramater-values', {
+    method: 'GET',
+    params: {
+      orderBy: 'Id',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+    },
+  });
+}
+// paramater-values
+
+// paramater-formulas
+export function getParamaterFormulas(params = {}) {
+  return requestLavarel('/v1/paramater-formulas', {
+    method: 'GET',
+    params: {
+      orderBy: 'Id',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+    },
+  });
+}
+// paramater-formulas

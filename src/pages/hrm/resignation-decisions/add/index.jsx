@@ -224,12 +224,7 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <FormItem
-                    label="Ghi chú"
-                    name="note"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
+                  <FormItem label="Ghi chú" name="note" type={variables.INPUT} rules={[]} />
                 </div>
               </div>
             </div>

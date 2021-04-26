@@ -343,7 +343,7 @@ const General = memo(({}) => {
                 <FormItem
                   data={trainningMajors}
                   name="trainingMajorId"
-                  label="Chuyên ngành đào tạo"
+                  label="Ngành đào tạo"
                   type={variables.SELECT}
                 />
               </Pane>
@@ -357,9 +357,11 @@ const General = memo(({}) => {
                   type={variables.SELECT}
                 />
               </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
-              </Pane>
+              {params.id && (
+                <Pane className="col-lg-4">
+                  <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
+                </Pane>
+              )}
             </Pane>
           </Pane>
           {!params.id && (

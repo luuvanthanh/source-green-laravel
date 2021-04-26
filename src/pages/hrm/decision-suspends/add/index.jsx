@@ -204,7 +204,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="Thời gian bắt đầu"
+                    label="Thời gian tạm hoãn từ"
                     name="from"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
@@ -212,19 +212,14 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-6">
                   <FormItem
-                    label="Thời gian kết thúc"
+                    label="Thời gian tạm hoãn đến"
                     name="to"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>
                 <div className="col-lg-6">
-                  <FormItem
-                    label="Ghi chú"
-                    name="note"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
+                  <FormItem label="Ghi chú" name="note" type={variables.INPUT} rules={[]} />
                 </div>
               </div>
             </div>

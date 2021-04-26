@@ -130,7 +130,7 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa chuyên ngành đạo tạo' : 'Tạo chuyên ngành đạo tạo'}
+          last={params.id ? 'Chỉnh sửa chuyên ngành đào tạo' : 'Tạo chuyên ngành đào tạo'}
           menu={menuData}
         />
         <Form
