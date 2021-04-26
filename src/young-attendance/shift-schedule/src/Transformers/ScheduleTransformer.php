@@ -2,9 +2,9 @@
 
 namespace GGPHP\YoungAttendance\ShiftSchedule\Transformers;
 
+use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
-use GGPHP\Users\Transformers\UserTransformer;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule;
 
 /**
@@ -19,7 +19,7 @@ class ScheduleTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee', 'shift'];
+    protected $availableIncludes = ['student', 'shift'];
     protected $defaultIncludes = ['scheduleRepeat', 'scheduleException'];
 
     /**
@@ -38,12 +38,12 @@ class ScheduleTransformer extends BaseTransformer
      * Include User
      * @param  Schedule $schedule
      */
-    public function includeEmployee(Schedule $schedule)
+    public function includeStudent(Schedule $schedule)
     {
-        if (empty($schedule->employee)) {
+        if (empty($schedule->student)) {
             return;
         }
-        return $this->item($schedule->employee, new UserTransformer, 'Employee');
+        return $this->item($schedule->student, new StudentTransformer, 'Student');
     }
 
     /**

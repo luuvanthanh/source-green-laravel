@@ -42,6 +42,7 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('branches', 'BranchController');
                 \Route::resource('divisions', 'DivisionController');
                 \Route::resource('positions', 'PositionController');
+                \Route::resource('holidays', 'HolidayController');
             });
 
         });

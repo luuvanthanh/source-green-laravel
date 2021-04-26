@@ -32,4 +32,17 @@ class UuidModel extends CoreModel
         return static::query()->create($attributes);
     }
 
+    public function update(array $attributes = [], array $options = [])
+    {
+        foreach ($attributes as $key => $value) {
+            $newkey = dashesToCamelCase($key, true);
+
+            if ($key != $newkey) {
+                $attributes[$newkey] = $attributes[$key];
+                unset($attributes[$key]);
+            }
+        }
+
+        return parent::update($attributes, $options);
+    }
 }

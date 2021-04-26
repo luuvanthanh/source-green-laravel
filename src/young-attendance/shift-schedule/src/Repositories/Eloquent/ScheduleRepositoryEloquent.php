@@ -137,7 +137,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
 
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
-        $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('StudentId', $attributes['employeeId'])->where(function ($query) use ($attributes, $dateEndYear) {
+        $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('StudentId', $attributes['studentId'])->where(function ($query) use ($attributes, $dateEndYear) {
             $query->where([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $dateEndYear]]);
         })->get();
 
@@ -185,6 +185,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
      */
     public function scheduleUser(array $attributes)
     {
+
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['schedules' => function ($query) use ($attributes) {
                 $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
@@ -192,19 +193,11 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             }]);
 
-            // get Absent for calendar schedule: (nguyennd)
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
-                $query->whereNotIn('AbsentTypeId', [6, 7])->where(function ($q2) use ($attributes) {
-                    $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
-                        ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
-                        ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
-                });
-            }]);
         }
 
-        if (!empty($attributes['employeeId'])) {
-            $employeeId = explode(',', $attributes['employeeId']);
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $employeeId);
+        if (!empty($attributes['studentId'])) {
+            $studentId = explode(',', $attributes['studentId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
 
         if (!empty($attributes['limit'])) {
@@ -481,7 +474,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
      * @param  Date  $startDate
      * @return object
      */
-    public static function getUserTimeWorkShift($employeeId, $startDate, $endDate)
+    public static function getUserTimeWorkShift($studentId, $startDate, $endDate)
     {
         $listDayRequest = [];
         $workDate = [];
@@ -491,7 +484,8 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         for ($i = 0; $i <= $diffDay; $i++) {
             $listDayRequest[] = Carbon::parse($startDate)->addDays($i)->toDateString();
         }
-        $employee = User::where('Id', $employeeId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
+
+        $employee = User::where('Id', $studentId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
             $query->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
                 ->orwhere([['StartDate', '>', $startDate], ['StartDate', '<=', $endDate]])
                 ->orwhere([['EndDate', '>=', $startDate], ['EndDate', '<', $endDate]]);

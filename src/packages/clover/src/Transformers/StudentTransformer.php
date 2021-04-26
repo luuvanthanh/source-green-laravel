@@ -4,6 +4,7 @@ namespace GGPHP\Clover\Transformers;
 
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
 
 /**
  * Class StudentTransformer.
@@ -29,8 +30,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [
-    ];
+    protected $availableIncludes = ['schedules'];
 
     /**
      * Transform the Student entity.
@@ -43,6 +43,16 @@ class StudentTransformer extends BaseTransformer
     {
 
         return [];
+    }
+
+    /**
+     * Include schedules
+     * @param Student $student
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeSchedules(Student $student)
+    {
+        return $this->collection($student->schedules, new ScheduleTransformer, 'Schedules');
     }
 
 }

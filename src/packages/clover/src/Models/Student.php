@@ -23,4 +23,13 @@ class Student extends UuidModel
         'FartherId', 'MotherId', 'CreatorId', 'LastModifierId', 'ConcurrencyStamp', 'DeleterId', 'DeletionTime', 'ExtraProperties', 'IsDeleted',
         'CardNumber', 'Code', 'Comments', 'StudentId', 'RegisterDate', 'StartDate', 'Status', 'FileImage', 'City', 'District', 'Street', 'Ward',
     ];
+
+    /**
+     * Define relations Schedule
+     */
+    public function schedules()
+    {
+        return $this->hasMany(\GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule::class, 'StudentId');
+    }
+
 }

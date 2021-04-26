@@ -3,10 +3,10 @@
 namespace GGPHP\Category\Transformers;
 
 use GGPHP\Category\Models\Position;
+use GGPHP\Category\Transformers\PositionSeasonTransformer;
 use GGPHP\Category\Transformers\QuotaWorkTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\RolePermission\Transformers\PermissionTransformer;
-use GGPHP\ShiftSchedule\Transformers\PositionSeasonTransformer;
 
 /**
  * Class PositionTransformer.
