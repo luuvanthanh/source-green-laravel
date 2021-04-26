@@ -192,15 +192,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                     ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             }]);
-
-            // get Absent for calendar schedule: (nguyennd)
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
-                $query->whereNotIn('AbsentTypeId', [6, 7])->where(function ($q2) use ($attributes) {
-                    $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
-                        ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
-                        ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
-                });
-            }]);
         }
 
         if (!empty($attributes['employeeId'])) {

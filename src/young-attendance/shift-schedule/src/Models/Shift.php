@@ -41,6 +41,14 @@ class Shift extends UuidModel
     }
 
     /**
+     * Define relations employee
+     */
+    public function branch()
+    {
+        return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'BranchId');
+    }
+
+    /**
      * Get shiftDetail To Json
      *
      * @return string

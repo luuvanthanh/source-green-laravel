@@ -2,8 +2,8 @@
 
 namespace GGPHP\YoungAttendance\ShiftSchedule\Transformers;
 
+use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\RolePermission\Transformers\StoreTransformer;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
 
 /**
@@ -21,7 +21,7 @@ class ShiftTransformer extends BaseTransformer
      */
     protected $defaultIncludes = ['shiftDetail'];
 
-    protected $availableIncludes = ['store'];
+    protected $availableIncludes = ['branch'];
 
     /**
      * Include Shift Detail
@@ -33,15 +33,15 @@ class ShiftTransformer extends BaseTransformer
     }
 
     /**
-     * Include store
+     * Include branch
      * @param  Shift $shift
      */
-    public function includeStore(Shift $shift)
+    public function includeBranch(Shift $shift)
     {
-        if (empty($shift->store)) {
+        if (empty($shift->branch)) {
             return;
         }
-        return $this->item($shift->store, new StoreTransformer, 'Store');
+        return $this->item($shift->branch, new BranchTransformer, 'Branch');
     }
 
 }

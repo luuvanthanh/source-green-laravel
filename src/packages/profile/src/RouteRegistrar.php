@@ -37,6 +37,9 @@ class RouteRegistrar extends CoreRegistrar
 
             //insurrances
             \Route::resource('insurrances', 'InsurranceController');
+
+            //sabbatical-leaves
+            \Route::resource('sabbatical-leaves', 'SabbaticalLeaveController');
         });
     }
 }

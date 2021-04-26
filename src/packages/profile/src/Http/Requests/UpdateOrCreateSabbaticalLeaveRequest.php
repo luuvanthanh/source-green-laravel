@@ -4,7 +4,7 @@ namespace GGPHP\Profile\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class InsurranceCreateRequest extends FormRequest
+class UpdateOrCreateSabbaticalLeaveRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,7 @@ class InsurranceCreateRequest extends FormRequest
     {
         return [
             'employeeId' => 'required|exists:Employees,Id',
-            'insurranceNumber' => 'required',
-            'timeJoin' => 'date',
-            'timeStop' => 'date',
+            'annualLeave' => 'required|integer',
         ];
     }
 }
