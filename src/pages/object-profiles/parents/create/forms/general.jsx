@@ -129,7 +129,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             </Heading>
             <Pane className="row">
               <Pane className="col">
-                <Form.Item name="avatar" label="Hình ảnh học sinh">
+                <Form.Item name="avatar" label="Hình ảnh phụ huynh">
                   <MultipleImageUpload
                     files={files}
                     callback={(files) => uploadFiles(files)}

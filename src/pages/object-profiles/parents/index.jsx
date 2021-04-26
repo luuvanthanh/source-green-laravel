@@ -52,6 +52,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
+        isStoreStaus: false,
       },
       objects: {},
     };
