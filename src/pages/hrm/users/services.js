@@ -1,17 +1,49 @@
 import request from '@/utils/requestLavarel';
 import { omit } from 'lodash';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request('/v1/employees', {
     method: 'GET',
     params: {
-      limit: params.limit,
-      page: params.page,
+      ...params,
       orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['positionLevel']),
+      search: Helper.convertParamSearchConvert({
+        FullName: params.fullName,
+      }),
+    },
+  });
+}
+
+export function getBranches(params = {}) {
+  return request('/v1/branches', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getDivisions(params = {}) {
+  return request('/v1/divisions', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+
+export function getPositions(params = {}) {
+  return request('/v1/positions', {
+    method: 'GET',
+    params: {
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
     },
   });
 }
