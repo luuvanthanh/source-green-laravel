@@ -118,7 +118,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="success"
             icon="plus"
-            onClick={() => history.push(`/chinh-sach-phi/chinh-sach/tao-moi`)}
+            onClick={() => history.push(`/chinh-sach-phi/chinh-sach/them-moi`)}
           >
             Tạo mới
           </Button>

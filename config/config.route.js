@@ -1298,6 +1298,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/chinh-sach-phi/chinh-sach/them-moi',
+            component: './fee-policy/policy/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // FEE POLICY

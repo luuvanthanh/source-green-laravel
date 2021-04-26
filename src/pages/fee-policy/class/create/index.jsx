@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'dva';
 import { useHistory } from 'umi';
 import csx from 'classnames';
 
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -14,6 +15,7 @@ import { variables } from '@/utils';
 
 const Index = memo(({ }) => {
   const { loading } = useSelector(({ loading }) => ({ loading }));
+  const [{ menuLeftFeePolicy }] = useSelector(({ menu }) => [menu]);
   const dispatch = useDispatch();
 
   const history = useHistory();
@@ -33,11 +35,7 @@ const Index = memo(({ }) => {
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
       <Helmet title="Tạo mới lớp" />
-      <Pane className="row" style={{ marginBottom: 20 }}>
-        <Pane className="col">
-          <Heading type="page-title">Tạo mới lớp</Heading>
-        </Pane>
-      </Pane>
+      <Breadcrumbs className="pb30 pt0" last="Thêm mới" menu={menuLeftFeePolicy} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-6">
           <Pane className="card">
