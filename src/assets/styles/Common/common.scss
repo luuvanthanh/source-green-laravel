@@ -712,6 +712,10 @@
   &:global(.ant-modal) {
     width: 90vw !important;
   }
+  :global(.ant-modal-body){
+    max-height: 80vh;
+    overflow-y: auto;
+  }
 }
 
 .avatar-container {

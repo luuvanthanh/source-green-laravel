@@ -28,20 +28,13 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    {
-      contractTypes,
-      branches,
-      divisions,
-      positions,
-      probationaryContracts
-    },
-    loading
-  ] = useSelector(
-    ({ HRMusersAdd, loading }) =>
-      [HRMusersAdd, loading?.effects]
-  );
+    { contractTypes, branches, divisions, positions, probationaryContracts },
+    loading,
+  ] = useSelector(({ HRMusersAdd, loading }) => [HRMusersAdd, loading?.effects]);
 
-  const { params: { id: employeeId } } = useRouteMatch();
+  const {
+    params: { id: employeeId },
+  } = useRouteMatch();
 
   const [visible, setVisible] = useState(false);
   const [contractDetails, setContractDetails] = useState({});
@@ -55,181 +48,195 @@ const Index = memo(() => {
     mountedSet(setContractDetails, currentType || {});
   };
 
-  const parameterFormulasColumns = useMemo(() => [
-    {
-      title: 'STT',
-      key: 'index',
-      width: 60,
-      className: 'min-width-60',
-      align: 'center',
-      render: (text, record, index) => index + 1,
-    },
-    {
-      title: 'Loại tham số',
-      key: 'name',
-      dataIndex: 'name',
-      className: 'min-width-120',
-    },
-    {
-      title: 'Công thức',
-      key: 'recipe',
-      dataIndex: 'recipe',
-      className: 'min-width-120',
-    },
-  ], []);
+  const parameterFormulasColumns = useMemo(
+    () => [
+      {
+        title: 'STT',
+        key: 'index',
+        width: 60,
+        className: 'min-width-60',
+        align: 'center',
+        render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'Loại tham số',
+        key: 'name',
+        dataIndex: 'name',
+        className: 'min-width-120',
+      },
+      {
+        title: 'Công thức',
+        key: 'recipe',
+        dataIndex: 'recipe',
+        className: 'min-width-120',
+      },
+    ],
+    [],
+  );
 
   const changeValue = useCallback((id) => (value) => {
-    mountedSet(setContractDetails, prev => ({
+    mountedSet(setContractDetails, (prev) => ({
       ...prev,
-      parameterValues: prev.parameterValues.map((item) => item.id === id ? ({
-        ...item,
-        valueDefault: value
-      }) : item)
+      parameterValues: prev.parameterValues.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              valueDefault: value,
+            }
+          : item,
+      ),
     }));
   });
 
-  const parameterValuesColumns = useMemo(() => [
-    {
-      title: 'STT',
-      key: 'index',
-      width: 60,
-      className: 'min-width-60',
-      align: 'center',
-      render: (text, record, index) => index + 1,
-    },
-    {
-      title: 'Loại tham số',
-      key: 'name',
-      dataIndex: 'name',
-      className: 'min-width-120',
-    },
-    {
-      title: 'Số tiền',
-      key: 'values',
-      dataIndex: 'valueDefault',
-      className: 'min-width-120',
-      render: (value, record) => (
-        <InputNumber
-          defaultValue={value}
-          className={csx('input-number', styles['input-number-container'])}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          onChange={changeValue(record.id)}
-          placeholder="Nhập"
-        />
-      ),
-    },
-    {
-      title: 'Ngày hiệu lực',
-      key: 'application_date',
-      dataIndex: 'applyDate',
-      className: 'min-width-120',
-      render: (value) => Helper.getDate(moment(value)),
-    },
-  ], []);
+  const parameterValuesColumns = useMemo(
+    () => [
+      {
+        title: 'STT',
+        key: 'index',
+        width: 60,
+        className: 'min-width-60',
+        align: 'center',
+        render: (text, record, index) => index + 1,
+      },
+      {
+        title: 'Loại tham số',
+        key: 'name',
+        dataIndex: 'name',
+        className: 'min-width-120',
+      },
+      {
+        title: 'Số tiền',
+        key: 'values',
+        dataIndex: 'valueDefault',
+        className: 'min-width-120',
+        render: (value, record) => (
+          <InputNumber
+            defaultValue={value}
+            className={csx('input-number', styles['input-number-container'])}
+            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            onChange={changeValue(record.id)}
+            placeholder="Nhập"
+          />
+        ),
+      },
+      {
+        title: 'Ngày hiệu lực',
+        key: 'application_date',
+        dataIndex: 'applyDate',
+        className: 'min-width-120',
+        render: (value) => Helper.getDate(moment(value)),
+      },
+    ],
+    [],
+  );
 
-  const columns = useMemo(() => [
-    {
-      title: 'Số hợp đồng',
-      key: 'contract_number',
-      dataIndex: 'contractNumber',
-      className: 'min-width-120',
-    },
-    {
-      title: 'Ngày hợp đồng',
-      key: 'date',
-      dataIndex: 'contractDate',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Loại hợp đồng',
-      key: 'contract_category',
-      dataIndex: 'typeOfContract',
-      className: 'min-width-120',
-      render: (value) => value?.name,
-    },
-    {
-      title: 'Số tháng thử việc',
-      key: 'contract_category',
-      dataIndex: 'month',
-      className: 'min-width-150',
-    },
-    {
-      title: 'Thời hạn HĐ từ',
-      key: 'date',
-      dataIndex: 'contractFrom',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Thời hạn HĐ đến',
-      key: 'deadline',
-      dataIndex: 'contractTo',
-      className: 'min-width-150',
-      render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Tỷ lệ lương',
-      key: 'contract_category',
-      dataIndex: 'salaryRatio',
-      className: 'min-width-150',
-      render: (value) =>  Helper.getPercent(value * 100),
-    },
-    {
-      title: 'Lương cơ bản',
-      key: 'salary',
-      dataIndex: 'parameterValues[0]',
-      className: 'min-width-150',
-      render: (value) => Helper.getPrice(value?.pivot?.value),
-    },
-    {
-      title: 'Tổng phụ cấp',
-      key: 'payment',
-      dataIndex: 'parameterValues',
-      className: 'min-width-150',
-      render: (value) => Helper.getPrice((value || []).reduce(
-        (result, item, index) =>
-          !!index
-            ? result + (item?.pivot?.value)
-            : result,
-        0)),
-    },
-    {
-      title: 'Nơi làm việc',
-      key: 'branch',
-      dataIndex: 'branch',
-      className: 'min-width-150',
-      render: (value) => value?.name,
-    },
-    {
-      title: 'Chức danh',
-      key: 'position',
-      dataIndex: 'position',
-      className: 'min-width-150',
-      render: (value) => value?.name,
-    },
-    // {
-    //   title: 'Thao tác',
-    //   key: 'actions',
-    //   width: 180,
-    //   className: 'min-width-180',
-    //   fixed: 'right',
-    //   align: 'center',
-    //   render: (record) => (
-    //     <ul className="list-unstyled list-inline">
-    //       <li className="list-inline-item">
-    //         <Button color="primary" icon="edit" />
-    //       </li>
-    //       <li className="list-inline-item">
-    //         <Button color="danger" icon="remove" className="ml-2" />
-    //       </li>
-    //       <li className="list-inline-item">
-    //         <Button color="success" icon="export" />
-    //       </li>
-    //     </ul>
-    //   ),
-    // },
-  ], []);
+  const columns = useMemo(
+    () => [
+      {
+        title: 'Số hợp đồng',
+        key: 'contract_number',
+        dataIndex: 'contractNumber',
+        className: 'min-width-120',
+      },
+      {
+        title: 'Ngày hợp đồng',
+        key: 'date',
+        dataIndex: 'contractDate',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Loại hợp đồng',
+        key: 'contract_category',
+        dataIndex: 'typeOfContract',
+        className: 'min-width-120',
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Số tháng thử việc',
+        key: 'contract_category',
+        dataIndex: 'month',
+        className: 'min-width-150',
+      },
+      {
+        title: 'Thời hạn HĐ từ',
+        key: 'date',
+        dataIndex: 'contractFrom',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Thời hạn HĐ đến',
+        key: 'deadline',
+        dataIndex: 'contractTo',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Tỷ lệ lương',
+        key: 'contract_category',
+        dataIndex: 'salaryRatio',
+        className: 'min-width-150',
+        render: (value) => Helper.getPercent(value * 100),
+      },
+      {
+        title: 'Lương cơ bản',
+        key: 'salary',
+        dataIndex: 'parameterValues[0]',
+        className: 'min-width-150',
+        render: (value) => Helper.getPrice(value?.pivot?.value),
+      },
+      {
+        title: 'Tổng phụ cấp',
+        key: 'payment',
+        dataIndex: 'parameterValues',
+        className: 'min-width-150',
+        render: (value) =>
+          Helper.getPrice(
+            (value || []).reduce(
+              (result, item, index) => (!!index ? result + item?.pivot?.value : result),
+              0,
+            ),
+          ),
+      },
+      {
+        title: 'Nơi làm việc',
+        key: 'branch',
+        dataIndex: 'branch',
+        className: 'min-width-150',
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Chức danh',
+        key: 'position',
+        dataIndex: 'position',
+        className: 'min-width-150',
+        render: (value) => value?.name,
+      },
+      // {
+      //   title: 'Thao tác',
+      //   key: 'actions',
+      //   width: 180,
+      //   className: 'min-width-180',
+      //   fixed: 'right',
+      //   align: 'center',
+      //   render: (record) => (
+      //     <ul className="list-unstyled list-inline">
+      //       <li className="list-inline-item">
+      //         <Button color="primary" icon="edit" />
+      //       </li>
+      //       <li className="list-inline-item">
+      //         <Button color="danger" icon="remove" className="ml-2" />
+      //       </li>
+      //       <li className="list-inline-item">
+      //         <Button color="success" icon="export" />
+      //       </li>
+      //     </ul>
+      //   ),
+      // },
+    ],
+    [],
+  );
 
   const finishForm = () => {
     const formValues = formRefModal?.current?.getFieldsValue();
@@ -242,8 +249,8 @@ const Index = memo(() => {
       contractTo: formValues.contractTo && moment(formValues.contractTo),
       detail: (contractDetails?.parameterValues || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
-        value: ++valueDefault
-      }))
+        value: ++valueDefault,
+      })),
     };
 
     dispatch({
@@ -264,20 +271,21 @@ const Index = memo(() => {
                 {
                   name: item?.source?.pointer,
                   errors: [item?.details],
-                }
+                },
               ]);
             }
           }
         }
-      }
+      },
     });
   };
 
   const fetchProbationaryContracts = () => {
     dispatch({
-      type: 'HRMusersAdd/GET_PROBATIONARY_CONTRACTS', payload: {
-        employeeId
-      }
+      type: 'HRMusersAdd/GET_PROBATIONARY_CONTRACTS',
+      payload: {
+        employeeId,
+      },
     });
   };
 
@@ -286,16 +294,14 @@ const Index = memo(() => {
 
     if (moment.isMoment(contractFrom)) {
       formRefModal?.current?.setFieldsValue({
-        contractTo:
-          moment(contractFrom)
-            .add(month || 0, 'months')
+        contractTo: moment(contractFrom).add(month || 0, 'months'),
       });
     }
   };
 
   useEffect(() => {
     mounted.current = true;
-    return () => mounted.current = false;
+    return () => (mounted.current = false);
   }, []);
 
   useEffect(() => {
@@ -323,21 +329,21 @@ const Index = memo(() => {
               disabled={loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT']}
               key="cancel"
               color="white"
-              icon="fe-x"
+              size="large"
               onClick={cancelModal}
             >
               Hủy
             </Button>
             <Button
               disabled={
-                loading['categories/GET_BRANCHES']
-                || loading['HRMusersAdd/GET_DIVISIONS']
-                || loading['HRMusersAdd/GET_POSITIONS']
-                || loading['HRMusersAdd/GET_CONTRACT_TYPES']
+                loading['categories/GET_BRANCHES'] ||
+                loading['HRMusersAdd/GET_DIVISIONS'] ||
+                loading['HRMusersAdd/GET_POSITIONS'] ||
+                loading['HRMusersAdd/GET_CONTRACT_TYPES']
               }
               key="choose"
               color="success"
-              icon="fe-save"
+              size="large"
               loading={loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT']}
               onClick={finishForm}
             >
@@ -350,7 +356,7 @@ const Index = memo(() => {
           layout="vertical"
           ref={formRefModal}
           initialValues={{
-            contractDate: moment()
+            contractDate: moment(),
           }}
           onValuesChange={formUpdate}
         >
@@ -444,7 +450,8 @@ const Index = memo(() => {
             <Pane className="col-lg-12">
               <FormItem
                 label="Công việc cụ thể"
-                name="work" type={variables.INPUT}
+                name="work"
+                type={variables.INPUT}
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
