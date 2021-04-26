@@ -100,9 +100,9 @@ class Breadcrumbs extends React.Component {
 
   render() {
     const { breadcrumb } = this.state;
-    const { last } = this.props;
+    const { last, className } = this.props;
     return (
-      <div className={styles.breadcrumbs}>
+      <div className={`${styles.breadcrumbs} ${className}`} >
         <div className={styles.path}>
           <Link className="text-muted" to="/">
             Trang chủ

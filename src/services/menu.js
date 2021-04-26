@@ -1082,7 +1082,7 @@ export async function getLeftMenuFeePolicy() {
     {
       title: 'Chính sách đóng phí',
       key: 'policy',
-      url: ['/chinh-sach-phi/chinh-sach', '/chinh-sach-phi/chinh-sach/tao-moi', '/chinh-sach-phi/chinh-sach/:id/chi-tiet'],
+      url: ['/chinh-sach-phi/chinh-sach', '/chinh-sach-phi/chinh-sach/them-moi', '/chinh-sach-phi/chinh-sach/:id/chi-tiet'],
       icon: 'icon icon-fee-policy',
       permission: [],
     },

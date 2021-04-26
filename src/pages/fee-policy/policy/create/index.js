@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Tabs } from 'antd';
+import { Tabs, Form } from 'antd';
 import { useSelector } from 'dva';
 import csx from 'classnames';
 
@@ -8,11 +8,12 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables } from '@/utils';
 
-import styles from '@/assets/styles/Common/information.module.scss';
 import commonStyles from '@/assets/styles/Common/common.scss';
-import variablesModules from './utils/variables';
 
+import variablesModules from './utils/variables';
 import ScheduleTable from './tables/schedule';
 import TuitionTable from './tables/tuition';
 import FoodTable from './tables/food';
@@ -27,6 +28,7 @@ const tables = {
 };
 
 const Index = memo(() => {
+  const formRef = useRef();
   const mounted = useRef(false);
   const mountedSet = (action, value) => {
     if (mounted.current) {
@@ -55,42 +57,68 @@ const Index = memo(() => {
     return () => (mounted.current = false);
   }, []);
 
+  const finishForm = () => {}
+
   return (
-    <>
-      <Breadcrumbs className="pb0" last="19/2021/QĐ-CT" menu={menuLeftFeePolicy} />
+    <Form layout="vertical" colon={false} ref={formRef} onFinish={finishForm}>
+      <Breadcrumbs className="pb0" last="Thêm mới" menu={menuLeftFeePolicy} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Loading loading={pageLoading} isError={error.isError} params={{ error, type: 'container' }}>
-          <Helmet title="Chi tiết chính sách" />
+          <Helmet title="Thêm mới chính sách" />
+
           <Pane className="card p20">
             <Heading type="form-title" className="mb10">
               Thông tin chung
             </Heading>
 
             <Pane className="row">
-              <Pane className="col-lg-3">
-                <label className={styles.infoLabel}>Ngày lập:</label>
-                <Pane className={styles.infoText}>
-                  24/03/2021
-                </Pane>
-              </Pane>
-              <Pane className="col-lg-3">
-                <label className={styles.infoLabel}>Số quyết định:</label>
-                <Pane className={styles.infoText}>
-                  19/2021/QĐ-CT
-                </Pane>
-              </Pane>
-              <Pane className="col-lg-3">
-                <label className={styles.infoLabel}>Thời điểm hiệu lực:</label>
-                <Pane className={styles.infoText}>
-                  01/06/2021 - 31/05/2022
-                </Pane>
-              </Pane>
-              <Pane className="col-lg-3">
-                <label className={styles.infoLabel}>Thời điểm nộp tiền:</label>
-                <Pane className={styles.infoText}>
-                  01/06/2021 - 31/05/2022
-                </Pane>
-              </Pane>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mb0"
+                  label="Ngày lập"
+                  name="ngayLap"
+                  rules={[variables.RULES.EMPTY]}
+                  type={variables.INPUT}
+                  data={[]}
+                  // onChange={this.selectBranch}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mb0"
+                  label="Số quyết định"
+                  name="soQuyetDinh"
+                  rules={[variables.RULES.EMPTY]}
+                  type={variables.INPUT}
+                  data={[]}
+                  // onChange={this.selectBranch}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mb0"
+                  label="Thời điểm hiệu lực"
+                  name="thoiDiemHieuLuc"
+                  rules={[variables.RULES.EMPTY]}
+                  type={variables.RANGE_PICKER}
+                  data={[]}
+                  // onChange={this.selectBranch}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-lg-3">
+                <FormItem
+                  className="mb0"
+                  label="Thời điểm nộp tiền"
+                  name="thoiDiemNopTien"
+                  type={variables.RANGE_PICKER}
+                  data={[]}
+                  // onChange={this.selectBranch}
+                  allowClear={false}
+                />
+              </div>
             </Pane>
           </Pane>
 
@@ -110,7 +138,7 @@ const Index = memo(() => {
           </Pane>
         </Loading>
       </Pane>
-    </>
+    </Form>
   );
 });
 

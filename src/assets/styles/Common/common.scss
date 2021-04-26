@@ -182,6 +182,27 @@
       background: $background-success;
     }
   }
+  &.block-table-tab-new {
+    @extend .block-table-tab;
+    padding: 0;
+    :global(.ant-tabs) {
+      margin: 0;
+    }
+    :global(.ant-tabs-nav) {
+      margin: 0;
+    }
+    :global(.ant-table-thead > tr > th) {
+      background: $white;
+    }
+    :global(.heading-tab) {
+      padding: 20px 20px 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    :global(.ant-table-summary .ant-table-cell) {
+      background: rgba(240, 240, 240, 0.45);
+      border-bottom: 1px solid #EAEAEA;
+    }
+  }
   :global(.ant-table-wrapper) {
     overflow-x: auto;
   }
