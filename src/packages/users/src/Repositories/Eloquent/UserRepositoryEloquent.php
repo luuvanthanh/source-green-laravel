@@ -51,4 +51,29 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         return UserPresenter::class;
     }
 
+    public function getUser($attributes)
+    {
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->where('Id', $employeeId);
+        }
+
+        if (!empty($attributes['hasClass'])) {
+            if ($attributes['hasClass'] == "true") {
+                $this->model = $this->model->whereHas('classTeacher');
+            } else {
+                $this->model = $this->model->whereDoesnthave('classTeacher');
+            }
+        }
+
+        $this->model = $this->model->tranferHistory($attributes);
+
+        if (empty($attributes['limit'])) {
+            $users = $this->get();
+        } else {
+            $users = $this->paginate($attributes['limit']);
+        }
+
+        return $users;
+    }
 }

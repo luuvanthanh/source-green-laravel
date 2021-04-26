@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Models;
 
+use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
@@ -115,6 +116,21 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $this->hasMany(PositionLevel::class, 'EmployeeId');
     }
 
+    /**
+     * Get profiles of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function positionLevelNow()
+    {
+        return $this->hasOne(PositionLevel::class, 'EmployeeId')->where('endDate', null);
+    }
+
+    /**
+     * Get workHours of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function workHours()
     {
         return $this->hasMany(\GGPHP\WorkHour\Models\WorkHour::class, 'EmployeeId');
@@ -129,4 +145,44 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     {
         return $this->hasMany(\GGPHP\WorkDeclaration\Models\WorkDeclaration::class, 'EmployeeId');
     }
+
+    public function classTeacher()
+    {
+        return $this->belongsTo(\GGPHP\Clover\Models\ClassTeacher::class, 'Id', 'EmployeeId');
+    }
+
+    public function scopeTranferHistory($query, $attributes)
+    {
+        $query->whereHas('positionLevel', function ($q) use ($attributes) {
+            if (!empty($attributes['branchId'])) {
+                $q->where('BranchId', $attributes['branchId']);
+            }
+
+            if (!empty($attributes['divisionId'])) {
+                $q->where('DivisionId', $attributes['divisionId']);
+            }
+
+            if (!empty($attributes['positionId'])) {
+                $q->where('PositionId', $attributes['positionId']);
+            }
+
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                $q->where(function ($q2) use ($attributes) {
+                    $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                        ->orWhere([['StartDate', '>', $attributes['startDate']], ['startDate', '<=', $attributes['endDate']]])
+                        ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]])
+                        ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
+                });
+            } else {
+                $now = !empty($attributes['date_tranfer']) ? $attributes['date_tranfer'] : Carbon::now()->format('Y-m-d');
+                $q->where(function ($q2) use ($now) {
+                    $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                        ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+                });
+            }
+        });
+
+        return $query;
+    }
+
 }

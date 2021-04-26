@@ -4,6 +4,7 @@ namespace GGPHP\Users\Transformers;
 
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Transformers\AbsentTransformer;
+use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\PositionLevel\Transformers\PositionLevelTransformer;
@@ -36,7 +37,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel',
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
     ];
 
     /**
@@ -96,11 +97,21 @@ class UserTransformer extends BaseTransformer
      */
     public function includeAbsent(User $employee)
     {
-        if (empty($employee->absent)) {
+        return $this->collection($employee->absent, new AbsentTransformer, 'Absent');
+    }
+
+    /**
+     * Include RankPositionInformation
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeClassTeacher(User $employee)
+    {
+        if (empty($employee->classTeacher)) {
             return;
         }
 
-        return $this->collection($employee->absent, new AbsentTransformer, 'Absent');
+        return $this->item($employee->classTeacher, new ClassTeacherTransformer, 'ClassTeacher');
     }
 
     /**

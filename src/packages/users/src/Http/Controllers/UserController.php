@@ -32,16 +32,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $employees = $this->employeeRepository->all();
-        } else {
-            $employees = $this->employeeRepository->paginate($limit);
-        }
+        $employees = $this->employeeRepository->getUser($request->all());
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
