@@ -98,6 +98,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/lich-su',
+            component: './criteria/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA
