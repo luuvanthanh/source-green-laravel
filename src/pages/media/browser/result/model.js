@@ -11,21 +11,21 @@ export default {
     },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -40,14 +40,14 @@ export default {
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },
     *VALIDATE({ payload, callback }, { call }) {
       try {
         const response = yield call(services.validate, payload);
-        callback && callback(response)
+        callback && callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
@@ -62,7 +62,7 @@ export default {
     *VALIDATE_ALL({ payload, callback }, { call }) {
       try {
         const response = yield call(services.validate, payload);
-        callback && callback(response)
+        callback && callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
@@ -77,13 +77,13 @@ export default {
     *REMOVE_IMAGE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.removeImage, payload);
-        callback && callback(response)
+        callback && callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        callback && callback(null, error)
+        callback && callback(null, error);
         notification.error({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thất bại',
@@ -93,13 +93,45 @@ export default {
     *REMOVE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.remove, payload);
-        callback && callback(response)
+        callback && callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        callback && callback(null, error)
+        callback && callback(null, error);
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thất bại',
+        });
+      }
+    },
+    *REMOVE_ALL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.removeAll, payload);
+        callback && callback(response);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback && callback(null, error);
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thất bại',
+        });
+      }
+    },
+    *MERGE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.merge, payload);
+        callback && callback(response);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback && callback(null, error);
         notification.error({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thất bại',

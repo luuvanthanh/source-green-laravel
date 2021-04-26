@@ -10,7 +10,7 @@ export function get(params = {}) {
 export function validate(data) {
   return request('/posts/send', {
     method: 'PUT',
-    data
+    data,
   });
 }
 
@@ -23,6 +23,20 @@ export function remove({ id }) {
 export function removeImage({ postId, fileId }) {
   return request(`/posts/${postId}/files/${fileId}`, {
     method: 'DELETE',
+  });
+}
+
+export function removeAll(data) {
+  return request(`/delete-list`, {
+    method: 'DELETE',
+    data,
+  });
+}
+
+export function merge(data) {
+  return request(`/posts/merge`, {
+    method: 'PUT',
+    data,
   });
 }
 
