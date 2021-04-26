@@ -535,6 +535,14 @@ export async function getLeftMenuCriteria() {
       pro: true,
     },
     {
+      title: 'Lịch sử',
+      key: 'history',
+      url: ['/tieu-chi-danh-gia/lich-su'],
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
+    },
+    {
       title: 'Cấu hình',
       key: 'categories',
       icon: 'icon icon-list',
