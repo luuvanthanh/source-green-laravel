@@ -352,11 +352,28 @@ export default [
         path: '/diem-danh',
         component: './attendance/layout',
         routes: [
-          // {
-          //   path: '/diem-danh',
-          //   redirect: '/diem-danh/hoc-sinh',
-          // },
-
+          {
+            path: '/diem-danh',
+            redirect: '/diem-danh/hoc-sinh',
+          },
+          {
+            path: '/diem-danh/cau-hinh-lich-hoc',
+            component: './attendance/shift-students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh-lich-hoc/tao-moi',
+            component: './attendance/shift-students/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh-lich-hoc/:id/chi-tiet',
+            component: './attendance/shift-students/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // Attendance

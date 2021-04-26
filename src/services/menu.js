@@ -248,11 +248,11 @@ export async function getLeftMenuSchedules() {
         },
         {
           title: 'Cấu hình lịch học',
-          key: 'config',
+          key: 'shift-students',
           url: [
-            '/diem-danh/cau-hinh',
-            '/diem-danh/cau-hinh/tao-moi',
-            '/diem-danh/cau-hinh/:id/chi-tiet',
+            '/diem-danh/cau-hinh-lich-hoc',
+            '/diem-danh/cau-hinh-lich-hoc/tao-moi',
+            '/diem-danh/cau-hinh-lich-hoc/:id/chi-tiet',
           ],
           permission: [],
           pro: true,
