@@ -366,7 +366,19 @@ export default [
         routes: [
           {
             path: '/diem-danh',
-            redirect: '/diem-danh/hoc-sinh',
+            redirect: '/diem-danh/lich-hoc-tre',
+          },
+          {
+            path: '/diem-danh/lich-hoc-tre',
+            component: './attendance/schedule-students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/lich-su-vao-ra-lop',
+            component: './attendance/in-out-histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
           },
           {
             path: '/diem-danh/cau-hinh-lich-hoc',
