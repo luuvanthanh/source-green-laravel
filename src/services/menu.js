@@ -527,6 +527,14 @@ export async function getLeftMenuCriteria() {
       pro: true,
     },
     {
+      title: 'Chương trình học',
+      key: 'study-program',
+      url: ['/tieu-chi-danh-gia/chuong-trinh-hoc'],
+      icon: 'icon icon-list',
+      permission: [],
+      pro: true,
+    },
+    {
       title: 'Cấu hình',
       key: 'categories',
       icon: 'icon icon-list',
