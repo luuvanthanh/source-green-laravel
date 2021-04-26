@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'medicalItemsAdd',
@@ -13,6 +14,8 @@ export default {
       isError: false,
       data: {},
     },
+    branches: [],
+    classes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -20,6 +23,14 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.items,
+    }),
+    SET_CLASSES: (state, { payload }) => ({
+      ...state,
+      classes: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -32,9 +43,27 @@ export default {
     }),
   },
   effects: {
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_CLASSES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getClasses, payload);
+        yield saga.put({
+          type: 'SET_CLASSES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.getStudents);
+        const response = yield saga.call(services.getStudents, payload);
         callback(response);
       } catch (error) {
         callback(null, error);

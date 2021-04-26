@@ -260,8 +260,8 @@ class Index extends PureComponent {
       {
         title: 'LOẠI',
         key: 'absentType',
-        className: 'min-width-100',
-        width: 100,
+        className: 'min-width-150',
+        width: 150,
         render: (record) => get(record, 'absentType.name'),
       },
       {

@@ -82,7 +82,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
             <Pane className={styles.imageWrapper}>
               <img
                 className={styles.thumb}
-                src={`${API_UPLOAD}/${item}`}
+                src={`${API_UPLOAD}${item}`}
                 alt="uploaded-image=thumb"
               />
 
