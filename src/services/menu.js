@@ -235,14 +235,14 @@ export async function getLeftMenuSchedules() {
         {
           title: 'Lịch học trẻ',
           key: 'schedules',
-          url: ['/diem-danh/hoc-sinh'],
+          url: ['/diem-danh/lich-hoc-tre'],
           permission: [],
           pro: true,
         },
         {
-          title: 'Lịch sử vào ra',
-          key: 'timekeeping',
-          url: ['/diem-danh/lich-su-vao-ra'],
+          title: 'Lịch sử vào ra lớp',
+          key: 'in-out-histories',
+          url: ['/diem-danh/lich-su-vao-ra-lop'],
           permission: [],
           pro: true,
         },
