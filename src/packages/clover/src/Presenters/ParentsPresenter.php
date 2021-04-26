@@ -2,25 +2,25 @@
 
 namespace GGPHP\Clover\Presenters;
 
-use GGPHP\Clover\Transformers\ClassesTransformer;
+use GGPHP\Clover\Transformers\ParentsTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
- * Class ClassesPresenter.
+ * Class ParentsPresenter.
  *
  * @package namespace App\Presenters;
  */
-class ClassesPresenter extends FractalPresenter
+class ParentsPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'Class';
+    public $resourceKeyItem = 'Parent';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'Class';
+    public $resourceKeyCollection = 'Parent';
 
     /**
      * Transformer
@@ -29,7 +29,7 @@ class ClassesPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new ClassesTransformer();
+        return new ParentsTransformer();
     }
 
 }

@@ -109,12 +109,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         try {
             $tranfer = ProbationaryContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['parameterValueId'], ['value' => $value['value']]);
+                $tranfer->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

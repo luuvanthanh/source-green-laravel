@@ -27,5 +27,6 @@ class CloverServiceProvider extends AuthServiceProvider
     public function register()
     {
         $this->app->bind(StudentRepository::class, StudentRepositoryEloquent::class);
+        $this->app->bind(\GGPHP\Clover\Repositories\Contracts\ParentRepository::class, \GGPHP\Clover\Repositories\Eloquent\ParentRepositoryEloquent::class);
     }
 }

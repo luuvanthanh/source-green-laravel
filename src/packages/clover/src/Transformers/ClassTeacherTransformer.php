@@ -29,7 +29,7 @@ class ClassTeacherTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['classes'];
+    protected $availableIncludes = ['class'];
 
     /**
      * Transform the Student entity.
@@ -49,12 +49,12 @@ class ClassTeacherTransformer extends BaseTransformer
      * @param ClassTeacher $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeClasses(ClassTeacher $classTeacher)
+    public function includeClass(ClassTeacher $classTeacher)
     {
         if (empty($classTeacher->classes)) {
             return;
         }
 
-        return $this->item($classTeacher->classes, new ClassesTransformer, 'Classes');
+        return $this->item($classTeacher->classes, new ClassesTransformer, 'Class');
     }
 }

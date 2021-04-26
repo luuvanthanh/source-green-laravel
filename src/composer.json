@@ -78,8 +78,10 @@
             "GGPHP\\ResignationDecision\\": "packages/resignation-decision/src/",
             "GGPHP\\DecisionSuspend\\": "packages/decision-suspend/src/",
             "GGPHP\\Clover\\": "packages/clover/src",
-            "GGPHP\\InOutHistories\\": "packages/in-out-histories/src",
             "GGPHP\\BusinessCard\\": "packages/business-card/src",
+            "GGPHP\\InOutHistories\\": "young-attendance/in-out-histories/src",
+            "GGPHP\\YoungAttendance\\ShiftSchedule\\": "young-attendance/shift-schedule/src",
+            "GGPHP\\YoungAttendance\\Absent\\": "young-attendance/absent/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

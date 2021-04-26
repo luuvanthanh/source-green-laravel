@@ -1,26 +1,26 @@
 <?php
 
-namespace GGPHP\Clover\Presenters;
+namespace GGPHP\YoungAttendance\Absent\Presenters;
 
-use GGPHP\Clover\Transformers\ClassesTransformer;
+use GGPHP\YoungAttendance\Absent\Transformers\AbsentTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
- * Class ClassesPresenter.
+ * Class UserPresenter.
  *
  * @package namespace App\Presenters;
  */
-class ClassesPresenter extends FractalPresenter
+class AbsentPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'Class';
+    public $resourceKeyItem = 'Absent';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'Class';
+    public $resourceKeyCollection = 'Absent';
 
     /**
      * Transformer
@@ -29,7 +29,6 @@ class ClassesPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new ClassesTransformer();
+        return new AbsentTransformer();
     }
-
 }

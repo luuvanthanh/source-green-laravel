@@ -178,6 +178,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         GGPHP\ShiftSchedule\Providers\ShiftScheduleServiceProvider::class,
+        GGPHP\YoungAttendance\ShiftSchedule\Providers\ShiftScheduleServiceProvider::class,
         GGPHP\FingerprintTimekeeper\Providers\FingerprintTimekeeperServiceProvider::class,
         UserServiceProvider::class,
         TimekeepingServiceProvider::class,
@@ -206,6 +207,7 @@ return [
         GGPHP\Clover\Providers\CloverServiceProvider::class,
         GGPHP\InOutHistories\Providers\InOutHistoriesServiceProvider::class,
         GGPHP\BusinessCard\Providers\BusinessCardServiceProvider::class,
+        GGPHP\YoungAttendance\Absent\Providers\AbsentServiceProvider::class,
     ],
 
     /*

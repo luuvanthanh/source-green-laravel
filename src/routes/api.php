@@ -123,13 +123,21 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
-    \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
     \GGPHP\BusinessCard\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
 
+    //YoungAttendance
+    \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\YoungAttendance\ShiftSchedule\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\YoungAttendance\Absent\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
     // });
 });
