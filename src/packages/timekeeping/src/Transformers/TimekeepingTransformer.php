@@ -14,7 +14,7 @@ use GGPHP\Users\Transformers\UserTransformer;
  */
 class TimekeepingTransformer extends BaseTransformer
 {
-    protected $availableIncludes = ['user'];
+    protected $availableIncludes = ['employee'];
     protected $defaultIncludes = ['fingerprintTimekeeper'];
 
     /**
@@ -35,13 +35,13 @@ class TimekeepingTransformer extends BaseTransformer
      * @param Timekeeping $timekeeping
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(Timekeeping $timekeeping)
+    public function includeEmployee(Timekeeping $timekeeping)
     {
-        if (empty($timekeeping->user)) {
+        if (empty($timekeeping->employee)) {
             return;
         }
 
-        return $this->item($timekeeping->user, new UserTransformer, 'User');
+        return $this->item($timekeeping->employee, new UserTransformer, 'Employee');
     }
 
     /**

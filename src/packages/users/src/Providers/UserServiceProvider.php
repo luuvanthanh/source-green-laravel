@@ -7,7 +7,6 @@ use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as AuthServiceProvider;
-use Laravel\Passport\Passport;
 
 class UserServiceProvider extends AuthServiceProvider
 {
@@ -30,7 +29,7 @@ class UserServiceProvider extends AuthServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/config.php', 'constants'
         );
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ggphp-users');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ggphp-employees');
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang');
         if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
@@ -40,12 +39,9 @@ class UserServiceProvider extends AuthServiceProvider
 
         // set auth config system
         $setDriver = Config::set('auth.guards.api.driver', 'passport');
-        $setProviders = Config::set('auth.providers.users.model', User::class);
+        $setProviders = Config::set('auth.providers.employees.model', User::class);
         $setConfigRepository = Config::set('repository.fractal.serializer', 'League\Fractal\Serializer\JsonApiSerializer');
 
-        Passport::routes();
-        Passport::tokensExpireIn(now()->addDays(config('constants.TOKEN.REFRESH_TOKEN_EXPIRE_IN')));
-        Passport::refreshTokensExpireIn(now()->addDays(config('constants.TOKEN.REFRESH_TOKEN_EXPIRE_IN')));
     }
 
     /**

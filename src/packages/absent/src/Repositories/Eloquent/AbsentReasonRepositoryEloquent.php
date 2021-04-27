@@ -5,15 +5,15 @@ namespace GGPHP\Absent\Repositories\Eloquent;
 use GGPHP\Absent\Models\AbsentReason;
 use GGPHP\Absent\Presenters\AbsentReasonPresenter;
 use GGPHP\Absent\Repositories\Absent\AbsentReasonRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class AbsentReasonRepositoryEloquent extends BaseRepository implements AbsentReasonRepository
+class AbsentReasonRepositoryEloquent extends CoreRepositoryEloquent implements AbsentReasonRepository
 {
     /**
      * Specify Model class name

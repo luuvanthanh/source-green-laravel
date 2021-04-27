@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ResetPasswordRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -24,7 +24,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:users,email'
+            'email' => 'required|email|exists:Employees,email',
         ];
     }
 }

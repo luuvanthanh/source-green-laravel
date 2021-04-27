@@ -2,14 +2,14 @@
 
 namespace ZK\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use GGPHP\Core\Models\UuidModel;
 use Illuminate\Support\Arr;
 
-class ZKSyncTime extends Model
+class ZKSyncTime extends UuidModel
 {
-    protected $table = 'zk_device_sync_times';
+    public $incrementing = false;
+
+    protected $table = 'ZkDeviceSyncTimes';
 
     /**
      * The attributes that are mass assignable.
@@ -17,6 +17,6 @@ class ZKSyncTime extends Model
      * @var array
      */
     protected $fillable = [
-        'device_id', 'updated_at', 'zk_sync_id'
+        'DeviceId', 'ZkSyncId',
     ];
 }

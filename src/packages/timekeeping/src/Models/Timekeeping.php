@@ -2,12 +2,16 @@
 
 namespace GGPHP\Timekeeping\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 use GGPHP\FingerprintTimekeeper\Models\FingerprintTimekeeper;
 use GGPHP\Users\Models\User;
 
-class Timekeeping extends CoreModel
+class Timekeeping extends UuidModel
 {
+    public $incrementing = false;
+
+    protected $table = 'Timekeepings';
+
     const CHECK_IN = 'CHECK_IN';
     const CHECK_OUT = 'CHECK_OUT';
     const TYPE_FINGERPRINT = '1';
@@ -29,11 +33,11 @@ class Timekeeping extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'device_id', 'type', 'attended_at', 'tracking_type',
+        'EmployeeId', 'DeviceId', 'Type', 'AttendedAt', 'TrackingType',
     ];
 
     protected $dateTimeFields = [
-        'attended_at',
+        'AttendedAt',
     ];
 
     /**
@@ -42,14 +46,14 @@ class Timekeeping extends CoreModel
      * @var array
      */
     protected $casts = [
-        'attended_at' => 'datetime',
+        'AttendedAt' => 'datetime',
     ];
 
     /**
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function employee()
     {
         return $this->belongsTo(User::class);
     }
@@ -60,6 +64,6 @@ class Timekeeping extends CoreModel
      */
     public function fingerprintTimekeeper()
     {
-        return $this->belongsTo(FingerprintTimekeeper::class, 'device_id');
+        return $this->belongsTo(FingerprintTimekeeper::class, 'DeviceId');
     }
 }

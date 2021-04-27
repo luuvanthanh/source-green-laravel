@@ -2,14 +2,16 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class ShiftDetail extends CoreModel
+class ShiftDetail extends UuidModel
 {
+    public $incrementing = false;
+
     /**
      * Declare the table name
      */
-    protected $table = 'shift_details';
+    protected $table = 'ShiftDetails';
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +19,7 @@ class ShiftDetail extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'shift_id', 'start_time', 'end_time', 'meal_time',
+        'ShiftId', 'StartTime', 'EndTime',
     ];
 
     /**

@@ -3,10 +3,10 @@
 namespace ZK\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class DeleteFingerprintOnDevice implements ShouldQueue
 {
@@ -34,11 +34,11 @@ class DeleteFingerprintOnDevice implements ShouldQueue
     {
         try {
             foreach ($this->devices as $device) {
-                $zk = new \ZK\Driver\ZKLib($device->ip, $device->port);
+                $zk = new \ZK\Driver\ZKLib($device->Ip, $device->Port);
                 //connect to device
                 $zk->connect();
-                //set user from server to device
-                $zk->removeFingerprint($this->fingerprint->user_id, [$this->fingerprint->finger_index]);
+                //set employee from server to device
+                $zk->removeFingerprint($this->fingerprint->EmployeeId, [$this->fingerprint->FingerIndex]);
                 //disconnect
                 $zk->disconnect();
             }

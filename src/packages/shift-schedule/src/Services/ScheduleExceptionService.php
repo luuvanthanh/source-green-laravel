@@ -14,18 +14,18 @@ class ScheduleExceptionService
      */
     public static function add($schedule, $date)
     {
-        $attributes = [];
         for ($i = 0; $i < count($date); $i++) {
-            $oldScheduleException = ScheduleException::where('schedule_id', $schedule->id)->where('date', $date[$i])->where('shift_id', $schedule->shift_id)->first();
+            $oldScheduleException = ScheduleException::where('ScheduleId', $schedule->Id)->where('Date', $date[$i])->where('ShiftId', $schedule->ShiftId)->first();
             if (is_null($oldScheduleException)) {
-                $attributes[] = [
-                    'date' => $date[$i],
-                    'shift_id' => $schedule->shift_id,
-                    'schedule_id' => $schedule->id,
+                $attributes = [
+                    'Date' => $date[$i],
+                    'ShiftId' => $schedule->ShiftId,
+                    'ScheduleId' => $schedule->Id,
                 ];
+                $scheduleException = ScheduleException::create($attributes);
             }
         }
-        $scheduleException = ScheduleException::insert($attributes);
+
         return $scheduleException;
     }
 
@@ -39,7 +39,7 @@ class ScheduleExceptionService
     public static function getDayException($schedulesId)
     {
         $listDayException = [];
-        $scheduleException = ScheduleException::where('schedule_id', $schedulesId)->get();
+        $scheduleException = ScheduleException::where('ScheduleId', $schedulesId)->get();
         foreach ($scheduleException as $value) {
             $listDayException[] = $value->date->toDateString();
         }

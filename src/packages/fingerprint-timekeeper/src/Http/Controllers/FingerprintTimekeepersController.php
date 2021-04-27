@@ -39,8 +39,8 @@ class FingerprintTimekeeperController extends Controller
      */
     public function store(FingerprintTimekeeperCreateRequest $request)
     {
-
-        $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->create($request->all());
+        $a = $request->all();
+        $fingerprintTimekeeper = $this->fingerprintTimekeeperrepository->create($a);
 
         return $this->success($fingerprintTimekeeper, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED, 'isShowData' => false]);
     }

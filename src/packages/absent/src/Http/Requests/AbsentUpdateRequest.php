@@ -21,12 +21,11 @@ class AbsentUpdateRequest extends FormRequest
             ];
         } else {
             return [
-                'absent_type_id' => 'required|exists:absent_types,id',
-                'absent_reason_id' => 'required|exists:absent_reasons,id',
-                'user_id' => 'required|exists:users,id',
-                'store_id' => 'required|exists:stores,id',
-                'start_date' => 'date|date_format:Y-m-d',
-                'end_date' => 'date|date_format:Y-m-d|after_or_equal:start_date',
+                'absentTypeId' => 'required|exists:AbsentTypes,Id',
+                'absentReasonId' => 'required|exists:AbsentReason,Id',
+                'employeeId' => 'required|exists:Employees,Id',
+                'startDate' => 'date|date_format:Y-m-d',
+                'endDate' => 'date|date_format:Y-m-d|after_or_equal:startDate',
             ];
         }
     }

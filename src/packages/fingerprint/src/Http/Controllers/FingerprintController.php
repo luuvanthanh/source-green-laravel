@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 class FingerprintController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $fingerprintRepository;
 

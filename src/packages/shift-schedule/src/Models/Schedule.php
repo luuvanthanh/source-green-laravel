@@ -2,14 +2,16 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class Schedule extends CoreModel
+class Schedule extends UuidModel
 {
+    public $incrementing = false;
+
     /**
      * Declare the table name
      */
-    protected $table = 'schedules';
+    protected $table = 'Schedules';
 
     /**
      * The attributes that are mass assignable.
@@ -17,12 +19,12 @@ class Schedule extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'shift_id', 'start_date', 'end_date', 'schedule_request_detail_id',
+        'EmployeeId', 'ShiftId', 'StartDate', 'EndDate',
     ];
 
     protected $dateTimeFields = [
-        'start_date',
-        'end_date',
+        'StartDate',
+        'EndDate',
     ];
 
     /**
@@ -31,8 +33,8 @@ class Schedule extends CoreModel
      * @var array
      */
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
 
     /**
@@ -43,11 +45,11 @@ class Schedule extends CoreModel
     protected $hidden = [];
 
     /**
-     * Define relations user
+     * Define relations employee
      */
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'user_id');
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
     /**
@@ -55,7 +57,7 @@ class Schedule extends CoreModel
      */
     public function scheduleRepeat()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\ScheduleRepeat::class, 'schedule_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\ScheduleRepeat::class, 'ScheduleId');
     }
 
     /**
@@ -63,7 +65,7 @@ class Schedule extends CoreModel
      */
     public function scheduleException()
     {
-        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ScheduleException::class, 'schedule_id');
+        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ScheduleException::class, 'ScheduleId');
     }
 
     /**
@@ -71,6 +73,6 @@ class Schedule extends CoreModel
      */
     public function shift()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'id', 'shift_id');
+        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'Id', 'ShiftId');
     }
 }

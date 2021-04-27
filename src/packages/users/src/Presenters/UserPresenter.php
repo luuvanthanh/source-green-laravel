@@ -15,12 +15,12 @@ class UserPresenter extends FractalPresenter
     /**
      * @var string
      */
-    public $resourceKeyItem = 'User';
+    public $resourceKeyItem = 'Employee';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'User';
+    public $resourceKeyCollection = 'Employee';
 
     /**
      * Transformer

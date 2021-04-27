@@ -10,15 +10,16 @@ class ResetPasswordController extends Controller
 {
     use ResetsPasswords;
 
-    protected function sendResetResponse($response) {
+    protected function sendResetResponse($response)
+    {
         return $this->success([], trans('lang::messages.auth.resetPasswordSuccess'), false);
     }
 
     protected function rules()
     {
         return [
-            'token'    => 'required',
-            'email'    => 'required|email|exists:users,email',
+            'token' => 'required',
+            'email' => 'required|email|exists:Employees,email',
             'password' => 'required|string|confirmed|min:8',
         ];
     }

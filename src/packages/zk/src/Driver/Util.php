@@ -33,9 +33,9 @@ class Util
     const CMD_VERSION = 1100; # Obtain the firmware edition
     const CMD_DEVICE = 11; # Read in the machine some configuration parameter
 
-    const CMD_SET_USER = 8; # Upload the user information (from PC to terminal).
+    const CMD_SET_USER = 8; # Upload the employee information (from PC to terminal).
     const CMD_USER_TEMP_WRQ = 10; # Upload some fingerprint template
-    const CMD_DELETE_USER = 18; # Delete some user
+    const CMD_DELETE_USER = 18; # Delete some employee
     const CMD_DELETE_USER_TEMP = 19; # Delete some fingerprint template
     const CMD_CLEAR_ADMIN = 20; # Cancel the manager
 
@@ -56,7 +56,7 @@ class Util
     const ATT_STATE_FINGERPRINT = 1;
     const ATT_STATE_PASSWORD = 0;
     const ATT_STATE_CARD = 2;
-    
+
     const ATT_TYPE_CHECK_IN = 0;
     const ATT_TYPE_CHECK_OUT = 1;
     const ATT_TYPE_OVERTIME_IN = 4;
@@ -69,20 +69,20 @@ class Util
      * @param string $t Format: "Y-m-d H:i:s"
      * @return int
      */
-    static public function encodeTime($t)
+    public static function encodeTime($t)
     {
         $timestamp = strtotime($t);
-        $t = (object)[
-            'year' => (int)date('Y', $timestamp),
-            'month' => (int)date('m', $timestamp),
-            'day' => (int)date('d', $timestamp),
-            'hour' => (int)date('H', $timestamp),
-            'minute' => (int)date('i', $timestamp),
-            'second' => (int)date('s', $timestamp),
+        $t = (object) [
+            'year' => (int) date('Y', $timestamp),
+            'month' => (int) date('m', $timestamp),
+            'day' => (int) date('d', $timestamp),
+            'hour' => (int) date('H', $timestamp),
+            'minute' => (int) date('i', $timestamp),
+            'second' => (int) date('s', $timestamp),
         ];
 
         $d = (($t->year % 100) * 12 * 31 + (($t->month - 1) * 31) + $t->day - 1) *
-            (24 * 60 * 60) + ($t->hour * 60 + $t->minute) * 60 + $t->second;
+        (24 * 60 * 60) + ($t->hour * 60 + $t->minute) * 60 + $t->second;
 
         return $d;
     }
@@ -94,7 +94,7 @@ class Util
      * @param int|string $t
      * @return false|string Format: "Y-m-d H:i:s"
      */
-    static public function decodeTime($t)
+    public static function decodeTime($t)
     {
         $second = $t % 60;
         $t = $t / 60;
@@ -124,7 +124,7 @@ class Util
      * @param string $hex
      * @return string
      */
-    static public function reverseHex($hex)
+    public static function reverseHex($hex)
     {
         $tmp = '';
 
@@ -144,7 +144,7 @@ class Util
      * @param ZKLib $self
      * @return bool|number
      */
-    static public function getSize(ZKLib $self)
+    public static function getSize(ZKLib $self)
     {
         $u = unpack('H2h1/H2h2/H2h3/H2h4/H2h5/H2h6/H2h7/H2h8', substr($self->_data_recv, 0, 8));
         $command = hexdec($u['h2'] . $u['h1']);
@@ -165,7 +165,7 @@ class Util
      *
      * @inheritdoc
      */
-    static public function createChkSum($p)
+    public static function createChkSum($p)
     {
         $l = count($p);
         $chksum = 0;
@@ -211,7 +211,7 @@ class Util
      *
      * @inheritdoc
      */
-    static public function createHeader($command, $chksum, $session_id, $reply_id, $command_string)
+    public static function createHeader($command, $chksum, $session_id, $reply_id, $command_string)
     {
         $buf = pack('SSSS', $command, $chksum, $session_id, $reply_id) . $command_string;
 
@@ -242,7 +242,7 @@ class Util
      *
      * @inheritdoc
      */
-    static public function checkValid($reply)
+    public static function checkValid($reply)
     {
         $u = unpack('H2h1/H2h2', substr($reply, 0, 8));
 
@@ -260,7 +260,7 @@ class Util
      * @param integer $role
      * @return string
      */
-    static public function getUserRole($role)
+    public static function getUserRole($role)
     {
         switch ($role) {
             case self::LEVEL_USER:
@@ -281,7 +281,7 @@ class Util
      * @param integer $state
      * @return string
      */
-    static public function getAttState($state)
+    public static function getAttState($state)
     {
         switch ($state) {
             case self::ATT_STATE_FINGERPRINT:
@@ -299,13 +299,13 @@ class Util
 
         return $ret;
     }
-    
+
     /**
      * Get Attendance Type string
      * @param integer $type
      * @return string
      */
-    static public function getAttType($type)
+    public static function getAttType($type)
     {
         switch ($type) {
             case self::ATT_TYPE_CHECK_IN:
@@ -334,7 +334,7 @@ class Util
      * @param bool $first if 'true' don't remove first 4 bytes for first row
      * @return string
      */
-    static public function recData(ZKLib $self, $maxErrors = 10, $first = true)
+    public static function recData(ZKLib $self, $maxErrors = 10, $first = true)
     {
         $data = '';
         $bytes = self::getSize($self);
@@ -361,7 +361,7 @@ class Util
                 }
 
                 if ($first === false) {
-                    //The first 4 bytes don't seem to be related to the user
+                    //The first 4 bytes don't seem to be related to the employee
                     $dataRec = substr($dataRec, 8);
                 }
 
@@ -385,7 +385,7 @@ class Util
      * @param int $received
      * @param int $bytes
      */
-    static private function logReceived(ZKLib $self, $received, $bytes)
+    private static function logReceived(ZKLib $self, $received, $bytes)
     {
         self::logger($self, 'Received: ' . $received . ' of ' . $bytes . ' bytes');
     }
@@ -395,7 +395,7 @@ class Util
      * @param ZKLib $self
      * @param string $str
      */
-    static private function logger(ZKLib $self, $str)
+    private static function logger(ZKLib $self, $str)
     {
         if (defined('ZK_LIB_LOG')) {
             //use constant if defined

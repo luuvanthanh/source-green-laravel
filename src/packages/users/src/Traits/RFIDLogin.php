@@ -22,23 +22,23 @@ trait RFIDLogin
         $rfidPatch = $request->input('rfid_patch');
 
         try {
-            $user = User::whereHas('magneticCards', function ($query) use ($rfidPatch) {
+            $employee = User::whereHas('magneticCards', function ($query) use ($rfidPatch) {
                 $query->where('magnetic_card_patch', '=', $rfidPatch)->where('status', 'ON')->withTrashed();
             })->where('status', '=', User::ON)->firstOrFail();
-            foreach ($user->magneticCards as $value) {
+            foreach ($employee->magneticCards as $value) {
                 if ($value->status === 'ON' && \Hash::check($rfid, $value->magnetic_card_token)) {
-                    $token = $user->createToken(['token'])->accessToken;
+                    $token = $employee->createToken(['token'])->accessToken;
 
                     return response()->json([
                         'token_type' => 'Token',
                         'expires_in' => '',
                         'access_token' => $token,
                         'refresh_token' => '',
-                        'user_id' => $user->id,
+                        'EmployeeId' => $employee->Id,
                     ]);
                 }
             }
-            return $this->error('Invalid_credentials', 'The user credentials were incorrect.', 400);
+            return $this->error('Invalid_credentials', 'The employee credentials were incorrect.', 400);
 
         } catch (ModelNotFoundException $e) {
             if ($e instanceof ModelNotFoundException) {

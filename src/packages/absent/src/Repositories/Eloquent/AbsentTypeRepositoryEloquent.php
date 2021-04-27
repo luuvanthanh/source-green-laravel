@@ -5,18 +5,19 @@ namespace GGPHP\Absent\Repositories\Eloquent;
 use GGPHP\Absent\Models\AbsentType;
 use GGPHP\Absent\Presenters\AbsentTypePresenter;
 use GGPHP\Absent\Repositories\Absent\AbsentTypeRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class AbsentTypeRepositoryEloquent extends BaseRepository implements AbsentTypeRepository
+class AbsentTypeRepositoryEloquent extends CoreRepositoryEloquent implements AbsentTypeRepository
 {
     protected $fieldSearchable = [
-        'status',
+        'Status',
+        'Name' => 'like',
     ];
 
     /**

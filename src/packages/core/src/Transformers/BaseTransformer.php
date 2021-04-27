@@ -35,9 +35,20 @@ class BaseTransformer extends TransformerAbstract
         }
         $fillableValues = Arr::only($model->toArray(), array_diff($fillables, $hiddens));
 
-        return array_merge($fillableValues, $this->customAttributes($model), [
-            'id' => $model->id,
+        $result = array_merge($fillableValues, $this->customAttributes($model), [
+            'id' => $model->Id,
         ]);
+
+        foreach ($result as $key => $value) {
+            $newkey = dashesToCamelCase($key, false);
+
+            if ($key != $newkey) {
+                $result[$newkey] = $result[$key];
+                unset($result[$key]);
+            }
+        }
+
+        return $result;
     }
 
     /**

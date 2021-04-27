@@ -6,12 +6,13 @@ use GGPHP\Users\Models\User as CoreUser;
 
 class User extends CoreUser
 {
+
     public function fingerprints()
     {
-        return $this->hasMany(\GGPHP\Fingerprint\Models\Fingerprint::class);
+        return $this->hasMany(\GGPHP\Fingerprint\Models\Fingerprint::class, 'EmployeeId');
     }
     public function attendences()
     {
-        return $this->hasMany(\GGPHP\Timekeeping\Models\Timekeeping::class);
+        return $this->hasMany(\GGPHP\Timekeeping\Models\Timekeeping::class, 'EmployeeId');
     }
 }

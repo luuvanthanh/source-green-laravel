@@ -2,15 +2,16 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class ScheduleRepeat extends CoreModel
+class ScheduleRepeat extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'schedule_repeats';
+    protected $table = 'ScheduleRepeats';
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +19,7 @@ class ScheduleRepeat extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'schedule_id', 'repeat_by', 'count', 'interval', 'by_week_day',
+        'ScheduleId', 'RepeatBy', 'Count', 'Interval', 'ByWeekDay',
     ];
 
     /**
@@ -33,7 +34,7 @@ class ScheduleRepeat extends CoreModel
      */
     public function schedule()
     {
-        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'schedule_id');
+        return $this->belongsTo(\GGPHP\ShiftSchedule\Models\Schedule::class, 'ScheduleId');
     }
 
     /**

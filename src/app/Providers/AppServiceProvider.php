@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use CloudCreativity\LaravelJsonApi\LaravelJsonApi;
-use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,10 +17,6 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
-        if ($this->app->isLocal()) {
-            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-            $this->app->register(TelescopeServiceProvider::class);
-        }
     }
 
     /**
@@ -42,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
          * @param string $pageName
          * @return array
          */
-        Collection::macro('paginate', function($perPage = null, $page = null, $total = null, $pageName = 'page') {
+        Collection::macro('paginate', function ($perPage = null, $page = null, $total = null, $pageName = 'page') {
             $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);
 
             return new LengthAwarePaginator(

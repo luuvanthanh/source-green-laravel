@@ -8,6 +8,8 @@ use ZK\Traits\SyncToDevice;
 
 class Fingerprint extends UuidModel
 {
+    public $incrementing = false;
+
     use SoftDeletes, SyncToDevice;
 
     const ON = 'ON';
@@ -15,7 +17,7 @@ class Fingerprint extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'fingerprints';
+    protected $table = 'Fingerprints';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +25,7 @@ class Fingerprint extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'user_id', 'finger', 'size', 'valid', 'finger_index', 'status', 'device_id',
+        'EmployeeId', 'Finger', 'Size', 'Valid', 'FingerIndex', 'Status', 'DeviceId',
     ];
 
     /**
@@ -36,8 +38,8 @@ class Fingerprint extends UuidModel
     /**
      * Define relations store
      */
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(\GGPHP\Users\Models\User::class);
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 }

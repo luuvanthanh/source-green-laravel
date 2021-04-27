@@ -8,8 +8,10 @@ class AbsentReason extends UuidModel
 {
     public $incrementing = false;
 
+    protected $table = 'AbsentReasons';
+
     protected $fillable = [
-        'name', 'absent_type_id', 'status',
+        'Name', 'AbsentTypeId', 'Status',
     ];
 
     /**
@@ -17,6 +19,6 @@ class AbsentReason extends UuidModel
      */
     public function absentType()
     {
-        return $this->belongsTo(AbsentType::class);
+        return $this->belongsTo(AbsentType::class, 'AbsentTypeId');
     }
 }

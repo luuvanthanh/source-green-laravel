@@ -13,20 +13,24 @@ class AddTableZkSyncsTable extends Migration
      */
     public function up()
     {
-        Schema::create('zk_syncs', function (Blueprint $table) {
+        Schema::create('ZkSyncs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('subject_type')->nullable();
-            $table->string('action')->nullable();
-            $table->unsignedBigInteger('subject_id')->nullable();
-            $table->longText('payload');
-            $table->index(['subject_id', 'subject_type'], 'subject');
-            $table->timestamps();
+            $table->string('SubjectType')->nullable();
+            $table->string('Action')->nullable();
+            $table->string('SubjectId', 36)->nullable();
+            $table->longText('Payload');
+            $table->index(['SubjectId', 'SubjectType'], 'Subject');
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
-        Schema::create('zk_device_sync_times', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('device_id');
-            $table->bigInteger('zk_sync_id')->nullable();
-            $table->timestamps();
+        Schema::create('ZkDeviceSyncTimes', function (Blueprint $table) {
+            $table->uuid('Id')->index()->unique();
+            $table->primary('Id');
+            $table->uuid('DeviceId');
+            $table->foreign('DeviceId')->references('Id')->on('FingerprintTimekeepers')->onDelete('cascade');
+            $table->bigInteger('ZkSyncId')->nullable();
+            $table->timestamp('CreationTime', 0)->nullable();
+            $table->timestamp('LastModificationTime', 0)->nullable();
         });
     }
 
@@ -37,7 +41,7 @@ class AddTableZkSyncsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zk_device_sync_times');
-        Schema::dropIfExists('zk_syncs');
+        Schema::dropIfExists('ZkDeviceSyncTimes');
+        Schema::dropIfExists('ZkSyncs');
     }
 }

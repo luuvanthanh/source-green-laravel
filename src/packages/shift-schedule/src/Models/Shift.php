@@ -2,18 +2,19 @@
 
 namespace GGPHP\ShiftSchedule\Models;
 
-use GGPHP\Core\Models\CoreModel;
-use GGPHP\RolePermission\Models\Store;
+use GGPHP\Core\Models\UuidModel;
 
-class Shift extends CoreModel
+class Shift extends UuidModel
 {
+    public $incrementing = false;
+
     const ON = 'ON';
     const OFF = 'OFF';
 
     /**
      * Declare the table name
      */
-    protected $table = 'shifts';
+    protected $table = 'Shifts';
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +22,7 @@ class Shift extends CoreModel
      * @var array
      */
     protected $fillable = [
-        'shift_code', 'description', 'store_id', 'status',
+        'ShiftCode', 'Description', 'Status',
     ];
 
     /**
@@ -36,7 +37,7 @@ class Shift extends CoreModel
      */
     public function shiftDetail()
     {
-        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ShiftDetail::class);
+        return $this->hasMany(\GGPHP\ShiftSchedule\Models\ShiftDetail::class, 'ShiftId');
     }
 
     /**
@@ -48,19 +49,11 @@ class Shift extends CoreModel
     {
         $shiftDetail = $this->shiftDetail->map(function ($item, $key) {
             return [
-                'start_time' => $item['start_time'],
-                'end_time' => $item['end_time'],
+                'StartTime' => $item['StartTime'],
+                'EndTime' => $item['EndTime'],
             ];
         });
 
         return json_encode($shiftDetail);
-    }
-
-    /**
-     * Define relations store
-     */
-    public function store()
-    {
-        return $this->belongsTo(Store::class);
     }
 }

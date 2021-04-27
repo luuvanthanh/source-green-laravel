@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 class ShiftDeleteRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -28,7 +28,7 @@ class ShiftDeleteRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'shift_id' => [
+            'shiftId' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $accessUpdate = $this->checkAccessDelete($value);
@@ -46,12 +46,12 @@ class ShiftDeleteRequest extends FormRequest
      *
      * @return boolean
      */
-    private function checkAccessDelete($shift_id)
+    private function checkAccessDelete($ShiftId)
     {
         $now = Carbon::now();
         $today = $now->toDateString();
 
-        $scheduleDetail = Schedule::where('shift_id', $shift_id)->whereDate('start_date', '<=', date($today))->get();
+        $scheduleDetail = Schedule::where('ShiftId', $ShiftId)->whereDate('StartDate', '<=', date($today))->get();
         if (empty(count($scheduleDetail))) {
             return true;
         }

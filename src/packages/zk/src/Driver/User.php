@@ -7,21 +7,21 @@ class User
     /**
      * @param ZKLib $self
      * @param int $uid Unique ID (max 65535)
-     * @param int|string $userid (max length = 9, only numbers - depends device setting)
+     * @param int|string $employeeid (max length = 9, only numbers - depends device setting)
      * @param string $name (max length = 24)
      * @param int|string $password (max length = 8, only numbers - depends device setting)
      * @param int $role Default Util::LEVEL_USER
      * @param int $cardno Default 0 (max length = 10, only numbers)
      * @return bool|mixed
      */
-    public function set(ZKLib $self, $uid, $userid, $name, $password, $role = Util::LEVEL_USER, $cardno = 0)
+    public function set(ZKLib $self, $uid, $employeeid, $name, $password, $role = Util::LEVEL_USER, $cardno = 0)
     {
         $self->_section = __METHOD__;
 
         if (
-            (int)$uid === 0 ||
-            (int)$uid > Util::USHRT_MAX ||
-            strlen($userid) > 9 ||
+            (int) $uid === 0 ||
+            (int) $uid > Util::USHRT_MAX ||
+            strlen($employeeid) > 9 ||
             strlen($name) > 24 ||
             strlen($password) > 8 ||
             strlen($cardno) > 10
@@ -30,8 +30,8 @@ class User
         }
 
         $command = Util::CMD_SET_USER;
-        $byte1 = chr((int)($uid % 256));
-        $byte2 = chr((int)($uid >> 8));
+        $byte1 = chr((int) ($uid % 256));
+        $byte2 = chr((int) ($uid >> 8));
         $cardno = hex2bin(Util::reverseHex(dechex($cardno)));
 
         $command_string = implode('', [
@@ -42,8 +42,8 @@ class User
             str_pad($name, 24, chr(0)),
             str_pad($cardno, 4, chr(0)),
             str_pad(chr(1), 9, chr(0)),
-            str_pad($userid, 9, chr(0)),
-            str_repeat(chr(0), 15)
+            str_pad($employeeid, 9, chr(0)),
+            str_repeat(chr(0), 15),
         ]);
 
         return $self->_command($command, $command_string);
@@ -51,7 +51,7 @@ class User
 
     /**
      * @param ZKLib $self
-     * @return array [userid, name, cardno, uid, role, password]
+     * @return array [employeeid, name, cardno, uid, role, password]
      */
     public function get(ZKLib $self)
     {
@@ -65,14 +65,14 @@ class User
             return [];
         }
 
-        $userData = Util::recData($self);
+        $employeeData = Util::recData($self);
 
-        $users = [];
-        if (!empty($userData)) {
-            $userData = substr($userData, 11);
+        $employees = [];
+        if (!empty($employeeData)) {
+            $employeeData = substr($employeeData, 11);
 
-            while (strlen($userData) > 72) {
-                $u = unpack('H144', substr($userData, 0, 72));
+            while (strlen($employeeData) > 72) {
+                $u = unpack('H144', substr($employeeData, 0, 72));
 
                 $u1 = hexdec(substr($u[1], 2, 2));
                 $u2 = hexdec(substr($u[1], 4, 2));
@@ -81,35 +81,35 @@ class User
                 $role = hexdec(substr($u[1], 6, 2)) . ' ';
                 $password = hex2bin(substr($u[1], 8, 16)) . ' ';
                 $name = hex2bin(substr($u[1], 24, 74)) . ' ';
-                $userid = hex2bin(substr($u[1], 98, 72)) . ' ';
+                $employeeid = hex2bin(substr($u[1], 98, 72)) . ' ';
 
-                //Clean up some messy characters from the user name
+                //Clean up some messy characters from the employee name
                 $password = explode(chr(0), $password, 2);
                 $password = $password[0];
-                $userid = explode(chr(0), $userid, 2);
-                $userid = $userid[0];
+                $employeeid = explode(chr(0), $employeeid, 2);
+                $employeeid = $employeeid[0];
                 $name = explode(chr(0), $name, 3);
                 $name = utf8_encode($name[0]);
                 $cardno = str_pad($cardno, 11, '0', STR_PAD_LEFT);
 
                 if ($name == '') {
-                    $name = $userid;
+                    $name = $employeeid;
                 }
 
-                $users[$userid] = [
-                    'userid' => $userid,
+                $employees[$employeeid] = [
+                    'employeeid' => $employeeid,
                     'name' => $name,
                     'cardno' => $cardno,
                     'uid' => $uid,
                     'role' => intval($role),
-                    'password' => $password
+                    'password' => $password,
                 ];
 
-                $userData = substr($userData, 72);
+                $employeeData = substr($employeeData, 72);
             }
         }
 
-        return $users;
+        return $employees;
     }
 
     /**
@@ -150,8 +150,8 @@ class User
         $self->_section = __METHOD__;
 
         $command = Util::CMD_DELETE_USER;
-        $byte1 = chr((int)($uid % 256));
-        $byte2 = chr((int)($uid >> 8));
+        $byte1 = chr((int) ($uid % 256));
+        $byte2 = chr((int) ($uid >> 8));
         $command_string = ($byte1 . $byte2);
 
         return $self->_command($command, $command_string);

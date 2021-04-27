@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class FingerprintTimekeeperCreateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -25,10 +25,9 @@ class FingerprintTimekeeperCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'store_id' => 'required',
             'ip' => 'required|string',
             'port' => 'required|numeric',
-            'serial_number' => 'required|string',
+            'serialNumber' => 'required|string',
         ];
     }
 }

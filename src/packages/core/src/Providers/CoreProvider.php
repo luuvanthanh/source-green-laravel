@@ -14,8 +14,8 @@ class CoreProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'users');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'users');
+        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'employees');
+        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'employees');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
         $this->publishes([
@@ -27,17 +27,17 @@ class CoreProvider extends ServiceProvider
 
         // Publishing the views.
         /*$this->publishes([
-        __DIR__.'/../resources/views' => resource_path('views/vendor/users'),
+        __DIR__.'/../resources/views' => resource_path('views/vendor/employees'),
         ], 'views');*/
 
         // Publishing assets.
         /*$this->publishes([
-        __DIR__.'/../resources/assets' => public_path('vendor/users'),
+        __DIR__.'/../resources/assets' => public_path('vendor/employees'),
         ], 'assets');*/
 
         // Publishing the translation files.
         /*$this->publishes([
-        __DIR__.'/../resources/lang' => resource_path('lang/vendor/users'),
+        __DIR__.'/../resources/lang' => resource_path('lang/vendor/employees'),
         ], 'lang');*/
 
         // Registering package commands.

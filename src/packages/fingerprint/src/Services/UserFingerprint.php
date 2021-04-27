@@ -1,31 +1,29 @@
 <?php
 namespace GGPHP\Fingerprint\Services;
 
-use GGPHP\Fingerprint\Models\Fingerprint as Model;
-
 class UserFingerprint
 {
     /**
-    * Add user to work schedule
-    * @param $attributes
-    * @return bool
-    */
-    public static function addOrUpdate($user, $attributes)
+     * Add employee to work schedule
+     * @param $attributes
+     * @return bool
+     */
+    public static function addOrUpdate($employee, $attributes)
     {
         // find or create role admin
-        return $user->fingerprints()->updateOrCreate(
-            ['user_id' => $user->id, 'finger_index' => $attributes['finger_index']],
+        return $employee->fingerprints()->updateOrCreate(
+            ['EmployeeId' => $employee->Id, 'FingerIndex' => $attributes['FingerIndex']],
             $attributes
         );
     }
 
     /**
-    * Remove user from work schedule
-    * @param $attributes
-    * @return bool
-    */
-    public static function remove($user, $fingerprintId)
+     * Remove employee from work schedule
+     * @param $attributes
+     * @return bool
+     */
+    public static function remove($employee, $fingerprintId)
     {
-        return $user->fingerprints()->delete($fingerprintId);
+        return $employee->fingerprints()->delete($fingerprintId);
     }
 }

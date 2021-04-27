@@ -19,7 +19,6 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
-        // $this->forKiosk();
     }
 
     /**
@@ -86,10 +85,10 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Lịch làm việc',
             ]);
 
-            \Route::get('schedule-users', [
+            \Route::get('schedule-employees', [
                 'comment' => 'Danh sách lịch làm việc theo nhân viên',
                 'uses' => 'ScheduleController@scheduleUser',
-                'as' => 'schedules.schedule-user.index',
+                'as' => 'schedules.schedule-employee.index',
                 'group' => 'Lịch làm việc',
             ]);
 
@@ -102,21 +101,6 @@ class RouteRegistrar extends CoreRegistrar
                     'group' => 'Lịch làm việc',
                 ]);
             });
-        });
-    }
-
-    /**
-     * Register the routes needed for managing clients.
-     *
-     * @return void
-     */
-    public function forKiosk()
-    {
-        \Route::group(['prefix' => 'kiosk'], function () {
-            \Route::get('schedule-users', [
-                'uses' => 'ScheduleController@scheduleUser',
-                'as' => 'kiosk.schedules.schedule-user.index',
-            ]);
         });
     }
 }

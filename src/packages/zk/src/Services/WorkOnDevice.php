@@ -4,40 +4,40 @@ namespace ZK\Services;
 class WorkOnDevice
 {
     /**
-    * Add user to work schedule
-    * @param $attributes
-    * @return bool
-    */
-    public static function addUserToDevices($user, $devices)
+     * Add employee to work schedule
+     * @param $attributes
+     * @return bool
+     */
+    public static function addUserToDevices($employee, $devices)
     {
-        return dispatch(new \ZK\Jobs\SyncUserToDevice($user, $devices));
+        return dispatch(new \ZK\Jobs\SyncUserToDevice($employee, $devices));
     }
 
     /**
-    * Remove user from work schedule
-    * @param $attributes
-    * @return bool
-    */
-    public static function removeUserOnDevice($user, $device)
+     * Remove employee from work schedule
+     * @param $attributes
+     * @return bool
+     */
+    public static function removeUserOnDevice($employee, $device)
     {
         return true;
     }
 
     /**
-    * Delete a fingerprint
-    * @param $attributes
-    * @return bool
-    */
+     * Delete a fingerprint
+     * @param $attributes
+     * @return bool
+     */
     public static function deleteFingerprint($fingerprint, $devices)
     {
         return dispatch(new \ZK\Jobs\DeleteFingerprintOnDevice($fingerprint, $devices));
     }
 
     /**
-    * Delete a fingerprint
-    * @param $attributes
-    * @return bool
-    */
+     * Delete a fingerprint
+     * @param $attributes
+     * @return bool
+     */
     public static function upsertFingerprint($uid, $fingerprint, $devices)
     {
         return dispatch(new \ZK\Jobs\UpsertFingerprintOnDevice($uid, $fingerprints, $devices));

@@ -18,9 +18,8 @@ class RouteRegistrar extends CoreRegistrar
      */
     public function all()
     {
-        $this->forGuest();
         $this->forUser();
-        $this->forKiosk();
+        $this->forAi();
     }
 
     /**
@@ -31,18 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forGuest()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('oauth/token', [
-                'uses' => 'AccessTokenController@issueToken',
-                'as' => 'users.login',
-            ]);
-            \Route::post('password/forgot/request', [
-                'uses' => 'ForgotPasswordController@getResetToken',
-                'as' => 'users.getResetToken',
-            ]);
-            \Route::post('password/forgot/reset', [
-                'uses' => 'ResetPasswordController@reset',
-                'as' => 'users.getResetToken',
-            ]);
+
         });
     }
 
@@ -54,52 +42,43 @@ class RouteRegistrar extends CoreRegistrar
     public function forUser()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            //users
-            \Route::get('users', [
-                'comment' => 'Danh sách người dùng',
+            //employees
+            \Route::get('employees', [
                 'uses' => 'UserController@index',
-                'as' => 'users.index',
-                'group' => 'Người dùng',
+                'as' => 'employees.index',
             ]);
 
-            \Route::post('users', [
-                'comment' => 'Tạo mới người dùng',
+            \Route::post('employees', [
                 'uses' => 'UserController@store',
-                'as' => 'users.store',
-                'group' => 'Người dùng',
+                'as' => 'employees.store',
             ]);
 
-            \Route::put('users/{id}', [
-                'comment' => 'Chỉnh sửa người dùng',
+            \Route::put('employees/{id}', [
                 'uses' => 'UserController@update',
-                'as' => 'users.update',
-                'group' => 'Người dùng',
+                'as' => 'employees.update',
             ]);
 
-            \Route::get('users/{id}', [
-                'comment' => 'Thông tin người dùng',
+            \Route::get('employees/{id}', [
                 'uses' => 'UserController@show',
-                'as' => 'users.show',
-                'group' => 'Người dùng',
-            ]);
-
-            \Route::get('me', [
-                'comment' => 'Thông tin tài khoản',
-                'uses' => 'AuthController@authenticated',
-                'as' => 'users.me.show',
-                'group' => 'Người dùng',
+                'as' => 'employees.show',
             ]);
 
         });
     }
 
-    public function forKiosk()
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAi()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('/auth/login', [
-                'uses' => 'AuthController@loginByRFID',
-                'as' => 'kiosk.users.login',
+            \Route::get('employees', [
+                'uses' => 'UserController@index',
+                'as' => 'employees.index',
             ]);
+
         });
     }
 }

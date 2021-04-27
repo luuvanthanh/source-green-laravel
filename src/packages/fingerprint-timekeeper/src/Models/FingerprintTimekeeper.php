@@ -2,6 +2,7 @@
 
 namespace GGPHP\FingerprintTimekeeper\Models;
 
+use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,13 +10,14 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package namespace GGPHP\FingerprintTimekeeper\Models;
  */
-class FingerprintTimekeeper extends Model
+class FingerprintTimekeeper extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'fingerprint_timekeepers';
+    protected $table = 'FingerprintTimekeepers';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +25,7 @@ class FingerprintTimekeeper extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'serial_number', 'ip', 'port', 'status',
+        'Name', 'SerialNumber', 'Ip', 'Port', 'Status',
     ];
 
     /**
@@ -31,6 +33,6 @@ class FingerprintTimekeeper extends Model
      */
     public function syncTime()
     {
-        return $this->hasOne(\ZK\Models\ZKSyncTime::class, 'device_id');
+        return $this->hasOne(\ZK\Models\ZKSyncTime::class, 'DeviceId');
     }
 }

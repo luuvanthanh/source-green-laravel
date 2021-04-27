@@ -4,6 +4,7 @@ namespace GGPHP\Timekeeping\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Timekeeping\Http\Requests\CreatTimekeepingRequest;
+use GGPHP\Timekeeping\Http\Requests\GetTimekeepingRequest;
 use GGPHP\Timekeeping\Http\Requests\UpdateTimekeepingRequest;
 use GGPHP\Timekeeping\Repositories\Contracts\TimekeepingRepository;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Http\Response;
 class TimekeepingController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
     protected $timekeepingRepository;
 
@@ -38,8 +39,8 @@ class TimekeepingController extends Controller
             $limit = $request->limit;
         }
 
-        $users = $this->timekeepingRepository->filterTimekeeping($request->all());
-        return $this->success($users, trans('lang::messages.common.getInfoSuccess'));
+        $employees = $this->timekeepingRepository->filterTimekeeping($request->all());
+        return $this->success($employees, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -63,6 +64,7 @@ class TimekeepingController extends Controller
     public function show($id)
     {
         $timekeeping = $this->timekeepingRepository->find($id);
+
         if ($timekeeping) {
             return $this->success($timekeeping, trans('lang::messages.common.getInfoSuccess'));
         }
@@ -79,6 +81,7 @@ class TimekeepingController extends Controller
     {
         $credentials = $request->all();
         $timekeeping = $this->timekeepingRepository->update($credentials, $id);
+
         return $this->success($timekeeping, trans('lang::messages.common.modifySuccess'));
     }
 
@@ -91,6 +94,20 @@ class TimekeepingController extends Controller
     public function destroy($id)
     {
         $this->timekeepingRepository->delete($id);
+
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getTimekeepingReport(GetTimekeepingRequest $request)
+    {
+        $employeesByStore = $this->timekeepingRepository->timekeepingReport($request->all());
+
+        return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));
     }
 }

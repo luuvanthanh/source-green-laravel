@@ -16,16 +16,16 @@ class AuthController extends Controller
     /**
      * @var UserRepository
      */
-    protected $userRepository;
+    protected $employeeRepository;
 
     /**
      * UserController constructor.
      *
-     * @param UserRepository $userRepository
+     * @param UserRepository $employeeRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $employeeRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
 
     /**
@@ -35,8 +35,8 @@ class AuthController extends Controller
      */
     public function authenticated(Request $request)
     {
-        $user = $this->userRepository->find(Auth::id());
-        return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+        $employee = $this->employeeRepository->find(Auth::id());
+        return $this->success($employee, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -46,10 +46,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         if (!empty($request->player_id)) {
-            $this->userRepository->deletePlayer($request->player_id, $request->user()->id);
+            $this->employeeRepository->deletePlayer($request->player_id, $request->employee()->Id);
         }
 
-        $request->user()->token()->revoke();
+        $request->employee()->token()->revoke();
 
         return $this->success([], trans('lang::messages.auth.logoutSuccess'), ['isShowData' => false]);
     }
@@ -63,8 +63,8 @@ class AuthController extends Controller
      */
     public function changePassword(ChangePasswordRequest $request)
     {
-        $user = $this->userRepository->update(['password' => Hash::make($request->password)], $request->user_id);
+        $employee = $this->employeeRepository->update(['password' => Hash::make($request->password)], $request->EmployeeId);
 
-        return $this->success($user, trans('lang::messages.auth.changePasswordSuccess'));
+        return $this->success($employee, trans('lang::messages.auth.changePasswordSuccess'));
     }
 }

@@ -22,6 +22,6 @@ class AbsentTypeTransformer extends BaseTransformer
      */
     public function includeAbsentReason(AbsentType $absentType)
     {
-        return $this->collection(empty($absentType->absentReason) ? [] : $absentType->absentReason, new AbsentReasonTransformer(), 'AbsentReason');
+        return $this->collection($absentType->absentReason, new AbsentReasonTransformer, 'AbsentReason');
     }
 }

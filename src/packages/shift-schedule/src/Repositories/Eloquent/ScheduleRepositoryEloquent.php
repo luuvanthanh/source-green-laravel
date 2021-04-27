@@ -3,40 +3,39 @@
 namespace GGPHP\ShiftSchedule\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ShiftSchedule\Models\Schedule;
 use GGPHP\ShiftSchedule\Presenters\SchedulePresenter;
 use GGPHP\ShiftSchedule\Repositories\Contracts\ScheduleRepository;
 use GGPHP\ShiftSchedule\Services\ScheduleExceptionService;
 use GGPHP\ShiftSchedule\Services\ScheduleRepeatService;
-use GGPHP\ShiftSchedule\Services\ScheduleRequestOriginService;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ScheduleRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepository
+class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements ScheduleRepository
 {
 
-    protected $userRepositoryEloquent;
+    protected $employeeRepositoryEloquent;
 
-    public function __construct(UserRepositoryEloquent $userRepositoryEloquent, Application $app)
+    public function __construct(UserRepositoryEloquent $employeeRepositoryEloquent, Application $app)
     {
         parent::__construct($app);
-        $this->userRepositoryEloquent = $userRepositoryEloquent;
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
     }
 
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'id',
-        'user.full_name' => 'like',
+        'Id',
+        'Employee.FullName' => 'like',
     ];
 
     /**
@@ -74,11 +73,11 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
      */
     public static function getDayEnd(array $attributes)
     {
-        $date = new Carbon($attributes['start_date']);
+        $date = new Carbon($attributes['startDate']);
         $dateEnd = $date->toDateString();
 
-        if (isset($attributes['repeat_by'])) {
-            switch ($attributes['repeat_by']) {
+        if (isset($attributes['repeatBy'])) {
+            switch ($attributes['repeatBy']) {
                 case 'daily':
                     $date->addDays($attributes['count']);
                     $dateEnd = $date->toDateString();
@@ -87,11 +86,11 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                     $day = [];
                     for ($i = 0; $i < $attributes['count'] + 1; $i++) {
                         $firstDate = new Carbon($date);
-                        $outDate = $firstDate->format('d');
+                        $oldDate = $firstDate->format('d');
                         $firstDate->addMonths($i);
                         $newDate = $firstDate->format('d');
 
-                        if ($newDate !== $outDate) {
+                        if ($newDate !== $oldDate) {
                             continue;
                         }
                         $day[] = $firstDate->toDateString();
@@ -99,10 +98,10 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                     $dateEnd = end($day);
                     break;
                 case 'weekly':
-                    if (is_array($attributes['by_week_day'])) {
-                        $byWeekDay = $attributes['by_week_day'];
+                    if (is_array($attributes['byWeekDay'])) {
+                        $byWeekDay = $attributes['byWeekDay'];
                     } else {
-                        $byWeekDay = explode(',', $attributes['by_week_day']);
+                        $byWeekDay = explode(',', $attributes['byWeekDay']);
                     }
                     $date->addWeeks($attributes['count'] / count($byWeekDay));
                     $dateEnd = $date->toDateString();
@@ -123,34 +122,32 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
      */
     public function createOrUpdate(array $attributes)
     {
-        $startDate = new Carbon($attributes['start_date']);
+        $startDate = new Carbon($attributes['startDate']);
         $dateEndYear = $startDate->endOfYear();
 
-        if (isset($attributes['repeat_by'])) {
-            $attributes['count'] = $this::getCountRepeat($attributes['repeat_by'], $attributes['start_date'], $dateEndYear);
+        if (isset($attributes['repeatBy'])) {
+            $attributes['count'] = $this::getCountRepeat($attributes['repeatBy'], $attributes['startDate'], $dateEndYear);
         }
-        $attributes['end_date'] = $this::getDayEnd($attributes);
+        $attributes['endDate'] = $this::getDayEnd($attributes);
         $schedule = $this->model()::create($attributes);
 
-        if (isset($attributes['repeat_by'])) {
-            $attributes['schedule_id'] = $schedule->id;
-            ScheduleRepeatService::add(\Arr::except($attributes, ['start_date', 'user_id', 'shift_id']));
+        if (isset($attributes['repeatBy'])) {
+            $attributes['ScheduleId'] = $schedule->Id;
+            ScheduleRepeatService::add(\Arr::except($attributes, ['StartDate', 'EmployeeId', 'ShiftId']));
         }
+
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
-        $oldschedule = $this->model()::whereNotIn('id', [$schedule->id])->where('user_id', $attributes['user_id'])->where(function ($query) use ($attributes, $dateEndYear) {
-            $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
+        $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('EmployeeId', $attributes['employeeId'])->where(function ($query) use ($attributes, $dateEndYear) {
+            $query->where([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $dateEndYear]]);
         })->get();
 
-        if (isset($attributes['repeat_by']) && $attributes['repeat_by'] === 'daily') {
+        if (isset($attributes['repeatBy']) && $attributes['repeatBy'] === 'daily') {
             foreach ($oldschedule as $value) {
-                if (isset($attributes['schedule_request_detail_id'])) {
-                    ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                }
-                if ($value->start_date->format('Y-m-d') >= Carbon::parse($attributes['start_date'])->format('Y-m-d')) {
+                if ($value->StartDate->format('Y-m-d') >= Carbon::parse($attributes['startDate'])->format('Y-m-d')) {
                     $value->delete();
                 } else {
-                    $this->updateScheduleByStartDate($value, $attributes['start_date']);
+                    $this->updateScheduleByStartDate($value, $attributes['startDate']);
                 }
             }
         } else {
@@ -159,9 +156,6 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                 if (empty($value->scheduleRepeat)) {
                     $dayValue = $this::getDayRepeat($value);
                     if (in_array($dayValue, $listDaySchedule)) {
-                        if (isset($attributes['schedule_request_detail_id'])) {
-                            ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                        }
                         $value->delete();
                     }
                 }
@@ -175,57 +169,40 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                 }
 
                 if (!empty($dateException)) {
-
-                    if (isset($attributes['schedule_request_detail_id'])) {
-                        ScheduleRequestOriginService::add($attributes['schedule_request_id'], $value);
-                    }
                     ScheduleExceptionService::add($value, $dateException);
                 }
 
             }
         }
 
-        return parent::find($schedule->id);
+        return parent::find($schedule->Id);
     }
 
     /**
-     * Get list schedule user
+     * Get list schedule employee
      *
      * @param  array  $attributes attributes from request
      * @return object
      */
     public function scheduleUser(array $attributes)
     {
-        if (!empty($attributes['start_date']) && !empty($attributes['end_date'])) {
-            $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->with(['schedules' => function ($query) use ($attributes) {
-                $query->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
-                    ->orWhere([['start_date', '>', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
-                    ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<', $attributes['end_date']]]);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['schedules' => function ($query) use ($attributes) {
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             }]);
+        }
 
-            // get Absent for calendar schedule: (nguyennd)
-            $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
-                $query->whereNotIn('absent_type_id', [6, 7])->where(function ($q2) use ($attributes) {
-                    $q2->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
-                        ->orWhere([['start_date', '>=', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
-                        ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $attributes['end_date']]]);
-                });
-            }]);
-
-            if (!empty($attributes['is_mobile'])) {
-                $this->userRepositoryEloquent->model = $this->userRepositoryEloquent->model->whereHas('schedules', function ($query) use ($attributes) {
-                    $query->where([['start_date', '<=', $attributes['start_date']], ['end_date', '>=', $attributes['end_date']]])
-                        ->orWhere([['start_date', '>', $attributes['start_date']], ['start_date', '<=', $attributes['end_date']]])
-                        ->orWhere([['end_date', '>=', $attributes['start_date']], ['end_date', '<', $attributes['end_date']]]);
-                });
-
-            }
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereIn('Id', $employeeId);
         }
 
         if (!empty($attributes['limit'])) {
-            $scheduleUser = $this->userRepositoryEloquent->paginate($attributes['limit']);
+            $scheduleUser = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $scheduleUser = $this->userRepositoryEloquent->get();
+            $scheduleUser = $this->employeeRepositoryEloquent->get();
         }
 
         return $scheduleUser;
@@ -242,13 +219,13 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
         $repeatBy = null;
         $day = [];
         if (!is_null($schedule->scheduleRepeat)) {
-            $repeatBy = $schedule->scheduleRepeat->repeat_by;
+            $repeatBy = $schedule->scheduleRepeat->RepeatBy;
         }
 
-        $date = new Carbon($schedule->start_date);
+        $date = new Carbon($schedule->StartDate);
         switch ($repeatBy) {
             case 'daily':
-                for ($i = 0; $i < $schedule->scheduleRepeat->count + 1; $i++) {
+                for ($i = 0; $i < $schedule->scheduleRepeat->Count + 1; $i++) {
                     $day[] = $date->toDateString();
                     $date->addDay();
                 }
@@ -279,8 +256,8 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                     default:
                         break;
                 }
-                for ($i = 0; $i < count($schedule->scheduleRepeat->by_week_day); $i++) {
-                    switch ($schedule->scheduleRepeat->by_week_day[$i]) {
+                for ($i = 0; $i < count($schedule->scheduleRepeat->ByWeekDay); $i++) {
+                    switch ($schedule->scheduleRepeat->ByWeekDay[$i]) {
                         case 'mo':
                             $byWeekDay[] = 2;
                             break;
@@ -307,27 +284,27 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
                     }
                 }
                 for ($i = 0; $i < count($byWeekDay); $i++) {
-                    $date = new Carbon($schedule->start_date);
+                    $date = new Carbon($schedule->StartDate);
                     $checkDuplicate = $byWeekDay[$i] - $dateNumber;
                     $date = $date->addDays($checkDuplicate);
 
                     if ($checkDuplicate < 0) {
                         $date = $date->addDays(7);
                     }
-                    for ($j = 0; $j < $schedule->scheduleRepeat->count + 1; $j++) {
+                    for ($j = 0; $j < $schedule->scheduleRepeat->Count + 1; $j++) {
                         $day[] = $date->toDateString();
                         $date->addWeek();
                     }
                 }
                 break;
             case 'monthly':
-                for ($i = 0; $i < $schedule->scheduleRepeat->count + 1; $i++) {
-                    $firstDate = new Carbon($schedule->start_date);
-                    $outDate = $firstDate->format('d');
+                for ($i = 0; $i < $schedule->scheduleRepeat->Count + 1; $i++) {
+                    $firstDate = new Carbon($schedule->StartDate);
+                    $oldDate = $firstDate->format('d');
                     $firstDate->addMonths($i);
                     $newDate = $firstDate->format('d');
 
-                    if ($newDate !== $outDate) {
+                    if ($newDate !== $oldDate) {
                         continue;
                     }
 
@@ -370,22 +347,22 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
     public function deleteAll($id, array $attributes)
     {
         $schedule = Schedule::findOrFail($id);
-        $startDate = $attributes['start_date'];
+        $startDate = $attributes['startDate'];
 
-        if (Carbon::parse($startDate)->format('Y-m-d') > $schedule->start_date->format("Y-m-d")) {
+        if (Carbon::parse($startDate)->format('Y-m-d') > $schedule->StartDate->format("Y-m-d")) {
             $this->updateScheduleByStartDate($schedule, $startDate);
         } else {
             $schedule->delete();
         }
 
-        $dateEndYear = new Carbon($attributes['start_date']);
+        $dateEndYear = new Carbon($attributes['startDate']);
         $dateEndYear = $dateEndYear->endOfYear();
-        $oldschedule = $this->model()::whereNotIn('id', [$id])->where(function ($query) use ($attributes, $dateEndYear) {
-            $query->where([['end_date', '>=', $attributes['start_date']], ['end_date', '<=', $dateEndYear]]);
-        })->where('shift_id', $schedule->shift_id)->where('user_id', $schedule->user_id)->get();
+        $oldschedule = $this->model()::whereNotIn('Id', [$id])->where(function ($query) use ($attributes, $dateEndYear) {
+            $query->where([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $dateEndYear]]);
+        })->where('ShiftId', $schedule->ShiftId)->where('EmployeeId', $schedule->EmployeeId)->get();
 
         foreach ($oldschedule as $value) {
-            if ($value->start_date->format("Y-m-d") >= Carbon::parse($startDate)->format('Y-m-d')) {
+            if ($value->StartDate->format("Y-m-d") >= Carbon::parse($startDate)->format('Y-m-d')) {
                 $value->delete();
             } else {
                 $this->updateScheduleByStartDate($value, $startDate);
@@ -408,27 +385,27 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
         $repeatBy = null;
         $startDate = new Carbon($startDate);
         if (!is_null($schedule->scheduleRepeat)) {
-            $repeatBy = $schedule->scheduleRepeat->repeat_by;
+            $repeatBy = $schedule->scheduleRepeat->RepeatBy;
         }
         switch ($repeatBy) {
             case 'daily':
-                $count = $startDate->diffInDays($schedule->start_date);
-                $endDate = $schedule->start_date->addDays($count - 1);
-                $schedule->update(['end_date' => $endDate]);
+                $count = $startDate->diffInDays($schedule->StartDate);
+                $endDate = $schedule->StartDate->addDays($count - 1);
+                $schedule->update(['EndDate' => $endDate]);
                 $schedule->scheduleRepeat->update(['count' => $count - 1]);
                 break;
             case 'weekly':
-                $count = $startDate->diffInDays($schedule->start_date);
+                $count = $startDate->diffInDays($schedule->StartDate);
                 $count = ceil(($count / 7) - 1);
-                $endDate = $schedule->start_date->addWeeks($count / count($schedule->scheduleRepeat->by_week_day));
-                $schedule->update(['end_date' => $endDate]);
+                $endDate = $schedule->StartDate->addWeeks($count / count($schedule->scheduleRepeat->ByWeekDay));
+                $schedule->update(['EndDate' => $endDate]);
                 $schedule->scheduleRepeat->update(['count' => $count]);
                 break;
             case 'monthly':
-                $outMonth = $schedule->start_date->format('m');
+                $outMonth = $schedule->StartDate->format('m');
                 $newMonth = $startDate->format('m');
                 $endDate = null;
-                if ($schedule->start_date->format('d') < $startDate->format('d')) {
+                if ($schedule->StartDate->format('d') < $startDate->format('d')) {
                     $count = $newMonth - $outMonth;
                 } else {
                     $count = $newMonth - $outMonth - 1;
@@ -439,19 +416,19 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
 
                 $day = [];
                 for ($i = 0; $i < $count + 1; $i++) {
-                    $firstDate = new Carbon($schedule->start_date);
-                    $outDate = $firstDate->format('d');
+                    $firstDate = new Carbon($schedule->StartDate);
+                    $oldDate = $firstDate->format('d');
                     $firstDate->addMonths($i);
                     $newDate = $firstDate->format('d');
 
-                    if ($newDate !== $outDate) {
+                    if ($newDate !== $oldDate) {
                         continue;
                     }
                     $day[] = $firstDate->toDateString();
                 }
 
                 $endDate = end($day);
-                $schedule->update(['end_date' => $endDate]);
+                $schedule->update(['EndDate' => $endDate]);
                 $schedule->scheduleRepeat->update(['count' => $count]);
                 break;
             default:
@@ -490,31 +467,31 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
     }
 
     /**
-     * Get user time workshift
+     * Get employee time workshift
      *
      * @param  Schedule  $schedule
      * @param  Date  $startDate
      * @return object
      */
-    public static function getUserTimeWorkShift($userId, $startDate, $endDate)
+    public static function getUserTimeWorkShift($employeeId, $startDate, $endDate)
     {
         $listDayRequest = [];
         $workDate = [];
-        $userTimeWorkShift = [];
+        $employeeTimeWorkShift = [];
         $diffDay = Carbon::parse($endDate)->diffInDays(Carbon::parse($startDate));
 
         for ($i = 0; $i <= $diffDay; $i++) {
             $listDayRequest[] = Carbon::parse($startDate)->addDays($i)->toDateString();
         }
-        $user = User::where('id', $userId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
-            $query->where([['start_date', '<=', $startDate], ['end_date', '>=', $endDate]])
-                ->orwhere([['start_date', '>', $startDate], ['start_date', '<=', $endDate]])
-                ->orwhere([['end_date', '>=', $startDate], ['end_date', '<', $endDate]]);
+        $employee = User::where('Id', $employeeId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
+            $query->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                ->orwhere([['StartDate', '>', $startDate], ['StartDate', '<=', $endDate]])
+                ->orwhere([['EndDate', '>=', $startDate], ['EndDate', '<', $endDate]]);
         }])->first();
 
-        foreach ($user->schedules as $value) {
+        foreach ($employee->schedules as $value) {
             $listDaySchedule = self::getDayRepeat($value);
-            $listDayException = ScheduleExceptionService::getDayException($value->id);
+            $listDayException = ScheduleExceptionService::getDayException($value->Id);
             $workDate = array_diff($listDaySchedule, $listDayException);
 
             if (empty($value->shift->shiftDetail)) {
@@ -523,20 +500,20 @@ class ScheduleRepositoryEloquent extends BaseRepository implements ScheduleRepos
             $shiftDetail = $value->shift->shiftDetail->toArray();
 
             foreach ($shiftDetail as $key => $detail) {
-                $shiftDetail[$key]['shift_code'] = $value->shift->shift_code;
+                $shiftDetail[$key]['ShiftCode'] = $value->shift->ShiftCode;
             }
 
             foreach ($workDate as $day) {
-                $userTimeWorkShift[$day] = $shiftDetail;
+                $employeeTimeWorkShift[$day] = $shiftDetail;
             }
         }
 
-        foreach ($userTimeWorkShift as $key => $value) {
+        foreach ($employeeTimeWorkShift as $key => $value) {
             if (!in_array($key, $listDayRequest)) {
-                unset($userTimeWorkShift[$key]);
+                unset($employeeTimeWorkShift[$key]);
             }
         }
 
-        return $userTimeWorkShift;
+        return $employeeTimeWorkShift;
     }
 }

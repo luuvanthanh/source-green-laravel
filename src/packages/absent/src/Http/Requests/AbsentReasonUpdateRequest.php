@@ -14,8 +14,6 @@ class AbsentReasonUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'absent_type_id' => 'required|exists:absent_types,id',
         ];
     }
 }

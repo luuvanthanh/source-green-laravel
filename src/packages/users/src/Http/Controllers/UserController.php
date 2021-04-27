@@ -5,6 +5,7 @@ namespace GGPHP\Users\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Users\Http\Requests\UserCreateRequest;
 use GGPHP\Users\Http\Requests\UserUpdateRequest;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,17 +13,17 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
     /**
-     * @var $userRepository
+     * @var $employeeRepository
      */
-    protected $userRepository;
+    protected $employeeRepository;
 
     /**
      * UserController constructor.
-     * @param UserRepository $userRepository
+     * @param UserRepository $employeeRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $employeeRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
 
     /**
@@ -31,9 +32,9 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->userRepository->all();
+        $employees = $this->employeeRepository->getUser($request->all());
 
-        return $this->success($users, trans('lang::messages.common.getListSuccess'));
+        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -44,9 +45,15 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $request)
     {
-        $user = $this->userRepository->create($request->all());
+        $attributes = $request->all();
 
-        return $this->success($user, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $employee = $this->employeeRepository->create($attributes);
+
+        return $this->success($employee, trans('lang::messages.auth.registerSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -56,9 +63,9 @@ class UserController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $user = $this->userRepository->findUser($request->all(), $id);
+        $employee = $this->employeeRepository->find($id);
 
-        return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($employee, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -70,8 +77,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $user = $this->userRepository->update($request->all(), $id);
+        $employee = $this->employeeRepository->update($request->all(), $id);
 
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
 }

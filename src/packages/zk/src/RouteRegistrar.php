@@ -28,11 +28,6 @@ class RouteRegistrar extends CoreRegistrar
     public function forIclock()
     {
         $this->router->group(['prefix' => 'iclock', 'middleware' => []], function ($router) {
-            $router->get('/test', [
-                'uses' => 'IclockController@sync',
-                'as' => 'zk.iclock.sync',
-            ]);
-
             $router->get('/cdata', [
                 'uses' => 'IclockController@deviceGetSetting',
                 'as' => 'zk.iclock.deviceGetSetting',

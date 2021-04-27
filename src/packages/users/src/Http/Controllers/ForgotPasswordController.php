@@ -3,10 +3,10 @@
 namespace GGPHP\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use GGPHP\Users\Repositories\Contracts\UserRepository;
 use GGPHP\Users\Http\Requests\ResetPasswordRequest;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use GGPHP\Users\Mail\ResetPassword;
+use GGPHP\Users\Repositories\Contracts\UserRepository;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Mail;
 
 class ForgotPasswordController extends Controller
@@ -16,35 +16,34 @@ class ForgotPasswordController extends Controller
     /**
      * @var UserRepository
      */
-    protected $userRepository;
-    
+    protected $employeeRepository;
+
     /**
      * UserController constructor.
      *
-     * @param UserRepository $userRepository
+     * @param UserRepository $employeeRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $employeeRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
-    
-    
+
     /**
      * @param ResetPasswordRequest $request
      * @return \Illuminate\Http\Response
      */
     public function getResetToken(ResetPasswordRequest $request)
     {
-        $this->userRepository->skipPresenter();
+        $this->employeeRepository->skipPresenter();
         $email = $request->email;
-        $user  = $this->userRepository->findByField('email', $email)->first();
+        $employee = $this->employeeRepository->findByField('email', $email)->first();
         // create reset password token
-        $token = $this->broker()->createToken($user);
+        $token = $this->broker()->createToken($employee);
         // send mail
-        $email        = $user->email;
-        $name         = $user->name;
+        $email = $employee->email;
+        $name = $employee->name;
         $domainClient = env('RESET_PASSWORD_URL', 'http://localhost:9001/password/reset');
-        $urlClient    = $domainClient . '/' . $token;
+        $urlClient = $domainClient . '/' . $token;
 
         try {
             Mail::to($email, $name)->send(new ResetPassword(compact('name', 'urlClient')));

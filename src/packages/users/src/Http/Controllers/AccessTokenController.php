@@ -22,20 +22,20 @@ class AccessTokenController extends ATController
     /**
      * @var UserRepository
      */
-    protected $userRepository;
+    protected $employeeRepository;
 
-    public function __construct(AuthorizationServer $server, TokenRepository $tokens, JwtParser $jwt, UserRepository $userRepository)
+    public function __construct(AuthorizationServer $server, TokenRepository $tokens, JwtParser $jwt, UserRepository $employeeRepository)
     {
         parent::__construct($server, $tokens, $jwt);
 
-        $this->userRepository = $userRepository;
+        $this->employeeRepository = $employeeRepository;
     }
 
     public function issueToken(ServerRequestInterface $request)
     {
         try {
-            $username = $request->getParsedBody()['username'];
-            $user = User::where('email', '=', $username)->where('status', User::ON)->firstOrFail();
+            $employeename = $request->getParsedBody()['employeename'];
+            $employee = User::where('email', '=', $employeename)->where('status', User::ON)->firstOrFail();
             //generate token
             $tokenResponse = parent::issueToken($request);
 
@@ -43,11 +43,11 @@ class AccessTokenController extends ATController
             $content = $tokenResponse->getContent();
             $data = json_decode($content, true);
             if (isset($data['error'])) {
-                throw new OAuthServerException('The user credentials were incorrect.', 6, 'invalid_credentials', 401);
+                throw new OAuthServerException('The employee credentials were incorrect.', 6, 'invalid_credentials', 401);
             }
 
             if (!empty($request->getParsedBody()['player_id'])) {
-                $this->userRepository->addPlayer($request->getParsedBody()['player_id'], $user->id);
+                $this->employeeRepository->addPlayer($request->getParsedBody()['player_id'], $employee->Id);
             }
 
             return Response::json(collect($data));
