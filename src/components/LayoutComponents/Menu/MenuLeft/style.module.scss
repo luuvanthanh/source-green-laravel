@@ -38,7 +38,8 @@
   }
 
   :global(.ant-menu-item) {
-    height: auto;
+    height: auto !important;
+    min-height: 40px;
     padding: 0 15px;
     a {
       display: flex;
@@ -48,7 +49,7 @@
     }
     .title {
       // white-space: pre-wrap;
-      white-space: nowrap;
+      white-space: break-spaces;
       line-height: 20px;
     }
   }
