@@ -99,6 +99,12 @@ export default [
             authority: [],
           },
           {
+            path: '/tieu-chi-danh-gia/chuong-trinh-hoc/them-moi',
+            component: './criteria/study-program/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/tieu-chi-danh-gia/lich-su',
             component: './criteria/histories',
             wrappers: ['@/wrappers/auth'],
