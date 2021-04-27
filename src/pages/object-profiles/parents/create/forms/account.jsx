@@ -56,7 +56,7 @@ const Index = memo(
         });
         dispatch({
           type: 'OPParentsAdd/GET_ROLES',
-          payload: params,
+          payload: { ...params, filter: 'Parent' },
         });
       }
     }, [params.id]);

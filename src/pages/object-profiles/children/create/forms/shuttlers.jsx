@@ -123,7 +123,7 @@ const Shuttlers = memo(
                               callback={(res) => {
                                 mountedSet(setFileImage, [...fileImage, res.fileInfo.url]);
                               }}
-                              fileImage={fileImage[`index`]}
+                              fileImage={fileImage[index]}
                             />
                           </Form.Item>
                         </Pane>
