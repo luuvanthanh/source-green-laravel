@@ -267,6 +267,13 @@ export async function getLeftMenuSchedules() {
       pro: true,
       children: [
         {
+          title: 'Nhập điểm danh',
+          key: 'attendances',
+          url: ['/diem-danh/nhap-diem-danh'],
+          permission: [],
+          pro: true,
+        },
+        {
           title: 'TH điểm danh',
           key: 'total',
           url: ['/diem-danh/tong-hop-cong'],

@@ -458,6 +458,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/nhap-diem-danh',
+            component: './attendance/attendances',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // Attendance
