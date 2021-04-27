@@ -1,7 +1,7 @@
 import request from '@/utils/requestLavarel';
 
 export function getAbsentTypes() {
-  return request(`/v1/absent-types`, {
+  return request(`/v1/absent-type-students`, {
     method: 'GET',
   });
 }

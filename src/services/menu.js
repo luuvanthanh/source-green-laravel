@@ -348,9 +348,9 @@ export async function getLeftMenuSchedules() {
       pro: true,
       children: [
         {
-          title: 'Nghỉ phép',
+          title: 'Đơn xin phép cho bé',
           key: 'absents',
-          url: ['/diem-danh/don-xin-phep', '/diem-danh/don-xin-phep/tao-moi'],
+          url: ['/diem-danh/don-xin-phep-cho-be', '/diem-danh/don-xin-phep-cho-be/tao-moi'],
           permission: [],
           pro: true,
         },
@@ -529,10 +529,7 @@ export async function getLeftMenuCriteria() {
     {
       title: 'Chương trình học',
       key: 'study-program',
-      url: [
-        '/tieu-chi-danh-gia/chuong-trinh-hoc',
-        '/tieu-chi-danh-gia/chuong-trinh-hoc/them-moi'
-      ],
+      url: ['/tieu-chi-danh-gia/chuong-trinh-hoc', '/tieu-chi-danh-gia/chuong-trinh-hoc/them-moi'],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
@@ -562,7 +559,7 @@ export async function getLeftMenuCriteria() {
               key: 'angle-tools',
               url: [
                 '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu',
-                '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/them-moi'
+                '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/them-moi',
               ],
               permission: [],
               pro: true,
@@ -572,12 +569,12 @@ export async function getLeftMenuCriteria() {
               key: 'tools',
               url: [
                 '/tieu-chi-danh-gia/cau-hinh/giao-cu',
-                '/tieu-chi-danh-gia/cau-hinh/giao-cu/them-moi'
+                '/tieu-chi-danh-gia/cau-hinh/giao-cu/them-moi',
               ],
               permission: [],
               pro: true,
             },
-          ]
+          ],
         },
         {
           title: 'Kiểu dữ liệu',
@@ -909,9 +906,9 @@ export async function getLeftMenuHRM() {
       pro: true,
       children: [
         {
-          title: 'Đơn xin phép cho bé',
+          title: 'Nghỉ phép',
           key: 'absents',
-          url: ['/diem-danh/don-xin-phep', '/diem-danh/don-xin-phep/tao-moi'],
+          url: ['/quan-ly-nhan-su/don-xin-phep', '/quan-ly-nhan-su/don-xin-phep/tao-moi'],
           permission: [],
           pro: true,
         },
@@ -925,16 +922,16 @@ export async function getLeftMenuHRM() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [],
-              url: ['/diem-danh/cau-hinh/loai-nghi-phep'],
+              url: ['/quan-ly-nhan-su/cau-hinh/loai-nghi-phep'],
             },
             {
               title: 'Lý do nghỉ phép',
               key: 'AbsentReasons',
               permission: [],
               url: [
-                '/diem-danh/cau-hinh/ly-do-nghi-phep',
-                '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
-                '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
+                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep',
+                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/tao-moi',
+                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
               ],
             },
           ],
@@ -1111,35 +1108,55 @@ export async function getLeftMenuFeePolicy() {
     {
       title: 'Danh mục nhóm đối tượng',
       key: 'target',
-      url: ['/chinh-sach-phi/nhom-doi-tuong', '/chinh-sach-phi/nhom-doi-tuong/tao-moi', '/chinh-sach-phi/nhom-doi-tuong/:id/chi-tiet'],
+      url: [
+        '/chinh-sach-phi/nhom-doi-tuong',
+        '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
+        '/chinh-sach-phi/nhom-doi-tuong/:id/chi-tiet',
+      ],
       icon: 'icon icon-list',
       permission: [],
     },
     {
       title: 'Danh mục loại lớp',
       key: 'class',
-      url: ['/chinh-sach-phi/lop', '/chinh-sach-phi/lop/tao-moi', '/chinh-sach-phi/lop/:id/chi-tiet'],
+      url: [
+        '/chinh-sach-phi/lop',
+        '/chinh-sach-phi/lop/tao-moi',
+        '/chinh-sach-phi/lop/:id/chi-tiet',
+      ],
       icon: 'icon icon-open-book',
       permission: [],
     },
     {
       title: 'Danh mục hình thức đóng phí',
       key: 'format',
-      url: ['/chinh-sach-phi/hinh-thuc', '/chinh-sach-phi/hinh-thuc/tao-moi', '/chinh-sach-phi/hinh-thuc/:id/chi-tiet'],
+      url: [
+        '/chinh-sach-phi/hinh-thuc',
+        '/chinh-sach-phi/hinh-thuc/tao-moi',
+        '/chinh-sach-phi/hinh-thuc/:id/chi-tiet',
+      ],
       icon: 'icon icon-send-money',
       permission: [],
     },
     {
       title: 'Danh mục phí',
       key: 'fee',
-      url: ['/chinh-sach-phi/phi', '/chinh-sach-phi/phi/tao-moi', '/chinh-sach-phi/phi/:id/chi-tiet'],
+      url: [
+        '/chinh-sach-phi/phi',
+        '/chinh-sach-phi/phi/tao-moi',
+        '/chinh-sach-phi/phi/:id/chi-tiet',
+      ],
       icon: 'icon icon-budget',
       permission: [],
     },
     {
       title: 'Chính sách đóng phí',
       key: 'policy',
-      url: ['/chinh-sach-phi/chinh-sach', '/chinh-sach-phi/chinh-sach/them-moi', '/chinh-sach-phi/chinh-sach/:id/chi-tiet'],
+      url: [
+        '/chinh-sach-phi/chinh-sach',
+        '/chinh-sach-phi/chinh-sach/them-moi',
+        '/chinh-sach-phi/chinh-sach/:id/chi-tiet',
+      ],
       icon: 'icon icon-fee-policy',
       permission: [],
     },

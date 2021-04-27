@@ -446,6 +446,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/don-xin-phep-cho-be',
+            component: './attendance/absents/absent-students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/don-xin-phep-cho-be/tao-moi',
+            component: './attendance/absents/absent-students/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // Attendance
