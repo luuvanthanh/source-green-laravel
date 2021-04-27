@@ -72,21 +72,10 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        startDate: details.startDate && moment(details.startDate),
-        endDate: details.endDate && moment(details.endDate),
-        detail: details.businessCardDetail.map((item) => ({
+        decisionDate: details.decisionDate && moment(details.decisionDate),
+        timeApply: details.timeApply && moment(details.timeApply),
+        detail: details.parameterValues.map((item) => ({
           ...item,
-          date: item.date && moment(details.date),
-          startTime:
-            item.startTime &&
-            moment(
-              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.startTime}`,
-            ),
-          endTime:
-            item.endTime &&
-            moment(
-              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.endTime}`,
-            ),
         })),
       });
     }
