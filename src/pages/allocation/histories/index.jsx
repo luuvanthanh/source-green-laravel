@@ -204,8 +204,8 @@ class Index extends PureComponent {
       {
         title: 'Tên tài khoản',
         key: 'name',
-        className: 'min-width-130',
-        render: (record) => 'Nguyễn Ngọc Bích',
+        className: 'min-width-150',
+        render: (record) => record?.creator?.name,
       },
       {
         title: 'Hành động',

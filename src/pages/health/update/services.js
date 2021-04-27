@@ -34,3 +34,37 @@ export function update(data = {}) {
     data,
   });
 }
+
+export function waterBottles(data) {
+  return request('/water-bottles', {
+    method: 'PUT',
+    params: {
+      reportDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.reportDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
+    data: data.data,
+  });
+}
+
+export function getWaterBottles(params = {}) {
+  return request(`/water-bottles/${params.studentId}/by-student`, {
+    method: 'GET',
+    params: {
+      ...params,
+      reportDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.reportDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
+  });
+}

@@ -32,7 +32,7 @@ const Index = memo(({ onOk, ...props }) => {
   const [students, setStudents] = useState([]);
   const [type, setType] = useState(DEFAULT_TYPE);
 
-  const addFile = (file) => {
+  const addFile = ({ file }) => {
     const { beforeUpload } = imageUploadProps;
     const result = beforeUpload(file);
     if (result) {
@@ -162,7 +162,7 @@ const Index = memo(({ onOk, ...props }) => {
         )}
       </Form>
 
-      <Dragger {...imageUploadProps} beforeUpload={addFile} multiple>
+      <Dragger {...imageUploadProps} customRequest={addFile} multiple>
         <Pane className="text-center p20">
           <span className={csx('icon-images', styles.icon)} />
           <Text size="normal">Kéo thả hình ảnh vào đây để tải lên hoặc click vào đây</Text>
