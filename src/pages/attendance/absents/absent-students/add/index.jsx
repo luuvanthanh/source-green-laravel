@@ -2,17 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
-import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Loading from '@/components/CommonComponent/Loading';
 
 let isMounted = true;
 /**
@@ -29,12 +26,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ absentReasonStudentAdd, loading, menu }) => ({
-  loading: loading,
-  error: absentReasonStudentAdd.error,
-  details: absentReasonStudentAdd.details,
-  categories: absentReasonStudentAdd.categories,
-  menuData: menu.menuLeftSchedules,
+const mapStateToProps = ({ menu, absentStudentsAdd, loading, user }) => ({
+  loading,
+  user: user.user,
+  error: absentStudentsAdd.error,
+  students: absentStudentsAdd.students,
+  categories: absentStudentsAdd.categories,
+  menuLeftSchedules: menu.menuLeftSchedules,
 });
 
 @connect(mapStateToProps)
@@ -51,6 +49,10 @@ class Index extends PureComponent {
     setIsMounted(false);
   }
 
+  componentDidMount() {
+    this.loadCategories();
+  }
+
   /**
    * Set state properties
    * @param {object} data the data input
@@ -65,50 +67,35 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  componentDidMount() {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-    if (get(params, 'id')) {
-      dispatch({
-        type: 'absentReasonStudentAdd/GET_DETAILS',
-        payload: get(params, 'id'),
-      });
-    }
-    this.loadCategories();
-  }
-
-  componentDidUpdate(prevProps) {
-    const {
-      details,
-      match: { params },
-    } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      this.formRef.current.setFieldsValue({
-        ...details,
-      });
-    }
-  }
-
   loadCategories = () => {
-    const { dispatch } = this.props;
+    const { dispatch, user } = this.props;
     dispatch({
-      type: 'absentReasonStudentAdd/GET_CATEGORIES',
+      type: 'absentStudentsAdd/GET_CATEGORIES',
       payload: {},
+    });
+    dispatch({
+      type: 'absentStudentsAdd/GET_STUDENTS',
+      payload: {
+        parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+        classStatus: 'HAS_CLASS',
+      },
     });
   };
 
   onFinish = (values) => {
     const {
+      user,
       dispatch,
       match: { params },
     } = this.props;
+    let parentId = null;
+    parentId = user?.objectInfo?.id;
     dispatch({
-      type: get(params, 'id') ? 'absentReasonStudentAdd/UPDATE' : 'absentReasonStudentAdd/ADD',
+      type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
         ...values,
-        id: get(params, 'id'),
+        parentId,
+        id: params.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -132,24 +119,29 @@ class Index extends PureComponent {
 
   render() {
     const {
+      students,
       error,
-      menuData,
+      menuLeftSchedules,
       categories,
       loading: { effects },
       match: { params },
     } = this.props;
     const loading =
-      effects['absentReasonStudentAdd/GET_DETAILS'] || effects['absentReasonStudentAdd/GET_CATEGORIES'];
-    const loadingSubmit = effects['absentReasonStudentAdd/ADD'] || effects['absentReasonStudentAdd/UPDATE'];
+      effects['absentStudentsAdd/GET_DETAILS'] ||
+      effects['absentStudentsAdd/GET_CATEGORIES'] ||
+      effects['absentStudentsAdd/GET_STUDENTS'];
+    const loadingSubmit = effects['absentStudentsAdd/ADD'];
     return (
       <>
-        <Breadcrumbs last={params.id ? 'Chỉnh sửa lý do' : 'Tạo lý do'} menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa nghỉ phép cho bé' : 'Tạo nghỉ phép cho bé'}
+          menu={menuLeftSchedules}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
-          colon={false}
-          onFinish={this.onFinish}
           ref={this.formRef}
+          onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
             <Loading loading={loading} isError={error.isError} params={{ error }}>
@@ -158,23 +150,51 @@ class Index extends PureComponent {
                   THÔNG TIN CHUNG
                 </Text>
                 <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="TÊN"
-                      name="name"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
                     <FormItem
                       data={categories?.absentTypes || []}
                       label="LOẠI NGHỈ PHÉP"
                       name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={Helper.convertSelectUsers(students)}
+                      label="HỌC SINH"
+                      name="studentId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="THỜI GIAN BẮT ĐẦU"
+                      name="startDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="THỜI GIAN KẾT THÚC"
+                      name="endDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      data={categories?.absentReasons || []}
+                      label="LÝ DO NGHỈ PHÉP"
+                      name="absentReasonId"
+                      type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </div>
                 </div>
@@ -186,7 +206,7 @@ class Index extends PureComponent {
                   onClick={() => history.goBack()}
                   size="large"
                   className="mr-3"
-                  loading={loadingSubmit || loading}
+                  loading={loadingSubmit}
                 >
                   HỦY
                 </Button>
@@ -195,7 +215,7 @@ class Index extends PureComponent {
                   icon="save"
                   htmlType="submit"
                   size="large"
-                  loading={loadingSubmit || loading}
+                  loading={loadingSubmit}
                 >
                   LƯU
                 </Button>
