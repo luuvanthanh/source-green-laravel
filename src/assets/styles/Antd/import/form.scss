@@ -180,3 +180,51 @@ form .ant-cascader-picker:only-child {
     min-height: unset;
   }
 }
+
+.search-form {
+  .ant-input-affix-wrapper {
+    padding: 10px 20px;
+    border-width: 1px 0;
+    border-color: $border-line;
+    &.ant-input-affix-wrapper-focused {
+      box-shadow: unset;
+    }
+  }
+}
+
+.checkbox-column {
+  .ant-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    .ant-checkbox-wrapper {
+      margin: 0;
+      padding: 15px 20px;
+      border-bottom: 1px solid $border-line;
+      &:last-child {
+        border-bottom: unset;
+      }
+      .ant-form-item input[type='checkbox'] {
+        width: 24px;
+        height: 24px;
+      }
+      .ant-checkbox-inner {
+        width: 24px;
+        height: 24px;
+        &::after {
+          left: 30%;
+          width: 7px;
+          height: 12px;
+        }
+      }
+    }
+  }
+}
+
+.btn-delete {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}

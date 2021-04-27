@@ -548,9 +548,37 @@ export async function getLeftMenuCriteria() {
     {
       title: 'Cấu hình',
       key: 'categories',
-      icon: 'icon icon-list',
+      icon: 'icon icon-setting',
       permission: [],
       children: [
+        {
+          title: 'Hoạt động giáo cụ',
+          key: 'teaching-tools',
+          permission: [],
+          pro: true,
+          children: [
+            {
+              title: 'Góc giáo cụ',
+              key: 'angle-tools',
+              url: [
+                '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu',
+                '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/them-moi'
+              ],
+              permission: [],
+              pro: true,
+            },
+            {
+              title: 'Giáo cụ',
+              key: 'tools',
+              url: [
+                '/tieu-chi-danh-gia/cau-hinh/giao-cu',
+                '/tieu-chi-danh-gia/cau-hinh/giao-cu/them-moi'
+              ],
+              permission: [],
+              pro: true,
+            },
+          ]
+        },
         {
           title: 'Kiểu dữ liệu',
           key: 'criteria-datatypes',
