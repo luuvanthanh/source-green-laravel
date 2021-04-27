@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, businessCardsAdd, loading }) => ({
+const mapStateToProps = ({ menu, salaryIncreasesAdd, loading }) => ({
   loading,
-  categories: businessCardsAdd.categories,
-  details: businessCardsAdd.details,
+  categories: salaryIncreasesAdd.categories,
+  details: salaryIncreasesAdd.details,
   menuData: menu.menuLeftHRM,
 });
 
@@ -55,7 +55,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'businessCardsAdd/GET_DETAILS',
+        type: 'salaryIncreasesAdd/GET_DETAILS',
         payload: {
           id: params.id,
         },
@@ -77,8 +77,16 @@ class Index extends PureComponent {
         detail: details.businessCardDetail.map((item) => ({
           ...item,
           date: item.date && moment(details.date),
-          startTime: item.startTime && moment(`${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.startTime}`),
-          endTime: item.endTime && moment(`${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.endTime}`),
+          startTime:
+            item.startTime &&
+            moment(
+              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.startTime}`,
+            ),
+          endTime:
+            item.endTime &&
+            moment(
+              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.endTime}`,
+            ),
         })),
       });
     }
@@ -101,7 +109,7 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessCardsAdd/GET_CATEGORIES',
+      type: 'salaryIncreasesAdd/GET_CATEGORIES',
       payload: {},
     });
   };
@@ -112,7 +120,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     dispatch({
-      type: params.id ? 'businessCardsAdd/UPDATE' : 'businessCardsAdd/ADD',
+      type: params.id ? 'salaryIncreasesAdd/UPDATE' : 'salaryIncreasesAdd/ADD',
       payload: {
         id: params.id,
         ...values,
@@ -143,16 +151,17 @@ class Index extends PureComponent {
     });
   };
 
-  onChangeTimePicker = (timeChoose, index, type = 'startTime') => {
+  onChangeParamaterValues = (value, index) => {
     if (this.formRef.current) {
+      const { categories } = this.props;
       const { detail } = this.formRef.current.getFieldsValue();
+      const valueParamter = categories.paramaterValues.find((item) => item.id === value);
       this.formRef.current.setFieldsValue({
-        detail: detail.map((item, indexTime) => {
-          if (indexTime === index) {
+        detail: detail.map((item, indexDetail) => {
+          if (indexDetail === index) {
             return {
               ...item,
-              startTime: type === 'startTime' ? timeChoose : item.startTime,
-              endTime: type === 'endTime' ? timeChoose : item.endTime,
+              value: valueParamter.valueDefault,
             };
           }
           return item;
@@ -168,13 +177,10 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['businessCardsAdd/ADD'] || effects['businessCardsAdd/UPDATE'];
+    const loadingSubmit = effects['salaryIncreasesAdd/ADD'] || effects['salaryIncreasesAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa đơn đi công tác' : 'Tạo đơn đi công tác'}
-          menu={menuData}
-        />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa tăng lương' : 'Tạo tăng lương'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -190,7 +196,7 @@ class Index extends PureComponent {
                 THÔNG TIN CHUNG
               </Text>
               <div className="row mt-3">
-                <div className="col-lg-6">
+                <div className="col-lg-12">
                   <FormItem
                     data={Helper.convertSelectUsers(categories?.users)}
                     label="NHÂN VIÊN"
@@ -199,31 +205,22 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    data={categories?.absentTypes}
-                    label="LOẠI CÔNG TÁC"
-                    name="absentTypeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
-                </div>
               </div>
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="NGÀY BẮT ĐẦU"
-                    name="startDate"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
+                    label="Số quyết định"
+                    name="decisionNumber"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </div>
                 <div className="col-lg-6">
                   <FormItem
-                    label="NGÀY KẾT THÚC"
-                    name="endDate"
-                    rules={[variables.RULES.EMPTY]}
+                    label="Ngày quyết định"
+                    name="decisionDate"
                     type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
               </div>
@@ -232,6 +229,24 @@ class Index extends PureComponent {
                   <FormItem
                     label="Lý do"
                     name="reason"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-lg-6">
+                  <FormItem
+                    label="NGÀY ÁP DỤNG"
+                    name="timeApply"
+                    rules={[variables.RULES.EMPTY]}
+                    type={variables.DATE_PICKER}
+                  />
+                </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    label="GHI CHÚ"
+                    name="note"
                     type={variables.INPUT}
                     rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                   />
@@ -251,59 +266,27 @@ class Index extends PureComponent {
                             )}
                             key={field.key}
                           >
-                            <div className="col-lg-4">
+                            <div className="col-lg-6">
                               <FormItem
-                                label="NGÀY"
-                                name={[field.name, 'date']}
-                                fieldKey={[field.fieldKey, 'date']}
+                                data={categories.paramaterValues}
+                                label="THAM SỐ GIÁ TRỊ"
+                                name={[field.name, 'parameterValueId']}
+                                fieldKey={[field.fieldKey, 'parameterValueId']}
                                 rules={[variables.RULES.EMPTY]}
-                                type={variables.DATE_PICKER}
+                                type={variables.SELECT}
+                                onChange={(event) => this.onChangeParamaterValues(event, index)}
                               />
                             </div>
-                            <div className="col-lg-4">
+                            <div className="col-lg-6">
                               <FormItem
-                                onSelect={(value) =>
-                                  this.onChangeTimePicker(value, index, 'startTime')
-                                }
-                                label="THỜI GIAN TỪ"
-                                name={[field.name, 'startTime']}
-                                fieldKey={[field.fieldKey, 'startTime']}
+                                label="LƯƠNG"
+                                name={[field.name, 'value']}
+                                fieldKey={[field.fieldKey, 'value']}
                                 rules={[variables.RULES.EMPTY]}
-                                type={variables.TIME_PICKER}
-                              />
-                            </div>
-                            <div className="col-lg-4">
-                              <FormItem
-                                onSelect={(value) =>
-                                  this.onChangeTimePicker(value, index, 'endTime')
-                                }
-                                label="ĐẾN"
-                                name={[field.name, 'endTime']}
-                                fieldKey={[field.fieldKey, 'endTime']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.TIME_PICKER}
+                                type={variables.INPUT_NUMBER}
                               />
                             </div>
 
-                            <div className="col-lg-4">
-                              <FormItem
-                                label="GIỜ"
-                                name={[field.name, 'number']}
-                                fieldKey={[field.fieldKey, 'number']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_COUNT}
-                              />
-                            </div>
-                            <div className="col-lg-4">
-                              <FormItem
-                                label="GIỮA GIỜ"
-                                name={[field.name, 'isHalfTime']}
-                                fieldKey={[field.fieldKey, 'isHalfTime']}
-                                rules={[variables.RULES.EMPTY]}
-                                valuePropName="checked"
-                                type={variables.SWITCH}
-                              />
-                            </div>
                             <>
                               {fields?.length > 1 ? (
                                 <DeleteOutlined

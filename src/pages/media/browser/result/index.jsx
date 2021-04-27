@@ -3,7 +3,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useLocation } from 'umi';
 import { Helmet } from 'react-helmet';
-import { size } from 'lodash';
+import { size, isEmpty } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
 import { Form, Checkbox } from 'antd';
@@ -140,7 +140,7 @@ const Index = memo(() => {
       payload: classifyData.map((item) => item.id),
       callback: (response) => {
         if (response) {
-          setClassifyData([]);
+          fetchMedia();
         }
       },
     });
@@ -151,9 +151,9 @@ const Index = memo(() => {
       type: 'mediaResult/MERGE',
       payload: classifyData.map((item) => item.id),
       callback: (response) => {
-        // if (response) {
-        //   setClassifyData([]);
-        // }
+        if (response) {
+          fetchMedia();
+        }
       },
     });
   };
@@ -222,6 +222,7 @@ const Index = memo(() => {
                   color="dark"
                   type="link"
                   onClick={removeAllPost}
+                  disabled={isEmpty(classifyData)}
                 >
                   Xóa tất cả ghi nhận
                 </Button>
@@ -230,6 +231,7 @@ const Index = memo(() => {
                   className="mr20"
                   color="primary"
                   onClick={merge}
+                  disabled={isEmpty(classifyData) || classifyData.length <= 1}
                 >
                   Gộp ghi nhận
                 </Button>
