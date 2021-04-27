@@ -1040,6 +1040,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/tang-luong',
+            component: './hrm/salary-increases',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/tang-luong/tao-moi',
+            component: './hrm/salary-increases/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
+            component: './hrm/salary-increases/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

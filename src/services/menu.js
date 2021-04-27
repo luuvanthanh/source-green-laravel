@@ -807,6 +807,16 @@ export async function getLeftMenuHRM() {
           ],
           permission: [],
         },
+        {
+          title: 'Tăng lương',
+          key: 'salary-increases',
+          url: [
+            '/quan-ly-nhan-su/tang-luong',
+            '/quan-ly-nhan-su/tang-luong/tao-moi',
+            '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
+          ],
+          permission: [],
+        },
       ],
     },
 
