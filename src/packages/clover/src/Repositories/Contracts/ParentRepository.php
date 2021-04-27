@@ -5,10 +5,10 @@ namespace GGPHP\Clover\Repositories\Contracts;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface StudentRepository.
+ * Interface ParentRepository.
  *
  * @package namespace App\Repositories\Contracts;
  */
-interface StudentRepository extends RepositoryInterface
+interface ParentRepository extends RepositoryInterface
 {
 }

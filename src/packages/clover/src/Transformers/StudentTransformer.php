@@ -4,7 +4,8 @@ namespace GGPHP\Clover\Transformers;
 
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\ShiftSchedule\Transformers\ScheduleTransformer;
+use GGPHP\InOutHistories\Transformers\InOutHistoriesTransformer;
+use GGPHP\YoungAttendance\ShiftSchedule\Transformers\ScheduleTransformer;
 
 /**
  * Class StudentTransformer.
@@ -30,7 +31,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules'];
+    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent'];
 
     /**
      * Transform the Student entity.
@@ -52,7 +53,30 @@ class StudentTransformer extends BaseTransformer
      */
     public function includeSchedules(Student $student)
     {
-        return $this->collection($student->schedules, new ScheduleTransformer, 'Schedules');
+        return $this->collection($student->schedules, new ScheduleTransformer, 'Schedule');
     }
 
+    /**
+     * Include schedules
+     * @param Student $student
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeInOutHistory(Student $student)
+    {
+        return $this->collection($student->inOutHistory, new InOutHistoriesTransformer, 'InOutHistory');
+    }
+
+    /**
+     * Include RankPositionInformation
+     * @param Student $student
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeClassStudent(Student $student)
+    {
+        if (empty($student->classStudent)) {
+            return;
+        }
+
+        return $this->item($student->classStudent, new ClassStudentTransformer, 'ClassStudent');
+    }
 }

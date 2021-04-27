@@ -6,6 +6,7 @@ use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule;
+use GGPHP\YoungAttendance\ShiftSchedule\Transformers\ScheduleRepeatTransformer;
 
 /**
  * Class ScheduleTransformer.
@@ -28,9 +29,11 @@ class ScheduleTransformer extends BaseTransformer
      */
     public function includeScheduleRepeat(Schedule $schedule)
     {
+
         if (empty($schedule->ScheduleRepeat)) {
             return;
         }
+
         return $this->item($schedule->ScheduleRepeat, new ScheduleRepeatTransformer, 'ScheduleRepeat');
     }
 

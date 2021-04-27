@@ -2,18 +2,18 @@
 
 namespace GGPHP\Clover\Repositories\Eloquent;
 
-use GGPHP\Clover\Models\Student;
-use GGPHP\Clover\Presenters\StudentPresenter;
-use GGPHP\Clover\Repositories\Contracts\StudentRepository;
+use GGPHP\Clover\Models\Parents;
+use GGPHP\Clover\Presenters\ParentsPresenter;
+use GGPHP\Clover\Repositories\Contracts\ParentRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
- * Class StudentRepositoryEloquent.
+ * Class ParentRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class StudentRepositoryEloquent extends CoreRepositoryEloquent implements StudentRepository
+class ParentRepositoryEloquent extends CoreRepositoryEloquent implements ParentRepository
 {
     /**
      * @var array
@@ -30,7 +30,7 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
      */
     public function model()
     {
-        return Student::class;
+        return Parents::class;
     }
 
     /**
@@ -48,7 +48,7 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
      */
     public function presenter()
     {
-        return StudentPresenter::class;
+        return ParentsPresenter::class;
     }
 
 }

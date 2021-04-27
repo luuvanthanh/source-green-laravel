@@ -2,23 +2,22 @@
 
 namespace GGPHP\Clover\Transformers;
 
-use GGPHP\Category\Transformers\BranchTransformer;
-use GGPHP\Clover\Models\Classes;
+use GGPHP\Clover\Models\ClassStudent;
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
- * Class ClassesTransformer.
+ * Class ClassStudentTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ClassesTransformer extends BaseTransformer
+class ClassStudentTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
      *
      * @var array
      */
-    protected $defaultIncludes = ['branch'];
+    protected $defaultIncludes = [];
 
     /**
      * Array attribute doesn't parse.
@@ -30,13 +29,12 @@ class ClassesTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [
-    ];
+    protected $availableIncludes = ['class'];
 
     /**
-     * Transform the Classes entity.
+     * Transform the Student entity.
      *
-     * @param Classes $model
+     * @param ClassStudent $model
      *
      * @return array
      */
@@ -47,16 +45,16 @@ class ClassesTransformer extends BaseTransformer
     }
 
     /**
-     * Include schedules
-     * @param Student $classes
+     * Include RankPositionInformation
+     * @param ClassStudent $employee
      * @return \League\Fractal\Resource\Collection
      */
-    public function includeBranch(Classes $classes)
+    public function includeClass(ClassStudent $classTeacher)
     {
-        if (empty($classes->branch)) {
+        if (empty($classTeacher->classes)) {
             return;
         }
 
-        return $this->item($classes->branch, new BranchTransformer, 'Branch');
+        return $this->item($classTeacher->classes, new ClassesTransformer, 'Class');
     }
 }

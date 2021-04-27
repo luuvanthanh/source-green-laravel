@@ -32,4 +32,16 @@ class Student extends UuidModel
         return $this->hasMany(\GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule::class, 'StudentId');
     }
 
+    /**
+     * Define relations Schedule
+     */
+    public function inOutHistory()
+    {
+        return $this->hasMany(\GGPHP\InOutHistories\Models\InOutHistories::class, 'StudentId');
+    }
+
+    public function classStudent()
+    {
+        return $this->belongsTo(\GGPHP\Clover\Models\ClassStudent::class, 'Id', 'StudentId');
+    }
 }

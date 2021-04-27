@@ -2,10 +2,12 @@
 
 namespace GGPHP\InOutHistories\Repositories\Eloquent;
 
+use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\InOutHistories\Models\InOutHistories;
 use GGPHP\InOutHistories\Presenters\InOutHistoriesPresenter;
 use GGPHP\InOutHistories\Repositories\Contracts\InOutHistoriesRepository;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -18,6 +20,14 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
     protected $fieldSearchable = [
         'Id',
     ];
+
+    public function __construct(
+        StudentRepositoryEloquent $studentRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->studentRepositoryEloquent = $studentRepositoryEloquent;
+    }
 
     /**
      * Specify Model class name
@@ -50,19 +60,21 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
     public function filterInOutHistories(array $attributes)
     {
 
-        if (!empty($attributes['startDate']) && !empty($attributes['startDate'])) {
-            $this->model = $this->model->where('AttendedAt', '>=', $attributes['startDate'])->where('AttendedAt', '<=', $attributes['endDate']);
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('inOutHistory', function ($query) use ($attributes) {
+                $query->where('AttendedAt', '>=', $attributes['startDate'])->where('AttendedAt', '<=', $attributes['endDate']);
+            });
         }
 
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
-            $this->model = $this->model->whereIn('StudentId', $studentId);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
 
         if (!empty($attributes['limit'])) {
-            $inOutHistories = $this->paginate($attributes['limit']);
+            $inOutHistories = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $inOutHistories = $this->get();
+            $inOutHistories = $this->studentRepositoryEloquent->get();
         }
 
         return $inOutHistories;

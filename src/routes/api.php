@@ -139,5 +139,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\YoungAttendance\Absent\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\OtherDeclaration\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
     // });
 });

@@ -22,4 +22,9 @@ class Classes extends UuidModel
         'Code', 'Name', 'Year', 'BranchId', 'Description', 'ExtraProperties', 'ConcurrencyStamp',
         'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime',
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'BranchId');
+    }
 }

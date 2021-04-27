@@ -2,7 +2,9 @@
 
 namespace GGPHP\Clover\Providers;
 
+use GGPHP\Clover\Repositories\Contracts\ParentRepository;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
+use GGPHP\Clover\Repositories\Eloquent\ParentRepositoryEloquent;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as AuthServiceProvider;
 
@@ -27,6 +29,6 @@ class CloverServiceProvider extends AuthServiceProvider
     public function register()
     {
         $this->app->bind(StudentRepository::class, StudentRepositoryEloquent::class);
-        $this->app->bind(\GGPHP\Clover\Repositories\Contracts\ParentRepository::class, \GGPHP\Clover\Repositories\Eloquent\ParentRepositoryEloquent::class);
+        $this->app->bind(ParentRepository::class, ParentRepositoryEloquent::class);
     }
 }

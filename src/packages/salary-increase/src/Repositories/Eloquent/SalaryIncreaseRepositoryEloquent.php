@@ -56,7 +56,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $tranfer = SalaryIncrease::create($attributes);
-            foreach ($attributes['Detail'] as $value) {
+            foreach ($attributes['detail'] as $value) {
                 $tranfer->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 

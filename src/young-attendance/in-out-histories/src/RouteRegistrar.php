@@ -44,6 +44,7 @@ class RouteRegistrar extends CoreRegistrar
                 'comment' => 'Thông tin lịch sử vào ra trẻ',
                 'uses' => 'InOutHistoriesController@show',
             ]);
+
         });
     }
 }
