@@ -128,6 +128,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/giao-cu/them-moi',
+            component: './criteria/teaching-tools/tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA

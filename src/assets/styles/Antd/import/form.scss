@@ -228,3 +228,37 @@ form .ant-cascader-picker:only-child {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.fw-bold {
+  font-weight: 600;
+}
+
+.fw-normal {
+  font-weight: normal;
+}
+
+.groups-input {
+  .ant-form-item {
+    width: calc(100% - 50px);
+  }
+  .icon {
+    border: 1px solid $gray-border;
+    padding: 4px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: $danger;
+  }
+}
+
+.color-success {
+  color: $text-success
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.fs-13 {
+  font-size: 13px;
+}
