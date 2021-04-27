@@ -210,6 +210,7 @@ return [
         GGPHP\YoungAttendance\Absent\Providers\AbsentServiceProvider::class,
         GGPHP\OtherDeclaration\Providers\OtherDeclarationServiceProvider::class,
         GGPHP\Children\Providers\ChildrenServiceProvider::class,
+        GGPHP\Attendance\Providers\AttendanceServiceProvider::class,
     ],
 
     /*

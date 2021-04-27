@@ -6,15 +6,15 @@ use GGPHP\Category\Models\Holiday;
 use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Category\Presenters\HolidayPresenter;
 use GGPHP\Category\Repositories\Contracts\HolidayRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class HolidayRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class HolidayRepositoryEloquent extends BaseRepository implements HolidayRepository
+class HolidayRepositoryEloquent extends CoreRepositoryEloquent implements HolidayRepository
 {
     /**
      * @var array

@@ -6,6 +6,7 @@ use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Category\Repositories\Contracts\DegreeRepository;
 use GGPHP\Category\Repositories\Contracts\DivisionRepository;
 use GGPHP\Category\Repositories\Contracts\EducationalLevelRepository;
+use GGPHP\Category\Repositories\Contracts\HolidayRepository;
 use GGPHP\Category\Repositories\Contracts\ParamaterFormulaLogRepository;
 use GGPHP\Category\Repositories\Contracts\ParamaterFormulaRepository;
 use GGPHP\Category\Repositories\Contracts\ParamaterValueLogRepository;
@@ -18,6 +19,7 @@ use GGPHP\Category\Repositories\Eloquent\BranchRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\DegreeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\DivisionRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\EducationalLevelRepositoryEloquent;
+use GGPHP\Category\Repositories\Eloquent\HolidayRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParamaterFormulaLogRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParamaterFormulaRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ParamaterValueLogRepositoryEloquent;
@@ -62,6 +64,7 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(PositionRepository::class, PositionRepositoryEloquent::class);
         $this->app->bind(DivisionRepository::class, DivisionRepositoryEloquent::class);
         $this->app->bind(BranchRepository::class, BranchRepositoryEloquent::class);
+        $this->app->bind(HolidayRepository::class, HolidayRepositoryEloquent::class);
 
     }
 }

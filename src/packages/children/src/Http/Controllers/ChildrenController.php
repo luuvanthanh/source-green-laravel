@@ -31,7 +31,7 @@ class ChildrenController extends Controller
     {
         $children = $this->childrenRepository->createMany($request->all());
 
-        return $this->success($children, trans('lang-program::messages.children.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($children, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
     /**
@@ -45,7 +45,7 @@ class ChildrenController extends Controller
     {
         $child = $this->childrenRepository->find($id);
 
-        return $this->success($child, trans('lang-program::messages.children.getInfoSuccess'));
+        return $this->success($child, trans('lang::messages.common.getInfoSuccess'));
     }
 
     /**
@@ -58,7 +58,7 @@ class ChildrenController extends Controller
 
         $children = $this->childrenRepository->index($request);
 
-        return $this->success($children, trans('lang-program::messages.children.getListSuccess'));
+        return $this->success($children, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -73,7 +73,7 @@ class ChildrenController extends Controller
     {
         $child = $this->childrenRepository->update($request->all(), $id);
 
-        return $this->success($child, trans('lang-program::messages.children.updateSuccess'), ['isShowData' => false]);
+        return $this->success($child, trans('lang::messages.common.updateSuccess'), ['isShowData' => false]);
     }
 
     /**
@@ -101,7 +101,7 @@ class ChildrenController extends Controller
         $result = $this->childrenRepository->export($request);
 
         if (is_string($result)) {
-            return $this->error('Export failed', trans('lang-program::messages.children.export.template-not-found'), 400);
+            return $this->error('Export failed', trans('lang::messages.common.export.template-not-found'), 400);
         }
 
         return $result;

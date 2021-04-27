@@ -6,26 +6,22 @@ use Carbon\Carbon;
 use GGPHP\Children\Models\Children;
 use GGPHP\Children\Presenters\ChildrenPresenter;
 use GGPHP\Children\Repositories\Contracts\ChildrenRepository;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Users\Models\User;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ChildrenRepositoryEloquent.
  *
  * @package GGPHP\Children\Repositories\Eloquents;
  */
-class ChildrenRepositoryEloquent extends BaseRepository implements ChildrenRepository
+class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements ChildrenRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'parent_id',
-        'full_name' => 'like',
-        'gender',
-        'birthday',
-        'status',
+        'Id',
     ];
 
     /**

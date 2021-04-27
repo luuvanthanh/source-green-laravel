@@ -39,22 +39,6 @@ class InsurranceController extends Controller
     }
 
     /**
-     * Export a listing of resource.
-     * @param Request $request
-     * @return Response
-     */
-    public function export(Request $request)
-    {
-        $result = $this->insurranceRepository->export($request->all());
-
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
-        }
-
-        return $result;
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param InsurranceCreateRequest $request
@@ -62,6 +46,7 @@ class InsurranceController extends Controller
      */
     public function store(InsurranceCreateRequest $request)
     {
+
         $insurrance = $this->insurranceRepository->create($request->all());
 
         return $this->success($insurrance, trans('lang::messages.common.createSuccess'));

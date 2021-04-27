@@ -2,18 +2,18 @@
 
 namespace GGPHP\Profile\Repositories\Eloquent;
 
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Profile\Models\SabbaticalLeave;
 use GGPHP\Profile\Presenters\SabbaticalLeavePresenter;
 use GGPHP\Profile\Repositories\Contracts\SabbaticalLeaveRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class SabbaticalLeaveRepositoryEloquent extends BaseRepository implements SabbaticalLeaveRepository
+class SabbaticalLeaveRepositoryEloquent extends CoreRepositoryEloquent implements SabbaticalLeaveRepository
 {
     protected $fieldSearchable = [
         'employeeId',

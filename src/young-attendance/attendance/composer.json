@@ -1,0 +1,26 @@
+{
+    "name": "kun391/attendance",
+    "description": "A Package for management Attendance with jsonapi specification",
+    "keywords": [
+        "kun391",
+        "Attendance"
+    ],
+    "homepage": "https://github.com/kun391/attendance",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "GiangNT",
+            "email": "nguyentrigiang1991@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0"
+    }
+}

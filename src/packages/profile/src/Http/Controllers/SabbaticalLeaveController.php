@@ -43,11 +43,7 @@ class SabbaticalLeaveController extends Controller
      */
     public function store(UpdateOrCreateSabbaticalLeaveRequest $request)
     {
-        $data = [
-            'annualLeave' => $request->annualLeave,
-        ];
-
-        $sabbaticalLeave = $this->sabbaticalLeaveRepository->updateOrCreate(['employeeId' => $request->employeeId], $data);
+        $sabbaticalLeave = $this->sabbaticalLeaveRepository->updateOrCreate(['EmployeeId' => $request->employeeId], $request->all());
         return $this->success($sabbaticalLeave, trans('lang-profile::messages.common.modifySuccess'));
     }
 

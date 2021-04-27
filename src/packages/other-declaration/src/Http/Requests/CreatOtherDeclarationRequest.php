@@ -25,7 +25,7 @@ class CreatOtherDeclarationRequest extends FormRequest
     {
 
         return [
-            'employeeId' => 'required|exists:Employees,Id',
+
         ];
     }
 }

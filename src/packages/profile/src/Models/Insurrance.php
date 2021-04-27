@@ -12,17 +12,17 @@ class Insurrance extends UuidModel
     protected $table = 'Insurrances';
 
     protected $fillable = [
-        'EmployeeId', 'InsurranceNumber', 'TimeJoin', 'TimeStop',
+        'EmployeeId', 'InsurranceNumber', 'TimeJoin', 'TimeStart',
     ];
 
     protected $dateTimeFields = [
         'TimeJoin',
-        'TimeStop',
+        'TimeStart',
     ];
 
     protected $casts = [
         'TimeJoin' => 'datetime',
-        'TimeStop' => 'datetime',
+        'TimeStart' => 'datetime',
     ];
 
     /**

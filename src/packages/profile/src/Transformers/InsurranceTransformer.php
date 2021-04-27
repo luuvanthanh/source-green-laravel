@@ -37,7 +37,11 @@ class InsurranceTransformer extends BaseTransformer
      */
     public function includeEmployee(Insurrance $insurrance)
     {
-        return $this->collection($insurrance->Employee, new UserTransformer, 'Employee');
+        if (empty($insurrance->employee)) {
+            return;
+        }
+
+        return $this->item($insurrance->employee, new UserTransformer, 'Employee');
     }
 
 }

@@ -15,7 +15,7 @@ class ChildrenPresenter extends FractalPresenter
     /**
      * @var string
      */
-    public $resourceKeyItem = 'Child';
+    public $resourceKeyItem = 'Children';
 
     /**
      * @var string

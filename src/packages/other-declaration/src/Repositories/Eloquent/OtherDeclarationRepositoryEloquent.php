@@ -54,7 +54,9 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
-            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+            $this->model = $this->model->whereHas('otherDeclarationDetail', function ($query) use ($employeeId) {
+                $query->whereIn('EmployeeId', $employeeId);
+            });
         }
 
         if (!empty($attributes['limit'])) {

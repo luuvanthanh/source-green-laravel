@@ -153,34 +153,36 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function scopeTranferHistory($query, $attributes)
     {
-        $query->whereHas('positionLevel', function ($q) use ($attributes) {
-            if (!empty($attributes['branchId'])) {
-                $q->where('BranchId', $attributes['branchId']);
-            }
+        if (!empty($attributes['branchId']) || !empty($attributes['divisionId']) || !empty($attributes['positionId'])) {
+            $query->whereHas('positionLevel', function ($q) use ($attributes) {
+                if (!empty($attributes['branchId'])) {
+                    $q->where('BranchId', $attributes['branchId']);
+                }
 
-            if (!empty($attributes['divisionId'])) {
-                $q->where('DivisionId', $attributes['divisionId']);
-            }
+                if (!empty($attributes['divisionId'])) {
+                    $q->where('DivisionId', $attributes['divisionId']);
+                }
 
-            if (!empty($attributes['positionId'])) {
-                $q->where('PositionId', $attributes['positionId']);
-            }
+                if (!empty($attributes['positionId'])) {
+                    $q->where('PositionId', $attributes['positionId']);
+                }
 
-            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-                $q->where(function ($q2) use ($attributes) {
-                    $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
-                        ->orWhere([['StartDate', '>', $attributes['startDate']], ['startDate', '<=', $attributes['endDate']]])
-                        ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]])
-                        ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
-                });
-            } else {
-                $now = !empty($attributes['date_tranfer']) ? $attributes['date_tranfer'] : Carbon::now()->format('Y-m-d');
-                $q->where(function ($q2) use ($now) {
-                    $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
-                        ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
-                });
-            }
-        });
+                if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                    $q->where(function ($q2) use ($attributes) {
+                        $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                            ->orWhere([['StartDate', '>', $attributes['startDate']], ['startDate', '<=', $attributes['endDate']]])
+                            ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]])
+                            ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
+                    });
+                } else {
+                    $now = !empty($attributes['date_tranfer']) ? $attributes['date_tranfer'] : Carbon::now()->format('Y-m-d');
+                    $q->where(function ($q2) use ($now) {
+                        $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                            ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+                    });
+                }
+            });
+        }
 
         return $query;
     }

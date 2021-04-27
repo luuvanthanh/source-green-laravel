@@ -34,10 +34,10 @@ class ChildrenTransformer extends BaseTransformer
     }
 
     /**
-     * Include Parent
+     * Include Employee
      * @param Children $children
      */
-    public function includeParent(Children $children)
+    public function includeEmployee(Children $children)
     {
         return $this->item($children->employee, new UserTransformer, 'Employee');
     }

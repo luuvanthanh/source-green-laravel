@@ -52,7 +52,7 @@ class UserTransformer extends BaseTransformer
         $status = null;
 
         foreach (User::STATUS as $key => $value) {
-            if ($value == $model->status) {
+            if ($value == $model->Status) {
                 $status = $key;
             }
         }
