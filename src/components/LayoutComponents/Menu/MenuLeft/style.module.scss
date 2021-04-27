@@ -149,7 +149,7 @@
   }
 
   :global(.ant-menu-submenu-inline) > :global(.ant-menu-submenu-title .ant-menu-submenu-arrow) {
-    right: 50px;
+    right: 15px;
   }
 
   :global(.ant-menu-inline, .ant-menu-vertical),
@@ -209,6 +209,12 @@
 
     :global(.ant-menu-sub) {
       color: $gray-darken;
+      :global(.ant-menu-submenu-title) {
+        padding-left: 23px !important;
+      }
+      :global(.ant-menu-submenu-arrow) {
+        right: 0;
+      }
     }
 
     :global(.ant-menu-item) {

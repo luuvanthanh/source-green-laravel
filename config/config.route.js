@@ -110,6 +110,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu',
+            component: './criteria/teaching-tools/angle-tool',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/them-moi',
+            component: './criteria/teaching-tools/angle-tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/cau-hinh/giao-cu',
+            component: './criteria/teaching-tools/tool',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // CRITERIA
