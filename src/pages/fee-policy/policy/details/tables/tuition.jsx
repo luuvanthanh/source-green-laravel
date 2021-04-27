@@ -10,7 +10,7 @@ const data = [{
 const Index = memo(() => {
   const columns = useMemo(() => [
     {
-      title: 'Lớp',
+      title: 'Loại lớp',
       key: 'class',
       className: 'min-width-80',
       render: (text, record, index) => <Text size="normal">15 - 24  tháng (tuổi)</Text>

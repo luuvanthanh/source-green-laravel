@@ -36,13 +36,13 @@ const Index = memo(() => {
 
   const columns = [
     {
-      title: 'Mã lớp',
+      title: 'Mã loại lớp',
       key: 'id',
       className: 'min-width-70',
       render: (text, record, index) => <Text size="normal">L1</Text>,
     },
     {
-      title: 'Tên lớp',
+      title: 'Tên loại lớp',
       key: 'name',
       className: 'min-width-200',
       render: (text, record, index) => <Text size="normal">15 - 24 tháng (tuổi)</Text>,
@@ -104,10 +104,10 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Lớp" />
+      <Helmet title="Loại lớp" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
-          <Heading type="page-title">Lớp</Heading>
+          <Heading type="page-title">Loại lớp</Heading>
           <Button
             className="ml-auto"
             color="success"

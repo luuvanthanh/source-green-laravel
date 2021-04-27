@@ -21,7 +21,7 @@ const Index = memo(() => {
 
   const columns = useMemo(() => [
     {
-      title: 'Lớp',
+      title: 'Loại lớp',
       key: 'class',
       className: 'min-width-80',
       render: (text, record, index) => (
