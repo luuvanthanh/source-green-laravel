@@ -1,4 +1,4 @@
-import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
+import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size, head } from 'lodash';
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
@@ -410,10 +410,10 @@ export default class Helpers {
     return current && current >= moment().endOf('day');
   };
 
-  static serialOrder(page, index, size = variables.PAGINATION.PAGE_SIZE) {
+  static serialOrder = (page, index, size = variables.PAGINATION.PAGE_SIZE) => {
     const num = (page - 1) * size + index + 1;
     return num;
-  }
+  };
 
   static getPagination = (page, limit) => {
     return {
@@ -592,6 +592,7 @@ export default class Helpers {
   };
 
   static toFixed = (num) => {
+    if (!num) return;
     return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
   };
 
@@ -610,5 +611,24 @@ export default class Helpers {
     return `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
+  };
+
+  static getPathAvatarJson = (fileImage) => {
+    if (Helper.isJSON(fileImage)) {
+      const files = JSON.parse(fileImage);
+      if (!isEmpty(files) && isArray(files)) return head(files);
+      return null;
+    }
+    return null;
+  };
+
+  static convertSelectUsers = (items) => {
+    if (!isEmpty(items)) {
+      return items.map((item) => ({
+        id: item.id,
+        name: `${item.fullName} (${getLodash(item, 'positionLevel[0].division.name')})`,
+      }));
+    }
+    return [];
   };
 }

@@ -3,7 +3,7 @@ import { connect } from 'umi';
 import { Modal, Avatar, Input, Typography, Form, message, Select } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import { isEmpty } from 'lodash';
+import { isEmpty, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
@@ -16,6 +16,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import variablesModules from '../utils/variables';
 import { Scrollbars } from 'react-custom-scrollbars';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -142,18 +143,22 @@ class Index extends PureComponent {
    * Function change status
    * @param {uid} id id of items
    */
-  onChangeStatus = (e) => {
-    const {
-      match: { params },
-      dispatch,
-      details,
-    } = this.props;
-    if (params.id) {
+  onChangeStatus = (status) => {
+    const { dispatch, details } = this.props;
+    if (status === variablesModules.STATUS.CLOSED) {
+      dispatch({
+        type: 'exchangeDetails/CLOSE',
+        payload: {
+          ...details,
+        },
+        callback: () => {},
+      });
+    } else {
       dispatch({
         type: 'exchangeDetails/UPDATE_COMMUNICATION',
         payload: {
           ...details,
-          status: e,
+          status,
         },
         callback: () => {},
       });
@@ -317,8 +322,16 @@ class Index extends PureComponent {
                 <div className={stylesExchange['group-user']}>
                   <p className={stylesExchange['norm']}>Dành cho</p>
                   <div className={stylesExchange['user-info']}>
-                    <Avatar size={50} shape="square" icon={<UserOutlined />} />
-                    <p className={stylesExchange['norm']}>Su beo</p>
+                    <AvatarTable
+                      size={50}
+                      fileImage={
+                        Helper.isJSON(get(details, 'studentMaster.student.fileImage')) &&
+                        head(JSON.parse(get(details, 'studentMaster.student.fileImage')))
+                      }
+                    />
+                    <p className={stylesExchange['norm']}>
+                      {details?.studentMaster?.student?.fullName}
+                    </p>
                   </div>
                 </div>
                 <hr />
@@ -326,19 +339,23 @@ class Index extends PureComponent {
                   <div className={stylesExchange['info-item']}>
                     <p className={stylesExchange['norm']}>Cơ sở</p>
                     <div className={stylesExchange['content']}>
-                      <div className={styles.circle}>
+                      <div className={stylesExchange.circle}>
                         <span className={'icon-school'}></span>
                       </div>
-                      <p className={stylesExchange['norm']}>Lake view</p>
+                      <p className={stylesExchange['norm']}>
+                        {get(details, 'studentMaster.student.class.branch.name')}
+                      </p>
                     </div>
                   </div>
                   <div className={stylesExchange['info-item']}>
                     <p className={stylesExchange['norm']}>Lớp</p>
                     <div className={stylesExchange['content']}>
-                      <div className={styles.circle}>
+                      <div className={stylesExchange.circle}>
                         <span className="icon-open-book"></span>
                       </div>
-                      <p className={stylesExchange['norm']}>Preschool</p>
+                      <p className={stylesExchange['norm']}>
+                        {get(details, 'studentMaster.student.class.name')}
+                      </p>
                     </div>
                   </div>
                 </div>

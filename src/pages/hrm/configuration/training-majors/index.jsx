@@ -261,7 +261,7 @@ class Index extends PureComponent {
         <Helmet title="Danh sách ngành đào tạo" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH NGÀNH ĐẠO TẠO</Text>
+            <Text color="dark">DANH SÁCH NGÀNH ĐÀO TẠO</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form, Avatar } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { get, debounce } from 'lodash';
 import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -35,6 +35,9 @@ const { confirm } = Modal;
 const mapStateToProps = ({ HRMusers, loading }) => ({
   data: HRMusers.data,
   pagination: HRMusers.pagination,
+  branches: HRMusers.branches,
+  divisions: HRMusers.divisions,
+  positions: HRMusers.positions,
   loading,
 });
 @connect(mapStateToProps)
@@ -49,9 +52,10 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        ...query,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        keyWord: query?.keyWord,
+        fullName: query?.fullName,
       },
       objects: {},
     };
@@ -60,6 +64,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -98,6 +103,29 @@ class Index extends PureComponent {
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
+    });
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'HRMusers/GET_BRANCHES',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'HRMusers/GET_DIVISIONS',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'HRMusers/GET_POSITIONS',
+      payload: {
+        ...search,
+      },
     });
   };
 
@@ -235,17 +263,15 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        align: 'center',
-        render: (record) => <AvatarTable fileImage={record.fileImage} />,
-      },
-      {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'Số điện thoại',
@@ -257,25 +283,25 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'position',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].branch.name')}</Text>
+        ),
       },
       {
         title: 'Bộ phận',
         key: 'division',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hành chính nhân sự</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].division.name')}</Text>
+        ),
       },
       {
         title: 'Chức vụ',
         key: 'position',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Ghi danh</Text>,
-      },
-      {
-        title: 'Hình thức làm việc',
-        key: 'work',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Chính thức</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].position.name')}</Text>
+        ),
       },
       {
         key: 'action',
@@ -300,6 +326,9 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      branches,
+      positions,
+      divisions,
       pagination,
       match: { params },
       loading: { effects },
@@ -331,43 +360,35 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="keyWord"
-                    onChange={(event) => this.onChange(event, 'keyWord')}
+                    name="fullName"
+                    onChange={(event) => this.onChange(event, 'fullName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={positions}
+                    name="positionId"
+                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả bộ phận' }]}
-                    name="class"
-                    onChange={(event) => this.onChangeSelect(event, 'class')}
+                    data={divisions}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-2">
+                <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả chức vụ' }]}
-                    name="position"
-                    onChange={(event) => this.onChangeSelect(event, 'position')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-2">
-                  <FormItem
-                    data={[{ id: null, name: 'Tất cả hình thức làm việc' }]}
-                    name="form"
-                    onChange={(event) => this.onChangeSelect(event, 'form')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>

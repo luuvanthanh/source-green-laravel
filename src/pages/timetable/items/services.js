@@ -1,11 +1,12 @@
 import request from '@/utils/request';
+import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request('/time-tables', {
     method: 'GET',
     params: {
-      ...params,
+      ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
       fromDate: Helper.getDateTime({
         value: Helper.setDate({

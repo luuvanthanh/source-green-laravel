@@ -16,7 +16,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
-  const [images, setImages] = useState(files);
+  const [images, setImages] = useState(files || []);
   const [showFullPreviewUrl, setShowFullPreviewUrl] = useState();
 
   const uploadAction = useCallback((file) => {
@@ -82,7 +82,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
             <Pane className={styles.imageWrapper}>
               <img
                 className={styles.thumb}
-                src={`${API_UPLOAD}/${item}`}
+                src={`${API_UPLOAD}${item}`}
                 alt="uploaded-image=thumb"
               />
 

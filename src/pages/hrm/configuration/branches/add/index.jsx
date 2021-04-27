@@ -137,8 +137,8 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -157,6 +157,24 @@ class Index extends PureComponent {
                       label="TÊN"
                       name="name"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="ĐỊA CHỈ"
+                      name="address"
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="SĐT"
+                      name="phoneNumber"
+                      rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -183,8 +201,8 @@ class Index extends PureComponent {
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );

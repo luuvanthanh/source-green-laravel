@@ -3,15 +3,12 @@ import { connect, history } from 'umi';
 import { Modal, Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import { isEmpty, get, head } from 'lodash';
-import moment from 'moment';
+import { isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
-import { UserOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -38,7 +35,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ exchangeAdd, loading, menu, user }) => ({
   loading,
   user: user.user,
-  categories: exchangeAdd.categories,
+  branches: exchangeAdd.branches,
+  classes: exchangeAdd.classes,
   menuData: menu.menuLeftExchange,
 });
 @connect(mapStateToProps)
@@ -60,6 +58,7 @@ class Index extends PureComponent {
         limit: variables.PAGINATION.PAGE_SIZE,
         totalCount: 0,
         parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+        classStatus: 'HAS_CLASS',
       },
     };
     setIsMounted(true);
@@ -67,6 +66,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.loadStudents();
+    this.loadBranches();
   }
 
   componentWillUnmount() {
@@ -129,6 +129,55 @@ class Index extends PureComponent {
               totalCount: response.totalCount,
             },
           }));
+        }
+      },
+    });
+  };
+
+  /**
+   * Function get list students
+   */
+  loadBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_BRANCHES',
+      payload: {},
+    });
+  };
+
+  onChangeBranch = (branch) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_CLASSES',
+      payload: {
+        branch,
+      },
+    });
+  };
+
+  onChangeClass = (value) => {
+    const { searchStudents } = this.state;
+    const { dispatch, user } = this.props;
+    dispatch({
+      type: 'exchangeAdd/GET_STUDENTS',
+      payload: {
+        ...searchStudents,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        class: value,
+        parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          this.setStateData({
+            students: response.items,
+            searchStudents: {
+              ...searchStudents,
+              page: variables.PAGINATION.PAGE,
+              limit: variables.PAGINATION.PAGE_SIZE,
+              totalCount: response.totalCount,
+            },
+          });
         }
       },
     });
@@ -215,8 +264,8 @@ class Index extends PureComponent {
 
   render() {
     const {
-      dispatch,
-      categories,
+      classes,
+      branches,
       menuData,
       match: { params },
       loading: { effects },
@@ -230,6 +279,7 @@ class Index extends PureComponent {
       },
       customRequest: this.customRequest,
       showUploadList: false,
+      multiple: true,
       fileList: [],
     };
     return (
@@ -255,10 +305,22 @@ class Index extends PureComponent {
                 <div className={stylesAllocation['content-form']}>
                   <div className="row mt-3">
                     <div className="col-lg-6">
-                      <FormItem label="Cơ sở" name="position" type={variables.SELECT} />
+                      <FormItem
+                        label="Cơ sở"
+                        data={branches}
+                        name="branchId"
+                        type={variables.SELECT}
+                        onChange={this.onChangeBranch}
+                      />
                     </div>
                     <div className="col-lg-6">
-                      <FormItem label="Lớp" name="class" type={variables.SELECT} />
+                      <FormItem
+                        label="Lớp"
+                        data={classes}
+                        name="classId"
+                        type={variables.SELECT}
+                        onChange={this.onChangeClass}
+                      />
                     </div>
                   </div>
                   <hr />
@@ -277,13 +339,6 @@ class Index extends PureComponent {
                         dataSource={students}
                         loading={loadingStudents}
                         renderItem={(item) => {
-                          let fileImage = '';
-                          if (Helper.isJSON(item.fileImage)) {
-                            const files = JSON.parse(item.fileImage);
-                            if (!isEmpty(files)) {
-                              fileImage = head(files);
-                            }
-                          }
                           return (
                             <List.Item key={item.id}>
                               <Radio
@@ -295,7 +350,10 @@ class Index extends PureComponent {
                                 <Avatar
                                   shape="square"
                                   size={40}
-                                  src={fileImage && `${API_UPLOAD}${fileImage}`}
+                                  src={
+                                    Helper.getPathAvatarJson(item.fileImage) &&
+                                    `${API_UPLOAD}${Helper.getPathAvatarJson(item.fileImage)}`
+                                  }
                                 />
                                 <div className={stylesAllocation['info']}>
                                   <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
@@ -379,6 +437,7 @@ class Index extends PureComponent {
                     size="large"
                     className="ml-auto"
                     loading={loadingSubmit}
+                    disabled={!studentId}
                   >
                     Gửi trao đổi
                   </Button>

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('icomoon.eot?xkgglg');
-  src:  url('icomoon.eot?xkgglg#iefix') format('embedded-opentype'),
-    url('icomoon.ttf?xkgglg') format('truetype'),
-    url('icomoon.woff?xkgglg') format('woff'),
-    url('icomoon.svg?xkgglg#icomoon') format('svg');
+  src:  url('icomoon.eot?14fjyf');
+  src:  url('icomoon.eot?14fjyf#iefix') format('embedded-opentype'),
+    url('icomoon.ttf?14fjyf') format('truetype'),
+    url('icomoon.woff?14fjyf') format('woff'),
+    url('icomoon.svg?14fjyf#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-baby-bottle:before {
+  content: "\e932";
+}
+.icon-budget:before {
+  content: "\e933";
+}
+.icon-fee-policy:before {
+  content: "\e934";
+}
+.icon-send-money:before {
+  content: "\e935";
+}
 .icon-woman:before {
   content: "\e921";
 }

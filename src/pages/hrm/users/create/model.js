@@ -1,4 +1,4 @@
-import { variables } from '@/utils';
+// import { variables } from '@/utils';
 import * as services from './services';
 import * as categories from '@/services/categories';
 
@@ -21,6 +21,12 @@ export default {
     dismisseds: [],
     apoints: [],
     transfers: [],
+    contractTypes: [],
+    contracts: [],
+    probationaryContracts: [],
+    decisionRewards: [],
+    paramaterValues: [],
+    paramaterFormulas: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -60,6 +66,14 @@ export default {
       ...state,
       dismisseds: payload.parsePayload,
     }),
+    SET_REMOVE_DIMISSEDS: (state, { payload }) => ({
+      ...state,
+      dismisseds: state.dismisseds.filter((item) => item.id !== payload.id),
+    }),
+    SET_REMOVE_APPOINTS: (state, { payload }) => ({
+      ...state,
+      apoints: state.apoints.filter((item) => item.id !== payload.id),
+    }),
     SET_APPOINTS: (state, { payload }) => ({
       ...state,
       apoints: payload.parsePayload,
@@ -67,6 +81,18 @@ export default {
     SET_TRANSFERS: (state, { payload }) => ({
       ...state,
       transfers: payload.parsePayload,
+    }),
+    SET_REMOVE_TRANSFERS: (state, { payload }) => ({
+      ...state,
+      transfers: state.transfers.filter((item) => item.id !== payload.id),
+    }),
+    SET_DECISION_REWARDS: (state, { payload }) => ({
+      ...state,
+      decisionRewards: payload.parsePayload,
+    }),
+    SET_REMOVE_DECISION_REWARDS: (state, { payload }) => ({
+      ...state,
+      decisionRewards: state.dismisseds.filter((item) => item.id !== payload.id),
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -88,6 +114,26 @@ export default {
         isError: false,
       },
     }),
+    SET_CONTRACT_TYPES: (state, { payload }) => ({
+      ...state,
+      contractTypes: payload.parsePayload,
+    }),
+    SET_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      contracts: payload.parsePayload,
+    }),
+    SET_PROBATIONARY_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      probationaryContracts: payload.parsePayload,
+    }),
+    SET_PARAMATER_VALUES: (state, { payload }) => ({
+      ...state,
+      paramaterValues: payload.parsePayload,
+    }),
+    SET_PARAMATER_FORMULAS: (state, { payload }) => ({
+      ...state,
+      paramaterFormulas: payload.parsePayload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -101,10 +147,14 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        const response = yield saga.call(services.add, payload);
+        yield saga.call(services.addPositionLevels, {
+          ...payload,
+          employeeId: response?.parsePayload?.id,
+        });
         callback(payload);
       } catch (error) {
-        callback(null, error?.data?.error);
+        callback(null, error);
       }
     },
     *ADD_ACCOUNT({ payload, callback }, saga) {
@@ -160,6 +210,34 @@ export default {
         const response = yield saga.call(services.detailsAccount, payload);
         yield saga.put({
           type: 'SET_DETAILS_ACCOUNT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARAMATER_VALUES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParamaterValues, payload);
+        yield saga.put({
+          type: 'SET_PARAMATER_VALUES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARAMATER_FORMULAS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParamaterFormulas, payload);
+        yield saga.put({
+          type: 'SET_PARAMATER_FORMULAS',
           payload: response,
         });
       } catch (error) {
@@ -271,6 +349,23 @@ export default {
         callback(null, error);
       }
     },
+    *UPDATE_DIMISSEDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateDismisseds, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_DIMISSEDS({ payload }, saga) {
+      try {
+        yield saga.call(services.removeDismisseds, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_DIMISSEDS',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
     *GET_DISMISSEDS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDismisseds, payload);
@@ -291,6 +386,25 @@ export default {
       try {
         yield saga.call(services.addAppoints, payload);
         callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_APPOINTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateAppoints, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_APPOINTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeAppoints, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_APPOINTS',
+          payload: payload,
+        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
@@ -319,6 +433,23 @@ export default {
         callback(null, error);
       }
     },
+    *UPDATE_TRANSFERS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateTransfers, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_TRANSFERS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addTransfers, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_TRANSFERS',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
     *GET_TRANSFERS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getTransfers, payload);
@@ -334,6 +465,110 @@ export default {
       }
     },
     // transfers
+    // contract
+    *GET_CONTRACT_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getContractTypes, payload);
+        yield saga.put({
+          type: 'SET_CONTRACT_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addContract, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getContracts, payload);
+        yield saga.put({
+          type: 'SET_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // contract
+    // probationary contract
+    *ADD_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addProbationaryContract, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_PROBATIONARY_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getProbationaryContracts, payload);
+        yield saga.put({
+          type: 'SET_PROBATIONARY_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // probationary contract
+
+    // decision-rewards
+    *ADD_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addDecisionRewards, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateDecisionRewards, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_DECISION_REWARDS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeDecisionRewards, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_DECISION_REWARDS',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
+    *GET_DECISION_REWARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDecisionRewards, payload);
+        yield saga.put({
+          type: 'SET_DECISION_REWARDS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // decision-rewards
   },
   subscriptions: {},
 };

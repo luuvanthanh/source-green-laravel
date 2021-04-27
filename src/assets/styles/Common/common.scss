@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 .menu-horizontal-children {
   padding: 0 rem(20);
@@ -17,7 +17,7 @@
   :global(.ant-menu-submenu) {
     position: relative;
     &::after {
-      content: "";
+      content: '';
       height: 22px;
       width: 1px;
       background-color: #dbdbdb;
@@ -42,7 +42,7 @@
 
   :global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: "Montserrat", sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -122,7 +122,7 @@
 .itemChildren {
   &:global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: "Roboto";
+    font-family: 'Roboto';
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -180,6 +180,27 @@
     }
     :global(.ant-tabs-ink-bar) {
       background: $background-success;
+    }
+  }
+  &.block-table-tab-new {
+    @extend .block-table-tab;
+    padding: 0;
+    :global(.ant-tabs) {
+      margin: 0;
+    }
+    :global(.ant-tabs-nav) {
+      margin: 0;
+    }
+    :global(.ant-table-thead > tr > th) {
+      background: $white;
+    }
+    :global(.heading-tab) {
+      padding: 20px 20px 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    :global(.ant-table-summary .ant-table-cell) {
+      background: rgba(240, 240, 240, 0.45);
+      border-bottom: 1px solid #EAEAEA;
     }
   }
   :global(.ant-table-wrapper) {
@@ -243,7 +264,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white;
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -311,7 +332,7 @@
     }
   }
   :global(.ant-collapse-header) {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
@@ -381,7 +402,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white !important;
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -527,7 +548,7 @@
     &:last-child {
       border-bottom: unset;
     }
-    span[class*="icon"] {
+    span[class*='icon'] {
       padding-right: 10px;
       color: rgba($color: $text-dark, $alpha: 0.65);
     }
@@ -558,7 +579,7 @@
   position: relative;
   &::after {
     color: $danger;
-    content: "*";
+    content: '*';
     font-size: 13px;
     line-height: 1;
     position: absolute;
@@ -584,14 +605,14 @@
   &.input-number-count {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: "";
+        content: '';
       }
     }
   }
   &.input-number-date {
     :global(.ant-input-number-input-wrap) {
       &::after {
-        content: "ngày";
+        content: 'ngày';
       }
     }
   }
@@ -601,11 +622,11 @@
   :global(.ant-input-number-input-wrap) {
     position: relative;
     &::after {
-      content: "đ";
+      content: 'đ';
       position: absolute;
       right: 5px;
       top: 4px;
-      font-family: "Roboto", sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -620,12 +641,12 @@
   flex-wrap: nowrap;
   padding: 4px;
   align-items: center;
-  span[class^="icon"] {
+  span[class^='icon'] {
     color: #e28631;
     padding-right: 10px;
   }
   span {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -635,7 +656,7 @@
 }
 
 .description-upload {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-style: italic;
   font-weight: normal;
   font-size: 13px;
@@ -664,7 +685,7 @@
 .table-switch {
   span {
     padding-left: 10px;
-    font-family: "Roboto";
+    font-family: 'Roboto';
     font-size: 13px;
     line-height: 22px;
     color: rgba($color: $black, $alpha: 0.85);
@@ -709,7 +730,49 @@
 }
 
 .modal-fullscreen {
-  &:global(.ant-modal){
+  &:global(.ant-modal) {
     width: 90vw !important;
+  }
+  :global(.ant-modal-body){
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  .info {
+    margin-left: 10px;
+  }
+  .name {
+    font-style: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: $text;
+    margin-bottom: 0;
+  }
+  .title {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: $text;
+    margin-bottom: 0;
+  }
+  .norm {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 20px;
+    color: #7a7e84;
+    margin-bottom: 0;
+  }
+}
+
+.checkbox {
+  &--large {
+    transform: scale(1.5);
+    transform-origin: left center;
   }
 }

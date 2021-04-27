@@ -15,7 +15,7 @@ import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
 import TransfersForm from './forms/transfers';
 import ContractForm from './forms/contract';
-import MinutesOfAgreementForm from './forms/minutesOfAgreement';
+import ProbationaryContractForm from '././forms/probationaryContract';
 import InsurranceForm from './forms/insurrance';
 import InsurranceHealthForm from './forms/InsurranceHealth';
 import DaysOffForm from './forms/daysOff';
@@ -26,6 +26,7 @@ import MagneticCardsForm from './forms/magnetic-cards';
 import AccountForm from './forms/account';
 import DismissedsForm from './forms/dismisseds';
 import AppointsForm from './forms/appoints';
+import DecisionRewardsForm from './forms/decision-rewards';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -45,7 +46,7 @@ const forms = {
   timework: <TimeworkForm />,
   transfers: <TransfersForm />,
   contract: <ContractForm />,
-  minutesOfAgreement: <MinutesOfAgreementForm />,
+  probationaryContract: <ProbationaryContractForm />,
   insurrance: <InsurranceForm />,
   healthInsurrance: <InsurranceHealthForm />,
   daysOff: <DaysOffForm />,
@@ -56,6 +57,7 @@ const forms = {
   account: <AccountForm />,
   dismisseds: <DismissedsForm />,
   appoints: <AppointsForm />,
+  ['decision-rewards']: <DecisionRewardsForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

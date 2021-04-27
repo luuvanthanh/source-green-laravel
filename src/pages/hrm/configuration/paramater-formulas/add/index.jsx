@@ -66,7 +66,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        apply_date: details.apply_date && moment(details.apply_date),
+        applyDate: details.applyDate && moment(details.applyDate),
       });
     }
   }

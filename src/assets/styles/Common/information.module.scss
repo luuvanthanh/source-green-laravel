@@ -1,3 +1,4 @@
+@import "@/assets/styles/mixins.scss";
 .listItem {
   display: flex;
   align-items: center;
@@ -12,21 +13,21 @@
 
   h3 {
     margin: 0;
-    color: #36383A;
-    font: 600 14px/20px 'Roboto';
+    color: #36383a;
+    font: 600 14px/20px "Roboto";
   }
 
   p {
     margin: 0;
-    color: #7A7E84;
-    font: 400 13px/20px 'Roboto';
+    color: #7a7e84;
+    font: 400 13px/20px "Roboto";
   }
 }
 
 .infoLabel {
   font-size: 14px;
   line-height: 20px;
-  color: #36383A;
+  color: #36383a;
   margin-bottom: 5px;
   margin-right: 5px;
 }
@@ -44,5 +45,33 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #F1F3F8;
+  background: #f1f3f8;
+}
+
+.setting {
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  cursor: pointer;
+  .circleIcon {
+    background-color: transparent;
+    color: $text-success;
+    height: auto;
+    width: auto;
+  }
+  .infoText {
+    color: $text-success;
+    margin-bottom: 0;
+  }
+}
+
+.form-item-advance {
+  position: relative;
+  .icon-delete {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    &:hover {
+      color: $danger;
+    }
+  }
 }

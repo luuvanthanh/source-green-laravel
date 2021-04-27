@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, head, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -33,6 +33,8 @@ const mapStateToProps = ({ health, loading }) => ({
   loading,
   data: health.data,
   pagination: health.pagination,
+  branches: health.branches,
+  classes: health.classes,
   criteriaGroupProperties: health.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -47,6 +49,9 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        branchId: query.branchId,
+        classId: query.classId,
+        reportDate: moment().format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
@@ -103,6 +108,19 @@ class Index extends PureComponent {
    * Function load data
    */
   loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'health/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'health/GET_BRANCHES',
+      payload: {},
+    });
     this.props.dispatch({
       type: 'health/GET_CRITERIA_GROUP_PROPERTIES',
       payload: {},
@@ -142,6 +160,21 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'health/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -197,9 +230,12 @@ class Index extends PureComponent {
   });
 
   getStudentCriteria = (items, key) => {
-    const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
-    if (itemCriteria) {
-      return itemCriteria.value;
+    if (items) {
+      const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
+      if (itemCriteria) {
+        return itemCriteria.value;
+      }
+      return null;
     }
     return null;
   };
@@ -217,26 +253,26 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'branch',
         className: 'min-width-150',
-        render: () => <Text size="normal">Lake View</Text>,
+        render: (record) => <Text size="normal">{get(record, 'student.class.branch.name')}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: () => <Text size="normal">Preschool 1</Text>,
+        render: (record) => <Text size="normal">{get(record, 'student.class.name')}</Text>,
       },
       {
         title: 'Họ và Tên',
-        key: 'fullName',
+        key: 'name',
         className: 'min-width-200',
-        render: (record) => (
-          <div className="d-flex align-items-center">
-            <AvatarTable fileImage={record.fileImage} />
-            <Text size="normal" className="ml-2">
-              {record.studentName}
-            </Text>
-          </div>
-        ),
+        render: (record) => {
+          return (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+              fullName={record?.student?.fullName}
+            />
+          );
+        },
       },
       {
         key: 'action',
@@ -247,7 +283,14 @@ class Index extends PureComponent {
             <Button
               color="success"
               ghost
-              onClick={() => history.push(`/suc-khoe/hom-nay/${record.id}/chi-tiet`)}
+              onClick={() =>
+                history.push(
+                  `/suc-khoe/hom-nay/${record?.student?.id}/chi-tiet?reportDate=${get(
+                    record,
+                    'studentCriterias[0].reportDate',
+                  )}&studentId=${record?.student?.id}`,
+                )
+              }
             >
               Chi tiết
             </Button>
@@ -260,9 +303,7 @@ class Index extends PureComponent {
       key: item.property,
       className: 'min-width-150',
       render: (record) => (
-        <Text size="normal">
-          {this.getStudentCriteria(record.studentCriteriaResponses, item.id)}
-        </Text>
+        <Text size="normal">{this.getStudentCriteria(record.studentCriterias, item.id)}</Text>
       ),
     }));
     return [...columns.slice(0, 3), ...columnsCategories, ...columns.slice(3)];
@@ -270,6 +311,8 @@ class Index extends PureComponent {
 
   render() {
     const {
+      branches,
+      classes,
       data,
       pagination,
       match: { params },
@@ -310,9 +353,17 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -329,7 +380,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               bordered={false}
-              rowKey={(record) => record.id || record.studentId}
+              rowKey={(record) => record.id || record?.student?.id}
               scroll={{ x: '100%' }}
             />
           </div>

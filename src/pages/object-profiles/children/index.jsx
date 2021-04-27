@@ -33,9 +33,11 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
 const mapStateToProps = ({ OPchildren, loading }) => ({
-  data: OPchildren.data,
-  pagination: OPchildren.pagination,
   loading,
+  data: OPchildren.data,
+  classes: OPchildren.classes,
+  branches: OPchildren.branches,
+  pagination: OPchildren.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -52,6 +54,10 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
+        class: query?.class,
+        branchId: query?.branchId,
+        classStatus: 'HAS_CLASS',
+        isStoreStaus: false,
       },
       objects: {},
     };
@@ -60,6 +66,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadBranches();
   }
 
   componentWillUnmount() {
@@ -102,6 +109,36 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function get list students
+   */
+  loadBranches = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    if (search.branchId) {
+      dispatch({
+        type: 'OPchildren/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    dispatch({
+      type: 'OPchildren/GET_BRANCHES',
+      payload: {},
+    });
+  };
+
+  onChangeBranch = (branch) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'OPchildren/GET_CLASSES',
+      payload: {
+        branch,
+      },
+    });
+  };
+
+  /**
    * Function debounce search
    * @param {string} value value of object search
    * @param {string} type key of object search
@@ -134,6 +171,21 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'exchangeItems/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -232,23 +284,17 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        align: 'center',
-        render: (record) => {
-          if (Helper.isJSON(record.fileImage)) {
-            const files = JSON.parse(record.fileImage);
-            return <AvatarTable fileImage={!isEmpty(files) && head(files)} />;
-          }
-          return <AvatarTable fileImage={record.fileImage} />;
-        },
-      },
-      {
         title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.fullName}</Text>,
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => {
+          return (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record.fileImage)}
+              fullName={record.fullName}
+            />
+          );
+        },
       },
       {
         title: 'Tuổi (tháng)',
@@ -308,6 +354,8 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      branches,
+      classes,
       pagination,
       match: { params },
       loading: { effects },
@@ -349,15 +397,15 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
+                    data={classes}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}

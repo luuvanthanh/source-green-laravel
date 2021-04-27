@@ -19,24 +19,27 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Item: ListItem } = List;
 const Index = memo(({}) => {
   const {
-    details,
     loading: { effects },
-    branches,
-    divisions,
-    positions,
-    transfers,
     error,
     criteriaGroupProperties,
-  } = useSelector(({ loading, user, healthAdd }) => ({
+    menuData,
+    branches,
+    classes,
+  } = useSelector(({ loading, user, healthAdd, menu }) => ({
     user: user.user,
     loading,
     details: healthAdd.details,
     error: healthAdd.error,
     criteriaGroupProperties: healthAdd.criteriaGroupProperties,
+    branches: healthAdd.branches,
+    classes: healthAdd.classes,
+    menuData: menu.menuLeftHealth,
   }));
   const dispatch = useDispatch();
   const params = useParams();
@@ -51,8 +54,10 @@ const Index = memo(({}) => {
   const [hasMore, setHasMore] = useState(true);
   const [searchStudents, setSearchStudents] = useState({
     totalCount: 0,
+    classStatus: 'HAS_CLASS',
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
+    class: null,
   });
   const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
@@ -78,10 +83,46 @@ const Index = memo(({}) => {
     }
   }, [params.id]);
 
+  const onChangeBranches = (value) => {
+    dispatch({
+      type: 'healthAdd/GET_CLASSES',
+      payload: {
+        branch: value,
+      },
+    });
+  };
+
+  const onChangeClasses = (value) => {
+    dispatch({
+      type: 'healthAdd/GET_STUDENTS',
+      payload: {
+        ...searchStudents,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        class: value,
+      },
+      callback: (response, error) => {
+        if (response) {
+          mountedSet(setStudents, response.items);
+          mountedSet(setSearchStudents, {
+            ...searchStudents,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+            totalCount: response.totalCount,
+          });
+        }
+        if (error) {
+          message.error('Lỗi hệ thống.');
+        }
+      },
+    });
+  };
+
   const onFinish = (values) => {
     dispatch({
       type: 'healthAdd/ADD',
       payload: values.data.map((item) => ({
+        reportDate: moment(),
         criteriaGroupPropertyId: item.id,
         studentId,
         value: toString(item.value),
@@ -162,195 +203,197 @@ const Index = memo(({}) => {
     });
   }, []);
 
+  useEffect(() => {
+    dispatch({
+      type: 'healthAdd/GET_BRANCHES',
+      payload: {},
+    });
+  }, []);
+
   return (
-    <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
-        <Helmet title="Tạo mới sức khỏe" />
-        <Pane className="row" style={{ marginBottom: 20 }}>
-          <Pane className="col">
-            <Heading type="page-title">Chi tiết</Heading>
-          </Pane>
-        </Pane>
+    <>
+      <Helmet title="Tạo mới sức khỏe" />
+      <Breadcrumbs last="Tạo mới sức khỏe" menu={menuData} />
+      <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 10 }}>
+        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+          <Pane className="row">
+            <Pane className="col-lg-6">
+              <Pane className="card" style={{ padding: 20 }}>
+                <Heading type="form-title" style={{ marginBottom: 20 }}>
+                  Danh sách học sinh
+                </Heading>
 
-        <Pane className="row">
-          <Pane className="col-lg-6">
-            <Pane className="card" style={{ padding: 20 }}>
-              <Heading type="form-title" style={{ marginBottom: 20 }}>
-                Danh sách học sinh
-              </Heading>
-
-              <Form layout="vertical" ref={filterRef}>
-                <Pane className={csx('border-bottom')}>
-                  <Pane className={csx('row')}>
-                    <Pane className="col-lg-6">
-                      <FormItem label="Cơ sở" name="position" type={variables.SELECT} />
-                    </Pane>
-                    <Pane className="col-lg-6">
-                      <FormItem label="Lớp" name="class" type={variables.SELECT} />
+                <Form layout="vertical" ref={filterRef}>
+                  <Pane className={csx('border-bottom')}>
+                    <Pane className={csx('row')}>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          data={branches}
+                          label="Cơ sở"
+                          name="position"
+                          type={variables.SELECT}
+                          onChange={onChangeBranches}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          data={classes}
+                          label="Lớp"
+                          name="class"
+                          type={variables.SELECT}
+                          onChange={onChangeClasses}
+                        />
+                      </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
 
-                <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
-                  <InfiniteScroll
-                    hasMore={!loadingStudents && hasMore}
-                    initialLoad={loadingStudents}
-                    loadMore={handleInfiniteOnLoad}
-                    pageStart={0}
-                    useWindow={false}
-                  >
-                    <Radio.Group value={studentId}>
-                      <List
-                        dataSource={students}
-                        renderItem={(item) => {
-                          let fileImage = '';
-                          if (Helper.isJSON(item.fileImage)) {
-                            const files = JSON.parse(item.fileImage);
-                            if (!isEmpty(files)) {
-                              fileImage = head(files);
-                            }
-                          }
-                          return (
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 333}>
+                    <InfiniteScroll
+                      hasMore={!loadingStudents && hasMore}
+                      initialLoad={loadingStudents}
+                      loadMore={handleInfiniteOnLoad}
+                      pageStart={0}
+                      useWindow={false}
+                    >
+                      <Radio.Group value={studentId}>
+                        <List
+                          loading={loadingStudents && hasMore}
+                          dataSource={students}
+                          renderItem={(item) => (
                             <ListItem key={item.id} className={styles.listItem}>
                               <Radio
                                 value={item.id}
                                 onChange={(event) => onChangeRadio(event, item.id)}
                               />
-                              <Pane className={styles.userInformation}>
-                                <Avatar
-                                  shape="square"
-                                  size={40}
-                                  src={fileImage ? `${API_UPLOAD}${fileImage}` : null}
-                                />
-                                <Pane>
-                                  <h3>{item.fullName}</h3>
-                                  <p>{item.age} tháng tuổi</p>
-                                </Pane>
-                              </Pane>
+                              <AvatarTable
+                                fileImage={Helper.getPathAvatarJson(item.fileImage)}
+                                fullName={item.fullName}
+                                description={`${item.age} tháng tuổi`}
+                              />
                             </ListItem>
-                          );
-                        }}
-                      >
-                        {loadingStudents && hasMore && (
-                          <div className="demo-loading-container">
-                            <Spin />
-                          </div>
-                        )}
-                      </List>
-                    </Radio.Group>
-                  </InfiniteScroll>
-                </Scrollbars>
-              </Form>
+                          )}
+                        >
+                          {loadingStudents && !hasMore && (
+                            <div className="demo-loading-container">
+                              <Spin />
+                            </div>
+                          )}
+                        </List>
+                      </Radio.Group>
+                    </InfiniteScroll>
+                  </Scrollbars>
+                </Form>
+              </Pane>
+            </Pane>
+
+            <Pane className="col-lg-6">
+              <Pane className="card">
+                <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
+                  <Pane className="border-bottom p20">
+                    <Heading type="form-title">Chi tiết</Heading>
+                  </Pane>
+
+                  <Form.List name="data">
+                    {(fields, { add, remove }) => (
+                      <>
+                        <Scrollbars autoHeight autoHeightMax={window.innerHeight - 300}>
+                          {fields.map(({ key, name }, index) => {
+                            const criteria = criteriaGroupProperties.find(
+                              (itemCriteria, indexCriteria) => indexCriteria === index,
+                            );
+                            return (
+                              <Pane
+                                key={key}
+                                className={csx('pb-0', 'border-bottom', 'position-relative')}
+                                style={{ padding: 20 }}
+                              >
+                                <Heading type="form-block-title" className="mb10">
+                                  {criteria.property}
+                                </Heading>
+                                {criteria.criteriaDataType.type === 'radioButton' && (
+                                  <Pane className="row">
+                                    <Pane className="col-lg-12">
+                                      <FormItem
+                                        name={[key, 'value']}
+                                        label={criteria.property}
+                                        data={
+                                          Helper.isJSON(criteria.criteriaDataType.value)
+                                            ? JSON.parse(criteria.criteriaDataType.value).map(
+                                                (item) => ({
+                                                  value: item,
+                                                  label: item,
+                                                }),
+                                              )
+                                            : []
+                                        }
+                                        type={variables.RADIO}
+                                        rules={[variables.RULES.EMPTY]}
+                                        radioInline
+                                      />
+                                    </Pane>
+                                  </Pane>
+                                )}
+                                {criteria.criteriaDataType.type === 'number' && (
+                                  <Pane className="row">
+                                    <Pane className="col-lg-12">
+                                      <FormItem
+                                        name={[key, 'value']}
+                                        label={criteria.property}
+                                        type={variables.INPUT_COUNT}
+                                        rules={[variables.RULES.EMPTY]}
+                                      />
+                                    </Pane>
+                                  </Pane>
+                                )}
+                                {criteria.criteriaDataType.type === 'textbox' && (
+                                  <Pane className="row">
+                                    <Pane className="col-lg-12">
+                                      <FormItem
+                                        name={[key, 'value']}
+                                        label={criteria.property}
+                                        type={variables.INPUT}
+                                        rules={[variables.RULES.EMPTY]}
+                                      />
+                                    </Pane>
+                                  </Pane>
+                                )}
+                                {criteria.criteriaDataType.isHasNote && (
+                                  <Pane className="row">
+                                    <Pane className="col-lg-12">
+                                      <FormItem
+                                        name={[key, 'note']}
+                                        label="Ghi chú"
+                                        type={variables.INPUT}
+                                      />
+                                    </Pane>
+                                  </Pane>
+                                )}
+                              </Pane>
+                            );
+                          })}
+                        </Scrollbars>
+                      </>
+                    )}
+                  </Form.List>
+
+                  <Pane className="p20">
+                    <Button
+                      className="ml-auto"
+                      size="large"
+                      htmlType="submit"
+                      color="success"
+                      loading={loadingSubmit}
+                    >
+                      Tạo mới
+                    </Button>
+                  </Pane>
+                </Form>
+              </Pane>
             </Pane>
           </Pane>
-
-          <Pane className="col-lg-6">
-            <Pane className="card">
-              <Form layout="vertical" colon={false} ref={formRef} onFinish={onFinish}>
-                <Pane className="border-bottom p20">
-                  <Heading type="form-title">Chi tiết</Heading>
-                </Pane>
-
-                <Form.List name="data">
-                  {(fields, { add, remove }) => (
-                    <>
-                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 300}>
-                        {fields.map(({ key, name }, index) => {
-                          const criteria = criteriaGroupProperties.find(
-                            (itemCriteria, indexCriteria) => indexCriteria === index,
-                          );
-                          return (
-                            <Pane
-                              key={key}
-                              className={csx('pb-0', 'border-bottom', 'position-relative')}
-                              style={{ padding: 20 }}
-                            >
-                              <Heading type="form-block-title" className="mb10">
-                                {criteria.property}
-                              </Heading>
-                              {criteria.criteriaDataType.type === 'radioButton' && (
-                                <Pane className="row">
-                                  <Pane className="col-lg-12">
-                                    <FormItem
-                                      name={[key, 'value']}
-                                      label={criteria.property}
-                                      data={
-                                        Helper.isJSON(criteria.criteriaDataType.value)
-                                          ? JSON.parse(criteria.criteriaDataType.value).map(
-                                              (item) => ({
-                                                value: item,
-                                                label: item,
-                                              }),
-                                            )
-                                          : []
-                                      }
-                                      type={variables.RADIO}
-                                      rules={[variables.RULES.EMPTY]}
-                                      radioInline
-                                    />
-                                  </Pane>
-                                </Pane>
-                              )}
-                              {criteria.criteriaDataType.type === 'number' && (
-                                <Pane className="row">
-                                  <Pane className="col-lg-12">
-                                    <FormItem
-                                      name={[key, 'value']}
-                                      label={criteria.property}
-                                      type={variables.INPUT_COUNT}
-                                      rules={[variables.RULES.EMPTY]}
-                                    />
-                                  </Pane>
-                                </Pane>
-                              )}
-                              {criteria.criteriaDataType.type === 'textbox' && (
-                                <Pane className="row">
-                                  <Pane className="col-lg-12">
-                                    <FormItem
-                                      name={[key, 'value']}
-                                      label={criteria.property}
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY]}
-                                    />
-                                  </Pane>
-                                </Pane>
-                              )}
-                              {criteria.criteriaDataType.isHasNote && (
-                                <Pane className="row">
-                                  <Pane className="col-lg-12">
-                                    <FormItem
-                                      name={[key, 'note']}
-                                      label="Ghi chú"
-                                      type={variables.INPUT}
-                                    />
-                                  </Pane>
-                                </Pane>
-                              )}
-                            </Pane>
-                          );
-                        })}
-                      </Scrollbars>
-                    </>
-                  )}
-                </Form.List>
-
-                <Pane className="p20">
-                  <Button
-                    className="ml-auto"
-                    size="large"
-                    htmlType="submit"
-                    color="success"
-                    loading={loadingSubmit}
-                  >
-                    Tạo mới
-                  </Button>
-                </Pane>
-              </Form>
-            </Pane>
-          </Pane>
-        </Pane>
-      </Loading>
-    </Pane>
+        </Loading>
+      </Pane>
+    </>
   );
 });
 

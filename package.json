@@ -87,6 +87,7 @@
     "qs": "^6.9.4",
     "rc-drawer": "^4.1.0",
     "react": "^17.0.1",
+    "react-beautiful-dnd": "^13.1.0",
     "react-c3js": "^0.1.20",
     "react-custom-scrollbars": "^4.2.1",
     "react-dnd": "^11.1.3",

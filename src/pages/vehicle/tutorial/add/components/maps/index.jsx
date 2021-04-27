@@ -167,7 +167,6 @@ class Index extends PureComponent {
               draggable={true}
               eventHandlers={{
                 click: (e) => {
-                  console.log('marker clicked', e);
                 },
               }}
             >

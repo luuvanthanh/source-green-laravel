@@ -12,6 +12,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -29,17 +30,24 @@ const General = memo(({}) => {
     loading: { effects },
     trainningMajors,
     trainningSchool,
+    branches,
+    divisions,
+    positions,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     details: HRMusersAdd.details,
     degrees: HRMusersAdd.degrees,
     trainningMajors: HRMusersAdd.trainningMajors,
     trainningSchool: HRMusersAdd.trainningSchool,
+    branches: HRMusersAdd.branches,
+    divisions: HRMusersAdd.divisions,
+    positions: HRMusersAdd.positions,
     error: HRMusersAdd.error,
   }));
   const dispatch = useDispatch();
   const params = useParams();
   const mounted = useRef(false);
+  const [files, setFiles] = useState([]);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
@@ -47,6 +55,9 @@ const General = memo(({}) => {
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
   const loading =
+    effects[`HRMusersAdd/GET_BRANCHES`] ||
+    effects[`HRMusersAdd/GET_DIVISIONS`] ||
+    effects[`HRMusersAdd/GET_POSITIONS`] ||
     effects[`HRMusersAdd/GET_DETAILS`] ||
     effects[`HRMusersAdd/GET_DEGREES`] ||
     effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
@@ -60,19 +71,19 @@ const General = memo(({}) => {
     dispatch({
       type: params.id ? 'HRMusersAdd/UPDATE' : 'HRMusersAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage }
-        : { ...values, fileImage },
+        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
+        : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
       callback: (response, error) => {
         if (response) {
           history.goBack();
         }
         if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
               formRef.current.setFields([
                 {
-                  name: head(item.members),
-                  errors: [item.message],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
             });
@@ -143,6 +154,42 @@ const General = memo(({}) => {
     });
   }, []);
 
+  /**
+   * Load Items Branches
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_BRANCHES',
+        payload: params,
+      });
+    }
+  }, []);
+
+  /**
+   * Load Items Divisions
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_DIVISIONS',
+        payload: params,
+      });
+    }
+  }, []);
+
+  /**
+   * Load Items Positions
+   */
+  useEffect(() => {
+    if (!params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_POSITIONS',
+        payload: params,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
@@ -160,6 +207,10 @@ const General = memo(({}) => {
     return () => (mounted.current = false);
   }, []);
 
+  const uploadFiles = (file) => {
+    mountedSet(setFiles, (prev) => [...prev, file]);
+  };
+
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
       <Pane className="card">
@@ -171,11 +222,10 @@ const General = memo(({}) => {
             <Pane className="row">
               <Pane className="col">
                 <Form.Item name="avatar" label="Hình ảnh nhân viên">
-                  <ImageUpload
-                    callback={(res) => {
-                      mountedSet(setFileImage, res.fileInfo.url);
-                    }}
-                    fileImage={fileImage}
+                  <MultipleImageUpload
+                    files={files}
+                    callback={(files) => uploadFiles(files)}
+                    removeFiles={(files) => mountedSet(setFiles, files)}
                   />
                 </Form.Item>
               </Pane>
@@ -213,7 +263,7 @@ const General = memo(({}) => {
                   name="phoneNumber"
                   label="Số điện thoại"
                   type={variables.INPUT}
-                  rules={[variables.RULES.PHONE]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                 />
               </Pane>
               <Pane className="col-lg-4">
@@ -221,7 +271,7 @@ const General = memo(({}) => {
                   name="email"
                   label="Email"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMAIL]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                 />
               </Pane>
             </Pane>
@@ -293,7 +343,7 @@ const General = memo(({}) => {
                 <FormItem
                   data={trainningMajors}
                   name="trainingMajorId"
-                  label="Chuyên ngành đào tạo"
+                  label="Ngành đào tạo"
                   type={variables.SELECT}
                 />
               </Pane>
@@ -307,11 +357,55 @@ const General = memo(({}) => {
                   type={variables.SELECT}
                 />
               </Pane>
-              <Pane className="col-lg-4">
-                <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
-              </Pane>
+              {params.id && (
+                <Pane className="col-lg-4">
+                  <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
+                </Pane>
+              )}
             </Pane>
           </Pane>
+          {!params.id && (
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Pane className="row">
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={branches}
+                    label="Cơ sở"
+                    name="branchId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={divisions}
+                    label="Bộ phận"
+                    name="divisionId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={positions}
+                    label="Chức vụ"
+                    name="positionId"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-6">
+                  <FormItem
+                    label="Thời gian bắt đầu"
+                    name="startDate"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => current < moment()}
+                  />
+                </Pane>
+              </Pane>
+            </Pane>
+          )}
 
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>

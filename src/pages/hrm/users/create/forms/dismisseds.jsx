@@ -1,7 +1,8 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -11,10 +12,13 @@ import Table from '@/components/CommonComponent/Table';
 import { history, useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 
+const { confirm } = Modal;
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
+  const [objects, setObjects] = useState({});
 
   const {
     details,
@@ -64,13 +68,27 @@ const Index = memo(() => {
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
+    mountedSet(setObjects, {});
+  };
+
+  const onEdit = (record) => {
+    mountedSet(setVisible, true);
+    mountedSet(setObjects, record);
+    if (formRefModal.current) {
+      formRefModal.current.setFieldsValue({
+        ...record,
+        ...head(record.dismissedDetails),
+        decisionDate: record.decisionDate && moment(record.decisionDate),
+      });
+    }
   };
 
   const save = () => {
     formRefModal.current.validateFields().then((values) => {
       dispatch({
-        type: 'HRMusersAdd/ADD_DIMISSEDS',
+        type: objects.id ? 'HRMusersAdd/UPDATE_DIMISSEDS' : 'HRMusersAdd/ADD_DIMISSEDS',
         payload: {
+          id: objects.id,
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
           reason: values.reason,
@@ -93,7 +111,6 @@ const Index = memo(() => {
             mountedSet(setVisible, false);
           }
           if (error) {
-            console.log(error.data);
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {
                 formRefModal.current.setFields([
@@ -107,6 +124,30 @@ const Index = memo(() => {
           }
         },
       });
+    });
+  };
+
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  const onRemove = (id) => {
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'HRMusersAdd/REMOVE_DIMISSEDS',
+          payload: {
+            id,
+          },
+        });
+      },
+      onCancel() {},
     });
   };
 
@@ -181,10 +222,15 @@ const Index = memo(() => {
         render: (record) => (
           <ul className="list-unstyled list-inline">
             <li className="list-inline-item">
-              <Button color="primary" icon="edit" />
+              <Button color="primary" icon="edit" onClick={() => onEdit(record)} />
             </li>
             <li className="list-inline-item">
-              <Button color="danger" icon="remove" className="ml-2" />
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => onRemove(record.id)}
+              />
             </li>
           </ul>
         ),
@@ -238,7 +284,6 @@ const Index = memo(() => {
       <Modal
         visible={visible}
         title="Miễn nhiệm"
-        onOk={handleOk}
         centered
         width={700}
         onCancel={cancelModal}
@@ -265,7 +310,15 @@ const Index = memo(() => {
           </Pane>
         }
       >
-        <Form layout="vertical" ref={formRefModal} initialValues={{}}>
+        <Form
+          layout="vertical"
+          ref={formRefModal}
+          initialValues={{
+            ...objects,
+            ...head(objects.dismissedDetails),
+            decisionDate: objects.decisionDate && moment(objects.decisionDate),
+          }}
+        >
           <Pane className="row">
             <Pane className="col-lg-6">
               <FormItem

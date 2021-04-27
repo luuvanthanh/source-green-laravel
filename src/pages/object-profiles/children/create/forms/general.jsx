@@ -248,18 +248,11 @@ const General = memo(
                     name="branchId"
                     label="Mã cơ sở"
                     type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY]}
                     onChange={onChangeBranch}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem
-                    data={classes}
-                    name="classId"
-                    label="Mã lớp"
-                    type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
+                  <FormItem data={classes} name="classId" label="Mã lớp" type={variables.SELECT} />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem data={[]} name="yearId" label="Mã năm" type={variables.SELECT} />

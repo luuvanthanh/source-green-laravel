@@ -81,6 +81,10 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -159,10 +163,12 @@ export default {
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.detailsAccount, payload);
-        yield saga.put({
-          type: 'SET_DETAILS_ACCOUNT',
-          payload: response,
-        });
+        if (response.status !== 204) {
+          yield saga.put({
+            type: 'SET_DETAILS_ACCOUNT',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

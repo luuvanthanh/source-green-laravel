@@ -228,6 +228,18 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
+        title: 'ĐỊA CHỈ',
+        key: 'address',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.address}</Text>,
+      },
+      {
+        title: 'SĐT',
+        key: 'phoneNumber',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,

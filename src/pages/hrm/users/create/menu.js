@@ -18,48 +18,16 @@ export const menu = [
     label: 'Cấp bậc, chức vụ',
   },
   {
-    key: 'certificate',
-    label: 'Chứng chỉ chuyên ngành',
-  },
-  {
-    key: 'history',
-    label: 'Lịch sử công tác',
-  },
-  {
-    key: 'contact',
-    label: 'Thông tin liên hệ',
-  },
-  {
-    key: 'health',
-    label: 'Tình trạng sức khỏe',
-  },
-  {
-    key: 'bank',
-    label: 'Thông tin ngân hàng',
-  },
-  {
-    key: 'timework',
-    label: 'Thời gian làm việc',
+    key: 'decision-rewards',
+    label: 'Quyết định, Khen thưởng kỹ luật',
   },
   {
     key: 'contract',
     label: 'Hợp đồng lao động',
   },
   {
-    key: 'minutesOfAgreement',
-    label: 'Biên bản thỏa thuận',
-  },
-  {
-    key: 'insurrance',
-    label: 'Bảo hiểm xã hội',
-  },
-  {
-    key: 'daysOff',
-    label: 'Số ngày nghỉ phép',
-  },
-  {
-    key: 'children',
-    label: 'Thông tin con',
+    key: 'probationaryContract',
+    label: 'Hợp đồng thử việc',
   },
   {
     key: 'magneticCards',

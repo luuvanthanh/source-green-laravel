@@ -69,6 +69,13 @@ export function add(data = {}) {
   });
 }
 
+export function addPositionLevels(data = {}) {
+  return requestLavarel('/v1/position-levels', {
+    method: 'POST',
+    data,
+  });
+}
+
 export function update(data = {}) {
   return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'PUT',
@@ -120,6 +127,20 @@ export function addDismisseds(data = {}) {
     data,
   });
 }
+
+export function updateDismisseds(data = {}) {
+  return requestLavarel(`/v1/dismisseds/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function removeDismisseds(data = {}) {
+  return requestLavarel(`/v1/dismisseds/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
 // dismisseds
 
 // dismisseds
@@ -140,12 +161,38 @@ export function addAppoints(data = {}) {
     data,
   });
 }
+
+export function updateAppoints(data = {}) {
+  return requestLavarel(`/v1/appoints/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+export function removeAppoints(data = {}) {
+  return requestLavarel(`/v1/appoints/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
 // dismisseds
 
 // transfers
 export function addTransfers(data = {}) {
   return requestLavarel('/v1/transfers', {
     method: 'POST',
+    data,
+  });
+}
+export function updateTransfers(data = {}) {
+  return requestLavarel(`/v1/transfers/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeTransfers(data = {}) {
+  return requestLavarel(`/v1/transfers/${data.id}`, {
+    method: 'DELETE',
     data,
   });
 }
@@ -160,3 +207,109 @@ export function getTransfers(params = {}) {
   });
 }
 // transfers
+
+// contract
+export function getContractTypes(params = {}) {
+  return requestLavarel('/v1/type-of-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      include: 'parameterValues,parameterFormulas',
+    },
+  });
+}
+export function addContract(data) {
+  return requestLavarel('/v1/labours-contracts', {
+    method: 'POST',
+    data,
+  });
+}
+export function getContracts(params) {
+  return requestLavarel('/v1/labours-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+      include: 'typeOfContract,position,branch',
+    },
+  });
+}
+// contract
+
+// probationary contract
+export function addProbationaryContract(data) {
+  return requestLavarel('/v1/probationary-contracts', {
+    method: 'POST',
+    data,
+  });
+}
+export function getProbationaryContracts(params) {
+  return requestLavarel('/v1/probationary-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+      include: 'typeOfContract,position,branch',
+    },
+  });
+}
+// probationary contract
+
+// decision-rewards
+export function addDecisionRewards(data = {}) {
+  return requestLavarel('/v1/decision-rewards', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateDecisionRewards(data = {}) {
+  return requestLavarel(`/v1/decision-rewards/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeDecisionRewards(data = {}) {
+  return requestLavarel(`/v1/decision-rewards/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getDecisionRewards(params = {}) {
+  return requestLavarel('/v1/decision-rewards', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// decision-rewards
+
+// paramater-values
+export function getParamaterValues(params = {}) {
+  return requestLavarel('/v1/paramater-values', {
+    method: 'GET',
+    params: {
+      orderBy: 'Id',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+    },
+  });
+}
+// paramater-values
+
+// paramater-formulas
+export function getParamaterFormulas(params = {}) {
+  return requestLavarel('/v1/paramater-formulas', {
+    method: 'GET',
+    params: {
+      orderBy: 'Id',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+    },
+  });
+}
+// paramater-formulas

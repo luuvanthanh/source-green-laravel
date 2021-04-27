@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
@@ -11,7 +12,7 @@ export function add(data = {}) {
 export function addAccount(data = {}) {
   return request(`/parents/${data.id}/account`, {
     method: 'POST',
-    data,
+    data: { ...omit(data, 'id') },
   });
 }
 

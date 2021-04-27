@@ -113,7 +113,31 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: get(error.data, 'error.validationErrors[0].message'),
+          description:
+            get(error.data, 'error.validationErrors[0].message') ||
+            'Lỗi hệ thông vui lòng kiểm tra lại',
+        });
+        callback(null, error?.data?.error);
+      }
+    },
+    *CLOSE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.closes, payload);
+        yield saga.put({
+          type: 'SET_UPDATE_COMMUNICATION',
+          payload: response,
+        });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+        callback(payload);
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description:
+            get(error.data, 'error.validationErrors[0].message') ||
+            'Lỗi hệ thông vui lòng kiểm tra lại',
         });
         callback(null, error?.data?.error);
       }
@@ -130,12 +154,12 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
+        notification.error({
+          message: 'THÔNG BÁO',
+          description:
+            get(error.data, 'error.validationErrors[0].message') ||
+            'Lỗi hệ thông vui lòng kiểm tra lại',
+        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

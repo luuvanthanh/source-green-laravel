@@ -15,6 +15,7 @@ import {
   getLeftMenuMedia,
   getLeftMenuHealth,
   getLeftMenuHRM,
+  getLeftMenuFeePolicy,
 } from '@/services/menu';
 
 export default {
@@ -36,6 +37,7 @@ export default {
     menuLeftMedia: [],
     menuLeftHealth: [],
     menuLeftHRM: [],
+    menuLeftFeePolicy: [],
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
@@ -58,6 +60,7 @@ export default {
       const menuLeftMedia = yield call(getLeftMenuMedia);
       const menuLeftHealth = yield call(getLeftMenuHealth);
       const menuLeftHRM = yield call(getLeftMenuHRM);
+      const menuLeftFeePolicy = yield call(getLeftMenuFeePolicy);
       yield put({
         type: 'SET_STATE',
         payload: {
@@ -77,6 +80,7 @@ export default {
           menuLeftMedia,
           menuLeftHealth,
           menuLeftHRM,
+          menuLeftFeePolicy,
         },
       });
     },

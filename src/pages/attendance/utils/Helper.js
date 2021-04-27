@@ -18,7 +18,10 @@ export default class Helpers {
     if (type === variables.STATUS.EXPIRE) {
       return <Tag color="danger">{variables.STATUS_NAME.EXPIRE}</Tag>;
     }
-    return <Tag color="danger">{variables.STATUS_NAME.VALID}</Tag>;
+    if (type === variables.STATUS.VALID) {
+      return <Tag color="danger">{variables.STATUS_NAME.VALID}</Tag>;
+    }
+    return <Tag color="success">{variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
   static getStartDate = (date, choose) => {
@@ -53,15 +56,5 @@ export default class Helpers {
       default:
         return 'CN';
     }
-  };
-
-  static getLateEarly = (type) => {
-    if (type === variables.TYPE_EARLY_LATE.LATE) {
-      return 'Đi trễ';
-    }
-    if (type === variables.TYPE_EARLY_LATE.EARLY) {
-      return 'Về sớm';
-    }
-    return '';
   };
 }

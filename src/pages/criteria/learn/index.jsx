@@ -34,6 +34,7 @@ const mapStateToProps = ({ criteriaLearn, loading }) => ({
   pagination: criteriaLearn.pagination,
   loading,
 });
+
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
