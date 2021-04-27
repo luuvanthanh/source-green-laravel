@@ -9,6 +9,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils/variables';
 import Loading from '@/components/CommonComponent/Loading';
+import { Helper } from '@/utils';
 
 const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
   loading,
@@ -98,10 +99,7 @@ const Curator = memo(
               <Pane className="row">
                 <Pane className="col-lg-4">
                   <FormItem
-                    data={employees.map((item) => ({
-                      id: item.id,
-                      name: item.fullName,
-                    }))}
+                    data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
                     label="Nhân viên theo dõi"
                     type={variables.SELECT}

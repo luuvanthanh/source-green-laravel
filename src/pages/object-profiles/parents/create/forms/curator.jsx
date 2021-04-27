@@ -8,6 +8,7 @@ import { head, isEmpty, get } from 'lodash';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
+import { Helper } from '@/utils';
 
 const mapStateToProps = ({ loading, OPParentsAdd }) => ({
   loading,
@@ -80,17 +81,19 @@ const Curator = memo(
               <Pane className="row">
                 <Pane className="col-lg-4">
                   <FormItem
-                    data={employees.map((item) => ({
-                      id: item.id,
-                      name: item.fullName,
-                    }))}
+                    data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
                     label="Nhân viên theo dõi"
                     type={variables.SELECT}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem name="source" label="Nguồn khách hàng" type={variables.INPUT} />
+                  <FormItem
+                    data={[]}
+                    name="source"
+                    label="Nguồn khách hàng"
+                    type={variables.SELECT}
+                  />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem name="code" label="Mã khách hàng" type={variables.INPUT} />
