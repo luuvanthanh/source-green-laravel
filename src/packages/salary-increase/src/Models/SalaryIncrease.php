@@ -58,7 +58,7 @@ class SalaryIncrease extends UuidModel
      */
     public function parameterValues()
     {
-        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'salary_increase_parameter_value', 'salary_increase_id', 'parameter_value_id')->withPivot('value');
+        return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'SalaryIncreaseParameterValue', 'SalaryIncreaseId', 'ParameterValueId')->withPivot('Value');
     }
 
 }

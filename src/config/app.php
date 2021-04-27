@@ -209,6 +209,7 @@ return [
         GGPHP\BusinessCard\Providers\BusinessCardServiceProvider::class,
         GGPHP\YoungAttendance\Absent\Providers\AbsentServiceProvider::class,
         GGPHP\OtherDeclaration\Providers\OtherDeclarationServiceProvider::class,
+        GGPHP\Children\Providers\ChildrenServiceProvider::class,
     ],
 
     /*

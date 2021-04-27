@@ -185,4 +185,12 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $query;
     }
 
+    /**
+     * Define relations children
+     */
+    public function children()
+    {
+        return $this->hasMany(Children::class, 'EmployeeId');
+    }
+
 }
