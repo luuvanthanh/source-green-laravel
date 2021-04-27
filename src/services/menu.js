@@ -1088,7 +1088,7 @@ export async function getLeftMenuFeePolicy() {
       permission: [],
     },
     {
-      title: 'Danh mục lớp',
+      title: 'Danh mục loại lớp',
       key: 'class',
       url: ['/chinh-sach-phi/lop', '/chinh-sach-phi/lop/tao-moi', '/chinh-sach-phi/lop/:id/chi-tiet'],
       icon: 'icon icon-open-book',

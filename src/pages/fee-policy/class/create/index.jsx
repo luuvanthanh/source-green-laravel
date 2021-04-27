@@ -34,7 +34,7 @@ const Index = memo(({ }) => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title="Tạo mới lớp" />
+      <Helmet title="Thêm mới loại lớp" />
       <Breadcrumbs className="pb30 pt0" last="Thêm mới" menu={menuLeftFeePolicy} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-6">
@@ -47,13 +47,14 @@ const Index = memo(({ }) => {
             >
               <Pane className="px20 pt20">
                 <Heading type="form-title" className="mb20">
-                  Thông tin lớp
+                  Thêm mới loại lớp
                 </Heading>
 
                 <Pane className={csx('row', 'border-bottom')}>
                   <Pane className="col-lg-6">
                     <FormItem
-                      label="Mã lớp"
+                      label="Mã loại lớp"
+                      name="maLoaiLop"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
                     />
@@ -61,8 +62,10 @@ const Index = memo(({ }) => {
 
                   <Pane className="col-lg-6">
                     <FormItem
-                      label="Tên lớp"
+                      label="Tên loại lớp"
+                      name="tenLoaiLop"
                       type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
 
