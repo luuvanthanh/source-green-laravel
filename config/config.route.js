@@ -422,6 +422,30 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/cau-hinh/loai-nghi-phep',
+            component: './attendance/absents/config/absent-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh/ly-do-nghi-phep',
+            component: './attendance/absents/config/absent-reasons',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
+            component: './attendance/absents/config/absent-reasons/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
+            component: './attendance/absents/config/absent-reasons/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // Attendance

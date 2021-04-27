@@ -909,9 +909,9 @@ export async function getLeftMenuHRM() {
       pro: true,
       children: [
         {
-          title: 'Nghỉ phép',
+          title: 'Đơn xin phép cho bé',
           key: 'absents',
-          url: ['/quan-ly-nhan-su/don-xin-phep', '/quan-ly-nhan-su/don-xin-phep/tao-moi'],
+          url: ['/diem-danh/don-xin-phep', '/diem-danh/don-xin-phep/tao-moi'],
           permission: [],
           pro: true,
         },
@@ -925,16 +925,16 @@ export async function getLeftMenuHRM() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [],
-              url: ['/quan-ly-nhan-su/cau-hinh/loai-nghi-phep'],
+              url: ['/diem-danh/cau-hinh/loai-nghi-phep'],
             },
             {
               title: 'Lý do nghỉ phép',
               key: 'AbsentReasons',
               permission: [],
               url: [
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep',
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/tao-moi',
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
+                '/diem-danh/cau-hinh/ly-do-nghi-phep',
+                '/diem-danh/cau-hinh/ly-do-nghi-phep/tao-moi',
+                '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
               ],
             },
           ],

@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography } from 'antd';
+import { Modal, Form, Switch } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { isEmpty, head, debounce } from 'lodash';
+import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -11,11 +12,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import HelperModules from '../../../utils/Helper';
+import variablesModules from '../../../utils/variables';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,9 +31,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ inOutHistories, loading }) => ({
-  data: inOutHistories.data,
-  pagination: inOutHistories.pagination,
+const { confirm } = Modal;
+const mapStateToProps = ({ absentReasonStudents, loading }) => ({
+  data: absentReasonStudents.data,
+  pagination: absentReasonStudents.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,11 +49,9 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
-        fullName: query?.fullName,
+        name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
       objects: {},
     };
@@ -85,26 +84,18 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search } = this.state;
+    const { search, status } = this.state;
     const {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'inOutHistories/GET_DATA',
+      type: 'absentReasonStudents/GET_DATA',
       payload: {
         ...search,
+        status,
       },
     });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
+    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
   };
 
   /**
@@ -191,40 +182,51 @@ class Index extends PureComponent {
     },
   });
 
-  renderDescription = (record) => {
-    if (!isEmpty(record)) {
-      const inOutHistories = record.map((item) => {
-        if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
-            item.attendedAt,
-            variables.DATE_FORMAT.DATE_TIME,
-          )}`;
-        }
-        return '';
-      });
-      return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
-          {inOutHistories.map((item, index) => (
-            <div key={index}>
-              {item}
-              <br />
-            </div>
-          ))}
-        </Paragraph>
-      );
-    }
-    return null;
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch, pagination } = this.props;
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'absentReasonStudents/REMOVE',
+          payload: {
+            id,
+            pagination: {
+              limit: 10,
+              page:
+                pagination.total % pagination.per_page === 1
+                  ? pagination.current_page - 1
+                  : pagination.current_page,
+            },
+          },
+        });
+      },
+      onCancel() {},
+    });
   };
 
   /**
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     return [
       {
         title: 'STT',
         key: 'text',
-        width: 50,
+        width: 60,
+        className: 'min-width-60',
         align: 'center',
         render: (text, record, index) =>
           Helper.sttList(
@@ -234,45 +236,32 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-200',
+        title: 'LOẠI NGHỈ PHÉP',
+        key: 'name',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.absentType?.name,
+      },
+      {
+        title: 'TÊN',
+        key: 'name',
+        className: 'min-width-150',
+        render: (record) => record.name,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
         render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
-            fullName={record?.fullName}
-          />
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+          </div>
         ),
-      },
-      {
-        title: 'Cơ sở',
-        key: 'branch',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record?.class?.branch?.name,
-      },
-      {
-        title: 'Lớp',
-        key: 'class',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record?.class?.name,
-      },
-      {
-        title: 'Số lần chấm',
-        key: 'count',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record.timekeeping?.length,
-      },
-      {
-        title: 'Chi tiết',
-        key: 'description',
-        className: 'min-width-200',
-        render: (record) => this.renderDescription(record.timekeeping),
       },
     ];
   };
@@ -281,50 +270,38 @@ class Index extends PureComponent {
     const {
       data,
       pagination,
+      location: { pathname },
       match: { params },
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['inOutHistories/GET_DATA'];
+    const loading = effects['absentReasonStudents/GET_DATA'];
     return (
       <>
-        <Helmet title="Lịch sử vào ra" />
-        <div className={classnames(styles['content-form'], styles['content-form-inOutHistories'])}>
+        <Helmet title="Danh sách lý do nghỉ phép" />
+        <div className={classnames(styles['content-form'], styles['content-form-absentReasonStudents'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Lịch sử vào ra</Text>
+            <Text color="dark">Danh sách lý do nghỉ phép</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Tạo mới
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-12">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
+                    name="name"
+                    onChange={(event) => this.onChange(event, 'name')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>
@@ -339,6 +316,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
