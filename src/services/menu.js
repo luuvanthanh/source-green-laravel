@@ -529,7 +529,10 @@ export async function getLeftMenuCriteria() {
     {
       title: 'Chương trình học',
       key: 'study-program',
-      url: ['/tieu-chi-danh-gia/chuong-trinh-hoc'],
+      url: [
+        '/tieu-chi-danh-gia/chuong-trinh-hoc',
+        '/tieu-chi-danh-gia/chuong-trinh-hoc/them-moi'
+      ],
       icon: 'icon icon-list',
       permission: [],
       pro: true,

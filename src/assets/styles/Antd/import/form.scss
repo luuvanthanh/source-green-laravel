@@ -109,3 +109,74 @@ form .ant-cascader-picker:only-child {
   color: $text-success;
   background-color: $white;
 }
+
+.row-radio {
+  .ant-radio-group {
+    display: flex;
+    .ant-radio-wrapper {
+      margin: 0;
+      width: 50%;
+    }
+  }
+}
+
+.heading-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.tab-drag {
+  padding: 0;
+  .ant-tabs-nav {
+    width: 100%;
+  }
+  .ant-tabs-left {
+    &>.ant-tabs-nav {
+      .ant-tabs-tab {
+        padding: 15px;
+        margin: 0;
+        border-width: 0 1px 1px 0;
+        border-style: solid;
+        border-color: $border-line;
+        background: rgba($color: $gray-lighten, $alpha: 0.5);
+        .ant-tabs-tab-btn {
+          width: 100%;
+        }
+      }
+    }
+    &.active-tab {
+      &>.ant-tabs-nav {
+        .ant-tabs-tab {
+          background: $white;
+        }
+      }
+    }
+  }
+}
+
+.tab-space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &.start {
+    align-items: start;
+  }
+  .icon {
+    margin-right: 5px;
+  }
+  .title {
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .text {
+    font-size: 13px;
+  }
+  .btn-switch {
+    min-width: 50px
+  }
+  .ant-form-item-control-input {
+    min-height: unset;
+  }
+}

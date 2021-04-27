@@ -108,9 +108,13 @@ class Index extends PureComponent {
   selectProgram = () => {}
 
   render() {
-    const { loading: { effects }, pagination } = this.props;
+    const {
+      loading: { effects },
+      location: { pathname },
+    } = this.props;
     const { tab } = this.state;
     const loading = effects['criteriaLearn/GET_DATA'];
+
 
     return (
       <>
@@ -118,7 +122,7 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Danh sách chương trình</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/them-moi`)}>
               Thêm mới
             </Button>
           </div>
