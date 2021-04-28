@@ -9,6 +9,7 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
+import { DeleteOutlined } from '@ant-design/icons';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
 
@@ -73,8 +74,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        timeJoin: details.timeJoin && moment(details.timeJoin),
-        timeStart: details.timeStart && moment(details.timeStart),
+        birthday: details.birthday && moment(details.birthday),
       });
     }
   }
@@ -146,13 +146,18 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa bảo hiểm xã hội' : 'Tạo bảo hiểm xã hội'}
+          last={
+            params.id ? 'Chỉnh sửa thông tin con của nhân viên' : 'Tạo thông tin con của nhân viên'
+          }
           menu={menuData}
         />
         <Form
           className={styles['layout-form']}
           layout="vertical"
           ref={this.formRef}
+          initialValues={{
+            data: [{}],
+          }}
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
@@ -165,39 +170,60 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={Helper.convertSelectUsers(categories?.users)}
-                      label="NHÂN VIÊN"
-                      name="employeeId"
+                      label="PHỤ HUYNH"
+                      name="parentId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
                 </div>
+                <hr />
                 <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="Số sổ bảo hiểm"
-                      name="insurranceNumber"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="Thời gian tham gia"
-                      name="timeJoin"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="Thời gian bắt đầu"
-                      name="timeStart"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                    />
+                  <div className="col-lg-12">
+                    <Form.List name="data">
+                      {(fields, { add, remove }) => (
+                        <div>
+                          {fields.map((field, index) => (
+                            <div
+                              className={classnames(
+                                'row',
+                                styles['form-item'],
+                                styles['form-item-advance'],
+                              )}
+                              key={field.key}
+                            >
+                              <div className="col-lg-6">
+                                <FormItem
+                                  label="HỌ VÀ TÊN"
+                                  name={[field.name, 'fullName']}
+                                  fieldKey={[field.fieldKey, 'fullName']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.INPUT}
+                                />
+                              </div>
+                              <div className="col-lg-6">
+                                <FormItem
+                                  label="NGÀY SINH"
+                                  name={[field.name, 'birthday']}
+                                  fieldKey={[field.fieldKey, 'birthday']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.DATE_PICKER}
+                                />
+                              </div>
+                              <div className="col-lg-6">
+                                <FormItem
+                                  label="GIỚI TÍNH"
+                                  name={[field.name, 'gender']}
+                                  fieldKey={[field.fieldKey, 'gender']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.INPUT}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Form.List>
                   </div>
                 </div>
               </div>
