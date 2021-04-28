@@ -42,14 +42,7 @@ class ProfileMenu extends React.Component {
     );
     return (
       <Dropdown overlay={menu} trigger={['click']} arrow>
-        <div className={styles.dropdown}>
-          <Avatar
-            className={styles.avatar}
-            src="images/avatar/avatar_01.png"
-            shape="circle"
-            size="large"
-          />
-        </div>
+        <div className={styles.dropdown}>{user?.user?.userName}</div>
       </Dropdown>
     );
   }
