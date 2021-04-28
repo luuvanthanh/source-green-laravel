@@ -244,24 +244,12 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1,
     showSizeChanger: true,
     onChange: (page, size) => {
-      this.onLoadData(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onLoadData(current, size);
+      this.changePagination(current, size);
     },
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
 
   /**
    * Function reset form
@@ -276,14 +264,6 @@ class Index extends PureComponent {
         this.formRefShift.current.resetFields();
       },
     );
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
   };
 
   /**
