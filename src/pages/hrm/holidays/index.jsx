@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -13,10 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -200,6 +197,7 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch, pagination } = this.props;
+    const { search } = this.state;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -211,7 +209,8 @@ class Index extends PureComponent {
         dispatch({
           type: 'holidays/REMOVE',
           payload: {
-            id,
+            name: moment(search.date).format(variables.DATE_FORMAT.YEAR),
+            deleteIds: [id],
             pagination: {
               limit: 10,
               page:
@@ -239,80 +238,43 @@ class Index extends PureComponent {
         key: 'text',
         width: 50,
         align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
+        render: (text, record, index) => {
+          if (record.holidayDetails) {
+            return null;
+          }
+          return Helper.sttList(
             this.props.pagination?.current_page,
             index,
             this.props.pagination?.per_page,
-          ),
+          );
+        },
       },
       {
-        title: 'Số QĐ',
+        title: 'Tên ngày lễ',
         key: 'insurrance_number',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'decisionNumber'),
-      },
-      {
-        title: 'Ngày QĐ',
-        key: 'decisionDate',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'reason'),
-      },
-      {
-        title: 'Nhân viên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Thời gian tạm hoãn từ',
-        key: 'from',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'from'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Thời gian tạm hoãn đến',
-        key: 'to',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'to'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
         className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'note'),
+        render: (record) => get(record, 'name'),
+      },
+      {
+        title: 'Ngày',
+        key: 'date',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(get(record, 'date'), variables.DATE_FORMAT.DATE),
       },
       {
         key: 'action',
         className: 'min-width-80',
         width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
+        render: (record) => {
+          if (!record.holidayDetails) {
+            return (
+              <div className={styles['list-button']}>
+                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+              </div>
+            );
+          }
+        },
       },
     ];
   };
@@ -362,6 +324,8 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              childrenColumnName="holidayDetails"
+              defaultExpandAllRows={true}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
