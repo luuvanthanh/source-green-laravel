@@ -27,11 +27,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, sabbaticalLeavesAdd, loading }) => ({
+const mapStateToProps = ({ menu, childrenHRMAdd, loading }) => ({
   loading,
-  categories: sabbaticalLeavesAdd.categories,
-  details: sabbaticalLeavesAdd.details,
-  error: sabbaticalLeavesAdd.error,
+  categories: childrenHRMAdd.categories,
+  details: childrenHRMAdd.details,
+  error: childrenHRMAdd.error,
   menuData: menu.menuLeftHRM,
 });
 
@@ -56,7 +56,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'sabbaticalLeavesAdd/GET_DETAILS',
+        type: 'childrenHRMAdd/GET_DETAILS',
         payload: {
           id: params.id,
         },
@@ -73,6 +73,8 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
+        timeJoin: details.timeJoin && moment(details.timeJoin),
+        timeStart: details.timeStart && moment(details.timeStart),
       });
     }
   }
@@ -94,7 +96,7 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'sabbaticalLeavesAdd/GET_CATEGORIES',
+      type: 'childrenHRMAdd/GET_CATEGORIES',
       payload: {},
     });
   };
@@ -105,7 +107,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     dispatch({
-      type: params.id ? 'sabbaticalLeavesAdd/UPDATE' : 'sabbaticalLeavesAdd/ADD',
+      type: params.id ? 'childrenHRMAdd/UPDATE' : 'childrenHRMAdd/ADD',
       payload: {
         id: params.id,
         ...values,
@@ -138,17 +140,13 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loading = effects['sabbaticalLeavesAdd/GET_CATEGORIES'] || effects['sabbaticalLeavesAdd/GET_DETAILS'];
-    const loadingSubmit =
-      effects['sabbaticalLeavesAdd/ADD'] || effects['sabbaticalLeavesAdd/UPDATE'];
+    const loading =
+      effects['childrenHRMAdd/GET_CATEGORIES'] || effects['childrenHRMAdd/GET_DETAILS'];
+    const loadingSubmit = effects['childrenHRMAdd/ADD'] || effects['childrenHRMAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs
-          last={
-            params.id
-              ? 'Chỉnh sửa ngày nghỉ phép của nhân viên'
-              : 'Tạo ngày nghỉ phép của nhân viên'
-          }
+          last={params.id ? 'Chỉnh sửa bảo hiểm xã hội' : 'Tạo bảo hiểm xã hội'}
           menu={menuData}
         />
         <Form
@@ -177,17 +175,27 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="Số ngày phép"
-                      name="annualLeave"
-                      type={variables.INPUT_COUNT}
+                      label="Số sổ bảo hiểm"
+                      name="insurranceNumber"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Thời gian tham gia"
+                      name="timeJoin"
+                      type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      label="Năm"
-                      name="year"
-                      type={variables.INPUT_COUNT}
+                      label="Thời gian bắt đầu"
+                      name="timeStart"
+                      type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>

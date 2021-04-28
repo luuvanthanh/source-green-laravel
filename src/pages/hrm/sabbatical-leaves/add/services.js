@@ -23,9 +23,8 @@ export function update(data = {}) {
   });
 }
 
-export function details(id) {
-  return request(`/v1/sabbatical-leaves/${id}`, {
+export function details(data) {
+  return request(`/v1/sabbatical-leaves/${data.id}`, {
     method: 'GET',
-    parse: true,
   });
 }

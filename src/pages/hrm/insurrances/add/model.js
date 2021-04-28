@@ -13,6 +13,10 @@ export default {
       users: [],
     },
     details: {},
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),

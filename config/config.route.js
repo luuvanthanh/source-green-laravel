@@ -1184,6 +1184,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',
+            component: './hrm/children',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/tao-moi',
+            component: './hrm/children/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/:id/chi-tiet',
+            component: './hrm/children/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

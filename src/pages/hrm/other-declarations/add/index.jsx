@@ -254,7 +254,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="TRỢ CẤP"
+                                label="TIỀN THƯỞNG"
                                 name={[field.name, 'bonus']}
                                 fieldKey={[field.fieldKey, 'bonus']}
                                 rules={[variables.RULES.EMPTY]}

@@ -883,6 +883,16 @@ export async function getLeftMenuHRM() {
           permission: [],
         },
         {
+          title: 'Thống kê con của nhân viên',
+          key: 'children',
+          url: [
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/tao-moi',
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
           title: 'Cấu hình',
           key: 'categories',
           icon: 'icon icon-list',
