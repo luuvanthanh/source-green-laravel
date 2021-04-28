@@ -44,7 +44,7 @@ export default {
     },
     *REMOVE({ payload }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
+        yield saga.call(services.remove, payload);
         yield saga.put({
           type: 'GET_DATA',
           payload: payload.pagination,

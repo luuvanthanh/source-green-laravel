@@ -10,7 +10,7 @@ export function get(data = {}) {
       orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes(['employee']),
+      include: Helper.convertIncludes(['holidayDetails']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
         name: Helper.getDateTime({
@@ -27,9 +27,10 @@ export function get(data = {}) {
   });
 }
 
-export function remove(id) {
-  return request(`/v1/holidays/${id}`, {
-    method: 'DELETE',
+export function remove(data) {
+  return request(`/v1/holidays`, {
+    method: 'POST',
+    data,
     parse: true,
   });
 }

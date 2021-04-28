@@ -53,8 +53,6 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        timeStart: HelperModules.getStartDate(query?.timeStart, query?.choose),
-        timeJoin: HelperModules.getStartDate(query?.timeJoin, query?.choose),
       },
       objects: {},
     };
@@ -102,8 +100,6 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          timeStart: Helper.getDate(search.timeStart, variables.DATE_FORMAT.DATE_AFTER),
-          timeJoin: Helper.getDate(search.timeJoin, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -247,7 +243,7 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
+        title: 'Phụ huynh',
         key: 'name',
         className: 'min-width-200',
         render: (record) => (
@@ -258,25 +254,25 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Số sổ bảo hiểm',
-        key: 'insurranceNumber',
+        title: 'Họ tên con',
+        key: 'fullName',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record.insurranceNumber,
+        render: (record) => record.fullName,
       },
       {
-        title: 'Ngày tham gia',
-        key: 'timeJoin',
-        className: 'min-width-130',
-        width: 130,
-        render: (record) => Helper.getDate(record.timeJoin, variables.DATE_FORMAT.DATE),
+        title: 'Ngày sinh',
+        key: 'birthday',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => Helper.getDate(record.birthday, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày bắt đầu',
-        key: 'timeStart',
+        title: 'Giới tính',
+        key: 'gender',
         className: 'min-width-130',
         width: 130,
-        render: (record) => Helper.getDate(record.timeStart, variables.DATE_FORMAT.DATE),
+        render: (record) => record.gender,
       },
       {
         key: 'action',
@@ -306,13 +302,14 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['childrenHRM/GET_DATA'];
+    console.log(data);
     return (
       <>
-        <Helmet title="Danh sách bảo hiểm xã hội" />
+        <Helmet title="Danh sách thống kê con nhân viên" />
         <div className={classnames(styles['content-form'], styles['content-form-childrenHRM'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách bảo hiểm xã hội</Text>
+            <Text color="dark">Danh sách thống kê con nhân viên</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
@@ -321,8 +318,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                timeJoin: search.timeJoin ? moment(search.timeJoin) : null,
-                timeStart: search.timeStart ? moment(search.timeStart) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -334,20 +329,6 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChange(event, 'fullName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="timeJoin"
-                    onChange={(event) => this.onChangeDate(event, 'timeJoin')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="timeStart"
-                    onChange={(event) => this.onChangeDate(event, 'timeStart')}
-                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>
