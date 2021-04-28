@@ -118,4 +118,48 @@ class CoreRepositoryEloquent extends BaseRepository
 
         return $this->parserResult($model);
     }
+
+    /**
+     * Update or Create an entity in repository
+     *
+     * @throws ValidatorException
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes, array $values = [])
+    {
+
+        foreach ($values as $key => $value) {
+            $newkey = dashesToCamelCase($key, true);
+
+            if ($key != $newkey) {
+                $values[$newkey] = $values[$key];
+                unset($values[$key]);
+            }
+        }
+
+        $this->applyScope();
+
+        if (!is_null($this->validator)) {
+            $this->validator->with(array_merge($attributes, $values))->passesOrFail(ValidatorInterface::RULE_CREATE);
+        }
+
+        $temporarySkipPresenter = $this->skipPresenter;
+
+        $this->skipPresenter(true);
+
+        event(new RepositoryEntityCreating($this, $attributes));
+
+        $model = $this->model->updateOrCreate($attributes, $values);
+
+        $this->skipPresenter($temporarySkipPresenter);
+        $this->resetModel();
+
+        event(new RepositoryEntityUpdated($this, $model));
+
+        return $this->parserResult($model);
+    }
 }

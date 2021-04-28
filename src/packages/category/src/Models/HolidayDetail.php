@@ -2,10 +2,11 @@
 
 namespace GGPHP\Category\Models;
 
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class HolidayDetail extends CoreModel
+class HolidayDetail extends UuidModel
 {
+    public $incrementing = false;
 
     /**
      * Declare the table name

@@ -84,6 +84,8 @@
             "GGPHP\\YoungAttendance\\Absent\\": "young-attendance/absent/src",
             "GGPHP\\OtherDeclaration\\": "packages/other-declaration/src",
             "GGPHP\\Children\\": "packages/children/src",
+            "GGPHP\\Attendance\\": "young-attendance/attendance/src",
+            "GGPHP\\BusRegistration\\": "packages/bus-registration/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

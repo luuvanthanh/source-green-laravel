@@ -6,26 +6,21 @@ use Carbon\Carbon;
 use GGPHP\Children\Models\Children;
 use GGPHP\Children\Presenters\ChildrenPresenter;
 use GGPHP\Children\Repositories\Contracts\ChildrenRepository;
-use GGPHP\Users\Models\User;
+use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class ChildrenRepositoryEloquent.
  *
  * @package GGPHP\Children\Repositories\Eloquents;
  */
-class ChildrenRepositoryEloquent extends BaseRepository implements ChildrenRepository
+class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements ChildrenRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
-        'parent_id',
-        'full_name' => 'like',
-        'gender',
-        'birthday',
-        'status',
+        'Id',
     ];
 
     /**
@@ -63,9 +58,18 @@ class ChildrenRepositoryEloquent extends BaseRepository implements ChildrenRepos
      */
     public function createMany(array $attributes)
     {
-        $parent = User::findOrFail($attributes['employeeId']);
+        \DB::beginTransaction();
+        try {
+            foreach ($attributes['data'] as $value) {
+                $value['employeeId'] = $attributes['employeeId'];
+                $children = Children::create($value);
+            }
 
-        $children = $parent->children()->createMany($attributes['data']);
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
 
         return $this->parserResult($children);
     }

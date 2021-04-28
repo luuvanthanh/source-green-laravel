@@ -31,7 +31,18 @@ class SabbaticalLeaveController extends Controller
      */
     public function index(Request $request)
     {
-        $sabbaticalLeave = $this->sabbaticalLeaveRepository->all();
+        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
+
+        if ($request->has('limit')) {
+            $limit = $request->limit;
+        }
+
+        if ($limit == config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
+            $sabbaticalLeave = $this->sabbaticalLeaveRepository->all();
+        } else {
+            $sabbaticalLeave = $this->sabbaticalLeaveRepository->paginate($limit);
+        }
+
         return $this->success($sabbaticalLeave, trans('lang::messages.common.getListSuccess'));
     }
 
@@ -43,11 +54,7 @@ class SabbaticalLeaveController extends Controller
      */
     public function store(UpdateOrCreateSabbaticalLeaveRequest $request)
     {
-        $data = [
-            'annualLeave' => $request->annualLeave,
-        ];
-
-        $sabbaticalLeave = $this->sabbaticalLeaveRepository->updateOrCreate(['employeeId' => $request->employeeId], $data);
+        $sabbaticalLeave = $this->sabbaticalLeaveRepository->updateOrCreate(['EmployeeId' => $request->employeeId], $request->all());
         return $this->success($sabbaticalLeave, trans('lang-profile::messages.common.modifySuccess'));
     }
 

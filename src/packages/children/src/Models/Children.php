@@ -4,10 +4,12 @@ namespace GGPHP\Children\Models;
 
 use Carbon\Carbon;
 use GGPHP\Children\Presenters\ChildrenPresenter;
-use GGPHP\Core\Models\CoreModel;
+use GGPHP\Core\Models\UuidModel;
 
-class Children extends CoreModel
+class Children extends UuidModel
 {
+    public $incrementing = false;
+
     protected $appends = ['months'];
 
     /**

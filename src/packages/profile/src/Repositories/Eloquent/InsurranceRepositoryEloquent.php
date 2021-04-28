@@ -57,6 +57,12 @@ class InsurranceRepositoryEloquent extends CoreRepositoryEloquent implements Ins
 
     public function getInsurrance(array $attributes)
     {
+
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
         $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
             $query->tranferHistory($attributes);
         });

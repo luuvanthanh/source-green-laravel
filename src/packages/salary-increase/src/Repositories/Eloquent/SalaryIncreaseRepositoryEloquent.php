@@ -62,6 +62,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 

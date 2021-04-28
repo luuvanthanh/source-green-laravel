@@ -58,6 +58,13 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->model = $this->model->whereIn('Id', $employeeId);
         }
 
+        if (!empty($attributes['classId'])) {
+
+            $this->model = $this->model->whereHas('classTeacher', function ($query) use ($attributes) {
+                $query->where('ClassId', $attributes['classId']);
+            });
+        }
+
         if (!empty($attributes['hasClass'])) {
             if ($attributes['hasClass'] == "true") {
                 $this->model = $this->model->whereHas('classTeacher');

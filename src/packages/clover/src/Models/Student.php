@@ -44,4 +44,12 @@ class Student extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Clover\Models\ClassStudent::class, 'Id', 'StudentId');
     }
+
+    /**
+     * Define relations Schedule
+     */
+    public function attendance()
+    {
+        return $this->hasMany(\GGPHP\Attendance\Models\Attendance::class, 'StudentId');
+    }
 }

@@ -26,9 +26,9 @@ class ChildrenCreateRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'parent_id' => 'required|exists:users,id',
+            'employeeId' => 'required|exists:Employees,Id',
             'data' => 'required|array',
-            'data.*.full_name' => 'required|string',
+            'data.*.fullName' => 'required|string',
             'data.*.birthday' => 'date|date_format:Y-m-d',
         ];
     }
