@@ -3,9 +3,9 @@ import * as services from './services';
 export default {
   namespace: 'feePolicyTarget',
   state: {
-    data: [{ id: 1 }],
+    data: [],
     pagination: {
-      total: 0
+      total: 0,
     },
     error: {
       isError: false,
@@ -13,21 +13,25 @@ export default {
     },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
+      error: {
+        isError: false,
+        data: {},
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -38,17 +42,17 @@ export default {
           payload: {
             parsePayload: response.items,
             pagination: {
-              total: response.totalCount
-            }
+              total: response.totalCount,
+            },
           },
-        });a
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
-    },
+    }
   },
   subscriptions: {},
 };
