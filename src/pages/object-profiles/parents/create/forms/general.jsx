@@ -7,12 +7,11 @@ import { connect, history, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
 import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },

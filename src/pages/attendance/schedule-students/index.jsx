@@ -480,7 +480,12 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'pl10 min-width-200',
-        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
     ];
     const arrayHeaderDate = Helper.convertArrayDays(search.startDate, search.endDate).map(

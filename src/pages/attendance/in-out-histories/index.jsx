@@ -239,8 +239,8 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
-            fullName={record?.student?.fullName}
+            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
+            fullName={record?.fullName}
           />
         ),
       },
@@ -250,7 +250,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record?.student?.class?.branch?.name,
+        render: (record) => record?.class?.branch?.name,
       },
       {
         title: 'Lớp',
@@ -258,7 +258,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record?.student?.class?.name,
+        render: (record) => record?.class?.name,
       },
       {
         title: 'Số lần chấm',

@@ -58,6 +58,18 @@ export const variables = {
     LATE: 'LATE',
     EARLY: 'EARLY',
   },
+  STATUS_ABSENT: {
+    ANNUAL_LEAVE: 'ANNUAL_LEAVE',
+    UNPAID_LEAVE: 'UNPAID_LEAVE',
+    HAVE_IN: 'HAVE_IN',
+    HAVE_OUT: 'HAVE_OUT',
+  },
+  STATUS_ABSENT_NAME: {
+    ANNUAL_LEAVE: 'Vắng có phép',
+    UNPAID_LEAVE: 'Vắng không phép',
+    HAVE_IN: 'Đã vào lớp',
+    HAVE_OUT: 'Ra về',
+  },
 };
 
 export default variables;

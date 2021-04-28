@@ -1,8 +1,8 @@
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useMemo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Checkbox } from 'antd';
 import { useLocation, useHistory } from 'umi';
-import { useSelector } from 'dva';
+import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
 import { debounce } from 'lodash';
 
@@ -16,9 +16,8 @@ import Text from '@/components/CommonComponent/Text';
 import { variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
-
 const Index = memo(() => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, feePolicyTarget }) => [
     feePolicyTarget,
     effects,
@@ -26,14 +25,44 @@ const Index = memo(() => {
 
   const history = useHistory();
   const { query } = useLocation();
-
   const filterRef = useRef();
+  const mounted = useRef(false);
 
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     search: query?.search,
   });
+
+  const mountedSet = (action, value) => {
+    if (mounted.current) {
+      action(value);
+    }
+  };
+
+  useEffect(() => {
+    onLoad();
+  }, [search]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  /**
+   * Function load data
+   */
+  const onLoad = () => {
+    dispatch({
+      type: 'feePolicyTarget/GET_DATA',
+      payload: {
+        ...search,
+        status,
+      },
+    });
+  };
 
   const columns = [
     {
@@ -60,7 +89,7 @@ const Index = memo(() => {
       key: 'grateful',
       className: 'min-width-70',
       align: 'center',
-      render: (record) => <Checkbox defaultChecked />,
+      render: (record) => <Checkbox checked={record?.grateful ? true : false} />,
     },
     {
       key: 'action',
@@ -88,8 +117,9 @@ const Index = memo(() => {
       defaultCurrent: Number(search.page),
       current: Number(search.page),
       hideOnSinglePage: (pagination?.total || 0) <= 10,
-      showSizeChanger: false,
-      pageSizeOptions: false,
+      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
       onChange: (page, limit) => {
         setSearch((prev) => ({
           ...prev,
@@ -97,19 +127,25 @@ const Index = memo(() => {
           limit,
         }));
       },
+      onShowSizeChange: (current, size) => {
+        setSearch((prev) => ({
+          ...prev,
+          page: current,
+          limit: size,
+        }));
+      },
+      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
     }),
     [pagination],
   );
 
-  const changeFilter = debounce(
-    (name) => (value) => {
-      setSearch((prevSearch) => ({
-        ...prevSearch,
-        [name]: value,
-      }));
-    },
-    300,
-  );
+  const changeSearch = debounce((e, name) => {
+    const { value } = e.target;
+    setSearch((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  }, 300);
 
   return (
     <>
@@ -143,9 +179,9 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    name="description"
+                    name="search"
                     type={variables.INPUT_SEARCH}
-                    onChange={({ target: { value } }) => changeFilter('description')(value)}
+                    onChange={(event) => changeSearch(event, 'search')}
                     placeholder="Nhập từ khóa tìm kiếm"
                   />
                 </Pane>
@@ -155,7 +191,7 @@ const Index = memo(() => {
             <Table
               columns={columns}
               dataSource={data}
-              loading={loading['media/GET_DATA']}
+              loading={loading['feePolicyTarget/GET_DATA']}
               isError={error.isError}
               pagination={paginationProps}
               rowKey={(record) => record.id}

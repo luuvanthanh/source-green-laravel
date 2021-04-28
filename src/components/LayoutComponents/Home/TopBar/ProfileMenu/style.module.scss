@@ -6,9 +6,14 @@
   display: flex;
   justify-content: center;
   position: relative;
-
+  font-size: 16px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  color: $text-white;
+  text-transform: capitalize;
   &:hover {
-    color: $blue;
+    color: $text-white;
   }
 }
 

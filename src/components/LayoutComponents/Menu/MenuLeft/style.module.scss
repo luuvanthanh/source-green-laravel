@@ -38,7 +38,8 @@
   }
 
   :global(.ant-menu-item) {
-    height: auto;
+    height: auto !important;
+    min-height: 40px;
     padding: 0 15px;
     a {
       display: flex;
@@ -48,7 +49,7 @@
     }
     .title {
       // white-space: pre-wrap;
-      white-space: nowrap;
+      white-space: break-spaces;
       line-height: 20px;
     }
   }
@@ -149,7 +150,7 @@
   }
 
   :global(.ant-menu-submenu-inline) > :global(.ant-menu-submenu-title .ant-menu-submenu-arrow) {
-    right: 50px;
+    right: 15px;
   }
 
   :global(.ant-menu-inline, .ant-menu-vertical),
@@ -163,6 +164,9 @@
   }
 
   &:global(.ant-menu-inline-collapsed) {
+    > :glboal(.ant-menu-item) {
+      padding: none;
+    }
     .title {
       display: none;
     }
@@ -209,6 +213,12 @@
 
     :global(.ant-menu-sub) {
       color: $gray-darken;
+      :global(.ant-menu-submenu-title) {
+        padding-left: 23px !important;
+      }
+      :global(.ant-menu-submenu-arrow) {
+        right: 0;
+      }
     }
 
     :global(.ant-menu-item) {

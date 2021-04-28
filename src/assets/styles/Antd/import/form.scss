@@ -180,3 +180,85 @@ form .ant-cascader-picker:only-child {
     min-height: unset;
   }
 }
+
+.search-form {
+  .ant-input-affix-wrapper {
+    padding: 10px 20px;
+    border-width: 1px 0;
+    border-color: $border-line;
+    &.ant-input-affix-wrapper-focused {
+      box-shadow: unset;
+    }
+  }
+}
+
+.checkbox-column {
+  .ant-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    .ant-checkbox-wrapper {
+      margin: 0;
+      padding: 15px 20px;
+      border-bottom: 1px solid $border-line;
+      &:last-child {
+        border-bottom: unset;
+      }
+      .ant-form-item input[type='checkbox'] {
+        width: 24px;
+        height: 24px;
+      }
+      .ant-checkbox-inner {
+        width: 24px;
+        height: 24px;
+        &::after {
+          left: 30%;
+          width: 7px;
+          height: 12px;
+        }
+      }
+    }
+  }
+}
+
+.btn-delete {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.fw-bold {
+  font-weight: 600;
+}
+
+.fw-normal {
+  font-weight: normal;
+}
+
+.groups-input {
+  .ant-form-item {
+    width: calc(100% - 50px);
+  }
+  .icon {
+    border: 1px solid $gray-border;
+    padding: 4px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: $danger;
+  }
+}
+
+.color-success {
+  color: $text-success
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.fs-13 {
+  font-size: 13px;
+}
