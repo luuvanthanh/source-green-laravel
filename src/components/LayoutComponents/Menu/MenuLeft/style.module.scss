@@ -164,6 +164,9 @@
   }
 
   &:global(.ant-menu-inline-collapsed) {
+    > :glboal(.ant-menu-item) {
+      padding: none;
+    }
     .title {
       display: none;
     }

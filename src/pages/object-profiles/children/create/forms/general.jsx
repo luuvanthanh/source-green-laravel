@@ -11,7 +11,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import variablesModules from '../../../utils/variables';
-import MultipleImageUpload from '@/components/CommonComponent/MultipleImageUpload';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
 
 const genders = [

@@ -32,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ otherDeclarations, loading }) => ({
-  data: otherDeclarations.data,
-  pagination: otherDeclarations.pagination,
+const mapStateToProps = ({ childrenHRM, loading }) => ({
+  data: childrenHRM.data,
+  pagination: childrenHRM.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -53,8 +53,8 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        timeStart: HelperModules.getStartDate(query?.timeStart, query?.choose),
+        timeJoin: HelperModules.getStartDate(query?.timeJoin, query?.choose),
       },
       objects: {},
     };
@@ -92,7 +92,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'otherDeclarations/GET_DATA',
+      type: 'childrenHRM/GET_DATA',
       payload: {
         ...search,
         status,
@@ -102,8 +102,8 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          timeStart: Helper.getDate(search.timeStart, variables.DATE_FORMAT.DATE_AFTER),
+          timeJoin: Helper.getDate(search.timeJoin, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -209,7 +209,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'otherDeclarations/REMOVE',
+          type: 'childrenHRM/REMOVE',
           payload: {
             id,
             pagination: {
@@ -235,95 +235,63 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'NGÀY',
-        key: 'time',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'GIỜ CÔNG',
-        key: 'numberOfWorkdays',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => record.numberOfWorkdays,
+        title: 'STT',
+        key: 'text',
+        width: 50,
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.sttList(
+            this.props.pagination?.current_page,
+            index,
+            this.props.pagination?.per_page,
+          ),
       },
       {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          if (record.otherDeclarationDetail) {
-            return null;
-          }
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-              fullName={get(record, 'employee.fullName')}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
+        ),
       },
       {
-        title: 'Trợ cấp',
-        key: 'allowance',
+        title: 'Số sổ bảo hiểm',
+        key: 'insurranceNumber',
         className: 'min-width-150',
         width: 150,
-        render: (record) => Helper.getPrice(record.allowance),
+        render: (record) => record.insurranceNumber,
       },
       {
-        title: 'Tiền thưởng',
-        key: 'bonus',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.bonus),
+        title: 'Ngày tham gia',
+        key: 'timeJoin',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => Helper.getDate(record.timeJoin, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Thu hồi',
-        key: 'retrieval',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.retrieval),
-      },
-      {
-        title: 'BHXH',
-        key: 'paymentOfSocialInsurance',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.paymentOfSocialInsurance),
-      },
-      {
-        title: 'BHXH NV',
-        key: 'employeeSocialInsurance',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getPrice(record.employeeSocialInsurance),
-      },
-      {
-        title: 'TỪ THIỆN',
-        key: 'charity',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getPrice(record.charity),
+        title: 'Ngày bắt đầu',
+        key: 'timeStart',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => Helper.getDate(record.timeStart, variables.DATE_FORMAT.DATE),
       },
       {
         key: 'action',
         className: 'min-width-80',
         width: 80,
-        render: (record) => {
-          if (record.otherDeclarationDetail) {
-            return (
-              <div className={styles['list-button']}>
-                <Button
-                  color="primary"
-                  icon="edit"
-                  onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-                />
-                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-              </div>
-            );
-          }
-        },
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+          </div>
+        ),
       },
     ];
   };
@@ -337,26 +305,24 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['otherDeclarations/GET_DATA'];
+    const loading = effects['childrenHRM/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách khai báo ngày công chuẩn trong tháng" />
-        <div
-          className={classnames(styles['content-form'], styles['content-form-otherDeclarations'])}
-        >
+        <Helmet title="Danh sách bảo hiểm xã hội" />
+        <div className={classnames(styles['content-form'], styles['content-form-childrenHRM'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách khai báo ngày công chuẩn trong tháng</Text>
+            <Text color="dark">Danh sách bảo hiểm xã hội</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo đơn
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                timeJoin: search.timeJoin ? moment(search.timeJoin) : null,
+                timeStart: search.timeStart ? moment(search.timeStart) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -372,26 +338,15 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[
-                      { id: 'REWARD', name: 'Khen thưởng' },
-                      { id: 'DISCIPLINE', name: 'Kỷ luật' },
-                    ]}
-                    name="type"
-                    type={variables.SELECT}
-                    onChange={(event) => this.onChangeSelect(event, 'type')}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    name="timeJoin"
+                    onChange={(event) => this.onChangeDate(event, 'timeJoin')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
+                    name="timeStart"
+                    onChange={(event) => this.onChangeDate(event, 'timeStart')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
@@ -403,7 +358,6 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
-              childrenColumnName="otherDeclarationDetail"
               params={{
                 header: this.header(),
                 type: 'table',

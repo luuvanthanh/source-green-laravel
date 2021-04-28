@@ -10,6 +10,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Loading from '@/components/CommonComponent/Loading';
 
 let isMounted = true;
 /**
@@ -30,6 +31,7 @@ const mapStateToProps = ({ menu, insurrancesAdd, loading }) => ({
   loading,
   categories: insurrancesAdd.categories,
   details: insurrancesAdd.details,
+  error: insurrancesAdd.error,
   menuData: menu.menuLeftHRM,
 });
 
@@ -132,11 +134,14 @@ class Index extends PureComponent {
 
   render() {
     const {
+      error,
       categories,
       menuData,
       loading: { effects },
       match: { params },
     } = this.props;
+    const loading =
+      effects['insurrancesAdd/GET_CATEGORIES'] || effects['insurrancesAdd/GET_DETAILS'];
     const loadingSubmit = effects['insurrancesAdd/ADD'] || effects['insurrancesAdd/UPDATE'];
     return (
       <>
@@ -151,71 +156,73 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <div className={classnames(styles['content-children'], 'mt10')}>
-              <Text color="dark" size="large-medium">
-                THÔNG TIN CHUNG
-              </Text>
-              <div className="row mt-3">
-                <div className="col-lg-6">
-                  <FormItem
-                    data={Helper.convertSelectUsers(categories?.users)}
-                    label="NHÂN VIÊN"
-                    name="employeeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
+                <Text color="dark" size="large-medium">
+                  THÔNG TIN CHUNG
+                </Text>
+                <div className="row mt-3">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={Helper.convertSelectUsers(categories?.users)}
+                      label="NHÂN VIÊN"
+                      name="employeeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Số sổ bảo hiểm"
+                      name="insurranceNumber"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Thời gian tham gia"
+                      name="timeJoin"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Thời gian bắt đầu"
+                      name="timeStart"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Số sổ bảo hiểm"
-                    name="insurranceNumber"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </div>
+              <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
+                <Button
+                  color="gray"
+                  icon="prev"
+                  onClick={() => history.goBack()}
+                  size="large"
+                  className="mr-3"
+                  loading={loadingSubmit}
+                >
+                  HỦY
+                </Button>
+                <Button
+                  color="green"
+                  icon="save"
+                  htmlType="submit"
+                  size="large"
+                  loading={loadingSubmit}
+                >
+                  LƯU
+                </Button>
               </div>
-              <div className="row">
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Thời gian tham gia"
-                    name="timeJoin"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Thời gian bắt đầu"
-                    name="timeStart"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-              <Button
-                color="gray"
-                icon="prev"
-                onClick={() => history.goBack()}
-                size="large"
-                className="mr-3"
-                loading={loadingSubmit}
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                htmlType="submit"
-                size="large"
-                loading={loadingSubmit}
-              >
-                LƯU
-              </Button>
-            </div>
+            </Loading>
           </div>
         </Form>
       </>

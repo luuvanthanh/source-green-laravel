@@ -252,9 +252,7 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'employee.fileImage'),
-            )}
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
             fullName={get(record, 'employee.fullName')}
           />
         ),
@@ -262,27 +260,23 @@ class Index extends PureComponent {
       {
         title: 'Số sổ bảo hiểm',
         key: 'insurranceNumber',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'insurranceNumber'),
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record.insurranceNumber,
       },
       {
         title: 'Ngày tham gia',
         key: 'timeJoin',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeJoin'), variables.DATE_FORMAT.DATE),
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => Helper.getDate(record.timeJoin, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Ngày bắt đầu',
         key: 'timeStart',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) =>
-          Helper.getDate(
-            get(record, 'timeStart'),
-            variables.DATE_FORMAT.DATE,
-          ),
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => Helper.getDate(record.timeStart, variables.DATE_FORMAT.DATE),
       },
       {
         key: 'action',
