@@ -10,25 +10,18 @@ export function get(data = {}) {
       orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
-      startDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: data.startDate,
-          targetValue: '00:00:00',
-        }),
-        isUTC: false,
-      }),
-      endDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: data.endDate,
-          targetValue: '23:59:59',
-        }),
-        isUTC: false,
-      }),
-      include: Helper.convertIncludes(['employee', 'addSubTimeDetail.user']),
+      include: Helper.convertIncludes(['employee']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
+        name: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: data.date,
+            targetValue: '23:59:59',
+          }),
+          format: variables.DATE_FORMAT.YEAR,
+          isUTC: false,
+        }),
       }),
     },
   });

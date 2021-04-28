@@ -42,7 +42,7 @@ const renderChildren = (
   picker,
   radioInline,
   disabledKeys,
-  options
+  options,
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -186,6 +186,16 @@ const renderChildren = (
       picker={picker}
     />
   ),
+  yearPicker: (
+    <DatePicker
+      disabled={disabled}
+      disabledDate={disabledDate}
+      format={'[Năm] YYYY'}
+      onChange={onChange}
+      placeholder="Chọn"
+      picker={'year'}
+    />
+  ),
   dateTimePicker: (
     <DatePicker
       disabled={disabled}
@@ -255,25 +265,24 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
-  checkboxSingle: (
-    <Checkbox onChange={onChange} className={styles['checkbox--large']}>
-    </Checkbox>
-  ),
+  checkboxSingle: <Checkbox onChange={onChange} className={styles['checkbox--large']}></Checkbox>,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
-      {!_.isEmpty(data) ? data.map((item, index) => (
-        <Radio
-          key={index}
-          value={item.value}
-          className={classnames({
-            'd-inline-block': radioInline,
-            'my-0': radioInline,
-          })}
-          disabled={(disabledKeys || []).includes(item.value)}
-        >
-          {item.label}
-        </Radio>
-      )) : (
+      {!_.isEmpty(data) ? (
+        data.map((item, index) => (
+          <Radio
+            key={index}
+            value={item.value}
+            className={classnames({
+              'd-inline-block': radioInline,
+              'my-0': radioInline,
+            })}
+            disabled={(disabledKeys || []).includes(item.value)}
+          >
+            {item.label}
+          </Radio>
+        ))
+      ) : (
         <Text className="no-data">Không có dữ liệu</Text>
       )}
     </Radio.Group>
@@ -327,7 +336,7 @@ export default function FormItem({
           picker,
           radioInline,
           disabledKeys,
-          options
+          options,
         )[type]
       }
     </Form.Item>
