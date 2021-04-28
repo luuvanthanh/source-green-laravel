@@ -53,8 +53,9 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        date: query?.date
+          ? Helper.getDate(query.date, variables.DATE_FORMAT.DATE_AFTER)
+          : Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
       },
       objects: {},
     };
@@ -102,8 +103,7 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          date: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -330,9 +330,7 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách ngày nghỉ phép" />
-        <div
-          className={classnames(styles['content-form'], styles['content-form-holidays'])}
-        >
+        <div className={classnames(styles['content-form'], styles['content-form-holidays'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách ngày nghỉ phép</Text>
@@ -344,8 +342,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                date: search.date ? moment(search.date) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -353,24 +350,9 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.YEAR_PICKER}
                   />
                 </div>
               </div>
