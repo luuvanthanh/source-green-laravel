@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography } from 'antd';
+import { Form, Typography, Button } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { debounce, isEmpty, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import variablesModules from '../utils/variables';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
@@ -51,8 +51,9 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        date: query?.date
+          ? Helper.getDate(query.date, variables.DATE_FORMAT.DATE_AFTER)
+          : Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
       },
       objects: {},
     };
@@ -99,8 +100,7 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          date: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -191,29 +191,18 @@ class Index extends PureComponent {
     },
   });
 
-  renderDescription = (record) => {
-    if (!isEmpty(record)) {
-      const attendances = record.map((item) => {
-        if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
-            item.attendedAt,
-            variables.DATE_FORMAT.DATE_TIME,
-          )}`;
-        }
-        return '';
-      });
-      return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
-          {attendances.map((item, index) => (
-            <div key={index}>
-              {item}
-              <br />
-            </div>
-          ))}
-        </Paragraph>
-      );
-    }
-    return null;
+  add = (record, status) => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    this.props.dispatch({
+      type: 'attendances/ADD',
+      payload: {
+        studentId: record.id,
+        date: moment(search.date).format(variables.DATE_FORMAT.DATE_AFTER),
+        status,
+      },
+      callback: () => {},
+    });
   };
 
   /**
@@ -224,7 +213,8 @@ class Index extends PureComponent {
       {
         title: 'STT',
         key: 'text',
-        width: 50,
+        width: 60,
+        className: 'min-width-60',
         align: 'center',
         render: (text, record, index) =>
           Helper.sttList(
@@ -237,6 +227,7 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record?.fileImage)}
@@ -261,18 +252,62 @@ class Index extends PureComponent {
         render: (record) => record?.class?.name,
       },
       {
-        title: 'Số lần chấm',
-        key: 'count',
+        title: 'Thao tác',
+        key: 'actions',
+        width: 450,
+        className: 'min-width-450',
+        fixed: 'right',
         align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record.timekeeping?.length,
-      },
-      {
-        title: 'Chi tiết',
-        key: 'description',
-        className: 'min-width-200',
-        render: (record) => this.renderDescription(record.timekeeping),
+        render: (record) => (
+          <ul className={classnames('list-unstyled list-inline', styles['group-button'])}>
+            <li className="list-inline-item">
+              <Button
+                className={classnames(styles.button, styles.primary, {
+                  [`${styles.active}`]:
+                    get(record, 'attendance[0].status') ===
+                    variablesModules.STATUS_ABSENT.ANNUAL_LEAVE,
+                })}
+                onClick={() => this.add(record, variablesModules.STATUS_ABSENT.ANNUAL_LEAVE)}
+              >
+                Vắng có phép
+              </Button>
+            </li>
+            <li className="list-inline-item">
+              <Button
+                className={classnames(styles.button, styles.dark, {
+                  [`${styles.active}`]:
+                    get(record, 'attendance[0].status') ===
+                    variablesModules.STATUS_ABSENT.UNPAID_LEAVE,
+                })}
+                onClick={() => this.add(record, variablesModules.STATUS_ABSENT.UNPAID_LEAVE)}
+              >
+                Vắng không phép
+              </Button>
+            </li>
+            <li className="list-inline-item">
+              <Button
+                className={classnames(styles.button, styles.success, {
+                  [`${styles.active}`]:
+                    get(record, 'attendance[0].status') === variablesModules.STATUS_ABSENT.HAVE_IN,
+                })}
+                onClick={() => this.add(record, variablesModules.STATUS_ABSENT.HAVE_IN)}
+              >
+                Đã vào lớp
+              </Button>
+            </li>
+            <li className="list-inline-item">
+              <Button
+                className={classnames(styles.button, styles.yellow, {
+                  [`${styles.active}`]:
+                    get(record, 'attendance[0].status') === variablesModules.STATUS_ABSENT.HAVE_OUT,
+                })}
+                onClick={() => this.add(record, variablesModules.STATUS_ABSENT.HAVE_OUT)}
+              >
+                Ra về
+              </Button>
+            </li>
+          </ul>
+        ),
       },
     ];
   };
@@ -298,8 +333,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                date: search.date ? moment(search.date) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -315,15 +349,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
@@ -340,7 +367,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '70vh' }}
             />
           </div>
         </div>

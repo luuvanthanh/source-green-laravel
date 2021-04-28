@@ -10,26 +10,28 @@ export function get(data = {}) {
       orderBy: 'Id',
       sortedBy: 'desc',
       searchJoin: 'and',
-      startDate: Helper.getDateTime({
+      date: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: data.startDate,
+          originValue: data.date,
           targetValue: '00:00:00',
         }),
         isUTC: false,
       }),
-      endDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: data.endDate,
-          targetValue: '23:59:59',
-        }),
-        isUTC: false,
-      }),
-      include: Helper.convertIncludes(['timekeeping', 'class']),
+      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance']),
       search: Helper.convertParamSearchConvert({
-        FullName: data.full_name,
+        FullName: data.fullName,
       }),
+    },
+  });
+}
+
+export function add(data) {
+  return request('/v1/attendances', {
+    method: 'POST',
+    data: data,
+    params: {
+      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance']),
     },
   });
 }
