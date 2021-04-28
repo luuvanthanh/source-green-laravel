@@ -1202,6 +1202,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/ngay-nghi-le',
+            component: './hrm/holidays',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
+            component: './hrm/holidays/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
+            component: './hrm/holidays/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

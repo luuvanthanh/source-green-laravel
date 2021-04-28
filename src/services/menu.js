@@ -893,6 +893,16 @@ export async function getLeftMenuHRM() {
           permission: [],
         },
         {
+          title: 'Ngày nghỉ lễ',
+          key: 'holidays',
+          url: [
+            '/quan-ly-nhan-su/ngay-nghi-le',
+            '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
+            '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
           title: 'Cấu hình',
           key: 'categories',
           icon: 'icon icon-list',
