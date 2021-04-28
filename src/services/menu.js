@@ -287,64 +287,6 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
-        {
-          title: 'Thêm buổi học',
-          key: 'additional-times',
-          url: [
-            '/diem-danh/cong-them',
-            '/diem-danh/cong-them/tao-moi',
-            '/diem-danh/cong-them/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Trừ buổi học',
-          key: 'subtraction-times',
-          url: [
-            '/diem-danh/cong-tru',
-            '/diem-danh/cong-tru/tao-moi',
-            '/diem-danh/cong-tru/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Không xác định công',
-          key: 'timekeeping-invalid',
-          url: ['/diem-danh/khong-xac-dinh-cong'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Bỏ ca',
-          key: 'revoke-shifts',
-          url: ['/diem-danh/bo-ca'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Công bổ sung',
-          key: 'work-declarations',
-          url: [
-            '/diem-danh/cong-bo-sung',
-            '/diem-danh/cong-bo-sung/tao-moi',
-            '/diem-danh/cong-bo-sung/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Phiếu ĐK giờ làm thêm',
-          key: 'work-hours',
-          url: [
-            '/diem-danh/phieu-dang-ky-gio-lam-them',
-            '/diem-danh/phieu-dang-ky-gio-lam-them/tao-moi',
-            '/diem-danh/phieu-dang-ky-gio-lam-them/:id/chi-tiet',
-          ],
-          permission: [],
-          pro: true,
-        },
       ],
     },
     {
@@ -893,16 +835,6 @@ export async function getLeftMenuHRM() {
           permission: [],
         },
         {
-          title: 'Ngày nghỉ lễ',
-          key: 'holidays',
-          url: [
-            '/quan-ly-nhan-su/ngay-nghi-le',
-            '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
-            '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
           title: 'Cấu hình',
           key: 'categories',
           icon: 'icon icon-list',
@@ -984,6 +916,16 @@ export async function getLeftMenuHRM() {
               ],
               permission: [],
               pro: true,
+            },
+            {
+              title: 'Ngày nghỉ lễ',
+              key: 'holidays',
+              url: [
+                '/quan-ly-nhan-su/ngay-nghi-le',
+                '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
+                '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
+              ],
+              permission: [],
             },
           ],
         },
