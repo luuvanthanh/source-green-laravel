@@ -55,7 +55,6 @@ class HolidayRepositoryEloquent extends CoreRepositoryEloquent implements Holida
     public function createOrUpdate(array $attributes)
     {
         $holiday = Holiday::where('Name', $attributes['name'])->first();
-
         if (is_null($holiday)) {
             $holiday = Holiday::create($attributes);
         } else {
@@ -78,7 +77,8 @@ class HolidayRepositoryEloquent extends CoreRepositoryEloquent implements Holida
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $value) {
                 $value['holidayId'] = $holiday->Id;
-                $holiday->holidayDetail()->create($value);
+
+                HolidayDetail::create($value);
             }
         }
 

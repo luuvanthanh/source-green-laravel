@@ -4,6 +4,7 @@ namespace GGPHP\Users\Models;
 
 use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
+use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\PositionLevel\Models\PositionLevel;

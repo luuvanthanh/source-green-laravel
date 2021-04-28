@@ -19,7 +19,7 @@ class Holiday extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'name',
+        'Name',
     ];
 
     /**

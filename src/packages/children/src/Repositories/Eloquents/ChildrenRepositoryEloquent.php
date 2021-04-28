@@ -7,7 +7,6 @@ use GGPHP\Children\Models\Children;
 use GGPHP\Children\Presenters\ChildrenPresenter;
 use GGPHP\Children\Repositories\Contracts\ChildrenRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
-use GGPHP\Users\Models\User;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -59,9 +58,18 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
      */
     public function createMany(array $attributes)
     {
-        $parent = User::findOrFail($attributes['employeeId']);
+        \DB::beginTransaction();
+        try {
+            foreach ($attributes['data'] as $value) {
+                $value['employeeId'] = $attributes['employeeId'];
+                $children = Children::create($value);
+            }
 
-        $children = $parent->children()->createMany($attributes['data']);
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
 
         return $this->parserResult($children);
     }

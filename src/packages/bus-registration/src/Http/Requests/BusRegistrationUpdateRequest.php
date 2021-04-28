@@ -1,15 +1,13 @@
 <?php
 
-namespace GGPHP\Category\Http\Requests;
+namespace GGPHP\BusRegistration\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
-class HolidayCreateRequest extends FormRequest
+class BusRegistrationUpdateRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -23,11 +21,9 @@ class HolidayCreateRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(Request $request)
+    public function rules()
     {
         return [
-            "name" => 'required|string',
         ];
     }
-
 }

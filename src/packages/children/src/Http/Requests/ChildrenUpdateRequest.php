@@ -26,9 +26,6 @@ class ChildrenUpdateRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'full_name' => 'string',
-            'gender' => 'string',
-            'birthday' => 'date|date_format:Y-m-d',
         ];
     }
 }

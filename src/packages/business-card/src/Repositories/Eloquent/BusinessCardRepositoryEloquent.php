@@ -76,7 +76,6 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

@@ -151,5 +151,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Attendance\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\BusRegistration\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
     // });
 });

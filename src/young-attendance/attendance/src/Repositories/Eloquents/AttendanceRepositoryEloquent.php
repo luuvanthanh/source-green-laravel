@@ -85,6 +85,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function getAttendance($attributes)
     {
+        if (!empty($attributes['date'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendance' => function ($query) use ($attributes) {
+                $query->where('Date', $attributes['date']);
+            }]);
+        }
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendance' => function ($query) use ($attributes) {
@@ -95,6 +100,22 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
+        }
+
+        if (!empty($attributes['classId'])) {
+            $classId = explode(',', $attributes['classId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($classId) {
+                $query->whereIn('ClassId', $classId);
+            });
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($branchId) {
+                $query->whereHas('branch', function ($query2) use ($branchId) {
+                    $query2->whereIn('BranchId', $branchId);
+                });
+            });
         }
 
         if (!empty($attributes['limit'])) {
