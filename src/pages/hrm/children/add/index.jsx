@@ -111,6 +111,10 @@ class Index extends PureComponent {
       payload: {
         id: params.id,
         ...values,
+        data: values.data.map((item) => ({
+          ...item,
+          birthday: moment(item.birthday).format(variables.DATE_FORMAT.DATE_AFTER),
+        })),
       },
       callback: (response, error) => {
         if (response) {
@@ -171,7 +175,7 @@ class Index extends PureComponent {
                     <FormItem
                       data={Helper.convertSelectUsers(categories?.users)}
                       label="PHỤ HUYNH"
-                      name="parentId"
+                      name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
