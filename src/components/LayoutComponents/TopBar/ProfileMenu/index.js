@@ -44,7 +44,6 @@ class ProfileMenu extends React.Component {
             <h3 className="title">{user?.user?.userName || 'Nguyễn Ngọc Bích'}</h3>
             <p>{user?.user?.name || 'Admin'}</p>
           </div>
-          <Avatar className={styles.avatar} icon={<UserOutlined />} shape="square" size="large" />
         </div>
       </Dropdown>
     );

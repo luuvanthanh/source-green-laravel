@@ -70,6 +70,12 @@ export const variables = {
     HAVE_IN: 'Đã vào lớp',
     HAVE_OUT: 'Ra về',
   },
+  STATUS_ABSENT_KEY: {
+    ANNUAL_LEAVE: 'P',
+    UNPAID_LEAVE: 'KP',
+    HAVE_IN: '1',
+    HAVE_OUT: '1',
+  },
 };
 
 export default variables;
