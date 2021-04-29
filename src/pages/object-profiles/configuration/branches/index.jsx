@@ -92,10 +92,14 @@ class Index extends PureComponent {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -150,13 +154,12 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
@@ -213,16 +216,16 @@ class Index extends PureComponent {
         render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
       },
       {
-        title: 'MÃ',
-        key: 'code',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.code}</Text>,
-      },
-      {
         title: 'TÊN',
         key: 'name',
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.name}</Text>,
+      },
+      {
+        title: 'MÃ',
+        key: 'code',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'ĐỊA CHỈ',
@@ -232,9 +235,9 @@ class Index extends PureComponent {
       },
       {
         title: 'SĐT',
-        key: 'phone',
+        key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.phone}</Text>,
+        render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
       },
       {
         key: 'action',
