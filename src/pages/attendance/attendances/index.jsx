@@ -189,6 +189,7 @@ class Index extends PureComponent {
     onShowSizeChange: (current, size) => {
       this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   add = (record, status) => {
