@@ -275,8 +275,8 @@ export async function getLeftMenuSchedules() {
         },
         {
           title: 'TH điểm danh',
-          key: 'total',
-          url: ['/diem-danh/tong-hop-cong'],
+          key: 'timekeeping-report',
+          url: ['/diem-danh/tong-hop-diem-danh'],
           permission: [],
           pro: true,
         },

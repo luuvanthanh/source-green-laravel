@@ -3,12 +3,12 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get, omit, head } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
@@ -61,7 +61,7 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params?.id) {
       this.formRef.current.setFieldsValue({
         ...details,
       });
@@ -93,22 +93,22 @@ class Index extends PureComponent {
     } = this.props;
     const payload = {
       ...values,
-      id: get(params, 'id'),
+      id: params.id,
     };
     dispatch({
-      type: params?.id ? 'branchesAdd/UPDATE' : 'branchesAdd/ADD',
-      payload: params?.id ? payload : omit(payload, 'id'),
+      type: params.id ? 'branchesAdd/UPDATE' : 'branchesAdd/ADD',
+      payload,
       callback: (response, error) => {
         if (response) {
           history.goBack();
         }
         if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
               this.formRef.current.setFields([
                 {
-                  name: head(item.members),
-                  errors: [item.message],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
             });
@@ -122,13 +122,14 @@ class Index extends PureComponent {
     const {
       error,
       menuData,
+      match: { params },
       loading: { effects },
     } = this.props;
     const loadingSubmit = effects['branchesAdd/ADD'] || effects['branchesAdd/UPDATE'];
     const loading = effects['branchesAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last="Tạo cơ sở" menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa cơ sở' : 'Tạo cơ sở'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -136,8 +137,8 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -147,7 +148,7 @@ class Index extends PureComponent {
                     <FormItem
                       label="MÃ"
                       name="code"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -155,7 +156,7 @@ class Index extends PureComponent {
                     <FormItem
                       label="TÊN"
                       name="name"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -165,44 +166,16 @@ class Index extends PureComponent {
                     <FormItem
                       label="ĐỊA CHỈ"
                       name="address"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
                       label="SĐT"
-                      name="phone"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      name="phoneNumber"
+                      rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                       type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="HIỆU TRƯỞNG"
-                      name="principal"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="PHÓ HIỆU TƯỞNG"
-                      name="assistantprincipal"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="GHI CHÚ"
-                      name="description"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
                     />
                   </div>
                 </div>
@@ -228,8 +201,8 @@ class Index extends PureComponent {
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );

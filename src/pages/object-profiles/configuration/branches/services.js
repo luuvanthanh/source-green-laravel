@@ -1,19 +1,24 @@
-import request from '@/utils/request';
-import { omit } from 'lodash';
+import request from '@/utils/requestLavarel';
 import { Helper } from '@/utils';
 
-export function get(params = {}) {
-  return request('/branches', {
+export function get(data = {}) {
+  return request('/v1/branches', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'Id',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      search: Helper.convertParamSearchConvert({
+        Name: data.name,
+      }),
     },
   });
 }
 
 export function remove(id) {
-  return request(`/branches/${id}`, {
+  return request(`/v1/branches/${id}`, {
     method: 'DELETE',
     parse: true,
   });

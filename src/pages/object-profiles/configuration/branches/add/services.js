@@ -1,8 +1,8 @@
-import request from '@/utils/request';
+import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
-  return request('/branches', {
+  return request('/v1/branches', {
     method: 'POST',
     data,
     parse: true,
@@ -10,7 +10,7 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/branches/${data.id}`, {
+  return request(`/v1/branches/${data.id}`, {
     method: 'PUT',
     data,
     parse: true,
@@ -18,7 +18,7 @@ export function update(data = {}) {
 }
 
 export function details(data = {}) {
-  return request(`/branches/${data.id}`, {
+  return request(`/v1/branches/${data.id}`, {
     method: 'GET',
   });
 }

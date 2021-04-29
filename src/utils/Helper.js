@@ -28,6 +28,14 @@ export default class Helpers {
     return null;
   };
 
+  static getDateLocal = (value, format = variables.DATE_FORMAT.DATE) => {
+    if (value) {
+      const date = value.replace('+00:00', '+07:00');
+      return moment(date).format(format);
+    }
+    return null;
+  };
+
   static getDate = (value, format = variables.DATE_FORMAT.DATE) => {
     if (value) {
       return moment.utc(value).local().format(format);
