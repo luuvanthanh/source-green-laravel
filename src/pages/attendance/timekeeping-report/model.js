@@ -1,18 +1,11 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'branches',
+  namespace: 'timekeepingReport',
   state: {
     data: [],
-    pagination: {
-      total: 0,
-    },
-    error: {
-      isError: false,
-      data: {},
-    },
+    pagination: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -20,6 +13,17 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_ADD: (state, { payload }) => ({
+      ...state,
+      data: state.data.map((item) =>
+        item.id === payload.studentId
+          ? {
+              ...item,
+              attendance: [{ ...payload }],
+            }
+          : item,
+      ),
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -29,6 +33,10 @@ export default {
           ...payload,
         },
       },
+    }),
+    REMOVE_DATA: (state, { payload }) => ({
+      ...state,
+      data: state.data.filter((item) => item.id !== payload),
     }),
   },
   effects: {
@@ -48,26 +56,27 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *ADD({ payload, callback }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
+        const response = yield saga.call(services.add, payload);
         yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
+          type: 'SET_ADD',
+          payload: {
+            ...payload,
+            ...response.parsePayload,
+          },
         });
+        callback(payload);
         notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
+          message: 'Cập nhật thành công',
+          description: 'Bạn đã cập nhật thành công dữ liệu',
         });
       } catch (error) {
         notification.error({
-          message: 'THÔNG BÁO',
+          message: 'Thông báo',
           description: 'Vui lòng kiểm tra lại hệ thống',
         });
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
       }
     },
   },

@@ -99,6 +99,16 @@ export const variables = {
     PARENT: 'PARENT',
     TEACHER: 'TEACHER',
   },
+  CHOOSE: [
+    {
+      id: 'DATE',
+      name: 'Ngày',
+    },
+    {
+      id: 'MONTH',
+      name: 'Tháng',
+    },
+  ],
 };
 
 export default variables;

@@ -211,19 +211,6 @@ class Index extends PureComponent {
   header = () => {
     return [
       {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-200',
@@ -254,8 +241,8 @@ class Index extends PureComponent {
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 450,
-        className: 'min-width-450',
+        width: 500,
+        className: 'min-width-500',
         fixed: 'right',
         align: 'center',
         render: (record) => (
