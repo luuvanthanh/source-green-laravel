@@ -259,27 +259,13 @@ const General = memo(
                 </Pane>
               </Pane>
 
-              <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+              {/* <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                 Địa chỉ
-              </Heading>
-
-              <Pane className="row">
-                <Pane className="col-lg-6">
-                  <FormItem name="address" label="Số nhà" type={variables.INPUT} />
-                </Pane>
-                <Pane className="col-lg-6">
-                  <FormItem name="street" label="Tên đường" type={variables.INPUT} />
-                </Pane>
-              </Pane>
+              </Heading> */}
 
               <Pane className="row">
                 <Pane className="col-lg-12">
-                  <FormItem
-                    data={[]}
-                    name="wardId"
-                    label="Thành Phố/Quận Huyện"
-                    type={variables.CASCADER}
-                  />
+                  <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
                 </Pane>
               </Pane>
             </Pane>

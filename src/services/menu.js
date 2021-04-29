@@ -460,6 +460,14 @@ export async function getLeftMenuVehicel() {
 export async function getLeftMenuCriteria() {
   return [
     {
+      title: 'Báo cáo tổng quát trẻ',
+      key: 'report',
+      url: ['/tieu-chi-danh-gia/bao-cao-tong-quat-tre'],
+      icon: 'icon icon-dashboard',
+      permission: [],
+      pro: true,
+    },
+    {
       title: 'Đánh giá học tập',
       key: 'learn',
       url: ['/tieu-chi-danh-gia/danh-gia-hoc-tap', '/tieu-chi-danh-gia/danh-gia-hoc-tap/tao-moi'],
