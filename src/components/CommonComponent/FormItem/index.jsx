@@ -183,7 +183,7 @@ const renderChildren = (
       format={'[Tháng] MM/YYYY'}
       onChange={onChange}
       placeholder="Chọn"
-      picker={picker}
+      picker={'month'}
     />
   ),
   yearPicker: (

@@ -72,7 +72,6 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      console.log(details);
       this.formRef.current.setFieldsValue({
         ...details,
         data: [{

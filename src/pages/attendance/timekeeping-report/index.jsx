@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Typography, Button } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get, head } from 'lodash';
+import { debounce, isEmpty, get, head, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -49,6 +49,7 @@ class Index extends PureComponent {
       visible: false,
       search: {
         fullName: query?.fullName,
+        type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -162,6 +163,24 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchMonth = debounce((value) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate: moment(value).startOf('month'),
+          endDate: moment(value).endOf('month'),
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 300);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -186,6 +205,10 @@ class Index extends PureComponent {
    */
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  onChangeMonth = (e) => {
+    this.debouncedSearchMonth(e);
   };
 
   /**
@@ -234,15 +257,53 @@ class Index extends PureComponent {
     onShowSizeChange: (current, size) => {
       this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   renderTitleHeader = (index, item) => {
     if (index !== null && item) {
       return (
         <div>
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
+          {HelperModules.getDayOfWeek(moment(item).format('ddd'))}
+          <br /> {moment(item).format('DD-MM')}
         </div>
       );
+    }
+    return null;
+  };
+
+  renderContentDate = (date, record) => {
+    const attendance = record.attendance.find(
+      (item) =>
+        Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
+        Helper.getDate(date, variables.DATE_FORMAT.DATE_AFTER),
+    );
+    if (attendance) {
+      return variablesModules.STATUS_ABSENT_KEY[attendance.status];
+    }
+    return null;
+  };
+
+  renderReality = (items) => {
+    if (!isEmpty(items.attendance)) {
+      const attendance = items.attendance.filter(
+        (item) =>
+          item.stauts === variablesModules.STATUS_ABSENT.HAVE_IN ||
+          variablesModules.STATUS_ABSENT.HAVE_OUT,
+      );
+      return size(attendance);
+    }
+    return null;
+  };
+
+  renderAbsents = (items) => {
+    if (!isEmpty(items.attendance)) {
+      const attendance = items.attendance.filter(
+        (item) =>
+          item.stauts === variablesModules.STATUS_ABSENT.ANNUAL_LEAVE ||
+          variablesModules.STATUS_ABSENT.UNPAID_LEAVE,
+      );
+      return size(attendance);
     }
     return null;
   };
@@ -256,8 +317,9 @@ class Index extends PureComponent {
       {
         title: 'Họ và Tên',
         key: 'fullName',
-        className: 'min-width-200',
-        width: 200,
+        className: 'min-width-220',
+        width: 220,
+        fixed: 'left',
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record?.fileImage)}
@@ -287,6 +349,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
+        fixed: 'right',
         render: (record) => record?.class?.name,
       },
       {
@@ -295,7 +358,8 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record?.class?.name,
+        fixed: 'right',
+        render: (record) => this.renderAbsents(record),
       },
       {
         title: 'Học thực tế',
@@ -303,21 +367,23 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record?.class?.name,
+        fixed: 'right',
+        render: (record) => this.renderReality(record),
       },
     ];
     const arrayHeaderDate = Helper.convertArrayDays(search.startDate, search.endDate).map(
       (item, index) => {
         const startDate = moment(search.startDate);
         const endDate = moment(search.endDate);
-        const currentDate = Helper.convertArrayDays(startDate, endDate)[index];
         return {
           title: this.renderTitleHeader(index, item),
           key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100'),
-          width: 100,
+          className: classnames('min-width-80', 'max-width-80'),
+          width: 80,
           align: 'center',
-          render: (record) => <div className={styles['item-schedules']}>-</div>,
+          render: (record) => (
+            <div className={styles['item-schedules']}>{this.renderContentDate(item, record)}</div>
+          ),
         };
       },
     );
@@ -331,7 +397,6 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    console.log(data)
     const { search } = this.state;
     const loading = effects['timekeepingReport/GET_DATA'];
     return (
@@ -374,20 +439,35 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
+                {search.type === 'DATE' && (
+                  <>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="startDate"
+                        onChange={(event) => this.onChangeDate(event, 'startDate')}
+                        type={variables.DATE_PICKER}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="endDate"
+                        onChange={(event) => this.onChangeDate(event, 'endDate')}
+                        type={variables.DATE_PICKER}
+                      />
+                    </div>
+                  </>
+                )}
+                {search.type === 'MONTH' && (
+                  <>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="startDate"
+                        onChange={this.onChangeMonth}
+                        type={variables.MONTH_PICKER}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </Form>
             <Table
@@ -401,7 +481,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '70vh' }}
             />
           </div>
         </div>
