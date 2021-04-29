@@ -21,6 +21,10 @@ export default [
         component: './criteria/layout',
         routes: [
           {
+            path: '/tieu-chi-danh-gia',
+            redirect: '/tieu-chi-danh-gia/danh-gia-hoc-tap',
+          },
+          {
             path: '/tieu-chi-danh-gia/danh-gia-hoc-tap',
             component: './criteria/learn',
             wrappers: ['@/wrappers/auth'],
@@ -131,6 +135,12 @@ export default [
           {
             path: '/tieu-chi-danh-gia/cau-hinh/giao-cu/them-moi',
             component: './criteria/teaching-tools/tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/tieu-chi-danh-gia/bao-cao-tong-quat-tre',
+            component: './criteria/report',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

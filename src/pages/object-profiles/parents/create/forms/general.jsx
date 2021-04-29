@@ -190,16 +190,13 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
             </Pane>
 
-            <Heading type="form-block-title" {...marginProps}>
+            {/* <Heading type="form-block-title" {...marginProps}>
               Địa chỉ
-            </Heading>
+            </Heading> */}
 
             <Pane className="row border-bottom" {...marginProps}>
-              <Pane className="col-lg-4">
+              <Pane className="col-lg-12">
                 <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-8">
-                <FormItem data={[]} name="cityId" label="Thành phố" type={variables.CASCADER} />
               </Pane>
             </Pane>
 
