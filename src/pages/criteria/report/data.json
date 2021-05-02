@@ -1,0 +1,71 @@
+{
+  "LEARN": [
+    {
+      "id": 1,
+      "name": "Trò chơi thả bóng vào lỗ trên khay gỗ ",
+      "count": 15,
+      "total": 50
+    },
+    {
+      "id": 2,
+      "name": "Chuyển nước 1 (từ 2 rót thủy tinh) ",
+      "count": 14,
+      "total": 44
+    },
+    {
+      "id": 3,
+      "name": "Chuyển hạt bằng kẹp gỗ",
+      "count": 13,
+      "total": 45
+    },
+    {
+      "id": 4,
+      "name": "Bảng chữ số lõm, có bút gỗ kèm theo",
+      "count": 12,
+      "total": 35
+    },
+    {
+      "id": 5,
+      "name": "Ghép hình 3 hình tròn kích cỡ khác nhau",
+      "count": 12,
+      "total": 15
+    }
+  ],
+  "PROGRAM": [
+    {
+      "id": 1,
+      "name": "Trò chơi thả bóng vào lỗ trên khay gỗ ",
+      "count": 15,
+      "total": 50,
+      "finished": 2
+    },
+    {
+      "id": 2,
+      "name": "Trò chơi thả khối lăng trụ chữ nhật vào hộp có lỗ ",
+      "count": 14,
+      "total": 44,
+      "finished": 3
+    },
+    {
+      "id": 3,
+      "name": "Trò chơi thả quả bóng vào hộp có lỗ ",
+      "count": 13,
+      "total": 45,
+      "finished": 2
+    },
+    {
+      "id": 4,
+      "name": "Trò chơi thả bóng vào hộp có lỗ và ngăn kéo ",
+      "count": 12,
+      "total": 35,
+      "finished": 5
+    },
+    {
+      "id": 5,
+      "name": "Ghép hình 3 hình tròn kích cỡ khác nhau",
+      "count": 12,
+      "total": 15,
+      "finished": 2
+    }
+  ]
+}
