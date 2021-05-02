@@ -74,6 +74,10 @@
 }
 
 .report-list {
+  .dot {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
   .report-item {
     background: linear-gradient(0deg, #f8fafc, #f8fafc), #f8fbff;
     border-radius: 6px;
@@ -83,21 +87,21 @@
     align-items: center;
     .content {
       padding-left: 15px;
-      .title {
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 20px;
-        color: #676c72;
-        margin-bottom: 0;
-      }
-      .norm {
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 20px;
-        color: #36383a;
-        margin-bottom: 0;
-      }
     }
+  }
+  .title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #676c72;
+    margin-bottom: 0;
+  }
+  .norm {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #36383a;
+    margin-bottom: 0;
   }
 }
 
@@ -105,6 +109,10 @@
   display: flex;
   flex-wrap: wrap;
   margin: -10px -20px;
+  .dot {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
   .grid {
     width: 50%;
     padding: 10px 20px;
@@ -116,6 +124,57 @@
       display: flex;
       align-items: center;
       color: #36383a;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.feedback-container {
+  .feedback-item {
+    padding: 15px 0;
+    position: relative;
+    display: flex;
+    &:not(:first-child) {
+      border-top: 1px solid #f2f2f2;
+    }
+    .image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.07));
+      border-radius: 6px;
+    }
+    .date-group {
+      position: absolute;
+      right: 0;
+      top: 15px;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 18px;
+      color: #818182;
+    }
+    .feedback-content {
+      padding-left: 12px;
+    }
+    .title {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 24px;
+      color: #36383a;
+      margin-bottom: 0;
+    }
+    .sub-title {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 18px;
+      color: #7a7e84;
+      margin-bottom: 0;
+    }
+    .norm {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 18px;
+      color: #3e4247;
       margin-bottom: 0;
     }
   }
