@@ -1,9 +1,17 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN MODAL */
 
 .ant-modal-close {
   outline: none !important;
+}
+
+.ant-image-mask {
+  background: transparent;
+}
+
+.ant-image {
+  margin: 5px;
 }

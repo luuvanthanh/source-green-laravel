@@ -83,6 +83,10 @@ export default {
         });
         callback(payload);
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'error.message') || 'Lỗi hệ thông vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -95,6 +99,10 @@ export default {
         });
         callback(payload);
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'error.message') || 'Lỗi hệ thông vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },

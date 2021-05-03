@@ -1,5 +1,5 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Upload, Modal } from 'antd';
+import { Upload, Modal, Image } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch } from 'dva';
 import { get } from 'lodash';
@@ -17,7 +17,6 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   const dispatch = useDispatch();
   const [images, setImages] = useState(files || []);
-  const [showFullPreviewUrl, setShowFullPreviewUrl] = useState();
 
   const uploadAction = useCallback((file) => {
     dispatch({
@@ -67,37 +66,34 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   return (
     <>
-      <Modal
-        visible={!!showFullPreviewUrl}
-        title="Hình ảnh"
-        footer={null}
-        onCancel={() => setShowFullPreviewUrl()}
-      >
-        <img className={styles.fullImage} src={showFullPreviewUrl} alt="upload-image" />
-      </Modal>
-
       <Pane className="row">
-        {(images || []).map((item, index) => (
-          <Pane className="col-lg-3" key={index}>
-            <Pane className={styles.imageWrapper}>
-              <img
-                className={styles.thumb}
+        <div className="pl10 pt20">
+          <Image.PreviewGroup>
+            {(images || []).map((item, index) => (
+              <Image
+                width={105}
+                height={105}
                 src={`${API_UPLOAD}${item}`}
-                alt="uploaded-image=thumb"
+                key={index}
+                preview={{
+                  maskClassName: 'customize-mask',
+                  mask: (
+                    <>
+                      <EyeOutlined className="mr5" />
+                      <DeleteOutlined
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setImages((prev) => prev.filter((image) => image !== item));
+                          removeFiles && removeFiles(images.filter((image) => image !== item));
+                        }}
+                      />
+                    </>
+                  ),
+                }}
               />
-
-              <Pane className={styles.actions}>
-                <EyeOutlined onClick={() => setShowFullPreviewUrl(`${API_UPLOAD}/${item}`)} />
-                <DeleteOutlined
-                  onClick={() => {
-                    setImages((prev) => prev.filter((image) => image !== item));
-                    removeFiles && removeFiles(images.filter((image) => image !== item));
-                  }}
-                />
-              </Pane>
-            </Pane>
-          </Pane>
-        ))}
+            ))}
+          </Image.PreviewGroup>
+        </div>
 
         <Pane className="mt-4 col d-flex align-items-center">
           <Upload {...uploadProps} listType="picture-card">

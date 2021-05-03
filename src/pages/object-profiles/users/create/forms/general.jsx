@@ -7,7 +7,7 @@ import { connect, history, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import variablesModules from '../../../utils/variables';
@@ -28,6 +28,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   const formRef = useRef();
   const [fileImage, setFileImage] = useState(null);
   const mounted = useRef(false);
+  const [files, setFiles] = useState([]);
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
@@ -44,8 +45,8 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     dispatch({
       type: params.id ? 'OPusersAdd/UPDATE' : 'OPusersAdd/ADD',
       payload: params.id
-        ? { ...details, ...values, id: params.id, fileImage }
-        : { ...values, fileImage },
+        ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
+        : { ...values, fileImage: JSON.stringify(files) },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -104,7 +105,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         boD: moment(details.boD),
         identifyDate: moment(details.boD),
       });
-      mountedSet(setFileImage, details.fileImage);
+      if (Helper.isJSON(details?.fileImage)) {
+        mountedSet(setFiles, JSON.parse(details?.fileImage));
+      }
     }
   }, [details]);
 
@@ -124,11 +127,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             <Pane className="row">
               <Pane className="col">
                 <Form.Item name="avatar" label="Hình ảnh nhân viên">
-                  <ImageUpload
-                    callback={(res) => {
-                      mountedSet(setFileImage, res.fileInfo.url);
-                    }}
-                    fileImage={fileImage}
+                  <MultipleImageUpload
+                    files={files}
+                    callback={(files) => uploadFiles(files)}
+                    removeFiles={(files) => mountedSet(setFiles, files)}
                   />
                 </Form.Item>
               </Pane>
