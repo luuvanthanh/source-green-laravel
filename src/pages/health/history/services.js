@@ -25,7 +25,7 @@ export function getCriteriaGroupProperties(params = {}) {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-      groupName: 'Sức khỏe',
+      type: 'HEALTH'
     },
   });
 }

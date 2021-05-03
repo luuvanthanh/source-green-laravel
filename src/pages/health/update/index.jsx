@@ -215,9 +215,12 @@ const Index = memo(({}) => {
                 {(fields, { add, remove }) => (
                   <div>
                     {fields.map((field, index) => {
-                      const itemWaterBottles = waterBottles.find(
-                        (item, indexWater) => indexWater === index,
-                      );
+                      let itemWaterBottles = {};
+                      if (formRefModal.current) {
+                        const { data } = formRefModal.current.getFieldsValue();
+                        const itemData = data?.find((item, indexWater) => indexWater === index);
+                        itemWaterBottles = waterBottles?.find((item) => item.id === itemData?.id);
+                      }
                       return (
                         <div
                           className={csx('row', styles['form-item'], styles['form-item-advance'])}
@@ -364,7 +367,12 @@ const Index = memo(({}) => {
                           <span className={styles.circleIcon}>
                             <span className={'icon-baby-bottle'} />
                           </span>
-                          <span className={styles.infoText}>50 ml</span>
+                          <span className={styles.infoText}>
+                            {!isEmpty(waterBottles)
+                              ? waterBottles?.find((item) => item?.isUsing)?.type
+                              : 0}{' '}
+                            ml
+                          </span>
                         </Pane>
                       </Pane>
                       <Pane className="col-lg-6 text-right">

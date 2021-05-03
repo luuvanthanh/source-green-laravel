@@ -696,6 +696,13 @@ export async function getLeftMenuHealth() {
       permission: [],
     },
     {
+      title: 'Cấu hình bình nước',
+      key: 'water-bottles',
+      url: ['/suc-khoe/cau-hinh-binh-nuoc', '/suc-khoe/cau-hinh-binh-nuoc/tao-moi', '/suc-khoe/cau-hinh-binh-nuoc/:id/chi-tiet'],
+      icon: 'icon icon-setting',
+      permission: [],
+    },
+    {
       title: 'Lịch sử',
       key: 'history',
       url: ['/suc-khoe/lich-su', '/suc-khoe/lich-su/:id/chi-tiet'],
