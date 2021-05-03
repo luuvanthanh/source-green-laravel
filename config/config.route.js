@@ -1435,6 +1435,12 @@ export default [
             redirect: '/suc-khoe/hom-nay',
           },
           {
+            path: '/suc-khoe/cau-hinh-binh-nuoc',
+            component: './health/water-bottles',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/suc-khoe/hom-nay',
             component: './health',
             wrappers: ['@/wrappers/auth'],
