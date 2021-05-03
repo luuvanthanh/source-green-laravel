@@ -6,6 +6,7 @@ use GGPHP\Attendance\Transformers\AttendanceTransformer;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\InOutHistories\Transformers\InOutHistoriesTransformer;
+use GGPHP\YoungAttendance\Absent\Transformers\AbsentTransformer;
 use GGPHP\YoungAttendance\ShiftSchedule\Transformers\ScheduleTransformer;
 
 /**
@@ -32,7 +33,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance'];
+    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent'];
 
     /**
      * Transform the Student entity.
@@ -75,6 +76,16 @@ class StudentTransformer extends BaseTransformer
     public function includeAttendance(Student $student)
     {
         return $this->collection($student->attendance, new AttendanceTransformer, 'Attendance');
+    }
+
+    /**
+     * Include Absent
+     * @param Student $student
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeAbsent(Student $student)
+    {
+        return $this->collection($student->absent, new AbsentTransformer, 'Absent');
     }
 
     /**
