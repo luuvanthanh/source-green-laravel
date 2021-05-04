@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useState, useEffect, useCallback } from 'react';
 import { Form, Checkbox } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
@@ -34,11 +34,11 @@ const Index = memo(() => {
   const mountedSet = (action, value) => mounted?.current && action(value);
 
   const [type, setType] = useState(1);
+  const [files, setFiles] = useState([]);
 
   const formRef = useRef();
 
   const onFinish = (values) => {
-    console.log(values);
     const payload = {
       fromDate: values.range[0],
       toDate: values.range[1],
@@ -46,10 +46,18 @@ const Index = memo(() => {
         menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         dayOfWeek: item,
       })),
-      menuDetails: values.menuDetails.map((item) => ({
-        ...item,
-        menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      })),
+      menuDetails: values.menuDetails.map((item, index) => {
+        return {
+          ...item,
+          foods: item.foods.map((itemFood, indexDishes) => ({
+            ...itemFood,
+            imageUrl: JSON.stringify(
+              files?.find((item) => item.index === index && item.indexDishes === indexDishes)?.file,
+            ),
+          })),
+          menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        };
+      }),
       classMenus: values.classMenus
         ? values.classMenus.map((item) => ({
             classId: item,
@@ -101,6 +109,89 @@ const Index = memo(() => {
         class: classId,
       },
     });
+  };
+
+  const uploadFiles = useCallback((filesList, index, indexDishes) => {
+    setFiles((prev) => {
+      const fileItem = prev.find(
+        (item) => item.index === index && item.indexDishes === indexDishes,
+      );
+      if (!fileItem) {
+        return [...prev, { index: index, file: [filesList], indexDishes: indexDishes }];
+      } else {
+        return prev.map((item) => {
+          if (item.index === index && item.indexDishes === indexDishes) {
+            return {
+              ...item,
+              file: [...item.file, filesList],
+            };
+          }
+          return item;
+        });
+      }
+    });
+  });
+
+  const removeFiles = (listFiles, index, indexDishes) => {
+    setFiles((prev) => {
+      const fileItem = prev.find(
+        (item) => item.index === index && item.indexDishes === indexDishes,
+      );
+      if (fileItem) {
+        return prev.map((item) => {
+          if (item.index === index && item.indexDishes === indexDishes) {
+            return {
+              ...item,
+              file: listFiles,
+            };
+          }
+          return item;
+        });
+      }
+    });
+  };
+
+  const removeFilesFoods = (index, indexDishes) => {
+    setFiles((prev) => {
+      return prev
+        .filter(
+          (item) =>
+            (item.index === index && item.indexDishes !== indexDishes) || item.index !== index,
+        )
+        .map((item) => {
+          if (item.index === index) {
+            return {
+              ...item,
+              indexDishes:
+                item.indexDishes >= indexDishes ? item.indexDishes - 1 : item.indexDishes,
+            };
+          }
+          return item;
+        });
+    });
+  };
+
+  const removeFilesMenuDetails = (index) => {
+    setFiles((prev) => {
+      return prev
+        .filter((item) => item.index !== index)
+        .map((item) => {
+          return {
+            ...item,
+            index: item.index >= index ? item.index - 1 : item.index,
+          };
+        });
+    });
+  };
+
+  const getFiles = (listFiles, index, indexDishes) => {
+    const itemFile = listFiles.find(
+      (item) => item.index === index && item.indexDishes === indexDishes,
+    );
+    if (itemFile) {
+      return itemFile.file;
+    }
+    return [];
   };
 
   return (
@@ -242,7 +333,10 @@ const Index = memo(() => {
                                 <DeleteOutlined
                                   className="position-absolute"
                                   style={{ top: 20, right: 20, zIndex: 2 }}
-                                  onClick={() => remove(name)}
+                                  onClick={() => {
+                                    remove(name);
+                                    removeFilesMenuDetails(index);
+                                  }}
                                 />
                               )}
 
@@ -268,46 +362,53 @@ const Index = memo(() => {
                               <FormList name={[name, 'foods']}>
                                 {(dishes, { add: addDishes, remove: removeDishes }) => (
                                   <>
-                                    {dishes.map(({ key: dishesKey, name: dishesName }, index) => (
-                                      <Pane
-                                        className={csx(
-                                          'position-relative',
-                                          'row',
-                                          'pt20',
-                                          'border-bottom',
-                                        )}
-                                        key={dishesKey}
-                                      >
-                                        {dishes.length > 1 && (
-                                          <DeleteOutlined
-                                            className="position-absolute"
-                                            style={{ top: 20, right: 20, zIndex: 2 }}
-                                            onClick={() => removeDishes(dishesName)}
-                                          />
-                                        )}
-
-                                        <Pane className="col-lg-12">
-                                          <FormItem
-                                            label={`Tên món ${index + 1}`}
-                                            name={[dishesName, 'name']}
-                                            rules={[variables.RULES.EMPTY]}
-                                            type={variables.INPUT}
-                                          />
-                                        </Pane>
-
-                                        <Pane className="col-lg-12">
-                                          <FormItemAntd label="Hình ảnh">
-                                            <MultipleImageUpload
-                                              files={[]}
-                                              callback={(files) => {
-                                                console.log(files);
+                                    {dishes.map(
+                                      ({ key: dishesKey, name: dishesName }, indexDishes) => (
+                                        <Pane
+                                          className={csx(
+                                            'position-relative',
+                                            'row',
+                                            'pt20',
+                                            'border-bottom',
+                                          )}
+                                          key={dishesKey}
+                                        >
+                                          {dishes.length > 1 && (
+                                            <DeleteOutlined
+                                              className="position-absolute"
+                                              style={{ top: 20, right: 20, zIndex: 2 }}
+                                              onClick={() => {
+                                                removeFilesFoods(index, indexDishes);
+                                                removeDishes(dishesName);
                                               }}
-                                              // removeFiles={(files) => mountedSet(setFiles, files)}
                                             />
-                                          </FormItemAntd>
+                                          )}
+
+                                          <Pane className="col-lg-12">
+                                            <FormItem
+                                              label={`Tên món ${indexDishes + 1}`}
+                                              name={[dishesName, 'name']}
+                                              rules={[variables.RULES.EMPTY]}
+                                              type={variables.INPUT}
+                                            />
+                                          </Pane>
+
+                                          <Pane className="col-lg-12">
+                                            <FormItemAntd label="Hình ảnh">
+                                              <MultipleImageUpload
+                                                files={getFiles(files, index, indexDishes)}
+                                                callback={(filesList) =>
+                                                  uploadFiles(filesList, index, indexDishes)
+                                                }
+                                                removeFiles={(filesList) =>
+                                                  removeFiles(filesList, index, indexDishes)
+                                                }
+                                              />
+                                            </FormItemAntd>
+                                          </Pane>
                                         </Pane>
-                                      </Pane>
-                                    ))}
+                                      ),
+                                    )}
 
                                     <Pane className="mt20 mb20">
                                       <Button color="success" ghost icon="plus" onClick={addDishes}>
