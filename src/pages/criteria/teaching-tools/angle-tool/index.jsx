@@ -62,7 +62,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
-            onClick={() => history.push(`/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/${record?.id}/chi-tiet`)}
+            onClick={() => history.push(`/chuong-trinh-hoc/cau-hinh/goc-giao-cu/${record?.id}/chi-tiet`)}
           >
             Chi tiết
           </Button>
@@ -112,7 +112,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="success"
             icon="plus"
-            onClick={() => history.push('/tieu-chi-danh-gia/cau-hinh/goc-giao-cu/them-moi')}
+            onClick={() => history.push('/chuong-trinh-hoc/cau-hinh/goc-giao-cu/them-moi')}
           >
             Tạo mới
           </Button>

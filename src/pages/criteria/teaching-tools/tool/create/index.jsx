@@ -138,7 +138,7 @@ const Index = memo(({ }) => {
                           </p>
                         )}
                       </Pane>
-                      <Text size="normal" >Tiêu chí đánh giá</Text>
+                      <Text size="normal" >Chương trình học</Text>
                       {
                         item?.childs.map((itemChild, indexChild) => (
                           <Pane key={indexChild} className="mt10 d-flex justify-content-between align-items-center groups-input">
