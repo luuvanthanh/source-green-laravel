@@ -1,40 +1,65 @@
-import { memo, useEffect } from 'react'
-import { Helmet } from 'react-helmet'
-import { useRouteMatch } from 'umi'
-import { useSelector, useDispatch } from 'dva'
+import { memo, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { useRouteMatch, history } from 'umi';
+import { useSelector, useDispatch } from 'dva';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Loading from '@/components/CommonComponent/Loading';
 
-import { variables, Helper } from '@/utils'
-import styles from '@/assets/styles/Common/information.module.scss'
+import { variables, Helper } from '@/utils';
+import styles from '@/assets/styles/Common/information.module.scss';
+import Button from '@/components/CommonComponent/Button';
 
 const Index = memo(() => {
-  const dispatch = useDispatch()
-  const [{ details, error }, loading] = useSelector(({ mediaDetails, loading }) => [mediaDetails, loading?.effects])
+  const dispatch = useDispatch();
+  const [{ details, error }, loading] = useSelector(({ mediaDetails, loading }) => [
+    mediaDetails,
+    loading?.effects,
+  ]);
 
-  const { params } = useRouteMatch()
+  const { params } = useRouteMatch();
 
   const fetchDetailsMedia = () => {
     dispatch({
       type: 'mediaDetails/GET_DETAILS',
-      payload: params
-    })
-  }
+      payload: params,
+    });
+  };
+
+  const remove = () => {
+    dispatch({
+      type: 'mediaDetails/REMOVE',
+      payload: params,
+      callback: (response) => {
+        if (response) {
+          history.goBack();
+        }
+      },
+    });
+  };
 
   useEffect(() => {
-    fetchDetailsMedia()
-  }, [])
+    fetchDetailsMedia();
+  }, []);
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Loading loading={loading['mediaDetails/GET_DETAILS']} isError={error.isError} params={{ error, type: 'container' }}>
+      <Loading
+        loading={loading['mediaDetails/GET_DETAILS']}
+        isError={error.isError}
+        params={{ error, type: 'container' }}
+      >
         <Helmet title="Chi tiết ghi nhận" />
         <Pane className="row" style={{ marginBottom: 20 }}>
           <Pane className="col">
             <Heading type="page-title">Chi tiết ghi nhận</Heading>
+          </Pane>
+          <Pane className="col text-right">
+            <Button className="ml-auto" color="danger" icon="remove" size="large" onClick={remove}>
+              Xóa
+            </Button>
           </Pane>
         </Pane>
 
@@ -46,9 +71,7 @@ const Index = memo(() => {
               </Heading>
             </Pane>
             <Pane style={{ marginBottom: 10 }}>
-              <Heading type="form-sub-title">
-                Mã ID: {details?.id}
-              </Heading>
+              <Heading type="form-sub-title">Mã ID: {details?.id}</Heading>
             </Pane>
             <Pane style={{ marginBottom: 20 }}>
               <Heading type="page-title">{details?.description}</Heading>
@@ -57,11 +80,7 @@ const Index = memo(() => {
             <Pane className="row">
               {(details?.files || []).map(({ id, name, url }) => (
                 <Pane className="col-lg-2" key={id}>
-                  <img
-                    className="d-block w-100"
-                    src={`${API_UPLOAD}${url}`}
-                    alt={name}
-                  />
+                  <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
                 </Pane>
               ))}
             </Pane>
@@ -126,8 +145,8 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Loading>
-    </Pane >
-  )
-})
+    </Pane>
+  );
+});
 
-export default Index
+export default Index;
