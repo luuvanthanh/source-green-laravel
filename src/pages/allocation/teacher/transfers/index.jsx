@@ -119,18 +119,16 @@ class Index extends PureComponent {
     this.setStateData({ loadingTeacher: true });
     const { dispatch } = this.props;
     const payload = {
-      classId,
-      hasClass: true,
-      include: Helper.convertIncludes(['positionLevel']),
+      class: classId,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     };
-
     dispatch({
-      type: 'categories/GET_TEACHERS',
+      type: 'allocationTeacherTransfers/GET_TEACHERS',
       payload,
       callback: (res, error) => {
         if (res) {
           this.setStateData({
-            teachers: res?.parsePayload || [],
+            teachers: res?.items || [],
             loadingTeacher: false
           });
         }
@@ -265,18 +263,18 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={teachers}
-                      renderItem={({ id, fullName, fileImage, positionLevel }, index) => (
+                      renderItem={({ id, employee }, index) => (
                         <List.Item key={index}>
                           <Checkbox
                             className={stylesAllocation.checkbox}
-                            onChange={this.toggleCheckbox(id)}
-                            checked={!_.isEmpty(selectedTeachers) ? selectedTeachers.includes(id) : false}
+                            onChange={this.toggleCheckbox(employee?.id)}
+                            checked={!_.isEmpty(selectedTeachers) ? selectedTeachers.includes(employee?.id) : false}
                           />
                           <div className={stylesAllocation['group-info']}>
-                            <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                            <AvatarTable fileImage={Helper.getPathAvatarJson(employee?.fileImage)} />
                             <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                              <p className={stylesAllocation['norm']}>{!_.isEmpty(positionLevel) ? _.map(positionLevel, 'position.name').join(', ') : ''}</p>
+                              <h3 className={stylesAllocation['title']}>{employee?.fullName || ''}</h3>
+                              <p className={stylesAllocation['norm']}>{employee?.position?.name || ''}</p>
                             </div>
                           </div>
                         </List.Item>
