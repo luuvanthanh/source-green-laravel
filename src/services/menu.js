@@ -698,7 +698,11 @@ export async function getLeftMenuHealth() {
     {
       title: 'Cấu hình bình nước',
       key: 'water-bottles',
-      url: ['/suc-khoe/cau-hinh-binh-nuoc', '/suc-khoe/cau-hinh-binh-nuoc/tao-moi', '/suc-khoe/cau-hinh-binh-nuoc/:id/chi-tiet'],
+      url: [
+        '/suc-khoe/cau-hinh-binh-nuoc',
+        '/suc-khoe/cau-hinh-binh-nuoc/tao-moi',
+        '/suc-khoe/cau-hinh-binh-nuoc/:id/chi-tiet',
+      ],
       icon: 'icon icon-setting',
       permission: [],
     },
@@ -729,86 +733,7 @@ export async function getLeftMenuHRM() {
           ],
           permission: [],
         },
-        {
-          title: 'QĐ Điều chuyển',
-          key: 'transfers',
-          url: [
-            '/quan-ly-nhan-su/dieu-chuyen',
-            '/quan-ly-nhan-su/dieu-chuyen/tao-moi',
-            '/quan-ly-nhan-su/dieu-chuyen/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Bổ nhiệm',
-          key: 'dismisseds',
-          url: [
-            '/quan-ly-nhan-su/mien-nhiem',
-            '/quan-ly-nhan-su/mien-nhiem/tao-moi',
-            '/quan-ly-nhan-su/mien-nhiem/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Miễn nhiệm',
-          key: 'appoints',
-          url: [
-            '/quan-ly-nhan-su/bo-nhiem',
-            '/quan-ly-nhan-su/bo-nhiem/tao-moi',
-            '/quan-ly-nhan-su/bo-nhiem/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Khen thưởng/ Kỷ luật',
-          key: 'decision-rewards',
-          url: [
-            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
-            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
-            '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Thôi việc',
-          key: 'resignation-decisions',
-          url: [
-            '/quan-ly-nhan-su/thoi-viec',
-            '/quan-ly-nhan-su/thoi-viec/tao-moi',
-            '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Tạm hoãn công việc',
-          key: 'decision-suspends',
-          url: [
-            '/quan-ly-nhan-su/tam-hoan-cong-viec',
-            '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
-            '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Đơn đi công tác',
-          key: 'business-cards',
-          url: [
-            '/quan-ly-nhan-su/don-di-cong-tac',
-            '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
-            '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'QĐ Tăng lương',
-          key: 'salary-increases',
-          url: [
-            '/quan-ly-nhan-su/tang-luong',
-            '/quan-ly-nhan-su/tang-luong/tao-moi',
-            '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
-          ],
-          permission: [],
-        },
+
         {
           title: 'Bảo hiểm xã hội',
           key: 'insurrances',
@@ -850,9 +775,95 @@ export async function getLeftMenuHRM() {
           permission: [],
         },
         {
-          title: 'Cấu hình',
+          title: 'Quyết định',
+          key: 'QD',
+          permission: [],
+          children: [
+            {
+              title: 'QĐ Điều chuyển',
+              key: 'transfers',
+              url: [
+                '/quan-ly-nhan-su/dieu-chuyen',
+                '/quan-ly-nhan-su/dieu-chuyen/tao-moi',
+                '/quan-ly-nhan-su/dieu-chuyen/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Bổ nhiệm',
+              key: 'dismisseds',
+              url: [
+                '/quan-ly-nhan-su/mien-nhiem',
+                '/quan-ly-nhan-su/mien-nhiem/tao-moi',
+                '/quan-ly-nhan-su/mien-nhiem/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Miễn nhiệm',
+              key: 'appoints',
+              url: [
+                '/quan-ly-nhan-su/bo-nhiem',
+                '/quan-ly-nhan-su/bo-nhiem/tao-moi',
+                '/quan-ly-nhan-su/bo-nhiem/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Khen thưởng/ Kỷ luật',
+              key: 'decision-rewards',
+              url: [
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Thôi việc',
+              key: 'resignation-decisions',
+              url: [
+                '/quan-ly-nhan-su/thoi-viec',
+                '/quan-ly-nhan-su/thoi-viec/tao-moi',
+                '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Tạm hoãn công việc',
+              key: 'decision-suspends',
+              url: [
+                '/quan-ly-nhan-su/tam-hoan-cong-viec',
+                '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
+                '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Đơn đi công tác',
+              key: 'business-cards',
+              url: [
+                '/quan-ly-nhan-su/don-di-cong-tac',
+                '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
+                '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Tăng lương',
+              key: 'salary-increases',
+              url: [
+                '/quan-ly-nhan-su/tang-luong',
+                '/quan-ly-nhan-su/tang-luong/tao-moi',
+                '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+          ],
+        },
+        {
+          title: 'Danh mục',
           key: 'categories',
-          icon: 'icon icon-list',
           permission: [],
           children: [
             {
