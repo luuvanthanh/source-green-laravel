@@ -3,7 +3,7 @@ import React from 'react';
 import { history } from 'umi';
 
 const NoFoundPage = () => (
-  <div className="d-flex justify-content-center align-items-center h-100">
+  <div className="d-flex justify-content-center align-items-center h-100" style={{ zIndex: 1 }}>
     <Result
       extra={
         <Button onClick={() => history.push('/')} type="primary">

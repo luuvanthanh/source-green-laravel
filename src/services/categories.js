@@ -16,7 +16,10 @@ export function getRoles(params = {}) {
 export function getStudents(params = {}) {
   return request('/students', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }
 

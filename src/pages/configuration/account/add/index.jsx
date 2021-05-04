@@ -134,7 +134,7 @@ class Index extends PureComponent {
           : 'configurationAccountAdd/ADD_PARENTS_ACCOUNTS',
       payload: {
         parentId: values.parentId,
-        employeeId: values.parentId,
+        employeeId: values.employeeId,
         account: {
           userName: values.parentId,
           password: values.password,

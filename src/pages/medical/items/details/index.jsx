@@ -84,7 +84,7 @@ const Index = memo(({}) => {
               <Pane className="card">
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
-                    {Helper.getDate(details, variables.DATE_FORMAT.DATE_TIME)}
+                    {Helper.getDate(details.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                   </Heading>
                   <Heading type="form-title">{details?.diseaseName}</Heading>
                 </Pane>
@@ -188,11 +188,11 @@ const Index = memo(({}) => {
                       <Pane style={{ padding: 20, width: '100%' }} className="row">
                         <Pane className="col-md-5">
                           <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
-                            {Helper.getDate(item, variables.DATE_FORMAT.DATE_TIME)}
+                            {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                           </Heading>
                         </Pane>
                         <Pane className="col-md-7">
-                          <Pane>{variablesModules?.MEDICAL_ACTION_TYPE[`${item.actionType}`]}</Pane>
+                          <Pane>{variablesModules?.MEDICAL_ACTION_TYPE[item.actionType]}</Pane>
                         </Pane>
                       </Pane>
                     </ListItem>

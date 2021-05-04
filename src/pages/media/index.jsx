@@ -68,7 +68,9 @@ const Index = memo(() => {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-120',
-      render: (record) => <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>,
+      render: (record) => (
+        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
+      ),
     },
     {
       title: 'Lớp',
@@ -87,7 +89,9 @@ const Index = memo(() => {
       key: 'parent',
       className: 'min-width-120',
       render: (record) => (
-        <Text size="normal">{record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}</Text>
+        <Text size="normal">
+          {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
+        </Text>
       ),
     },
     {
@@ -136,15 +140,21 @@ const Index = memo(() => {
     [pagination],
   );
 
-  const changeFilter = debounce(
-    (name) => (value) => {
-      setSearch((prevSearch) => ({
-        ...prevSearch,
-        [name]: value,
-      }));
-    },
-    300,
-  );
+  const changeFilterDebouce = debounce((name, value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
+  }, 300);
+
+  const changeFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
+  };
+
+  const changeFilterBranch = (name) => (value) => {
+    changeFilterDebouce(name, value);
+    fetchClasses(name);
+  };
 
   const changeFilterDate = (values) => {
     setSearch((prevSearch) => ({
@@ -159,7 +169,7 @@ const Index = memo(() => {
       type: 'media/GET_DATA',
       payload: {
         ...search,
-        status: localVariables.CLASSIFY_STATUS.POST
+        status: localVariables.CLASSIFY_STATUS.POST,
       },
     });
     history.push({
@@ -169,6 +179,9 @@ const Index = memo(() => {
   }, [search]);
 
   const fetchBranches = () => {
+    if(search.branchId){
+      fetchClasses(search.branchId)
+    }
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
@@ -247,7 +260,7 @@ const Index = memo(() => {
                     name="branchId"
                     type={variables.SELECT}
                     data={category?.branches || []}
-                    onChange={fetchClasses}
+                    onChange={(value) => changeFilterBranch('branchId')(value)}
                   />
                 </Pane>
                 <Pane className="col-lg-3">

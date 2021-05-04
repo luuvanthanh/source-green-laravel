@@ -1,16 +1,12 @@
+import { notification } from 'antd';
+import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'menuKid',
+  namespace: 'waterBottles',
   state: {
     data: [],
-    pagination: {
-      total: 0,
-    },
-    error: {
-      isError: false,
-      data: {},
-    },
+    pagination: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -47,6 +43,34 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_WATER_BOTTLES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getWaterBottles, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *WATER_BOTTLES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.waterBottles, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: error?.data?.error?.message || 'Cập nhật thất bại',
+        });
+        callback(null, error?.data?.error);
       }
     },
   },

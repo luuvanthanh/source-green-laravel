@@ -8,7 +8,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
-import { variables } from '@/utils/variables';
+import { variables, Helper } from '@/utils';
 import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
@@ -197,7 +197,9 @@ const General = memo(({}) => {
         dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
         dateOff: details.dateOff && moment(details.dateOff),
       });
-      mountedSet(setFileImage, details.fileImage);
+      if (Helper.isJSON(details?.fileImage)) {
+        mountedSet(setFiles, JSON.parse(details?.fileImage));
+      }
     }
   }, [details]);
 

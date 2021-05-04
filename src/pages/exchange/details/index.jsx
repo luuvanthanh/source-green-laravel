@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Input, Typography, Form, message, Select } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Modal, Avatar, Input, Typography, Form, message, Select, Image } from 'antd';
+import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
+
 import { isEmpty, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -303,12 +304,21 @@ class Index extends PureComponent {
                   dangerouslySetInnerHTML={{ __html: details.description }}
                 ></div>
                 <div className={stylesExchange['list-image']}>
-                  {Helper.isJSON(details.files) &&
-                    JSON.parse(details.files).map((item) => (
-                      <div className={stylesExchange['image-item']} key={item}>
-                        <img src={`${API_UPLOAD}${item}`} className={stylesExchange['image']} />
-                      </div>
-                    ))}
+                  <Image.PreviewGroup>
+                    {Helper.isJSON(details.files) &&
+                      JSON.parse(details.files).map((item, index) => (
+                        <Image
+                          width={80}
+                          height={80}
+                          src={`${API_UPLOAD}${item}`}
+                          key={index}
+                          preview={{
+                            maskClassName: 'customize-mask',
+                            mask: <EyeOutlined className="mr5" />,
+                          }}
+                        />
+                      ))}
+                  </Image.PreviewGroup>
                 </div>
                 <hr />
                 <div className={stylesExchange['group-user']}>

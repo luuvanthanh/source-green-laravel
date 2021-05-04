@@ -6,3 +6,12 @@ export function changeClassTeacher({ id, data }) {
     data
   });
 }
+
+export function getTeachers(params = {}) {
+  return request('/class-teachers', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}

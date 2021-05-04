@@ -84,7 +84,7 @@ class IndexLayout extends React.PureComponent {
       if (/^\/quan-ly-phuong-tien(?=\/|$)/i.test(pathname)) {
         return 'vehicel';
       }
-      if (/^\/tieu-chi-danh-gia(?=\/|$)/i.test(pathname)) {
+      if (/^\/chuong-trinh-hoc(?=\/|$)/i.test(pathname)) {
         return 'criteria';
       }
       if (/^\/thuc-don(?=\/|$)/i.test(pathname)) {
