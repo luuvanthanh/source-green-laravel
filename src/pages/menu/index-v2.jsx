@@ -1,12 +1,13 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, List, Timeline } from 'antd';
+import { Form, List, Timeline, Image } from 'antd';
 import { useHistory, useLocation, useDispatch, useSelector } from 'dva';
+import { EyeOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { RRule, RRuleSet } from 'rrule';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -22,29 +23,86 @@ const { Item: ListItem } = List;
 const { Item: TimelineItem } = Timeline;
 
 const Index = memo(() => {
-  const [loadingReducer, { data, pagination, error }] = useSelector(({ loading, menuKid }) => [
-    loading,
-    menuKid,
-  ]);
+  const [
+    loadingReducer,
+    { data, pagination, error, branches, classes },
+  ] = useSelector(({ loading, menuKid }) => [loading, menuKid]);
   const loading = loadingReducer?.effects['menuKid/GET_DATA'];
   const dispatch = useDispatch();
   const mounted = useRef(false);
   const mountedSet = (action, value) => mounted?.current && action(value);
 
   const history = useHistory();
-  const { query } = useLocation();
+  const { query, pathname } = useLocation();
 
   const filterRef = useRef();
 
-  const [search /*setSearch*/] = useState({
-    position: query?.position || 1,
-    class: query?.class || 1,
-    rangeTime: query?.rangeTime || [moment('2021/03/01'), moment('2021/03/15')],
+  const [search, setSearch] = useState({
+    branchId: query?.branchId,
+    classId: query?.classId,
+    rangeTime:
+      query.fromDate && query.toDate
+        ? [moment(query.fromDate), moment(query.toDate)]
+        : [moment().startOf('weeks'), moment().endOf('weeks')],
   });
 
   useEffect(() => {
     dispatch({
       type: 'menuKid/GET_DATA',
+      payload: {
+        branchId: search?.branchId,
+        classId: search?.classId,
+        fromDate: search.rangeTime[0],
+        toDate: search.rangeTime[1],
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        branchId: search?.branchId,
+        classId: search?.classId,
+        fromDate: Helper.getDate(search.rangeTime[0], variables.DATE_FORMAT.DATE_AFTER),
+        toDate: Helper.getDate(search.rangeTime[1], variables.DATE_FORMAT.DATE_AFTER),
+      }),
+    });
+  }, [search]);
+
+  const changeFilterDebouce = debounce((value, name) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
+  }, 300);
+
+  const changeFilter = (value, name) => {
+    changeFilterDebouce(value, name);
+  };
+
+  const changeFilterBranch = (value, name) => {
+    changeFilterDebouce(value, name);
+    fetchClasses(value);
+  };
+
+  const fetchClasses = (branchId) => {
+    dispatch({
+      type: 'menuKid/GET_CLASSES',
+      payload: {
+        branch: branchId,
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (search.branchId) {
+      dispatch({
+        type: 'menuKid/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    dispatch({
+      type: 'menuKid/GET_BRANCHES',
       payload: {},
     });
   }, []);
@@ -115,16 +173,18 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-4">
                   <FormItem
-                    name="position"
+                    name="branchId"
                     type={variables.SELECT}
-                    data={[{ id: 1, name: 'Lake View' }]}
+                    data={branches}
+                    onChange={(event) => changeFilterBranch(event, 'branchId')}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem
-                    name="class"
+                    name="classId"
                     type={variables.SELECT}
-                    data={[{ id: 1, name: 'Preschool 1' }]}
+                    data={classes}
+                    onChange={(event) => changeFilter(event, 'classId')}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -158,14 +218,26 @@ const Index = memo(() => {
                                 {Helper.getDate(toTime, variables.DATE_FORMAT.TIME_FULL)}
                               </b>
                             </Pane>
-                            {foods?.map(({ name, image }, index) => (
+                            {foods?.map(({ name, imageUrl }, index) => (
                               <Pane key={index} className="mb5">
                                 <Text size="normal">{name}</Text>
-                                <img
-                                  src={'https://bit.ly/3mF1QGn'}
-                                  alt="dishes-preview"
-                                  className={styles['dishes-image']}
-                                />
+                                {Helper.isJSON(imageUrl) && (
+                                  <Image.PreviewGroup>
+                                    {Helper.isJSON(imageUrl) &&
+                                      JSON.parse(imageUrl).map((item, index) => (
+                                        <Image
+                                          width={80}
+                                          height={80}
+                                          src={`${API_UPLOAD}${item}`}
+                                          key={index}
+                                          preview={{
+                                            maskClassName: 'customize-mask',
+                                            mask: <EyeOutlined className="mr5" />,
+                                          }}
+                                        />
+                                      ))}
+                                  </Image.PreviewGroup>
+                                )}
                               </Pane>
                             ))}
                           </TimelineItem>

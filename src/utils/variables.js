@@ -66,7 +66,7 @@ export const variables = {
   // DATE FORMAT
   DATE_FORMAT: {
     DATE: 'DD-MM-YYYY',
-    DATE_TIME: 'HH:mm, DD-MM-YYYY',
+    DATE_TIME: 'DD-MM-YYYY, HH:mm',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
@@ -74,7 +74,6 @@ export const variables = {
     DAY_NAME: 'ddd',
     WEEKLY: 'weekly',
     // TODO: rename
-    DATE_TIME_VI: 'HH:mm, DD/MM/YYYY',
     DATE_VI: 'DD/MM/YYYY',
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
   },

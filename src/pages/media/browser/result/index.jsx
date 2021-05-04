@@ -294,7 +294,7 @@ const Index = memo(() => {
                           Thời gian tải lên:
                         </label>
                         <span className={infoStyles.infoText}>
-                          {moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME_VI)}
+                          {moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME)}
                         </span>
                       </Pane>
                       <Button
