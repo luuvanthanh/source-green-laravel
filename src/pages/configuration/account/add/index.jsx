@@ -136,7 +136,7 @@ class Index extends PureComponent {
         parentId: values.parentId,
         employeeId: values.employeeId,
         account: {
-          userName: values.parentId,
+          userName: values.userName,
           password: values.password,
           email: values.email,
           roleId: values.roleId,
