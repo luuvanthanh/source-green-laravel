@@ -643,4 +643,13 @@ export default class Helpers {
     }
     return [];
   };
+
+  static onSortDates = (data = [], key = 'created_at') => {
+    if (!isEmpty(data)) {
+      return data.sort((a, b) => {
+        return new Date(b[`${key}`]) - new Date(a[`${key}`]);
+      });
+    }
+    return [];
+  };
 }

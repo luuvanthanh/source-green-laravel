@@ -127,6 +127,7 @@ export const variables = {
     { id: 'Saturday', name: 'Thứ bảy' },
     { id: 'Sunday', name: 'Chủ nhật' },
   ],
+  WEEKLY: 'WEEKLY',
 };
 
 export default variables;

@@ -133,7 +133,7 @@ form .ant-cascader-picker:only-child {
     width: 100%;
   }
   .ant-tabs-left {
-    &>.ant-tabs-nav {
+    & > .ant-tabs-nav {
       .ant-tabs-tab {
         padding: 15px;
         margin: 0;
@@ -147,7 +147,7 @@ form .ant-cascader-picker:only-child {
       }
     }
     &.active-tab {
-      &>.ant-tabs-nav {
+      & > .ant-tabs-nav {
         .ant-tabs-tab {
           background: $white;
         }
@@ -174,7 +174,7 @@ form .ant-cascader-picker:only-child {
     font-size: 13px;
   }
   .btn-switch {
-    min-width: 50px
+    min-width: 50px;
   }
   .ant-form-item-control-input {
     min-height: unset;
@@ -192,10 +192,22 @@ form .ant-cascader-picker:only-child {
   }
 }
 
+.checkbox-group {
+  .ant-checkbox-group {
+    label {
+      display: block;
+    }
+  }
+  .ant-checkbox-wrapper {
+    margin-left: 0;
+  }
+}
+
 .checkbox-column {
   .ant-checkbox-group {
     display: flex;
     flex-direction: column;
+
     .ant-checkbox-wrapper {
       margin: 0;
       padding: 15px 20px;
@@ -203,7 +215,7 @@ form .ant-cascader-picker:only-child {
       &:last-child {
         border-bottom: unset;
       }
-      .ant-form-item input[type='checkbox'] {
+      .ant-form-item input[type="checkbox"] {
         width: 24px;
         height: 24px;
       }
@@ -252,7 +264,7 @@ form .ant-cascader-picker:only-child {
 }
 
 .color-success {
-  color: $text-success
+  color: $text-success;
 }
 
 .pointer {
