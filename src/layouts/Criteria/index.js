@@ -44,7 +44,7 @@ class MainLayout extends React.PureComponent {
           menu={menuLeftCriteria}
           info={{
             icon: '/images/home/spreadsheet.svg',
-            title: 'Tiêu chí đánh giá',
+            title: 'Chương trình học',
           }}
         />
         <Settings />

@@ -50,7 +50,7 @@ const Index = memo((props) => {
         <div className={styles['list-button']}>
           <Button
             color="success"
-            onClick={(id = 1) => props.history.push(`/tieu-chi-danh-gia/chuong-trinh-hoc/${id}`)}
+            onClick={(id = 1) => props.history.push(`/chuong-trinh-hoc/chuong-trinh-hoc/${id}`)}
           >
             Chi tiết
           </Button>
