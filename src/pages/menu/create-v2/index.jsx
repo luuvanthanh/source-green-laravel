@@ -1,46 +1,37 @@
-import { memo, useRef, useState } from 'react'
-import { Form, Checkbox } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
-import { Helmet } from 'react-helmet'
+import { memo, useRef, useState } from 'react';
+import { Form, Checkbox } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import Button from '@/components/CommonComponent/Button'
-import FormItem from '@/components/CommonComponent/FormItem'
-import ImageUpload from '@/components/CommonComponent/ImageUpload'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
+import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import variablesModules from '../utils/variables';
 
-import variables from '@/utils/variables'
-
-const days = [
-  { id: 1, name: 'Thứ hai' },
-  { id: 2, name: 'Thứ ba' },
-  { id: 3, name: 'Thứ tư' },
-  { id: 4, name: 'Thứ năm' },
-  { id: 5, name: 'Thứ sáu' },
-  { id: 6, name: 'Thứ bảy' },
-  { id: 7, name: 'Chủ nhật' },
-]
+import variables from '@/utils/variables';
 
 const classes = [
   { id: 1, name: 'Lớp Preschool 1' },
   { id: 2, name: 'Lớp Preschool 2' },
-]
+];
 
-const { List: FormList, Item: FormItemAntd } = Form
+const { List: FormList, Item: FormItemAntd } = Form;
 
 const Index = memo(() => {
-  const [type, setType] = useState(1)
+  const [type, setType] = useState(1);
 
-  const formRef = useRef()
+  const formRef = useRef();
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title="Tạo y tế" />
+      <Helmet title="Tạo thực đơn" />
       <Pane className="row" style={{ marginBottom: 20 }}>
         <Pane className="col">
-          <Heading type="page-title">Tạo y tế</Heading>
+          <Heading type="page-title">Tạo thực đơn</Heading>
         </Pane>
       </Pane>
 
@@ -49,13 +40,15 @@ const Index = memo(() => {
         ref={formRef}
         initialValues={{
           type: 1,
-          menu: [{ dishes: [{}] }]
+          menu: [{ dishes: [{}] }],
         }}
       >
         <Pane className="row">
           <Pane className="col-lg-6">
             <Pane className="card" style={{ padding: 20 }}>
-              <Heading type="form-title" style={{ marginBottom: 20 }}>Thông tin chung</Heading>
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                Thông tin chung
+              </Heading>
 
               <Pane className={csx('row', 'border-bottom', 'mb20')}>
                 <Pane className="col-lg-12">
@@ -64,10 +57,10 @@ const Index = memo(() => {
                     name="day"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT_MUTILPLE}
-                    data={days}
+                    data={variablesModules.DAYS}
                   />
                 </Pane>
-                <Pane className="col-lg-6">
+                <Pane className="col-lg-8">
                   <FormItem
                     label="Khoảng thời gian áp dụng"
                     name="range"
@@ -122,9 +115,7 @@ const Index = memo(() => {
                       label="Chọn trẻ"
                       name="student"
                       type={variables.SELECT}
-                      data={[
-                        { id: 1, name: 'Subeo' },
-                      ]}
+                      data={[{ id: 1, name: 'Subeo' }]}
                     />
                   </Pane>
                 </Pane>
@@ -147,11 +138,13 @@ const Index = memo(() => {
                           <Pane
                             key={key}
                             className={csx('position-relative', {
-                              'border-bottom': index < times.length - 1
+                              'border-bottom': index < times.length - 1,
                             })}
                             style={{ padding: '20px 20px 0 20px' }}
                           >
-                            <Heading type="form-block-title" style={{ marginBottom: 12 }}>Mốc thời gian {index + 1}</Heading>
+                            <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                              Mốc thời gian {index + 1}
+                            </Heading>
 
                             {times.length > 1 && (
                               <DeleteOutlined
@@ -165,24 +158,32 @@ const Index = memo(() => {
                               <Pane className="col-lg-6">
                                 <FormItem
                                   label="Giờ bắt đầu"
-                                  name={[name, "time_start"]}
+                                  name={[name, 'fromTime']}
                                   type={variables.TIME_PICKER}
                                 />
                               </Pane>
                               <Pane className="col-lg-6">
                                 <FormItem
                                   label="Giờ kết thúc"
-                                  name={[name, "time_end"]}
+                                  name={[name, 'toTime']}
                                   type={variables.TIME_PICKER}
                                 />
                               </Pane>
                             </Pane>
 
-                            <FormList name={[name, 'dishes']}>
+                            <FormList name={[name, 'foods']}>
                               {(dishes, { add: addDishes, remove: removeDishes }) => (
                                 <>
                                   {dishes.map(({ key: dishesKey, name: dishesName }, index) => (
-                                    <Pane className={csx('position-relative', 'row', 'pt20', 'border-bottom')} key={dishesKey}>
+                                    <Pane
+                                      className={csx(
+                                        'position-relative',
+                                        'row',
+                                        'pt20',
+                                        'border-bottom',
+                                      )}
+                                      key={dishesKey}
+                                    >
                                       {dishes.length > 1 && (
                                         <DeleteOutlined
                                           className="position-absolute"
@@ -194,7 +195,7 @@ const Index = memo(() => {
                                       <Pane className="col-lg-12">
                                         <FormItem
                                           label={`Tên món ${index + 1}`}
-                                          name={[dishesName, "name"]}
+                                          name={[dishesName, 'name']}
                                           rules={[variables.RULES.EMPTY]}
                                           type={variables.INPUT}
                                         />
@@ -209,12 +210,7 @@ const Index = memo(() => {
                                   ))}
 
                                   <Pane className="mt20 mb20">
-                                    <Button
-                                      color="success"
-                                      ghost
-                                      icon="plus"
-                                      onClick={addDishes}
-                                    >
+                                    <Button color="success" ghost icon="plus" onClick={addDishes}>
                                       Thêm món
                                     </Button>
                                   </Pane>
@@ -235,7 +231,7 @@ const Index = memo(() => {
                         onClick={add}
                       >
                         Thêm mốc thời gian
-                    </Button>
+                      </Button>
                     </Pane>
                   </>
                 )}
@@ -244,6 +240,7 @@ const Index = memo(() => {
               <Pane className="p20">
                 <Button
                   color="success"
+                  size="large"
                   style={{ marginLeft: 'auto' }}
                   htmlType="submit"
                 >
@@ -254,8 +251,8 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Form>
-    </Pane >
-  )
-})
+    </Pane>
+  );
+});
 
-export default Index
+export default Index;

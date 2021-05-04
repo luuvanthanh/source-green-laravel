@@ -85,11 +85,17 @@ class Index extends PureComponent {
   onFinish = (values) => {
     const {
       user,
+      students,
       dispatch,
       match: { params },
     } = this.props;
     let parentId = null;
-    parentId = user?.objectInfo?.id;
+    if (!isEmpty(students)) {
+      const student = students.find((item) => item.id === values.studentId);
+      parentId = student?.fartherId || student?.motherId || user?.objectInfo?.id;
+    } else {
+      parentId = user?.objectInfo?.id;
+    }
     dispatch({
       type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
