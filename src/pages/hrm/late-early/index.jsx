@@ -244,19 +244,16 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(record?.date, variables.DATE_FORMAT.DATE_AFTER),
       },
       {
-        title: 'Hình ảnh',
-        key: 'name',
-        className: 'min-width-100',
-        width: 100,
-        align: 'center',
-        render: (record) => <Avatar size={40} shape="square" icon={<UserOutlined />} />,
-      },
-      {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
         title: 'Loại',
