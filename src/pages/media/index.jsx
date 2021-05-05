@@ -188,7 +188,7 @@ const Index = memo(() => {
         if (res) {
           mountedSet(setCategory)((prev) => ({
             ...prev,
-            branches: res?.items || [],
+            branches: res?. parsePayload || [],
           }));
         }
       },

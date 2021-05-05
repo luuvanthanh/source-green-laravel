@@ -78,6 +78,7 @@
     "json-api-normalizer": "^1.0.4",
     "jwt-decode": "^3.1.2",
     "leaflet": "^1.7.1",
+    "leaflet-routing-machine": "^3.2.12",
     "lodash": "^4.17.11",
     "moment": "^2.25.3",
     "node-sass": "^4.14.1",
