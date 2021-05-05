@@ -299,6 +299,18 @@ class Index extends PureComponent {
           ),
       },
       {
+        title: 'Loại quyết định',
+        key: 'typr',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => {
+          if (record.type === 'DISCIPLINE') {
+            return 'Kỷ luật';
+          }
+          return 'Khen thưởng';
+        },
+      },
+      {
         title: 'Ghi chú',
         key: 'note',
         className: 'min-width-150',

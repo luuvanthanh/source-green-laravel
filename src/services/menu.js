@@ -1122,7 +1122,7 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Loại hợp đồng',
+          title: 'Thông tin hợp đồng',
           key: 'type-of-contracts',
           url: [
             '/quan-ly-nhan-su/cau-hinh/loai-hop-dong',

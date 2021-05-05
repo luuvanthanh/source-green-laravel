@@ -246,19 +246,6 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'transferDetails[0].employee.fileImage'),
-            )}
-            fullName={get(record, 'transferDetails[0].employee.fullName')}
-          />
-        ),
-      },
-      {
         title: 'Số QĐ',
         key: 'insurrance_number',
         className: 'min-width-100',
@@ -273,6 +260,19 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
       },
       {
+        title: 'Nhân viên',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(
+              get(record, 'transferDetails[0].employee.fileImage'),
+            )}
+            fullName={get(record, 'transferDetails[0].employee.fullName')}
+          />
+        ),
+      },
+      {
         title: 'Lý do',
         key: 'reason',
         className: 'min-width-100',
@@ -280,21 +280,21 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Cơ sở',
+        title: 'CS Công tác mới',
         key: 'branch',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'transferDetails[0].branch.name'),
       },
       {
-        title: 'Bộ phận',
+        title: 'Bộ phận mới',
         key: 'division',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'transferDetails[0].division.name'),
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,

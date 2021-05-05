@@ -245,19 +245,7 @@ class Index extends PureComponent {
             this.props.pagination?.per_page,
           ),
       },
-      {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'appointDetails[0].employee.fileImage'),
-            )}
-            fullName={get(record, 'appointDetails[0].employee.fullName')}
-          />
-        ),
-      },
+
       {
         title: 'Số QĐ',
         key: 'insurrance_number',
@@ -280,21 +268,34 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Cơ sở',
+        title: 'Nhân viên',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(
+              get(record, 'appointDetails[0].employee.fileImage'),
+            )}
+            fullName={get(record, 'appointDetails[0].employee.fullName')}
+          />
+        ),
+      },
+      {
+        title: 'CS Công tác mới',
         key: 'branch',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'appointDetails[0].branch.name'),
       },
       {
-        title: 'Bộ phận',
+        title: 'Bộ phận mới',
         key: 'division',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'appointDetails[0].division.name'),
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,
