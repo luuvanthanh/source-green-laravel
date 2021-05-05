@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories'
 
 export default {
   namespace: 'HRMusers',
@@ -45,7 +46,7 @@ export default {
   effects: {
     *GET_BRANCHES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getBranches, payload);
+        const response = yield saga.call(categories.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,

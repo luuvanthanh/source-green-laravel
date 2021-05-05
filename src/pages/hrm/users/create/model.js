@@ -291,7 +291,7 @@ export default {
     },
     *GET_BRANCHES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getBranches, payload);
+        const response = yield saga.call(categories.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,
