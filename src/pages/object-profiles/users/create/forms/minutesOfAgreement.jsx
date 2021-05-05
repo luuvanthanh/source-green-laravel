@@ -51,7 +51,7 @@ const Index = memo(() => {
         render: (text, record, index) => index + 1,
       },
       {
-        title: 'Loại hợp đồng',
+        title: 'Thông tin hợp đồng',
         key: 'contract_category',
         className: 'min-width-150',
         render: (record) => get(record, 'labours_contract_category_id'),
@@ -184,7 +184,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 dataa={[]}
-                label="Loại hợp đồng"
+                label="Thông tin hợp đồng"
                 name="labours_contract_category_id"
                 type={variables.SELECT}
               />

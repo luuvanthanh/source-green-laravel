@@ -340,13 +340,13 @@ class Index extends PureComponent {
     const loading = effects['otherDeclarations/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách khai báo ngày công chuẩn trong tháng" />
+        <Helmet title="Danh sách khai báo các khoản khác" />
         <div
           className={classnames(styles['content-form'], styles['content-form-otherDeclarations'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách khai báo ngày công chuẩn trong tháng</Text>
+            <Text color="dark">Danh sách khai báo các khoản khác</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo đơn
             </Button>

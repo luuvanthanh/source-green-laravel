@@ -27,9 +27,10 @@ export function removeImage({ postId, fileId }) {
 }
 
 export function removeAll(data) {
-  return request(`/delete-list`, {
+  return request(`/posts/delete-list`, {
     method: 'DELETE',
     data,
+    parse: true,
   });
 }
 
@@ -37,6 +38,7 @@ export function merge(data) {
   return request(`/posts/merge`, {
     method: 'PUT',
     data,
+    parse: true,
   });
 }
 

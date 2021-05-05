@@ -755,7 +755,7 @@ export async function getLeftMenuHRM() {
           permission: [],
         },
         {
-          title: 'Khai báo ngày công chuẩn trong tháng',
+          title: 'Khai báo các khoản khác',
           key: 'other-declarationss',
           url: [
             '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang',

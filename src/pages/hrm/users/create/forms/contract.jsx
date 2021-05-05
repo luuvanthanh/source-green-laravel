@@ -64,7 +64,7 @@ const Index = memo(() => {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Loại hợp đồng',
+        title: 'Thông tin hợp đồng',
         key: 'contract_category',
         dataIndex: 'typeOfContract',
         className: 'min-width-120',

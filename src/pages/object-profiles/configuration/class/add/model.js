@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories'
 
 export default {
   namespace: 'classesAdd',
@@ -25,7 +26,7 @@ export default {
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
-      branches: payload.items,
+      branches: payload.parsePayload,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -35,7 +36,7 @@ export default {
   effects: {
     *GET_BRANCHES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getBranches, payload);
+        const response = yield saga.call(categories.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
           payload: response,

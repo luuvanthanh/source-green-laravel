@@ -24,11 +24,10 @@ export function getStudents(params = {}) {
 }
 
 export function getBranches(params = {}) {
-  return request('/branches', {
+  return requestLaravel('/v1/branches', {
     method: 'GET',
     params: {
       ...params,
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
 }

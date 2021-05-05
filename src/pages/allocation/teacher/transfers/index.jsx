@@ -80,7 +80,7 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: res?.items || [],
+            branches: res?. parsePayload || [],
           });
         }
       },

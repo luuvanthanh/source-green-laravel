@@ -41,7 +41,7 @@ export default {
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
-      branches: payload.items,
+      branches: payload.parsePayload,
     }),
   },
   effects: {

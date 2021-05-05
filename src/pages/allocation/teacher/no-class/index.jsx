@@ -155,7 +155,7 @@ class Index extends PureComponent {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              branches: res?.items || [],
+              branches: res?. parsePayload || [],
             },
           }));
         }
