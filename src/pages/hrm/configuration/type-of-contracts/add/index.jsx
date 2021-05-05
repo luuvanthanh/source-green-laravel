@@ -145,7 +145,7 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa loại hợp đồng' : 'Tạo loại hợp đồng'}
+          last={params.id ? 'Chỉnh sửa thông tin hợp đồng' : 'Tạo thông tin hợp đồng'}
           menu={menuData}
         />
         <Form
@@ -182,7 +182,7 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="LOẠI"
+                      label="PHÂN LOẠI"
                       name="type"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
