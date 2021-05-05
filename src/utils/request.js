@@ -13,9 +13,11 @@ const request = extend({
 const removeParams = (params) => {
   return omit(pickBy(params, (value) => value !== null && value !== undefined));
 };
+let optionsRoot;
 
 // request options
 request.interceptors.request.use(async (url, options) => {
+  optionsRoot = options;
   const access_token = cookies.get('access_token');
   const token_type = cookies.get('token_type');
   if (access_token && token_type) {
@@ -41,6 +43,11 @@ request.interceptors.request.use(async (url, options) => {
 // response interceptor, handling response
 request.interceptors.response.use(
   (response) => {
+    if (optionsRoot?.parse && response.status < 300) {
+      return {
+        status: 201,
+      };
+    }
     if (response.status === variables.STATUS_204) {
       return {
         ...response,

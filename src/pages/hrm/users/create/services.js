@@ -215,6 +215,9 @@ export function getContractTypes(params = {}) {
     params: {
       ...params,
       include: 'parameterValues,parameterFormulas',
+      search: Helper.convertParamSearchConvert({
+        Name: params.name,
+      }),
     },
   });
 }

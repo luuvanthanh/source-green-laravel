@@ -390,7 +390,7 @@ const Index = memo(() => {
             <Pane className="col-lg-4">
               <FormItem
                 data={contractTypes}
-                label="Thông tin hợp đồng"
+                label="Loại hợp đồng"
                 name="typeOfContractId"
                 type={variables.SELECT}
                 onChange={changeContract}

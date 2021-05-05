@@ -180,8 +180,8 @@ class Index extends PureComponent {
         <Breadcrumbs
           last={
             params.id
-              ? 'Chỉnh sửa khai báo ngày công chuẩn trong tháng'
-              : 'Tạo khai báo ngày công chuẩn trong tháng'
+              ? 'Chỉnh sửa Khai báo các khoản khác'
+              : 'Tạo Khai báo các khoản khác'
           }
           menu={menuData}
         />
