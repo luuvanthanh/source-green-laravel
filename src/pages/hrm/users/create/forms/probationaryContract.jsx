@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find } from 'lodash';
+import { find, size } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
 import csx from 'classnames';
@@ -50,6 +50,7 @@ const Index = memo(() => {
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
+    formRefModal?.current?.resetFields();
   };
 
   const changeContract = (value) => {
@@ -275,6 +276,7 @@ const Index = memo(() => {
           mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
           fetchProbationaryContracts();
+          formRefModal?.current?.resetFields();
         }
         if (err) {
           const { data } = err;
@@ -321,7 +323,12 @@ const Index = memo(() => {
     dispatch({ type: 'HRMusersAdd/GET_BRANCHES' });
     dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
     dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
-    dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+    dispatch({
+      type: 'HRMusersAdd/GET_CONTRACT_TYPES',
+      payload: {
+        name: 'Thử việc',
+      },
+    });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_FORMULAS' });
   }, []);
@@ -395,7 +402,7 @@ const Index = memo(() => {
             <Pane className="col-lg-4">
               <FormItem
                 data={contractTypes}
-                label="Thông tin hợp đồng"
+                label="Loại hợp đồng"
                 name="typeOfContractId"
                 type={variables.SELECT}
                 onChange={changeContract}

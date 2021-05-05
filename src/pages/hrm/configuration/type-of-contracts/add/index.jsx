@@ -217,7 +217,7 @@ class Index extends PureComponent {
                       type={variables.SELECT_MUTILPLE}
                     />
                   </div>
-                  <div className="col-lg-6">
+                  {/* <div className="col-lg-6">
                     <FormItem
                       data={paramaterFormulas}
                       label="THAM SỐ CÔNG THỨC"
@@ -225,7 +225,7 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>

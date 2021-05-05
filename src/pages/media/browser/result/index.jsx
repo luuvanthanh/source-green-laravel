@@ -149,7 +149,7 @@ const Index = memo(() => {
   const merge = () => {
     dispatch({
       type: 'mediaResult/MERGE',
-      payload: classifyData.map((item) => item.id),
+      payload: groupIds,
       callback: (response) => {
         if (response) {
           fetchMedia();
@@ -231,7 +231,7 @@ const Index = memo(() => {
                   className="mr20"
                   color="primary"
                   onClick={merge}
-                  disabled={isEmpty(classifyData) || classifyData.length <= 1}
+                  disabled={isEmpty(groupIds) || groupIds.length <= 1}
                 >
                   Gộp ghi nhận
                 </Button>
