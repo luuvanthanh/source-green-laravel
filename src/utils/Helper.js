@@ -1,4 +1,14 @@
-import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size, head } from 'lodash';
+import {
+  isArray,
+  pickBy,
+  isEmpty,
+  get as getLodash,
+  toString,
+  omit,
+  size,
+  head,
+  last,
+} from 'lodash';
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
@@ -651,5 +661,11 @@ export default class Helpers {
       });
     }
     return [];
+  };
+
+  static isVideo = (string) => {
+    const arrayLink = string.split('.');
+    if (last(arrayLink) === 'mp4') return true;
+    return false;
   };
 }

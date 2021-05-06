@@ -1,89 +1,95 @@
 {
-    "dataSource": [
-      {
-        "title": "Thông báo",
-        "src": "/images/home/news.svg",
-        "url": "/thong-bao/danh-sach"
-      },
-      {
-        "title": "Hồ sơ đối tượng",
-        "src": "/images/home/contact.svg",
-        "url": "/ho-so-doi-tuong"
-      },
-      {
-        "title": "Phân bổ",
-        "src": "/images/home/pin.svg",
-        "url": "/phan-bo"
-      },
-      {
-        "title": "Trao đổi",
-        "src": "/images/home/speech.svg",
-        "url": "/trao-doi"
-      },
-      {
-        "title": "Ghi nhận",
-        "src": "/images/home/movies.svg",
-        "url": "/ghi-nhan/danh-sach"
-      },
-      {
-        "title": "Điểm danh trẻ",
-        "src": "/images/home/note.svg",
-        "url": "/diem-danh"
-      },
-      {
-        "title": "Chương trình học",
-        "src": "/images/home/spreadsheet.svg",
-        "url": "/chuong-trinh-hoc/danh-gia-hoc-tap"
-      },
-      {
-        "title": "Bus",
-        "src": "/images/home/road.svg",
-        "url": "/quan-ly-phuong-tien"
-      },
-      {
-        "title": "Y tế",
-        "src": "/images/home/balloons.svg",
-        "url": "/y-te"
-      },
-      {
-        "title": "Thời khóa biểu",
-        "src": "/images/home/calendar.svg",
-        "url": "/thoi-khoa-bieu"
-      },
-      {
-        "title": "Bếp",
-        "src": "/images/home/cooking.svg",
-        "url": "/thuc-don"
-      },
-      {
-        "title": "Biếu phí",
-        "src": "/images/home/currency.svg",
-        "url": "/"
-      },
-      {
-        "title": "Bảng lương",
-        "src": "/images/home/drive.svg",
-        "url": "/"
-      },
-      {
-        "title": "Sức khỏe",
-        "src": "/images/home/tumblr.svg",
-        "url": "/suc-khoe"
-      },
-      {
-        "title": "Quản trị nhân sự",
-        "src": "/images/home/hrm.svg",
-        "url": "/quan-ly-nhan-su"
-      },
-      {
-        "title": "Chính sách phí",
-        "src": "/images/home/diploma.svg",
-        "url": "/chinh-sach-phi"
-      },
-      {
-        "title": "Cấu hình",
-        "src": "/images/home/gear.svg",
-        "url": "/cau-hinh"
-      }
-    ]
-  }
+  "dataSource": [
+    {
+      "title": "Thông báo",
+      "src": "/images/home/news.svg",
+      "url": "/thong-bao/danh-sach"
+    },
+    {
+      "title": "Hồ sơ đối tượng",
+      "src": "/images/home/contact.svg",
+      "url": "/ho-so-doi-tuong"
+    },
+    {
+      "title": "Phân bổ",
+      "src": "/images/home/pin.svg",
+      "url": "/phan-bo"
+    },
+    {
+      "title": "Trao đổi",
+      "src": "/images/home/speech.svg",
+      "url": "/trao-doi"
+    },
+    {
+      "title": "Ghi nhận",
+      "src": "/images/home/movies.svg",
+      "url": "/ghi-nhan/danh-sach"
+    },
+    {
+      "title": "Điểm danh trẻ",
+      "src": "/images/home/note.svg",
+      "url": "/diem-danh"
+    },
+    {
+      "title": "Chương trình học",
+      "src": "/images/home/spreadsheet.svg",
+      "url": "/chuong-trinh-hoc/danh-gia-hoc-tap"
+    },
+    {
+      "title": "Bus",
+      "src": "/images/home/road.svg",
+      "url": "/quan-ly-phuong-tien"
+    },
+    {
+      "title": "Y tế",
+      "src": "/images/home/balloons.svg",
+      "url": "/y-te"
+    },
+    {
+      "title": "Thời khóa biểu",
+      "src": "/images/home/calendar.svg",
+      "url": "/thoi-khoa-bieu"
+    },
+    {
+      "title": "Bếp",
+      "src": "/images/home/cooking.svg",
+      "url": "/thuc-don"
+    },
+    {
+      "title": "Biếu phí",
+      "src": "/images/home/currency.svg",
+      "url": "/"
+    },
+    {
+      "title": "Bảng lương",
+      "src": "/images/home/drive.svg",
+      "url": "/"
+    },
+    {
+      "title": "Sức khỏe",
+      "src": "/images/home/tumblr.svg",
+      "url": "/suc-khoe"
+    },
+    {
+      "title": "Quản trị nhân sự",
+      "src": "/images/home/hrm.svg",
+      "url": "/quan-ly-nhan-su"
+    },
+    {
+      "title": "Chính sách phí",
+      "src": "/images/home/diploma.svg",
+      "url": "/chinh-sach-phi"
+    },
+    {
+      "title": "Cấu hình",
+      "src": "/images/home/gear.svg",
+      "url": "/cau-hinh"
+    },
+    {
+      "title": "Camera AI",
+      "src": "/images/home/chip.svg",
+      "url": "http://clover.product.greenlabs.ai/processes/6092193419e7d2f2b3f2cd8e",
+      "target": true
+    }
+  ]
+}

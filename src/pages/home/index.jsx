@@ -78,14 +78,26 @@ class Index extends PureComponent {
             {dataSource.map((item, index) => {
               return (
                 <div key={index}>
-                  <Link to={item.url} className={styles.item}>
-                    <div className={styles['item-image']}>
-                      <img src={item.src} alt="notification" className={styles.icon} />
-                    </div>
-                    <div className={styles['item-content']}>
-                      <p className={styles['norm']}>{item.title}</p>
-                    </div>
-                  </Link>
+                  {item.target && (
+                    <a href={item.url} target="_blank" className={styles.item}>
+                      <div className={styles['item-image']}>
+                        <img src={item.src} alt="notification" className={styles.icon} />
+                      </div>
+                      <div className={styles['item-content']}>
+                        <p className={styles['norm']}>{item.title}</p>
+                      </div>
+                    </a>
+                  )}
+                  {!item.target && (
+                    <Link to={item.url} className={styles.item}>
+                      <div className={styles['item-image']}>
+                        <img src={item.src} alt="notification" className={styles.icon} />
+                      </div>
+                      <div className={styles['item-content']}>
+                        <p className={styles['norm']}>{item.title}</p>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               );
             })}
