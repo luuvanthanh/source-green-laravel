@@ -78,7 +78,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                   <Image
                     width={105}
                     height={105}
-                    src={`/default-upload.png`}
+                    src={`/image-default.png`}
                     key={index}
                     preview={{
                       maskClassName: 'customize-mask',
