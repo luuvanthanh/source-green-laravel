@@ -182,24 +182,28 @@ const Index = memo(() => {
       },
       {
         title: 'Mức thưởng, Mức phạt',
-        key: 'momeny',
+        key: 'money',
         className: 'min-width-100',
         width: 100,
-        render: (record) => Helper.getPrice(record.momeny),
+        render: (record) => Helper.getPrice(get(record, 'decisionRewardDetails[0].money')),
       },
       {
         title: 'Ngày áp dụng',
         key: 'timeApply',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+        render: (record) =>
+          Helper.getDate(
+            get(record, 'decisionRewardDetails[0].timeApply'),
+            variables.DATE_FORMAT.DATE,
+          ),
       },
       {
         title: 'Ghi chú',
         key: 'note',
         className: 'min-width-150',
         width: 150,
-        render: (record) => get(record, 'dismissedDetails[0].note'),
+        render: (record) => get(record, 'decisionRewardDetails[0].note'),
       },
       {
         title: 'Thao tác',
@@ -310,7 +314,11 @@ const Index = memo(() => {
               <FormItem
                 label="Loại"
                 name="type"
-                type={variables.INPUT}
+                type={variables.SELECT}
+                data={[
+                  { id: 'Kỷ luật', name: 'Kỷ luật' },
+                  { id: 'Khen thưởng', name: 'Khen thưởng' },
+                ]}
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
@@ -335,7 +343,7 @@ const Index = memo(() => {
                 label="Ghi chú"
                 name="note"
                 type={variables.INPUT}
-                rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                rules={[variables.RULES.MAX_LENGTH_INPUT]}
               />
             </Pane>
           </Pane>

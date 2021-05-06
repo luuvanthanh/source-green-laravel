@@ -13,7 +13,7 @@ export function get(data = {}) {
       include: Helper.convertIncludes(['holidayDetails']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
-        name: Helper.getDateTime({
+        Name: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: data.date,

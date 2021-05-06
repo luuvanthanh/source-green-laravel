@@ -184,8 +184,18 @@ class Index extends PureComponent {
                     <FormItem
                       label="PHÂN LOẠI"
                       name="type"
+                      data={[
+                        {
+                          id: 'Thử việc',
+                          name: 'Thử việc',
+                        },
+                        {
+                          id: 'Hợp đồng',
+                          name: 'Hợp đồng',
+                        },
+                      ]}
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
+                      type={variables.SELECT}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -217,7 +227,7 @@ class Index extends PureComponent {
                       type={variables.SELECT_MUTILPLE}
                     />
                   </div>
-                  {/* <div className="col-lg-6">
+                  <div className="col-lg-6">
                     <FormItem
                       data={paramaterFormulas}
                       label="THAM SỐ CÔNG THỨC"
@@ -225,7 +235,7 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />
-                  </div> */}
+                  </div>
                 </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>

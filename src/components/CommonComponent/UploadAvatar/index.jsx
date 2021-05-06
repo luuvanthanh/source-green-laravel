@@ -8,6 +8,7 @@ import Pane from '@/components/CommonComponent/Pane';
 
 import { imageUploadProps } from '@/utils/upload';
 import styles from './styles.module.scss';
+import { Helper } from '@/utils';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
@@ -35,10 +36,12 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
     () => ({
       ...otherProps,
       multiple: true,
-      beforeUpload: (file) => beforeUpload(file),
+      beforeUpload: (file) => {
+        return null;
+      },
       customRequest({ file }) {
-        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        const maxSize = 5 * 2 ** 20;
+        const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
+        const maxSize = 20 * 2 ** 20;
         const { type, size } = file;
 
         if (!allowImageTypes.includes(type)) {
@@ -67,35 +70,62 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
   return (
     <>
       <Pane className="row">
-        <div className="pl10 pt20">
+        <div className="pl10">
           <Image.PreviewGroup>
-            {(images || []).map((item, index) => (
-              <Image
-                width={105}
-                height={105}
-                src={`${API_UPLOAD}${item}`}
-                key={index}
-                preview={{
-                  maskClassName: 'customize-mask',
-                  mask: (
-                    <>
-                      <EyeOutlined className="mr5" />
-                      <DeleteOutlined
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setImages((prev) => prev.filter((image) => image !== item));
-                          removeFiles && removeFiles(images.filter((image) => image !== item));
-                        }}
-                      />
-                    </>
-                  ),
-                }}
-              />
-            ))}
+            {(images || []).map((item, index) => {
+              if (Helper.isVideo(item)) {
+                return (
+                  <Image
+                    width={105}
+                    height={105}
+                    src={`/image-default.png`}
+                    key={index}
+                    preview={{
+                      maskClassName: 'customize-mask',
+                      mask: (
+                        <>
+                          <EyeOutlined className="mr5" />
+                          <DeleteOutlined
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setImages((prev) => prev.filter((image) => image !== item));
+                              removeFiles && removeFiles(images.filter((image) => image !== item));
+                            }}
+                          />
+                        </>
+                      ),
+                    }}
+                  />
+                );
+              }
+              return (
+                <Image
+                  width={105}
+                  height={105}
+                  src={`${API_UPLOAD}${item}`}
+                  key={index}
+                  preview={{
+                    maskClassName: 'customize-mask',
+                    mask: (
+                      <>
+                        <EyeOutlined className="mr5" />
+                        <DeleteOutlined
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setImages((prev) => prev.filter((image) => image !== item));
+                            removeFiles && removeFiles(images.filter((image) => image !== item));
+                          }}
+                        />
+                      </>
+                    ),
+                  }}
+                />
+              );
+            })}
           </Image.PreviewGroup>
         </div>
 
-        <Pane className="mt-4 col d-flex align-items-center">
+        <Pane className="col d-flex align-items-center">
           <Upload {...uploadProps} listType="picture-card">
             <CloudUploadOutlined />
           </Upload>

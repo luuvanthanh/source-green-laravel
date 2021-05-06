@@ -411,7 +411,12 @@ const Index = memo(() => {
                                     )}
 
                                     <Pane className="mt20 mb20">
-                                      <Button color="success" ghost icon="plus" onClick={addDishes}>
+                                      <Button
+                                        color="success"
+                                        ghost
+                                        icon="plus"
+                                        onClick={() => addDishes()}
+                                      >
                                         Thêm món
                                       </Button>
                                     </Pane>
@@ -429,7 +434,7 @@ const Index = memo(() => {
                           color="success"
                           ghost
                           icon="plus"
-                          onClick={add}
+                          onClick={() => add()}
                         >
                           Thêm mốc thời gian
                         </Button>

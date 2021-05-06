@@ -5,7 +5,8 @@ export const variables = {
     CLASSIFIED: 'CLASSIFIED',
     VALIDATING: 'VALIDATING',
     SENT: 'SENT',
-  }
-}
+    UNDEFINED: 'UNDEFINED',
+  },
+};
 
-export default variables
+export default variables;
