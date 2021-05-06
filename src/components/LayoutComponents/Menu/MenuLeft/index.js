@@ -280,16 +280,30 @@ class MenuLeft extends React.Component {
     const content = (
       <Scrollbars autoHeight autoHeightMax={'50vh'}>
         <div className={styles['popover-container']}>
-          {dataSource.map((item, index) => (
-            <Link to={item.url} className={styles.item} key={index}>
-              <div className={styles['item-image']}>
-                <img src={item.src} alt="notification" className={styles.icon} />
-              </div>
-              <div className={styles['item-content']}>
-                <p className={styles['norm']}>{item.title}</p>
-              </div>
-            </Link>
-          ))}
+          {dataSource.map((item, index) => {
+            if (item.target) {
+              return (
+                <a href={item.url} target="_blank" className={styles.item} key={index}>
+                  <div className={styles['item-image']}>
+                    <img src={item.src} alt="notification" className={styles.icon} />
+                  </div>
+                  <div className={styles['item-content']}>
+                    <p className={styles['norm']}>{item.title}</p>
+                  </div>
+                </a>
+              );
+            }
+            return (
+              <Link to={item.url} className={styles.item} key={index}>
+                <div className={styles['item-image']}>
+                  <img src={item.src} alt="notification" className={styles.icon} />
+                </div>
+                <div className={styles['item-content']}>
+                  <p className={styles['norm']}>{item.title}</p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </Scrollbars>
     );
