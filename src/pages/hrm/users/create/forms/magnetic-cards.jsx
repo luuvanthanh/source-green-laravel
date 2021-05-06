@@ -12,7 +12,7 @@ const Index = memo(() => {
   const formRef = useRef();
 
   return (
-    <Form layout="vertical" ref={formRef} onFinish initialValues={{}}>
+    <Form layout="vertical" ref={formRef} initialValues={{}}>
       <Pane className="card">
         <Pane style={{ padding: 20 }} className="pb-0">
           <Heading type="form-title">Thẻ từ</Heading>

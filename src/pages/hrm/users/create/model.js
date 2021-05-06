@@ -1,4 +1,5 @@
 // import { variables } from '@/utils';
+import { notification } from 'antd';
 import * as services from './services';
 import * as categories from '@/services/categories';
 
@@ -166,6 +167,10 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: error?.data?.error?.message || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
