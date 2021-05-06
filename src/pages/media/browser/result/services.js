@@ -42,4 +42,11 @@ export function merge(data) {
   });
 }
 
+export function getRecordedImages(params = {}) {
+  return request('/recorded-images', {
+    method: 'GET',
+    params,
+  });
+}
+
 export default get;
