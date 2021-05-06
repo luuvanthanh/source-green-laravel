@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Image } from 'antd';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -343,6 +343,39 @@ const Index = memo(() => {
             </Scrollbars>
           </Form>
         </Loading>
+
+        {/* <Pane className="mt20 mb20 d-flex justify-content-between">
+          <Heading type="page-title">Những ảnh không xác định</Heading>
+          <Button
+            disabled={loading['mediaResult/GET_DATA']}
+            className="mr20"
+            color="dark"
+            type="link"
+            onClick={removeAllPost}
+            disabled={isEmpty(classifyData)}
+          >
+            Xóa tất cả ghi nhận
+          </Button>
+        </Pane>
+
+        <Pane className={csx('card p20 mb-0')}>
+          <Pane className="row">
+            {([]).map((image) => (
+              <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
+                <img
+                  className="d-block w-100"
+                  src={`${API_UPLOAD}${image?.url}`}
+                  alt={image?.name}
+                />
+                <Button
+                  icon="cancel"
+                  className={styles.close}
+                  onClick={() => removeImage(post?.id, image)}
+                />
+              </Pane>
+            ))}
+          </Pane>
+        </Pane> */}
 
         {/* <Pane className="mt15">
           <Button

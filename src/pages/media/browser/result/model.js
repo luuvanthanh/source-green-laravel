@@ -9,6 +9,7 @@ export default {
       isError: false,
       data: {},
     },
+    recordedImages: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -16,6 +17,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_RECORDED_IMAGES: (state, { payload }) => ({
+      ...state,
+      recordedImages: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -36,6 +41,20 @@ export default {
           payload: {
             parsePayload: response.items,
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_RECORDED_IMAGES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRecordedImages, payload);
+        yield saga.put({
+          type: 'SET_RECORDED_IMAGES',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({

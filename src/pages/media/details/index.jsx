@@ -78,11 +78,13 @@ const Index = memo(() => {
             </Pane>
 
             <Pane className="row">
-              {(details?.files || []).map(({ id, name, url }) => (
-                <Pane className="col-lg-2" key={id}>
-                  <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
-                </Pane>
-              ))}
+              {(details?.files || []).map(({ id, name, url, extension }) => {
+                return (
+                  <Pane className="col-lg-2" key={id}>
+                    <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
+                  </Pane>
+                );
+              })}
             </Pane>
           </Pane>
 

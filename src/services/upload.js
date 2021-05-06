@@ -16,6 +16,5 @@ export const upload = (files) => {
     prefix: API_UPLOAD,
     method: 'POST',
     data: formData,
-    parse: true,
   });
 };
