@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request('/posts', {
@@ -42,10 +43,21 @@ export function merge(data) {
   });
 }
 
-export function getRecordedImages(params = {}) {
-  return request('/recorded-images', {
+export function getRecordedFiles(params = {}) {
+  return request('/recorded-files', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function removeRecordFiles(data) {
+  return request('/recorded-files/delete-list', {
+    method: 'DELETE',
+    data,
+    parse: true,
   });
 }
 

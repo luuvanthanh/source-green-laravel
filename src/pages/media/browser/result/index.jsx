@@ -25,10 +25,10 @@ const Index = memo(() => {
   const filterRef = useRef();
 
   const dispatch = useDispatch();
-  const [{ data }, loading] = useSelector(({ loading: { effects }, mediaResult }) => [
-    mediaResult,
-    effects,
-  ]);
+  const [
+    { data, recordedFiles },
+    loading,
+  ] = useSelector(({ loading: { effects }, mediaResult }) => [mediaResult, effects]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -67,6 +67,16 @@ const Index = memo(() => {
       query: Helper.convertParamSearch(search),
     });
   }, [search]);
+
+  const fetchRecordedFiles = useCallback(() => {
+    dispatch({
+      type: 'mediaResult/GET_RECORDED_FILES',
+      payload: {
+        status: localVariables.CLASSIFY_STATUS.UNDEFINED,
+        maxResultCount: variables.PAGINATION.SIZEMAX,
+      },
+    });
+  }, []);
 
   const removeImage = (postId, image) => {
     dispatch({
@@ -146,6 +156,30 @@ const Index = memo(() => {
     });
   };
 
+  const removeRecordOnlyFiles = (id) => {
+    dispatch({
+      type: 'mediaResult/REMOVE_RECORD_FILES',
+      payload: [id],
+      callback: (response) => {
+        if (response) {
+          fetchRecordedFiles();
+        }
+      },
+    });
+  };
+
+  const removeRecordFiles = () => {
+    dispatch({
+      type: 'mediaResult/REMOVE_RECORD_FILES',
+      payload: recordedFiles.map((item) => item.id),
+      callback: (response) => {
+        if (response) {
+          fetchRecordedFiles();
+        }
+      },
+    });
+  };
+
   const merge = () => {
     dispatch({
       type: 'mediaResult/MERGE',
@@ -181,6 +215,10 @@ const Index = memo(() => {
   useEffect(() => {
     fetchMedia();
   }, [fetchMedia]);
+
+  useEffect(() => {
+    fetchRecordedFiles();
+  }, [fetchRecordedFiles]);
 
   useEffect(() => {
     setClassifyData(data);
@@ -344,38 +382,42 @@ const Index = memo(() => {
           </Form>
         </Loading>
 
-        {/* <Pane className="mt20 mb20 d-flex justify-content-between">
-          <Heading type="page-title">Những ảnh không xác định</Heading>
-          <Button
-            disabled={loading['mediaResult/GET_DATA']}
-            className="mr20"
-            color="dark"
-            type="link"
-            onClick={removeAllPost}
-            disabled={isEmpty(classifyData)}
-          >
-            Xóa tất cả ghi nhận
-          </Button>
-        </Pane>
+        {!isEmpty(recordedFiles) && (
+          <>
+            <Pane className="mt20 mb20 d-flex justify-content-between">
+              <Heading type="page-title">Những ảnh không xác định</Heading>
+              <Button
+                disabled={loading['mediaResult/GET_DATA']}
+                className="mr20"
+                color="dark"
+                type="link"
+                onClick={removeRecordFiles}
+                disabled={isEmpty(recordedFiles)}
+              >
+                Xóa tất cả
+              </Button>
+            </Pane>
 
-        <Pane className={csx('card p20 mb-0')}>
-          <Pane className="row">
-            {([]).map((image) => (
-              <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
-                <img
-                  className="d-block w-100"
-                  src={`${API_UPLOAD}${image?.url}`}
-                  alt={image?.name}
-                />
-                <Button
-                  icon="cancel"
-                  className={styles.close}
-                  onClick={() => removeImage(post?.id, image)}
-                />
+            <Pane className={csx('card p20 mb-0')}>
+              <Pane className="row">
+                {(recordedFiles || []).map((image) => (
+                  <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
+                    <img
+                      className="d-block w-100"
+                      src={`${API_UPLOAD}${image?.url}`}
+                      alt={image?.name}
+                    />
+                    <Button
+                      icon="cancel"
+                      className={styles.close}
+                      onClick={() => removeRecordOnlyFiles(image?.id)}
+                    />
+                  </Pane>
+                ))}
               </Pane>
-            ))}
-          </Pane>
-        </Pane> */}
+            </Pane>
+          </>
+        )}
 
         {/* <Pane className="mt15">
           <Button
