@@ -9,7 +9,7 @@ export default {
       isError: false,
       data: {},
     },
-    recordedImages: [],
+    recordedFiles: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -18,9 +18,9 @@ export default {
       data: payload.parsePayload,
       pagination: payload.pagination,
     }),
-    SET_RECORDED_IMAGES: (state, { payload }) => ({
+    SET_RECORDED_FILES: (state, { payload }) => ({
       ...state,
-      recordedImages: payload.items,
+      recordedFiles: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -49,11 +49,11 @@ export default {
         });
       }
     },
-    *GET_RECORDED_IMAGES({ payload }, saga) {
+    *GET_RECORDED_FILES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getRecordedImages, payload);
+        const response = yield saga.call(services.getRecordedFiles, payload);
         yield saga.put({
-          type: 'SET_RECORDED_IMAGES',
+          type: 'SET_RECORDED_FILES',
           payload: response,
         });
       } catch (error) {
@@ -112,6 +112,22 @@ export default {
     *REMOVE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.remove, payload);
+        callback && callback(response);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        callback && callback(null, error);
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thất bại',
+        });
+      }
+    },
+    *REMOVE_RECORD_FILES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.removeRecordFiles, payload);
         callback && callback(response);
         notification.success({
           message: 'THÔNG BÁO',
