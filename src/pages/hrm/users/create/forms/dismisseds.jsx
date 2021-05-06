@@ -185,21 +185,21 @@ const Index = memo(() => {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Cơ sở',
+        title: 'Cơ sở mới',
         key: 'branch',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'dismissedDetails[0].branch.name'),
       },
       {
-        title: 'Bộ phận',
+        title: 'Bộ phận mới',
         key: 'division',
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'dismissedDetails[0].division.name'),
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,
@@ -369,7 +369,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={positions}
-                label="Chức vụ"
+                label="Chức danh"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
@@ -380,7 +380,7 @@ const Index = memo(() => {
                 label="Ghi chú"
                 name="note"
                 type={variables.INPUT}
-                rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                rules={[variables.RULES.MAX_LENGTH_INPUT]}
               />
             </Pane>
           </Pane>

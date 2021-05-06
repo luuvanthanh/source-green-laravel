@@ -95,6 +95,7 @@ const renderChildren = (
       placeholder={placeholder || 'Chọn'}
       showSearch
       options={options}
+      disabled={disabled}
     />
   ),
   selectAdd: (

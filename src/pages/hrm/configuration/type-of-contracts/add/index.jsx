@@ -184,8 +184,18 @@ class Index extends PureComponent {
                     <FormItem
                       label="PHÂN LOẠI"
                       name="type"
+                      data={[
+                        {
+                          id: 'Thử việc',
+                          name: 'Thử việc',
+                        },
+                        {
+                          id: 'Hợp đồng',
+                          name: 'Hợp đồng',
+                        },
+                      ]}
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
+                      type={variables.SELECT}
                     />
                   </div>
                   <div className="col-lg-6">

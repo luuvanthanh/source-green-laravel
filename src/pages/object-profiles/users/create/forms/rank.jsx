@@ -183,7 +183,7 @@ const Index = memo(() => {
       >
         <Pane className="card">
           <Pane style={{ padding: 20 }} className="pb-0">
-            <Heading type="form-title">Cấp bậc, chức vụ</Heading>
+            <Heading type="form-title">Điều chuyển</Heading>
           </Pane>
           <Pane style={{ padding: 20 }} className="pb-0">
             <Table

@@ -15,7 +15,7 @@ export const menu = [
   },
   {
     key: 'transfers',
-    label: 'Cấp bậc, chức vụ',
+    label: 'Điều chuyển',
   },
   {
     key: 'decision-rewards',
