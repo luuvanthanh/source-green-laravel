@@ -198,9 +198,8 @@ const Index = memo(() => {
   );
 
   const changeValue = useCallback((record) => (value) => {
-    mountedSet(setContractDetails, (prev) => ({
-      ...prev,
-      parameterValues: prev.parameterValues.map((item) =>
+    mountedSet(setParameterValuesDetails, (prev) =>
+      prev.map((item) =>
         item.index === record.index
           ? {
               ...item,
@@ -208,7 +207,7 @@ const Index = memo(() => {
             }
           : item,
       ),
-    }));
+    );
   });
 
   const changeValueSelect = useCallback((record) => (value) => {
