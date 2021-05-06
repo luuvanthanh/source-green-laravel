@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size } from 'lodash';
+import { find, size, last } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
 import csx from 'classnames';
@@ -47,6 +47,8 @@ const Index = memo(() => {
 
   const [visible, setVisible] = useState(false);
   const [contractDetails, setContractDetails] = useState({});
+  const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
+  const [parameterFormulasDetails, setParameterFormulasDetails] = useState([]);
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
@@ -56,6 +58,22 @@ const Index = memo(() => {
   const changeContract = (value) => {
     const currentType = find(contractTypes, { id: value });
     mountedSet(setContractDetails, currentType || {});
+    mountedSet(
+      setParameterValuesDetails,
+      currentType.parameterValues.map((item, index) => ({ index, ...item })) || {},
+    );
+    mountedSet(setParameterFormulasDetails, currentType.parameterFormulas || {});
+    formRefModal.current.setFieldsValue({
+      month: currentType.month,
+      year: currentType.year,
+    });
+  };
+
+  const addParameterValues = () => {
+    mountedSet(setParameterValuesDetails, [
+      ...parameterValuesDetails,
+      { index: last(parameterValuesDetails).index + 1, id: null, valueDefault: null },
+    ]);
   };
 
   const parameterFormulasColumns = useMemo(
@@ -83,34 +101,32 @@ const Index = memo(() => {
     ],
     [],
   );
-
-  const changeValue = useCallback((id) => (value) => {
-    mountedSet(setContractDetails, (prev) => ({
-      ...prev,
-      parameterValues: prev.parameterValues.map((item) =>
-        item.id === id
+  const changeValue = useCallback((record) => (value) => {
+    mountedSet(setParameterValuesDetails, (prev) =>
+      prev.map((item) =>
+        item.index === record.index
           ? {
               ...item,
               valueDefault: value,
             }
           : item,
       ),
-    }));
+    );
   });
 
-  const onChangeParameterValues = (id, value) => {
-    const paramater = paramaterValues.find((item) => item.id === value);
-    mountedSet(setContractDetails, (prev) => ({
-      ...prev,
-      parameterValues: prev.parameterValues.map((item) =>
-        item.id === id
+  const changeValueSelect = useCallback((record) => (value) => {
+    const itemParameter = paramaterValues.find((item) => item.id === value);
+    mountedSet(setParameterValuesDetails, (prev) =>
+      prev.map((item) =>
+        item.index === record.index
           ? {
-              ...paramater,
+              ...item,
+              ...itemParameter,
             }
           : item,
       ),
-    }));
-  };
+    );
+  });
 
   const parameterValuesColumns = [
     {
@@ -124,8 +140,15 @@ const Index = memo(() => {
     {
       title: 'Loại tham số',
       key: 'name',
-      dataIndex: 'name',
       className: 'min-width-120',
+      render: (record) => (
+        <Select
+          value={record.id}
+          dataSet={paramaterValues}
+          onChange={changeValueSelect(record)}
+          style={{ width: '100%' }}
+        />
+      ),
     },
     {
       title: 'Số tiền',
@@ -134,13 +157,20 @@ const Index = memo(() => {
       className: 'min-width-120',
       render: (value, record) => (
         <InputNumber
-          defaultValue={value}
+          value={value}
           className={csx('input-number', styles['input-number-container'])}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          onChange={changeValue(record.id)}
+          onChange={changeValue(record)}
           placeholder="Nhập"
         />
       ),
+    },
+    {
+      title: 'Ngày hiệu lực',
+      key: 'application_date',
+      dataIndex: 'applyDate',
+      className: 'min-width-120',
+      render: (value) => Helper.getDate(moment(value)),
     },
   ];
 
@@ -261,7 +291,7 @@ const Index = memo(() => {
       contractDate: moment(formValues.contractDate),
       contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
       contractTo: formValues.contractTo && moment(formValues.contractTo),
-      detail: (contractDetails?.parameterValues || []).map(({ id, valueDefault }) => ({
+      detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
         value: ++valueDefault,
       })),
@@ -505,16 +535,16 @@ const Index = memo(() => {
               <Table
                 bordered
                 columns={parameterValuesColumns}
-                dataSource={contractDetails?.parameterValues || []}
+                dataSource={parameterValuesDetails || []}
                 pagination={false}
                 params={{
                   header: parameterValuesColumns,
                   type: 'table',
                 }}
-                rowKey="id"
+                rowKey="index"
                 scroll={{ x: '100%' }}
                 footer={() => (
-                  <Button color="success" ghost icon="plus">
+                  <Button color="success" ghost icon="plus" onClick={addParameterValues}>
                     Thêm dòng
                   </Button>
                 )}
@@ -525,7 +555,7 @@ const Index = memo(() => {
               <Table
                 bordered
                 columns={parameterFormulasColumns}
-                dataSource={contractDetails?.parameterFormulas || []}
+                dataSource={parameterFormulasDetails || []}
                 pagination={false}
                 params={{
                   header: parameterFormulasColumns,
@@ -533,11 +563,6 @@ const Index = memo(() => {
                 }}
                 rowKey="id"
                 scroll={{ x: '100%' }}
-                footer={() => (
-                  <Button color="success" ghost icon="plus">
-                    Thêm dòng
-                  </Button>
-                )}
               />
             </TabPane>
           </Tabs>
