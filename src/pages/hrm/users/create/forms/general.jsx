@@ -157,42 +157,39 @@ const General = memo(({}) => {
    * Load Items Branches
    */
   useEffect(() => {
-    if (!params.id) {
-      dispatch({
-        type: 'HRMusersAdd/GET_BRANCHES',
-        payload: params,
-      });
-    }
+    dispatch({
+      type: 'HRMusersAdd/GET_BRANCHES',
+      payload: params,
+    });
   }, []);
 
   /**
    * Load Items Divisions
    */
   useEffect(() => {
-    if (!params.id) {
-      dispatch({
-        type: 'HRMusersAdd/GET_DIVISIONS',
-        payload: params,
-      });
-    }
+    dispatch({
+      type: 'HRMusersAdd/GET_DIVISIONS',
+      payload: params,
+    });
   }, []);
 
   /**
    * Load Items Positions
    */
   useEffect(() => {
-    if (!params.id) {
-      dispatch({
-        type: 'HRMusersAdd/GET_POSITIONS',
-        payload: params,
-      });
-    }
+    dispatch({
+      type: 'HRMusersAdd/GET_POSITIONS',
+      payload: params,
+    });
   }, []);
 
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
         ...details,
+        ...head(details.positionLevel),
+        startDate:
+          head(details.positionLevel)?.startDate && moment(head(details.positionLevel)?.startDate),
         dateOfBirth: details.dateOfBirth && moment(details.dateOfBirth),
         dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
         dateOff: details.dateOff && moment(details.dateOff),
@@ -365,48 +362,49 @@ const General = memo(({}) => {
               )}
             </Pane>
           </Pane>
-          {!params.id && (
-            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-              <Pane className="row">
-                <Pane className="col-lg-6">
-                  <FormItem
-                    data={branches}
-                    label="Cơ sở"
-                    name="branchId"
-                    type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </Pane>
-                <Pane className="col-lg-6">
-                  <FormItem
-                    data={divisions}
-                    label="Bộ phận"
-                    name="divisionId"
-                    type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </Pane>
-                <Pane className="col-lg-6">
-                  <FormItem
-                    data={positions}
-                    label="Chức vụ"
-                    name="positionId"
-                    type={variables.SELECT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </Pane>
-                <Pane className="col-lg-6">
-                  <FormItem
-                    label="Thời gian bắt đầu"
-                    name="startDate"
-                    type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
-                    disabledDate={(current) => current < moment()}
-                  />
-                </Pane>
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Pane className="row">
+              <Pane className="col-lg-6">
+                <FormItem
+                  data={branches}
+                  label="Cơ sở"
+                  name="branchId"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={params.id}
+                />
+              </Pane>
+              <Pane className="col-lg-6">
+                <FormItem
+                  data={divisions}
+                  label="Bộ phận"
+                  name="divisionId"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={params.id}
+                />
+              </Pane>
+              <Pane className="col-lg-6">
+                <FormItem
+                  data={positions}
+                  label="Chức vụ"
+                  name="positionId"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={params.id}
+                />
+              </Pane>
+              <Pane className="col-lg-6">
+                <FormItem
+                  label="Thời gian bắt đầu"
+                  name="startDate"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                  disabled={params.id}
+                />
               </Pane>
             </Pane>
-          )}
+          </Pane>
 
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>

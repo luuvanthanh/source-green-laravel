@@ -31,7 +31,7 @@ export const menu = [
   },
   {
     key: 'rank',
-    label: 'Cấp bậc, chức vụ',
+    label: 'Điều chuyển',
   },
   {
     key: 'timework',

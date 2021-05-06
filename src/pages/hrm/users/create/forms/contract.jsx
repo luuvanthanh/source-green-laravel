@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size } from 'lodash';
+import { find, size, last, toNumber } from 'lodash';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
@@ -11,6 +11,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import Select from '@/components/CommonComponent/Select';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -28,7 +29,7 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    { contractTypes, branches, divisions, positions, contracts },
+    { contractTypes, branches, divisions, positions, contracts, paramaterValues },
     loading,
   ] = useSelector(({ HRMusersAdd, loading }) => [HRMusersAdd, loading?.effects]);
 
@@ -38,14 +39,35 @@ const Index = memo(() => {
 
   const [visible, setVisible] = useState(false);
   const [contractDetails, setContractDetails] = useState({});
+  const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
+  const [parameterFormulasDetails, setParameterFormulasDetails] = useState([]);
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
+    mountedSet(setParameterFormulasDetails, []);
+    mountedSet(setParameterValuesDetails, []);
+    formRefModal.current.resetFields();
   };
 
   const changeContract = (value) => {
     const currentType = find(contractTypes, { id: value });
     mountedSet(setContractDetails, currentType || {});
+    mountedSet(
+      setParameterValuesDetails,
+      currentType.parameterValues.map((item, index) => ({ index, ...item })) || {},
+    );
+    mountedSet(setParameterFormulasDetails, currentType.parameterFormulas || {});
+    formRefModal.current.setFieldsValue({
+      month: currentType.month,
+      year: currentType.year,
+    });
+  };
+
+  const addParameterValues = () => {
+    mountedSet(setParameterValuesDetails, [
+      ...parameterValuesDetails,
+      { index: last(parameterValuesDetails).index + 1, id: null, valueDefault: null },
+    ]);
   };
 
   const columns = useMemo(
@@ -89,18 +111,6 @@ const Index = memo(() => {
         dataIndex: 'contractTo',
         className: 'min-width-150',
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Thời gian làm việc',
-        key: 'work_time',
-        dataIndex: 'workTime',
-        className: 'min-width-150',
-      },
-      {
-        title: 'Công việc phải làm',
-        key: 'work',
-        dataIndex: 'work',
-        className: 'min-width-150',
       },
       {
         title: 'Lương cơ bản',
@@ -187,11 +197,11 @@ const Index = memo(() => {
     [],
   );
 
-  const changeValue = useCallback((id) => (value) => {
+  const changeValue = useCallback((record) => (value) => {
     mountedSet(setContractDetails, (prev) => ({
       ...prev,
       parameterValues: prev.parameterValues.map((item) =>
-        item.id === id
+        item.index === record.index
           ? {
               ...item,
               valueDefault: value,
@@ -201,47 +211,65 @@ const Index = memo(() => {
     }));
   });
 
-  const parameterValuesColumns = useMemo(
-    () => [
-      {
-        title: 'STT',
-        key: 'index',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) => index + 1,
-      },
-      {
-        title: 'Loại tham số',
-        key: 'name',
-        dataIndex: 'name',
-        className: 'min-width-120',
-      },
-      {
-        title: 'Số tiền',
-        key: 'values',
-        dataIndex: 'valueDefault',
-        className: 'min-width-120',
-        render: (value, record) => (
-          <InputNumber
-            defaultValue={value}
-            className={csx('input-number', styles['input-number-container'])}
-            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            onChange={changeValue(record.id)}
-            placeholder="Nhập"
-          />
-        ),
-      },
-      {
-        title: 'Ngày hiệu lực',
-        key: 'application_date',
-        dataIndex: 'applyDate',
-        className: 'min-width-120',
-        render: (value) => Helper.getDate(moment(value)),
-      },
-    ],
-    [],
-  );
+  const changeValueSelect = useCallback((record) => (value) => {
+    const itemParameter = paramaterValues.find((item) => item.id === value);
+    mountedSet(setParameterValuesDetails, (prev) =>
+      prev.map((item) =>
+        item.index === record.index
+          ? {
+              ...item,
+              ...itemParameter,
+            }
+          : item,
+      ),
+    );
+  });
+
+  const parameterValuesColumns = [
+    {
+      title: 'STT',
+      key: 'index',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: 'Loại tham số',
+      key: 'name',
+      className: 'min-width-120',
+      render: (record) => (
+        <Select
+          value={record.id}
+          dataSet={paramaterValues}
+          onChange={changeValueSelect(record)}
+          style={{ width: '100%' }}
+        />
+      ),
+    },
+    {
+      title: 'Số tiền',
+      key: 'values',
+      dataIndex: 'valueDefault',
+      className: 'min-width-120',
+      render: (value, record) => (
+        <InputNumber
+          value={value}
+          className={csx('input-number', styles['input-number-container'])}
+          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          onChange={changeValue(record)}
+          placeholder="Nhập"
+        />
+      ),
+    },
+    {
+      title: 'Ngày hiệu lực',
+      key: 'application_date',
+      dataIndex: 'applyDate',
+      className: 'min-width-120',
+      render: (value) => Helper.getDate(moment(value)),
+    },
+  ];
 
   const finishForm = () => {
     const formValues = formRefModal?.current?.getFieldsValue();
@@ -252,7 +280,7 @@ const Index = memo(() => {
       contractDate: moment(formValues.contractDate),
       contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
       contractTo: formValues.contractTo && moment(formValues.contractTo),
-      detail: (contractDetails?.parameterValues || []).map(({ id, valueDefault }) => ({
+      detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
         value: ++valueDefault,
       })),
@@ -267,6 +295,9 @@ const Index = memo(() => {
           mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
           fetchContracts();
+          mountedSet(setParameterFormulasDetails, []);
+          mountedSet(setParameterValuesDetails, []);
+          formRefModal.current.resetFields();
         }
         if (err) {
           const { data } = err;
@@ -318,6 +349,7 @@ const Index = memo(() => {
     dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
     dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
     dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+    dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
   }, []);
 
   useEffect(() => {
@@ -492,14 +524,19 @@ const Index = memo(() => {
               <Table
                 bordered
                 columns={parameterValuesColumns}
-                dataSource={contractDetails?.parameterValues || []}
+                dataSource={parameterValuesDetails || []}
                 pagination={false}
                 params={{
                   header: parameterValuesColumns,
                   type: 'table',
                 }}
-                rowKey="id"
+                rowKey="index"
                 scroll={{ x: '100%' }}
+                footer={() => (
+                  <Button color="success" ghost icon="plus" onClick={addParameterValues}>
+                    Thêm dòng
+                  </Button>
+                )}
               />
             </TabPane>
 
@@ -507,7 +544,7 @@ const Index = memo(() => {
               <Table
                 bordered
                 columns={parameterFormulasColumns}
-                dataSource={contractDetails?.parameterFormulas || []}
+                dataSource={parameterFormulasDetails || []}
                 pagination={false}
                 params={{
                   header: parameterFormulasColumns,

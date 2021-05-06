@@ -126,7 +126,7 @@ class Index extends PureComponent {
                     Người tạo: <strong>Nguyễn Anh</strong>
                   </p>
                   <p className={classnames(stylesExchange['norm'], 'ml-4')}>
-                    Dành cho: <strong>Su Beo</strong>
+                    Dành cho: <strong>{item?.student?.fullName}</strong>
                   </p>
                 </div>
                 <div
