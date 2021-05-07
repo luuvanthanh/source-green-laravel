@@ -200,7 +200,7 @@ const Index = memo(() => {
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
               <List
                 loading={loading}
-                dataSource={convertDataMenus(data)}
+                dataSource={data}
                 renderItem={({ date, menuDetails = [] }, index) => (
                   <ListItem key={index}>
                     <Pane className="w-100">

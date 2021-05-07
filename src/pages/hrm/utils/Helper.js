@@ -24,6 +24,14 @@ export default class Helpers {
     return <Tag color="success">{variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
+  static tagStatusAccount = (type) => {
+    if (type === variables.STATUS.NO_IMAGE || type === variables.STATUS.HANDLING_IMAGE_FAILED) {
+      return <Tag color="yellow">{variables.STATUS_NAME.NO_IMAGE}</Tag>;
+    }
+
+    return <Tag color="success">Đã đăng ký</Tag>;
+  };
+
   static getStartDate = (date, choose) => {
     if (date) {
       return moment(date);

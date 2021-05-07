@@ -32,7 +32,7 @@ const MainLayout = memo(({ children = null }) => {
         menu={menuData}
         info={{
           icon: '/images/home/hrm.svg',
-          title: 'Quản lý nhân sự',
+          title: 'Quản trị nhân sự',
         }}
       />
       <Settings />

@@ -319,3 +319,10 @@ export function getParamaterFormulas(params = {}) {
   });
 }
 // paramater-formulas
+
+export function faceRegistration(data = {}) {
+  return request(`/employees/${data.id}/face-registration`, {
+    method: 'POST',
+    data,
+  });
+}

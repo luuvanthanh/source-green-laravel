@@ -5,6 +5,8 @@ export const variables = {
     PENDING: 'PENDING',
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
+    NO_IMAGE: 'NO_IMAGE',
+    HANDLING_IMAGE_FAILED: 'HANDLING_IMAGE_FAILED',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
@@ -12,6 +14,8 @@ export const variables = {
     PENDING: 'Làm thủ tục',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
+    NO_IMAGE: 'Chưa đăng ký',
+    HANDLING_IMAGE_FAILED: 'Chưa đăng ký',
   },
   STATUS_SHIFT: {
     ON: 'ON',
