@@ -244,11 +244,12 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1,
     showSizeChanger: true,
     onChange: (page, size) => {
-      this.onLoadData(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onLoadData(current, size);
+      this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**

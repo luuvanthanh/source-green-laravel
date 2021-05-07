@@ -18,4 +18,11 @@ export default class Helpers {
     }
     return <Tag color="primary">{variables.STATUS_NAME.REGIST}</Tag>;
   };
+
+  static tagStatusAccount = (type) => {
+    if (type === variables.STATUS.NO_IMAGE || type === variables.STATUS.HANDLING_IMAGE_FAILED) {
+      return <Tag color="yellow">{variables.STATUS_NAME.NO_IMAGE}</Tag>;
+    }
+    return <Tag color="success">Đã đăng ký</Tag>;
+  };
 }

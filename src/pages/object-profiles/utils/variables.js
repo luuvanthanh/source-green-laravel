@@ -6,12 +6,16 @@ export const variables = {
     NO_REGIST: 'NO_REGIST',
     REGISTED: 'REGISTED',
     STORE: 'STORE',
+    NO_IMAGE: 'NO_IMAGE',
+    HANDLING_IMAGE_FAILED: 'HANDLING_IMAGE_FAILED',
   },
   STATUS_NAME: {
     REGIST: 'Đăng ký',
     JOIN_CLASS: 'Đã xếp lớp',
     LEAVE_SCHOOL: 'Nghỉ học',
-    STORE: 'Lưu trữ'
+    STORE: 'Lưu trữ',
+    NO_IMAGE: 'Chưa đăng ký',
+    HANDLING_IMAGE_FAILED: 'Chưa đăng ký',
   },
   TYPE_USER: {
     RANK: 'rank',

@@ -1,5 +1,6 @@
 import * as services from './services';
 import * as categories from '@/services/categories';
+import { notification } from 'antd';
 
 export default {
   namespace: 'healthAdd',
@@ -98,7 +99,15 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Tạo thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: error.data || 'Tạo thất bại',
+        });
         callback(null, error?.data?.error);
       }
     },
