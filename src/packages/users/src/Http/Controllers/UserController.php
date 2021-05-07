@@ -77,7 +77,13 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $employee = $this->employeeRepository->update($request->all(), $id);
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $employee = $this->employeeRepository->update($attributes, $id);
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
