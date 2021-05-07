@@ -54,7 +54,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -157,37 +159,11 @@ class Index extends PureComponent {
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    onShowSizeChange: (current, size) => {
+      this.changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function remove items
-   * @param {objects} record value of items
-   */
-  onEdit = (objects) => {
-    this.setStateData(
-      {
-        objects,
-        visible: true,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          ...objects,
-        });
-      },
-    );
-  };
 
   /**
    * Function remove items
@@ -196,6 +172,7 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const { search } = this.state;
+    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -208,10 +185,11 @@ class Index extends PureComponent {
           type: 'vehicle/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
           },
         });
       },
@@ -228,19 +206,19 @@ class Index extends PureComponent {
         title: 'MÃ SỐ',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">0001</Text>,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
         title: 'HÃNG',
         key: 'manufacturer',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hyundai</Text>,
+        render: (record) => <Text size="normal">{record.manufacturer}</Text>,
       },
       {
         title: 'SỐ CHỔ NGỒI',
         key: 'seats',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">45 chỗ</Text>,
+        render: (record) => <Text size="normal">{record.seats} chỗ</Text>,
       },
       {
         title: 'XE',
@@ -248,8 +226,13 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <Text size="normal">
-            <Avatar size={32} shape="circle" className="mr-2" />
-            Hyundai Universe
+            <Avatar
+              size={32}
+              shape="circle"
+              className="mr-2"
+              src={record.fileImage && `${API_UPLOAD}${record.fileImage}`}
+            />
+            {record.name}
           </Text>
         ),
       },
@@ -257,13 +240,13 @@ class Index extends PureComponent {
         title: 'ĐỜI',
         key: 'life',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">2018</Text>,
+        render: (record) => <Text size="normal"> {record.year}</Text>,
       },
       {
         title: 'TRUYỀN ĐỘNG',
         key: 'movement',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Số tự động</Text>,
+        render: (record) => <Text size="normal">{record.transmission}</Text>,
       },
       {
         key: 'action',
@@ -271,7 +254,11 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`/quan-ly-phuong-tien/xe/${record.id}/chi-tiet`)}
+            />
             <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
@@ -282,13 +269,12 @@ class Index extends PureComponent {
 
   render() {
     const {
-      match: { params },
       data,
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
+    const { search } = this.state;
     const loading = effects['vehicle/GET_DATA'];
     const loadingSubmit = effects['vehicle/ADD'] || effects['vehicle/UPDATE'];
     return (
@@ -302,56 +288,10 @@ class Index extends PureComponent {
             </Button>
           </div>
           <div className={styles['block-table']}>
-            <Form
-              initialValues={{
-                ...search,
-              }}
-              layout="vertical"
-              ref={this.formRef}
-            >
-              <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="HÃNG"
-                    name="manufacturer"
-                    onChange={(event) => this.onChange(event, 'manufacturer')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="LOẠI XE"
-                    name="type"
-                    onChange={(event) => this.onChange(event, 'type')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="ĐỜI"
-                    name="life"
-                    onChange={(event) => this.onChange(event, 'life')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="TRUYỀN ĐỘNG"
-                    name="movement"
-                    onChange={(event) => this.onChange(event, 'movement')}
-                    type={variables.SELECT}
-                  />
-                </div>
-              </div>
-            </Form>
             <Table
               bordered
-              columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              columns={this.header()}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{

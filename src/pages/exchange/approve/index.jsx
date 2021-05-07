@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Avatar, Typography } from 'antd';
+import { Typography } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
+import { head, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -10,6 +11,7 @@ import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
 import { variables, Helper } from '@/utils';
 import variablesModules from '../utils/variables';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -123,7 +125,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="d-flex">
                   <p className={stylesExchange['norm']}>
-                    Người tạo: <strong>Nguyễn Anh</strong>
+                    Người tạo: <strong>{item?.creator?.objectInfo?.fullName}</strong>
                   </p>
                   <p className={classnames(stylesExchange['norm'], 'ml-4')}>
                     Dành cho: <strong>{item?.student?.fullName}</strong>
@@ -157,10 +159,20 @@ class Index extends PureComponent {
                       <div className={stylesExchange['heading']}>
                         <div className={stylesExchange['group-user']}>
                           <div className={stylesExchange['user-info']}>
-                            <Avatar size={50} shape="square" icon={<UserOutlined />} />
+                            <AvatarTable
+                              size={50}
+                              fileImage={
+                                Helper.isJSON(get(itemFeedbacks, 'creator.objectInfo.fileImage')) &&
+                                head(JSON.parse(get(itemFeedbacks, 'creator.objectInfo.fileImage')))
+                              }
+                            />
                             <div className={stylesExchange['info']}>
-                              <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                              <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                              <p className={stylesExchange['norm']}>
+                                {itemFeedbacks?.creator?.objectInfo?.fullName}
+                              </p>
+                              <p className={stylesExchange['sub-norm']}>
+                                {variablesModules.NAME_ROLES[item.type]}
+                              </p>
                             </div>
                           </div>
                           <div className={stylesExchange['wrapper-content']}>
