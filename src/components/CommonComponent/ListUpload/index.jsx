@@ -3,19 +3,21 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import styles from './styles.module.scss';
 
-export default function ButtonCustom({ data }) {
+export default function ButtonCustom({ data, remove }) {
   return (
     <div className={classnames(styles.listUpload, 'd-flex', 'flex-wrap')}>
-      {
-        data.map((item, index) => (
-          <div key={index} className={styles.item}>
-            <img alt="image" aria-hidden src={item.src || "/default-upload.png"} />
-            <span className={styles.icon}>
-              <span className="icon-close-circle" />
-            </span>
-          </div>
-        ))
-      }
+      {data.map((item, index) => (
+        <div key={index} className={styles.item}>
+          <img
+            alt="image"
+            aria-hidden
+            src={item ? `${API_UPLOAD}${item}` : '/default-upload.png'}
+          />
+          <span className={styles.icon} onClick={() => remove(item)}>
+            <span className="icon-close-circle" />
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

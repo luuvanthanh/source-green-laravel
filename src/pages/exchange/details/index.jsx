@@ -145,12 +145,16 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onChangeStatus = (status) => {
-    const { dispatch, details } = this.props;
+    const {
+      dispatch,
+      details,
+      match: { params },
+    } = this.props;
     if (status === variablesModules.STATUS.CLOSED) {
       dispatch({
         type: 'exchangeDetails/CLOSE',
         payload: {
-          ...details,
+          ...params,
         },
         callback: () => {},
       });
@@ -158,8 +162,11 @@ class Index extends PureComponent {
       dispatch({
         type: 'exchangeDetails/UPDATE_COMMUNICATION',
         payload: {
-          ...details,
+          title: details.title,
+          description: details.description,
+          studentId: details.studentId,
           status,
+          ...params,
         },
         callback: () => {},
       });
@@ -324,8 +331,16 @@ class Index extends PureComponent {
                 <div className={stylesExchange['group-user']}>
                   <p className={stylesExchange['norm']}>Người tạo</p>
                   <div className={stylesExchange['user-info']}>
-                    <Avatar size={50} shape="square" icon={<UserOutlined />} />
-                    <p className={stylesExchange['norm']}>Nguyễn Anh</p>
+                    <AvatarTable
+                      size={50}
+                      fileImage={
+                        Helper.isJSON(get(details, 'creator.objectInfo.fileImage')) &&
+                        head(JSON.parse(get(details, 'creator.objectInfo.fileImage')))
+                      }
+                    />
+                    <p className={stylesExchange['norm']}>
+                      {details?.creator?.objectInfo?.fullName}
+                    </p>
                   </div>
                 </div>
                 <hr />
@@ -394,10 +409,20 @@ class Index extends PureComponent {
                           <div className={stylesExchange['heading']}>
                             <div className={stylesExchange['group-user']}>
                               <div className={stylesExchange['user-info']}>
-                                <Avatar size={50} shape="square" icon={<UserOutlined />} />
+                                <AvatarTable
+                                  size={50}
+                                  fileImage={
+                                    Helper.isJSON(get(item, 'creator.objectInfo.fileImage')) &&
+                                    head(JSON.parse(get(item, 'creator.objectInfo.fileImage')))
+                                  }
+                                />
                                 <div className={stylesExchange['info']}>
-                                  <p className={stylesExchange['norm']}>Nguyễn Thị Mai</p>
-                                  <p className={stylesExchange['sub-norm']}>Giáo viên - Cơ sở 1</p>
+                                  <p className={stylesExchange['norm']}>
+                                    {item?.creator?.objectInfo?.fullName}
+                                  </p>
+                                  <p className={stylesExchange['sub-norm']}>
+                                    {variablesModules.NAME_ROLES[item.type]}
+                                  </p>
                                 </div>
                               </div>
                             </div>

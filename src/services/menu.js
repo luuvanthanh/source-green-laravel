@@ -45,6 +45,7 @@ export async function getLeftMenuData() {
       url: [
         '/quan-ly-phuong-tien/xe',
         '/quan-ly-phuong-tien/xe/tao-moi',
+        '/quan-ly-phuong-tien/xe/:id/chi-tiet',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
       ],
@@ -423,7 +424,11 @@ export async function getLeftMenuVehicel() {
     {
       title: 'Quản lý xe',
       key: 'vehicel',
-      url: ['/quan-ly-phuong-tien/xe', '/quan-ly-phuong-tien/xe/tao-moi'],
+      url: [
+        '/quan-ly-phuong-tien/xe',
+        '/quan-ly-phuong-tien/xe/tao-moi',
+        '/quan-ly-phuong-tien/xe/:id/chi-tiet',
+      ],
       icon: 'icon icon-checkmark',
       permission: [],
       pro: true,

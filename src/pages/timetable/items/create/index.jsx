@@ -27,7 +27,6 @@ const mapStateToProps = ({ timeTablesAdd, loading, menu }) => ({
 });
 const Index = memo(
   ({ dispatch, loading: { effects }, match: { params }, branches, error, menuLeft, classes }) => {
-    const [type, setType] = useState(1);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -103,7 +102,6 @@ const Index = memo(
               ref={formRef}
               onFinish={onFinish}
               initialValues={{
-                type: 1,
                 timetableDetails: [{}],
               }}
             >
@@ -234,7 +232,7 @@ const Index = memo(
                               color="success"
                               ghost
                               icon="plus"
-                              onClick={add}
+                              onClick={() => add()}
                             >
                               Thêm mốc thời gian
                             </Button>

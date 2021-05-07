@@ -2,33 +2,29 @@ import request from '@/utils/request';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/api/product-types', {
+  return request(`/bus-informations/${params.id}`, {
     method: 'GET',
-    params: {
-      ...params,
-      ...Helper.getPagination(params.page, params.limit),
-    }
   });
 }
 
 export function add(data = {}) {
-  return request('/api/product-types', {
+  return request('/bus-informations', {
     method: 'POST',
-    data
+    data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/api/product-types/${data.id}`, {
+  return request(`/bus-informations/${data.id}`, {
     method: 'PUT',
-    data
+    data,
   });
 }
 
 export function remove(id) {
-  return request(`/api/product-types/${id}`, {
+  return request(`/bus-informations/${id}`, {
     method: 'DELETE',
-    parse: true
+    parse: true,
   });
 }
 
