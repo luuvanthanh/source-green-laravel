@@ -50,3 +50,10 @@ export function updateStatus(data = {}) {
     data,
   });
 }
+
+export function faceRegistration(data = {}) {
+  return request(`/parents/${data.id}/face-registration`, {
+    method: 'POST',
+    data,
+  });
+}

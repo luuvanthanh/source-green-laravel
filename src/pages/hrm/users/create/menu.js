@@ -19,7 +19,7 @@ export const menu = [
   },
   {
     key: 'decision-rewards',
-    label: 'Quyết định, Khen thưởng kỹ luật',
+    label: 'Quyết định, Khen thưởng kỷ luật',
   },
   {
     key: 'contract',

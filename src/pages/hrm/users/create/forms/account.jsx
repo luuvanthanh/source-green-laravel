@@ -8,6 +8,8 @@ import { head, isEmpty, get } from 'lodash';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
+import HelperModules from '../../../utils/Helper';
+import variablesModules from '../../../utils/variables';
 
 const mapStateToProps = ({ loading, HRMusersAdd }) => ({
   loading,
@@ -39,6 +41,33 @@ const Index = memo(
           },
         },
         callback: (response, error) => {
+          if (error) {
+            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+              error?.validationErrors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: head(item.members),
+                    errors: [item.message],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    };
+
+    const register = () => {
+      dispatch({
+        type: 'HRMusersAdd/FACE_REGISTRATION',
+        payload: { id: params.id },
+        callback: (response, error) => {
+          if (response) {
+            dispatch({
+              type: 'HRMusersAdd/GET_DETAILS_ACCOUNT',
+              payload: params,
+            });
+          }
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {
@@ -123,6 +152,24 @@ const Index = memo(
                     rules={[variables.RULES.EMPTY]}
                   />
                 </Pane>
+                {!isEmpty(details) && (
+                  <>
+                    <Pane className="col-lg-3">
+                      <Form.Item label="Đăng nhập bằng hình ảnh">
+                        {HelperModules.tagStatusAccount(details?.faceImageStatus)}
+                      </Form.Item>
+                    </Pane>
+                    {details?.faceImageStatus !== variablesModules.STATUS.NO_IMAGE && (
+                      <Pane className="col-lg-3">
+                        <Form.Item label=" ">
+                          <Button color="success" ghost onClick={register}>
+                            Đăng ký
+                          </Button>
+                        </Form.Item>
+                      </Pane>
+                    )}
+                  </>
+                )}
               </Pane>
             </Pane>
 

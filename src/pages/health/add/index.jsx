@@ -382,6 +382,7 @@ const Index = memo(({}) => {
                       size="large"
                       htmlType="submit"
                       color="success"
+                      disabled={!studentId}
                       loading={loadingSubmit}
                     >
                       Tạo mới
