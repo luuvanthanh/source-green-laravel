@@ -232,6 +232,15 @@ class IclockController extends Controller
                                 break;
                             }
 
+                            //call service add magnetic card to user
+                            \GGPHP\MagneticCard\Services\MagneticCardServices::addOrUpdate($employee, [
+                                'magneticCard' => !empty($magneticCard) ? (int) $magneticCard : 0,
+                                'magneticCardPatch' => !empty($magneticCardPatch) ? $magneticCardPatch : 0,
+                                'magneticCardToken' => !empty($magneticCard) ? \Hash::make($magneticCard) : '',
+                                'deviceId' => $device->Id,
+                                'card' => !empty($card) ? $card : '',
+                            ]);
+
                             break;
                         case $haystack['fingerprint']:
                             $arrayAttributes = preg_split('/\t/', $stringAttributes);

@@ -22,4 +22,12 @@ class OtherDeclarationDetail extends UuidModel
         'OtherDeclarationId', 'EmployeeId', 'Allowance', 'Bonus', 'Retrieval', 'PaymentOfSocialInsurance',
         'EmployeeSocialInsurance', 'CompanySocialInsurance', 'Charity',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function employee()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
+    }
 }

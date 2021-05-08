@@ -26,13 +26,11 @@ class AppointCreateRequest extends FormRequest
         return [
             'decisionNumber' => 'unique:Appoints,DecisionNumber',
             'decisionDate' => 'required',
-            'reason' => 'required',
             'data' => 'required|array',
             'data.*.employeeId' => 'required',
             'data.*.branchId' => 'required',
             'data.*.divisionId' => 'required',
             'data.*.positionId' => 'required',
-            'data.*.note' => 'required',
         ];
     }
 }

@@ -196,4 +196,12 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $this->hasMany(Children::class, 'EmployeeId');
     }
 
+    /**
+     * Define relations magneticCards
+     */
+    public function magneticCards()
+    {
+        return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class)->withTrashed();
+    }
+
 }

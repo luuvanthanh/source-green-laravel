@@ -58,7 +58,7 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
             $tranfer->parameterValues()->attach($attributes['paramValue']);
 
-            $tranfer->parameterFormulas()->attach($attributes['paramFormula']);
+            // $tranfer->parameterFormulas()->attach($attributes['paramFormula']);
 
             \DB::commit();
         } catch (\Exception $e) {

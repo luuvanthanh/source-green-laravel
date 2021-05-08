@@ -16,7 +16,8 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class SabbaticalLeaveRepositoryEloquent extends CoreRepositoryEloquent implements SabbaticalLeaveRepository
 {
     protected $fieldSearchable = [
-        'employeeId',
+        'Id',
+        'employee.FullName' => 'like',
     ];
     /**
      * Specify Model class name

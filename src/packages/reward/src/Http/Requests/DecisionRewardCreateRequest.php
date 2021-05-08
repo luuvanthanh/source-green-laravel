@@ -31,7 +31,6 @@ class DecisionRewardCreateRequest extends FormRequest
             'data' => 'required|array',
             'data.*.employeeId' => 'required',
             'data.*.money' => 'required',
-            'data.*.note' => 'required',
         ];
     }
 }

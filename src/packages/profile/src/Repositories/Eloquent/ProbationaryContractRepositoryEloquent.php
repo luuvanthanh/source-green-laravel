@@ -22,7 +22,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
      */
     protected $fieldSearchable = [
         'Id',
-        'EmployeeId',
+        'employee.FullName' => 'like',
     ];
 
     /**
