@@ -2,6 +2,7 @@
 
 namespace GGPHP\ShiftSchedule\Http\Requests;
 
+use GGPHP\ShiftSchedule\Models\Shift;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -29,8 +30,16 @@ class ShiftCreateRequest extends FormRequest
             'shiftCode' => [
                 'required',
                 'string',
+                function ($attribute, $value, $fail) {
+                    $shift = Shift::where('ShiftCode', $value)->where('Status', 'ON')->first();
+
+                    if (!is_null($shift)) {
+                        return $fail('Mã ca đã tồn tại.');
+                    }
+                },
             ],
             'description' => 'string',
+            'name' => 'required|string',
             'time' => ['required', 'array',
                 function ($attribute, $value, $fail) {
                     for ($i = 1; $i < count($value); $i++) {

@@ -63,7 +63,9 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('inOutHistory', function ($query) use ($attributes) {
                 $query->where('AttendedAt', '>=', $attributes['startDate'])->where('AttendedAt', '<=', $attributes['endDate']);
-            });
+            })->with(['inOutHistory' => function ($query) use ($attributes) {
+                $query->where('AttendedAt', '>=', $attributes['startDate'])->where('AttendedAt', '<=', $attributes['endDate']);
+            }]);
         }
 
         if (!empty($attributes['studentId'])) {

@@ -33,7 +33,7 @@ class ProbationaryContractTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $parameterValues = $model->parameterValues;
+        $parameterValues = $model->parameterValues->toArray();
 
         foreach ($parameterValues as $key => $value) {
             foreach ($value as $keyItem => $item) {

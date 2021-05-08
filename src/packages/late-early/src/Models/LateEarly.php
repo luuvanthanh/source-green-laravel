@@ -47,7 +47,7 @@ class LateEarly extends UuidModel
      */
     public function employee()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'EmployeeId');
     }
 
     /**
@@ -63,7 +63,7 @@ class LateEarly extends UuidModel
      */
     public function timekeeping()
     {
-        return $this->employee->timekeeping()->whereDate('AttendedAt', $this->date);
+        return $this->employee->timekeeping()->whereDate('AttendedAt', $this->Date);
     }
 
     /**

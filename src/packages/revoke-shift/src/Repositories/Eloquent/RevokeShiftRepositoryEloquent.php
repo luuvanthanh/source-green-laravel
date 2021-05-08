@@ -111,25 +111,20 @@ class RevokeShiftRepositoryEloquent extends CoreRepositoryEloquent implements Re
                 if (empty(count($timekepping))) {
 
                     $absentType = AbsentType::whereIn('Type', [AbsentType::ANNUAL_LEAVE, AbsentType::UNPAID_LEAVE, AbsentType::QUIT_WORK])->pluck('Id')->toArray();
-                    $absentType2 = AbsentType::whereIn('Type', [AbsentType::TYPE_OFF, AbsentType::AWOL])->pluck('Id')->toArray();
 
                     $absent = Absent::where('EmployeeId', $value->Id)->whereIn('AbsentTypeId', $absentType)->where(function ($q2) use ($date) {
                         $q2->where([['StartDate', '<=', $date], ['EndDate', '>=', $date]])
                             ->orWhere([['StartDate', '>=', $date], ['StartDate', '<=', $date]])
                             ->orWhere([['EndDate', '>=', $date], ['EndDate', '<=', $date]]);
                     })->get();
-                    $absent2 = Absent::where('EmployeeId', 28)->whereIn('AbsentTypeId', $absentType2)->where(function ($q2) use ($date) {
-                        $q2->where([['StartDate', '<=', $date], ['EndDate', '>=', $date]])
-                            ->orWhere([['StartDate', '>=', $date], ['StartDate', '<=', $date]])
-                            ->orWhere([['EndDate', '>=', $date], ['EndDate', '<=', $date]]);
-                    })->get();
+
                     $data = [
                         "EmployeeId" => $value->Id,
                         "ShiftId" => $employeeHasWorkShift[$date][0]['ShiftId'],
                         "DateViolation" => $date,
                     ];
 
-                    if (empty(count($absent)) && empty(count($absent2))) {
+                    if (empty(count($absent))) {
                         $checkRevokeShift = RevokeShift::where('EmployeeId', $data['EmployeeId'])->where('DateViolation', $data['DateViolation'])->first();
 
                         if (is_null($checkRevokeShift)) {
@@ -138,7 +133,13 @@ class RevokeShiftRepositoryEloquent extends CoreRepositoryEloquent implements Re
                     }
                 }
 
-                $getTimekeeping = $this->timekeepingRepositoryEloquent->timekeepingReport($value->Id, null, null, $date, $date, null, true);
+                $dataTimeKeepingReport = [
+                    'employeeId' => $value->Id,
+                    'startDate' => $date,
+                    'endDate' => $date,
+                ];
+
+                $getTimekeeping = $this->timekeepingRepositoryEloquent->timekeepingReport($dataTimeKeepingReport);
 
                 if (isset($getTimekeeping['data'][0]['attributes']['timeKeepingReport'][0]) && $getTimekeeping['data'][0]['attributes']['timeKeepingReport'][0]['timekeepingReport'] == 0 && !empty(count($timekepping))) {
                     $shift = Shift::findOrFail($employeeHasWorkShift[$date][0]['ShiftId']);

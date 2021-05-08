@@ -3,7 +3,7 @@
 namespace GGPHP\OtherDeclaration\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\OtherDeclaration\Models\OtherDeclaration;
+use GGPHP\OtherDeclaration\Models\OtherDeclarationDetail;
 use GGPHP\Users\Transformers\UserTransformer;
 
 /**
@@ -17,14 +17,14 @@ class OtherDeclarationDetailTransformer extends BaseTransformer
 
     /**
      * Include User
-     * @param  OtherDeclaration $otherDeclaration
+     * @param  OtherDeclarationDetail $otherDeclarationDetail
      */
-    public function includeEmployee(OtherDeclaration $otherDeclaration)
+    public function includeEmployee(OtherDeclarationDetail $otherDeclarationDetail)
     {
-        if (empty($otherDeclaration->employee)) {
+        if (empty($otherDeclarationDetail->employee)) {
             return;
         }
 
-        return $this->item($otherDeclaration->employee, new UserTransformer, 'Employee');
+        return $this->item($otherDeclarationDetail->employee, new UserTransformer, 'Employee');
     }
 }

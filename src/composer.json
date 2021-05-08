@@ -86,6 +86,7 @@
             "GGPHP\\Children\\": "packages/children/src",
             "GGPHP\\Attendance\\": "young-attendance/attendance/src",
             "GGPHP\\BusRegistration\\": "packages/bus-registration/src",
+            "GGPHP\\MagneticCard\\": "packages/magnetic-card/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

@@ -127,6 +127,10 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    \GGPHP\MagneticCard\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
     //YoungAttendance
     \GGPHP\InOutHistories\RouteRegistrar::routes(function ($router) {
         $router->forBread();
