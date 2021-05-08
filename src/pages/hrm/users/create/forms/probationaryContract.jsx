@@ -577,6 +577,7 @@ const Index = memo(() => {
           <Table
             bordered
             columns={columns}
+            loading={loading['HRMusersAdd/GET_PROBATIONARY_CONTRACTS']}
             dataSource={probationaryContracts}
             pagination={false}
             params={{
