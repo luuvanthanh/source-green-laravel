@@ -193,7 +193,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-4">
                       <FormItem
-                        label="Chức vụ"
+                        label="Chức danh"
                         name="position"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.INPUT_PASSWORD}

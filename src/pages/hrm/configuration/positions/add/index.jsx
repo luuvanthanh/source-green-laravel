@@ -128,7 +128,7 @@ class Index extends PureComponent {
     const loading = effects['positionsAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs last={params.id ? 'Chỉnh sửa chức vụ' : 'Tạo chức vụ'} menu={menuData} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa chức danh' : 'Tạo chức danh'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"

@@ -264,7 +264,7 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">Hành chính nhân sự</Text>,
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh',
         key: 'position',
         className: 'min-width-150',
         render: (record) => <Text size="normal">Ghi danh</Text>,
@@ -347,7 +347,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả chức vụ' }]}
+                    data={[{ id: null, name: 'Tất cả chức danh' }]}
                     name="position"
                     onChange={(event) => this.onChangeSelect(event, 'position')}
                     type={variables.SELECT}

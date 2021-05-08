@@ -62,7 +62,7 @@ const Index = memo(() => {
                         />
                       </Pane>
                       <Pane className="col-lg-6">
-                        <FormItem name={[key, 'position']} label="Chức vụ" type={variables.INPUT} />
+                        <FormItem name={[key, 'position']} label="Chức danh" type={variables.INPUT} />
                       </Pane>
                     </Pane>
                     {fields.length > 1 && (

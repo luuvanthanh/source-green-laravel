@@ -296,7 +296,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh',
         key: 'position',
         className: 'min-width-150',
         render: (record) => (

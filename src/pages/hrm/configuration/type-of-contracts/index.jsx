@@ -228,6 +228,24 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
+        title: 'LOẠI',
+        key: 'type',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.type}</Text>,
+      },
+      {
+        title: 'SỐ NĂM',
+        key: 'year',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.year}</Text>,
+      },
+      {
+        title: 'SỐ THÁNG',
+        key: 'month',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.month}</Text>,
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -259,10 +277,10 @@ class Index extends PureComponent {
     const loading = effects['typeOfContracts/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách thông tin hợp đồng" />
+        <Helmet title="Danh sách loại hợp đồng" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH THÔNG TIN HỢP ĐỒNG</Text>
+            <Text color="dark">Danh sách loại hợp đồng</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

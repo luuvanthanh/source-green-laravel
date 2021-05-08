@@ -273,13 +273,6 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'reason'),
-      },
-      {
         title: 'CS Công tác mới',
         key: 'branch',
         className: 'min-width-150',
