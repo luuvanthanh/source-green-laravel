@@ -47,7 +47,7 @@ const forms = {
   transfers: <TransfersForm />,
   contract: <ContractForm />,
   probationaryContract: <ProbationaryContractForm />,
-  insurrance: <InsurranceForm />,
+  insurrances: <InsurranceForm />,
   healthInsurrance: <InsurranceHealthForm />,
   daysOff: <DaysOffForm />,
   children: <ChildrenForm />,

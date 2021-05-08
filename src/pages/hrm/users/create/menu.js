@@ -30,6 +30,10 @@ export const menu = [
     label: 'Hợp đồng thử việc',
   },
   {
+    key: 'insurrances',
+    label: 'Bảo hiểm xã hội',
+  },
+  {
     key: 'magneticCards',
     label: 'Thẻ từ',
   },

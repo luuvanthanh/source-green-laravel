@@ -567,6 +567,7 @@ const Index = memo(() => {
             columns={columns}
             dataSource={contracts}
             pagination={false}
+            loading={loading['HRMusersAdd/GET_CONTRACTS']}
             params={{
               header: columns,
               type: 'table',
