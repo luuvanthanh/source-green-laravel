@@ -268,7 +268,7 @@ class Index extends PureComponent {
         render: (record) => 'Hành chính nhân sự',
       },
       {
-        title: 'Chức vụ',
+        title: 'Chức danh',
         key: 'positon',
         className: 'min-width-120',
         render: (record) => 'Ghi danh',

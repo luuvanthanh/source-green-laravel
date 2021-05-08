@@ -387,7 +387,7 @@ const General = memo(({}) => {
               <Pane className="col-lg-6">
                 <FormItem
                   data={positions}
-                  label="Chức vụ"
+                  label="Chức danh"
                   name="positionId"
                   type={variables.SELECT}
                   rules={[variables.RULES.EMPTY]}
