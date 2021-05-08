@@ -56,7 +56,7 @@ class Index extends PureComponent {
         keyWord: query?.keyWord,
         class: query?.class,
         branchId: query?.branchId,
-        classStatus: 'HAS_CLASS',
+        classStatus: 'ALL',
         isStoreStaus: false,
       },
       objects: {},
@@ -181,7 +181,7 @@ class Index extends PureComponent {
   onChangeSelectBranch = (e, type) => {
     this.debouncedSearch(e, type);
     this.props.dispatch({
-      type: 'exchangeItems/GET_CLASSES',
+      type: 'OPchildren/GET_CLASSES',
       payload: {
         branch: e,
       },
@@ -221,24 +221,29 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return {
+      size: 'default',
+      total: pagination.total,
+      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
+      defaultCurrent: Number(this.state.search.page),
+      current: Number(this.state.search.page),
+      hideOnSinglePage: pagination.total <= 10,
+      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+      onChange: (page, size) => {
+        this.changePagination(page, size);
+      },
+      onShowSizeChange: (current, size) => {
+        this.changePagination(current, size);
+      },
+      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
+    };
+  };
 
   /**
    * Function remove items

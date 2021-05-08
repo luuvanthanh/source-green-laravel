@@ -261,13 +261,6 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'reason'),
-      },
-      {
         title: 'Nhân viên',
         key: 'name',
         className: 'min-width-200',

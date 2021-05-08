@@ -5,27 +5,27 @@ import * as services from './services';
 export default {
   namespace: 'vehicleAdd',
   state: {
-    data: [],
-    pagination: {
-      total: 0
-    }
+    data: {},
+    error: {
+      isError: false,
+      data: {},
+    },
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination
+      data: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -33,17 +33,12 @@ export default {
         const response = yield saga.call(services.get, payload);
         yield saga.put({
           type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount
-            }
-          },
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },
@@ -51,7 +46,17 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        if (get(error.data, 'error.validationErrors[0]')) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
+          });
+        }
         callback(null, error?.data?.error);
       }
     },
@@ -59,7 +64,17 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        if (get(error.data, 'error.validationErrors[0]')) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
+          });
+        }
         callback(null, error?.data?.error);
       }
     },
@@ -68,7 +83,7 @@ export default {
         yield saga.call(services.remove, payload.id);
         yield saga.put({
           type: 'GET_DATA',
-          payload: payload.pagination
+          payload: payload.pagination,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -83,7 +98,7 @@ export default {
         }
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
         });
       }
     },

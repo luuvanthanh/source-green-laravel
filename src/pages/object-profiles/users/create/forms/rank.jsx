@@ -62,7 +62,7 @@ const Index = memo(() => {
         render: (record) => <Text size="normal">Quản lý công ty</Text>,
       },
       {
-        title: 'Chức vụ	',
+        title: 'Chức danh	',
         key: 'position',
         className: 'min-width-100',
         render: (record) => <Text size="normal">Chủ tịch SL</Text>,
@@ -141,7 +141,7 @@ const Index = memo(() => {
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem data={[]} label="Chức vụ" name="position_id" type={variables.SELECT} />
+              <FormItem data={[]} label="Chức danh" name="position_id" type={variables.SELECT} />
             </Pane>
             <Pane className="col-lg-6">
               <FormItem

@@ -218,20 +218,10 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="Lý do"
-                      name="reason"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                    />
-                  </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={branches}
-                      label="Cơ sở"
+                      label="Cơ sở mới"
                       name="branchId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
@@ -240,7 +230,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={divisions}
-                      label="Bộ phận"
+                      label="Bộ phận mới"
                       name="divisionId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
@@ -249,18 +239,10 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={positions}
-                      label="Chức vụ"
+                      label="Chức danh mới"
                       name="positionId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="Ghi chú"
-                      name="note"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                     />
                   </div>
                 </div>

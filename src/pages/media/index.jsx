@@ -122,12 +122,13 @@ const Index = memo(() => {
     () => ({
       size: 'default',
       total: pagination?.total || 0,
-      pageSize: variables.PAGINATION.PAGE_SIZE,
+      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
       defaultCurrent: Number(search.page),
       current: Number(search.page),
       hideOnSinglePage: (pagination?.total || 0) <= 10,
-      showSizeChanger: false,
-      pageSizeOptions: false,
+      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
       onChange: (page, limit) => {
         setSearch((prev) => ({
           ...prev,
@@ -179,8 +180,8 @@ const Index = memo(() => {
   }, [search]);
 
   const fetchBranches = () => {
-    if(search.branchId){
-      fetchClasses(search.branchId)
+    if (search.branchId) {
+      fetchClasses(search.branchId);
     }
     dispatch({
       type: 'categories/GET_BRANCHES',
@@ -188,7 +189,7 @@ const Index = memo(() => {
         if (res) {
           mountedSet(setCategory)((prev) => ({
             ...prev,
-            branches: res?. parsePayload || [],
+            branches: res?.parsePayload || [],
           }));
         }
       },

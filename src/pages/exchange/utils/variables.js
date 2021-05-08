@@ -34,6 +34,10 @@ export const variables = {
   ],
   PARENT: 'PARENT',
   TEACHER: 'TEACHER',
+  NAME_ROLES: {
+    TEACHER: 'Giáo viên',
+    PARENT: 'Phụ huynh',
+  },
 };
 
 export default variables;

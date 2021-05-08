@@ -2,6 +2,7 @@ import { memo, useRef, useEffect } from 'react';
 import { Form, List } from 'antd';
 import { Helmet } from 'react-helmet';
 import Pane from '@/components/CommonComponent/Pane';
+import { isArray } from 'lodash';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -278,15 +279,16 @@ const Index = memo(({}) => {
                           <Pane>
                             <label className={styles.infoLabel}>Hình ảnh:</label>
                             <Pane className="row">
-                              {JSON.parse(files).map((item) => (
-                                <Pane className="col-lg-3" key={item}>
-                                  <img
-                                    className={styles.thumb}
-                                    src={`${API_UPLOAD}${item}`}
-                                    className="d-block w-100"
-                                  />
-                                </Pane>
-                              ))}
+                              {isArray(JSON.parse(files)) &&
+                                JSON.parse(files).map((item) => (
+                                  <Pane className="col-lg-3" key={item}>
+                                    <img
+                                      className={styles.thumb}
+                                      src={`${API_UPLOAD}${item}`}
+                                      className="d-block w-100"
+                                    />
+                                  </Pane>
+                                ))}
                             </Pane>
                           </Pane>
                         )}

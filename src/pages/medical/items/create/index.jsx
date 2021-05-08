@@ -62,7 +62,7 @@ const Index = memo(({}) => {
   };
   const [pillTimes, setPillTimes] = useState({});
   const [students, setStudents] = useState([]);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState({});
   const [studentId, setStudentsId] = useState(null);
   const filterRef = useRef();
 
@@ -199,7 +199,7 @@ const Index = memo(({}) => {
         });
         return {
           ...omit(item, 'pillTimeNote', 'pillTimes'),
-          files: JSON.stringify(files),
+          files: files[index]?.files ? JSON.stringify(files[index]?.files) : undefined,
           medicineTimes,
         };
       }),
@@ -216,7 +216,21 @@ const Index = memo(({}) => {
   };
 
   const uploadFiles = (file, index) => {
-    mountedSet(setFiles, (prev) => [...prev, file]);
+    mountedSet(setFiles, (prev) => ({
+      ...prev,
+      [index]: {
+        files: prev[index]?.files ? [...prev[index].files, file] : [file],
+      },
+    }));
+  };
+
+  const removeFiles = (file, index) => {
+    mountedSet(setFiles, (prev) => ({
+      ...prev,
+      [index]: {
+        files: file,
+      },
+    }));
   };
 
   return (
@@ -412,7 +426,8 @@ const Index = memo(({}) => {
                                 <FormItemAntd label="Đính kèm hình ảnh" name={[name, 'files']}>
                                   <MultipleImageUpload
                                     callback={(event) => uploadFiles(event, index)}
-                                    files={files}
+                                    removeFiles={(event) => removeFiles(event, index)}
+                                    files={files[index]?.files || []}
                                   />
                                 </FormItemAntd>
                               </Pane>
@@ -421,7 +436,7 @@ const Index = memo(({}) => {
                         ))}
                       </Scrollbars>
                       <Pane style={{ padding: 20 }} className="border-bottom border-top">
-                        <Button color="success" ghost icon="plus" onClick={add}>
+                        <Button color="success" ghost icon="plus" onClick={() => add()}>
                           Thêm thuốc
                         </Button>
                       </Pane>

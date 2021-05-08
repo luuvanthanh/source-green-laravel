@@ -283,20 +283,9 @@ class Index extends PureComponent {
       {
         title: 'Mức thưởng, Mức phạt',
         key: 'momeny',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => Helper.getPrice(get(record, 'decisionRewardDetails[0].money')),
-      },
-      {
-        title: 'Ngày áp dụng',
-        key: 'timeApply',
         className: 'min-width-120',
         width: 120,
-        render: (record) =>
-          Helper.getDate(
-            get(record, 'decisionRewardDetails[0].timeApply'),
-            variables.DATE_FORMAT.DATE,
-          ),
+        render: (record) => Helper.getPrice(get(record, 'decisionRewardDetails[0].money')),
       },
       {
         title: 'Loại quyết định',
