@@ -325,27 +325,33 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (value) => value?.name,
       },
-      // {
-      //   title: 'Thao tác',
-      //   key: 'actions',
-      //   width: 180,
-      //   className: 'min-width-180',
-      //   fixed: 'right',
-      //   align: 'center',
-      //   render: (record) => (
-      //     <ul className="list-unstyled list-inline">
-      //       <li className="list-inline-item">
-      //         <Button color="primary" icon="edit" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="danger" icon="remove" className="ml-2" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="success" icon="export" />
-      //       </li>
-      //     </ul>
-      //   ),
-      // },
+      {
+        title: 'Thao tác',
+        key: 'actions',
+        width: 130,
+        className: 'min-width-130',
+        fixed: 'right',
+        align: 'center',
+        render: (record) => (
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                icon="edit"
+                onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => this.onRemove(record.id)}
+              />
+            </li>
+          </ul>
+        ),
+      },
     ];
   };
 

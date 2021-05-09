@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'laboursContractsAdd',
@@ -11,7 +12,12 @@ export default {
     },
     categories: {
       users: [],
+      branches: [],
+      positions: [],
+      divisions: [],
+      paramaterValues: [],
     },
+    contractTypes: [],
     details: {},
     error: {
       isError: false,
@@ -42,14 +48,40 @@ export default {
       ...state,
       categories: {
         users: payload.users.parsePayload,
+        divisions: payload.divisions.parsePayload,
+        positions: payload.positions.parsePayload,
+        branches: payload.branches.parsePayload,
+        paramaterValues: payload.paramaterValues.parsePayload,
       },
+    }),
+    SET_TYPE_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      contractTypes: payload.parsePayload,
     }),
   },
   effects: {
+    *GET_TYPE_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getTypeOfContracts, payload);
+        yield saga.put({
+          type: 'SET_TYPE_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_CATEGORIES({ payload }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
+          divisions: saga.call(categories.getDivisions),
+          positions: saga.call(categories.getPositions),
+          branches: saga.call(categories.getBranches),
+          paramaterValues: saga.call(categories.getParamaterValues),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
