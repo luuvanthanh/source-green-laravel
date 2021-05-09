@@ -356,7 +356,7 @@ const Index = memo(() => {
     dispatch({
       type: 'HRMusersAdd/GET_CONTRACT_TYPES',
       payload: {
-        name: 'Thử việc',
+        type: 'THU_VIEC',
       },
     });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });

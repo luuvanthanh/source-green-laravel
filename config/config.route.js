@@ -1242,6 +1242,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-lao-dong',
+            component: './hrm/labours-contracts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+            component: './hrm/labours-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+            component: './hrm/labours-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thu-viec',
+            component: './hrm/probationary-contracts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+            component: './hrm/probationary-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+            component: './hrm/probationary-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

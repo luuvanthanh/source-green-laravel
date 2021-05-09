@@ -347,7 +347,12 @@ const Index = memo(() => {
     dispatch({ type: 'HRMusersAdd/GET_BRANCHES' });
     dispatch({ type: 'HRMusersAdd/GET_DIVISIONS' });
     dispatch({ type: 'HRMusersAdd/GET_POSITIONS' });
-    dispatch({ type: 'HRMusersAdd/GET_CONTRACT_TYPES' });
+    dispatch({
+      type: 'HRMusersAdd/GET_CONTRACT_TYPES',
+      payload: {
+        type: 'HOP_DONG',
+      },
+    });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
   }, []);
 

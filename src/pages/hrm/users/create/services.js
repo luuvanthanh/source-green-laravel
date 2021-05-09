@@ -88,7 +88,7 @@ export function details(data = {}) {
     method: 'GET',
     params: {
       include: Helper.convertIncludes(['positionLevel']),
-    }
+    },
   });
 }
 
@@ -220,6 +220,7 @@ export function getContractTypes(params = {}) {
       include: 'parameterValues,parameterFormulas',
       search: Helper.convertParamSearchConvert({
         Name: params.name,
+        Type: params.type,
       }),
     },
   });
@@ -326,7 +327,6 @@ export function faceRegistration(data = {}) {
     data,
   });
 }
-
 
 // insurrances
 export function addInsurrances(data = {}) {
