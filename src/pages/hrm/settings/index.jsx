@@ -312,6 +312,13 @@ class Index extends PureComponent {
         render: (record) => record.shiftCode,
       },
       {
+        title: 'Tên ca',
+        key: 'name',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => record.name,
+      },
+      {
         title: 'Thời gian',
         key: 'time',
         className: classnames('min-width-120', 'max-width-200'),
