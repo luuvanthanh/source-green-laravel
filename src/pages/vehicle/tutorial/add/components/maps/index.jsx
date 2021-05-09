@@ -10,7 +10,7 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
-import Routing from './mapInfo';
+import Routing from './MapInfo';
 
 const iconStudent = new L.Icon({
   iconUrl: '/images/maker-student.svg',
