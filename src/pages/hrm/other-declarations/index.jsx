@@ -402,6 +402,7 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
+              defaultExpandAllRows
               pagination={this.pagination(pagination)}
               childrenColumnName="otherDeclarationDetail"
               params={{

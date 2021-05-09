@@ -60,10 +60,6 @@ class Index extends PureComponent {
       type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
       payload: params,
     });
-    dispatch({
-      type: 'typeOfContractsAdd/GET_PARAMATER_FORMULAS',
-      payload: params,
-    });
   }
 
   componentDidUpdate(prevProps) {
@@ -147,7 +143,7 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa thông tin hợp đồng' : 'Tạo thông tin hợp đồng'}
+          last={params.id ? 'Chỉnh sửa loại hợp đồng' : 'Tạo loại hợp đồng'}
           menu={menuData}
         />
         <Form
@@ -225,15 +221,6 @@ class Index extends PureComponent {
                       data={paramaterValues}
                       label="THAM SỐ GIÁ TRỊ"
                       name="paramValue"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT_MUTILPLE}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={paramaterFormulas}
-                      label="THAM SỐ CÔNG THỨC"
-                      name="paramFormula"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />

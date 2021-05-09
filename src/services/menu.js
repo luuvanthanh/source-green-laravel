@@ -782,9 +782,9 @@ export async function getLeftMenuHRM() {
           title: 'Khai báo các khoản khác',
           key: 'other-declarationss',
           url: [
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang',
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/tao-moi',
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/:id/chi-tiet',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/tao-moi',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/:id/chi-tiet',
           ],
           permission: [],
         },
