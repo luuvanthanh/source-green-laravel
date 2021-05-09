@@ -222,18 +222,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
-          {
-            path: '/quan-ly-phuong-tien/lich-su',
-            component: './vehicle/history',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-phuong-tien/hom-nay',
-            component: './vehicle/today',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
+          // {
+          //   path: '/quan-ly-phuong-tien/lich-su',
+          //   component: './vehicle/history',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [],
+          // },
+          // {
+          //   path: '/quan-ly-phuong-tien/hom-nay',
+          //   component: './vehicle/today',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [],
+          // },
         ],
       },
       // VEHICEL
