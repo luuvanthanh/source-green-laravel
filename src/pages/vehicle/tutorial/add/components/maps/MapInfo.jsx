@@ -28,5 +28,8 @@ class Routing extends MapLayer {
     }).addTo(map.leafletElement);
     return leafletElement.getPlan();
   }
+  render() {
+    return null;
+  }
 }
 export default withLeaflet(Routing);
