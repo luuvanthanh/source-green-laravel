@@ -120,6 +120,7 @@ class Index extends PureComponent {
       payload: {
         ...values,
         id: get(params, 'id'),
+        shiftId: get(params, 'id'),
         time: values.time.map((item) => ({
           endTime: Helper.getDateTime({
             value: Helper.setDate({
@@ -286,7 +287,7 @@ class Index extends PureComponent {
         >
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className={styles['content-form']}>
-            <div className={classnames(styles['content-children'], 'mt10')}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>

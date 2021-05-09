@@ -47,7 +47,6 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       parameterValues: [],
-      parameterFormulas: [],
     };
     setIsMounted(true);
   }
@@ -134,10 +133,6 @@ class Index extends PureComponent {
     if (itemContract) {
       this.setStateData({
         parameterValues: itemContract.parameterValues.map((item, index) => ({
-          index,
-          ...item,
-        })),
-        parameterFormulas: itemContract.parameterFormulas.map((item, index) => ({
           index,
           ...item,
         })),
@@ -279,29 +274,6 @@ class Index extends PureComponent {
     ];
   };
 
-  headerFormulasColumns = () => [
-    {
-      title: 'STT',
-      key: 'index',
-      width: 60,
-      className: 'min-width-60',
-      align: 'center',
-      render: (text, record, index) => index + 1,
-    },
-    {
-      title: 'Loại tham số',
-      key: 'name',
-      dataIndex: 'name',
-      className: 'min-width-120',
-    },
-    {
-      title: 'Công thức',
-      key: 'recipe',
-      dataIndex: 'recipe',
-      className: 'min-width-120',
-    },
-  ];
-
   render() {
     const {
       error,
@@ -311,7 +283,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { parameterFormulas, parameterValues } = this.state;
+    const { parameterValues } = this.state;
     const loading =
       effects['laboursContractsAdd/GET_CATEGORIES'] ||
       effects['laboursContractsAdd/GET_DETAILS'] ||
@@ -489,23 +461,6 @@ class Index extends PureComponent {
                               Thêm dòng
                             </Button>
                           )}
-                        />
-                      </TabPane>
-
-                      <TabPane tab="Tham số công thức" key="paramaterFormulas">
-                        <Table
-                          bordered
-                          columns={this.headerFormulasColumns()}
-                          dataSource={parameterFormulas}
-                          className="table-edit"
-                          pagination={false}
-                          isEmpty
-                          params={{
-                            header: this.headerFormulasColumns(),
-                            type: 'table',
-                          }}
-                          rowKey="id"
-                          scroll={{ x: '100%' }}
                         />
                       </TabPane>
                     </Tabs>

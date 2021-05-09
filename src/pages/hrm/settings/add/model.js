@@ -73,7 +73,7 @@ export default {
         callback(payload);
       } catch (error) {
         if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
+          if (get(error.data, 'errors[0].source.pointer') === 'shiftId') {
             notification.error({
               message: 'Thông báo',
               description:

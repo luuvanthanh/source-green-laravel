@@ -1189,19 +1189,19 @@ export default [
             authority: [],
           },
           {
-            path: '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang',
+            path: '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
             component: './hrm/other-declarations',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
-            path: '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/tao-moi',
+            path: '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/tao-moi',
             component: './hrm/other-declarations/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
-            path: '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/:id/chi-tiet',
+            path: '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/:id/chi-tiet',
             component: './hrm/other-declarations/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
