@@ -738,7 +738,26 @@ export async function getLeftMenuHRM() {
           ],
           permission: [],
         },
-
+        {
+          title: 'Hợp đồng lao động',
+          key: 'labours-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-lao-dong',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Hợp đồng thử việc',
+          key: 'probationary-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-thu-viec',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+          ],
+          permission: [],
+        },
         {
           title: 'Bảo hiểm xã hội',
           key: 'insurrances',

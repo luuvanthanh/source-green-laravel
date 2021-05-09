@@ -62,6 +62,10 @@ export const variables = {
     LATE: 'LATE',
     EARLY: 'EARLY',
   },
+  TYPE_CONSTRACT: {
+    THU_VIEC: 'Thử việc',
+    HOP_DONG: 'Hợp đồng',
+  },
 };
 
 export default variables;

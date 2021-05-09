@@ -3,13 +3,14 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get, toString } from 'lodash';
-import Loading from '@/components/CommonComponent/Loading';
+import { get, isEmpty } from 'lodash';
+import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Loading from '@/components/CommonComponent/Loading';
 
 let isMounted = true;
 /**
@@ -26,13 +27,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, typeOfContractsAdd }) => ({
+const mapStateToProps = ({ menu, probationaryContractsAdd, loading }) => ({
   loading,
+  categories: probationaryContractsAdd.categories,
+  details: probationaryContractsAdd.details,
+  error: probationaryContractsAdd.error,
   menuData: menu.menuLeftHRM,
-  details: typeOfContractsAdd.details,
-  error: typeOfContractsAdd.error,
-  paramaterValues: typeOfContractsAdd.paramaterValues,
-  paramaterFormulas: typeOfContractsAdd.paramaterFormulas,
 });
 
 @connect(mapStateToProps)
@@ -45,6 +45,10 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
+  componentWillUnmount() {
+    setIsMounted(false);
+  }
+
   componentDidMount() {
     const {
       dispatch,
@@ -52,18 +56,13 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       dispatch({
-        type: 'typeOfContractsAdd/GET_DETAILS',
-        payload: params,
+        type: 'probationaryContractsAdd/GET_DETAILS',
+        payload: {
+          id: params.id,
+        },
       });
     }
-    dispatch({
-      type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
-      payload: params,
-    });
-    dispatch({
-      type: 'typeOfContractsAdd/GET_PARAMATER_FORMULAS',
-      payload: params,
-    });
+    this.loadCategories();
   }
 
   componentDidUpdate(prevProps) {
@@ -74,14 +73,10 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        year: toString(details.year),
-        month: toString(details.month),
+        timeJoin: details.timeJoin && moment(details.timeJoin),
+        timeStart: details.timeStart && moment(details.timeStart),
       });
     }
-  }
-
-  componentWillUnmount() {
-    setIsMounted(false);
   }
 
   /**
@@ -98,18 +93,25 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'probationaryContractsAdd/GET_CATEGORIES',
+      payload: {},
+    });
+  };
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
-    const payload = {
-      ...values,
-      id: params.id,
-    };
     dispatch({
-      type: params.id ? 'typeOfContractsAdd/UPDATE' : 'typeOfContractsAdd/ADD',
-      payload,
+      type: params.id ? 'probationaryContractsAdd/UPDATE' : 'probationaryContractsAdd/ADD',
+      payload: {
+        id: params.id,
+        ...values,
+      },
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -133,32 +135,28 @@ class Index extends PureComponent {
   render() {
     const {
       error,
+      categories,
       menuData,
       loading: { effects },
-      paramaterValues,
-      paramaterFormulas,
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
     const loading =
-      effects['typeOfContractsAdd/GET_DETAILS'] ||
-      effects['typeOfContractsAdd/GET_PARAMATER_VALUES'] ||
-      effects['typeOfContractsAdd/GET_PARAMATER_FORMULAS'];
+      effects['probationaryContractsAdd/GET_CATEGORIES'] || effects['probationaryContractsAdd/GET_DETAILS'];
+    const loadingSubmit = effects['probationaryContractsAdd/ADD'] || effects['probationaryContractsAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa thông tin hợp đồng' : 'Tạo thông tin hợp đồng'}
+          last={params.id ? 'Chỉnh sửa bảo hiểm xã hội' : 'Tạo bảo hiểm xã hội'}
           menu={menuData}
         />
         <Form
           className={styles['layout-form']}
           layout="vertical"
-          colon={false}
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
+          <div className={styles['content-form']}>
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -166,76 +164,39 @@ class Index extends PureComponent {
                 <div className="row mt-3">
                   <div className="col-lg-6">
                     <FormItem
-                      label="MÃ"
-                      name="code"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="TÊN"
-                      name="name"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="PHÂN LOẠI"
-                      name="type"
-                      data={[
-                        {
-                          id: 'THU_VIEC',
-                          name: 'Thử việc',
-                        },
-                        {
-                          id: 'HOP_DONG',
-                          name: 'Hợp đồng',
-                        },
-                      ]}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      data={Helper.convertSelectUsers(categories?.users)}
+                      label="NHÂN VIÊN"
+                      name="employeeId"
+                      rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
+                </div>
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="SỐ NĂM"
-                      name="year"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      label="Số sổ bảo hiểm"
+                      name="insurranceNumber"
                       type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                     />
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="SỐ THÁNG"
-                      name="month"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={paramaterValues}
-                      label="THAM SỐ GIÁ TRỊ"
-                      name="paramValue"
+                      label="Thời gian tham gia"
+                      name="timeJoin"
+                      type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT_MUTILPLE}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      data={paramaterFormulas}
-                      label="THAM SỐ CÔNG THỨC"
-                      name="paramFormula"
+                      label="Thời gian bắt đầu"
+                      name="timeStart"
+                      type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT_MUTILPLE}
                     />
                   </div>
                 </div>
@@ -253,16 +214,16 @@ class Index extends PureComponent {
                 </Button>
                 <Button
                   color="green"
-                  htmlType="submit"
                   icon="save"
+                  htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
                 >
                   LƯU
                 </Button>
               </div>
-            </div>
-          </Loading>
+            </Loading>
+          </div>
         </Form>
       </>
     );
