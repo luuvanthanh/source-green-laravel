@@ -795,7 +795,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Bổ nhiệm',
+              title: 'QĐ Miễn nhiệm',
               key: 'dismisseds',
               url: [
                 '/quan-ly-nhan-su/mien-nhiem',
@@ -805,7 +805,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Miễn nhiệm',
+              title: 'QĐ Bổ nhiệm',
               key: 'appoints',
               url: [
                 '/quan-ly-nhan-su/bo-nhiem',
