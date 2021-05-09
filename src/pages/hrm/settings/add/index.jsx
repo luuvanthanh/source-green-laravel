@@ -95,6 +95,7 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         shiftCode: get(details, 'shiftCode'),
+        name: get(details, 'name'),
         time: get(details, 'shiftDetail').map((item) => {
           const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
           const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
@@ -290,10 +291,18 @@ class Index extends PureComponent {
                   THÔNG TIN CHUNG
                 </Text>
                 <div className="row mt-3">
-                  <div className="col-lg-12">
+                  <div className="col-lg-6">
                     <FormItem
                       label="MÃ CA"
                       name="shiftCode"
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      type={variables.INPUT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="TÊN CA"
+                      name="name"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
