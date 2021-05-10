@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography } from 'antd';
+import { Form, Typography, Avatar } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { debounce, isEmpty, get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -194,16 +194,10 @@ class Index extends PureComponent {
   renderDescription = (record) => {
     if (!isEmpty(record)) {
       const inOutHistories = record.map((item) => {
-        if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
-            item.attendedAt,
-            variables.DATE_FORMAT.DATE_TIME,
-          )}`;
-        }
-        return '';
+        return `${Helper.getDate(item.attendedAt, variables.DATE_FORMAT.DATE_TIME)}`;
       });
       return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
+        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'Xem thêm' }}>
           {inOutHistories.map((item, index) => (
             <div key={index}>
               {item}
@@ -245,20 +239,30 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Hình chấm',
+        key: 'inOutHistory',
+        className: 'min-width-130',
+        align: 'center',
+        render: (record) => {
+          if (!isEmpty(record?.inOutHistory)) {
+            return <Avatar shape="square" size={80} src={head(record?.inOutHistory)?.fileImage} />;
+          }
+          return null;
+        },
+      },
+      {
         title: 'Cơ sở',
         key: 'branch',
-        align: 'center',
-        className: 'min-width-100',
+        className: 'min-width-130',
         width: 100,
-        render: (record) => record?.class?.branch?.name,
+        render: (record) => record?.classStudent?.class?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
-        align: 'center',
-        className: 'min-width-100',
+        className: 'min-width-130',
         width: 100,
-        render: (record) => record?.class?.name,
+        render: (record) => record?.classStudent?.class?.name,
       },
       {
         title: 'Số lần chấm',
@@ -266,13 +270,13 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record.timekeeping?.length,
+        render: (record) => record.inOutHistory?.length,
       },
       {
         title: 'Chi tiết',
         key: 'description',
         className: 'min-width-200',
-        render: (record) => this.renderDescription(record.timekeeping),
+        render: (record) => this.renderDescription(record.inOutHistory),
       },
     ];
   };

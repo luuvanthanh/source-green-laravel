@@ -392,7 +392,7 @@ class Index extends PureComponent {
         key: 'life',
         className: 'min-width-150',
         render: (record) => (
-          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
+          <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
         ),
       },
       {
