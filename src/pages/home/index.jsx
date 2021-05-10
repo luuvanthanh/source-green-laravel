@@ -23,7 +23,11 @@ class Index extends PureComponent {
               isOrPermission: true,
             },
           ],
-          userPermission: [user?.user?.role?.toUpperCase()],
+          userPermission: [
+            variables.ROLES_PERMISSIONS.includes(user?.user?.role?.toUpperCase())
+              ? user?.user?.role?.toUpperCase()
+              : variables.ROLES.ALL,
+          ],
         });
         return showMenu;
       }),
