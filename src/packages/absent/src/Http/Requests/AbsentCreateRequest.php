@@ -34,19 +34,6 @@ class AbsentCreateRequest extends FormRequest
                     if (request('absentTypeId') == $quitWorkType->Id) {
                         return true;
                     }
-                    if (request('absentTypeId') == $type->Id) {
-                        $accessWeekend = $this->checkWeekend($value);
-                        if ($accessWeekend === true) {
-                            return true;
-                        }
-                        return $fail('Không được nghỉ vào thứ 6, thứ 7, chủ nhật');
-                    }
-                    return true;
-                },
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('absentTypeId') == $quitWorkType->Id) {
-                        return true;
-                    }
 
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
@@ -61,17 +48,6 @@ class AbsentCreateRequest extends FormRequest
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:startDate',
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-
-                    if (request('absentTypeId') == $type->Id) {
-                        $accessWeekend = $this->checkWeekend($value);
-                        if ($accessWeekend === true) {
-                            return true;
-                        }
-                        return $fail('Không được nghỉ vào thứ 6, thứ 7, chủ nhật');
-                    }
-                    return;
-                },
             ],
         ];
     }

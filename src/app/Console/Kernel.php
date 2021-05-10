@@ -24,10 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('tranfer')->daily();
         $schedule->command('revoke_shift')->daily();
         $schedule->command('late_early')->everyMinute();
-        $schedule->command('work_backlog')->dailyAt('07:45');
     }
 
     /**

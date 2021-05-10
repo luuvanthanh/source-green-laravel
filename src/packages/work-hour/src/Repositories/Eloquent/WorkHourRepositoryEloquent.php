@@ -51,7 +51,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
     {
 
         if (!empty($attributes['startDate']) && !empty($attributes['startDate'])) {
-            $this->model = $this->model->where('date', '>=', $attributes['startDate'])->where('date', '<=', $attributes['endDate']);
+            $this->model = $this->model->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
         }
 
         if (!empty($attributes['employeeId'])) {

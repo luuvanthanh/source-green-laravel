@@ -274,6 +274,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     ];
 
                     if (!empty($existInvalid) && Carbon::parse($existInvalid->Date)->format('Y-m-d') == $key) {
+
                         $responseTimeKeepingUser[] = [
                             "date" => $key,
                             "timekeepingReport" => 0,
@@ -287,11 +288,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                         $this->quotaWork = $quotaWork;
                         $resultTimekeeping[$key] = $this->calculatorTimekeeping($quotaWork, $key, $value, $timeKeepingByDate[$key], $type, $dataAutoApproval);
-
                         $employee->reportTimkeepingPage = [$resultTimekeeping];
                         $result['date'] = $key;
                         $result['timekeepingReport'] = $resultTimekeeping[$key]['TotalTimeKeeping'];
-                        $result['type'] = null;
+                        $result['type'] = $resultTimekeeping[$key]['TotalTimeKeeping'] == 1 ? 'x' : 'KXD';
 
                         $responseTimeKeepingUser[] = $result;
 
@@ -553,7 +553,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $result = ['TotalTimeKeeping' => $resultCalculatorHours, 'TotalTimeRedundant' => 0];
         } else {
 
-            $response = $resultCalculator / ($quotaWork * 3600) > 1 ? 1 : ($resultCalculator / ($quotaWork * 3600));
+            $response = $resultCalculator / ($quotaWork * 3600) >= 1 ? 1 : ($resultCalculator / ($quotaWork * 3600));
 
             $totalTimeRedundant = $resultCalculator < ($quotaWork * 3600) ? $resultCalculator : 0;
 

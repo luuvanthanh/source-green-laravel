@@ -54,7 +54,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'Nation', 'IdCard', 'DateOfIssueIdCard', 'PlaceOfIssueIdCard', 'Religion', 'WorkDate',
         'HealthInsuranceBookNumber', 'HospitalAddress', 'SocialInsuranceBooknumber', 'BankName',
         'BankNumberOfAccount', 'Note', 'MaternityLeave', 'MaternityLeaveFrom', 'MaternityLeaveTo',
-        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage',
+        'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married',
     ];
 
     /**
@@ -194,6 +194,14 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function children()
     {
         return $this->hasMany(Children::class, 'EmployeeId');
+    }
+
+    /**
+     * Define relations magneticCards
+     */
+    public function magneticCards()
+    {
+        return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class)->withTrashed();
     }
 
 }

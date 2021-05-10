@@ -212,6 +212,7 @@ return [
         GGPHP\Children\Providers\ChildrenServiceProvider::class,
         GGPHP\Attendance\Providers\AttendanceServiceProvider::class,
         GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
+        GGPHP\MagneticCard\Providers\MagneticCardServiceProvider::class,
     ],
 
     /*

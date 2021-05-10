@@ -28,10 +28,16 @@ class ShiftUpdateRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        $store_id = $request->store_id;
         return [
             'shiftCode' => [
                 'string',
+                function ($attribute, $value, $fail) {
+                    $shift = Shift::where('ShiftCode', $value)->where('Status', 'ON')->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($shift)) {
+                        return $fail('Mã ca đã tồn tại.');
+                    }
+                },
             ],
             'shiftId' => [
                 'required',

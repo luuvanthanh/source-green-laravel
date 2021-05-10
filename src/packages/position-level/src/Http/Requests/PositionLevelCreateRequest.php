@@ -33,7 +33,6 @@ class PositionLevelCreateRequest extends FormRequest
             'startDate' => [
                 'required',
                 'date',
-                'after:today',
                 function ($attribute, $value, $fail) {
                     $now = Carbon::now();
                     $today = $now->toDateString();

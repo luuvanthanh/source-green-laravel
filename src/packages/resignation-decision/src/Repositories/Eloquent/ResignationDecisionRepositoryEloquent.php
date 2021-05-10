@@ -7,6 +7,7 @@ use GGPHP\ResignationDecision\Models\ResignationDecision;
 use GGPHP\ResignationDecision\Presenters\ResignationDecisionPresenter;
 use GGPHP\ResignationDecision\Repositories\Contracts\ResignationDecisionRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
+use \GGPHP\Users\Models\User;
 
 /**
  * Class ResignationDecisionRepositoryEloquent.
@@ -69,5 +70,14 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         }
 
         return $resignationDecision;
+    }
+
+    public function create(array $attributes)
+    {
+        $resignationDecision = ResignationDecision::create($attributes);
+
+        $employee = User::where('Id', $attributes['employeeId'])->update(['DateOff' => $attributes['DateOff']]);
+
+        return parent::find($resignationDecision->Id);
     }
 }

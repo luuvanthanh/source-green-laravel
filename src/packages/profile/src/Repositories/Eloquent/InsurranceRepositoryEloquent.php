@@ -22,9 +22,8 @@ class InsurranceRepositoryEloquent extends CoreRepositoryEloquent implements Ins
      */
     protected $fieldSearchable = [
         'id',
-        'employeeId',
-        'insurrance_number' => 'like',
-        'user.full_name' => 'like',
+        'InsurranceNumber' => 'like',
+        'employee.FullName' => 'like',
     ];
 
     /**
