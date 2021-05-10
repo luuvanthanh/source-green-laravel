@@ -152,7 +152,9 @@ const Index = memo(
                         {HelperModules.tagStatusAccount(details?.faceImageStatus)}
                       </Form.Item>
                     </Pane>
-                    {details?.faceImageStatus !== variablesModules.STATUS.NO_IMAGE && (
+                    {(details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
+                      details?.faceImageStatus ===
+                        variablesModules.STATUS.HANDLING_IMAGE_FAILED) && (
                       <Pane className="col-lg-3">
                         <Form.Item label=" ">
                           <Button color="success" ghost onClick={register}>
