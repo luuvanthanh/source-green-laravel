@@ -245,7 +245,7 @@ class Index extends PureComponent {
         align: 'center',
         render: (record) => {
           if (!isEmpty(record?.inOutHistory)) {
-            return <Avatar shape="square" size={40} src={head(record?.inOutHistory)?.fileImage} />;
+            return <Avatar shape="square" size={80} src={head(record?.inOutHistory)?.fileImage} />;
           }
           return null;
         },
