@@ -82,7 +82,7 @@
       "title": "Sức khỏe",
       "src": "/images/home/tumblr.svg",
       "url": "/suc-khoe",
-      "permission": ["TEACHER", "PARENT", "PRINCIPAL"]
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Quản trị nhân sự",
