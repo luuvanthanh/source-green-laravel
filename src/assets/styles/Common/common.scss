@@ -594,6 +594,9 @@
     max-height: 95vh;
     overflow: auto;
   }
+  :global(.ant-modal-body) {
+    overflow-x: hidden;
+  }
   .leafletContainer {
     height: 75vh;
     width: 100%;
