@@ -13,6 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import Children from './components/children';
 import Maps from './components/maps';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -32,6 +33,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, tutorialAdd }) => ({
   menuData: menu.menuLeftVehicel,
   branches: tutorialAdd.branches,
+  employees: tutorialAdd.employees,
+  busInformations: tutorialAdd.busInformations,
 });
 const { confirm } = Modal;
 @connect(mapStateToProps)
@@ -51,6 +54,8 @@ class Index extends PureComponent {
       visible: false,
       visibleMap: false,
       targetKeys: [],
+      bus: [],
+      busId: null,
     };
     setIsMounted(true);
   }
@@ -81,6 +86,22 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'tutorialAdd/GET_BRANCHES',
       payload: {},
+    });
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_BUS_INFORMATIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_EMPLOYEES',
+      payload: {},
+    });
+  };
+
+  onChangeBus = (value) => {
+    const { busInformations } = this.props;
+    this.setStateData({
+      bus: busInformations.filter((item) => item.id === value),
+      busId: value,
     });
   };
 
@@ -245,28 +266,33 @@ class Index extends PureComponent {
           title: 'MÃ SỐ',
           key: 'code',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">0001</Text>,
+          render: (record) => <Text size="normal">{record.code}</Text>,
         },
         {
           title: 'HÃNG',
           key: 'manufacturer',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">Hyundai</Text>,
+          render: (record) => <Text size="normal">{record.manufacturer}</Text>,
         },
         {
           title: 'SỐ CHỔ NGỒI',
           key: 'seats',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">45 chỗ</Text>,
+          render: (record) => <Text size="normal">{record.seats} chỗ</Text>,
         },
         {
           title: 'XE',
           key: 'vehicle',
-          className: 'min-width-150',
+          className: 'min-width-200',
           render: (record) => (
             <Text size="normal">
-              <Avatar size={32} shape="circle" className="mr-2" />
-              Hyundai Universe
+              <Avatar
+                size={32}
+                shape="circle"
+                className="mr-2"
+                src={record.fileImage && `${API_UPLOAD}${record.fileImage}`}
+              />
+              {record.name}
             </Text>
           ),
         },
@@ -274,13 +300,13 @@ class Index extends PureComponent {
           title: 'ĐỜI',
           key: 'life',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">2018</Text>,
+          render: (record) => <Text size="normal"> {record.year}</Text>,
         },
         {
           title: 'TRUYỀN ĐỘNG',
           key: 'movement',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">Số tự động</Text>,
+          render: (record) => <Text size="normal">{record.transmission}</Text>,
         },
       ];
     }
@@ -288,18 +314,17 @@ class Index extends PureComponent {
     return columns;
   };
 
-  render() {
-    const { list, visible, listId, targetKeys, visibleMap } = this.state;
-    const { menuData, branches } = this.props;
-    const props = {
-      beforeUpload: (file) => {
-        return file;
-      },
-      showUploadList: false,
-      fileList: [],
-    };
-    const position = [51.505, -0.09];
+  onFinish = (values) => {
+    console.log(values);
+  };
 
+  onSubmitMaps = values => {
+    console.log(values)
+  }
+
+  render() {
+    const { list, visible, listId, targetKeys, visibleMap, bus } = this.state;
+    const { menuData, branches, busInformations, employees } = this.props;
     return (
       <>
         <Breadcrumbs last="Chi tiết lộ trình" menu={menuData} />
@@ -308,6 +333,7 @@ class Index extends PureComponent {
           layout="vertical"
           initialValues={{}}
           colon={false}
+          onFinish={this.onFinish}
           ref={this.formRef}
         >
           {visible && (
@@ -319,7 +345,7 @@ class Index extends PureComponent {
               targetKeys={targetKeys}
             />
           )}
-          {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
+          {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} onSubmit={this.onSubmitMaps} />}
           <div className={styles['content-form']}>
             <div className={classnames(styles['content-children'], 'mt0')}>
               <Text color="dark" size="large-medium">
@@ -344,25 +370,30 @@ class Index extends PureComponent {
                 <Text color="dark" size="large-medium">
                   THÔNG TIN XE
                 </Text>
-                <Select dataSet={[]} style={{ width: '200px' }} />
+                <Select
+                  dataSet={busInformations}
+                  style={{ width: '200px' }}
+                  placeholder="Chọn xe"
+                  onChange={this.onChangeBus}
+                />
               </div>
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <FormItem
-                    data={[]}
+                    data={variablesModules.DAYS}
                     label="Thời gian lặp lại của lộ trình"
                     name="busRouteShedules"
-                    type={variables.SELECT}
+                    type={variables.SELECT_MUTILPLE}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     label="Thời gian bắt đầu"
                     name="startDate"
                     type={variables.DATE_PICKER}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     label="Thời gian kết thúc"
                     name="endDate"
@@ -375,7 +406,9 @@ class Index extends PureComponent {
                   <Table
                     bordered
                     columns={this.header()}
-                    dataSource={[{ id: 1 }]}
+                    dataSource={bus}
+                    className="table-edit"
+                    isEmpty
                     pagination={false}
                     params={{
                       header: this.header(),
@@ -393,10 +426,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    data={[]}
+                    data={Helper.convertSelectUsers(employees)}
                     label="BẢO MẪU"
                     name="busRouteNannies"
-                    type={variables.SELECT}
+                    type={variables.SELECT_MUTILPLE}
                   />
                 </div>
               </div>
@@ -481,7 +514,7 @@ class Index extends PureComponent {
               >
                 HỦY
               </Button>
-              <Button color="green" icon="save" size="large">
+              <Button color="green" htmlType="submit" icon="save" size="large">
                 LƯU
               </Button>
             </div>
