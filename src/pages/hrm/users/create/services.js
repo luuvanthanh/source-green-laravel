@@ -88,7 +88,7 @@ export function details(data = {}) {
     method: 'GET',
     params: {
       include: Helper.convertIncludes(['positionLevel']),
-    }
+    },
   });
 }
 
@@ -220,6 +220,7 @@ export function getContractTypes(params = {}) {
       include: 'parameterValues,parameterFormulas',
       search: Helper.convertParamSearchConvert({
         Name: params.name,
+        Type: params.type,
       }),
     },
   });
@@ -326,3 +327,34 @@ export function faceRegistration(data = {}) {
     data,
   });
 }
+
+// insurrances
+export function addInsurrances(data = {}) {
+  return requestLavarel('/v1/insurrances', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateInsurrances(data = {}) {
+  return requestLavarel(`/v1/insurrances/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeInsurrances(data = {}) {
+  return requestLavarel(`/v1/insurrances/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getInsurrances(params = {}) {
+  return requestLavarel('/v1/insurrances', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// insurrances

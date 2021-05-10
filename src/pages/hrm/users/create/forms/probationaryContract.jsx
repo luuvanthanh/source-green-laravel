@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size, last } from 'lodash';
+import { find, size, last, isEmpty } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
 import csx from 'classnames';
@@ -48,7 +48,6 @@ const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [contractDetails, setContractDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
-  const [parameterFormulasDetails, setParameterFormulasDetails] = useState([]);
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
@@ -62,7 +61,6 @@ const Index = memo(() => {
       setParameterValuesDetails,
       currentType.parameterValues.map((item, index) => ({ index, ...item })) || {},
     );
-    mountedSet(setParameterFormulasDetails, currentType.parameterFormulas || {});
     formRefModal.current.setFieldsValue({
       month: currentType.month,
       year: currentType.year,
@@ -76,31 +74,6 @@ const Index = memo(() => {
     ]);
   };
 
-  const parameterFormulasColumns = useMemo(
-    () => [
-      {
-        title: 'STT',
-        key: 'index',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) => index + 1,
-      },
-      {
-        title: 'Loại tham số',
-        key: 'name',
-        dataIndex: 'name',
-        className: 'min-width-120',
-      },
-      {
-        title: 'Công thức',
-        key: 'recipe',
-        dataIndex: 'recipe',
-        className: 'min-width-120',
-      },
-    ],
-    [],
-  );
   const changeValue = useCallback((record) => (value) => {
     mountedSet(setParameterValuesDetails, (prev) =>
       prev.map((item) =>
@@ -356,7 +329,7 @@ const Index = memo(() => {
     dispatch({
       type: 'HRMusersAdd/GET_CONTRACT_TYPES',
       payload: {
-        name: 'Thử việc',
+        type: 'THU_VIEC',
       },
     });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
@@ -529,43 +502,32 @@ const Index = memo(() => {
             </Pane>
           </Pane>
 
-          <Heading type="form-block-title">Chi tiết hợp đồng</Heading>
-          <Tabs defaultActiveKey="paramaterValues">
-            <TabPane tab="Tham số giá trị" key="paramaterValues">
-              <Table
-                bordered
-                columns={parameterValuesColumns}
-                dataSource={parameterValuesDetails || []}
-                pagination={false}
-                params={{
-                  header: parameterValuesColumns,
-                  type: 'table',
-                }}
-                rowKey="index"
-                scroll={{ x: '100%' }}
-                footer={() => (
-                  <Button color="success" ghost icon="plus" onClick={addParameterValues}>
-                    Thêm dòng
-                  </Button>
-                )}
-              />
-            </TabPane>
-
-            <TabPane tab="Tham số công thức" key="paramaterFormulas">
-              <Table
-                bordered
-                columns={parameterFormulasColumns}
-                dataSource={parameterFormulasDetails || []}
-                pagination={false}
-                params={{
-                  header: parameterFormulasColumns,
-                  type: 'table',
-                }}
-                rowKey="id"
-                scroll={{ x: '100%' }}
-              />
-            </TabPane>
-          </Tabs>
+          {!isEmpty(parameterValuesDetails) && (
+            <>
+              <Heading type="form-block-title">Chi tiết hợp đồng</Heading>
+              <Tabs defaultActiveKey="paramaterValues">
+                <TabPane tab="Tham số giá trị" key="paramaterValues">
+                  <Table
+                    bordered
+                    columns={parameterValuesColumns}
+                    dataSource={parameterValuesDetails || []}
+                    pagination={false}
+                    params={{
+                      header: parameterValuesColumns,
+                      type: 'table',
+                    }}
+                    rowKey="index"
+                    scroll={{ x: '100%' }}
+                    footer={() => (
+                      <Button color="success" ghost icon="plus" onClick={addParameterValues}>
+                        Thêm dòng
+                      </Button>
+                    )}
+                  />
+                </TabPane>
+              </Tabs>
+            </>
+          )}
         </Form>
       </Modal>
 
@@ -577,6 +539,7 @@ const Index = memo(() => {
           <Table
             bordered
             columns={columns}
+            loading={loading['HRMusersAdd/GET_PROBATIONARY_CONTRACTS']}
             dataSource={probationaryContracts}
             pagination={false}
             params={{

@@ -738,7 +738,26 @@ export async function getLeftMenuHRM() {
           ],
           permission: [],
         },
-
+        {
+          title: 'Hợp đồng lao động',
+          key: 'labours-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-lao-dong',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Hợp đồng thử việc',
+          key: 'probationary-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-thu-viec',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+          ],
+          permission: [],
+        },
         {
           title: 'Bảo hiểm xã hội',
           key: 'insurrances',
@@ -763,9 +782,9 @@ export async function getLeftMenuHRM() {
           title: 'Khai báo các khoản khác',
           key: 'other-declarationss',
           url: [
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang',
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/tao-moi',
-            '/quan-ly-nhan-su/khai-bao-ngay-cong-chuan-trong-thang/:id/chi-tiet',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/tao-moi',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/:id/chi-tiet',
           ],
           permission: [],
         },
@@ -795,7 +814,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Bổ nhiệm',
+              title: 'QĐ Miễn nhiệm',
               key: 'dismisseds',
               url: [
                 '/quan-ly-nhan-su/mien-nhiem',
@@ -805,7 +824,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Miễn nhiệm',
+              title: 'QĐ Bổ nhiệm',
               key: 'appoints',
               url: [
                 '/quan-ly-nhan-su/bo-nhiem',

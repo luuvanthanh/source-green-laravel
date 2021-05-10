@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, toString } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -60,10 +60,6 @@ class Index extends PureComponent {
       type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
       payload: params,
     });
-    dispatch({
-      type: 'typeOfContractsAdd/GET_PARAMATER_FORMULAS',
-      payload: params,
-    });
   }
 
   componentDidUpdate(prevProps) {
@@ -74,6 +70,8 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
+        year: toString(details.year),
+        month: toString(details.month),
       });
     }
   }
@@ -145,7 +143,7 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa thông tin hợp đồng' : 'Tạo thông tin hợp đồng'}
+          last={params.id ? 'Chỉnh sửa loại hợp đồng' : 'Tạo loại hợp đồng'}
           menu={menuData}
         />
         <Form
@@ -186,11 +184,11 @@ class Index extends PureComponent {
                       name="type"
                       data={[
                         {
-                          id: 'Thử việc',
+                          id: 'THU_VIEC',
                           name: 'Thử việc',
                         },
                         {
-                          id: 'Hợp đồng',
+                          id: 'HOP_DONG',
                           name: 'Hợp đồng',
                         },
                       ]}
@@ -223,15 +221,6 @@ class Index extends PureComponent {
                       data={paramaterValues}
                       label="THAM SỐ GIÁ TRỊ"
                       name="paramValue"
-                      rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT_MUTILPLE}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      data={paramaterFormulas}
-                      label="THAM SỐ CÔNG THỨC"
-                      name="paramFormula"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT_MUTILPLE}
                     />

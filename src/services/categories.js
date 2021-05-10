@@ -48,4 +48,53 @@ export function getTeachers(params = {}) {
   });
 }
 
-export default getRoles;
+export function getDivisions(params = {}) {
+  return requestLaravel('/v1/divisions', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getPositions(params = {}) {
+  return requestLaravel('/v1/positions', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getParamaterValues(params = {}) {
+  return requestLaravel('/v1/paramater-values', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getTypeOfContracts(params = {}) {
+  return requestLaravel('/v1/type-of-contracts', {
+    method: 'GET',
+    params: {
+      ...params,
+      search: Helper.convertParamSearchConvert({
+        Name: params.name,
+        Type: params.type,
+      }),
+      include: Helper.convertIncludes(['parameterValues', 'parameterFormulas']),
+    },
+  });
+}
+
+export function getUsers(params = {}) {
+  return requestLaravel('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['positionLevel']),
+    },
+  });
+}

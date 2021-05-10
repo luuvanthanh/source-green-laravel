@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar, Switch } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { debounce, get } from 'lodash';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,11 +12,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -33,9 +32,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ schedulesSetting, loading }) => ({
-  data: schedulesSetting.data,
-  pagination: schedulesSetting.pagination,
+const mapStateToProps = ({ probationaryContracts, loading }) => ({
+  data: probationaryContracts.data,
+  pagination: probationaryContracts.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,6 +49,8 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        type: query?.type,
+        fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -84,17 +85,25 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search } = this.state;
+    const { search, status } = this.state;
     const {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'schedulesSetting/GET_DATA',
+      type: 'probationaryContracts/GET_DATA',
       payload: {
         ...search,
+        status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -167,74 +176,22 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    total: pagination.total,
+    defaultPageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'schedulesSetting/UPDATE' : 'schedulesSetting/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
 
   /**
    * Function remove items
@@ -251,7 +208,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'schedulesSetting/REMOVE',
+          type: 'probationaryContracts/REMOVE',
           payload: {
             id,
             pagination: {
@@ -269,21 +226,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onChangeSwitch = (record, checked) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'schedulesSetting/UPDATE_CONFIG',
-      payload: {
-        ...record,
-        status: checked ? variablesModules.STATUS_SHIFT.ON : variablesModules.STATUS_SHIFT.OFF,
-      },
-    });
-  };
-
-  /**
    * Function header table
    */
   header = () => {
@@ -292,83 +234,122 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Mã ca',
-        key: 'shiftCode',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => record.shiftCode,
-      },
-      {
-        title: 'Tên ca',
+        title: 'Họ và Tên',
         key: 'name',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => record.name,
-      },
-      {
-        title: 'Thời gian',
-        key: 'time',
-        className: classnames('min-width-120', 'max-width-200'),
-        render: (record) =>
-          record.shiftDetail.map((item) => {
-            const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
-            const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
-            return (
-              <span key={item.id}>
-                {Helper.getTwoDate(startTime, endTime, variables.DATE_FORMAT.HOUR)} &nbsp;&nbsp;
-              </span>
-            );
-          }),
-      },
-      {
-        title: 'Mô tả',
-        key: 'description',
         className: 'min-width-200',
-        render: (record) => record.description,
-      },
-      {
-        title: '',
-        key: 'lock',
-        className: 'min-width-150',
-        width: 150,
         render: (record) => (
-          <div className={styles['table-switch']}>
-            <Switch
-              checked={record.status === variablesModules.STATUS_SHIFT.ON}
-              onChange={(event) => this.onChangeSwitch(record, event)}
-            />
-            <span>
-              {record.status === variablesModules.STATUS_SHIFT.ON ? 'Đang bật' : 'Đang khóa'}
-            </span>
-          </div>
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
         ),
       },
       {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        title: 'Số hợp đồng',
+        key: 'contract_number',
+        dataIndex: 'contractNumber',
+        className: 'min-width-120',
+      },
+      {
+        title: 'Ngày hợp đồng',
+        key: 'date',
+        dataIndex: 'contractDate',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Thông tin hợp đồng',
+        key: 'contract_category',
+        dataIndex: 'typeOfContract',
+        className: 'min-width-120',
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Số tháng thử việc',
+        key: 'contract_category',
+        dataIndex: 'month',
+        className: 'min-width-150',
+      },
+      {
+        title: 'Thời hạn HĐ từ',
+        key: 'date',
+        dataIndex: 'contractFrom',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Thời hạn HĐ đến',
+        key: 'deadline',
+        dataIndex: 'contractTo',
+        className: 'min-width-150',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Tỷ lệ lương',
+        key: 'contract_category',
+        dataIndex: 'salaryRatio',
+        className: 'min-width-150',
+        render: (value) => Helper.getPercent(value * 100),
+      },
+      {
+        title: 'Lương cơ bản',
+        key: 'salary',
+        dataIndex: 'parameterValues[0]',
+        className: 'min-width-150',
+        render: (value) => Helper.getPrice(value?.pivot?.value),
+      },
+      {
+        title: 'Tổng phụ cấp',
+        key: 'payment',
+        dataIndex: 'parameterValues',
+        className: 'min-width-150',
+        render: (value) =>
+          Helper.getPrice(
+            (value || []).reduce(
+              (result, item, index) => (!!index ? result + item?.pivot?.value : result),
+              0,
+            ),
+          ),
+      },
+      {
+        title: 'Nơi làm việc',
+        key: 'branch',
+        dataIndex: 'branch',
+        className: 'min-width-150',
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Chức danh',
+        key: 'position',
+        dataIndex: 'position',
+        className: 'min-width-150',
+        render: (value) => value?.name,
+      },
+      {
+        title: 'Thao tác',
+        key: 'actions',
+        width: 130,
+        className: 'min-width-130',
+        fixed: 'right',
+        align: 'center',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                icon="edit"
+                onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => this.onRemove(record.id)}
+              />
+            </li>
+          </ul>
         ),
       },
     ];
@@ -383,35 +364,36 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['schedulesSetting/GET_DATA'];
+    const loading = effects['probationaryContracts/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách cấu hình ca" />
+        <Helmet title="Danh sách hợp đồng thử việc" />
         <div
-          className={classnames(styles['content-form'], styles['content-form-schedulesSetting'])}
+          className={classnames(
+            styles['content-form'],
+            styles['content-form-probationaryContracts'],
+          )}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách cấu hình ca</Text>
+            <Text color="dark">Danh sách hợp đồng thử việc</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo ca
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-3">
                   <FormItem
-                    name="shiftCode"
-                    onChange={(event) => this.onChange(event, 'shiftCode')}
+                    name="fullName"
+                    onChange={(event) => this.onChange(event, 'fullName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
@@ -428,7 +410,6 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />

@@ -28,6 +28,7 @@ export default {
     decisionRewards: [],
     paramaterValues: [],
     paramaterFormulas: [],
+    insurrances: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -143,6 +144,14 @@ export default {
           ...payload,
         },
       },
+    }),
+    SET_INSURRANCES: (state, { payload }) => ({
+      ...state,
+      insurrances: payload.parsePayload,
+    }),
+    SET_REMOVE_INSURRANCES: (state, { payload }) => ({
+      ...state,
+      insurrances: state.insurrances.filter((item) => item.id !== payload.id),
     }),
   },
   effects: {
@@ -450,7 +459,7 @@ export default {
     },
     *REMOVE_TRANSFERS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addTransfers, payload);
+        yield saga.call(services.removeTransfers, payload);
         yield saga.put({
           type: 'SET_REMOVE_TRANSFERS',
           payload: payload,
@@ -592,6 +601,47 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    // insurrances
+    *ADD_INSURRANCES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addInsurrances, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_INSURRANCES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateInsurrances, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_INSURRANCES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeInsurrances, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_INSURRANCES',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
+    *GET_INSURRANCES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getInsurrances, payload);
+        yield saga.put({
+          type: 'SET_INSURRANCES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // insurrances
   },
   subscriptions: {},
 };

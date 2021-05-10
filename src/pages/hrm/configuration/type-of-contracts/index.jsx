@@ -12,6 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -231,7 +232,9 @@ class Index extends PureComponent {
         title: 'LOẠI',
         key: 'type',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.type}</Text>,
+        render: (record) => (
+          <Text size="normal">{variablesModules.TYPE_CONSTRACT[record.type]}</Text>
+        ),
       },
       {
         title: 'SỐ NĂM',

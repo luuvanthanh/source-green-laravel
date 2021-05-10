@@ -1,31 +1,35 @@
-import { isEmpty, get } from 'lodash';
 import { notification } from 'antd';
+import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
-  namespace: 'absentReasonStudentAdd',
+  namespace: 'laboursContractsAdd',
   state: {
-    dataStores: [],
-    isError: false,
+    data: [],
+    pagination: {
+      total: 0,
+    },
+    categories: {
+      users: [],
+      branches: [],
+      positions: [],
+      divisions: [],
+      paramaterValues: [],
+    },
+    contractTypes: [],
+    details: {},
     error: {
       isError: false,
       data: {},
     },
-    details: {},
-    categories: {
-      absentTypes: [],
-    },
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      error: { isError: false, data: {} },
-      data: [],
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      dataStores: payload,
+      data: payload.parsePayload,
+      pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -36,22 +40,48 @@ export default {
         },
       },
     }),
-    SET_CATEGORIES: (state, { payload }) => ({
-      ...state,
-      categories: {
-        absentTypes: payload.absentTypes.parsePayload,
-      },
-    }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
     }),
+    SET_CATEGORIES: (state, { payload }) => ({
+      ...state,
+      categories: {
+        users: payload.users.parsePayload,
+        divisions: payload.divisions.parsePayload,
+        positions: payload.positions.parsePayload,
+        branches: payload.branches.parsePayload,
+        paramaterValues: payload.paramaterValues.parsePayload,
+      },
+    }),
+    SET_TYPE_CONTRACTS: (state, { payload }) => ({
+      ...state,
+      contractTypes: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_TYPE_CONTRACTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getTypeOfContracts, payload);
+        yield saga.put({
+          type: 'SET_TYPE_CONTRACTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_CATEGORIES({ payload }, saga) {
       try {
         const response = yield saga.all({
-          absentTypes: saga.call(services.getAbsentTypes),
+          users: saga.call(categories.getUsers),
+          divisions: saga.call(categories.getDivisions),
+          positions: saga.call(categories.getPositions),
+          branches: saga.call(categories.getBranches),
+          paramaterValues: saga.call(categories.getParamaterValues),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
@@ -66,36 +96,17 @@ export default {
     },
     *ADD({ payload, callback }, saga) {
       try {
-        yield saga.put({
-          type: 'INIT_STATE',
-        });
         yield saga.call(services.add, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error);
       }
     },

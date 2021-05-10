@@ -97,6 +97,8 @@ export const variables = {
   ROLES: {
     PARENT: 'PARENT',
     TEACHER: 'TEACHER',
+    HRM: 'HRM',
+    ADMIN: 'ADMIN',
   },
   CHOOSE: [
     {

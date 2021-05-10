@@ -3,93 +3,111 @@
     {
       "title": "Thông báo",
       "src": "/images/home/news.svg",
-      "url": "/thong-bao/danh-sach"
+      "url": "/thong-bao/danh-sach",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Hồ sơ đối tượng",
       "src": "/images/home/contact.svg",
-      "url": "/ho-so-doi-tuong"
+      "url": "/ho-so-doi-tuong",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Phân bổ",
       "src": "/images/home/pin.svg",
-      "url": "/phan-bo"
+      "url": "/phan-bo",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Trao đổi",
       "src": "/images/home/speech.svg",
-      "url": "/trao-doi"
+      "url": "/trao-doi",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Ghi nhận",
       "src": "/images/home/movies.svg",
-      "url": "/ghi-nhan/danh-sach"
+      "url": "/ghi-nhan/danh-sach",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Điểm danh trẻ",
       "src": "/images/home/note.svg",
-      "url": "/diem-danh"
+      "url": "/diem-danh",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Chương trình học",
       "src": "/images/home/spreadsheet.svg",
-      "url": "/chuong-trinh-hoc/danh-gia-hoc-tap"
+      "url": "/chuong-trinh-hoc/danh-gia-hoc-tap",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Bus",
       "src": "/images/home/road.svg",
-      "url": "/quan-ly-phuong-tien"
+      "url": "/quan-ly-phuong-tien",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Y tế",
       "src": "/images/home/balloons.svg",
-      "url": "/y-te"
+      "url": "/y-te",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Thời khóa biểu",
       "src": "/images/home/calendar.svg",
-      "url": "/thoi-khoa-bieu"
+      "url": "/thoi-khoa-bieu",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Bếp",
       "src": "/images/home/cooking.svg",
-      "url": "/thuc-don"
+      "url": "/thuc-don",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Biếu phí",
       "src": "/images/home/currency.svg",
-      "url": "/"
+      "url": "/",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Bảng lương",
       "src": "/images/home/drive.svg",
-      "url": "/"
+      "url": "/",
+      "permission": ["ADMIN", "HRM"]
     },
     {
       "title": "Sức khỏe",
       "src": "/images/home/tumblr.svg",
-      "url": "/suc-khoe"
+      "url": "/suc-khoe",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Quản trị nhân sự",
       "src": "/images/home/hrm.svg",
-      "url": "/quan-ly-nhan-su"
+      "url": "/quan-ly-nhan-su",
+      "permission": ["ADMIN", "HRM"]
     },
     {
       "title": "Chính sách phí",
       "src": "/images/home/diploma.svg",
-      "url": "/chinh-sach-phi"
+      "url": "/chinh-sach-phi",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Cấu hình",
       "src": "/images/home/gear.svg",
-      "url": "/cau-hinh"
+      "url": "/cau-hinh",
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     },
     {
       "title": "Camera AI",
       "src": "/images/home/chip.svg",
       "url": "http://clover.product.greenlabs.ai/processes/6092193419e7d2f2b3f2cd8e",
-      "target": true
+      "target": true,
+      "permission": ["ADMIN", "TEACHER", "PARENT", "PRINCIPAL"]
     }
   ]
 }
