@@ -194,7 +194,7 @@ class Index extends PureComponent {
   renderDescription = (record) => {
     if (!isEmpty(record)) {
       const inOutHistories = record.map((item) => {
-        return `${Helper.getDate(item.attendedAt, variables.DATE_FORMAT.DATE_TIME)}`;
+        return `${Helper.getDateLocal(item.attendedAt, variables.DATE_FORMAT.DATE_TIME)}`;
       });
       return (
         <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'Xem thêm' }}>
