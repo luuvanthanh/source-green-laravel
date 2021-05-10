@@ -12,6 +12,7 @@ export default {
     },
     branches: [],
     busInformations: [],
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -33,12 +34,25 @@ export default {
       ...state,
       branches: payload.parsePayload,
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
     SET_BUS_INFORMATIONS: (state, { payload }) => ({
       ...state,
       busInformations: payload.items,
     }),
   },
   effects: {
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getUsers, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);

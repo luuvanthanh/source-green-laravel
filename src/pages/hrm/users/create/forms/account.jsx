@@ -106,8 +106,6 @@ const Index = memo(
       }
     }, [details]);
 
-    console.log(details);
-
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
