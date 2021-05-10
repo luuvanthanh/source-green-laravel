@@ -29,10 +29,23 @@ const mapStateToProps = ({ menu, settings, badges, user }) => ({
 class MenuLeft extends React.Component {
   constructor(props, context) {
     super(props, context);
+    const { user } = props;
     this.state = {
       menuData: props.menu || props.menuData,
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
+      data: dataSource.filter((menuItem) => {
+        const showMenu = isValidCondition({
+          conditions: [
+            {
+              permission: menuItem.permission || [''],
+              isOrPermission: true,
+            },
+          ],
+          userPermission: [user?.user?.role?.toUpperCase()],
+        });
+        return showMenu;
+      }),
     };
   }
 
@@ -259,7 +272,7 @@ class MenuLeft extends React.Component {
   };
 
   render() {
-    const { selectedKeys, openedKeys } = this.state;
+    const { selectedKeys, openedKeys, data } = this.state;
     const { isMobileView, isMenuCollapsed, isLightTheme, info } = this.props;
     const menuSettings = isMobileView
       ? {
@@ -280,7 +293,7 @@ class MenuLeft extends React.Component {
     const content = (
       <Scrollbars autoHeight autoHeightMax={'50vh'}>
         <div className={styles['popover-container']}>
-          {dataSource.map((item, index) => {
+          {data.map((item, index) => {
             if (item.target) {
               return (
                 <a href={item.url} target="_blank" className={styles.item} key={index}>

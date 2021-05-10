@@ -6,13 +6,35 @@ import classnames from 'classnames';
 import styles from './index.scss';
 import Slider from 'react-slick';
 import { dataSource } from '@/services/menuHome.json';
+import { variables } from '@/utils';
+import { isValidCondition } from '@/utils/authority';
 
 @connect(({ user, loading }) => ({ user, loading }))
 class Index extends PureComponent {
+  constructor(props, context) {
+    super(props, context);
+    const { user } = props;
+    this.state = {
+      data: dataSource.filter((menuItem) => {
+        const showMenu = isValidCondition({
+          conditions: [
+            {
+              permission: menuItem.permission || [''],
+              isOrPermission: true,
+            },
+          ],
+          userPermission: [user?.user?.role?.toUpperCase()],
+        });
+        return showMenu;
+      }),
+    };
+  }
+
   render() {
     const {
       loading: { effects },
     } = this.props;
+    const { data } = this.state;
     const settings = {
       arrows: false,
       dots: true,
@@ -75,32 +97,30 @@ class Index extends PureComponent {
         <Helmet title="Trang Chủ" />
         <div className={classnames(styles['items-container'])}>
           <Slider {...settings}>
-            {dataSource.map((item, index) => {
-              return (
-                <div key={index}>
-                  {item.target && (
-                    <a href={item.url} target="_blank" className={styles.item}>
-                      <div className={styles['item-image']}>
-                        <img src={item.src} alt="notification" className={styles.icon} />
-                      </div>
-                      <div className={styles['item-content']}>
-                        <p className={styles['norm']}>{item.title}</p>
-                      </div>
-                    </a>
-                  )}
-                  {!item.target && (
-                    <Link to={item.url} className={styles.item}>
-                      <div className={styles['item-image']}>
-                        <img src={item.src} alt="notification" className={styles.icon} />
-                      </div>
-                      <div className={styles['item-content']}>
-                        <p className={styles['norm']}>{item.title}</p>
-                      </div>
-                    </Link>
-                  )}
-                </div>
-              );
-            })}
+            {data.map((item, index) => (
+              <div key={index}>
+                {item.target && (
+                  <a href={item.url} target="_blank" className={styles.item}>
+                    <div className={styles['item-image']}>
+                      <img src={item.src} alt="notification" className={styles.icon} />
+                    </div>
+                    <div className={styles['item-content']}>
+                      <p className={styles['norm']}>{item.title}</p>
+                    </div>
+                  </a>
+                )}
+                {!item.target && (
+                  <Link to={item.url} className={styles.item}>
+                    <div className={styles['item-image']}>
+                      <img src={item.src} alt="notification" className={styles.icon} />
+                    </div>
+                    <div className={styles['item-content']}>
+                      <p className={styles['norm']}>{item.title}</p>
+                    </div>
+                  </Link>
+                )}
+              </div>
+            ))}
           </Slider>
         </div>
       </div>
