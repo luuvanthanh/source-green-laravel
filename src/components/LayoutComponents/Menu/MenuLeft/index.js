@@ -10,6 +10,7 @@ import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
 import validator from 'validator';
 import { dataSource } from '@/services/menuHome.json';
+import { variables } from '@/utils';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
@@ -42,7 +43,11 @@ class MenuLeft extends React.Component {
               isOrPermission: true,
             },
           ],
-          userPermission: [user?.user?.role?.toUpperCase()],
+          userPermission: [
+            variables.ROLES_PERMISSIONS.includes(user?.user?.role?.toUpperCase())
+              ? user?.user?.role?.toUpperCase()
+              : variables.ROLES.ALL,
+          ],
         });
         return showMenu;
       }),

@@ -99,7 +99,9 @@ export const variables = {
     TEACHER: 'TEACHER',
     HRM: 'HRM',
     ADMIN: 'ADMIN',
+    ALL: 'ALL',
   },
+  ROLES_PERMISSIONS: ['ADMIN', 'TEACHER', 'PARENT', 'HRM'],
   CHOOSE: [
     {
       id: 'DATE',
