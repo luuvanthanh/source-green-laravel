@@ -36,16 +36,16 @@ const Index = memo(() => {
   const [classifyData, setClassifyData] = useState([]);
   const [search, setSearch] = useState({
     search: query?.search,
-    sentDateFrom: query?.sentDateFrom,
-    sentDateTo: query?.sentDateTo,
+    creationTimeFrom: query?.creationTimeFrom,
+    creationTimeTo: query?.creationTimeTo,
   });
   const [groupIds, setGroupIds] = useState([]);
 
   const changeFilterDate = (values) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      sentDateFrom: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
-      sentDateTo: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+      creationTimeFrom: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+      creationTimeTo: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
     }));
   };
 
@@ -238,8 +238,8 @@ const Index = memo(() => {
             ref={filterRef}
             initialValues={{
               rangeTime: [
-                search?.sentDateFrom ? moment(search?.sentDateFrom) : null,
-                search?.sentDateTo ? moment(search?.sentDateTo) : null,
+                search?.creationTimeFrom ? moment(search?.creationTimeFrom) : null,
+                search?.creationTimeTo ? moment(search?.creationTimeTo) : null,
               ],
             }}
           >
