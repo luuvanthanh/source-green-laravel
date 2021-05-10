@@ -9,7 +9,8 @@
     "page": true,
     "API_URL": true,
     "API_SSO_URL": true,
-    "API_URL_LAVAREL": true
+    "API_URL_LAVAREL": true,
+    "ACCESS_TOKEN_MAPBOX": true
   },
   "globals": {
     "IMAGE_URL": true,

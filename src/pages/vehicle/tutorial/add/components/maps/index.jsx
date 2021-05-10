@@ -5,34 +5,13 @@ import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
-import { Map, TileLayer, withLeaflet, MapControl, Marker } from 'react-leaflet';
+import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import 'leaflet/dist/leaflet.css';
-import Routing from './MapInfo';
 
 const iconStudent = new L.Icon({
   iconUrl: '/images/maker-student.svg',
   iconAnchor: [17, 46],
 });
-const iconSchool = new L.Icon({
-  iconUrl: '/images/marker-location.svg',
-  iconAnchor: [17, 46],
-});
-const iconCar = new L.Icon({
-  iconUrl: '/images/marker-car.svg',
-  iconAnchor: [17, 46],
-});
-
-const mockData = [];
-for (let i = 0; i < 20; i++) {
-  mockData.push({
-    key: i.toString(),
-    title: `content${i + 1}`,
-    address: `address of content${i + 1}`,
-  });
-}
 
 let isMounted = true;
 /**
@@ -90,27 +69,13 @@ class Index extends PureComponent {
   };
 
   onClickMap = (e) => {
+    console.log(e)
     this.setStateData({
-      position: [e.latlng.lat, e.latlng.lng],
+      position: e.latlng,
     });
   };
 
-  onChange = (nextTargetKeys) => {
-    this.setState({ targetKeys: nextTargetKeys });
-  };
-
-  onSubmit = () => {
-    const { targetKeys, listId } = this.state;
-    const users = mockData.filter(function (item) {
-      return targetKeys.includes(item.key);
-    });
-    this.props.onSave(
-      users.map((item) => ({ ...item, parentId: listId })),
-      listId,
-    );
-  };
-
-  handleClick = (e) => {};
+  onSubmit = () => {};
 
   saveMap = (map) => {
     this.map = map;
@@ -157,7 +122,13 @@ class Index extends PureComponent {
         visible={visible}
       >
         <div className={styles.leafletContainer}>
-          <Map center={position} zoom={15} maxZoom={22} ref={this.saveMap}>
+          <Map
+            center={position}
+            zoom={15}
+            maxZoom={22}
+            ref={this.saveMap}
+            onClick={this.onClickMap}
+          >
             <TileLayer
               url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
               attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
@@ -165,10 +136,7 @@ class Index extends PureComponent {
               // minZoom="0"
               // maxZoom="23"
             />
-            <Routing map={this.map} />
-            <Marker position={[16.050051, 108.155123]} icon={iconStudent}></Marker>
-            <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker>
-            <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker>
+            <Marker position={position} icon={iconStudent}></Marker>
           </Map>
         </div>
       </Modal>

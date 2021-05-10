@@ -29,8 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu }) => ({
+const mapStateToProps = ({ menu, tutorialAdd }) => ({
   menuData: menu.menuLeftVehicel,
+  branches: tutorialAdd.branches,
 });
 const { confirm } = Modal;
 @connect(mapStateToProps)
@@ -54,6 +55,10 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
+  componentDidMount() {
+    this.loadCategories();
+  }
+
   componentWillUnmount() {
     setIsMounted(false);
   }
@@ -70,6 +75,13 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -278,7 +290,7 @@ class Index extends PureComponent {
 
   render() {
     const { list, visible, listId, targetKeys, visibleMap } = this.state;
-    const { menuData } = this.props;
+    const { menuData, branches } = this.props;
     const props = {
       beforeUpload: (file) => {
         return file;
@@ -290,21 +302,11 @@ class Index extends PureComponent {
 
     return (
       <>
-        <Breadcrumbs last="Chi tiết xe" menu={menuData} />
+        <Breadcrumbs last="Chi tiết lộ trình" menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
-          initialValues={{
-            criteria: [
-              {
-                itemsCriterias: [
-                  {
-                    children: [{}],
-                  },
-                ],
-              },
-            ],
-          }}
+          initialValues={{}}
           colon={false}
           ref={this.formRef}
         >
@@ -319,10 +321,7 @@ class Index extends PureComponent {
           )}
           {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
           <div className={styles['content-form']}>
-            <div className="d-flex justify-content-between">
-              <Text color="dark">CHI TIẾT XE</Text>
-            </div>
-            <div className={styles['content-children']}>
+            <div className={classnames(styles['content-children'], 'mt0')}>
               <Text color="dark" size="large-medium">
                 THÔNG TIN CHUNG
               </Text>
@@ -332,21 +331,43 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[]}
+                    data={branches}
                     label="ĐIỂM XUẤT PHÁT"
-                    name="location"
+                    name="startedPlace"
                     type={variables.SELECT}
                   />
                 </div>
               </div>
             </div>
             <div className={styles['content-children']}>
-              <Text color="dark" size="large-medium">
-                THÔNG TIN XE
-              </Text>
+              <div className="d-flex justify-content-between align-items-center mb20">
+                <Text color="dark" size="large-medium">
+                  THÔNG TIN XE
+                </Text>
+                <Select dataSet={[]} style={{ width: '200px' }} />
+              </div>
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem data={[]} label="CHỌN XE" name="vehicle" type={variables.SELECT} />
+                <div className="col-lg-4">
+                  <FormItem
+                    data={[]}
+                    label="Thời gian lặp lại của lộ trình"
+                    name="busRouteShedules"
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    label="Thời gian bắt đầu"
+                    name="startDate"
+                    type={variables.DATE_PICKER}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    label="Thời gian kết thúc"
+                    name="endDate"
+                    type={variables.DATE_PICKER}
+                  />
                 </div>
               </div>
               <div className="row">
@@ -365,23 +386,18 @@ class Index extends PureComponent {
                   />
                 </div>
               </div>
-              <div className="row mt-3">
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[]}
-                    label="THỜI KHÓA BIỂU XE HOẠT ĐỘNG"
-                    name="schedules"
-                    type={variables.SELECT}
-                  />
-                </div>
-              </div>
               <hr />
               <Text color="dark" size="large-medium">
                 THÔNG TIN BẢO MẪU
               </Text>
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem data={[]} label="BẢO MẪU" name="nanny" type={variables.SELECT} />
+                <div className="col-lg-12">
+                  <FormItem
+                    data={[]}
+                    label="BẢO MẪU"
+                    name="busRouteNannies"
+                    type={variables.SELECT}
+                  />
                 </div>
               </div>
             </div>
