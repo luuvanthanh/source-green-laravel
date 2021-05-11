@@ -149,14 +149,14 @@ const Index = memo(() => {
         render: (record) => record.insurranceNumber,
       },
       {
-        title: 'Ngày tham gia',
+        title: 'Thời gian hiệu lực (từ ngày),',
         key: 'timeJoin',
         className: 'min-width-130',
         width: 130,
         render: (record) => Helper.getDate(record.timeJoin, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày bắt đầu',
+        title: 'Thời gian hiệu lực (đến ngày)',
         key: 'timeStart',
         className: 'min-width-130',
         width: 130,

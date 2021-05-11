@@ -74,6 +74,13 @@ const Index = memo(() => {
     }));
   }, 300);
 
+  const changeFilterDateDebouce = debounce((value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      rangeTime: value,
+    }));
+  }, 300);
+
   const changeFilter = (value, name) => {
     changeFilterDebouce(value, name);
   };
@@ -81,6 +88,10 @@ const Index = memo(() => {
   const changeFilterBranch = (value, name) => {
     changeFilterDebouce(value, name);
     fetchClasses(value);
+  };
+
+  const changeFilterDate = (value) => {
+    changeFilterDateDebouce(value);
   };
 
   const fetchClasses = (branchId) => {
@@ -188,7 +199,11 @@ const Index = memo(() => {
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem name="rangeTime" type={variables.RANGE_PICKER} />
+                  <FormItem
+                    name="rangeTime"
+                    type={variables.RANGE_PICKER}
+                    onChange={changeFilterDate}
+                  />
                 </Pane>
               </Pane>
             </Form>
