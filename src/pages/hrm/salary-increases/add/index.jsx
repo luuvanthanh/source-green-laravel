@@ -226,7 +226,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="Ngày áp dụng"
+                    label="Ngày bắt đầu"
                     name="timeApply"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.DATE_PICKER}
