@@ -329,13 +329,13 @@ class Index extends PureComponent {
     const loading = effects['decisionSuspends/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách tạm hoãn công việc" />
+        <Helmet title="Danh sách tạm hoãn hợp đồng" />
         <div
           className={classnames(styles['content-form'], styles['content-form-decisionSuspends'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách tạm hoãn công việc</Text>
+            <Text color="dark">Danh sách tạm hoãn hợp đồng</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
