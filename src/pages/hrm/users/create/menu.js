@@ -34,6 +34,10 @@ export const menu = [
     label: 'Bảo hiểm xã hội',
   },
   {
+    key: 'children',
+    label: 'Thông tin quan hệ gia đình',
+  },
+  {
     key: 'magneticCards',
     label: 'Thẻ từ',
   },

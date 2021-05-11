@@ -865,7 +865,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Đơn đi công tác',
+              title: 'Đăng ký đi công tác',
               key: 'business-cards',
               url: [
                 '/quan-ly-nhan-su/don-di-cong-tac',

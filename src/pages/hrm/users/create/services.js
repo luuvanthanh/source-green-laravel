@@ -375,3 +375,34 @@ export function getInsurrances(params = {}) {
   });
 }
 // insurrances
+
+// children
+export function addChildren(data = {}) {
+  return requestLavarel('/v1/children', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateChildren(data = {}) {
+  return requestLavarel(`/v1/children/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeChildren(data = {}) {
+  return requestLavarel(`/v1/children/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getChildren(params = {}) {
+  return requestLavarel('/v1/children', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// children
