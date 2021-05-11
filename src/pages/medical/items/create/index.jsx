@@ -397,6 +397,7 @@ const Index = memo(({}) => {
                                   label="Thời gian uống"
                                   name={[name, 'pillTimes']}
                                   type={variables.CHECKBOX}
+                                  rules={[variables.RULES.EMPTY]}
                                   data={variablesModules.STATUS_TIME_CODE}
                                   onChange={(values) =>
                                     setPillTimes((prev) => ({ ...prev, [name]: values.sort() }))
