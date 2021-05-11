@@ -188,7 +188,7 @@ class Index extends PureComponent {
                 <div className="col-lg-12">
                   <FormItem
                     data={Helper.convertSelectUsers(categories?.users)}
-                    label="NHÂN VIÊN"
+                    label="Nhân viên"
                     name="employeeId"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
@@ -226,7 +226,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="NGÀY ÁP DỤNG"
+                    label="Ngày áp dụng"
                     name="timeApply"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.DATE_PICKER}
@@ -234,7 +234,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-12">
                   <FormItem
-                    label="GHI CHÚ"
+                    label="Ghi chú"
                     name="note"
                     type={variables.INPUT}
                     rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
@@ -258,7 +258,7 @@ class Index extends PureComponent {
                             <div className="col-lg-6">
                               <FormItem
                                 data={categories.paramaterValues}
-                                label="THAM SỐ GIÁ TRỊ"
+                                label="Tham số giá trị"
                                 name={[field.name, 'parameterValueId']}
                                 fieldKey={[field.fieldKey, 'parameterValueId']}
                                 rules={[variables.RULES.EMPTY]}
@@ -268,7 +268,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="LƯƠNG"
+                                label="Lương"
                                 name={[field.name, 'value']}
                                 fieldKey={[field.fieldKey, 'value']}
                                 rules={[variables.RULES.EMPTY]}

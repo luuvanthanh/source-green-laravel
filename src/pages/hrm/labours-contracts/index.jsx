@@ -287,9 +287,11 @@ class Index extends PureComponent {
       {
         title: 'Lương cơ bản',
         key: 'salary',
-        dataIndex: 'parameterValues[0]',
         className: 'min-width-150',
-        render: (value) => Helper.getPrice(value?.pivot?.value),
+        render: (record) => {
+          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG');
+          return Helper.getPrice(parameterValues?.pivot?.value);
+        },
       },
       {
         title: 'Tổng phụ cấp',

@@ -500,7 +500,31 @@ export default {
       try {
         yield saga.call(services.addContract, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *UPDATE_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateContract, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -524,7 +548,31 @@ export default {
       try {
         yield saga.call(services.addProbationaryContract, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *UPDATE_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateProbationaryContract, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
