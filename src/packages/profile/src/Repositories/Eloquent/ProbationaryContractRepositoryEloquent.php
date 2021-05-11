@@ -95,21 +95,21 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         }
 
         if (!empty($attributes['limit'])) {
-            $labourContract = $this->paginate($attributes['limit']);
+            $probationaryContract = $this->paginate($attributes['limit']);
         } else {
-            $labourContract = $this->get();
+            $probationaryContract = $this->get();
         }
 
-        return $labourContract;
+        return $probationaryContract;
     }
 
     public function create(array $attributes)
     {
         \DB::beginTransaction();
         try {
-            $tranfer = ProbationaryContract::create($attributes);
+            $probationaryContract = ProbationaryContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                $probationaryContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
             \DB::commit();
@@ -117,6 +117,27 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($probationaryContract->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $probationaryContract = ProbationaryContract::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $probationaryContract->update($attributes);
+
+            $probationaryContract->parameterValues()->detach();
+            foreach ($attributes['detail'] as $value) {
+                $probationaryContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($probationaryContract->Id);
     }
 }
