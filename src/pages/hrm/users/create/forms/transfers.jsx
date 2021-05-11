@@ -350,7 +350,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={branches}
-                label="Cơ sở"
+                label="Cơ sở mới"
                 name="branchId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
@@ -359,7 +359,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={divisions}
-                label="Bộ phận"
+                label="Bộ phận mới"
                 name="divisionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
@@ -368,7 +368,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={positions}
-                label="Chức danh"
+                label="Chức danh mới"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
