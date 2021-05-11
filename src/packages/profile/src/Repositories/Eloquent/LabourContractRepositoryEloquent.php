@@ -108,9 +108,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         \DB::beginTransaction();
         try {
-            $tranfer = LabourContract::create($attributes);
+            $labourContract = LabourContract::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
             \DB::commit();
@@ -118,6 +118,27 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($labourContract->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $labourContract->update($attributes);
+
+            $labourContract->parameterValues()->detach();
+            foreach ($attributes['detail'] as $value) {
+                $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($labourContract->Id);
     }
 }
