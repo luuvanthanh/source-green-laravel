@@ -236,20 +236,10 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-12">
                     <FormItem
-                      label="THỜI GIAN"
+                      label="NGÀY ÁP DỤNG"
                       name="date"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="LÝ DO"
-                      name="reason"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
                     />
                   </div>
                 </div>
@@ -268,7 +258,7 @@ class Index extends PureComponent {
                           <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'in')}
-                              label="VÀO"
+                              label="THỜI GIAN TỪ"
                               name={[field.name, 'in']}
                               fieldKey={[field.fieldKey, 'in']}
                               rules={[variables.RULES.EMPTY]}
@@ -278,7 +268,7 @@ class Index extends PureComponent {
                           <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'out')}
-                              label="RA"
+                              label="THỜI GIAN ĐẾN"
                               name={[field.name, 'out']}
                               fieldKey={[field.fieldKey, 'out']}
                               rules={[variables.RULES.EMPTY]}
@@ -290,6 +280,16 @@ class Index extends PureComponent {
                     </div>
                   )}
                 </Form.List>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="LÝ DO"
+                      name="reason"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
+                    />
+                  </div>
+                </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
