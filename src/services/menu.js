@@ -855,7 +855,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Tạm hoãn công việc',
+              title: 'QĐ Tạm hoãn hợp đồng',
               key: 'decision-suspends',
               url: [
                 '/quan-ly-nhan-su/tam-hoan-cong-viec',
