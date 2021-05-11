@@ -234,18 +234,25 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
+        title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-150',
         width: 150,
         render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
       },
       {
-        title: 'Ngày tạo',
-        key: 'creationTime',
+        title: 'Thời gian',
+        key: 'hours',
+        width: 170,
+        className: 'min-width-170',
+        render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
+      },
+      {
+        title: 'Ngày áp dụng',
+        key: 'date',
         width: 120,
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE),
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Loại',
@@ -254,18 +261,10 @@ class Index extends PureComponent {
         render: (record) => record?.absentType?.name,
       },
       {
-        title: 'Ngày hỗ trợ',
-        key: 'date',
-        width: 120,
+        title: 'Lý do',
+        key: 'reason',
         className: 'min-width-120',
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Giờ',
-        key: 'hours',
-        width: 170,
-        className: 'min-width-170',
-        render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
+        render: (record) => record.reason,
       },
     ];
   };
@@ -282,11 +281,11 @@ class Index extends PureComponent {
     const loading = effects['workHours/GET_DATA'];
     return (
       <>
-        <Helmet title="Phiếu ĐK giờ làm thêm" />
+        <Helmet title="Danh sách phiếu ĐK giờ làm thêm" />
         <div className={classnames(styles['content-form'], styles['content-form-workHours'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Phiếu ĐK giờ làm thêm</Text>
+            <Text color="dark">Danh sách phiếu ĐK giờ làm thêm</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
