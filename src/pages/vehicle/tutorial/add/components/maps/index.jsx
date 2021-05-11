@@ -72,7 +72,7 @@ class Index extends PureComponent {
 
   onClickMap = (e) => {
     this.setStateData({
-      position: e.latlng,
+      position: [e.latlng.lat, e.latlng.lng],
     });
   };
 
@@ -93,7 +93,7 @@ class Index extends PureComponent {
       .then((response) => response.json())
       .then((data) => {
         const address = head(data.features)?.place_name_vi;
-        self.props.onSubmit({ position, address });
+        self.props.onSubmit({ address, position, lat: head(position), lng: last(position) });
       });
   };
 

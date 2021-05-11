@@ -12,34 +12,28 @@ export function getBusInformations(params = {}) {
 }
 
 export function get(params = {}) {
-  return request('/api/product-types', {
+  return request(`/bus-routes/${params.id}`, {
     method: 'GET',
-    params: {
-      ...params,
-      ...Helper.getPagination(params.page, params.limit),
-    },
   });
 }
 
 export function add(data = {}) {
-  return request('/api/product-types', {
+  return request('/bus-routes', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/api/product-types/${data.id}`, {
+  return request(`/bus-routes/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
 export function remove(id) {
-  return request(`/api/product-types/${id}`, {
+  return request(`/bus-routes/${id}`, {
     method: 'DELETE',
     parse: true,
   });
 }
-
-export default get;

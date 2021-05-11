@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -46,6 +46,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -54,7 +55,9 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.onLoad();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -157,80 +160,11 @@ class Index extends PureComponent {
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
+    onShowSizeChange: (current, size) => {
+      this.changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'tutorial/UPDATE' : 'tutorial/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
-   * Function remove items
-   * @param {objects} record value of items
-   */
-  onEdit = (objects) => {
-    this.setStateData(
-      {
-        objects,
-        visible: true,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          ...objects,
-        });
-      },
-    );
-  };
 
   /**
    * Function remove items
@@ -266,6 +200,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
         title: 'STT',
@@ -279,19 +216,19 @@ class Index extends PureComponent {
         title: 'TÊN LỘ TRÌNH',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Hùng Vương - Trần phú</Text>,
+        render: (record) => <Text size="normal">{record?.busRoute?.name}</Text>,
       },
       {
         title: 'SỐ ĐIỂM ĐÓN',
         key: 'count',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">5</Text>,
+        render: (record) => <Text size="normal">{record?.stationTotal}</Text>,
       },
       {
         title: 'SỐ LƯỢNG TRẺ ĐÓN',
         key: 'children',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">12</Text>,
+        render: (record) => <Text size="normal">{record?.studentTotal}</Text>,
       },
       {
         key: 'action',
@@ -299,8 +236,11 @@ class Index extends PureComponent {
         width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
+            />
           </div>
         ),
       },
@@ -372,14 +312,14 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record.id || record?.busRoute?.id}
               scroll={{ x: '100%' }}
             />
           </div>

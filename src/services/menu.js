@@ -48,6 +48,7 @@ export async function getLeftMenuData() {
         '/quan-ly-phuong-tien/xe/:id/chi-tiet',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
       permission: [],
