@@ -48,10 +48,13 @@ const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [contractDetails, setContractDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
+  const [details, setDetails] = useState({});
 
   const cancelModal = () => {
     mountedSet(setVisible, false);
-    formRefModal?.current?.resetFields();
+    mountedSet(setParameterValuesDetails, []);
+    mountedSet(setDetails, {});
+    formRefModal.current.resetFields();
   };
 
   const changeContract = (value) => {
@@ -65,6 +68,29 @@ const Index = memo(() => {
       month: currentType.month,
       year: currentType.year,
     });
+  };
+
+  const onEdit = (record) => {
+    mountedSet(setVisible, true);
+    mountedSet(setDetails, record);
+    mountedSet(
+      setParameterValuesDetails,
+      record.parameterValues.map((item, index) => ({
+        ...item,
+        index,
+        valueDefault: item.pivot.value,
+        id: item.pivot.parameterValueId,
+      })),
+    );
+    setParameterValuesDetails;
+    if (formRefModal.current) {
+      formRefModal.current.setFieldsValue({
+        ...record,
+        contractFrom: record.contractFrom && moment(record.contractFrom),
+        contractTo: record.contractTo && moment(record.contractTo),
+        contractDate: record.contractDate && moment(record.contractDate),
+      });
+    }
   };
 
   const addParameterValues = () => {
@@ -101,6 +127,10 @@ const Index = memo(() => {
     );
   });
 
+  const onRemove = (record) => {
+    setParameterValuesDetails((prev) => prev.filter((item) => item.index !== record.index));
+  };
+
   const parameterValuesColumns = [
     {
       title: 'STT',
@@ -124,14 +154,14 @@ const Index = memo(() => {
       ),
     },
     {
-      title: 'Số tiền',
+      title: 'Giá trị',
       key: 'values',
       dataIndex: 'valueDefault',
       className: 'min-width-120',
       render: (value, record) => (
         <InputNumber
           value={value}
-          className={csx('input-number', styles['input-number-container'])}
+          className={csx('input-number')}
           formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           onChange={changeValue(record)}
           placeholder="Nhập"
@@ -139,11 +169,24 @@ const Index = memo(() => {
       ),
     },
     {
-      title: 'Ngày hiệu lực',
-      key: 'application_date',
-      dataIndex: 'applyDate',
-      className: 'min-width-120',
-      render: (value) => Helper.getDate(moment(value)),
+      title: 'Thao tác',
+      key: 'actions',
+      width: 100,
+      className: 'min-width-100',
+      fixed: 'right',
+      align: 'center',
+      render: (record) => (
+        <ul className="list-unstyled list-inline">
+          <li className="list-inline-item">
+            <Button
+              color="danger"
+              icon="remove"
+              className="ml-2"
+              onClick={() => onRemove(record)}
+            />
+          </li>
+        </ul>
+      ),
     },
   ];
 
@@ -199,9 +242,11 @@ const Index = memo(() => {
       {
         title: 'Lương cơ bản',
         key: 'salary',
-        dataIndex: 'parameterValues[0]',
         className: 'min-width-150',
-        render: (value) => Helper.getPrice(value?.pivot?.value),
+        render: (record) => {
+          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG');
+          return Helper.getPrice(parameterValues?.pivot?.value);
+        },
       },
       {
         title: 'Tổng phụ cấp',
@@ -230,27 +275,21 @@ const Index = memo(() => {
         className: 'min-width-150',
         render: (value) => value?.name,
       },
-      // {
-      //   title: 'Thao tác',
-      //   key: 'actions',
-      //   width: 180,
-      //   className: 'min-width-180',
-      //   fixed: 'right',
-      //   align: 'center',
-      //   render: (record) => (
-      //     <ul className="list-unstyled list-inline">
-      //       <li className="list-inline-item">
-      //         <Button color="primary" icon="edit" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="danger" icon="remove" className="ml-2" />
-      //       </li>
-      //       <li className="list-inline-item">
-      //         <Button color="success" icon="export" />
-      //       </li>
-      //     </ul>
-      //   ),
-      // },
+      {
+        title: 'Thao tác',
+        key: 'actions',
+        width: 100,
+        className: 'min-width-100',
+        fixed: 'right',
+        align: 'center',
+        render: (record) => (
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button color="primary" icon="edit" onClick={() => onEdit(record)} />
+            </li>
+          </ul>
+        ),
+      },
     ],
     [],
   );
@@ -260,6 +299,7 @@ const Index = memo(() => {
 
     const reqData = {
       ...formValues,
+      id: details.id,
       employeeId,
       contractDate: moment(formValues.contractDate),
       contractFrom: formValues.contractFrom && moment(formValues.contractFrom),
@@ -271,7 +311,9 @@ const Index = memo(() => {
     };
 
     dispatch({
-      type: 'HRMusersAdd/ADD_PROBATIONARY_CONTRACT',
+      type: !isEmpty(details)
+        ? 'HRMusersAdd/UPDATE_PROBATIONARY_CONTRACT'
+        : 'HRMusersAdd/ADD_PROBATIONARY_CONTRACT',
       payload: reqData,
       callback: (res, err) => {
         if (res) {
@@ -279,6 +321,7 @@ const Index = memo(() => {
           mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
           fetchProbationaryContracts();
+          mountedSet(setDetails, {});
           formRefModal?.current?.resetFields();
         }
         if (err) {
@@ -369,7 +412,10 @@ const Index = memo(() => {
               key="choose"
               color="success"
               size="large"
-              loading={loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT']}
+              loading={
+                loading['HRMusersAdd/ADD_PROBATIONARY_CONTRACT'] ||
+                loading['HRMusersAdd/UPDATE_PROBATIONARY_CONTRACT']
+              }
               onClick={finishForm}
             >
               Lưu
@@ -381,7 +427,10 @@ const Index = memo(() => {
           layout="vertical"
           ref={formRefModal}
           initialValues={{
-            contractDate: moment(),
+            ...details,
+            contractFrom: details.contractFrom && moment(details.contractFrom),
+            contractTo: details.contractTo && moment(details.contractTo),
+            contractDate: details.contractDate && moment(details.contractDate),
           }}
           onValuesChange={formUpdate}
         >

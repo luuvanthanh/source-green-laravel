@@ -225,12 +225,21 @@ export function getContractTypes(params = {}) {
     },
   });
 }
+
 export function addContract(data) {
   return requestLavarel('/v1/labours-contracts', {
     method: 'POST',
     data,
   });
 }
+
+export function updateContract(data) {
+  return requestLavarel(`/v1/labours-contracts/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 export function getContracts(params) {
   return requestLavarel('/v1/labours-contracts', {
     method: 'GET',
@@ -251,6 +260,14 @@ export function addProbationaryContract(data) {
     data,
   });
 }
+
+export function updateProbationaryContract(data) {
+  return requestLavarel(`/v1/probationary-contracts/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 export function getProbationaryContracts(params) {
   return requestLavarel('/v1/probationary-contracts', {
     method: 'GET',
@@ -358,3 +375,34 @@ export function getInsurrances(params = {}) {
   });
 }
 // insurrances
+
+// children
+export function addChildren(data = {}) {
+  return requestLavarel('/v1/children', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateChildren(data = {}) {
+  return requestLavarel(`/v1/children/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeChildren(data = {}) {
+  return requestLavarel(`/v1/children/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getChildren(params = {}) {
+  return requestLavarel('/v1/children', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// children

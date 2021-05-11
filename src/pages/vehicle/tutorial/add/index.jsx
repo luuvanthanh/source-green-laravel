@@ -13,6 +13,10 @@ import Table from '@/components/CommonComponent/Table';
 import Children from './components/children';
 import Maps from './components/maps';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import variablesModules from '../../utils/variables';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import { head, isEmpty, omit } from 'lodash';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -29,9 +33,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, tutorialAdd }) => ({
+const mapStateToProps = ({ menu, tutorialAdd, loading }) => ({
+  loading,
+  details: tutorialAdd.details,
   menuData: menu.menuLeftVehicel,
   branches: tutorialAdd.branches,
+  students: tutorialAdd.students,
+  employees: tutorialAdd.employees,
+  busInformations: tutorialAdd.busInformations,
 });
 const { confirm } = Modal;
 @connect(mapStateToProps)
@@ -41,22 +50,44 @@ class Index extends PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      list: [
+      busPlaces: [
         {
           id: '1',
-          children: [],
+          studentBusPlaces: [],
         },
       ],
       listId: null,
       visible: false,
       visibleMap: false,
-      targetKeys: [],
+      studentBusPlaces: [],
+      bus: [],
+      busId: null,
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
+    this.loadDetails();
     this.loadCategories();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      details,
+      match: { params },
+    } = this.props;
+    if (details !== prevProps.details && !isEmpty(details) && params.id) {
+      this.formRef.current.setFieldsValue({
+        name: details.name,
+        startedPlace: details.startedPlace,
+        startDate: details.startDate && moment(details.startDate),
+        endDate: details.endDate && moment(details.endDate),
+        busRouteNannies: details.busRouteNannies.map((item) => item.nannyId),
+        busRouteShedules: details.busRouteShedules.map((item) => item.dayOfWeek),
+      });
+      this.onSetBus(details);
+      this.onSetBusPlaces(details);
+    }
   }
 
   componentWillUnmount() {
@@ -77,10 +108,64 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  loadDetails = () => {
+    const {
+      match: { params },
+      dispatch,
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'tutorialAdd/GET_DATA',
+        payload: params,
+      });
+    }
+  };
+
   loadCategories = () => {
     this.props.dispatch({
       type: 'tutorialAdd/GET_BRANCHES',
       payload: {},
+    });
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_BUS_INFORMATIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_EMPLOYEES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'tutorialAdd/GET_STUDENTS',
+      payload: {
+        classStatus: 'HAS_CLASS',
+      },
+    });
+  };
+
+  onSetBusPlaces = (record) => {
+    this.setStateData({
+      busPlaces: record.busPlaces.map((item) => ({
+        ...item,
+        studentBusPlaces: item.studentBusPlaces.map((itemStudent) => ({
+          ...itemStudent,
+          ...itemStudent.student,
+        })),
+      })),
+    });
+  };
+
+  onSetBus = (record) => {
+    this.setStateData({
+      bus: [record.busInfor],
+      busId: record.busId,
+    });
+  };
+
+  onChangeBus = (value) => {
+    const { busInformations } = this.props;
+    this.setStateData({
+      bus: busInformations.filter((item) => item.id === value),
+      busId: value,
     });
   };
 
@@ -90,11 +175,11 @@ class Index extends PureComponent {
    */
   onSave = (items, listId) => {
     this.setStateData((prevState) => ({
-      list: prevState.list.map((item) => {
+      busPlaces: prevState.busPlaces.map((item) => {
         if (item.id === listId) {
           return {
             ...item,
-            children: items,
+            studentBusPlaces: items,
             parentId: listId,
           };
         }
@@ -110,7 +195,7 @@ class Index extends PureComponent {
    */
   collapsed = (record) => {
     this.setStateData((prevState) => ({
-      list: prevState.list.map((item) => {
+      busPlaces: prevState.busPlaces.map((item) => {
         if (item.id === record.id) {
           return {
             ...item,
@@ -130,7 +215,7 @@ class Index extends PureComponent {
     this.setStateData({
       visible: true,
       listId: record.id,
-      targetKeys: record.children.map((item) => item.key),
+      studentBusPlaces: record.studentBusPlaces.map((item) => item.key),
     });
   };
 
@@ -138,7 +223,7 @@ class Index extends PureComponent {
     this.setStateData({
       visible: false,
       listId: null,
-      targetKeys: [],
+      studentBusPlaces: [],
     });
   };
 
@@ -147,13 +232,14 @@ class Index extends PureComponent {
    */
   addList = () => {
     this.setStateData((prevState) => ({
-      list: [...prevState.list, { id: Math.random().toString(36).substr(2, 9) }],
+      busPlaces: [...prevState.busPlaces, { id: Math.random().toString(36).substr(2, 9) }],
     }));
   };
 
-  showMap = () => {
+  showMap = (record) => {
     this.setStateData({
       visibleMap: true,
+      listId: record.id,
     });
   };
 
@@ -174,7 +260,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         self.setStateData((prevState) => ({
-          list: prevState.list.filter((item) => item.id !== id),
+          busPlaces: prevState.busPlaces.filter((item) => item.id !== id),
         }));
       },
       onCancel() {},
@@ -183,11 +269,11 @@ class Index extends PureComponent {
 
   onRemoveChildren = (record) => {
     this.setStateData((prevState) => ({
-      list: prevState.list.map((item) => {
+      busPlaces: prevState.busPlaces.map((item) => {
         if (item.id == record.parentId) {
           return {
             ...item,
-            children: item.children.filter((itemChildren) => itemChildren.key !== record.key),
+            busPlaces: item.busPlaces.filter((itemChildren) => itemChildren.key !== record.key),
           };
         }
         return item;
@@ -212,21 +298,22 @@ class Index extends PureComponent {
         },
         {
           title: 'HỌC SINH',
-          key: 'children',
-          width: 200,
+          key: 'name',
           className: 'min-width-200',
-          render: (record) => (
-            <Text size="normal">
-              <Avatar size={32} shape="circle" className="mr-2" />
-              Nguyễn Văn A
-            </Text>
-          ),
+          render: (record) => {
+            return (
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(record.fileImage)}
+                fullName={record.fullName}
+              />
+            );
+          },
         },
         {
           title: 'ĐỊA CHỈ',
           key: 'address',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">10 Hùng Vương </Text>,
+          render: (record) => <Text size="normal">{record.address}</Text>,
         },
         {
           key: 'action',
@@ -245,28 +332,33 @@ class Index extends PureComponent {
           title: 'MÃ SỐ',
           key: 'code',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">0001</Text>,
+          render: (record) => <Text size="normal">{record.code}</Text>,
         },
         {
           title: 'HÃNG',
           key: 'manufacturer',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">Hyundai</Text>,
+          render: (record) => <Text size="normal">{record.manufacturer}</Text>,
         },
         {
           title: 'SỐ CHỔ NGỒI',
           key: 'seats',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">45 chỗ</Text>,
+          render: (record) => <Text size="normal">{record.seats} chỗ</Text>,
         },
         {
           title: 'XE',
           key: 'vehicle',
-          className: 'min-width-150',
+          className: 'min-width-200',
           render: (record) => (
             <Text size="normal">
-              <Avatar size={32} shape="circle" className="mr-2" />
-              Hyundai Universe
+              <Avatar
+                size={32}
+                shape="circle"
+                className="mr-2"
+                src={record.fileImage && `${API_UPLOAD}${record.fileImage}`}
+              />
+              {record.name}
             </Text>
           ),
         },
@@ -274,13 +366,13 @@ class Index extends PureComponent {
           title: 'ĐỜI',
           key: 'life',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">2018</Text>,
+          render: (record) => <Text size="normal"> {record.year}</Text>,
         },
         {
           title: 'TRUYỀN ĐỘNG',
           key: 'movement',
           className: 'min-width-150',
-          render: (record) => <Text size="normal">Số tự động</Text>,
+          render: (record) => <Text size="normal">{record.transmission}</Text>,
         },
       ];
     }
@@ -288,18 +380,85 @@ class Index extends PureComponent {
     return columns;
   };
 
-  render() {
-    const { list, visible, listId, targetKeys, visibleMap } = this.state;
-    const { menuData, branches } = this.props;
-    const props = {
-      beforeUpload: (file) => {
-        return file;
-      },
-      showUploadList: false,
-      fileList: [],
+  onFinish = (values) => {
+    const { busPlaces, busId } = this.state;
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    const payload = {
+      ...values,
+      id: params.id,
+      busPlaces: busPlaces.map((item) => ({
+        ...item,
+        studentBusPlaces: item.studentBusPlaces.map((itemBus, index) => ({
+          studentId: itemBus.id,
+          address: itemBus.address,
+          description: itemBus.description,
+          orderNo: index,
+        })),
+      })),
+      busRouteShedules: values.busRouteShedules.map((item) => ({
+        dayOfWeek: item,
+      })),
+      busRouteNannies: values.busRouteNannies.map((item) => ({
+        nannyId: item,
+      })),
+      busId: busId,
     };
-    const position = [51.505, -0.09];
+    dispatch({
+      type: params.id ? 'tutorialAdd/UPDATE' : 'tutorialAdd/ADD',
+      payload: {
+        ...omit(payload, 'busRouteShedules'),
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
+  onSubmitMaps = (values) => {
+    const { listId } = this.state;
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === listId) {
+          return {
+            ...item,
+            ...values,
+          };
+        }
+        return item;
+      }),
+      visibleMap: false,
+    }));
+  };
+
+  render() {
+    const { busPlaces, visible, listId, studentBusPlaces, visibleMap, bus, busId } = this.state;
+    const {
+      menuData,
+      branches,
+      busInformations,
+      employees,
+      students,
+      loading: { effects },
+    } = this.props;
+    const loading = effects['tutorialAdd/GET_DATA'];
+    const loadingSubmit = effects['tutorialAdd/ADD'] || effects['tutorialAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last="Chi tiết lộ trình" menu={menuData} />
@@ -308,18 +467,26 @@ class Index extends PureComponent {
           layout="vertical"
           initialValues={{}}
           colon={false}
+          onFinish={this.onFinish}
           ref={this.formRef}
         >
           {visible && (
             <Children
               visible={visible}
               listId={listId}
+              students={students}
               onSave={this.onSave}
               handleCancel={this.handleCancel}
-              targetKeys={targetKeys}
+              studentBusPlaces={studentBusPlaces}
             />
           )}
-          {visibleMap && <Maps visible={visibleMap} handleCancel={this.handleCancelMap} />}
+          {visibleMap && (
+            <Maps
+              visible={visibleMap}
+              handleCancel={this.handleCancelMap}
+              onSubmit={this.onSubmitMaps}
+            />
+          )}
           <div className={styles['content-form']}>
             <div className={classnames(styles['content-children'], 'mt0')}>
               <Text color="dark" size="large-medium">
@@ -327,7 +494,12 @@ class Index extends PureComponent {
               </Text>
               <div className="row">
                 <div className="col-lg-9">
-                  <FormItem data={[]} label="TÊN LỘ TRÌNH" name="name" type={variables.INPUT} />
+                  <FormItem
+                    label="TÊN LỘ TRÌNH"
+                    name="name"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
@@ -335,6 +507,7 @@ class Index extends PureComponent {
                     label="ĐIỂM XUẤT PHÁT"
                     name="startedPlace"
                     type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
               </div>
@@ -344,29 +517,38 @@ class Index extends PureComponent {
                 <Text color="dark" size="large-medium">
                   THÔNG TIN XE
                 </Text>
-                <Select dataSet={[]} style={{ width: '200px' }} />
+                <Select
+                  value={busId}
+                  dataSet={busInformations}
+                  style={{ width: '200px' }}
+                  placeholder="Chọn xe"
+                  onChange={this.onChangeBus}
+                />
               </div>
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <FormItem
-                    data={[]}
+                    data={variablesModules.DAYS}
                     label="Thời gian lặp lại của lộ trình"
                     name="busRouteShedules"
-                    type={variables.SELECT}
+                    type={variables.SELECT_MUTILPLE}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     label="Thời gian bắt đầu"
                     name="startDate"
                     type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     label="Thời gian kết thúc"
                     name="endDate"
                     type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
               </div>
@@ -375,7 +557,9 @@ class Index extends PureComponent {
                   <Table
                     bordered
                     columns={this.header()}
-                    dataSource={[{ id: 1 }]}
+                    dataSource={bus}
+                    className="table-edit"
+                    isEmpty
                     pagination={false}
                     params={{
                       header: this.header(),
@@ -393,16 +577,17 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    data={[]}
+                    data={Helper.convertSelectUsers(employees)}
                     label="BẢO MẪU"
                     name="busRouteNannies"
-                    type={variables.SELECT}
+                    type={variables.SELECT_MUTILPLE}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </div>
               </div>
             </div>
             <div className={classnames(styles['list-info'], 'mt-5')}>
-              {list.map((item, index) => (
+              {busPlaces.map((item, index) => (
                 <div
                   className={classnames(styles.item, { [`${styles.collapsed}`]: item.collapsed })}
                   key={index}
@@ -422,10 +607,12 @@ class Index extends PureComponent {
                       <Input
                         className="ml-3"
                         size="large"
+                        value={item.address}
+                        style={{ width: '400px' }}
                         suffix={
                           <span
                             className={classnames('icon-map', styles['icon-map'])}
-                            onClick={this.showMap}
+                            onClick={() => this.showMap(item)}
                           ></span>
                         }
                       />
@@ -453,7 +640,7 @@ class Index extends PureComponent {
                     <Table
                       bordered
                       columns={this.header('CHILDREN')}
-                      dataSource={item.children || []}
+                      dataSource={item.studentBusPlaces || []}
                       className="table-edit"
                       pagination={false}
                       isEmpty
@@ -478,10 +665,17 @@ class Index extends PureComponent {
                 onClick={() => history.goBack()}
                 size="large"
                 className="mr-3"
+                loading={loadingSubmit}
               >
                 HỦY
               </Button>
-              <Button color="green" icon="save" size="large">
+              <Button
+                color="green"
+                htmlType="submit"
+                icon="save"
+                size="large"
+                loading={loadingSubmit}
+              >
                 LƯU
               </Button>
             </div>

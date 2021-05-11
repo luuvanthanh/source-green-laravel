@@ -149,14 +149,14 @@ const Index = memo(() => {
         render: (record) => record.insurranceNumber,
       },
       {
-        title: 'Ngày tham gia',
+        title: 'Thời gian hiệu lực (từ ngày),',
         key: 'timeJoin',
         className: 'min-width-130',
         width: 130,
         render: (record) => Helper.getDate(record.timeJoin, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày bắt đầu',
+        title: 'Thời gian hiệu lực (đến ngày)',
         key: 'timeStart',
         className: 'min-width-130',
         width: 130,
@@ -253,7 +253,7 @@ const Index = memo(() => {
           <div className="row">
             <div className="col-lg-6">
               <FormItem
-                label="Thời gian tham gia"
+                label="Thời gian hiệu lực (từ ngày)"
                 name="timeJoin"
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
@@ -261,7 +261,7 @@ const Index = memo(() => {
             </div>
             <div className="col-lg-6">
               <FormItem
-                label="Thời gian bắt đầu"
+                label="Thời gian hiệu lực (đến ngày)"
                 name="timeStart"
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}

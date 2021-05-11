@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
+import { head, last } from 'lodash';
 import { Modal } from 'antd';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
@@ -41,7 +42,8 @@ class Index extends PureComponent {
       listId: props.listId,
       targetKeys: props.targetKeys || [],
       position: [16.050051, 108.155123],
-      zoom: 7,
+      zoom: 15,
+      loading: false,
     };
     setIsMounted(true);
   }
@@ -69,13 +71,31 @@ class Index extends PureComponent {
   };
 
   onClickMap = (e) => {
-    console.log(e)
     this.setStateData({
-      position: e.latlng,
+      position: [e.latlng.lat, e.latlng.lng],
     });
   };
 
-  onSubmit = () => {};
+  onViewportChanged = (e) => {
+    this.setStateData({
+      zoom: e.zoom,
+    });
+  };
+
+  onSubmit = () => {
+    const { position } = this.state;
+    const self = this;
+    fetch(
+      `${API_MAP_BOX}/${last(position)},${head(
+        position,
+      )}.json?access_token=${ACCESS_TOKEN_MAPBOX}&language=vi`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const address = head(data.features)?.place_name_vi;
+        self.props.onSubmit({ address, position, lat: head(position), lng: last(position) });
+      });
+  };
 
   saveMap = (map) => {
     this.map = map;
@@ -89,7 +109,7 @@ class Index extends PureComponent {
       loading: { effects },
       visible,
     } = this.props;
-    const { targetKeys, position } = this.state;
+    const { targetKeys, position, zoom } = this.state;
     const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
@@ -124,10 +144,11 @@ class Index extends PureComponent {
         <div className={styles.leafletContainer}>
           <Map
             center={position}
-            zoom={15}
+            zoom={zoom}
             maxZoom={22}
             ref={this.saveMap}
             onClick={this.onClickMap}
+            onViewportChanged={this.onViewportChanged}
           >
             <TileLayer
               url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"

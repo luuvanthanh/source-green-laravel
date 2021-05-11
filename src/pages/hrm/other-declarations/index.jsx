@@ -265,42 +265,49 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'Trợ cấp',
+        title: 'Phụ cấp',
         key: 'allowance',
         className: 'min-width-150',
         width: 150,
         render: (record) => Helper.getPrice(record.allowance),
       },
       {
-        title: 'Tiền thưởng',
+        title: 'Thưởng tháng 13',
         key: 'bonus',
         className: 'min-width-150',
         width: 150,
         render: (record) => Helper.getPrice(record.bonus),
       },
       {
-        title: 'Thu hồi',
+        title: 'Truy lĩnh',
         key: 'retrieval',
         className: 'min-width-150',
         width: 150,
         render: (record) => Helper.getPrice(record.retrieval),
       },
       {
-        title: 'BHXH',
+        title: 'Thanh toán BHXH',
         key: 'paymentOfSocialInsurance',
         className: 'min-width-150',
         width: 150,
         render: (record) => Helper.getPrice(record.paymentOfSocialInsurance),
       },
       {
-        title: 'BHXH NV',
+        title: 'Điều chỉnh BHXH NLD',
         key: 'employeeSocialInsurance',
         className: 'min-width-120',
         width: 120,
         render: (record) => Helper.getPrice(record.employeeSocialInsurance),
       },
       {
-        title: 'TỪ THIỆN',
+        title: 'Điều chỉnh BHXH CTT',
+        key: 'companySocialInsurance',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getPrice(record.companySocialInsurance),
+      },
+      {
+        title: 'Đóng góp từ thiện',
         key: 'charity',
         className: 'min-width-120',
         width: 120,
@@ -348,7 +355,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách khai báo các khoản khác</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo đơn
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

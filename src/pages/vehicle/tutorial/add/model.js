@@ -6,19 +6,17 @@ import * as categories from '@/services/categories';
 export default {
   namespace: 'tutorialAdd',
   state: {
-    data: [],
-    pagination: {
-      total: 0,
-    },
     branches: [],
     busInformations: [],
+    employees: [],
+    students: [],
+    details: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      details: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -33,12 +31,52 @@ export default {
       ...state,
       branches: payload.parsePayload,
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
     SET_BUS_INFORMATIONS: (state, { payload }) => ({
       ...state,
       busInformations: payload.items,
     }),
+    SET_STUDENTS: (state, { payload }) => ({
+      ...state,
+      students: payload.items,
+    }),
   },
   effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STUDENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getStudents, payload);
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getUsers, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
@@ -57,30 +95,19 @@ export default {
         });
       } catch (error) {}
     },
-    *GET_DATA({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -88,32 +115,16 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *REMOVE({ payload }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
+        callback(null, error?.data?.error);
       }
     },
   },

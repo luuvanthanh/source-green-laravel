@@ -225,6 +225,12 @@ class Index extends PureComponent {
     });
   };
 
+  onRemove = (record) => {
+    this.setStateData((prevState) => ({
+      parameterValues: prevState.parameterValues.filter((item) => item.index !== record.index),
+    }));
+  };
+
   headerValuesColumns = () => {
     const { categories } = this.props;
     return [
@@ -250,14 +256,14 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Số tiền',
+        title: 'Giá trị',
         key: 'values',
         dataIndex: 'valueDefault',
         className: 'min-width-120',
         render: (value, record) => (
           <InputNumber
             value={value}
-            className={classnames('input-number', styles['input-number-container'])}
+            className={classnames('input-number')}
             formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             onChange={this.changeValue(record)}
             placeholder="Nhập"
@@ -270,6 +276,26 @@ class Index extends PureComponent {
         dataIndex: 'applyDate',
         className: 'min-width-120',
         render: (value) => Helper.getDate(moment(value)),
+      },
+      {
+        title: 'Thao tác',
+        key: 'actions',
+        width: 100,
+        className: 'min-width-100',
+        fixed: 'right',
+        align: 'center',
+        render: (record) => (
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => this.onRemove(record)}
+              />
+            </li>
+          </ul>
+        ),
       },
     ];
   };

@@ -29,6 +29,7 @@ export default {
     paramaterValues: [],
     paramaterFormulas: [],
     insurrances: [],
+    children: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -152,6 +153,14 @@ export default {
     SET_REMOVE_INSURRANCES: (state, { payload }) => ({
       ...state,
       insurrances: state.insurrances.filter((item) => item.id !== payload.id),
+    }),
+    SET_CHILDREN: (state, { payload }) => ({
+      ...state,
+      children: payload.parsePayload,
+    }),
+    SET_REMOVE_CHILDREN: (state, { payload }) => ({
+      ...state,
+      children: state.children.filter((item) => item.id !== payload.id),
     }),
   },
   effects: {
@@ -500,7 +509,31 @@ export default {
       try {
         yield saga.call(services.addContract, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *UPDATE_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateContract, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -524,7 +557,31 @@ export default {
       try {
         yield saga.call(services.addProbationaryContract, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *UPDATE_PROBATIONARY_CONTRACT({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateProbationaryContract, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -642,6 +699,47 @@ export default {
       }
     },
     // insurrances
+    // children
+    *ADD_CHILDREN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addChildren, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *UPDATE_CHILDREN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateChildren, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *REMOVE_CHILDREN({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeChildren, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_CHILDREN',
+          payload: payload,
+        });
+      } catch (error) {}
+    },
+    *GET_CHILDREN({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getChildren, payload);
+        yield saga.put({
+          type: 'SET_CHILDREN',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // children
   },
   subscriptions: {},
 };

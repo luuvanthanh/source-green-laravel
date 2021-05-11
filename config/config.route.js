@@ -223,6 +223,12 @@ export default [
             authority: [],
           },
           {
+            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
+            component: './vehicle/tutorial/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/quan-ly-phuong-tien/lich-su',
             component: './vehicle/history',
             wrappers: ['@/wrappers/auth'],

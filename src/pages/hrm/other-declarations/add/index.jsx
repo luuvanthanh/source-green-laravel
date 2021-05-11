@@ -245,7 +245,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="TRỢ CẤP"
+                                label="PHỤ CẤP"
                                 name={[field.name, 'allowance']}
                                 fieldKey={[field.fieldKey, 'allowance']}
                                 rules={[variables.RULES.EMPTY]}
@@ -254,7 +254,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="TIỀN THƯỞNG"
+                                label="THƯỞNG THÁNG 13"
                                 name={[field.name, 'bonus']}
                                 fieldKey={[field.fieldKey, 'bonus']}
                                 rules={[variables.RULES.EMPTY]}
@@ -263,7 +263,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="THU HỒI"
+                                label="TRUY LĨNH"
                                 name={[field.name, 'retrieval']}
                                 fieldKey={[field.fieldKey, 'retrieval']}
                                 rules={[variables.RULES.EMPTY]}
@@ -272,7 +272,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="BHXH"
+                                label="THANH TOÁN TỪ BHXH"
                                 name={[field.name, 'paymentOfSocialInsurance']}
                                 fieldKey={[field.fieldKey, 'paymentOfSocialInsurance']}
                                 rules={[variables.RULES.EMPTY]}
@@ -281,7 +281,7 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="BHXH NV"
+                                label="ĐIỀU CHỈNH BHXH NLD"
                                 name={[field.name, 'employeeSocialInsurance']}
                                 fieldKey={[field.fieldKey, 'employeeSocialInsurance']}
                                 rules={[variables.RULES.EMPTY]}
@@ -290,7 +290,16 @@ class Index extends PureComponent {
                             </div>
                             <div className="col-lg-6">
                               <FormItem
-                                label="TỪ THIỆN"
+                                label="ĐIỀU CHỈNH BHXH CTT"
+                                name={[field.name, 'companySocialInsurance']}
+                                fieldKey={[field.fieldKey, 'companySocialInsurance']}
+                                rules={[variables.RULES.EMPTY]}
+                                type={variables.INPUT_NUMBER}
+                              />
+                            </div>
+                            <div className="col-lg-6">
+                              <FormItem
+                                label="ĐÓNG GÓP TỪ THIỆN"
                                 name={[field.name, 'charity']}
                                 fieldKey={[field.fieldKey, 'charity']}
                                 rules={[variables.RULES.EMPTY]}

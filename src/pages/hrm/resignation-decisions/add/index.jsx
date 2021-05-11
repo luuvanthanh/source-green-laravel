@@ -163,7 +163,7 @@ class Index extends PureComponent {
                 <div className="col-lg-6">
                   <FormItem
                     data={Helper.convertSelectUsers(categories?.users)}
-                    label="NHÂN VIÊN"
+                    label="Nhân viên"
                     name="employeeId"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
@@ -199,14 +199,6 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className="row">
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Loại"
-                    name="type"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
                 <div className="col-lg-6">
                   <FormItem
                     label="Ngày áp dụng"

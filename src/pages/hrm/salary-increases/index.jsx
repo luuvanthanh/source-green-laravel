@@ -247,17 +247,6 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-            fullName={get(record, 'employee.fullName')}
-          />
-        ),
-      },
-      {
         title: 'Số QĐ',
         key: 'insurrance_number',
         className: 'min-width-100',
@@ -279,18 +268,22 @@ class Index extends PureComponent {
         render: (record) => get(record, 'reason'),
       },
       {
-        title: 'Ngày áp dụng',
+        title: 'Nhân viên',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
+        ),
+      },
+      {
+        title: 'Ngày bắt đầu',
         key: 'timeApply',
         className: 'min-width-120',
         width: 120,
         render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'note'),
       },
       {
         key: 'action',
@@ -328,7 +321,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách tăng lương</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo đơn
+              Tạo mới
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

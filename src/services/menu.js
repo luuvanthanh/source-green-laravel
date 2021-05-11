@@ -48,6 +48,7 @@ export async function getLeftMenuData() {
         '/quan-ly-phuong-tien/xe/:id/chi-tiet',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
       permission: [],
@@ -854,7 +855,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Tạm hoãn công việc',
+              title: 'QĐ Tạm hoãn hợp đồng',
               key: 'decision-suspends',
               url: [
                 '/quan-ly-nhan-su/tam-hoan-cong-viec',
@@ -864,7 +865,7 @@ export async function getLeftMenuHRM() {
               permission: [],
             },
             {
-              title: 'QĐ Đơn đi công tác',
+              title: 'Đăng ký đi công tác',
               key: 'business-cards',
               url: [
                 '/quan-ly-nhan-su/don-di-cong-tac',

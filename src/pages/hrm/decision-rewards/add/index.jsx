@@ -212,7 +212,7 @@ class Index extends PureComponent {
                       { id: 'REWARD', name: 'Khen thưởng' },
                       { id: 'DISCIPLINE', name: 'Kỷ luật' },
                     ]}
-                    label="Loại"
+                    label="Loại QĐ"
                     name="type"
                     type={variables.SELECT}
                     rules={[variables.RULES.EMPTY]}
@@ -223,14 +223,6 @@ class Index extends PureComponent {
                     label="Mức thưởng, mức phạt"
                     name="money"
                     type={variables.INPUT_NUMBER}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    label="Thời gian áp dụng"
-                    name="timeApply"
-                    type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>

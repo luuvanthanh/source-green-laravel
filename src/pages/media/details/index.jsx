@@ -95,7 +95,11 @@ const Index = memo(() => {
                 <Pane className={styles.userInformation}>
                   <AvatarTable fileImage={details?.parent?.fileImage} />
                   <Pane>
-                    <h3>{details?.parent?.fullName || 'Nguyễn Anh'}</h3>
+                    <h3>
+                      {details?.studentMaster?.farther?.fullName ||
+                        details?.studentMaster?.mother?.fullName ||
+                        'Nguyễn Anh'}
+                    </h3>
                   </Pane>
                 </Pane>
               </Pane>
@@ -138,7 +142,7 @@ const Index = memo(() => {
                 <Pane className={styles.userInformation}>
                   <AvatarTable fileImage={details?.teacher?.fileImage} />
                   <Pane>
-                    <h3>{details?.teacher?.fullName || 'Lê Thị Vân'}</h3>
+                    <h3>{details?.creator?.objectInfo?.fullName || 'Lê Thị Vân'}</h3>
                     {/* <p>{details?.teacher?.position}</p> */}
                   </Pane>
                 </Pane>

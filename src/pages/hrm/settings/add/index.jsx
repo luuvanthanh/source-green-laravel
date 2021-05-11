@@ -13,6 +13,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Heading from '@/components/CommonComponent/Heading';
 
 const getTotalTime = (start, end) => {
   if (!start || !end) return null;
@@ -279,7 +280,7 @@ class Index extends PureComponent {
           className={styles['layout-form']}
           layout="vertical"
           initialValues={{
-            time: [{}],
+            time: [{}, {}],
           }}
           colon={false}
           onFinish={this.onFinish}
@@ -309,6 +310,16 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
+                <div className="row mt-3">
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="MÔ TẢ"
+                      name="description"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
+                    />
+                  </div>
+                </div>
                 <Form.List name="time">
                   {(fields, { add, remove }) => (
                     <div>
@@ -321,7 +332,12 @@ class Index extends PureComponent {
                           )}
                           key={field.key}
                         >
-                          <div className="col-lg-4">
+                          <div className="col-lg-12">
+                            <Heading type="form-block-title" className="mb10">
+                              {index === 0 ? 'Ca sáng' : 'Ca chiều'}
+                            </Heading>
+                          </div>
+                          <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) =>
                                 this.onChangeTimePicker(value, index, 'startTime')
@@ -333,7 +349,7 @@ class Index extends PureComponent {
                               type={variables.TIME_PICKER}
                             />
                           </div>
-                          <div className="col-lg-4">
+                          <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'endTime')}
                               label="ĐẾN"
@@ -343,52 +359,11 @@ class Index extends PureComponent {
                               type={variables.TIME_PICKER}
                             />
                           </div>
-                          <div className="col-lg-4">
-                            <Form.Item label={<span>Tổng thời gian</span>} shouldUpdate>
-                              {({ getFieldValue }) => {
-                                const totalTime = get(getFieldValue('time'), `${index}.totalTime`);
-                                return totalTime;
-                              }}
-                            </Form.Item>
-                          </div>
-                          <>
-                            {fields?.length > 1 ? (
-                              <DeleteOutlined
-                                className={classnames(stylesModule['icon-delete'], 'ml-1')}
-                                onClick={() => {
-                                  remove(field.name);
-                                }}
-                              />
-                            ) : null}
-                          </>
                         </div>
                       ))}
-                      <div className="row mb-3">
-                        <div className="col-lg-3">
-                          <Button
-                            color="success"
-                            icon="plusMain"
-                            onClick={() => {
-                              add();
-                            }}
-                          >
-                            Thêm dòng
-                          </Button>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </Form.List>
-                <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="MÔ TẢ"
-                      name="description"
-                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                      type={variables.TEXTAREA}
-                    />
-                  </div>
-                </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
