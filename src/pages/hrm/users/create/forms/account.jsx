@@ -152,25 +152,22 @@ const Index = memo(
                     rules={[variables.RULES.EMPTY]}
                   />
                 </Pane>
+                <Pane className="col-lg-3">
+                  <Form.Item label="Đăng nhập bằng hình ảnh">
+                    {HelperModules.tagStatusAccount(details?.faceImageStatus)}
+                  </Form.Item>
+                </Pane>
                 {!isEmpty(details) && (
-                  <>
-                    <Pane className="col-lg-3">
-                      <Form.Item label="Đăng nhập bằng hình ảnh">
-                        {HelperModules.tagStatusAccount(details?.faceImageStatus)}
-                      </Form.Item>
-                    </Pane>
-                    {(details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
-                      details?.faceImageStatus ===
-                        variablesModules.STATUS.HANDLING_IMAGE_FAILED) && (
-                      <Pane className="col-lg-3">
-                        <Form.Item label=" ">
-                          <Button color="success" ghost onClick={register}>
-                            Đăng ký
-                          </Button>
-                        </Form.Item>
-                      </Pane>
-                    )}
-                  </>
+                  <Pane className="col-lg-3">
+                    <Form.Item label=" ">
+                      <Button color="success" ghost onClick={register}>
+                        {details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
+                        details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
+                          ? 'Đăng ký'
+                          : 'Đăng ký lại'}
+                      </Button>
+                    </Form.Item>
+                  </Pane>
                 )}
               </Pane>
             </Pane>

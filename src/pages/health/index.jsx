@@ -336,7 +336,7 @@ class Index extends PureComponent {
               Sức khỏe hôm nay - Ngày {Helper.getDate(moment(), variables.DATE_FORMAT.DATE)}
             </Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo đơn sức khỏe
+              Tạo mới sức khỏe
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>

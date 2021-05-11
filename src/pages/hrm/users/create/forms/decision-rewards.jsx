@@ -188,17 +188,6 @@ const Index = memo(() => {
         render: (record) => Helper.getPrice(get(record, 'decisionRewardDetails[0].money')),
       },
       {
-        title: 'Ngày áp dụng',
-        key: 'timeApply',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) =>
-          Helper.getDate(
-            get(record, 'decisionRewardDetails[0].timeApply'),
-            variables.DATE_FORMAT.DATE,
-          ),
-      },
-      {
         title: 'Ghi chú',
         key: 'note',
         className: 'min-width-150',
@@ -312,7 +301,7 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-6">
               <FormItem
-                label="Loại"
+                label="Loại QĐ"
                 name="type"
                 type={variables.SELECT}
                 data={[
@@ -327,14 +316,6 @@ const Index = memo(() => {
                 label="Mức thưởng, mức phạt"
                 name="money"
                 type={variables.INPUT_NUMBER}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-            <Pane className="col-lg-6">
-              <FormItem
-                label="Thời gian áp dụng"
-                name="timeApply"
-                type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
