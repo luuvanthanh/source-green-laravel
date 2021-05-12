@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'businessCardsAdd',
@@ -10,10 +11,14 @@ export default {
       total: 0,
     },
     categories: {
-      users: [],
       absentTypes: [],
+      users: [],
     },
-    details: {},
+    error: {
+      isError: false,
+      data: {},
+    },
+    shiftUsers: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -31,27 +36,42 @@ export default {
         },
       },
     }),
-    SET_DETAILS: (state, { payload }) => ({
-      ...state,
-      details: payload,
-    }),
     SET_CATEGORIES: (state, { payload }) => ({
       ...state,
       categories: {
-        users: payload.users.parsePayload,
         absentTypes: payload.absentTypes.parsePayload,
+        users: payload.users.parsePayload,
       },
+    }),
+    SET_SHIFT_USERS: (state, { payload }) => ({
+      ...state,
+      shiftUsers: payload.parsePayload,
     }),
   },
   effects: {
     *GET_CATEGORIES({ payload }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
           absentTypes: saga.call(services.getAbsentTypes),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SHIFT_USERS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getShiftUsers, payload);
+        console.log(response)
+        yield saga.put({
+          type: 'SET_SHIFT_USERS',
           payload: response,
         });
       } catch (error) {
@@ -77,16 +97,24 @@ export default {
         callback(null, error);
       }
     },
-    *GET_DETAILS({ payload }, saga) {
+    *REMOVE({ payload }, saga) {
       try {
-        const response = yield saga.call(services.details, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response.parsePayload,
+        yield saga.call(services.remove, payload.id);
+        yield saga.put({
+          type: 'GET_DATA',
+          payload: payload.pagination,
+        });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        if (get(error.data, 'error.validationErrors[0]')) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
           });
         }
-      } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

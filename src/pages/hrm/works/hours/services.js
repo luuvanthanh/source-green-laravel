@@ -8,7 +8,7 @@ export function get(data = {}) {
       limit: data.limit,
       page: data.page,
       searchJoin: 'and',
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       startDate: Helper.getDateTime({
         value: Helper.setDate({

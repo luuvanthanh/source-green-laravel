@@ -291,11 +291,11 @@ class Index extends PureComponent {
     const loading = effects['holidays/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách ngày nghỉ phép" />
+        <Helmet title="Danh sách ngày nghỉ lễ" />
         <div className={classnames(styles['content-form'], styles['content-form-holidays'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách ngày nghỉ phép</Text>
+            <Text color="dark">Danh sách ngày nghỉ lễ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>

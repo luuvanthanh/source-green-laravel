@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, DatePicker, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty } from 'lodash';
@@ -10,6 +10,10 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
+import Heading from '@/components/CommonComponent/Heading';
+import Table from '@/components/CommonComponent/Table';
+import Select from '@/components/CommonComponent/Select';
+import variablesModules from '../../../utils/variables';
 
 let isMounted = true;
 /**
@@ -39,7 +43,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      detail: [],
+    };
     setIsMounted(true);
   }
 
@@ -78,10 +84,12 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: params.id ? 'absentsAdd/UPDATE' : 'absentsAdd/ADD',
       payload: {
         ...values,
+        detail: detail.map((item) => ({ ...item, isFullDate: item.isFullDate === 1 })),
         id: params.id,
       },
       callback: (response, error) => {
@@ -104,6 +112,130 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeFullDate = (value, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            isFullDate: value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeShiftCode = (shiftCode, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          if (item.isFullDate === 1) {
+            return {
+              ...item,
+              shiftCode,
+              startTime: '08:00:00',
+              endTime: '17:00:00',
+            };
+          }
+          if (item.isFullDate === 0.5) {
+            return {
+              ...item,
+              shiftCode,
+              startTime: '08:00:00',
+              endTime: '12:00:00',
+            };
+          }
+          return {
+            ...item,
+            shiftCode,
+            startTime: '08:00:00',
+            endTime: '17:00:00',
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => {
+    return [
+      {
+        title: 'Thời gian',
+        key: 'date',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Số ngày',
+        key: 'isFullDate',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => (
+          <InputNumber
+            value={record.isFullDate}
+            min="0.5"
+            max="1"
+            step="0.5"
+            placeholder="Nhập"
+            style={{ width: '100%' }}
+            onChange={(event) => this.onChangeFullDate(event, record)}
+          />
+        ),
+      },
+      {
+        title: 'Loại ca',
+        key: 'shiftCode',
+        className: 'min-width-200',
+        render: (record) => (
+          <Select
+            dataSet={variablesModules.SHIFT_CODES}
+            value={record.shiftCode}
+            style={{ width: '100%' }}
+            placeholder="Chọn"
+            onChange={(event) => this.onChangeShiftCode(event, record)}
+          />
+        ),
+      },
+      {
+        title: 'Thời gian bắt đầu',
+        key: 'startTime',
+        className: 'min-width-200',
+        render: (record) => record.startTime,
+      },
+      {
+        title: 'Thời gian kết thúc',
+        key: 'endTime',
+        className: 'min-width-200',
+        render: (record) => record.endTime,
+      },
+    ];
+  };
+
+  formUpdate = (value, values) => {
+    const { dispatch } = this.props;
+    if (
+      values.employeeId &&
+      values.endDate &&
+      values.startDate &&
+      values.absentTypeId &&
+      values.type
+    ) {
+      const dates = Helper.convertArrayDays(values.startDate, values.endDate);
+      this.setStateData({
+        detail: dates.map((item, index) => ({ date: item, index })),
+      });
+      dispatch({
+        type: 'absentsAdd/GET_SHIFT_USERS',
+        payload: { ...values },
+      });
+    }
+  };
+
   render() {
     const {
       error,
@@ -112,6 +244,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     const loading = effects['absentsAdd/GET_DETAILS'] || effects['absentsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['absentsAdd/ADD'];
     return (
@@ -125,6 +258,7 @@ class Index extends PureComponent {
           layout="vertical"
           ref={this.formRef}
           onFinish={this.onFinish}
+          onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
             <Loading loading={loading} isError={error.isError} params={{ error }}>
@@ -132,25 +266,31 @@ class Index extends PureComponent {
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>
-                <div className="row mt-3">
+                <div className="row  mt-3">
                   <div className="col-lg-6">
                     <FormItem
-                      data={categories?.absentTypes || []}
-                      label="LOẠI NGHỈ PHÉP"
-                      name="absentTypeId"
+                      label="Ngày bắt đầu"
+                      name="startDate"
+                      type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      data={
-                        categories?.users.map((item) => ({
-                          id: item.id,
-                          name: item.fullName,
-                        })) || []
-                      }
-                      label="NHÂN VIÊN"
+                      label="Ngày kết thúc"
+                      name="endDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={Helper.convertSelectUsers(categories.users)}
+                      label="Nhân viên"
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
@@ -160,32 +300,46 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      label="THỜI GIAN BẮT ĐẦU"
-                      name="startDate"
-                      type={variables.DATE_PICKER}
+                      data={variablesModules.TYPES_ABSENTS || []}
+                      label="Hình thức chấm công"
+                      name="type"
                       rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
                     />
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      label="THỜI GIAN KẾT THÚC"
-                      name="endDate"
-                      type={variables.DATE_PICKER}
+                      data={categories?.absentTypes || []}
+                      label="Loại công"
+                      name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
                     />
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-lg-12">
-                    <FormItem
-                      data={categories?.absentReasons || []}
-                      label="LÝ DO NGHỈ PHÉP"
-                      name="absentReasonId"
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
+                    <FormItem label="Lý do" name="reason" rules={[]} type={variables.INPUT} />
                   </div>
                 </div>
+                <hr />
+                <Heading type="form-block-title" className="mb10">
+                  Chi tiết phiếu đăng ký
+                </Heading>
+                <Table
+                  bordered
+                  columns={this.header()}
+                  dataSource={detail}
+                  isEmpty
+                  className="table-edit"
+                  pagination={false}
+                  params={{
+                    header: this.header(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id || record.index}
+                  scroll={{ x: '100%' }}
+                />
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button

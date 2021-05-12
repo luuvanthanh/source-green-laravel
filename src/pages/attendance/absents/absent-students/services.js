@@ -7,7 +7,7 @@ export function get(data = {}) {
     params: {
       limit: data.limit,
       page: data.page,
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       startDate: Helper.getDateTime({

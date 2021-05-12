@@ -243,7 +243,7 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Phụ huynh',
+        title: 'Nhân viên',
         key: 'name',
         className: 'min-width-200',
         render: (record) => (
@@ -256,8 +256,8 @@ class Index extends PureComponent {
       {
         title: 'Họ tên con',
         key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
+        className: 'min-width-180',
+        width: 180,
         render: (record) => record.fullName,
       },
       {

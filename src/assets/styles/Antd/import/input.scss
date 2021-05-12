@@ -68,3 +68,31 @@
     }
   }
 }
+
+.ant-checkbox-wrapper {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #36383a;
+  .ant-checkbox-inner {
+    width: 24px;
+    height: 24px;
+    &::after {
+      left: 30%;
+    }
+  }
+}
+
+.ant-radio-wrapper {
+  display: inline-flex;
+  .ant-radio-inner {
+    width: 24px;
+    height: 24px;
+    &::after {
+      top: 5px;
+      left: 5px;
+      width: 12px;
+      height: 12px;
+    }
+  }
+}

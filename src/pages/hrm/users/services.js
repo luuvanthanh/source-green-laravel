@@ -7,7 +7,7 @@ export function get(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['positionLevel']),

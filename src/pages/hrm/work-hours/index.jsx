@@ -101,7 +101,7 @@ class Index extends PureComponent {
         {
           ...search,
           endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
+          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,

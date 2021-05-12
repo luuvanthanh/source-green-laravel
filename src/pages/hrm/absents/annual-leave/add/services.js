@@ -6,6 +6,7 @@ export function getAbsentTypes(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      Type: 'ABSENT',
     },
   });
 }
@@ -19,11 +20,29 @@ export function getAbsentReasons(params = {}) {
   });
 }
 
-export function getUsers(params = {}) {
-  return request('/v1/employees', {
+export function getShiftUsers(params = {}) {
+  return request(`/v1/shift-users/${params.employeeId}`, {
     method: 'GET',
     params: {
       ...params,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.startDate,
+          targetValue: '00:00:00',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.endDate,
+          targetValue: '23:59:59',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     },
   });
 }

@@ -317,7 +317,7 @@ export function getParamaterValues(params = {}) {
   return requestLavarel('/v1/paramater-values', {
     method: 'GET',
     params: {
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
     },
@@ -330,7 +330,7 @@ export function getParamaterFormulas(params = {}) {
   return requestLavarel('/v1/paramater-formulas', {
     method: 'GET',
     params: {
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
     },
