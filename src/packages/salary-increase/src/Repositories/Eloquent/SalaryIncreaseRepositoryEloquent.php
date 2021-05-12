@@ -21,6 +21,7 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

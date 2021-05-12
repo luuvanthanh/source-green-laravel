@@ -23,6 +23,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
     protected $fieldSearchable = [
         'Id',
         'employee.FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

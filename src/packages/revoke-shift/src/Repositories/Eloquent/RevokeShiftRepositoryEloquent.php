@@ -27,6 +27,7 @@ class RevokeShiftRepositoryEloquent extends CoreRepositoryEloquent implements Re
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     public function __construct(

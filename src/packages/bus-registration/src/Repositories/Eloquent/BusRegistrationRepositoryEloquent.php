@@ -17,6 +17,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

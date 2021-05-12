@@ -18,6 +18,7 @@ class DegreeRepositoryEloquent extends CoreRepositoryEloquent implements DegreeR
     protected $fieldSearchable = [
         'Id',
         'Name' => 'like',
+        'CreationTime',
     ];
 
     /**

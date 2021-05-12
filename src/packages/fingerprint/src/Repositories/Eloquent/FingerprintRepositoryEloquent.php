@@ -22,7 +22,9 @@ class FingerprintRepositoryEloquent extends CoreRepositoryEloquent implements Fi
         'Id',
         'Employee.FullName' => 'like',
         'status',
+        'CreationTime',
     ];
+
     /**
      * Specify Model class name
      *

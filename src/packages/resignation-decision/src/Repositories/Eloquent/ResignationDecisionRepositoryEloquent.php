@@ -25,7 +25,7 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         'DecisionNumber' => 'like',
         'EmployeeId',
         'Employee.FullName' => 'like',
-
+        'CreationTime',
     ];
 
     /**

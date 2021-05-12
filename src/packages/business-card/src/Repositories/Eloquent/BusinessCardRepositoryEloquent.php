@@ -19,6 +19,7 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
     protected $fieldSearchable = [
         'Id',
         'employee.FullName',
+        'CreationTime',
     ];
 
     /**

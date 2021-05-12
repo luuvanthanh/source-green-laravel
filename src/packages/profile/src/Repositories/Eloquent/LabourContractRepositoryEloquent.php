@@ -24,6 +24,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
     protected $fieldSearchable = [
         'Id',
         'employee.FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

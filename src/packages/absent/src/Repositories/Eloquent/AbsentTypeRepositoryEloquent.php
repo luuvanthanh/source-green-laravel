@@ -18,6 +18,8 @@ class AbsentTypeRepositoryEloquent extends CoreRepositoryEloquent implements Abs
     protected $fieldSearchable = [
         'Status',
         'Name' => 'like',
+        'CreationTime',
+        'Id',
     ];
 
     /**

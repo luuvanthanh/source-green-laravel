@@ -22,6 +22,7 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

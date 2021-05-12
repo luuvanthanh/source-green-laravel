@@ -18,6 +18,7 @@ class DivisionRepositoryEloquent extends CoreRepositoryEloquent implements Divis
     protected $fieldSearchable = [
         'Id',
         'Name' => 'like',
+        'CreationTime',
     ];
 
     /**

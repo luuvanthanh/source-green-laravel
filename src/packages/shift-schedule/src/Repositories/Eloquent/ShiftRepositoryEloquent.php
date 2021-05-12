@@ -24,6 +24,7 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
     protected $fieldSearchable = [
         'ShiftCode' => 'like',
         'Status',
+        'CreationTime',
     ];
 
     /**

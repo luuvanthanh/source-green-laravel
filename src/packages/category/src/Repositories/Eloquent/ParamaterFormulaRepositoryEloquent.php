@@ -19,6 +19,7 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
         'Id',
         'Name' => 'like',
         'Code' => 'like',
+        'CreationTime',
     ];
 
     /**

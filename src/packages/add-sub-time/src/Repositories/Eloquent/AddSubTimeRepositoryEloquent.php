@@ -25,6 +25,7 @@ class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements Add
         'EmployeeId',
         'Employee.FullName' => 'like',
         'Type',
+        'CreationTime',
     ];
 
     protected $employeeRepositoryEloquent;

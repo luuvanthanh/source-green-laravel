@@ -15,7 +15,10 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class LateEarlyConfigRepositoryEloquent extends CoreRepositoryEloquent implements LateEarlyConfigRepository
 {
-    protected $fieldSearchable = ['type'];
+    protected $fieldSearchable = [
+        'Type',
+        'CreationTime',
+    ];
     /**
      * Specify Model class name
      *

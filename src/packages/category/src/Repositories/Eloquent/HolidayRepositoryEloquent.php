@@ -22,6 +22,7 @@ class HolidayRepositoryEloquent extends CoreRepositoryEloquent implements Holida
     protected $fieldSearchable = [
         'Id',
         'Name',
+        'CreationTime',
     ];
 
     /**

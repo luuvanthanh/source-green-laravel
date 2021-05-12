@@ -18,6 +18,7 @@ class EducationalLevelRepositoryEloquent extends CoreRepositoryEloquent implemen
     protected $fieldSearchable = [
         'Id',
         'Name' => 'like',
+        'CreationTime',
     ];
 
     /**

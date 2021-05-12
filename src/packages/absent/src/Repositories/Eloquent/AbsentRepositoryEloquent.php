@@ -31,6 +31,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         'AbsentTypeId',
         'AbsentReasonId',
         'Employee.FullName' => 'like',
+        'CreationTime',
     ];
     /**
      * Specify Model class name

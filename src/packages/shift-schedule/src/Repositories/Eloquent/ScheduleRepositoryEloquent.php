@@ -36,6 +36,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
     protected $fieldSearchable = [
         'Id',
         'Employee.FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

@@ -19,6 +19,7 @@ class RewardRepositoryEloquent extends CoreRepositoryEloquent implements RewardR
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     protected $employeeRepositoryEloquent;

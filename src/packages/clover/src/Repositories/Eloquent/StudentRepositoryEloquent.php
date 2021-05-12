@@ -21,6 +21,7 @@ class StudentRepositoryEloquent extends CoreRepositoryEloquent implements Studen
     protected $fieldSearchable = [
         'Id',
         'FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

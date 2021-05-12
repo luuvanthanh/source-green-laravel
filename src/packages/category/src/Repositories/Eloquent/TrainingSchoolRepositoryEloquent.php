@@ -19,6 +19,7 @@ class TrainingSchoolRepositoryEloquent extends CoreRepositoryEloquent implements
         'Id',
         'Name' => 'like',
         'Code' => 'like',
+        'CreationTime',
     ];
 
     /**

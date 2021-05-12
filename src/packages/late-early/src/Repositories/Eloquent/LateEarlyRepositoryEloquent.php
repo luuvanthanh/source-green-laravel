@@ -29,6 +29,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
         'Status',
         'Employee.FullName' => 'like',
         'EmployeeId',
+        'CreationTime',
     ];
 
     protected $employeeRepositoryEloquent, $timekeepingRepositoryEloquent;

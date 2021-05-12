@@ -19,6 +19,7 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
     protected $fieldSearchable = [
         'Id',
         'Time',
+        'CreationTime',
     ];
 
     /**

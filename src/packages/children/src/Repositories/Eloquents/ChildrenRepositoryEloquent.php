@@ -21,6 +21,7 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

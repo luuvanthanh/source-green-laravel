@@ -17,6 +17,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

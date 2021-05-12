@@ -23,6 +23,7 @@ class MagneticCardRepositoryEloquent extends CoreRepositoryEloquent implements M
         'Id',
         'EmployeeId',
         'employee.FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

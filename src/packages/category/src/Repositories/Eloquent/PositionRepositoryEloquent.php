@@ -18,6 +18,7 @@ class PositionRepositoryEloquent extends CoreRepositoryEloquent implements Posit
     protected $fieldSearchable = [
         'Id',
         'Name' => 'like',
+        'CreationTime',
     ];
 
     /**

@@ -22,6 +22,7 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**
