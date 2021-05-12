@@ -178,7 +178,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={Helper.convertSelectUsers(categories?.users)}
-                      label="PHỤ HUYNH"
+                      label="NHÂN VIÊN"
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}

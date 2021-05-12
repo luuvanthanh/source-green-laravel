@@ -1,5 +1,5 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import * as services from './services';
 import * as categories from '@/services/categories';
 
@@ -45,7 +45,7 @@ export default {
     }),
     SET_SHIFT_USERS: (state, { payload }) => ({
       ...state,
-      shiftUsers: payload.parsePayload,
+      shiftUsers: !isEmpty(payload.payload) ? payload.payload : {},
     }),
   },
   effects: {

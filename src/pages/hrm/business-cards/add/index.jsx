@@ -34,6 +34,7 @@ const mapStateToProps = ({ menu, businessCardsAdd, loading }) => ({
   loading,
   error: businessCardsAdd.error,
   categories: businessCardsAdd.categories,
+  shiftUsers: businessCardsAdd.shiftUsers,
   menuLeftSchedules: menu.menuLeftHRM,
 });
 
@@ -45,6 +46,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       detail: [],
+      type: '',
     };
     setIsMounted(true);
   }
@@ -76,6 +78,12 @@ class Index extends PureComponent {
     dispatch({
       type: 'businessCardsAdd/GET_CATEGORIES',
       payload: {},
+    });
+  };
+
+  onChangeType = (type) => {
+    this.setStateData({
+      type,
     });
   };
 
@@ -126,31 +134,13 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeShiftCode = (shiftCode, record) => {
+  onChangeNumber = (value, record) => {
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item.index === record.index) {
-          if (item.isFullDate === 1) {
-            return {
-              ...item,
-              shiftCode,
-              startTime: '08:00:00',
-              endTime: '17:00:00',
-            };
-          }
-          if (item.isFullDate === 0.5) {
-            return {
-              ...item,
-              shiftCode,
-              startTime: '08:00:00',
-              endTime: '12:00:00',
-            };
-          }
           return {
             ...item,
-            shiftCode,
-            startTime: '08:00:00',
-            endTime: '17:00:00',
+            number: value,
           };
         }
         return item;
@@ -158,10 +148,108 @@ class Index extends PureComponent {
     }));
   };
 
+  onChangeShiftCode = (shiftCode, record) => {
+    const { shiftUsers } = this.props;
+    const shifts = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
+    if (shifts) {
+      const itemShift = shifts.find((item) => item.id === shiftCode);
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            return {
+              ...item,
+              shiftCode,
+              startTime: itemShift?.startTime,
+              endTime: itemShift?.endTime,
+            };
+          }
+          return item;
+        }),
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            return {
+              ...item,
+              shiftCode,
+              startTime: null,
+              endTime: null,
+            };
+          }
+          return item;
+        }),
+      }));
+    }
+  };
+
   /**
    * Function header table
    */
   header = () => {
+    const { type } = this.state;
+    const { shiftUsers } = this.props;
+    if (type === variablesModules.TYPE_ABSENTS.BUSINESS_TRAVEL) {
+      return [
+        {
+          title: 'Thời gian',
+          key: 'date',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Loại ca',
+          key: 'shiftCode',
+          className: 'min-width-200',
+          render: (record) => (
+            <Select
+              dataSet={
+                shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                  (item) => ({
+                    id: item.id,
+                    name: item.shiftCode || item.name,
+                  }),
+                ) || []
+              }
+              value={record.shiftCode}
+              style={{ width: '100%' }}
+              placeholder="Chọn"
+              onChange={(event) => this.onChangeShiftCode(event, record)}
+            />
+          ),
+        },
+        {
+          title: 'Thời gian bắt đầu',
+          key: 'startTime',
+          className: 'min-width-200',
+          render: (record) => record.startTime,
+        },
+        {
+          title: 'Thời gian kết thúc',
+          key: 'endTime',
+          className: 'min-width-200',
+          render: (record) => record.endTime,
+        },
+        {
+          title: 'Số giờ',
+          key: 'number',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.number}
+              min="0"
+              max="10"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeNumber(event, record)}
+            />
+          ),
+        },
+      ];
+    }
     return [
       {
         title: 'Thời gian',
@@ -193,7 +281,14 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <Select
-            dataSet={variablesModules.SHIFT_CODES}
+            dataSet={
+              shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                (item) => ({
+                  id: item.id,
+                  name: item.shiftCode || item.name,
+                }),
+              ) || []
+            }
             value={record.shiftCode}
             style={{ width: '100%' }}
             placeholder="Chọn"
@@ -245,12 +340,17 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const { detail } = this.state;
-    const loading = effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
+    const loading =
+      effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['businessCardsAdd/ADD'];
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa phiếu đi công tác/ đi ra ngoài' : 'Tạo phiếu đi công tác/ đi ra ngoài'}
+          last={
+            params.id
+              ? 'Chỉnh sửa phiếu đi công tác/ đi ra ngoài'
+              : 'Tạo phiếu đi công tác/ đi ra ngoài'
+          }
           menu={menuLeftSchedules}
         />
         <Form
@@ -300,11 +400,12 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      data={variablesModules.TYPES_ABSENTS || []}
+                      data={variablesModules.TYPES_DIFFIRENT_ABSENTS || []}
                       label="Hình thức chấm công"
                       name="type"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
+                      onChange={this.onChangeType}
                     />
                   </div>
                   <div className="col-lg-6">

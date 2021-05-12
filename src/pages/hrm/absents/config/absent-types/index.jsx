@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Modal, Form, Tabs, Tag } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -13,6 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import variablesModules from '../../../utils/variables';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -232,9 +233,39 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'LOẠI PHÉP',
+        title: 'Tên',
         key: 'typeAbsent',
         render: (record) => record.name,
+      },
+      {
+        title: 'Loại',
+        key: 'type',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) => variablesModules.TYPE_ABSENTS_NAME[record.type],
+      },
+      {
+        title: 'Trạng thái',
+        key: 'status',
+        width: 150,
+        className: 'min-width-150',
+        render: (record) =>
+          record.status === 'ON' ? <Tag color="success">Mở</Tag> : <Tag color="red">Đóng</Tag>,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+          </div>
+        ),
       },
     ];
   };
@@ -245,16 +276,20 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['absentTypes/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách loại nghỉ phép" />
+        <Helmet title="Danh mục loại công" />
         <div className={classnames(styles['content-form'], styles['content-form-absentTypes'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách loại nghỉ phép</Text>
+            <Text color="dark">Danh mục loại công</Text>
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Tạo mới
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

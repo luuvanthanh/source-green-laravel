@@ -370,7 +370,7 @@ const General = memo(({}) => {
                   label="Cơ sở"
                   name="branchId"
                   type={variables.SELECT}
-                  rules={[variables.RULES.EMPTY]}
+                  // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
               </Pane>
@@ -380,7 +380,7 @@ const General = memo(({}) => {
                   label="Bộ phận"
                   name="divisionId"
                   type={variables.SELECT}
-                  rules={[variables.RULES.EMPTY]}
+                  // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
               </Pane>
@@ -390,7 +390,7 @@ const General = memo(({}) => {
                   label="Chức danh"
                   name="positionId"
                   type={variables.SELECT}
-                  rules={[variables.RULES.EMPTY]}
+                  // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
               </Pane>
@@ -399,7 +399,7 @@ const General = memo(({}) => {
                   label="Thời gian bắt đầu"
                   name="startDate"
                   type={variables.DATE_PICKER}
-                  rules={[variables.RULES.EMPTY]}
+                  // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
               </Pane>
