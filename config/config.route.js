@@ -1284,6 +1284,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/phan-ca-lam-viec',
+            component: './hrm/work-shift',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/phan-ca-lam-viec/tao-moi',
+            component: './hrm/work-shift/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/phan-ca-lam-viec/:id/chi-tiet',
+            component: './hrm/work-shift/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM
