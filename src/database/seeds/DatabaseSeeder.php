@@ -27,5 +27,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ConfigsTableSeeder::class);
         $this->call(TypeOfContractParameterValueTableSeeder::class);
         $this->call(TypeOfContractParameterFormulaTableSeeder::class);
+        $this->call(AbsentTypesTableSeeder::class);
     }
 }

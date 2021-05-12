@@ -12,7 +12,7 @@ class Absent extends UuidModel
     protected $table = 'Absents';
 
     protected $fillable = [
-        'AbsentTypeId', 'AbsentReasonId', 'EmployeeId', 'StartDate', 'EndDate',
+        'AbsentTypeId', 'AbsentReasonId', 'EmployeeId', 'StartDate', 'EndDate', 'Reason',
     ];
 
     protected $dateTimeFields = [
@@ -47,5 +47,13 @@ class Absent extends UuidModel
     public function absentReason()
     {
         return $this->belongsTo(AbsentReason::class, 'AbsentReasonId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function absentDetail()
+    {
+        return $this->hasMany(AbsentDetail::class, 'AbsentId');
     }
 }

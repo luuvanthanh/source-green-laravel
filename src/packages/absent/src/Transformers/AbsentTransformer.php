@@ -4,9 +4,6 @@ namespace GGPHP\Absent\Transformers;
 
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\LateEarly\Models\LateEarly;
-use GGPHP\LateEarly\Models\LateEarlyTimeConfig;
-use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\ShiftSchedule\Models\Shift;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\ShiftSchedule\Transformers\ShiftTransformer;
@@ -22,8 +19,8 @@ use GGPHP\Users\Transformers\UserTransformer;
 class AbsentTransformer extends BaseTransformer
 {
 
-    protected $defaultIncludes = ['absentType'];
-    protected $availableIncludes = ['employee', 'absentReason', 'shift', 'early', 'timekeeping'];
+    protected $defaultIncludes = ['absentType', 'absentDetail'];
+    protected $availableIncludes = ['employee', 'shift', 'timekeeping'];
 
     /**
      * Include AbsentType
@@ -37,20 +34,6 @@ class AbsentTransformer extends BaseTransformer
         }
 
         return $this->item($absent->employee, new UserTransformer, 'Employee');
-    }
-
-    /**
-     * Include AbsentReason
-     * @param Absent $absent
-     * @return \League\Fractal\Resource\Item
-     */
-    public function includeAbsentReason(Absent $absent)
-    {
-        if (empty($absent->absentReason)) {
-            return;
-        }
-
-        return $this->item($absent->absentReason, new AbsentReasonTransformer, 'AbsentReason');
     }
 
     /**
@@ -90,22 +73,6 @@ class AbsentTransformer extends BaseTransformer
      * @param Absent $absent
      * @return \League\Fractal\Resource\Item
      */
-    public function includeEarly(Absent $absent)
-    {
-        $startDate = $absent->StartDate->format('Y-m-d');
-
-        $early = $absent->employee->lateEarly()->whereDate('Date', $startDate)->whereHas('lateEarlyConfig', function ($query) {
-            $query->where('Type', LateEarlyTimeConfig::EARLY);
-        })->get();
-
-        return $this->collection($early, new LateEarlyTransformer, 'Early');
-    }
-
-    /**
-     * Include Owner
-     * @param Absent $absent
-     * @return \League\Fractal\Resource\Item
-     */
     public function includeTimekeeping(Absent $absent)
     {
         $startDate = $absent->StartDate->format('Y-m-d');
@@ -113,5 +80,15 @@ class AbsentTransformer extends BaseTransformer
         $timekeeping = $absent->employee->timekeeping()->whereDate('AttendedAt', $startDate)->get();
 
         return $this->collection($timekeeping, new TimekeepingTransformer, 'Timekeeping');
+    }
+
+    /**
+     * Include Owner
+     * @param Absent $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeAbsentDetail(Absent $absent)
+    {
+        return $this->collection($absent->absentDetail, new AbsentDetailTransformer, 'AbsentDetail');
     }
 }

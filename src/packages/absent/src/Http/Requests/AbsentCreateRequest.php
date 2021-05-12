@@ -2,7 +2,6 @@
 
 namespace GGPHP\Absent\Http\Requests;
 
-use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Models\AbsentType;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,30 +15,22 @@ class AbsentCreateRequest extends FormRequest
 
     public function rules()
     {
-
-        $type = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
-        $quitWorkType = AbsentType::where('Type', AbsentType::QUIT_WORK)->first();
-
         return [
             'absentTypeId' => [
                 'required',
                 'exists:AbsentTypes,Id',
             ],
-            'absentReasonId' => 'required|exists:AbsentReasons,Id',
             'employeeId' => 'required|exists:Employees,Id',
             'startDate' => [
                 'date',
                 'date_format:Y-m-d',
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('absentTypeId') == $quitWorkType->Id) {
-                        return true;
-                    }
+                function ($attribute, $value, $fail) {
 
-                    $accessAbsent = $this->checkDuplicateAbsent($value);
+                    // $accessAbsent = $this->checkDuplicateAbsent($value);
 
-                    if (!is_null($accessAbsent)) {
-                        return $fail("Bạn đã " . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
-                    }
+                    // if (!is_null($accessAbsent)) {
+                    //     return $fail("Bạn đã " . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
+                    // }
 
                     return true;
                 },
@@ -50,20 +41,6 @@ class AbsentCreateRequest extends FormRequest
                 'after_or_equal:startDate',
             ],
         ];
-    }
-
-    /**
-     * @param $value
-     * @return bool
-     */
-    private function checkWeekend($value)
-    {
-        $check = Carbon::parse($value)->format('l');
-        if ($check === 'Friday' || $check === 'Saturday' || $check === 'Sunday') {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -107,26 +84,5 @@ class AbsentCreateRequest extends FormRequest
         }
 
         return null;
-    }
-
-    public function checkMaxAbsentEarlyLateInMonth($value)
-    {
-        $employeeId = request()->EmployeeId;
-        $startDate = Carbon::parse(request()->startDate);
-        $endDate = Carbon::parse(request()->endDate);
-        $early = AbsentType::where('Type', AbsentType::ABSENT_EARLY)->first();
-        $late = AbsentType::where('Type', AbsentType::ABSENT_LATE)->first();
-
-        $check = Absent::whereIn('absentTypeId', [$early->Id, $late->Id])->where(function ($q) use ($employeeId, $startDate, $endDate, $early, $late) {
-            $q->where([['StartDate', '<=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '>=', $startDate->endOfMonth()->format('Y-m-d')]])
-                ->orWhere([['StartDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['StartDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]])
-                ->orWhere([['EndDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]]);
-        })->where('EmployeeId', $employeeId)->get();
-
-        if (count($check) > 3) {
-            return false;
-        }
-
-        return true;
     }
 }
