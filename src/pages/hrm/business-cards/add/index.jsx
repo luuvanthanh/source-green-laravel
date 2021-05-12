@@ -1,16 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, DatePicker, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty } from 'lodash';
-import moment from 'moment';
-import { DeleteOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import Loading from '@/components/CommonComponent/Loading';
+import Heading from '@/components/CommonComponent/Heading';
+import Table from '@/components/CommonComponent/Table';
+import Select from '@/components/CommonComponent/Select';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -29,9 +32,10 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, businessCardsAdd, loading }) => ({
   loading,
+  error: businessCardsAdd.error,
   categories: businessCardsAdd.categories,
-  details: businessCardsAdd.details,
-  menuData: menu.menuLeftHRM,
+  shiftUsers: businessCardsAdd.shiftUsers,
+  menuLeftSchedules: menu.menuLeftHRM,
 });
 
 @connect(mapStateToProps)
@@ -40,7 +44,10 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      detail: [],
+      type: '',
+    };
     setIsMounted(true);
   }
 
@@ -49,39 +56,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-    if (params.id) {
-      dispatch({
-        type: 'businessCardsAdd/GET_DETAILS',
-        payload: {
-          id: params.id,
-        },
-      });
-    }
     this.loadCategories();
-  }
-
-  componentDidUpdate(prevProps) {
-    const {
-      details,
-      match: { params },
-    } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      this.formRef.current.setFieldsValue({
-        ...details,
-        startDate: details.startDate && moment(details.startDate),
-        endDate: details.endDate && moment(details.endDate),
-        detail: details.businessCardDetail.map((item) => ({
-          ...item,
-          date: item.date && moment(details.date),
-          startTime: item.startTime && moment(`${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.startTime}`),
-          endTime: item.endTime && moment(`${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.endTime}`),
-        })),
-      });
-    }
   }
 
   /**
@@ -106,22 +81,24 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeType = (type) => {
+    this.setStateData({
+      type,
+    });
+  };
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: params.id ? 'businessCardsAdd/UPDATE' : 'businessCardsAdd/ADD',
       payload: {
-        id: params.id,
         ...values,
-        detail: values.detail.map((item) => ({
-          ...item,
-          date: moment(item.date).format(variables.DATE_FORMAT.DATE_AFTER),
-          endTime: moment(item.endTime).format(variables.DATE_FORMAT.TIME_FULL),
-          startTime: moment(item.startTime).format(variables.DATE_FORMAT.TIME_FULL),
-        })),
+        detail: detail.map((item) => ({ ...item, isFullDate: item.isFullDate === 1 })),
+        id: params.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -143,219 +120,350 @@ class Index extends PureComponent {
     });
   };
 
-  onChangeTimePicker = (timeChoose, index, type = 'startTime') => {
-    if (this.formRef.current) {
-      const { detail } = this.formRef.current.getFieldsValue();
-      this.formRef.current.setFieldsValue({
-        detail: detail.map((item, indexTime) => {
-          if (indexTime === index) {
+  onChangeFullDate = (value, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            isFullDate: value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeNumber = (value, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            number: value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeShiftCode = (shiftCode, record) => {
+    const { shiftUsers } = this.props;
+    const shifts = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
+    if (shifts) {
+      const itemShift = shifts.find((item) => item.id === shiftCode);
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
             return {
               ...item,
-              startTime: type === 'startTime' ? timeChoose : item.startTime,
-              endTime: type === 'endTime' ? timeChoose : item.endTime,
+              shiftCode,
+              startTime: itemShift?.startTime,
+              endTime: itemShift?.endTime,
             };
           }
           return item;
         }),
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            return {
+              ...item,
+              shiftCode,
+              startTime: null,
+              endTime: null,
+            };
+          }
+          return item;
+        }),
+      }));
+    }
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => {
+    const { type } = this.state;
+    const { shiftUsers } = this.props;
+    if (type === variablesModules.TYPE_ABSENTS.BUSINESS_TRAVEL) {
+      return [
+        {
+          title: 'Thời gian',
+          key: 'date',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Loại ca',
+          key: 'shiftCode',
+          className: 'min-width-200',
+          render: (record) => (
+            <Select
+              dataSet={
+                shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                  (item) => ({
+                    id: item.id,
+                    name: item.shiftCode || item.name,
+                  }),
+                ) || []
+              }
+              value={record.shiftCode}
+              style={{ width: '100%' }}
+              placeholder="Chọn"
+              onChange={(event) => this.onChangeShiftCode(event, record)}
+            />
+          ),
+        },
+        {
+          title: 'Thời gian bắt đầu',
+          key: 'startTime',
+          className: 'min-width-200',
+          render: (record) => record.startTime,
+        },
+        {
+          title: 'Thời gian kết thúc',
+          key: 'endTime',
+          className: 'min-width-200',
+          render: (record) => record.endTime,
+        },
+        {
+          title: 'Số giờ',
+          key: 'number',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.number}
+              min="0"
+              max="10"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeNumber(event, record)}
+            />
+          ),
+        },
+      ];
+    }
+    return [
+      {
+        title: 'Thời gian',
+        key: 'date',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Số ngày',
+        key: 'isFullDate',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => (
+          <InputNumber
+            value={record.isFullDate}
+            min="0.5"
+            max="1"
+            step="0.5"
+            placeholder="Nhập"
+            style={{ width: '100%' }}
+            onChange={(event) => this.onChangeFullDate(event, record)}
+          />
+        ),
+      },
+      {
+        title: 'Loại ca',
+        key: 'shiftCode',
+        className: 'min-width-200',
+        render: (record) => (
+          <Select
+            dataSet={
+              shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                (item) => ({
+                  id: item.id,
+                  name: item.shiftCode || item.name,
+                }),
+              ) || []
+            }
+            value={record.shiftCode}
+            style={{ width: '100%' }}
+            placeholder="Chọn"
+            onChange={(event) => this.onChangeShiftCode(event, record)}
+          />
+        ),
+      },
+      {
+        title: 'Thời gian bắt đầu',
+        key: 'startTime',
+        className: 'min-width-200',
+        render: (record) => record.startTime,
+      },
+      {
+        title: 'Thời gian kết thúc',
+        key: 'endTime',
+        className: 'min-width-200',
+        render: (record) => record.endTime,
+      },
+    ];
+  };
+
+  formUpdate = (value, values) => {
+    const { dispatch } = this.props;
+    if (
+      values.employeeId &&
+      values.endDate &&
+      values.startDate &&
+      values.absentTypeId &&
+      values.type
+    ) {
+      const dates = Helper.convertArrayDays(values.startDate, values.endDate);
+      this.setStateData({
+        detail: dates.map((item, index) => ({ date: item, index })),
+      });
+      dispatch({
+        type: 'businessCardsAdd/GET_SHIFT_USERS',
+        payload: { ...values },
       });
     }
   };
 
   render() {
     const {
+      error,
+      menuLeftSchedules,
       categories,
-      menuData,
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['businessCardsAdd/ADD'] || effects['businessCardsAdd/UPDATE'];
+    const { detail } = this.state;
+    const loading =
+      effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
+    const loadingSubmit = effects['businessCardsAdd/ADD'];
     return (
       <>
         <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa đơn đi công tác' : 'Tạo mới đi công tác'}
-          menu={menuData}
+          last={
+            params.id
+              ? 'Chỉnh sửa phiếu đi công tác/ đi ra ngoài'
+              : 'Tạo phiếu đi công tác/ đi ra ngoài'
+          }
+          menu={menuLeftSchedules}
         />
         <Form
           className={styles['layout-form']}
           layout="vertical"
           ref={this.formRef}
-          initialValues={{
-            detail: [{}],
-          }}
           onFinish={this.onFinish}
+          onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
-            <div className={classnames(styles['content-children'], 'mt10')}>
-              <Text color="dark" size="large-medium">
-                THÔNG TIN CHUNG
-              </Text>
-              <div className="row mt-3">
-                <div className="col-lg-6">
-                  <FormItem
-                    data={Helper.convertSelectUsers(categories?.users)}
-                    label="NHÂN VIÊN"
-                    name="employeeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
+              <div className={classnames(styles['content-children'], 'mt10')}>
+                <Text color="dark" size="large-medium">
+                  THÔNG TIN CHUNG
+                </Text>
+                <div className="row  mt-3">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Ngày bắt đầu"
+                      name="startDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Ngày kết thúc"
+                      name="endDate"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    />
+                  </div>
                 </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    data={categories?.absentTypes}
-                    label="LOẠI CÔNG TÁC"
-                    name="absentTypeId"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.SELECT}
-                  />
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={Helper.convertSelectUsers(categories.users)}
+                      label="Nhân viên"
+                      name="employeeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
                 </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={variablesModules.TYPES_DIFFIRENT_ABSENTS || []}
+                      label="Hình thức chấm công"
+                      name="type"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                      onChange={this.onChangeType}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={categories?.absentTypes || []}
+                      label="Loại công"
+                      name="absentTypeId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <FormItem label="Lý do" name="reason" rules={[]} type={variables.INPUT} />
+                  </div>
+                </div>
+                <hr />
+                <Heading type="form-block-title" className="mb10">
+                  Chi tiết phiếu đăng ký
+                </Heading>
+                <Table
+                  bordered
+                  columns={this.header()}
+                  dataSource={detail}
+                  isEmpty
+                  className="table-edit"
+                  pagination={false}
+                  params={{
+                    header: this.header(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id || record.index}
+                  scroll={{ x: '100%' }}
+                />
               </div>
-              <div className="row">
-                <div className="col-lg-6">
-                  <FormItem
-                    label="NGÀY BẮT ĐẦU"
-                    name="startDate"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-6">
-                  <FormItem
-                    label="NGÀY KẾT THÚC"
-                    name="endDate"
-                    rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
+              <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
+                <Button
+                  color="gray"
+                  icon="prev"
+                  onClick={() => history.goBack()}
+                  size="large"
+                  className="mr-3"
+                  loading={loadingSubmit}
+                >
+                  HỦY
+                </Button>
+                <Button
+                  color="green"
+                  icon="save"
+                  htmlType="submit"
+                  size="large"
+                  loading={loadingSubmit}
+                >
+                  LƯU
+                </Button>
               </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <FormItem
-                    label="Lý do"
-                    name="reason"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
-                  <Form.List name="detail">
-                    {(fields, { add, remove }) => (
-                      <div>
-                        {fields.map((field, index) => (
-                          <div
-                            className={classnames(
-                              'row',
-                              styles['form-item'],
-                              styles['form-item-advance'],
-                            )}
-                            key={field.key}
-                          >
-                            <div className="col-lg-4">
-                              <FormItem
-                                label="NGÀY"
-                                name={[field.name, 'date']}
-                                fieldKey={[field.fieldKey, 'date']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.DATE_PICKER}
-                              />
-                            </div>
-                            <div className="col-lg-4">
-                              <FormItem
-                                onSelect={(value) =>
-                                  this.onChangeTimePicker(value, index, 'startTime')
-                                }
-                                label="THỜI GIAN TỪ"
-                                name={[field.name, 'startTime']}
-                                fieldKey={[field.fieldKey, 'startTime']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.TIME_PICKER}
-                              />
-                            </div>
-                            <div className="col-lg-4">
-                              <FormItem
-                                onSelect={(value) =>
-                                  this.onChangeTimePicker(value, index, 'endTime')
-                                }
-                                label="ĐẾN"
-                                name={[field.name, 'endTime']}
-                                fieldKey={[field.fieldKey, 'endTime']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.TIME_PICKER}
-                              />
-                            </div>
-
-                            <div className="col-lg-4">
-                              <FormItem
-                                label="GIỜ"
-                                name={[field.name, 'number']}
-                                fieldKey={[field.fieldKey, 'number']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_COUNT}
-                              />
-                            </div>
-                            <div className="col-lg-4">
-                              <FormItem
-                                label="GIỮA GIỜ"
-                                name={[field.name, 'isHalfTime']}
-                                fieldKey={[field.fieldKey, 'isHalfTime']}
-                                rules={[variables.RULES.EMPTY]}
-                                valuePropName="checked"
-                                type={variables.SWITCH}
-                              />
-                            </div>
-                            <>
-                              {fields?.length > 1 ? (
-                                <DeleteOutlined
-                                  className={classnames(styles['icon-delete'], 'ml-1')}
-                                  onClick={() => {
-                                    remove(field.name);
-                                  }}
-                                />
-                              ) : null}
-                            </>
-                          </div>
-                        ))}
-                        <div className="row mb-3">
-                          <div className="col-lg-3">
-                            <Button
-                              color="success"
-                              icon="plusMain"
-                              onClick={() => {
-                                add();
-                              }}
-                            >
-                              Thêm dòng
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </Form.List>
-                </div>
-              </div>
-            </div>
-            <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-              <Button
-                color="gray"
-                icon="prev"
-                onClick={() => history.goBack()}
-                size="large"
-                className="mr-3"
-                loading={loadingSubmit}
-              >
-                HỦY
-              </Button>
-              <Button
-                color="green"
-                icon="save"
-                htmlType="submit"
-                size="large"
-                loading={loadingSubmit}
-              >
-                LƯU
-              </Button>
-            </div>
+            </Loading>
           </div>
         </Form>
       </>

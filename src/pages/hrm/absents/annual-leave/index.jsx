@@ -265,9 +265,9 @@ class Index extends PureComponent {
       },
       {
         title: 'Lý do',
-        key: 'absentReason',
+        key: 'reason',
         className: 'min-width-200',
-        render: (record) => record?.absentReason?.name,
+        render: (record) => record?.reason,
       },
     ];
   };
@@ -284,7 +284,7 @@ class Index extends PureComponent {
     const loading = effects['absents/GET_DATA'];
     return (
       <>
-        <Helmet title="Đi trễ về sớm" />
+        <Helmet title="Đơn xin phép" />
         <div className={classnames(styles['content-form'], styles['content-form-absents'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">

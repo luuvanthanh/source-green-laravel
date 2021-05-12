@@ -266,7 +266,7 @@ class Index extends PureComponent {
         title: 'GIÁ MẶC ĐỊNH',
         key: 'value_default',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getPrice(record.valueDefault)}</Text>,
+        render: (record) => <Text size="normal">{Helper.getPrice(record.valueDefault, 3)}</Text>,
       },
       {
         title: 'LOẠI',

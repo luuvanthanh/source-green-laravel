@@ -1,6 +1,7 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import * as services from './services';
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'absentsAdd',
@@ -11,13 +12,13 @@ export default {
     },
     categories: {
       absentTypes: [],
-      absentReasons: [],
       users: [],
     },
     error: {
       isError: false,
       data: {},
     },
+    shiftUsers: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -39,9 +40,12 @@ export default {
       ...state,
       categories: {
         absentTypes: payload.absentTypes.parsePayload,
-        absentReasons: payload.absentReasons.parsePayload,
         users: payload.users.parsePayload,
       },
+    }),
+    SET_SHIFT_USERS: (state, { payload }) => ({
+      ...state,
+      shiftUsers: !isEmpty(payload.payload) ? payload.payload : {},
     }),
   },
   effects: {
@@ -49,11 +53,24 @@ export default {
       try {
         const response = yield saga.all({
           absentTypes: saga.call(services.getAbsentTypes),
-          absentReasons: saga.call(services.getAbsentReasons),
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SHIFT_USERS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getShiftUsers, payload);
+        yield saga.put({
+          type: 'SET_SHIFT_USERS',
           payload: response,
         });
       } catch (error) {

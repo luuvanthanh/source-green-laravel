@@ -7,7 +7,7 @@ export function get(data = {}) {
     params: {
       limit: data.limit,
       page: data.page,
-      orderBy: 'id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['store', 'shiftDetail']),

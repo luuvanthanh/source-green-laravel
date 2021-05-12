@@ -552,7 +552,7 @@ export default class Helpers {
     const params = {
       ...pickBy(paramSearch, (value) => value),
     };
-    const url = new URL(`${API_URL}${path}`);
+    const url = new URL(`${API_URL_LAVAREL}${path}`);
     Object.keys(params).forEach((key) => {
       if (params[key]) {
         url.searchParams.append(key, params[key]);
@@ -667,5 +667,23 @@ export default class Helpers {
     const arrayLink = string.split('.');
     if (last(arrayLink) === 'mp4') return true;
     return false;
+  };
+
+  static disabledDateTo = (current, formRef, key = 'endDate') => {
+    if (formRef.current) {
+      const data = formRef.current.getFieldsValue();
+      if (data[key]) return current && current > moment(data[key]).endOf('day');
+      return null;
+    }
+    return null;
+  };
+
+  static disabledDateFrom = (current, formRef, key = 'startDate') => {
+    if (formRef.current) {
+      const data = formRef.current.getFieldsValue();
+      if (data[key]) return current && current < moment(data[key]).endOf('day');
+      return null;
+    }
+    return null;
   };
 }

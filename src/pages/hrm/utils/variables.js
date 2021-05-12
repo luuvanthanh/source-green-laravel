@@ -66,6 +66,54 @@ export const variables = {
     THU_VIEC: 'Thử việc',
     HOP_DONG: 'Hợp đồng',
   },
+  TYPE_ABSENTS_NAME: {
+    ABSENT: 'Nghỉ phép  ',
+    BUSINESS_TRAVEL: 'Công tác',
+    ADD_TIME: 'Làm thêm',
+    GO_OUT: 'Đi ra ngoài',
+    MATERNITY_LEAVE: 'Nghỉ thai sản',
+  },
+  TYPE_ABSENTS: {
+    ABSENT: 'ABSENT',
+    BUSINESS_TRAVEL: 'BUSINESS_TRAVEL',
+    ADD_TIME: 'ADD_TIME',
+    GO_OUT: 'GO_OUT',
+    MATERNITY_LEAVE: 'MATERNITY_LEAVE',
+  },
+  TYPES_ABSENTS: [
+    {
+      id: 'ABSENT',
+      name: 'Nghỉ phép',
+    },
+  ],
+  TYPES_DIFFIRENT_ABSENTS: [
+    {
+      id: 'BUSINESS_TRAVEL',
+      name: 'Công tác',
+    },
+    {
+      id: 'ADD_TIME',
+      name: 'Làm thêm',
+    },
+    {
+      id: 'GO_OUT',
+      name: 'Đi ra ngoài',
+    },
+    {
+      id: 'MATERNITY_LEAVE',
+      name: 'Nghỉ thai sản',
+    },
+  ],
+  SHIFT_CODES: [
+    {
+      id: 'Ca sáng',
+      name: 'Ca sáng',
+    },
+    {
+      id: 'Ca chiều',
+      name: 'Ca chiều',
+    },
+  ],
 };
 
 export default variables;
