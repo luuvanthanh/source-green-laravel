@@ -55,11 +55,11 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         \DB::beginTransaction();
         try {
-            $tranfer = TypeOfContract::create($attributes);
+            $typeOfContract = TypeOfContract::create($attributes);
 
-            $tranfer->parameterValues()->attach($attributes['paramValue']);
+            $typeOfContract->parameterValues()->attach($attributes['paramValue']);
 
-            // $tranfer->parameterFormulas()->attach($attributes['paramFormula']);
+            // $typeOfContract->parameterFormulas()->attach($attributes['paramFormula']);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -67,6 +67,27 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($typeOfContract->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $typeOfContract = TypeOfContract::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $typeOfContract->update($attributes);
+
+            if (!empty($attributes['paramValue'])) {
+                $typeOfContract->parameterValues()->detach();
+                $typeOfContract->parameterValues()->attach($attributes['paramValue']);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($typeOfContract->Id);
     }
 }
