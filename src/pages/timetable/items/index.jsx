@@ -57,8 +57,12 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        fromDate: query.fromDate ? moment(query.fromDate) : moment().startOf('month'),
-        toDate: query.toDate ? moment(query.toDate) : moment().endOf('month'),
+        fromDate: query?.fromDate
+          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+        toDate: query?.toDate
+          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
         type: query.type || 'dayGridMonth',
         branchId: query.branchId,
         classId: query.classId,
@@ -173,12 +177,42 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          fromDate,
+          toDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
    * Function change select
    * @param {object} e value of select
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e, type) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -236,17 +270,15 @@ class Index extends PureComponent {
             {
               title: itemTime.content,
               rrule: {
-                freq: 'weekly',
+                freq: 'daily',
                 interval: 1,
-                byweekday: item.timetableWeeks.map(
-                  (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
-                ),
+                byweekday: null,
                 dtstart: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
+                  value: Helper.joinDateTime(item.date, itemTime.fromTime),
                   format: variables.DATE_FORMAT.DATE_TIME_UTC,
                 }),
                 until: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.toDate, itemTime.toTime),
+                  value: Helper.joinDateTime(item.date, itemTime.toTime),
                   format: variables.DATE_FORMAT.DATE_TIME_UTC,
                 }),
               },
@@ -302,8 +334,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
+                date: search.fromDate &&
+                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -325,6 +357,14 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    label="THỜI GIAN"
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

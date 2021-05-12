@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { omit } from 'lodash';
 import requestLogin from '@/utils/requestLogin';
 import requestLaravel from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
@@ -95,6 +96,26 @@ export function getUsers(params = {}) {
     params: {
       ...params,
       include: Helper.convertIncludes(['positionLevel']),
+    },
+  });
+}
+
+export function getEmployees(params = {}) {
+  return requestLaravel('/v1/employees', {
+    method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['positionLevel']),
+    },
+  });
+}
+
+export function getParents(params = {}) {
+  return request('/parents', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
     },
   });
 }

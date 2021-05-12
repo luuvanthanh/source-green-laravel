@@ -7,7 +7,7 @@ export function get(data = {}) {
     params: {
       limit: data.limit,
       page: data.page,
-      orderBy: 'Id',
+      orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       startDate: Helper.getDateTime({
@@ -26,18 +26,11 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['employee', 'absentType']),
+      type: 'ABSENT',
+      include: Helper.convertIncludes(['employee', 'absentType', 'absentReason']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
-        type: data.type,
       }),
     },
-  });
-}
-
-export function remove(id) {
-  return request(`/v1/business-cards/${id}`, {
-    method: 'DELETE',
-    parse: true,
   });
 }
