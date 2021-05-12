@@ -22,6 +22,7 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

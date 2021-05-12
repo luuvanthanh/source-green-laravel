@@ -21,6 +21,7 @@ class ParentRepositoryEloquent extends CoreRepositoryEloquent implements ParentR
     protected $fieldSearchable = [
         'Id',
         'FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

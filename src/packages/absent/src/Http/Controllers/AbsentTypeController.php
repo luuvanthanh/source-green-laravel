@@ -33,15 +33,8 @@ class AbsentTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-        if ($limit == config('constants-absent.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $absentTypes = $this->absentTypeRepository->all();
-        } else {
-            $absentTypes = $this->absentTypeRepository->paginate($limit);
-        }
+
+        $absentTypes = $this->absentTypeRepository->getAbsentType($request->all());
 
         return $this->success($absentTypes, trans('lang::messages.common.getListSuccess'));
     }

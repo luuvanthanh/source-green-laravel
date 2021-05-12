@@ -40,6 +40,11 @@ class RouteRegistrar extends CoreRegistrar
 
             //sabbatical-leaves
             \Route::resource('sabbatical-leaves', 'SabbaticalLeaveController');
+
+            \Route::get('labours-contracts-export-word/{id}', [
+                'uses' => 'LabourContractController@exportWord',
+                'as' => 'labours-contracts.word.export',
+            ]);
         });
     }
 }

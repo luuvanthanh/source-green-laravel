@@ -17,6 +17,7 @@ class ParamaterValueLogRepositoryEloquent extends CoreRepositoryEloquent impleme
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

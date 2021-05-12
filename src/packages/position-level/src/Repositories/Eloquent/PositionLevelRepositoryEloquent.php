@@ -24,6 +24,7 @@ class PositionLevelRepositoryEloquent extends CoreRepositoryEloquent implements 
     protected $fieldSearchable = [
         'Id',
         'EmployeeId',
+        'CreationTime',
     ];
 
     /**

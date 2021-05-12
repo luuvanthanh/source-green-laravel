@@ -16,6 +16,14 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class AbsentReasonRepositoryEloquent extends CoreRepositoryEloquent implements AbsentReasonRepository
 {
     /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'Id',
+        'CreationTime',
+    ];
+
+    /**
      * Specify Model class name
      *
      * @return string

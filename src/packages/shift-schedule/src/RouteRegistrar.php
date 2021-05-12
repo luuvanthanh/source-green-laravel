@@ -70,6 +70,10 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'shifts.destroy',
             ]);
 
+            \Route::get('shift-users/{id}', [
+                'uses' => 'ScheduleController@getShiftUser',
+            ]);
+
             //schedule
             \Route::post('schedules', [
                 'comment' => 'Tạo/Sửa lịch làm việc',

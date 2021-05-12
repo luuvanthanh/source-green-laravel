@@ -18,6 +18,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

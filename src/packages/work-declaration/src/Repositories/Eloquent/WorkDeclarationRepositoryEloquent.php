@@ -18,6 +18,7 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
     protected $fieldSearchable = [
         'Id',
         'employee.FullName',
+        'CreationTime',
     ];
 
     /**

@@ -19,7 +19,7 @@ class BusinessCardDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'BusinessCardId', 'Date', 'IsHalfTime', 'Number', 'StartTime', 'EndTime',
+        'BusinessCardId', 'Date', 'IsFullDate', 'Number', 'StartTime', 'EndTime', 'ShiftCode',
     ];
 
     protected $dateTimeFields = [

@@ -24,6 +24,7 @@ class InsurranceRepositoryEloquent extends CoreRepositoryEloquent implements Ins
         'id',
         'InsurranceNumber' => 'like',
         'employee.FullName' => 'like',
+        'CreationTime',
     ];
 
     /**

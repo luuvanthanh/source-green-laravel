@@ -19,6 +19,7 @@ class ParamaterValueRepositoryEloquent extends CoreRepositoryEloquent implements
         'Id',
         'Name' => 'like',
         'Code' => 'like',
+        'CreationTime',
     ];
 
     /**

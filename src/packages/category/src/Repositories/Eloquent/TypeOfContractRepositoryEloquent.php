@@ -20,6 +20,7 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
         'Name' => 'like',
         'Code' => 'like',
         'Type',
+        'CreationTime',
     ];
 
     /**

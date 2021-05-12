@@ -18,6 +18,7 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
     protected $fieldSearchable = [
         'Id',
         'Name' => 'like',
+        'CreationTime',
     ];
 
     /**

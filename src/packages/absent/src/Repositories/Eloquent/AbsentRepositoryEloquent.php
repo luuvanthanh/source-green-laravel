@@ -5,6 +5,7 @@ namespace GGPHP\Absent\Repositories\Eloquent;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Presenters\AbsentPresenter;
 use GGPHP\Absent\Repositories\Absent\AbsentRepository;
+use GGPHP\Absent\Services\AbsentDetailServices;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
@@ -31,6 +32,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         'AbsentTypeId',
         'AbsentReasonId',
         'Employee.FullName' => 'like',
+        'CreationTime',
     ];
     /**
      * Specify Model class name
@@ -124,5 +126,20 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         return $employees;
+    }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $absent = Absent::create($attributes);
+            AbsentDetailServices::add($absent->Id, $attributes['detail']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($absent->Id);
     }
 }

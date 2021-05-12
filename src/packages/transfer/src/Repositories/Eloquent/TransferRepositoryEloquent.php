@@ -22,6 +22,7 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**
@@ -61,7 +62,6 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

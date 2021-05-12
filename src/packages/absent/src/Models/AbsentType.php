@@ -15,20 +15,18 @@ class AbsentType extends UuidModel
      */
     const ON = 'ON';
     const OFF = 'OFF';
+
     /**
      * Type of absent
      */
-    const ANNUAL_LEAVE = 'ANNUAL_LEAVE';
-    const UNPAID_LEAVE = 'UNPAID_LEAVE';
-    const QUIT_WORK = 'QUIT_WORK';
-    const TYPE_OFF = 'OFF';
-    // absent without leave
-    const AWOL = 'AWOL';
-    const ABSENT_EARLY = 'ABSENT_EARLY';
-    const ABSENT_LATE = 'ABSENT_LATE';
+    const ABSENT = 'ABSENT';
+    const BUSINESS_TRAVEL = 'BUSINESS_TRAVEL';
+    const ADD_TIME = 'ADD_TIME';
+    const GO_OUT = 'GO_OUT';
+    const MATERNITY_LEAVE = 'MATERNITY_LEAVE';
 
     protected $fillable = [
-        'Name', 'Status', 'Type',
+        'Name', 'Status', 'Type', 'Code',
     ];
 
     /**

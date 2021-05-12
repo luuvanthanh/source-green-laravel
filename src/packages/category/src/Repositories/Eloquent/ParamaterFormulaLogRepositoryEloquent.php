@@ -17,6 +17,7 @@ class ParamaterFormulaLogRepositoryEloquent extends CoreRepositoryEloquent imple
 {
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
     ];
 
     /**

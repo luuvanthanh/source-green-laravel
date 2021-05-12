@@ -15,6 +15,14 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class FingerprintTimekeeperRepositoryEloquent extends CoreRepositoryEloquent implements FingerprintTimekeeperRepository
 {
     /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'Id',
+        'CreationTime',
+    ];
+
+    /**
      * Specify Model class name
      *
      * @return string

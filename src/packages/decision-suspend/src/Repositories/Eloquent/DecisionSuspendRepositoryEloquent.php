@@ -24,7 +24,7 @@ class DecisionSuspendRepositoryEloquent extends CoreRepositoryEloquent implement
         'DecisionNumber' => 'like',
         'EmployeeId',
         'Employee.FullName' => 'like',
-
+        'CreationTime',
     ];
 
     /**

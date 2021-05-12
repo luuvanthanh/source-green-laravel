@@ -18,6 +18,7 @@ class SabbaticalLeaveRepositoryEloquent extends CoreRepositoryEloquent implement
     protected $fieldSearchable = [
         'Id',
         'employee.FullName' => 'like',
+        'CreationTime',
     ];
     /**
      * Specify Model class name

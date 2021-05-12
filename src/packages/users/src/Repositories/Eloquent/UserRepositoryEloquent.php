@@ -20,6 +20,7 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
      */
     protected $fieldSearchable = [
         'Id',
+        'CreationTime',
         'FullName' => 'like',
     ];
 
