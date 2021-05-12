@@ -69,7 +69,6 @@ export default {
     *GET_SHIFT_USERS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getShiftUsers, payload);
-        console.log(response)
         yield saga.put({
           type: 'SET_SHIFT_USERS',
           payload: response,
