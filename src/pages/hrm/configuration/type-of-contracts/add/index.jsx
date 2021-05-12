@@ -72,6 +72,7 @@ class Index extends PureComponent {
         ...details,
         year: toString(details.year),
         month: toString(details.month),
+        paramValue: details.parameterValues.map((item) => item.id),
       });
     }
   }
