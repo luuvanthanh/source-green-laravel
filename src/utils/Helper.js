@@ -552,7 +552,7 @@ export default class Helpers {
     const params = {
       ...pickBy(paramSearch, (value) => value),
     };
-    const url = new URL(`${API_URL}${path}`);
+    const url = new URL(`${API_URL_LAVAREL}${path}`);
     Object.keys(params).forEach((key) => {
       if (params[key]) {
         url.searchParams.append(key, params[key]);

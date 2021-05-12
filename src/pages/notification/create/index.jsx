@@ -196,7 +196,6 @@ const Index = memo(({}) => {
   };
 
   const onFinish = (values) => {
-    console.log();
     const payload = {
       ...values,
       content,
