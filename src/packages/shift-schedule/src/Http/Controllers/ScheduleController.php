@@ -3,6 +3,7 @@
 namespace GGPHP\ShiftSchedule\Http\Controllers;
 
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\ShiftSchedule\Http\Requests\GetShiftUserRequest;
 use GGPHP\ShiftSchedule\Http\Requests\ScheduleCreateRequest;
 use GGPHP\ShiftSchedule\Http\Requests\ScheduleUpdateRequest;
 use GGPHP\ShiftSchedule\Repositories\Contracts\ScheduleRepository;
@@ -131,5 +132,19 @@ class ScheduleController extends Controller
         $schedule = $this->scheduleRepository->deleteScheduleRepeat($id, $request->all());
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    /**
+     * Delete schedule repeat
+     *
+     * @param  Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getShiftUser($id, GetShiftUserRequest $request)
+    {
+        $user = $this->scheduleRepository->getShiftUser($id, $request->all());
+
+        return $this->success(["data" => $user], trans('lang::messages.common.deleteSuccess'));
     }
 }

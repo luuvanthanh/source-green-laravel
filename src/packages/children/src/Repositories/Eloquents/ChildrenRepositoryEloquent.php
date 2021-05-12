@@ -87,7 +87,7 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
 
             if ($request->has('employeeId')) {
                 $employeeId = explode(',', $request->employeeId);
-                $this->model = $this->model->whereIn('Id', $employeeId);
+                $this->model = $this->model->whereIn('employeeId', $employeeId);
             }
 
             $query->tranferHistory($request->all());

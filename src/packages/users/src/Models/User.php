@@ -57,6 +57,16 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         'EducationalLevelId', 'Address', 'Status', 'FingerprintId', 'FileImage', 'Married',
     ];
 
+    protected $dateTimeFields = [
+        'DateOfBirth',
+        'DateOfIssueIdCard',
+    ];
+
+    protected $casts = [
+        'DateOfBirth' => 'datetime',
+        'DateOfIssueIdCard' => 'datetime',
+    ];
+
     /**
      * Get educations of employee
      *
@@ -124,7 +134,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function positionLevelNow()
     {
-        return $this->hasOne(PositionLevel::class, 'EmployeeId')->where('endDate', null);
+        return $this->hasOne(PositionLevel::class, 'EmployeeId')->where('EndDate', null);
     }
 
     /**

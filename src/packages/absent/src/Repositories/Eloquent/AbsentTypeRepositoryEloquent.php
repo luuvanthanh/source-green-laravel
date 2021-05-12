@@ -49,4 +49,20 @@ class AbsentTypeRepositoryEloquent extends CoreRepositoryEloquent implements Abs
     {
         return AbsentTypePresenter::class;
     }
+
+    public function getAbsentType(array $attributes)
+    {
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $this->model = $this->model->whereIn('Type', $type);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $absentType = $this->paginate($attributes['limit']);
+        } else {
+            $absentType = $this->get();
+        }
+
+        return $absentType;
+    }
 }

@@ -14,7 +14,7 @@
         "cloudcreativity/laravel-json-api": "^2.0",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",
         "cviebrock/eloquent-sluggable": "^7.0",
-        "doctrine/dbal": "^3.0",
+        "doctrine/dbal": "2.10",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
@@ -23,6 +23,7 @@
         "laravel/ui": "^2.0",
         "league/fractal": "^0.19.2",
         "orangehill/iseed": "^2.6",
+        "phpoffice/phpword": "^0.18.1",
         "prettus/l5-repository": "^2.6",
         "spatie/laravel-medialibrary": "^8.0.0",
         "staudenmeir/eloquent-json-relations": "^1.1",
@@ -87,6 +88,7 @@
             "GGPHP\\Attendance\\": "young-attendance/attendance/src",
             "GGPHP\\BusRegistration\\": "packages/bus-registration/src",
             "GGPHP\\MagneticCard\\": "packages/magnetic-card/src",
+            "GGPHP\\WordExporter\\": "packages/word-exporter/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

@@ -517,4 +517,34 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
 
         return $employeeTimeWorkShift;
     }
+
+    public function getShiftUser($id, array $attributes)
+    {
+        $user = $this->employeeRepositoryEloquent->model->findOrFail($id);
+
+        $shiftOfUser = $this->getUserTimeWorkShift($user->Id, $attributes['startDate'], $attributes['endDate']);
+
+        foreach ($shiftOfUser as $key => $value) {
+
+            foreach ($value as $keyItem => $item) {
+
+                foreach ($item as $keyItem2 => $item2) {
+
+                    $newkeyItem2 = dashesToCamelCase($keyItem2, false);
+                    if ($keyItem2 != $newkeyItem2) {
+                        $item[$newkeyItem2] = $item[$keyItem2];
+
+                        unset($item[$keyItem2]);
+                    }
+                }
+
+                $value[$keyItem] = $item;
+
+            }
+            $shiftOfUser[$key] = $value;
+
+        }
+
+        return $shiftOfUser;
+    }
 }
