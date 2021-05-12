@@ -49,10 +49,10 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     if (params.id) {
-      dispatch({
-        type: 'workShiftsAdd/GET_DETAILS',
-        payload: params,
-      });
+      // dispatch({
+      //   type: 'workShiftsAdd/GET_DETAILS',
+      //   payload: params,
+      // });
     }
   }
 

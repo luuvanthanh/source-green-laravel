@@ -34,6 +34,7 @@ const mapStateToProps = ({ menu, absentsAdd, loading }) => ({
   loading,
   error: absentsAdd.error,
   categories: absentsAdd.categories,
+  shiftUsers: absentsAdd.shiftUsers,
   menuLeftSchedules: menu.menuLeftHRM,
 });
 
@@ -127,41 +128,45 @@ class Index extends PureComponent {
   };
 
   onChangeShiftCode = (shiftCode, record) => {
-    this.setStateData((prevState) => ({
-      detail: prevState.detail.map((item) => {
-        if (item.index === record.index) {
-          if (item.isFullDate === 1) {
+    const { shiftUsers } = this.props;
+    const shifts = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
+    if (shifts) {
+      const itemShift = shifts.find((item) => item.id === shiftCode);
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
             return {
               ...item,
               shiftCode,
-              startTime: '08:00:00',
-              endTime: '17:00:00',
+              startTime: itemShift?.startTime,
+              endTime: itemShift?.endTime,
             };
           }
-          if (item.isFullDate === 0.5) {
+          return item;
+        }),
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
             return {
               ...item,
               shiftCode,
-              startTime: '08:00:00',
-              endTime: '12:00:00',
+              startTime: null,
+              endTime: null,
             };
           }
-          return {
-            ...item,
-            shiftCode,
-            startTime: '08:00:00',
-            endTime: '17:00:00',
-          };
-        }
-        return item;
-      }),
-    }));
+          return item;
+        }),
+      }));
+    }
   };
 
   /**
    * Function header table
    */
   header = () => {
+    const { shiftUsers } = this.props;
     return [
       {
         title: 'Thời gian',
@@ -193,7 +198,14 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <Select
-            dataSet={variablesModules.SHIFT_CODES}
+            dataSet={
+              shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                (item) => ({
+                  id: item.id,
+                  name: item.shiftCode || item.name,
+                }),
+              ) || []
+            }
             value={record.shiftCode}
             style={{ width: '100%' }}
             placeholder="Chọn"

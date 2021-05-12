@@ -315,7 +315,7 @@ export async function getLeftMenuSchedules() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [],
-              url: ['/diem-danh/cau-hinh/loai-nghi-phep'],
+              url: ['/diem-danh/cau-hinh/loai-cong'],
             },
             {
               title: 'Lý do nghỉ phép',
@@ -1026,7 +1026,11 @@ export async function getLeftMenuHRM() {
           title: 'Danh mục Loại công',
           key: 'AbsentTypes',
           permission: [],
-          url: ['/quan-ly-nhan-su/cau-hinh/loai-nghi-phep'],
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/loai-cong',
+            '/quan-ly-nhan-su/cau-hinh/loai-cong/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/loai-cong/:id/chi-tiet',
+          ],
         },
         {
           title: 'Phiếu đăng ký',
@@ -1096,14 +1100,6 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
       ],
-    },
-    {
-      title: 'Công',
-      key: 'works',
-      icon: 'icon icon-open-book',
-      permission: [],
-      pro: true,
-      children: [],
     },
     {
       title: 'Cấu hình',

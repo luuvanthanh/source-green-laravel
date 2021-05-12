@@ -66,6 +66,13 @@ export const variables = {
     THU_VIEC: 'Thử việc',
     HOP_DONG: 'Hợp đồng',
   },
+  TYPE_ABSENTS_NAME: {
+    ABSENT: 'Nghỉ phép  ',
+    BUSINESS_TRAVEL: 'Công tác',
+    ADD_TIME: 'Làm thêm',
+    GO_OUT: 'Đi ra ngoài',
+    MATERNITY_LEAVE: 'Nghỉ thai sản',
+  },
   TYPE_ABSENTS: {
     ABSENT: 'ABSENT',
     BUSINESS_TRAVEL: 'BUSINESS_TRAVEL',

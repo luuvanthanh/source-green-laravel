@@ -167,10 +167,10 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.add, payload);
-        yield saga.call(services.addPositionLevels, {
-          ...payload,
-          employeeId: response?.parsePayload?.id,
-        });
+        // yield saga.call(services.addPositionLevels, {
+        //   ...payload,
+        //   employeeId: response?.parsePayload?.id,
+        // });
         callback(payload);
       } catch (error) {
         callback(null, error);

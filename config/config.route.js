@@ -451,7 +451,7 @@ export default [
             authority: [],
           },
           {
-            path: '/diem-danh/cau-hinh/loai-nghi-phep',
+            path: '/diem-danh/cau-hinh/loai-cong',
             component: './attendance/absents/config/absent-types',
             wrappers: ['@/wrappers/auth'],
             authority: [],
@@ -703,8 +703,20 @@ export default [
             authority: [],
           },
           {
-            path: '/quan-ly-nhan-su/cau-hinh/loai-nghi-phep',
+            path: '/quan-ly-nhan-su/cau-hinh/loai-cong',
             component: './hrm/absents/config/absent-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/loai-cong/tao-moi',
+            component: './hrm/absents/config/absent-types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/loai-cong/:id/chi-tiet',
+            component: './hrm/absents/config/absent-types/add',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

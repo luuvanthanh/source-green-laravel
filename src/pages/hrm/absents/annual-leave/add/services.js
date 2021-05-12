@@ -6,7 +6,7 @@ export function getAbsentTypes(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      Type: 'ABSENT',
+      type: 'ABSENT',
     },
   });
 }
