@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -12,9 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import variablesModules from '../../utils/variables';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,10 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ paramaterValues, loading }) => ({
-  data: paramaterValues.data,
-  error: paramaterValues.error,
-  pagination: paramaterValues.pagination,
+const mapStateToProps = ({ workShifts, loading }) => ({
+  data: workShifts.data,
+  error: workShifts.error,
+  pagination: workShifts.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,7 +48,6 @@ class Index extends PureComponent {
       visible: false,
       search: {
         name: query?.name,
-        type: query?.type || variablesModules.PARAMATER_VALUES.CONTRACT,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -90,7 +87,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'paramaterValues/GET_DATA',
+      type: 'workShifts/GET_DATA',
       payload: {
         ...search,
       },
@@ -123,38 +120,12 @@ class Index extends PureComponent {
   }, 300);
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchStatus = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
-  };
-
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelectStatus = (e, type) => {
-    this.debouncedSearchStatus(e, type);
   };
 
   /**
@@ -214,7 +185,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'paramaterValues/REMOVE',
+          type: 'workShifts/REMOVE',
           payload: {
             id,
             pagination: {
@@ -237,50 +208,40 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
-      },
-      {
-        title: 'TÊN',
+        title: 'Phòng ban',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.name}</Text>,
+        render: (record) => <Text size="normal">{record.branch}</Text>,
       },
       {
-        title: 'MÃ',
+        title: 'Chấm công vào',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        render: (record) => <Text size="normal">{record.timeIn}</Text>,
       },
       {
-        title: 'NGÀY ÁP DỤNG',
-        key: 'apply_date',
+        title: 'Chấm công ra',
+        key: 'address',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getDate(record.applyDate)}</Text>,
+        render: (record) => <Text size="normal">{record.timeOut}</Text>,
       },
       {
-        title: 'GIÁ MẶC ĐỊNH',
-        key: 'value_default',
+        title: 'Thời gian đi trễ (Không vượt quá)',
+        key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getPrice(record.valueDefault, 3)}</Text>,
+        render: (record) => <Text size="normal">{record.timeLate}</Text>,
       },
       {
-        title: 'LOẠI',
-        key: 'type',
+        title: 'Thời gian về sớm (Không vượt quá)',
+        key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{variablesModules.PARAMATER_VALUES_NAME[record.type]}</Text>
-        ),
+        render: (record) => <Text size="normal">{record.timeEarly}</Text>,
       },
       {
-        title: 'GHI CHÚ',
-        key: 'note',
+        title: 'Ca làm việc',
+        key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.note}</Text>,
+        render: (record) => <Text size="normal">{record.shiftCode}</Text>,
       },
       {
         key: 'action',
@@ -293,7 +254,6 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
@@ -311,26 +271,18 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['paramaterValues/GET_DATA'];
+    const loading = effects['workShifts/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách tham số giá trị" />
+        <Helmet title="Phân ca làm việc" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH THAM SỐ GIÁ TRỊ</Text>
+            <Text color="dark">Phân ca làm việc</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>
-          <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
-            <Tabs
-              activeKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
-              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
-            >
-              {variablesModules.TYPES_PARAMATER_VALUES.map((item) => (
-                <TabPane tab={item.name} key={item.id}></TabPane>
-              ))}
-            </Tabs>
+          <div className={styles['block-table']}>
             <Form
               initialValues={{
                 ...search,
@@ -339,7 +291,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-6">
                   <FormItem
                     name="name"
                     onChange={(event) => this.onChange(event, 'name')}
@@ -352,7 +304,35 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={[
+                {
+                  id: 1,
+                  branch: 'Kế toán',
+                  timeIn: '08:00:00',
+                  timeOut: '17:00:00',
+                  timeLate: '16:45:00',
+                  timeEarly: '08:15:00',
+                  shiftCode: 'Ca làm việc',
+                },
+                {
+                  id: 2,
+                  branch: 'Bếp',
+                  timeIn: '06:00:00',
+                  timeOut: '14:00:00',
+                  timeLate: '06:15:00',
+                  timeEarly: '13:45:00',
+                  shiftCode: 'Ca bếp',
+                },
+                {
+                  id: 3,
+                  branch: 'Hành chính - Nhân sự',
+                  timeIn: '08:00:00',
+                  timeOut: '17:00:00',
+                  timeLate: '08:15:00',
+                  timeEarly: '16:45:00',
+                  shiftCode: 'Hành chính',
+                },
+              ]}
               loading={loading}
               pagination={this.pagination(pagination)}
               error={error}

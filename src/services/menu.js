@@ -730,163 +730,6 @@ export async function getLeftMenuHRM() {
       permission: [],
       children: [
         {
-          title: 'Hồ sơ Cán bộ nhân viên',
-          key: 'employee',
-          url: [
-            '/quan-ly-nhan-su/nhan-vien',
-            '/quan-ly-nhan-su/nhan-vien/tao-moi',
-            '/quan-ly-nhan-su/nhan-vien/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Hợp đồng lao động',
-          key: 'labours-contracts',
-          url: [
-            '/quan-ly-nhan-su/hop-dong-lao-dong',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Hợp đồng thử việc',
-          key: 'probationary-contracts',
-          url: [
-            '/quan-ly-nhan-su/hop-dong-thu-viec',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Bảo hiểm xã hội',
-          key: 'insurrances',
-          url: [
-            '/quan-ly-nhan-su/bao-hiem-xa-hoi',
-            '/quan-ly-nhan-su/bao-hiem-xa-hoi/tao-moi',
-            '/quan-ly-nhan-su/bao-hiem-xa-hoi/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Ngày nghỉ phép của nv',
-          key: 'sabbatical-leaves',
-          url: [
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien',
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/tao-moi',
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Khai báo các khoản khác',
-          key: 'other-declarationss',
-          url: [
-            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
-            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/tao-moi',
-            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Thống kê con của nhân viên',
-          key: 'children',
-          url: [
-            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',
-            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/tao-moi',
-            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/:id/chi-tiet',
-          ],
-          permission: [],
-        },
-        {
-          title: 'Quyết định',
-          key: 'QD',
-          permission: [],
-          children: [
-            {
-              title: 'QĐ Điều chuyển',
-              key: 'transfers',
-              url: [
-                '/quan-ly-nhan-su/dieu-chuyen',
-                '/quan-ly-nhan-su/dieu-chuyen/tao-moi',
-                '/quan-ly-nhan-su/dieu-chuyen/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Miễn nhiệm',
-              key: 'dismisseds',
-              url: [
-                '/quan-ly-nhan-su/mien-nhiem',
-                '/quan-ly-nhan-su/mien-nhiem/tao-moi',
-                '/quan-ly-nhan-su/mien-nhiem/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Bổ nhiệm',
-              key: 'appoints',
-              url: [
-                '/quan-ly-nhan-su/bo-nhiem',
-                '/quan-ly-nhan-su/bo-nhiem/tao-moi',
-                '/quan-ly-nhan-su/bo-nhiem/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Khen thưởng/ Kỷ luật',
-              key: 'decision-rewards',
-              url: [
-                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
-                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
-                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Thôi việc',
-              key: 'resignation-decisions',
-              url: [
-                '/quan-ly-nhan-su/thoi-viec',
-                '/quan-ly-nhan-su/thoi-viec/tao-moi',
-                '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Tạm hoãn hợp đồng',
-              key: 'decision-suspends',
-              url: [
-                '/quan-ly-nhan-su/tam-hoan-cong-viec',
-                '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
-                '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'Phiếu đi công tác/ đi ra ngoài',
-              key: 'business-cards',
-              url: [
-                '/quan-ly-nhan-su/don-di-cong-tac',
-                '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
-                '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-            {
-              title: 'QĐ Tăng lương',
-              key: 'salary-increases',
-              url: [
-                '/quan-ly-nhan-su/tang-luong',
-                '/quan-ly-nhan-su/tang-luong/tao-moi',
-                '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
-              ],
-              permission: [],
-            },
-          ],
-        },
-        {
           title: 'Danh mục',
           key: 'categories',
           permission: [],
@@ -968,13 +811,150 @@ export async function getLeftMenuHRM() {
               permission: [],
               pro: true,
             },
+          ],
+        },
+        {
+          title: 'Hồ sơ Cán bộ nhân viên',
+          key: 'employee',
+          url: [
+            '/quan-ly-nhan-su/nhan-vien',
+            '/quan-ly-nhan-su/nhan-vien/tao-moi',
+            '/quan-ly-nhan-su/nhan-vien/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Hợp đồng thử việc',
+          key: 'probationary-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-thu-viec',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Hợp đồng lao động',
+          key: 'labours-contracts',
+          url: [
+            '/quan-ly-nhan-su/hop-dong-lao-dong',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Bảo hiểm xã hội',
+          key: 'insurrances',
+          url: [
+            '/quan-ly-nhan-su/bao-hiem-xa-hoi',
+            '/quan-ly-nhan-su/bao-hiem-xa-hoi/tao-moi',
+            '/quan-ly-nhan-su/bao-hiem-xa-hoi/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Ngày nghỉ phép của nv',
+          key: 'sabbatical-leaves',
+          url: [
+            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien',
+            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/tao-moi',
+            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Khai báo các khoản khác',
+          key: 'other-declarationss',
+          url: [
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/tao-moi',
+            '/quan-ly-nhan-su/khai-bao-cac-khoan-khac/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Thống kê con của nhân viên',
+          key: 'children',
+          url: [
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/tao-moi',
+            '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Quyết định',
+          key: 'QD',
+          permission: [],
+          children: [
             {
-              title: 'Ngày nghỉ lễ',
-              key: 'holidays',
+              title: 'QĐ Điều chuyển',
+              key: 'transfers',
               url: [
-                '/quan-ly-nhan-su/ngay-nghi-le',
-                '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
-                '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
+                '/quan-ly-nhan-su/dieu-chuyen',
+                '/quan-ly-nhan-su/dieu-chuyen/tao-moi',
+                '/quan-ly-nhan-su/dieu-chuyen/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Bổ nhiệm',
+              key: 'appoints',
+              url: [
+                '/quan-ly-nhan-su/bo-nhiem',
+                '/quan-ly-nhan-su/bo-nhiem/tao-moi',
+                '/quan-ly-nhan-su/bo-nhiem/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Miễn nhiệm',
+              key: 'dismisseds',
+              url: [
+                '/quan-ly-nhan-su/mien-nhiem',
+                '/quan-ly-nhan-su/mien-nhiem/tao-moi',
+                '/quan-ly-nhan-su/mien-nhiem/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Kỷ luật - Khen thưởng',
+              key: 'decision-rewards',
+              url: [
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat',
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/tao-moi',
+                '/quan-ly-nhan-su/quyet-dinh-khen-thuong-va-ky-luat/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Tăng lương',
+              key: 'salary-increases',
+              url: [
+                '/quan-ly-nhan-su/tang-luong',
+                '/quan-ly-nhan-su/tang-luong/tao-moi',
+                '/quan-ly-nhan-su/tang-luong/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Thôi việc',
+              key: 'resignation-decisions',
+              url: [
+                '/quan-ly-nhan-su/thoi-viec',
+                '/quan-ly-nhan-su/thoi-viec/tao-moi',
+                '/quan-ly-nhan-su/thoi-viec/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'QĐ Tạm hoãn hợp đồng',
+              key: 'decision-suspends',
+              url: [
+                '/quan-ly-nhan-su/tam-hoan-cong-viec',
+                '/quan-ly-nhan-su/tam-hoan-cong-viec/tao-moi',
+                '/quan-ly-nhan-su/tam-hoan-cong-viec/:id/chi-tiet',
               ],
               permission: [],
             },
@@ -982,30 +962,15 @@ export async function getLeftMenuHRM() {
         },
       ],
     },
-
     {
-      title: 'Lịch làm việc',
+      title: 'Chấm công',
       key: 'schedules',
       icon: 'icon icon-clock',
       permission: [],
       pro: true,
       children: [
         {
-          title: 'Chia ca',
-          key: 'schedules',
-          url: ['/quan-ly-nhan-su/lich-lam-viec'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Lịch sử vào ra',
-          key: 'timekeeping',
-          url: ['/quan-ly-nhan-su/lich-su-vao-ra'],
-          permission: [],
-          pro: true,
-        },
-        {
-          title: 'Cấu hình',
+          title: 'Danh mục Ca làm việc',
           key: 'config',
           url: [
             '/quan-ly-nhan-su/lich-lam-viec/cau-hinh',
@@ -1015,75 +980,93 @@ export async function getLeftMenuHRM() {
           permission: [],
           pro: true,
         },
-      ],
-    },
-    {
-      title: 'Máy chấm công',
-      key: 'fingerprints',
-      url: ['/quan-ly-nhan-su/may-cham-cong-van-tay'],
-      icon: 'icon icon-newspaper',
-      permission: [],
-      pro: true,
-    },
-    {
-      title: 'Đi trễ về sớm',
-      key: 'lateEarly',
-      url: ['/quan-ly-nhan-su/di-tre-ve-som'],
-      icon: 'icon icon-clock',
-      permission: [],
-      pro: true,
-    },
-    {
-      title: 'Đơn xin phép',
-      key: 'absents',
-      icon: 'icon icon-clock',
-      permission: [],
-      pro: true,
-      children: [
         {
-          title: 'Nghỉ phép',
+          title: 'Chia ca',
+          key: 'schedules',
+          url: ['/quan-ly-nhan-su/lich-lam-viec'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Phân ca làm việc',
+          key: 'work-shift',
+          url: [
+            '/quan-ly-nhan-su/phan-ca-lam-viec',
+            '/quan-ly-nhan-su/phan-ca-lam-viec/tao-moi',
+            '/quan-ly-nhan-su/phan-ca-lam-viec/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Đi trễ về sớm',
+          key: 'lateEarly',
+          url: ['/quan-ly-nhan-su/di-tre-ve-som'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình vân tay',
+          key: 'fingerprints',
+          url: ['/quan-ly-nhan-su/may-cham-cong-van-tay'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Danh mục Ngày nghỉ trong năm',
+          key: 'holidays',
+          url: [
+            '/quan-ly-nhan-su/ngay-nghi-le',
+            '/quan-ly-nhan-su/ngay-nghi-le/tao-moi',
+            '/quan-ly-nhan-su/ngay-nghi-le/:id/chi-tiet',
+          ],
+          permission: [],
+        },
+        {
+          title: 'Danh mục Loại công',
+          key: 'AbsentTypes',
+          permission: [],
+          url: ['/quan-ly-nhan-su/cau-hinh/loai-nghi-phep'],
+        },
+        {
+          title: 'Phiếu đăng ký',
+          key: 'types',
+          permission: [],
+          children: [
+            {
+              title: 'Phiếu đi công tác/ đi ra ngoài',
+              key: 'business-cards',
+              url: [
+                '/quan-ly-nhan-su/don-di-cong-tac',
+                '/quan-ly-nhan-su/don-di-cong-tac/tao-moi',
+                '/quan-ly-nhan-su/don-di-cong-tac/:id/chi-tiet',
+              ],
+              permission: [],
+            },
+            {
+              title: 'Phiếu ĐK giờ làm thêm',
+              key: 'work-hours',
+              url: [
+                '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them',
+                '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/tao-moi',
+                '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/:id/chi-tiet',
+              ],
+              permission: [],
+              pro: true,
+            },
+          ],
+        },
+        {
+          title: 'Đơn xin phép',
           key: 'absents',
           url: ['/quan-ly-nhan-su/don-xin-phep', '/quan-ly-nhan-su/don-xin-phep/tao-moi'],
           permission: [],
           pro: true,
         },
         {
-          title: 'Cấu hình',
-          key: 'lateEarlyConfig',
-          permission: [],
-          multiple: true,
-          children: [
-            {
-              title: 'Loại nghỉ phép',
-              key: 'AbsentTypes',
-              permission: [],
-              url: ['/quan-ly-nhan-su/cau-hinh/loai-nghi-phep'],
-            },
-            {
-              title: 'Lý do nghỉ phép',
-              key: 'AbsentReasons',
-              permission: [],
-              url: [
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep',
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/tao-moi',
-                '/quan-ly-nhan-su/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Công',
-      key: 'works',
-      icon: 'icon icon-open-book',
-      permission: [],
-      pro: true,
-      children: [
-        {
-          title: 'Tổng hợp công',
-          key: 'total',
-          url: ['/quan-ly-nhan-su/tong-hop-cong'],
+          title: 'Lịch sử vào ra',
+          key: 'timekeeping',
+          url: ['/quan-ly-nhan-su/lich-su-vao-ra'],
           permission: [],
           pro: true,
         },
@@ -1106,17 +1089,21 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Phiếu ĐK giờ làm thêm',
-          key: 'work-hours',
-          url: [
-            '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them',
-            '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/tao-moi',
-            '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/:id/chi-tiet',
-          ],
+          title: 'Bảng tổng hợp công tháng',
+          key: 'total',
+          url: ['/quan-ly-nhan-su/tong-hop-cong'],
           permission: [],
           pro: true,
         },
       ],
+    },
+    {
+      title: 'Công',
+      key: 'works',
+      icon: 'icon icon-open-book',
+      permission: [],
+      pro: true,
+      children: [],
     },
     {
       title: 'Cấu hình',
