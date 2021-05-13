@@ -133,8 +133,8 @@ export default {
         });
       } catch (error) {
         notification.error({
-          message: 'Thông báo',
-          description: 'Vui lòng kiểm tra lại hệ thống',
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }
@@ -150,8 +150,8 @@ export default {
         });
       } catch (error) {
         notification.error({
-          message: 'Thông báo',
-          description: 'Vui lòng kiểm tra lại hệ thống',
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }

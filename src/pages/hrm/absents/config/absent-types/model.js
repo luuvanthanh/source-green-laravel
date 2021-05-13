@@ -60,16 +60,9 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (!isEmpty(error?.data?.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, xóa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
         });
       }
     },

@@ -370,7 +370,15 @@ export default {
       try {
         yield saga.call(services.addDismisseds, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -378,7 +386,15 @@ export default {
       try {
         yield saga.call(services.updateDismisseds, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -389,7 +405,16 @@ export default {
           type: 'SET_REMOVE_DIMISSEDS',
           payload: payload,
         });
-      } catch (error) {}
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
     },
     *GET_DISMISSEDS({ payload }, saga) {
       try {
@@ -411,7 +436,15 @@ export default {
       try {
         yield saga.call(services.addAppoints, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -419,7 +452,15 @@ export default {
       try {
         yield saga.call(services.updateAppoints, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -430,7 +471,15 @@ export default {
           type: 'SET_REMOVE_APPOINTS',
           payload: payload,
         });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -454,7 +503,15 @@ export default {
       try {
         yield saga.call(services.addTransfers, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -462,7 +519,15 @@ export default {
       try {
         yield saga.call(services.updateTransfers, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -473,7 +538,16 @@ export default {
           type: 'SET_REMOVE_TRANSFERS',
           payload: payload,
         });
-      } catch (error) {}
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
     },
     *GET_TRANSFERS({ payload }, saga) {
       try {
@@ -516,7 +590,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }
@@ -564,7 +638,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }
@@ -580,7 +654,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }
@@ -606,7 +680,15 @@ export default {
       try {
         yield saga.call(services.addDecisionRewards, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -614,7 +696,15 @@ export default {
       try {
         yield saga.call(services.updateDecisionRewards, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -625,7 +715,16 @@ export default {
           type: 'SET_REMOVE_DECISION_REWARDS',
           payload: payload,
         });
-      } catch (error) {}
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
     },
     *GET_DECISION_REWARDS({ payload }, saga) {
       try {
@@ -663,7 +762,15 @@ export default {
       try {
         yield saga.call(services.addInsurrances, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -671,7 +778,15 @@ export default {
       try {
         yield saga.call(services.updateInsurrances, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -682,7 +797,17 @@ export default {
           type: 'SET_REMOVE_INSURRANCES',
           payload: payload,
         });
-      } catch (error) {}
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
     },
     *GET_INSURRANCES({ payload }, saga) {
       try {
@@ -704,7 +829,15 @@ export default {
       try {
         yield saga.call(services.addChildren, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -712,7 +845,15 @@ export default {
       try {
         yield saga.call(services.updateChildren, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -723,7 +864,16 @@ export default {
           type: 'SET_REMOVE_CHILDREN',
           payload: payload,
         });
-      } catch (error) {}
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
     },
     *GET_CHILDREN({ payload }, saga) {
       try {
