@@ -76,7 +76,7 @@
       "title": "Bảng lương",
       "src": "/images/home/drive.svg",
       "url": "/",
-      "permission": ["ADMIN", "HRM", "ALL"]
+      "permission": ["ADMIN", "HRM"]
     },
     {
       "title": "Sức khỏe",
@@ -88,7 +88,7 @@
       "title": "Quản trị nhân sự",
       "src": "/images/home/hrm.svg",
       "url": "/quan-ly-nhan-su",
-      "permission": ["ADMIN", "HRM", "ALL"]
+      "permission": ["ADMIN", "HRM"]
     },
     {
       "title": "Chính sách phí",

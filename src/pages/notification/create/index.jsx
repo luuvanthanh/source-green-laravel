@@ -206,7 +206,7 @@ const Index = memo(({}) => {
           : [],
       parentNews:
         type === variablesModules.TYPE.PARENT
-          ? parents.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
+          ? parents.filter((item) => item.checked).map((item) => ({ parentId: item.id }))
           : [],
     };
     dispatch({
