@@ -1,11 +1,11 @@
 // Import mixins
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN SELECT */
 
 .ant-select {
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: "Nunito Sans", sans-serif;
 }
 
 .ant-select-dropdown {
@@ -22,10 +22,22 @@
 }
 
 .ant-radio-checked {
-   .ant-radio-inner {
-     border-color: $border-success;
-     &::after{
-       background-color: $background-success;
-     }
-   }
+  .ant-radio-inner {
+    border-color: $border-success;
+    &::after {
+      background-color: $background-success;
+    }
+  }
+}
+
+.ant-select-multiple {
+  .ant-select-selection-item {
+    background-color: $background-success;
+    font-size: 14px;
+    line-height: 22px;
+    color: $text-white;
+  }
+  .ant-select-selection-item-remove {
+    color: $text-white;
+  }
 }

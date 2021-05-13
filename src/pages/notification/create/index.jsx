@@ -41,6 +41,8 @@ const Index = memo(({}) => {
   const dispatch = useDispatch();
 
   const [content, setContent] = useState('');
+  const [isAllEmployees, setIsAllEmployees] = useState(false);
+  const [isAllParents, setIsAllParents] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -195,17 +197,27 @@ const Index = memo(({}) => {
     });
   };
 
+  const changeAll = (type, event) => {
+    if (type === variablesModules.TYPE.EMPLOYEE) {
+      mountedSet(setIsAllEmployees, event.target.checked);
+    } else {
+      mountedSet(setIsAllParents, event.target.checked);
+    }
+  };
+
   const onFinish = (values) => {
     const payload = {
       ...values,
       content,
       sentDate: moment(),
+      isAllEmployees,
+      isAllParents,
       employeeNews:
-        type === variablesModules.TYPE.EMPLOYEE
+        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
           ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
           : [],
       parentNews:
-        type === variablesModules.TYPE.PARENT
+        type === variablesModules.TYPE.PARENT && !isAllParents
           ? parents.filter((item) => item.checked).map((item) => ({ parentId: item.id }))
           : [],
     };
@@ -281,7 +293,12 @@ const Index = memo(({}) => {
                     </Pane>
                     <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                       <FormItemAntd label="Người nhận thông báo">
-                        <Checkbox>Tất cả nhân viên</Checkbox>
+                        <Checkbox
+                          checked={isAllEmployees}
+                          onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
+                        >
+                          Tất cả nhân viên
+                        </Checkbox>
                       </FormItemAntd>
                     </Pane>
 
@@ -331,7 +348,12 @@ const Index = memo(({}) => {
                   <>
                     <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                       <FormItemAntd label="Người nhận thông báo">
-                        <Checkbox>Tất cả phụ huynh</Checkbox>
+                        <Checkbox
+                          checked={isAllParents}
+                          onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
+                        >
+                          Tất cả phụ huynh
+                        </Checkbox>
                       </FormItemAntd>
                     </Pane>
 
@@ -414,7 +436,9 @@ const Index = memo(({}) => {
                     htmlType="submit"
                     disabled={
                       !employees.find((item) => item.checked) &&
-                      !parents.find((item) => item.checked)
+                      !parents.find((item) => item.checked) &&
+                      !isAllEmployees &&
+                      !isAllParents
                     }
                   >
                     Gửi thông báo

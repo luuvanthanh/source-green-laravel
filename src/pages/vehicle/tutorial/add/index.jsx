@@ -215,7 +215,7 @@ class Index extends PureComponent {
     this.setStateData({
       visible: true,
       listId: record.id,
-      studentBusPlaces: record.studentBusPlaces.map((item) => item.key),
+      studentBusPlaces: record.studentBusPlaces.map((item) => item.id),
     });
   };
 
@@ -408,9 +408,7 @@ class Index extends PureComponent {
     };
     dispatch({
       type: params.id ? 'tutorialAdd/UPDATE' : 'tutorialAdd/ADD',
-      payload: {
-        ...omit(payload, 'busRouteShedules'),
-      },
+      payload,
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -445,6 +443,14 @@ class Index extends PureComponent {
       }),
       visibleMap: false,
     }));
+  };
+
+  enabledSubmit = () => {
+    const { busPlaces } = this.state;
+    const itemBusValidate = busPlaces.find(
+      (item) => !item.address || isEmpty(item.studentBusPlaces),
+    );
+    return !!itemBusValidate;
   };
 
   render() {
@@ -675,6 +681,7 @@ class Index extends PureComponent {
                 icon="save"
                 size="large"
                 loading={loadingSubmit}
+                disabled={!busId || this.enabledSubmit()}
               >
                 LƯU
               </Button>

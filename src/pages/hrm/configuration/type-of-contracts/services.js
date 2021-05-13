@@ -20,6 +20,9 @@ export function get(data = {}) {
 export function remove(id) {
   return request(`/v1/type-of-contracts/${id}`, {
     method: 'DELETE',
+    data: {
+      id,
+    },
     parse: true,
   });
 }

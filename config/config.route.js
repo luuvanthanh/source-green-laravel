@@ -703,6 +703,12 @@ export default [
             authority: [],
           },
           {
+            path: '/quan-ly-nhan-su/don-xin-phep/:id/chi-tiet',
+            component: './hrm/absents/annual-leave/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/quan-ly-nhan-su/cau-hinh/loai-cong',
             component: './hrm/absents/config/absent-types',
             wrappers: ['@/wrappers/auth'],

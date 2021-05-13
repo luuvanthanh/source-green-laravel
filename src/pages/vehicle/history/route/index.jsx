@@ -15,7 +15,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import common from '@/assets/styles/Common/common.scss';
 
 const iconStudent = new L.Icon({
-  iconUrl: '/images/maker-student.svg',
+  iconUrl: '/images/marker-student.svg',
   iconAnchor: [17, 46],
 });
 const iconSchool = new L.Icon({
