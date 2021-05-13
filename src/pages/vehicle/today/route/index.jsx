@@ -20,7 +20,7 @@ const details = {};
 const { Item: TimelineItem } = Timeline;
 
 const iconStudent = new L.Icon({
-  iconUrl: '/images/maker-student.svg',
+  iconUrl: '/images/marker-student.svg',
   iconAnchor: [17, 46],
 });
 const iconSchool = new L.Icon({

@@ -21,6 +21,9 @@ export function get(data = {}) {
 export function remove(id) {
   return request(`/v1/paramater-values/${id}`, {
     method: 'DELETE',
+    data: {
+      id,
+    },
     parse: true,
   });
 }

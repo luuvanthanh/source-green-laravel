@@ -20,6 +20,9 @@ export function get(data = {}) {
 export function remove(id) {
   return request(`/v1/training-majors/${id}`, {
     method: 'DELETE',
+    data: {
+      id,
+    },
     parse: true,
   });
 }

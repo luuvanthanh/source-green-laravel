@@ -10,7 +10,7 @@ import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
 const iconStudent = new L.Icon({
-  iconUrl: '/images/maker-student.svg',
+  iconUrl: '/images/marker-current.svg',
   iconAnchor: [17, 46],
 });
 

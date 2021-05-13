@@ -34,3 +34,10 @@ export function get(data = {}) {
     },
   });
 }
+
+export function remove(id) {
+  return request(`/v1/business-cards/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}
