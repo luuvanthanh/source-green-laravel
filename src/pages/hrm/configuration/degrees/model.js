@@ -63,10 +63,6 @@ export default {
           message: 'THÔNG BÁO',
           description: 'Vui lòng kiểm tra lại hệ thống',
         });
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
       }
     },
   },
