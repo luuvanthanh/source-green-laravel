@@ -35,4 +35,11 @@ class BusinessCardDetail extends UuidModel
         'Date' => 'datetime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function businessCard()
+    {
+        return $this->belongsTo(BusinessCard::class, 'BusinessCardId');
+    }
 }

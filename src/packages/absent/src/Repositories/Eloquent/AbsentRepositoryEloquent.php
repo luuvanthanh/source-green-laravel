@@ -133,13 +133,33 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         \DB::beginTransaction();
         try {
             $absent = Absent::create($attributes);
+
             AbsentDetailServices::add($absent->Id, $attributes['detail']);
 
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 
         return parent::find($absent->Id);
     }
+
+    public function update(array $attributes, $id)
+    {
+        $absent = Absent::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $absent->update($attributes);
+            $absent->absentDetail()->delete();
+            AbsentDetailServices::add($id, $attributes['detail']);
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($id);
+    }
+
 }

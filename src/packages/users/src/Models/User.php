@@ -94,6 +94,14 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Define relations businessCard
+     */
+    public function businessCard()
+    {
+        return $this->hasMany(\GGPHP\BusinessCard\Models\BusinessCard::class, 'EmployeeId');
+    }
+
+    /**
      * Define relations late earlies
      */
     public function lateEarly()

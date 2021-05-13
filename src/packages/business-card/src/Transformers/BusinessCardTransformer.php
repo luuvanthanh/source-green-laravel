@@ -15,8 +15,8 @@ use GGPHP\Users\Transformers\UserTransformer;
 class BusinessCardTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['employee', 'absentType'];
-    protected $defaultIncludes = ['businessCardDetail'];
+    protected $availableIncludes = ['employee'];
+    protected $defaultIncludes = ['businessCardDetail', 'absentType'];
 
     public function customAttributes($model): array
     {

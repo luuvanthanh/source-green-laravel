@@ -13,11 +13,8 @@ class AbsentTypeCreateRequest extends FormRequest
 
     public function rules()
     {
-        $absentType = implode(',', config('constants-absent.ABSENT_TYPE'));
-
         return [
             'name' => 'required',
-            'status' => 'required|string|in:' . $absentType,
         ];
     }
 }

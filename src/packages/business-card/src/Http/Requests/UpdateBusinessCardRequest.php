@@ -4,7 +4,7 @@ namespace GGPHP\BusinessCard\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BusinessCardUpdateRequest extends FormRequest
+class UpdateBusinessCardRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
