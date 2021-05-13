@@ -105,7 +105,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }
@@ -121,7 +121,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error);
       }

@@ -14,6 +14,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
 import variablesModules from '../../../utils/variables';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -55,6 +56,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    this.loadDetails();
     this.loadCategories();
   }
 
@@ -70,6 +72,36 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadDetails = () => {
+    const {
+      match: { params },
+      dispatch,
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'absentsAdd/GET_DATA',
+        payload: params,
+        callback: (response, error) => {
+          if (response) {
+            this.formRef.current.setFieldsValue({
+              ...response,
+              startDate: response.startDate && moment(response.startDate),
+              endDate: response.endDate && moment(response.endDate),
+              type: response?.absentType?.type,
+            });
+            this.setStateData({
+              detail: response.absentDetail.map((item, index) => ({
+                ...item,
+                index,
+                isFullDate: item.isFullDate ? '1' : '0.5',
+              })),
+            });
+          }
+        },
+      });
+    }
   };
 
   loadCategories = () => {
@@ -127,17 +159,18 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeShiftCode = (shiftCode, record) => {
+  onChangeShiftCode = (shiftId, record) => {
     const { shiftUsers } = this.props;
     const shifts = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
     if (shifts) {
-      const itemShift = shifts.find((item) => item.id === shiftCode);
+      const itemShift = shifts.find((item) => item.id === shiftId);
       this.setStateData((prevState) => ({
         detail: prevState.detail.map((item) => {
           if (item.index === record.index) {
             return {
               ...item,
-              shiftCode,
+              shiftId,
+              shiftCode: itemShift.name || itemShift.shiftCode,
               startTime: itemShift?.startTime,
               endTime: itemShift?.endTime,
             };
@@ -151,7 +184,7 @@ class Index extends PureComponent {
           if (item.index === record.index) {
             return {
               ...item,
-              shiftCode,
+              shiftId,
               startTime: null,
               endTime: null,
             };
@@ -206,7 +239,7 @@ class Index extends PureComponent {
                 }),
               ) || []
             }
-            value={record.shiftCode}
+            value={record?.shiftId}
             style={{ width: '100%' }}
             placeholder="Chọn"
             onChange={(event) => this.onChangeShiftCode(event, record)}
@@ -251,14 +284,15 @@ class Index extends PureComponent {
   render() {
     const {
       error,
-      menuLeftSchedules,
+      details,
       categories,
-      loading: { effects },
       match: { params },
+      menuLeftSchedules,
+      loading: { effects },
     } = this.props;
     const { detail } = this.state;
     const loading = effects['absentsAdd/GET_DETAILS'] || effects['absentsAdd/GET_CATEGORIES'];
-    const loadingSubmit = effects['absentsAdd/ADD'];
+    const loadingSubmit = effects['absentsAdd/ADD'] || effects['absentsAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs

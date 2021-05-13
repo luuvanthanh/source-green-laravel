@@ -54,9 +54,9 @@ export default {
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
         });
       }
     },

@@ -270,15 +270,17 @@ class Index extends PureComponent {
             {
               title: itemTime.content,
               rrule: {
-                freq: 'daily',
+                freq: 'weekly',
                 interval: 1,
-                byweekday: null,
+                byweekday: item.timetableWeeks.map(
+                  (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
+                ),
                 dtstart: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.date, itemTime.fromTime),
+                  value: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
                   format: variables.DATE_FORMAT.DATE_TIME_UTC,
                 }),
                 until: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.date, itemTime.toTime),
+                  value: Helper.joinDateTime(item.toDate, itemTime.toTime),
                   format: variables.DATE_FORMAT.DATE_TIME_UTC,
                 }),
               },

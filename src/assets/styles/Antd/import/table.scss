@@ -14,6 +14,16 @@
   @if $i != 0 {
     $unit: "px";
   }
+  .col-fixed-#{$i*5} {
+    width: #{$value}#{$unit};
+  }
+}
+@for $i from 0 through 100 {
+  $value: $i * 5;
+  $unit: "";
+  @if $i != 0 {
+    $unit: "px";
+  }
   .min-width-#{$i*5} {
     min-width: #{$value}#{$unit};
   }
@@ -160,5 +170,17 @@
 .p-pagination-20 {
   .ant-pagination {
     padding: 0 20px;
+  }
+}
+
+.ant-table-has-fix-left {
+  .ant-table-header {
+    > table {
+      visibility: unset !important;
+    }
+    .ant-table-cell-fix-right.ant-table-cell-scrollbar {
+      display: none;
+    }
+    
   }
 }

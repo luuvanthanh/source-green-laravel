@@ -6,10 +6,7 @@ import * as categories from '@/services/categories';
 export default {
   namespace: 'absentsAdd',
   state: {
-    data: [],
-    pagination: {
-      total: 0,
-    },
+    details: {},
     categories: {
       absentTypes: [],
       users: [],
@@ -24,8 +21,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -84,7 +80,15 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -92,32 +96,30 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-      } catch (error) {
-        callback(null, error);
-      }
-    },
-    *REMOVE({ payload }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
+        callback(null, error);
+      }
+    },
+    *GET_DATA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload.id);
+        yield saga.put({
+          type: 'GET_SHIFT_USERS',
+          payload: {
+            ...response.parsePayload,
+          },
+        });
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

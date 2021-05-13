@@ -1063,7 +1063,11 @@ export async function getLeftMenuHRM() {
         {
           title: 'Đơn xin phép',
           key: 'absents',
-          url: ['/quan-ly-nhan-su/don-xin-phep', '/quan-ly-nhan-su/don-xin-phep/tao-moi'],
+          url: [
+            '/quan-ly-nhan-su/don-xin-phep',
+            '/quan-ly-nhan-su/don-xin-phep/tao-moi',
+            '/quan-ly-nhan-su/don-xin-phep/:id/chi-tiet',
+          ],
           permission: [],
           pro: true,
         },

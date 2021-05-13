@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Modal, Form, Avatar, Typography } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, get } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -220,9 +220,44 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch, pagination } = this.props;
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'absents/REMOVE',
+          payload: {
+            id,
+            pagination: {
+              limit: 10,
+              page:
+                pagination.total % pagination.per_page === 1
+                  ? pagination.current_page - 1
+                  : pagination.current_page,
+            },
+          },
+        });
+      },
+      onCancel() {},
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     return [
       {
         title: 'STT',
@@ -268,6 +303,21 @@ class Index extends PureComponent {
         key: 'reason',
         className: 'min-width-200',
         render: (record) => record?.reason,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+          </div>
+        ),
       },
     ];
   };

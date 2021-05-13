@@ -52,6 +52,12 @@ class Index extends PureComponent {
         keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        fromDate: query?.fromDate
+          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+        toDate: query?.toDate
+          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
       },
     };
     setIsMounted(true);
@@ -167,6 +173,36 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
+  };
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          fromDate,
+          toDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e, type) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -304,7 +340,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                classId: search.classId || null,
+                date: search.fromDate &&
+                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -320,9 +357,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

@@ -2,7 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { Modal, Upload, Form } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { isEqual, size } from 'lodash';
-import { useDispatch } from 'dva';
+import { useDispatch, useSelector } from 'dva';
 import csx from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -27,6 +27,7 @@ const Index = memo(({ onOk, ...props }) => {
   const formRef = useRef();
 
   const dispatch = useDispatch();
+  const [loading] = useSelector(({ loading: { effects } }) => [effects]);
 
   const [fileList, setFileList] = useState([]);
   const [students, setStudents] = useState([]);
@@ -119,6 +120,11 @@ const Index = memo(({ onOk, ...props }) => {
           color="success"
           size="large"
           onClick={upload}
+          loading={
+            loading['upload/UPLOAD'] ||
+            loading['mediaUpload/UPLOAD'] ||
+            loading['mediaUpload/CREATE']
+          }
         >
           Tải lên
         </Button>

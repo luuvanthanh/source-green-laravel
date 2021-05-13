@@ -42,6 +42,24 @@ export default {
         });
       }
     },
+    *REMOVE({ payload }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        yield saga.put({
+          type: 'GET_DATA',
+          payload: payload.pagination,
+        });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
+        });
+      }
+    },
   },
   subscriptions: {},
 };
