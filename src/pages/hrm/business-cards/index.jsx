@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar, Typography } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -16,7 +16,6 @@ import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -186,38 +185,14 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
   });
-
-  renderDescription = (record) => {
-    if (!isEmpty(record)) {
-      const businessCards = record.map((item) => {
-        if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
-            item.attended_at,
-            variables.DATE_FORMAT.DATE_TIME,
-          )}`;
-        }
-        return '';
-      });
-      return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
-          {businessCards.map((item, index) => (
-            <div key={index}>
-              {item}
-              <br />
-            </div>
-          ))}
-        </Paragraph>
-      );
-    }
-    return null;
-  };
 
   /**
    * Function remove items
