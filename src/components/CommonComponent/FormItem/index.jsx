@@ -171,6 +171,7 @@ const renderChildren = (
   datePicker: (
     <DatePicker
       disabled={disabled}
+      allowClear={allowClear}
       disabledDate={disabledDate}
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
