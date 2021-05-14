@@ -670,7 +670,7 @@ export async function getLeftMenuMedia() {
       title: 'Đăng hình',
       key: 'upload',
       url: ['/ghi-nhan/dang-hinh'],
-      icon: 'icon icon-drawer',
+      icon: 'icon icon-file',
       permission: [],
       pro: true,
     },
