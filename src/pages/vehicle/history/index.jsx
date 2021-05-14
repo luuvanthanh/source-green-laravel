@@ -1,124 +1,208 @@
-import { memo, useMemo, useRef, useState } from 'react'
-import { Helmet } from 'react-helmet'
-import { Form, Tabs } from 'antd'
-import { useSelector, useLocation } from 'dva'
-import csx from 'classnames'
+import { memo, useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import { Helmet } from 'react-helmet';
+import { Form, Tabs } from 'antd';
+import { useSelector, useDispatch } from 'dva';
+import { useLocation, useHistory } from 'umi';
+import csx from 'classnames';
+import moment from 'moment';
+import { debounce } from 'lodash';
 
-import Pane from '@/components/CommonComponent/Pane'
-import Heading from '@/components/CommonComponent/Heading'
-import Button from '@/components/CommonComponent/Button'
-import FormItem from '@/components/CommonComponent/FormItem'
-import Table from '@/components/CommonComponent/Table'
-import Text from '@/components/CommonComponent/Text'
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
+import Table from '@/components/CommonComponent/Table';
+import Text from '@/components/CommonComponent/Text';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import variables from '@/utils/variables'
-import variablesModules from '../utils/variables'
-import styles from '@/assets/styles/Common/common.scss'
+import variablesModules from '../utils/variables';
+import styles from '@/assets/styles/Common/common.scss';
+import { Helper, variables } from '@/utils';
 
-import RouteModal from './route'
+import RouteModal from './route';
 
-const { TabPane } = Tabs
+const { TabPane } = Tabs;
 
 const Index = memo(() => {
-  const [loadingReducer, paginationReducer] = useSelector(({ loading, busHistory = {} }) => [loading, busHistory?.pagination])
-  const loading = loadingReducer?.effects['notification/GET_DATA']
+  const [
+    loadingReducer,
+    paginationReducer,
+    busHistory,
+    data,
+  ] = useSelector(({ loading, busHistory = {} }) => [
+    loading,
+    busHistory?.pagination,
+    busHistory?.busRoutes,
+    busHistory?.data,
+  ]);
+  const loading = loadingReducer?.effects['busHistory/GET_DATA'];
 
-  const { query } = useLocation()
+  const history = useHistory();
+  const { query, pathname } = useLocation();
+  const dispatch = useDispatch();
 
-  const filterRef = useRef()
+  const mounted = useRef(false);
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
 
-  const [visibleRoute, setVisibleRoute] = useState(false)
+  const filterRef = useRef();
+
+  const [visibleRoute, setVisibleRoute] = useState(false);
   const [search, setSearch] = useState({
+    id: query?.id,
+    date: query?.date,
+    status: query?.status || variablesModules.STATUS_TABS.SCHOOLWARD,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-  })
+  });
 
-  const columns = useMemo(() => [
-    {
-      title: 'STT',
-      key: 'index',
-      className: 'min-width-70',
-      align: 'center',
-      render: () => '1'
-    },
-    {
-      title: 'Cơ sở',
-      key: 'premises',
-      className: 'min-width-70',
-      render: () => <Text size="normal">Lake view</Text>
-    },
-    {
-      title: 'Lớp',
-      key: 'class',
-      className: 'min-width-70',
-      render: () => <Text size="normal">Preschool 1</Text>
-    },
-    {
-      title: 'Trẻ',
-      key: 'student',
-      className: 'min-width-70',
-      render: () => <Text size="normal">Su Beo</Text>
-    },
-    {
-      title: 'Địa điểm',
-      key: 'location',
-      className: 'min-width-150',
-      render: () => <Text size="normal">165 Hoàng Văn Thụ</Text>
-    },
-    {
-      title: 'Lên xe',
-      key: 'start',
-      className: 'min-width-70',
-      render: () => <Text size="normal">07:15</Text>
-    },
-    {
-      title: 'Xuống xe',
-      key: 'end',
-      className: 'min-width-70',
-      render: () => <Text size="normal">07:23</Text>
-    },
-    {
-      title: 'Bảo mẫu',
-      key: 'shuttler',
-      className: 'min-width-70',
-      render: () => <Text size="normal">Lê Thị Vân</Text>
-    },
-    {
-      key: 'action',
-      className: 'min-width-80',
-      width: 80,
-      render: () => (
-        <div className={styles['list-button']}>
-          <Button
-            color="success"
-            ghost
-            onClick={() => setVisibleRoute(true)}
-          >
-            Xem lộ trình
-          </Button>
-        </div>
-      )
-    },
-  ], [])
+  const columns = useMemo(
+    () => [
+      {
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => Helper.serialOrder(search?.page, index),
+      },
+      {
+        title: 'Trẻ',
+        key: 'student',
+        width: 200,
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fullName={record?.student?.fullName}
+          />
+        ),
+      },
+      {
+        title: 'Địa điểm',
+        key: 'location',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record?.busPlace?.address}</Text>,
+      },
+      {
+        title: 'Lên xe',
+        key: 'start',
+        width: 120,
+        className: 'min-width-120',
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.busPlaceLog?.schoolwardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+          </Text>
+        ),
+      },
+      {
+        title: 'Xuống xe',
+        key: 'end',
+        width: 120,
+        className: 'min-width-120',
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.busPlaceLog?.schoolwardGetOff, variables.DATE_FORMAT.TIME_FULL)}
+          </Text>
+        ),
+      },
+      {
+        title: 'Bảo mẫu',
+        key: 'shuttler',
+        width: 120,
+        className: 'min-width-120',
+        render: () => <Text size="normal">Lê Thị Vân</Text>,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        render: () => (
+          <div className={styles['list-button']}>
+            <Button color="success" ghost onClick={() => setVisibleRoute(true)}>
+              Xem lộ trình
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
 
-  const pagination = useMemo(() => ({
-    size: 'default',
-    total: paginationReducer?.total || 0,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(search.page),
-    current: Number(search.page),
-    hideOnSinglePage: (paginationReducer?.total || 0) <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, limit) => {
-      setSearch(prev => ({
-        ...prev,
-        page,
-        limit
-      }))
-      // callback
-    },
-  }), [paginationReducer])
+  const pagination = useMemo(
+    () => ({
+      size: 'default',
+      total: paginationReducer?.total || 0,
+      pageSize: variables.PAGINATION.PAGE_SIZE,
+      defaultCurrent: Number(search.page),
+      current: Number(search.page),
+      hideOnSinglePage: (paginationReducer?.total || 0) <= 10,
+      showSizeChanger: false,
+      pageSizeOptions: false,
+      onChange: (page, limit) => {
+        setSearch((prev) => ({
+          ...prev,
+          page,
+          limit,
+        }));
+        // callback
+      },
+    }),
+    [paginationReducer],
+  );
+
+  const loadData = useCallback(() => {
+    if (search.id && search.date) {
+      dispatch({
+        type: 'busHistory/GET_DATA',
+        payload: {
+          ...search,
+        },
+      });
+      history.push({
+        pathname,
+        query: Helper.convertParamSearch({
+          ...search,
+          date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
+        }),
+      });
+    }
+  }, [search]);
+
+  const formUpdate = (value, values) => {
+    if (values.id && values.date) {
+      mountedSet(setSearch, { ...search, ...values });
+    }
+  };
+
+  useEffect(() => {
+    dispatch({
+      type: 'busHistory/GET_BUS_ROUTES',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => (mounted.current = false);
+  }, []);
+
+  const debouncedSearchStatus = debounce((value) => {
+    mountedSet(setSearch, { ...search, status: value });
+  }, 300);
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  const onChangeSelectStatus = (e) => {
+    debouncedSearchStatus(e);
+  };
 
   return (
     <>
@@ -130,7 +214,10 @@ const Index = memo(() => {
 
         <Pane className="card">
           <Pane className={csx(styles['block-table'], styles['block-table-tab'])}>
-            <Tabs>
+            <Tabs
+              defaultActiveKey={search?.status || variablesModules.STATUS_TABS.SCHOOLWARD}
+              onChange={onChangeSelectStatus}
+            >
               {variablesModules.TABS.map(({ id, name }) => (
                 <TabPane tab={name} key={id} />
               ))}
@@ -139,34 +226,30 @@ const Index = memo(() => {
             <Form
               layout="vertical"
               ref={filterRef}
+              initialValues={{ ...search, date: search.date && moment(search.date) }}
+              onValuesChange={formUpdate}
             >
               <Pane className="row">
-                <Pane className="col-lg-3">
+                <Pane className="col-lg-4">
                   <FormItem
-                    name="premises"
+                    name="id"
                     type={variables.SELECT}
-                    data={[]}
+                    data={busHistory.map((item) => ({
+                      id: item?.busRoute?.id,
+                      name: item?.busRoute?.name,
+                    }))}
+                    placeholder="Chọn lộ trình"
                   />
                 </Pane>
                 <Pane className="col-lg-3">
-                  <FormItem
-                    name="class"
-                    type={variables.SELECT}
-                    data={[]}
-                  />
-                </Pane>
-                <Pane className="col-lg-3">
-                  <FormItem
-                    name="date"
-                    type={variables.DATE_PICKER}
-                  />
+                  <FormItem name="date" type={variables.DATE_PICKER} />
                 </Pane>
               </Pane>
             </Form>
 
             <Table
               columns={columns}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={pagination}
               rowKey={(record) => record.id}
@@ -177,7 +260,7 @@ const Index = memo(() => {
       </Pane>
       <RouteModal visible={visibleRoute} onCancel={() => setVisibleRoute(false)} />
     </>
-  )
-})
+  );
+});
 
-export default Index
+export default Index;

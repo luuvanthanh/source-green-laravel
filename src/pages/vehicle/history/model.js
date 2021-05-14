@@ -7,25 +7,30 @@ export default {
   state: {
     data: [],
     pagination: {
-      total: 0
-    }
+      total: 0,
+    },
+    busRoutes: [],
   },
   reducers: {
-    INIT_STATE: state => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
-      pagination: payload.pagination
+      pagination: payload.pagination,
+    }),
+    SET_BUS_ROUTES: (state, { payload }) => ({
+      ...state,
+      busRoutes: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
         data: {
-          ...payload
-        }
-      }
-    })
+          ...payload,
+        },
+      },
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -36,14 +41,28 @@ export default {
           payload: {
             parsePayload: response.items,
             pagination: {
-              total: response.totalCount
-            }
+              total: response.totalCount,
+            },
           },
         });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
-          payload: error.data
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BUS_ROUTES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBusRoutes, payload);
+        yield saga.put({
+          type: 'SET_BUS_ROUTES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
         });
       }
     },

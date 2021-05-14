@@ -11,7 +11,8 @@
     "API_SSO_URL": true,
     "API_URL_LAVAREL": true,
     "ACCESS_TOKEN_MAPBOX": true,
-    "API_MAP_BOX": true
+    "API_MAP_BOX": true,
+    "URL_AI": true
   },
   "globals": {
     "IMAGE_URL": true,

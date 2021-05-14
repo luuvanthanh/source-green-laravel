@@ -232,7 +232,10 @@ class Index extends PureComponent {
    */
   addList = () => {
     this.setStateData((prevState) => ({
-      busPlaces: [...prevState.busPlaces, { id: Math.random().toString(36).substr(2, 9) }],
+      busPlaces: [
+        ...prevState.busPlaces,
+        { id: Math.random().toString(36).substr(2, 9), studentBusPlaces: [] },
+      ],
     }));
   };
 

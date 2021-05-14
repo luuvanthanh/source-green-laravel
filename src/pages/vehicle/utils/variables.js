@@ -1,8 +1,12 @@
 export const variables = {
   TABS: [
-    { id: 'PICK', name: 'Đón trẻ' },
-    { id: 'DROP', name: 'Trả trẻ' },
+    { id: 'SCHOOLWARD', name: 'Đón trẻ' },
+    { id: 'HOMEAWARD', name: 'Trả trẻ' },
   ],
+  STATUS_TABS: {
+    SCHOOLWARD: 'SCHOOLWARD',
+    HOMEAWARD: 'HOMEAWARD',
+  },
   DAY_OF_WEEK: {
     Monday: 'mo',
     Tuesday: 'tu',

@@ -319,7 +319,7 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -328,7 +328,7 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                 </div>

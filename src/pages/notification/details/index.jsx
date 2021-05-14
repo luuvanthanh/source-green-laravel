@@ -167,7 +167,7 @@ const Index = memo(({}) => {
 
                   <Pane className="mt10">
                     <label className={styles.infoLabel}>Nội dung</label>
-                    <div dangerouslySetInnerHTML={{ __html: details?.description }}></div>
+                    <div dangerouslySetInnerHTML={{ __html: details?.content }}></div>
                   </Pane>
                 </Pane>
               </Pane>

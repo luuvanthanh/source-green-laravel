@@ -7,6 +7,12 @@ export const variables = {
     SENT: 'SENT',
     UNDEFINED: 'UNDEFINED',
   },
+  CLASSIFY_STATUS_NAME: {
+    PENDING: 'Đang xử lý',
+    CLASSIFYING: 'Đang xử lý',
+    UNDEFINED: 'Không xác định',
+    CLASSIFIED: 'Đã xử lý',
+  },
 };
 
 export default variables;

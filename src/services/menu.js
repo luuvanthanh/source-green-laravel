@@ -440,6 +440,7 @@ export async function getLeftMenuVehicel() {
       url: [
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
       icon: 'icon icon-notification',
       permission: [],
@@ -670,7 +671,7 @@ export async function getLeftMenuMedia() {
       title: 'Đăng hình',
       key: 'upload',
       url: ['/ghi-nhan/dang-hinh'],
-      icon: 'icon icon-drawer',
+      icon: 'icon icon-file',
       permission: [],
       pro: true,
     },

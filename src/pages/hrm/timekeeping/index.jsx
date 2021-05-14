@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar, Typography } from 'antd';
+import { Modal, Form, Typography } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
+import { debounce, isEmpty, get, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -185,11 +184,12 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
   });
 
@@ -239,7 +239,12 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'fullName',
         className: 'min-width-200',
-        render: (record) => <AvatarTable fileImage={record.fileImage} fullName={record.fullName} />,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'Số lần chấm',
@@ -247,7 +252,7 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-100',
         width: 100,
-        render: (record) => record.timekeeping?.length,
+        render: (record) => size(record.timekeeping),
       },
       {
         title: 'Chi tiết',
@@ -299,6 +304,7 @@ class Index extends PureComponent {
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -306,6 +312,7 @@ class Index extends PureComponent {
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>
