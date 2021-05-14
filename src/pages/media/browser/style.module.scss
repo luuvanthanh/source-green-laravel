@@ -1,12 +1,69 @@
+@import "@/assets/styles/mixins.scss";
+
 .imageWrapper {
   position: relative;
 }
 
 .close {
   border-radius: 50%;
-  transform: scale(.6);
+  transform: scale(0.6);
   background: #fff !important;
   position: absolute;
   right: -4px;
   top: -16px;
+}
+
+.preview-image {
+  :global(.ant-image-mask) {
+    opacity: 1;
+  }
+  .ant-image {
+    position: relative;
+  }
+  .tag {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    font-family: "Roboto", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    border-radius: 2px;
+    padding: 4px;
+    &.yellow {
+      color: $text-dark;
+      background-color: #feea35;
+      border: 1px solid #feea35;
+    }
+    &.success {
+      color: $text-white;
+      background-color: #27a600;
+      border: 1px solid #27a600;
+    }
+    &.danger {
+      color: $text-white;
+      background-color: #d83838;
+      border: 1px solid #d83838;
+    }
+  }
+  .cancel {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    width: 24px;
+    height: 24px;
+    background: $background-white;
+    border: 1px solid #eaeaea;
+    box-sizing: border-box;
+    border-radius: 100%;
+    span[class*="icon"] {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: $text;
+      font-size: 10px;
+    }
+  }
 }
