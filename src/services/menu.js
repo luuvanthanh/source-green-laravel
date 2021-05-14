@@ -440,6 +440,7 @@ export async function getLeftMenuVehicel() {
       url: [
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
       icon: 'icon icon-notification',
       permission: [],

@@ -9,8 +9,8 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
 import validator from 'validator';
-import { dataSource } from '@/services/menuHome.json';
 import { variables } from '@/utils';
+import feature from '@/services/feature';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
@@ -35,7 +35,7 @@ class MenuLeft extends React.Component {
       menuData: props.menu || props.menuData,
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
-      data: dataSource.filter((menuItem) => {
+      data: feature.FEATURES.filter((menuItem) => {
         const showMenu = isValidCondition({
           conditions: [
             {
