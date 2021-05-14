@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
-import { Form } from 'antd';
+import { Form, Image, Tag, Modal } from 'antd';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory, useLocation } from 'umi';
@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'dva';
 import { size } from 'lodash';
 import moment from 'moment';
 import csx from 'classnames';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -14,11 +15,13 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import NoData from '@/components/CommonComponent/NoData';
 import UploadModal from './upload';
+import Loading from '@/components/CommonComponent/Loading';
 
 import { Helper, variables } from '@/utils';
 import localVariables from '../utils/variables';
 import styles from './style.module.scss';
 
+const { confirm } = Modal;
 const Index = memo(() => {
   const filterRef = useRef();
 
@@ -33,23 +36,31 @@ const Index = memo(() => {
 
   const [visibleUpload, setVisibleUpload] = useState(false);
   const [search, setSearch] = useState({
-    uploadDate: query?.uploadDate,
+    uploadDate: query?.uploadDate || moment(),
   });
   const [images, setImages] = useState([]);
 
   const removeImage = (removeId) => () => {
-    dispatch({
-      type: 'mediaBrowser/REMOVE',
-      payload: {
-        id: removeId
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'mediaBrowser/REMOVE',
+          payload: {
+            id: removeId,
+          },
+          callback: () => {
+            setImages((prevImages) => prevImages.filter((image) => image.id !== removeId));
+          },
+        });
       },
-      callback: () => {
-        setImages((prevImages) => prevImages.filter(
-          (image) => image.id !== removeId)
-        );
-      }
+      onCancel() {},
     });
-
   };
 
   const onOk = useCallback(() => {
@@ -69,12 +80,14 @@ const Index = memo(() => {
       type: 'mediaBrowser/GET_DATA',
       payload: {
         ...search,
-        status: localVariables.CLASSIFY_STATUS.PENDING,
-      }
+      },
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        uploadDate: Helper.getDate(search.uploadDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   }, [search]);
 
@@ -108,7 +121,6 @@ const Index = memo(() => {
           <Button
             className="ml-auto"
             color="primary"
-            icon="cloudDownload"
             size="large"
             onClick={() => setVisibleUpload(true)}
           >
@@ -130,6 +142,7 @@ const Index = memo(() => {
                   <FormItem
                     name="uploadDate"
                     type={variables.DATE_PICKER}
+                    allowClear={false}
                     onChange={(date) =>
                       changeFilter('uploadDate')(
                         date ? date.format(variables.DATE_FORMAT.DATE_AFTER) : null,
@@ -141,28 +154,59 @@ const Index = memo(() => {
             </Form>
           </Pane>
 
-          {!size(images) ? (
-            <Pane className="p20">
-              <NoData />
-            </Pane>
-          ) : (
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 312}>
-              <Pane className="px20 py10">
-                <Pane className="row">
-                  {images.map(({ url, id, name }) => (
-                    <Pane
-                      className={csx('col-lg-2 col-md-4 col-sm-6 my10', styles.imageWrapper)}
-                      key={id}
-                    >
-                      <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
-
-                      <Button icon="cancel" className={styles.close} onClick={removeImage(id)} />
-                    </Pane>
-                  ))}
-                </Pane>
+          <Loading loading={loading['mediaBrowser/GET_DATA']} params={{ type: 'container' }}>
+            {!size(images) ? (
+              <Pane className="p20">
+                <NoData />
               </Pane>
-            </Scrollbars>
-          )}
+            ) : (
+              <Scrollbars autoHeight autoHeightMax={window.innerHeight - 312}>
+                <Pane className={csx('px20 py10', styles['preview-image'])}>
+                  <Image.PreviewGroup>
+                    {(images || []).map((item, index) => (
+                      <Image
+                        width={175}
+                        height={138}
+                        src={`${API_UPLOAD}${item.url}`}
+                        key={index}
+                        preview={{
+                          maskClassName: 'customize-mask',
+                          mask: (
+                            <>
+                              <Tag
+                                className={csx(styles.tag, {
+                                  [`${styles.yellow}`]:
+                                    item.status === localVariables.CLASSIFY_STATUS.PENDING,
+                                  [`${styles.success}`]:
+                                    item.status === localVariables.CLASSIFY_STATUS.CLASSIFIED,
+                                  [`${styles.danger}`]:
+                                    item.status === localVariables.CLASSIFY_STATUS.UNDEFINED,
+                                })}
+                              >
+                                {localVariables.CLASSIFY_STATUS_NAME[item.status] ||
+                                  localVariables.CLASSIFY_STATUS_NAME.PENDING}
+                              </Tag>
+                              {/* <Tag className={csx(styles.tag)}>Đã xử lý</Tag>
+                            <Tag className={csx(styles.tag)}>Không xác định</Tag> */}
+                              <div
+                                className={styles['cancel']}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  removeImage(id);
+                                }}
+                              >
+                                <span className="icon-cancel"></span>
+                              </div>
+                            </>
+                          ),
+                        }}
+                      />
+                    ))}
+                  </Image.PreviewGroup>
+                </Pane>
+              </Scrollbars>
+            )}
+          </Loading>
         </Pane>
 
         <Pane>
@@ -172,7 +216,6 @@ const Index = memo(() => {
             className="mx-auto"
             color="success"
             size="large"
-            icon="checkmark"
             onClick={classify}
           >
             Lọc hình ảnh
