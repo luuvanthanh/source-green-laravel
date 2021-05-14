@@ -176,7 +176,8 @@ const Index = memo(() => {
                               <Tag
                                 className={csx(styles.tag, {
                                   [`${styles.yellow}`]:
-                                    item.status === localVariables.CLASSIFY_STATUS.PENDING,
+                                    item.status === localVariables.CLASSIFY_STATUS.PENDING ||
+                                    item.status === localVariables.CLASSIFY_STATUS.CLASSIFYING,
                                   [`${styles.success}`]:
                                     item.status === localVariables.CLASSIFY_STATUS.CLASSIFIED,
                                   [`${styles.danger}`]:

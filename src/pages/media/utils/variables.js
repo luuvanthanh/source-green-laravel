@@ -9,6 +9,7 @@ export const variables = {
   },
   CLASSIFY_STATUS_NAME: {
     PENDING: 'Đang xử lý',
+    CLASSIFYING: 'Đang xử lý',
     UNDEFINED: 'Không xác định',
     CLASSIFIED: 'Đã xử lý',
   },
