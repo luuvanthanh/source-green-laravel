@@ -101,6 +101,7 @@ class Index extends PureComponent {
           const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
           const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
           return {
+            ...item,
             endTime,
             startTime,
             totalTime: getTotalTime(startTime, endTime),
@@ -123,6 +124,7 @@ class Index extends PureComponent {
         id: get(params, 'id'),
         shiftId: get(params, 'id'),
         time: values.time.map((item) => ({
+          ...item,
           endTime: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
@@ -280,7 +282,10 @@ class Index extends PureComponent {
           className={styles['layout-form']}
           layout="vertical"
           initialValues={{
-            time: [{}, {}],
+            time: [
+              { name: 'Ca sáng', code: 'CA_SANG' },
+              { name: 'Ca chiều', code: 'CA_CHIEU' },
+            ],
           }}
           colon={false}
           onFinish={this.onFinish}

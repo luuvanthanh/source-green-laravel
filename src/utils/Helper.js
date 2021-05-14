@@ -672,7 +672,7 @@ export default class Helpers {
   static disabledDateTo = (current, formRef, key = 'endDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current > moment(data[key]).endOf('day');
+      if (data[key]) return current && current < moment(data[key]).endOf('day');
       return null;
     }
     return null;
@@ -681,7 +681,7 @@ export default class Helpers {
   static disabledDateFrom = (current, formRef, key = 'startDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current < moment(data[key]).endOf('day');
+      if (data[key]) return current && current > moment(data[key]).endOf('day');
       return null;
     }
     return null;

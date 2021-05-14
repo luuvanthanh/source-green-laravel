@@ -173,68 +173,14 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
   });
-
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'schedulesSetting/UPDATE' : 'schedulesSetting/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
 
   /**
    * Function remove items
@@ -328,7 +274,8 @@ class Index extends PureComponent {
             const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
             return (
               <span key={item.id}>
-                {Helper.getTwoDate(startTime, endTime, variables.DATE_FORMAT.HOUR)} &nbsp;&nbsp;
+                {item.name && `${item.name}:`} {Helper.getTwoDate(startTime, endTime, variables.DATE_FORMAT.HOUR)}{' '}
+                <br />
               </span>
             );
           }),
@@ -386,13 +333,13 @@ class Index extends PureComponent {
     const loading = effects['schedulesSetting/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách cấu hình ca" />
+        <Helmet title="Danh mục ca làm việc" />
         <div
           className={classnames(styles['content-form'], styles['content-form-schedulesSetting'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách cấu hình ca</Text>
+            <Text color="dark">Danh mục ca làm việc</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo ca
             </Button>
@@ -401,8 +348,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
