@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import styles from './index.scss';
 import Slider from 'react-slick';
-import { dataSource } from '@/services/menuHome.json';
 import { variables } from '@/utils';
 import { isValidCondition } from '@/utils/authority';
+import feature from '@/services/feature';
 
 @connect(({ user, loading }) => ({ user, loading }))
 class Index extends PureComponent {
@@ -15,7 +15,7 @@ class Index extends PureComponent {
     super(props, context);
     const { user } = props;
     this.state = {
-      data: dataSource.filter((menuItem) => {
+      data: feature.FEATURES.filter((menuItem) => {
         const showMenu = isValidCondition({
           conditions: [
             {
