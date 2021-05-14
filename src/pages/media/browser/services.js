@@ -10,6 +10,7 @@ export function get(params) {
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.uploadDate,
+          targetValue: '00:00:00',
         }),
         isUTC: false,
       }),
