@@ -75,6 +75,11 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'DecisionRewardController@update',
                 'as' => 'decision-reward.update',
             ]);
+
+            \Route::get('decision-rewards-export-word/{id}', [
+                'uses' => 'DecisionRewardController@exportWord',
+                'as' => 'decision-rewards.word.export',
+            ]);
         });
     }
 }

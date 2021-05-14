@@ -2,11 +2,14 @@
 
 namespace GGPHP\Dismissed\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Presenters\DismissedPresenter;
 use GGPHP\Dismissed\Repositories\Contracts\DismissedRepository;
 use GGPHP\Dismissed\Services\DismissedDetailServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -24,6 +27,18 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         'Id',
         'CreationTime',
     ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -57,15 +72,15 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
     {
         \DB::beginTransaction();
         try {
-            $tranfer = Dismissed::create($attributes);
-            DismissedDetailServices::add($tranfer->Id, $attributes['data']);
+            $dismissed = Dismissed::create($attributes);
+            DismissedDetailServices::add($dismissed->Id, $attributes['data']);
 
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($dismissed->Id);
     }
 
     public function getDismissed(array $attributes)
@@ -88,5 +103,30 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         }
 
         return $dismissed;
+    }
+
+    public function exportWord($id)
+    {
+        $dismissed = Dismissed::findOrFail($id);
+        $now = Carbon::now();
+
+        $detail = $dismissed->dismissedDetails->first();
+        $employee = $detail->employee;
+        $params = [
+            'decisionNumber' => $dismissed->DecisionNumber,
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'date' => $dismissed->DecisionDate->format('d'),
+            'month' => $dismissed->DecisionDate->format('m'),
+            'year' => $dismissed->DecisionDate->format('Y'),
+            'decisionDate' => $dismissed->DecisionDate->format('d/m/Y'),
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '       ',
+            'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
+            'position' => $detail->position ? $detail->position->Name : '       ',
+        ];
+
+        return $this->wordExporterServices->exportWord('dismissed', $params);
     }
 }

@@ -2,11 +2,14 @@
 
 namespace GGPHP\Appoint\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Appoint\Models\Appoint;
 use GGPHP\Appoint\Presenters\AppointPresenter;
 use GGPHP\Appoint\Repositories\Contracts\AppointRepository;
 use GGPHP\Appoint\Services\AppointDetailServices;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -24,6 +27,18 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
         'Id',
         'CreationTime',
     ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -88,5 +103,32 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
         }
 
         return $appoint;
+    }
+
+    public function exportWord($id)
+    {
+        $appoint = Appoint::findOrFail($id);
+        $now = Carbon::now();
+
+        $detail = $appoint->appointDetails->first();
+        $employee = $detail->employee;
+        $params = [
+            'decisionNumber' => $appoint->DecisionNumber,
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'date' => $appoint->DecisionDate->format('d'),
+            'month' => $appoint->DecisionDate->format('m'),
+            'year' => $appoint->DecisionDate->format('Y'),
+            'decisionDate' => $appoint->DecisionDate->format('d/m/Y'),
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '       ',
+            'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
+            'position' => $detail->position ? $detail->position->Name : '       ',
+            'class' => $detail->class ? $detail->class->Name : '       ',
+            'yearStudy' => $appoint->YearStudy ? $appoint->YearStudy : '       ',
+        ];
+
+        return $this->wordExporterServices->exportWord('appoint', $params);
     }
 }

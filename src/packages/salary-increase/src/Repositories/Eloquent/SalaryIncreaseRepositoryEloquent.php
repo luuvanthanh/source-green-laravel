@@ -2,10 +2,13 @@
 
 namespace GGPHP\SalaryIncrease\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\SalaryIncrease\Models\SalaryIncrease;
 use GGPHP\SalaryIncrease\Presenters\SalaryIncreasePresenter;
 use GGPHP\SalaryIncrease\Repositories\Contracts\SalaryIncreaseRepository;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -23,6 +26,18 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         'Id',
         'CreationTime',
     ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -88,5 +103,29 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         return $salaryIncrease;
+    }
+
+    public function exportWord($id)
+    {
+        $salaryIncrease = SalaryIncrease::findOrFail($id);
+        $now = Carbon::now();
+
+        $employee = $salaryIncrease->employee;
+        $params = [
+            'decisionNumber' => $salaryIncrease->DecisionNumber,
+            'decisionDate' => $salaryIncrease->DecisionDate->format('d-m-Y'),
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
+            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'salary' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
+            'salaryOld' => '........',
+            'salatyNew' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
+            'allowance' => '........',
+        ];
+
+        return $this->wordExporterServices->exportWord('salary_increase', $params);
     }
 }

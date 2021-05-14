@@ -55,6 +55,11 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'AppointController@destroy',
                     'as' => 'appoints.destroy',
                 ]);
+
+                \Route::get('appoints-export-word/{id}', [
+                    'uses' => 'AppointController@exportWord',
+                    'as' => 'appoints.word.export',
+                ]);
             });
 
         });

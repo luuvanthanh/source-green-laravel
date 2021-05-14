@@ -55,6 +55,11 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'DismissedController@destroy',
                     'as' => 'dismisseds.destroy',
                 ]);
+
+                \Route::get('dismisseds-export-word/{id}', [
+                    'uses' => 'DismissedController@exportWord',
+                    'as' => 'dismisseds.word.export',
+                ]);
             });
 
         });

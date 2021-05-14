@@ -7,6 +7,8 @@ use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -25,6 +27,18 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         'employee.FullName' => 'like',
         'CreationTime',
     ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -140,5 +154,41 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         }
 
         return parent::find($probationaryContract->Id);
+    }
+
+    public function exportWord($id)
+    {
+        $labourContract = ProbationaryContract::findOrFail($id);
+        $now = Carbon::now();
+
+        $employee = $labourContract->employee;
+        $params = [
+            'contractNumber' => $labourContract->ContractNumber,
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '       ',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '       ',
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '       ',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '       ',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '       ',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '       ',
+            'dateOfIssueCard' => $employee->DateOfIssueCard ? $employee->DateOfIssueCard->format('d-m-Y') : '       ',
+            'placeOfIssueCard' => $employee->PlaceOfIssueCard ? $employee->PlaceOfIssueCard : '       ',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '       ',
+            'adress' => $employee->Adress ? $employee->Adress : '.......',
+            // 'phone' => $employee->Phone ? $employee->Phone : '.......',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '       ',
+            'month' => $labourContract->Month ? $labourContract->Month : '       ',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '       ',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '       ',
+            'position' => $labourContract->position ? $labourContract->position->Name : '       ',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '       ',
+            'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
+            'salary' => $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
+        ];
+
+        return $this->wordExporterServices->exportWord('probationary_contract', $params);
     }
 }

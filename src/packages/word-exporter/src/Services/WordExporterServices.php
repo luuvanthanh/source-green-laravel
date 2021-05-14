@@ -18,21 +18,37 @@ class WordExporterServices
             'template' => 'labour_contract.docx',
             'result' => 'labour_contract.docx',
         ],
-        'minutes_of_agreements' => [
-            'template' => 'minutes_of_agreements.docx',
-            'result' => 'minutes_of_agreements.docx',
+        'probationary_contract' => [
+            'template' => 'probationary_contract.docx',
+            'result' => 'probationary_contract.docx',
         ],
         'transfer' => [
             'template' => 'transfer.docx',
             'result' => 'transfer.docx',
         ],
+        'dismissed' => [
+            'template' => 'dismissed.docx',
+            'result' => 'dismissed.docx',
+        ],
+        'appoint' => [
+            'template' => 'appoint.docx',
+            'result' => 'appoint.docx',
+        ],
         'decision_reward' => [
             'template' => 'decision_reward.docx',
             'result' => 'decision_reward.docx',
         ],
-        'entrance-paper' => [
-            'template' => 'entrance-paper.docx',
-            'result' => 'entrance-paper.docx',
+        'salary_increase' => [
+            'template' => 'salary_increase.docx',
+            'result' => 'salary_increase.docx',
+        ],
+        'resignation_decision' => [
+            'template' => 'resignation_decision.docx',
+            'result' => 'resignation_decision.docx',
+        ],
+        'decision_suspend' => [
+            'template' => 'decision_suspend.docx',
+            'result' => 'decision_suspend.docx',
         ],
     ];
 

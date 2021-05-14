@@ -23,6 +23,19 @@ class DecisionRewardDetail extends UuidModel
         'DecisionRewardId', 'EmployeeId', 'Money', 'TimeApply', 'Note',
     ];
 
+    protected $dateTimeFields = [
+        'TimeApply',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'TimeApply' => 'datetime',
+    ];
+
     /**
      * Define relations store
      */
