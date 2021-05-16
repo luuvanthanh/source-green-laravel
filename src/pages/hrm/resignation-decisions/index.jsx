@@ -226,6 +226,10 @@ class Index extends PureComponent {
     });
   };
 
+  export = (id) => {
+    Helper.exportExcel(`/v1/resignation-decisions-export-word/${id}`, {}, 'QD-ThoiViec.docx');
+  };
+
   /**
    * Function header table
    */
@@ -300,18 +304,38 @@ class Index extends PureComponent {
         render: (record) => get(record, 'note'),
       },
       {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        title: 'Thao tác',
+        key: 'actions',
+        width: 180,
+        className: 'min-width-180',
+        fixed: 'right',
+        align: 'center',
         render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
+          <ul className="list-unstyled list-inline">
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                icon="edit"
+                onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="danger"
+                icon="remove"
+                className="ml-2"
+                onClick={() => this.onRemove(record.id)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="success"
+                icon="export"
+                className="ml-2"
+                onClick={() => this.export(record.id)}
+              />
+            </li>
+          </ul>
         ),
       },
     ];

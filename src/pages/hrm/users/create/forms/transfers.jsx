@@ -149,6 +149,10 @@ const Index = memo(() => {
     });
   };
 
+  const exportData = (id) => {
+    Helper.exportExcel(`/v1/transfers-export-word/${id}`, {}, 'QDDieuChuyen.docx');
+  };
+
   /**
    * Function header table
    */
@@ -224,10 +228,10 @@ const Index = memo(() => {
             </li>
             <li className="list-inline-item">
               <Button
-                color="danger"
-                icon="remove"
+                color="success"
+                icon="export"
                 className="ml-2"
-                onClick={() => onRemove(record.id)}
+                onClick={() => exportData(record.id)}
               />
             </li>
           </ul>
