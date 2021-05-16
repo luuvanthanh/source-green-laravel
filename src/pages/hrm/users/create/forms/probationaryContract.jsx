@@ -190,6 +190,10 @@ const Index = memo(() => {
     },
   ];
 
+  const exportData = (id) => {
+    Helper.exportExcel(`/v1/probationary-contracts-export-word/${id}`, {}, 'HopDongThuViec.docx');
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -278,14 +282,22 @@ const Index = memo(() => {
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 100,
-        className: 'min-width-100',
+        width: 130,
+        className: 'min-width-130',
         fixed: 'right',
         align: 'center',
         render: (record) => (
           <ul className="list-unstyled list-inline">
             <li className="list-inline-item">
               <Button color="primary" icon="edit" onClick={() => onEdit(record)} />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="success"
+                icon="export"
+                className="ml-2"
+                onClick={() => exportData(record.id)}
+              />
             </li>
           </ul>
         ),

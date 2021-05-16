@@ -225,6 +225,10 @@ class Index extends PureComponent {
     });
   };
 
+  export = (id) => {
+    Helper.exportExcel(`/v1/probationary-contracts-export-word/${id}`, {}, 'HopDongThuViec.docx');
+  };
+
   /**
    * Function header table
    */
@@ -330,8 +334,8 @@ class Index extends PureComponent {
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 130,
-        className: 'min-width-130',
+        width: 180,
+        className: 'min-width-180',
         fixed: 'right',
         align: 'center',
         render: (record) => (
@@ -349,6 +353,14 @@ class Index extends PureComponent {
                 icon="remove"
                 className="ml-2"
                 onClick={() => this.onRemove(record.id)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="success"
+                icon="export"
+                className="ml-2"
+                onClick={() => this.export(record.id)}
               />
             </li>
           </ul>
