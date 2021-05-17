@@ -59,14 +59,17 @@ export default {
         });
       }
     },
-    *GET_STUDENTS({ payload }, saga) {
+    *GET_STUDENTS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(categories.getStudents, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_STUDENTS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        callback(null, error);
+      }
     },
     *GET_EMPLOYEES({ payload }, saga) {
       try {

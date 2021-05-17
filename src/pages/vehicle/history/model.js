@@ -35,6 +35,9 @@ export default {
   effects: {
     *GET_DATA({ payload }, saga) {
       try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
         const response = yield saga.call(services.get, payload);
         yield saga.put({
           type: 'SET_DATA',
