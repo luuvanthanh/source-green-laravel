@@ -1,13 +1,18 @@
 import { MapLayer } from 'react-leaflet';
+import { isEmpty } from 'lodash';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 import { withLeaflet } from 'react-leaflet';
 
 class Routing extends MapLayer {
   createLeafletElement() {
-    const { map } = this.props;
+    const { map, routes } = this.props;
+    let waypoints = [];
+    if (!isEmpty(routes)) {
+      waypoints = routes.map((item) => L.latLng(item?.lat, item?.long));
+    }
     let leafletElement = L.Routing.control({
-      waypoints: [L.latLng(16.050051, 108.155123), L.latLng(16.06471, 108.15115)],
+      waypoints: waypoints,
       lineOptions: {
         styles: [
           {
