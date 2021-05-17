@@ -38,8 +38,8 @@ const mapStateToProps = ({ menu, tutorialAdd, loading }) => ({
   details: tutorialAdd.details,
   menuData: menu.menuLeftVehicel,
   branches: tutorialAdd.branches,
-  students: tutorialAdd.students,
   employees: tutorialAdd.employees,
+  students: tutorialAdd.students,
   busInformations: tutorialAdd.busInformations,
 });
 const { confirm } = Modal;
@@ -62,6 +62,7 @@ class Index extends PureComponent {
       studentBusPlaces: [],
       bus: [],
       busId: null,
+      students: [],
     };
     setIsMounted(true);
   }
@@ -139,6 +140,7 @@ class Index extends PureComponent {
       payload: {
         classStatus: 'HAS_CLASS',
       },
+      callback: () => {},
     });
   };
 
@@ -207,15 +209,28 @@ class Index extends PureComponent {
     }));
   };
 
+  enableStudents = (items) => {
+    const { busPlaces } = this.state;
+    let studentBusPlaces = [];
+    busPlaces.forEach((item) => {
+      studentBusPlaces = [...studentBusPlaces, ...item.studentBusPlaces];
+    });
+    return items.filter(
+      (item) => !studentBusPlaces.find((itemStudent) => itemStudent.id === item.id),
+    );
+  };
+
   /**
    * Function edit list
    * @param {uid} id id of items
    */
   onEditList = (record) => {
+    const { students } = this.props;
     this.setStateData({
       visible: true,
       listId: record.id,
       studentBusPlaces: record.studentBusPlaces.map((item) => item.id),
+      students: [...this.enableStudents(students), ...record.studentBusPlaces],
     });
   };
 
@@ -224,6 +239,7 @@ class Index extends PureComponent {
       visible: false,
       listId: null,
       studentBusPlaces: [],
+      students: [],
     });
   };
 
@@ -253,21 +269,9 @@ class Index extends PureComponent {
   };
 
   onRemove = (id) => {
-    const self = this;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        self.setStateData((prevState) => ({
-          busPlaces: prevState.busPlaces.filter((item) => item.id !== id),
-        }));
-      },
-      onCancel() {},
-    });
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.filter((item) => item.id !== id),
+    }));
   };
 
   onRemoveChildren = (record) => {
@@ -394,6 +398,7 @@ class Index extends PureComponent {
       id: params.id,
       busPlaces: busPlaces.map((item) => ({
         ...item,
+        long: item.lng,
         studentBusPlaces: item.studentBusPlaces.map((itemBus, index) => ({
           studentId: itemBus.id,
           address: itemBus.address,
@@ -456,14 +461,35 @@ class Index extends PureComponent {
     return !!itemBusValidate;
   };
 
+  disabledDatOffWeek = (current, formRef) => {
+    if (formRef.current) {
+      const data = this.formRef.current.getFieldsValue();
+      if (data.busRouteShedules) {
+        return !data.busRouteShedules.includes(
+          variablesModules.DAY_OF_WEEK_NUMBER[moment(current).format('d')],
+        );
+      }
+      return false;
+    }
+    return null;
+  };
+
   render() {
-    const { busPlaces, visible, listId, studentBusPlaces, visibleMap, bus, busId } = this.state;
+    const {
+      busPlaces,
+      visible,
+      listId,
+      studentBusPlaces,
+      visibleMap,
+      bus,
+      busId,
+      students,
+    } = this.state;
     const {
       menuData,
       branches,
       busInformations,
       employees,
-      students,
       loading: { effects },
     } = this.props;
     const loading = effects['tutorialAdd/GET_DATA'];
@@ -550,6 +576,10 @@ class Index extends PureComponent {
                     name="startDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) =>
+                      Helper.disabledDateFrom(current, this.formRef) ||
+                      this.disabledDatOffWeek(current, this.formRef)
+                    }
                   />
                 </div>
                 <div className="col-lg-3">
@@ -558,6 +588,10 @@ class Index extends PureComponent {
                     name="endDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) =>
+                      Helper.disabledDateTo(current, this.formRef) ||
+                      this.disabledDatOffWeek(current, this.formRef)
+                    }
                   />
                 </div>
               </div>
@@ -570,6 +604,7 @@ class Index extends PureComponent {
                     className="table-edit"
                     isEmpty
                     pagination={false}
+                    loading={loading}
                     params={{
                       header: this.header(),
                       type: 'table',
