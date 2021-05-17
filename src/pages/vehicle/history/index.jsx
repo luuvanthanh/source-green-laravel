@@ -145,8 +145,8 @@ const Index = memo(() => {
       {
         title: 'Bảo mẫu',
         key: 'shuttler',
-        width: 120,
-        className: 'min-width-120',
+        width: 200,
+        className: 'min-width-200',
         render: (record) => (
           <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
             {record?.busPlace?.busRoute?.busRouteNannies

@@ -15,6 +15,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import common from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
 import variablesModules from '../../utils/variables';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const iconStudent = new L.Icon({
   iconUrl: '/images/marker-student.svg',
@@ -114,14 +115,17 @@ class Index extends PureComponent {
       status,
     } = this.props;
     const { position } = this.state;
-    const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
         centered
         bodyStyle={{ padding: 0 }}
         className={common['modal-container']}
         onCancel={this.props.onCancel}
-        title="LỘ TRÌNH XE BUS"
+        title={
+          <Heading type="form-block-title" className="mb10">
+            Lộ trình xe bus
+          </Heading>
+        }
         visible={visible}
         footer={false}
       >
@@ -206,13 +210,18 @@ class Index extends PureComponent {
             </div>
 
             <div className="p20">
-              <div className={styles.userInformation}>
-                <AvatarTable />
-                <div>
-                  <h3>{'Lê Thị Vân'}</h3>
-                  <p>{'Bảo mẫu - Cơ sở 1 '}</p>
-                </div>
-              </div>
+              <label className={styles.infoLabel}>Nhân viên</label>
+              <Scrollbars autoHeight autoHeightMax={340}>
+                {route?.busPlace?.busRoute?.busRouteNannies?.map((item) => (
+                  <div key={item?.nanny?.id} className="mt10 mb10 ">
+                    <AvatarTable
+                      fullName={item?.nanny?.fullName}
+                      fileImage={Helper.getPathAvatarJson(item?.nanny?.fileImage)}
+                      description="Bảo mẫu"
+                    />
+                  </div>
+                ))}
+              </Scrollbars>
             </div>
           </div>
           <div className="col-lg-7">
