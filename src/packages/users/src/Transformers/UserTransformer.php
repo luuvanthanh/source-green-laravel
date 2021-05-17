@@ -37,7 +37,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow',
     ];
 
     /**
@@ -98,6 +98,20 @@ class UserTransformer extends BaseTransformer
         }
 
         return $this->item($employee->classTeacher, new ClassTeacherTransformer, 'ClassTeacher');
+    }
+
+    /**
+     * Include RankPositionInformation
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includePositionLevelNow(User $employee)
+    {
+        if (empty($employee->positionLevelNow)) {
+            return;
+        }
+
+        return $this->item($employee->positionLevelNow, new PositionLevelTransformer, 'PositionLevelNow');
     }
 
     /**

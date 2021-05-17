@@ -142,7 +142,12 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
      */
     public function positionLevelNow()
     {
-        return $this->hasOne(PositionLevel::class, 'EmployeeId')->where('EndDate', null);
+        $now = Carbon::now()->format('Y-m-d');
+
+        return $this->hasOne(PositionLevel::class, 'EmployeeId')->where(function ($q2) use ($now) {
+            $q2->where([['StartDate', '<=', $now], ['EndDate', '>=', $now]])
+                ->orWhere([['StartDate', '<=', $now], ['EndDate', null]]);
+        });
     }
 
     /**

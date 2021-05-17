@@ -105,6 +105,35 @@ class RouteRegistrar extends CoreRegistrar
                     'group' => 'Lịch làm việc',
                 ]);
             });
+
+            \Route::get('division-shifts', [
+                'comment' => 'Tạo mới ca',
+                'uses' => 'DivisionShiftController@index',
+                'as' => 'division-shifts.store',
+                'group' => 'Ca làm việc',
+            ]);
+
+            \Route::post('division-shifts', [
+                'comment' => 'Tạo mới ca',
+                'uses' => 'DivisionShiftController@store',
+                'as' => 'division-shifts.store',
+                'group' => 'Ca làm việc',
+            ]);
+
+            \Route::put('division-shifts/{id}', [
+                'comment' => 'Chỉnh sửa ca',
+                'uses' => 'DivisionShiftController@update',
+                'as' => 'division-shifts.update',
+                'group' => 'Ca làm việc',
+            ]);
+
+            \Route::get('division-shifts/{id}', [
+                'comment' => 'Thông tin ca',
+                'uses' => 'DivisionShiftController@show',
+                'as' => 'division-shifts.show',
+                'group' => 'Ca làm việc',
+            ]);
+
         });
     }
 }

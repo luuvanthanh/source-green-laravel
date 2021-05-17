@@ -124,7 +124,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
     public function createOrUpdate(array $attributes)
     {
         $startDate = new Carbon($attributes['startDate']);
-        $dateEndYear = $startDate->endOfYear();
+        $dateEndYear = isset($attributes['endDate']) ? Carbon::parse($attributes['endDate']) : $startDate->endOfYear();
 
         if (isset($attributes['repeatBy'])) {
             $attributes['count'] = $this::getCountRepeat($attributes['repeatBy'], $attributes['startDate'], $dateEndYear);

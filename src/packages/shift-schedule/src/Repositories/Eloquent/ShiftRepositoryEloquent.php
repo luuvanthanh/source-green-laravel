@@ -88,7 +88,7 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
         $shift = $this->model::find($id);
         $shift = $shift->update($attributes);
 
-        if (!empty($attributes['Time'])) {
+        if (!empty($attributes['time'])) {
             ShiftDetailServices::update($id, $attributes['time']);
         }
 
