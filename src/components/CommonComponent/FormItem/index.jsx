@@ -222,6 +222,7 @@ const renderChildren = (
       disabledHours={disabledHours}
       disabledMinutes={disabledMinutes}
       placeholder="Chọn"
+      disabled={disabled}
     />
   ),
   treeSelect: (

@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
+import * as categroies from '@/services/categories';
 
 export default {
   namespace: 'workShiftsAdd',
@@ -10,6 +11,8 @@ export default {
       isError: false,
       data: {},
     },
+    divistions: [],
+    shifts: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -26,8 +29,34 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
+    }),
+    SET_SHIFTS: (state, { payload }) => ({
+      ...state,
+      shifts: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categroies.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {}
+    },
+    *GET_SHIFTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categroies.getShifts, payload);
+        yield saga.put({
+          type: 'SET_SHIFTS',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
