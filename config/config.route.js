@@ -1320,6 +1320,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus',
+            component: './hrm/bus-registrations',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus/tao-moi',
+            component: './hrm/bus-registrations/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus/:id/chi-tiet',
+            component: './hrm/bus-registrations/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // HRM

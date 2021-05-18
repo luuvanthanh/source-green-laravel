@@ -1,6 +1,6 @@
 import { memo, useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Tabs, Checkbox } from 'antd';
+import { Form, Tabs, Checkbox, Input } from 'antd';
 import csx from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
@@ -207,7 +207,7 @@ const Index = memo(() => {
                     </Pane>
 
                     {studentBusPlaces.map((item, index) => (
-                      <Pane className="row mb15 mt15 align-items-center" key={index}>
+                      <Pane className="row mb15 mt15 align-items-end" key={index}>
                         <Pane className="col-lg-3">
                           <AvatarTable
                             fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
@@ -234,7 +234,7 @@ const Index = memo(() => {
                               options={variablesModules.STATUS_BUS}
                             />
                           )}
-                          {false && <FormItem label="Lý do" type={variables.INPUT} />}
+                          {item.description && <Input value={item.description} className="mt5" />}
                         </Pane>
 
                         <Pane className="col-lg-3">

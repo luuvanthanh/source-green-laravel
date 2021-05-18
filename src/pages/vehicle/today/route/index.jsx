@@ -30,13 +30,6 @@ const iconCar = new L.Icon({
   iconAnchor: [17, 46],
 });
 
-const mockData = [
-  { time: '07:12', location: 'Điểm đón số 1: Số 45 Hoàng Hoa Thám' },
-  { time: '07:13', location: 'Điểm đón số 2: Số 245 Hoàng Hoa Thám' },
-  { location: 'Điểm đón số 3: Số 400 Hoàng Hoa Thám' },
-  { location: 'Điểm đón số 4' },
-];
-
 let isMounted = true;
 /**
  * Set isMounted
@@ -68,6 +61,8 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
+  componentDidMount() {}
+
   componentWillUnmount() {
     setIsMounted(false);
   }
@@ -84,6 +79,16 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadRouting = () => {
+    fetch(
+      `https://router.project-osrm.org/route/v1/driving/108.169863,16.067899;108.154157,16.053197?overview=false&alternatives=true&steps=true&hints=;`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
   };
 
   handleCancel = () => {
@@ -116,6 +121,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { position } = this.state;
+    console.log(routes);
     return (
       <Modal
         centered
@@ -185,13 +191,13 @@ class Index extends PureComponent {
               <Scrollbars autoHeight autoHeightMax={220}>
                 <div className="pt20">
                   <Timeline>
-                    {mockData.map(({ time, location }, index) => (
+                    {routes.map(({ time, address }, index) => (
                       <TimelineItem key={index}>
                         <Text size="normal">
                           <b>{time}</b>
                         </Text>
                         <Text size="normal" color={!!time ? 'success' : 'dark-opacity'}>
-                          {location}
+                          Điểm đón số {index + 1}: {address}
                         </Text>
                       </TimelineItem>
                     ))}
