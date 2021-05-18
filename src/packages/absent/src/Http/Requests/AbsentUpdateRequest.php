@@ -13,12 +13,11 @@ class AbsentUpdateRequest extends FormRequest
 
     public function rules()
     {
-            return [
-                'absentTypeId' => 'required|exists:AbsentTypes,Id',
-                'employeeId' => 'required|exists:Employees,Id',
-                'startDate' => 'date|date_format:Y-m-d',
-                'endDate' => 'date|date_format:Y-m-d|after_or_equal:startDate',
-            ];
-        }
+        return [
+            'absentTypeId' => 'required|exists:AbsentTypes,Id',
+            'employeeId' => 'required|exists:Employees,Id',
+            'startDate' => 'date|date_format:Y-m-d',
+            'endDate' => 'date|date_format:Y-m-d|after_or_equal:startDate',
+        ];
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Absent\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Absent\Http\Requests\AbsentTypeCreateRequest;
+use GGPHP\Absent\Http\Requests\AbsentTypeDeleteRequest;
 use GGPHP\Absent\Http\Requests\AbsentTypeUpdateRequest;
 use GGPHP\Absent\Repositories\Absent\AbsentTypeRepository;
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class AbsentTypeController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(AbsentTypeDeleteRequest $request, $id)
     {
         $this->absentTypeRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

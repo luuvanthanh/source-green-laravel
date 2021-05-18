@@ -19,7 +19,7 @@ class ShiftDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ShiftId', 'StartTime', 'EndTime', 'Code', 'Name',
+        'ShiftId', 'StartTime', 'EndTime', 'Code', 'Name', 'AfterStart', 'BeforeEnd',
     ];
 
     /**

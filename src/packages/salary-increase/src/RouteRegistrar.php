@@ -55,6 +55,11 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'SalaryIncreaseController@destroy',
                     'as' => 'salary-increases.destroy',
                 ]);
+
+                \Route::get('salary-increases-export-word/{id}', [
+                    'uses' => 'SalaryIncreaseController@exportWord',
+                    'as' => 'salary-increases.word.export',
+                ]);
             });
 
         });

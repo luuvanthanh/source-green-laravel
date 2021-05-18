@@ -55,6 +55,11 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'DecisionSuspendController@destroy',
                     'as' => 'decision-suspends.destroy',
                 ]);
+
+                \Route::get('decision-suspends-export-word/{id}', [
+                    'uses' => 'DecisionSuspendController@exportWord',
+                    'as' => 'decision-suspends.word.export',
+                ]);
             });
 
         });

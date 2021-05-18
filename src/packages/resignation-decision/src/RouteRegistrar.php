@@ -55,6 +55,11 @@ class RouteRegistrar extends CoreRegistrar
                     'uses' => 'ResignationDecisionController@destroy',
                     'as' => 'resignation-decisions.destroy',
                 ]);
+
+                \Route::get('resignation-decisions-export-word/{id}', [
+                    'uses' => 'ResignationDecisionController@exportWord',
+                    'as' => 'resignation-decisions.word.export',
+                ]);
             });
 
         });

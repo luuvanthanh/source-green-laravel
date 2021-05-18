@@ -71,4 +71,16 @@ class SabbaticalLeaveController extends Controller
             return $this->success($sabbaticalLeave, trans('lang-profile::messages.common.getInfoSuccess'));
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
+        $this->sabbaticalLeave->delete($id);
+        return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
 }

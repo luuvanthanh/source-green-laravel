@@ -4,7 +4,7 @@ namespace GGPHP\BusRegistration\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BusRegistrationUpdateRequest extends FormRequest
+class UpdateBusRegistrationRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.

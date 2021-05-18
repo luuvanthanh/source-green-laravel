@@ -37,7 +37,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher',
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow',
     ];
 
     /**
@@ -58,22 +58,8 @@ class UserTransformer extends BaseTransformer
         }
 
         $attributes = [
-            'totalRealTimekeeping' => $model->totalRealTimekeeping,
-            'totalHourRedundantTimekeeping' => $model->totalHourRedundantTimekeeping,
-            'totalAdditionalTimes' => $model->additionalTimes,
-            'totalAdditionalHours' => $model->additionalHours,
-            'totalSubtractionTimes' => $model->subtractionTimes,
-            'totalSubtractionHours' => $model->subtractionHours,
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
-            'totalAnnualAbsent' => $model->totalAnnualAbsent,
-            'totalUnpaidAbsent' => $model->totalUnpaidAbsent,
-            'totalTimekeepingWork' => round($model->totalWorks, 2),
-            'totalHourRedundantWorks' => $model->totalHourRedundantWorks,
-            'totalHourRedundantWorksFormatDate' => $model->totalHourRedundantWorksFormatDate,
-            'totalTimekeepingDate' => $model->totalTimekeepingDate,
-            'workBirthday' => $model->workBirthday,
-            'totalWorkDeclarations' => $model->totalWorkDeclarations,
-            'totalWorkHourSupport' => $model->totalWorkHourSupport,
+            'totalWorks' => $model->totalWorks,
             'Status' => $status,
         ];
 
@@ -112,6 +98,20 @@ class UserTransformer extends BaseTransformer
         }
 
         return $this->item($employee->classTeacher, new ClassTeacherTransformer, 'ClassTeacher');
+    }
+
+    /**
+     * Include RankPositionInformation
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includePositionLevelNow(User $employee)
+    {
+        if (empty($employee->positionLevelNow)) {
+            return;
+        }
+
+        return $this->item($employee->positionLevelNow, new PositionLevelTransformer, 'PositionLevelNow');
     }
 
     /**

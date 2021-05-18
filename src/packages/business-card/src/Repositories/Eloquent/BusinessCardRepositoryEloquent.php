@@ -87,10 +87,17 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
     {
         $businessCard = BusinessCard::findOrFail($id);
 
-        $attributes['hours'] = json_encode($attributes['hours']);
-        $businessCard->update($attributes);
+        \DB::beginTransaction();
+        try {
+            $businessCard->update($attributes);
+            $businessCard->businessCardDetail()->delete();
+            BusinessCardDetailServices::add($id, $attributes['detail']);
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
 
-        return parent::find($businessCard->Id);
+        return parent::find($id);
     }
 
 }

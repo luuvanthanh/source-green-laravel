@@ -2,11 +2,14 @@
 
 namespace GGPHP\Reward\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Reward\Models\DecisionReward;
 use GGPHP\Reward\Presenters\DecisionRewardPresenter;
 use GGPHP\Reward\Repositories\Contracts\DecisionRewardRepository;
 use GGPHP\Reward\Services\DecisionRewardDetailServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -20,6 +23,14 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         'Id',
         'CreationTime',
     ];
+
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -278,4 +289,28 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         return $string;
     }
 
+    public function exportWord($id)
+    {
+        $decisionReward = DecisionReward::findOrFail($id);
+        $now = Carbon::now();
+
+        $detail = $decisionReward->decisionRewardDetails->first();
+        $employee = $detail->employee;
+
+        $params = [
+            'decisionNumber' => $decisionReward->DecisionNumber,
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->name : '       ',
+            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->name : '       ',
+            'reason' => $decisionReward->Reason ? $decisionReward->Reason : '       ',
+            'timeApply' => $detail->TimeApply ? $detail->TimeApply->format('m-Y') : '       ',
+            'money' => $detail->Money ? number_format($detail->Money) : '       ',
+            'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '       ',
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+        ];
+
+        return $this->wordExporterServices->exportWord('decision_reward', $params);
+    }
 }

@@ -3,7 +3,6 @@
 namespace GGPHP\ShiftSchedule\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\RolePermission\Transformers\StoreTransformer;
 use GGPHP\ShiftSchedule\Models\Shift;
 
 /**
@@ -21,7 +20,7 @@ class ShiftTransformer extends BaseTransformer
      */
     protected $defaultIncludes = ['shiftDetail'];
 
-    protected $availableIncludes = ['store'];
+    protected $availableIncludes = [];
 
     /**
      * Include Shift Detail
@@ -31,17 +30,4 @@ class ShiftTransformer extends BaseTransformer
     {
         return $this->collection(empty($shift->shiftDetail) ? [] : $shift->shiftDetail, new ShiftDetailTransformer, 'ShiftDetail');
     }
-
-    /**
-     * Include store
-     * @param  Shift $shift
-     */
-    public function includeStore(Shift $shift)
-    {
-        if (empty($shift->store)) {
-            return;
-        }
-        return $this->item($shift->store, new StoreTransformer, 'Store');
-    }
-
 }

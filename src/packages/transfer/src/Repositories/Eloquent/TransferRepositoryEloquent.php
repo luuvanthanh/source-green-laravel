@@ -2,11 +2,14 @@
 
 namespace GGPHP\Transfer\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Presenters\TransferPresenter;
 use GGPHP\Transfer\Repositories\Contracts\TransferRepository;
 use GGPHP\Transfer\Services\TransferDetailServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -24,6 +27,18 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         'Id',
         'CreationTime',
     ];
+
+    /**
+     * @param Application $app
+     * @param ExcelExporterServices $wordExporterServices
+     */
+    public function __construct(
+        WordExporterServices $wordExporterServices,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->wordExporterServices = $wordExporterServices;
+    }
 
     /**
      * Specify Model class name
@@ -89,4 +104,28 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
 
         return $transfer;
     }
+
+    public function exportWord($id)
+    {
+        $transfer = Transfer::findOrFail($id);
+        $now = Carbon::now();
+
+        $detail = $transfer->transferDetails->first();
+        $employee = $detail->employee;
+        $params = [
+            'decisionNumber' => $transfer->DecisionNumber,
+            'dateNow' => $now->format('d'),
+            'monthNow' => $now->format('m'),
+            'yearNow' => $now->format('Y'),
+            'date' => $transfer->DecisionDate->format('d'),
+            'month' => $transfer->DecisionDate->format('m'),
+            'year' => $transfer->DecisionDate->format('Y'),
+            'decisionDate' => $transfer->DecisionDate->format('d/m/Y'),
+            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
+        ];
+
+        return $this->wordExporterServices->exportWord('transfer', $params);
+    }
+
 }

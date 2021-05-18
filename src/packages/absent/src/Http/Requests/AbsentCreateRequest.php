@@ -2,8 +2,7 @@
 
 namespace GGPHP\Absent\Http\Requests;
 
-use GGPHP\Absent\Models\Absent;
-use GGPHP\Absent\Models\AbsentType;
+use GGPHP\Absent\Models\AbsentDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AbsentCreateRequest extends FormRequest
@@ -24,21 +23,24 @@ class AbsentCreateRequest extends FormRequest
             'startDate' => [
                 'date',
                 'date_format:Y-m-d',
-                function ($attribute, $value, $fail) {
-
-                    // $accessAbsent = $this->checkDuplicateAbsent($value);
-
-                    // if (!is_null($accessAbsent)) {
-                    //     return $fail("Bạn đã " . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
-                    // }
-
-                    return true;
-                },
             ],
             'endDate' => [
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:startDate',
+            ],
+            'detail' => [
+                'required',
+                function ($attribute, $value, $fail) {
+
+                    $accessAbsent = $this->checkDuplicateAbsent($value);
+
+                    if (!is_null($accessAbsent)) {
+                        return $fail("Bạn đã nghỉ vào ngày " . $accessAbsent);
+                    }
+
+                    return true;
+                },
             ],
         ];
     }
@@ -49,37 +51,30 @@ class AbsentCreateRequest extends FormRequest
      */
     private function checkDuplicateAbsent($value)
     {
-        $employeeId = request()->EmployeeId;
-        $annualLeaveType = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
-        $unpaidLeaveType = AbsentType::where('Type', AbsentType::UNPAID_LEAVE)->first();
-
+        $employeeId = request()->employeeId;
         $startDate = request()->startDate;
         $endDate = request()->endDate;
-        $begin = new \DateTime($startDate);
-        $end = new \DateTime($endDate . ' +1 day');
+        $result = [];
+        foreach ($value as $item) {
+            $absentDetails = AbsentDetail::where('Date', $item['date'])->whereHas('absent', function ($query) use ($employeeId) {
+                $query->where('EmployeeId', $employeeId);
+            })->get();
 
-        $intervalDate = \DateInterval::createFromDateString('1 day');
-        $periodDate = new \DatePeriod($begin, $intervalDate, $end);
-        $listDateRequestAbsent = [];
-        foreach ($periodDate as $date) {
-            $listDateRequestAbsent[] = $date->format('Y-m-d');
-        }
+            $count = count($absentDetails);
 
-        $absent = Absent::whereIn('AbsentTypeId', [$annualLeaveType->Id, $unpaidLeaveType->Id])->where(function ($q2) use ($startDate, $endDate) {
-            $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
-                ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
-                ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
-        })->where('EmployeeId', $employeeId)->get();
+            switch ($count) {
+                case 1:
+                    if ($absentDetails[0]->IsFullDate) {
+                        return $item['date'];
+                    }
+                    if ($item['isFullDate']) {
+                        return $item['date'];
+                    }
 
-        $result = $absent;
-        foreach ($result as $value) {
-            foreach ($listDateRequestAbsent as $dateRequest) {
-                if ($value->StartDate->format('Y-m-d') <= $dateRequest && $value->EndDate->format('Y-m-d') >= $dateRequest) {
-                    return [
-                        "date" => date('d-m-Y', strtotime($dateRequest)),
-                        "type" => $value->absentType->name,
-                    ];
-                }
+                    break;
+                case 2:
+                    return $item['date'];
+                    break;
             }
         }
 

@@ -18,4 +18,5 @@ class AbsentDetailServices
 
         return true;
     }
+
 }

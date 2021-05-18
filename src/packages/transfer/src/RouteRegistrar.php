@@ -65,6 +65,11 @@ class RouteRegistrar extends CoreRegistrar
                     'as' => 'transfers.destroy',
                     'group' => 'Điều chuyển',
                 ]);
+
+                \Route::get('transfers-export-word/{id}', [
+                    'uses' => 'TransferController@exportWord',
+                    'as' => 'transfers.word.export',
+                ]);
             });
 
         });

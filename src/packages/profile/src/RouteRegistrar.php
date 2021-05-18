@@ -45,6 +45,11 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'LabourContractController@exportWord',
                 'as' => 'labours-contracts.word.export',
             ]);
+
+            \Route::get('probationary-contracts-export-word/{id}', [
+                'uses' => 'ProbationaryContractController@exportWord',
+                'as' => 'probationary-contracts.word.export',
+            ]);
         });
     }
 }
