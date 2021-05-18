@@ -10,9 +10,9 @@ export function get(params) {
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.uploadDate,
-          targetValue: '00:00:00',
+          targetValue: '23:59:59',
         }),
-        isUTC: false,
+        isUTC: true,
       }),
     },
   });
