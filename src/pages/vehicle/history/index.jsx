@@ -1,6 +1,6 @@
 import { memo, useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Tabs } from 'antd';
+import { Form, Tabs, Typography } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
@@ -21,6 +21,7 @@ import { Helper, variables } from '@/utils';
 
 import RouteModal from './route';
 
+const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const Index = memo(() => {
@@ -48,6 +49,7 @@ const Index = memo(() => {
   const filterRef = useRef();
 
   const [visibleRoute, setVisibleRoute] = useState(false);
+  const [route, setRoute] = useState({});
   const [search, setSearch] = useState({
     id: query?.id,
     date: query?.date,
@@ -55,6 +57,16 @@ const Index = memo(() => {
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
   });
+
+  const showRoute = (record) => {
+    mountedSet(setVisibleRoute, true);
+    mountedSet(setRoute, record);
+  };
+
+  const hiddenRoute = () => {
+    mountedSet(setVisibleRoute, false);
+    mountedSet(setRoute, {});
+  };
 
   const columns = useMemo(
     () => [
@@ -89,37 +101,68 @@ const Index = memo(() => {
         key: 'start',
         width: 120,
         className: 'min-width-120',
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.busPlaceLog?.schoolwardGetIn, variables.DATE_FORMAT.TIME_FULL)}
-          </Text>
-        ),
+        render: (record) => {
+          if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
+            return (
+              <Text size="normal">
+                {Helper.getDate(record.busPlaceLog?.homewardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+              </Text>
+            );
+          }
+          return (
+            <Text size="normal">
+              {Helper.getDate(record.busPlaceLog?.schoolwardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+            </Text>
+          );
+        },
       },
       {
         title: 'Xuống xe',
         key: 'end',
         width: 120,
         className: 'min-width-120',
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.busPlaceLog?.schoolwardGetOff, variables.DATE_FORMAT.TIME_FULL)}
-          </Text>
-        ),
+        render: (record) => {
+          if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
+            return (
+              <Text size="normal">
+                {Helper.getDate(
+                  record.busPlaceLog?.homewardGetOff,
+                  variables.DATE_FORMAT.TIME_FULL,
+                )}
+              </Text>
+            );
+          }
+          return (
+            <Text size="normal">
+              {Helper.getDate(
+                record.busPlaceLog?.schoolwardGetOff,
+                variables.DATE_FORMAT.TIME_FULL,
+              )}
+            </Text>
+          );
+        },
       },
       {
         title: 'Bảo mẫu',
         key: 'shuttler',
-        width: 120,
-        className: 'min-width-120',
-        render: () => <Text size="normal">Lê Thị Vân</Text>,
+        width: 200,
+        className: 'min-width-200',
+        render: (record) => (
+          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+            {record?.busPlace?.busRoute?.busRouteNannies
+              ?.map((item) => item?.nanny?.fullName)
+              .join(',')}
+          </Paragraph>
+        ),
       },
       {
         key: 'action',
         className: 'min-width-80',
         width: 80,
-        render: () => (
+        fixed: 'right',
+        render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success" ghost onClick={() => setVisibleRoute(true)}>
+            <Button color="success" ghost onClick={() => showRoute(record)}>
               Xem lộ trình
             </Button>
           </div>
@@ -258,7 +301,15 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
-      <RouteModal visible={visibleRoute} onCancel={() => setVisibleRoute(false)} />
+      {visibleRoute && (
+        <RouteModal
+          {...search}
+          visible={visibleRoute}
+          route={route}
+          routes={data}
+          onCancel={hiddenRoute}
+        />
+      )}
     </>
   );
 });

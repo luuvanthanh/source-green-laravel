@@ -1059,6 +1059,17 @@ export async function getLeftMenuHRM() {
               permission: [],
               pro: true,
             },
+            {
+              title: 'Phiếu ĐK đi xe bus',
+              key: 'bus-registrations',
+              url: [
+                '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus',
+                '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus/tao-moi',
+                '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus/:id/chi-tiet',
+              ],
+              permission: [],
+              pro: true,
+            },
           ],
         },
         {

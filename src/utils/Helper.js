@@ -669,21 +669,31 @@ export default class Helpers {
     return false;
   };
 
-  static disabledDateTo = (current, formRef, key = 'endDate') => {
+  static disabledDateTo = (current, formRef, key = 'startDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current < moment(data[key]).endOf('day');
+      if (data[key]) return current && current <= moment(data[key]).startOf('day');
       return null;
     }
     return null;
   };
 
-  static disabledDateFrom = (current, formRef, key = 'startDate') => {
+  static disabledDateFrom = (current, formRef, key = 'endDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current > moment(data[key]).endOf('day');
+      if (data[key]) return current && current >= moment(data[key]).endOf('day');
       return null;
     }
     return null;
+  };
+
+  static centerLatLng = (items) => {
+    let lat = 0;
+    let lng = 0;
+    items.forEach((item) => {
+      lat += item.lat;
+      lng += item.long;
+    });
+    return [lat / items.length, lng / items.length];
   };
 }

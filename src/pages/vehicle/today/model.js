@@ -3,13 +3,14 @@
 import * as services from './services';
 
 export default {
-  namespace: 'busHistory',
+  namespace: 'busToday',
   state: {
     data: [],
     pagination: {
       total: 0,
     },
     busRoutes: [],
+    summary: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -17,6 +18,7 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+      summary: payload.summary,
     }),
     SET_BUS_ROUTES: (state, { payload }) => ({
       ...state,
@@ -43,6 +45,7 @@ export default {
           type: 'SET_DATA',
           payload: {
             parsePayload: response.items,
+            summary: response.summary,
             pagination: {
               total: response.totalCount,
             },

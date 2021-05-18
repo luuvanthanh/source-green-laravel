@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
 import { Modal, Timeline } from 'antd';
-import classnames from 'classnames';
-import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import Routing from './components/route';
+import { get, head } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/information.module.scss';
 import common from '@/assets/styles/Common/common.scss';
 import { Scrollbars } from 'react-custom-scrollbars';
-
-const details = {};
+import { Helper, variables } from '@/utils';
+import variablesModules from '../../utils/variables';
 
 const { Item: TimelineItem } = Timeline;
 
@@ -31,13 +29,6 @@ const iconCar = new L.Icon({
   iconUrl: '/images/marker-car.svg',
   iconAnchor: [17, 46],
 });
-
-const mockData = [
-  { time: '07:12', location: 'Điểm đón số 1: Số 45 Hoàng Hoa Thám' },
-  { time: '07:13', location: 'Điểm đón số 2: Số 245 Hoàng Hoa Thám' },
-  { location: 'Điểm đón số 3: Số 400 Hoàng Hoa Thám' },
-  { location: 'Điểm đón số 4' },
-];
 
 let isMounted = true;
 /**
@@ -64,11 +55,13 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      position: [16.050051, 108.155123],
+      position: Helper.centerLatLng(props.routes),
       zoom: 7,
     };
     setIsMounted(true);
   }
+
+  componentDidMount() {}
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -86,6 +79,16 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadRouting = () => {
+    fetch(
+      `https://router.project-osrm.org/route/v1/driving/108.169863,16.067899;108.154157,16.053197?overview=false&alternatives=true&steps=true&hints=;`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
   };
 
   handleCancel = () => {
@@ -111,73 +114,53 @@ class Index extends PureComponent {
 
   render() {
     const {
-      details,
-      loading: { effects },
       visible,
+      routes,
+      search,
+      summary,
+      loading: { effects },
     } = this.props;
     const { position } = this.state;
-    const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
+    console.log(routes);
     return (
       <Modal
         centered
         bodyStyle={{ padding: 0 }}
         className={common['modal-container']}
-        footer={[
-          <div className={classnames('d-flex', 'justify-content-center')} key="action">
-            <Button
-              color="white"
-              icon="cross"
-              loading={loadingSubmit}
-              onClick={this.props.onCancel}
-              size="medium"
-            >
-              ĐÓNG
-            </Button>
-            <Button
-              color="green"
-              icon="save"
-              loading={loadingSubmit}
-              onClick={this.onSubmit}
-              size="medium"
-            >
-              XÁC NHẬN VỊ TRÍ
-            </Button>
-          </div>,
-        ]}
+        footer={false}
         onCancel={this.props.onCancel}
-        title="Maps"
+        title={<Heading type="form-block-title">Lộ trình xe bus</Heading>}
         visible={visible}
       >
         <div className="row">
           <div className="col-lg-5">
             <div className="p20 border-bottom">
-              <Heading type="form-title">Đón trẻ 10/1/2021</Heading>
+              <Heading type="form-title">
+                Đón trẻ {Helper.getDate(search.date, variables.DATE_FORMAT.DATE)}
+              </Heading>
               <Text size="normal">
-                Số trẻ đã lên xe bus: <b>8/12</b>
+                Số trẻ đã lên xe bus:{' '}
+                <b>
+                  {' '}
+                  {search.status === variablesModules.STATUS_TABS.SCHOOLWARD
+                    ? summary.schoolGetInStatusTotal
+                    : summary.homeGetInStatusTotal}
+                  /{summary.studentTotal}
+                </b>
               </Text>
             </div>
 
             <div className="p20 border-bottom">
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-12">
                   <label className={styles.infoLabel}>Cơ sở</label>
                   <div className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
                       <span className={'icon-school'} />
                     </span>
                     <span className={styles.infoText}>
-                      {details?.position?.name || 'Lake view'}
+                      {head(routes)?.busRoute?.branch?.name || 'Lake view'}
                     </span>
-                  </div>
-                </div>
-
-                <div className="col-lg-6">
-                  <label className={styles.infoLabel}>Lớp</label>
-                  <div className="d-flex align-items-center">
-                    <span className={styles.circleIcon}>
-                      <span className={'icon-open-book'} />
-                    </span>
-                    <span className={styles.infoText}>{details?.class?.name || 'Preschool'}</span>
                   </div>
                 </div>
               </div>
@@ -185,13 +168,21 @@ class Index extends PureComponent {
 
             <div className="p20 border-bottom">
               <label className={styles.infoLabel}>Nhân viên</label>
-              <div className={styles.userInformation}>
-                <AvatarTable />
-                <div>
-                  <h3>{'Lê Thị Vân'}</h3>
-                  <p>{'Bảo mẫu - Cơ sở 1 '}</p>
-                </div>
-              </div>
+              <Scrollbars autoHeight autoHeightMax={200}>
+                {routes.map((item) => (
+                  <div key={item.id}>
+                    {item?.busRoute?.busRouteNannies?.map((itemBus) => (
+                      <div key={itemBus?.nanny?.id} className="mt10 mb10 ">
+                        <AvatarTable
+                          fullName={itemBus?.nanny?.fullName}
+                          fileImage={Helper.getPathAvatarJson(itemBus?.nanny?.fileImage)}
+                          description="Bảo mẫu"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </Scrollbars>
             </div>
 
             <div className="p20">
@@ -200,13 +191,13 @@ class Index extends PureComponent {
               <Scrollbars autoHeight autoHeightMax={220}>
                 <div className="pt20">
                   <Timeline>
-                    {mockData.map(({ time, location }, index) => (
+                    {routes.map(({ time, address }, index) => (
                       <TimelineItem key={index}>
                         <Text size="normal">
                           <b>{time}</b>
                         </Text>
                         <Text size="normal" color={!!time ? 'success' : 'dark-opacity'}>
-                          {location}
+                          Điểm đón số {index + 1}: {address}
                         </Text>
                       </TimelineItem>
                     ))}
@@ -221,14 +212,17 @@ class Index extends PureComponent {
                 <TileLayer
                   url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                   attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
-                  // maxNativeZoom="23"
-                  // minZoom="0"
-                  // maxZoom="23"
                 />
-                <Routing map={this.map} />
-                <Marker position={[16.050051, 108.155123]} icon={iconStudent}></Marker>
-                <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker>
-                <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker>
+                <Routing map={this.map} routes={routes} />
+                {routes.map((item) => (
+                  <Marker
+                    key={item.id}
+                    position={[item.lat, item.long]}
+                    icon={iconStudent}
+                  ></Marker>
+                ))}
+                {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker>
+                <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker> */}
               </Map>
             </div>
           </div>

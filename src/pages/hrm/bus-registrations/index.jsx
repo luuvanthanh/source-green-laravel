@@ -1,10 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Modal, Form, Typography } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -15,7 +14,9 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
+const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,9 +33,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ resignationDecisions, loading }) => ({
-  data: resignationDecisions.data,
-  pagination: resignationDecisions.pagination,
+const mapStateToProps = ({ busRegistrations, loading }) => ({
+  data: busRegistrations.data,
+  pagination: busRegistrations.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -91,7 +92,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'resignationDecisions/GET_DATA',
+      type: 'busRegistrations/GET_DATA',
       payload: {
         ...search,
         status,
@@ -199,7 +200,8 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
+    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -209,25 +211,19 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'resignationDecisions/REMOVE',
+          type: 'busRegistrations/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
           },
         });
       },
       onCancel() {},
     });
-  };
-
-  export = (id) => {
-    Helper.exportExcel(`/v1/resignation-decisions-export-word/${id}`, {}, 'QD-ThoiViec.docx');
   };
 
   /**
@@ -241,7 +237,8 @@ class Index extends PureComponent {
       {
         title: 'STT',
         key: 'text',
-        width: 50,
+        width: 60,
+        className: 'min-width-60',
         align: 'center',
         render: (text, record, index) =>
           Helper.sttList(
@@ -251,63 +248,42 @@ class Index extends PureComponent {
           ),
       },
       {
-        title: 'Số QĐ',
-        key: 'insurrance_number',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => get(record, 'decisionNumber'),
-      },
-      {
-        title: 'Ngày QĐ',
-        key: 'decisionDate',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'reason'),
-      },
-      {
         title: 'Nhân viên',
-        key: 'name',
+        key: 'fullName',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
           />
         ),
       },
       {
-        title: 'Ngày áp dụng',
-        key: 'timeApply',
-        className: 'min-width-120',
+        title: 'Ngày đăng ký',
+        key: 'date',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+        className: 'min-width-120',
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Ngày kết thúc thanh toán lương',
-        key: 'payEndDate',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'payEndDate'), variables.DATE_FORMAT.DATE),
+        title: 'Sô giờ',
+        key: 'hours',
+        width: 170,
+        className: 'min-width-170',
+        render: (record) => record.hourNumber,
       },
       {
         title: 'Ghi chú',
-        key: 'note',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'note'),
+        key: 'reason',
+        className: 'min-width-120',
+        render: (record) => record.note,
       },
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 180,
-        className: 'min-width-180',
+        width: 130,
+        className: 'min-width-130',
         fixed: 'right',
         align: 'center',
         render: (record) => (
@@ -327,14 +303,6 @@ class Index extends PureComponent {
                 onClick={() => this.onRemove(record.id)}
               />
             </li>
-            <li className="list-inline-item">
-              <Button
-                color="success"
-                icon="export"
-                className="ml-2"
-                onClick={() => this.export(record.id)}
-              />
-            </li>
           </ul>
         ),
       },
@@ -350,19 +318,16 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['resignationDecisions/GET_DATA'];
+    const loading = effects['busRegistrations/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách thôi việc" />
+        <Helmet title="Danh sách phiếu ĐK đi xe bus" />
         <div
-          className={classnames(
-            styles['content-form'],
-            styles['content-form-resignationDecisions'],
-          )}
+          className={classnames(styles['content-form'], styles['content-form-busRegistrations'])}
         >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách thôi việc</Text>
+            <Text color="dark">Danh sách phiếu ĐK đi xe bus</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
@@ -371,8 +336,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
                 endDate: search.endDate ? moment(search.endDate) : null,
+                startDate: search.startDate ? moment(search.startDate) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -388,18 +353,16 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    name="endDate"
+                    onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
+                    name="startDate"
+                    onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>

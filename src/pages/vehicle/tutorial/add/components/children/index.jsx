@@ -38,9 +38,9 @@ class Index extends PureComponent {
     this.state = {
       listId: props.listId,
       targetKeys: props.studentBusPlaces || [],
-      dataSource: props.students.map((item, index) => ({
+      dataSource: props.students.map((item) => ({
         ...item,
-        key: index,
+        key: item.id,
       })),
     };
     setIsMounted(true);

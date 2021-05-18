@@ -151,6 +151,10 @@ const Index = memo(() => {
     });
   };
 
+  const exportData = (id) => {
+    Helper.exportExcel(`/v1/dismisseds-export-word/${id}`, {}, 'QDMienNhiem.docx');
+  };
+
   /**
    * Function header table
    */
@@ -215,8 +219,8 @@ const Index = memo(() => {
       {
         title: 'Thao tác',
         key: 'actions',
-        width: 130,
-        className: 'min-width-130',
+        width: 180,
+        className: 'min-width-180',
         fixed: 'right',
         align: 'center',
         render: (record) => (
@@ -230,6 +234,14 @@ const Index = memo(() => {
                 icon="remove"
                 className="ml-2"
                 onClick={() => onRemove(record.id)}
+              />
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="success"
+                icon="export"
+                className="ml-2"
+                onClick={() => exportData(record.id)}
               />
             </li>
           </ul>

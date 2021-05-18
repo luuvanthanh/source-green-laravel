@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, head, debounce, get } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -211,37 +211,47 @@ class Index extends PureComponent {
         title: 'Phòng ban',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.branch}</Text>,
+        render: (record) => <Text size="normal">{record?.division?.name}</Text>,
       },
       {
         title: 'Chấm công vào',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.timeIn}</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'shift.shiftDetail[0].startTime')}</Text>
+        ),
       },
       {
         title: 'Chấm công ra',
         key: 'address',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.timeOut}</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'shift.shiftDetail[1].endTime')}</Text>
+        ),
       },
       {
         title: 'Thời gian đi trễ (Không vượt quá)',
         key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.timeLate}</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'shift.shiftDetail[0].afterStart')}</Text>
+        ),
       },
       {
         title: 'Thời gian về sớm (Không vượt quá)',
         key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.timeEarly}</Text>,
+        render: (record) => (
+          <Text size="normal">{get(record, 'shift.shiftDetail[0].beforeEnd')}</Text>
+        ),
       },
       {
         title: 'Ca làm việc',
         key: 'phoneNumber',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.shiftCode}</Text>,
+        render: (record) => (
+          <Text size="normal">{record?.shift?.name || record?.shift?.shiftCode}</Text>
+        ),
       },
       {
         key: 'action',
@@ -265,8 +275,8 @@ class Index extends PureComponent {
     const {
       error,
       data,
-      match: { params },
       pagination,
+      match: { params },
       loading: { effects },
       location: { pathname },
     } = this.props;
@@ -304,35 +314,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[
-                {
-                  id: 1,
-                  branch: 'Kế toán',
-                  timeIn: '08:00:00',
-                  timeOut: '17:00:00',
-                  timeLate: '16:45:00',
-                  timeEarly: '08:15:00',
-                  shiftCode: 'Ca làm việc',
-                },
-                {
-                  id: 2,
-                  branch: 'Bếp',
-                  timeIn: '06:00:00',
-                  timeOut: '14:00:00',
-                  timeLate: '06:15:00',
-                  timeEarly: '13:45:00',
-                  shiftCode: 'Ca bếp',
-                },
-                {
-                  id: 3,
-                  branch: 'Hành chính - Nhân sự',
-                  timeIn: '08:00:00',
-                  timeOut: '17:00:00',
-                  timeLate: '08:15:00',
-                  timeEarly: '16:45:00',
-                  shiftCode: 'Hành chính',
-                },
-              ]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               error={error}

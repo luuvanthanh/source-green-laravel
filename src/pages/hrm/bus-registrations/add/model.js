@@ -3,7 +3,7 @@ import { notification } from 'antd';
 import * as services from './services';
 
 export default {
-  namespace: 'schedulesSettingAdd',
+  namespace: 'busRegistrationsAdd',
   state: {
     dataStores: [],
     isError: false,
@@ -12,6 +12,10 @@ export default {
       data: {},
     },
     details: {},
+    categories: {
+      users: [],
+    },
+    absentTypes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -37,8 +41,48 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_CATEGORIES: (state, { payload }) => ({
+      ...state,
+      categories: {
+        users: payload.users.parsePayload,
+      },
+    }),
+    SET_ABSENT_TYPES: (state, { payload }) => ({
+      ...state,
+      absentTypes: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_ABSENT_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getAbsentTypes);
+        yield saga.put({
+          type: 'SET_ABSENT_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CATEGORIES({ payload }, saga) {
+      try {
+        const response = yield saga.all({
+          users: saga.call(services.getUsers),
+        });
+        yield saga.put({
+          type: 'SET_CATEGORIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.put({
@@ -51,10 +95,15 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
+        if (!isEmpty(error.data.errors)) {
+          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
+            notification.error({
+              message: 'Thông báo',
+              description:
+                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
+            });
+          }
+        }
         callback(null, error);
       }
     },
@@ -67,10 +116,15 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
+        if (!isEmpty(error.data.errors)) {
+          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
+            notification.error({
+              message: 'Thông báo',
+              description:
+                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
+            });
+          }
+        }
         callback(null, error);
       }
     },
