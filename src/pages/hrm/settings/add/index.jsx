@@ -100,11 +100,14 @@ class Index extends PureComponent {
         time: get(details, 'shiftDetail').map((item) => {
           const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
           const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
+          const afterStart = moment(item.afterStart, variables.DATE_FORMAT.TIME_FULL);
+          const beforeEnd = moment(item.beforeEnd, variables.DATE_FORMAT.TIME_FULL);
           return {
             ...item,
+            afterStart,
+            beforeEnd,
             endTime,
             startTime,
-            totalTime: getTotalTime(startTime, endTime),
           };
         }),
         description: get(details, 'description'),
@@ -141,6 +144,22 @@ class Index extends PureComponent {
             format: variables.DATE_FORMAT.TIME_FULL,
             isUTC: false,
           }),
+          afterStart: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.afterStart,
+            }),
+            format: variables.DATE_FORMAT.TIME_FULL,
+            isUTC: false,
+          }),
+          beforeEnd: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.beforeEnd,
+            }),
+            format: variables.DATE_FORMAT.TIME_FULL,
+            isUTC: false,
+          }),
         })),
       },
       callback: (response, error) => {
@@ -169,18 +188,12 @@ class Index extends PureComponent {
       this.formRef.current.setFieldsValue({
         time: time.map((item, indexTime) => {
           if (indexTime === index) {
-            let totalTime = null;
-            if (type === 'startTime' && item.endTime) {
-              totalTime = getTotalTime(timeChoose, item.endTime);
-            }
-            if (type === 'endTime' && item.startTime) {
-              totalTime = getTotalTime(item.startTime, timeChoose);
-            }
             return {
               ...item,
               startTime: type === 'startTime' ? timeChoose : item.startTime,
               endTime: type === 'endTime' ? timeChoose : item.endTime,
-              totalTime,
+              afterStart: type === 'afterStart' ? timeChoose : item.afterStart,
+              beforeEnd: type === 'beforeEnd' ? timeChoose : item.beforeEnd,
             };
           }
           return item;
@@ -342,7 +355,19 @@ class Index extends PureComponent {
                               {index === 0 ? 'Ca sáng' : 'Ca chiều'}
                             </Heading>
                           </div>
-                          <div className="col-lg-6">
+                          <div className="col-lg-3">
+                            <FormItem
+                              onSelect={(value) =>
+                                this.onChangeTimePicker(value, index, 'afterStart')
+                              }
+                              label="THỜI GIAN ĐI TRỄ (KHÔNG VƯỢT QUÁ)"
+                              name={[field.name, 'afterStart']}
+                              fieldKey={[field.fieldKey, 'afterStart']}
+                              rules={[variables.RULES.EMPTY]}
+                              type={variables.TIME_PICKER}
+                            />
+                          </div>
+                          <div className="col-lg-3">
                             <FormItem
                               onSelect={(value) =>
                                 this.onChangeTimePicker(value, index, 'startTime')
@@ -354,12 +379,24 @@ class Index extends PureComponent {
                               type={variables.TIME_PICKER}
                             />
                           </div>
-                          <div className="col-lg-6">
+                          <div className="col-lg-3">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'endTime')}
                               label="ĐẾN"
                               name={[field.name, 'endTime']}
                               fieldKey={[field.fieldKey, 'endTime']}
+                              rules={[variables.RULES.EMPTY]}
+                              type={variables.TIME_PICKER}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              onSelect={(value) =>
+                                this.onChangeTimePicker(value, index, 'beforeEnd')
+                              }
+                              label="THỜI GIAN VỀ SỚM (KHÔNG VƯỢT QUÁ)"
+                              name={[field.name, 'beforeEnd']}
+                              fieldKey={[field.fieldKey, 'beforeEnd']}
                               rules={[variables.RULES.EMPTY]}
                               type={variables.TIME_PICKER}
                             />

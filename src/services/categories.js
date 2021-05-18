@@ -119,3 +119,19 @@ export function getParents(params = {}) {
     },
   });
 }
+
+export function getShifts(params = {}) {
+  return requestLaravel('/v1/shifts', {
+    method: 'GET',
+    params: {
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['shiftDetail']),
+      search: Helper.convertParamSearchConvert({
+        StoreId: params.storeId,
+        ShiftCode: params.shiftCode,
+      }),
+    },
+  });
+}

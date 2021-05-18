@@ -51,15 +51,10 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
+        notification.error({
+          message: 'Thông báo',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -72,15 +67,10 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shiftId') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
+        notification.error({
+          message: 'Thông báo',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
