@@ -303,7 +303,7 @@ const Index = memo(() => {
       contractTo: formValues.contractTo && moment(formValues.contractTo),
       detail: (parameterValuesDetails || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
-        value: ++valueDefault,
+        value: valueDefault,
       })),
     };
 

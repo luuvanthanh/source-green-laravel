@@ -230,22 +230,6 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Thời gian đi trễ (Không vượt quá)',
-        key: 'phoneNumber',
-        className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{get(record, 'shift.shiftDetail[0].afterStart')}</Text>
-        ),
-      },
-      {
-        title: 'Thời gian về sớm (Không vượt quá)',
-        key: 'phoneNumber',
-        className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{get(record, 'shift.shiftDetail[0].beforeEnd')}</Text>
-        ),
-      },
-      {
         title: 'Ca làm việc',
         key: 'phoneNumber',
         className: 'min-width-150',
@@ -282,6 +266,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['workShifts/GET_DATA'];
+    console.log(data)
     return (
       <>
         <Helmet title="Phân ca làm việc" />

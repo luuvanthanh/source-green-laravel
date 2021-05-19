@@ -384,9 +384,14 @@ class Index extends PureComponent {
     let checkBetween = false;
     let absentType = '';
     user?.absent?.forEach((item) => {
-      if (moment(dayOfWeek).isBetween(moment(item.startDate), moment(item.endDate), null, '[]')) {
-        absentType = item.absentType.name;
+      const itemAbsentDetail = item.absentDetail.find(
+        (itemAbsent) =>
+          Helper.getDate(itemAbsent.date, variables.DATE_FORMAT.DATE_AFTER) ===
+          Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+      );
+      if (itemAbsentDetail) {
         checkBetween = true;
+        absentType = itemAbsentDetail?.isFullDate ? 'F' : 'F/2';
       }
     });
     if (checkBetween) {
