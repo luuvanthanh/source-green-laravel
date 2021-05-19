@@ -92,21 +92,25 @@ class DecisionSuspendRepositoryEloquent extends CoreRepositoryEloquent implement
         $now = Carbon::now();
 
         $employee = $decisionSuspend->employee;
+        $labourContract = $employee->labourContract->last();
+
         $params = [
             'decisionNumber' => $decisionSuspend->DecisionNumber,
+            'contractNumber' => is_null($labourContract) ? $labourContract->ContractNumber : '......',
+            'contractDate' => is_null($labourContract) ? $labourContract->ContractDate->format('d-m-Y') : '......',
             'decisionDate' => $decisionSuspend->DecisionDate->format('d-m-Y'),
             'dateNow' => $now->format('d'),
             'monthNow' => $now->format('m'),
             'yearNow' => $now->format('Y'),
-            'date' => $decisionSuspend->DecisionDate->format('d'),
-            'month' => $decisionSuspend->DecisionDate->format('m'),
-            'year' => $decisionSuspend->DecisionDate->format('Y'),
+            'date' => is_null($labourContract) ? $labourContract->ContractDate->format('d') : '......',
+            'month' => is_null($labourContract) ? $labourContract->ContractDate->format('m') : '......',
+            'year' => is_null($labourContract) ? $labourContract->ContractDate->format('Y') : '......',
             'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
             'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'from' => $decisionSuspend->From ? $decisionSuspend->From->format('d-m-Y') : '       ',
             'to' => $decisionSuspend->To ? $decisionSuspend->To->format('d-m-Y') : '       ',
-            'prohibit' => $decisionSuspend->Prohibit ? $decisionSuspend->Prohibit : '       ',
+            'prohibit' => $decisionSuspend->Reason ? $decisionSuspend->Reason : '       ',
         ];
 
         return $this->wordExporterServices->exportWord('decision_suspend', $params);

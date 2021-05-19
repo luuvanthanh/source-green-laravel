@@ -91,7 +91,7 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     {
         $resignationDecision = ResignationDecision::create($attributes);
 
-        $employee = User::where('Id', $attributes['employeeId'])->update(['DateOff' => $attributes['DateOff']]);
+        $employee = User::where('Id', $attributes['employeeId'])->update(['DateOff' => $attributes['timeApply']]);
 
         return parent::find($resignationDecision->Id);
     }
@@ -102,17 +102,22 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         $now = Carbon::now();
 
         $employee = $resignationDecision->employee;
+        $labourContract = $employee->labourContract->last();
+
         $params = [
             'decisionNumber' => $resignationDecision->DecisionNumber,
+            'decisionNumberLabourContract' => $labourContract->ContractNumber,
             'decisionDate' => $resignationDecision->DecisionDate->format('d-m-Y'),
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
+            'timeApply' => $resignationDecision->TimeApply->format('d-m-Y'),
+            'dateNow' => $resignationDecision->DecisionDate->format('d'),
+            'monthNow' => $resignationDecision->DecisionDate->format('m'),
+            'yearNow' => $resignationDecision->DecisionDate->format('Y'),
             'date' => $resignationDecision->DecisionDate->format('d'),
             'month' => $resignationDecision->DecisionDate->format('m'),
             'year' => $resignationDecision->DecisionDate->format('Y'),
             'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
             'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
+            'positionDivision' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name . " - " . $employee->positionLevelNow->division->Name : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'payEndDate' => $resignationDecision->PayEndDate ? $resignationDecision->PayEndDate->format('d-m-Y') : '       ',
         ];

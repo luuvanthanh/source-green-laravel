@@ -28,7 +28,7 @@ class ResignationDecisionCreateRequest extends FormRequest
             'decisionDate' => 'required',
             'employeeId' => 'required',
             'timeApply' => 'required',
-            'payEndDate' => 'required',
+            'payEndDate' => 'required|before:timeApply',
         ];
     }
 }
