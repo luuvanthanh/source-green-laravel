@@ -10,6 +10,9 @@ export function getUsers() {
 export function getAbsentTypes() {
   return request(`/v1/absent-types`, {
     method: 'GET',
+    params: {
+      type: 'ADD_TIME',
+    },
   });
 }
 

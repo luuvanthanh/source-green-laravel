@@ -43,8 +43,8 @@ class MainLayout extends React.PureComponent {
         <Menu
           menu={menuData}
           info={{
-            icon: '/images/home/speech.svg',
-            title: 'Trao đổi',
+            icon: '/images/home/pages.svg',
+            title: 'Ghi chú',
           }}
         />
         <Settings />
