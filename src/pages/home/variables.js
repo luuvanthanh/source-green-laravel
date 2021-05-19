@@ -128,6 +128,76 @@ export const variables = {
       number: '13'
     }
   ],
+  STUDENTS: [
+    {
+      id: '1',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '2',
+      name: 'Lâm Thị Minh Khuê'
+    },
+    {
+      id: '3',
+      name: 'Thạch Tuấn Khang'
+    },
+    {
+      id: '4',
+      name: 'Trần Tuấn Khương'
+    },
+    {
+      id: '5',
+      name: 'Trần Khôi Khải Vĩ'
+    },
+    {
+      id: '6',
+      name: 'Trần Hải'
+    },
+    {
+      id: '7',
+      name: 'Phạm Trương Bảo Nguyên'
+    },
+    {
+      id: '8',
+      name: 'Lâm Thị Tố Trinh'
+    },
+    {
+      id: '9',
+      name: 'Lyu You Lin'
+    },
+    {
+      id: '10',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '11',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '12',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '13',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '14',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '15',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '16',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+    {
+      id: '17',
+      name: 'Bùi Ngọc Thy Nhân'
+    },
+  ]
 };
 
 export default variables;

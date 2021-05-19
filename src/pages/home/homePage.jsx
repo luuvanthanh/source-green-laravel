@@ -12,11 +12,13 @@ import styles from './index.scss';
 import variablesModules from './variables';
 import Overview from './overview';
 import Application from './application';
+import Student from './student'
 
 const { TabPane } = Tabs;
 const tables = {
   overview: <Overview />,
   application: <Application />,
+  student: <Student />,
 };
 
 
@@ -47,7 +49,7 @@ class HomePage extends PureComponent {
     this.state = {
       branches: [],
       branch: '',
-      tab: 'overview'
+      tab: 'student'
     };
     setIsMounted(true);
   }

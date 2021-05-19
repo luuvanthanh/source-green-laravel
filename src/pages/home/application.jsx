@@ -16,7 +16,6 @@ class Application extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { user } = props;
-    console.log(user, 'user');
     this.state = {
       data: feature.FEATURES.filter((menuItem) => {
         const showMenu = isValidCondition({
