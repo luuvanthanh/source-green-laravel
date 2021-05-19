@@ -358,18 +358,6 @@ class Index extends PureComponent {
                           <div className="col-lg-3">
                             <FormItem
                               onSelect={(value) =>
-                                this.onChangeTimePicker(value, index, 'afterStart')
-                              }
-                              label="THỜI GIAN ĐI TRỄ (KHÔNG VƯỢT QUÁ)"
-                              name={[field.name, 'afterStart']}
-                              fieldKey={[field.fieldKey, 'afterStart']}
-                              rules={[variables.RULES.EMPTY]}
-                              type={variables.TIME_PICKER}
-                            />
-                          </div>
-                          <div className="col-lg-3">
-                            <FormItem
-                              onSelect={(value) =>
                                 this.onChangeTimePicker(value, index, 'startTime')
                               }
                               label="THỜI GIAN TỪ"
@@ -385,6 +373,18 @@ class Index extends PureComponent {
                               label="ĐẾN"
                               name={[field.name, 'endTime']}
                               fieldKey={[field.fieldKey, 'endTime']}
+                              rules={[variables.RULES.EMPTY]}
+                              type={variables.TIME_PICKER}
+                            />
+                          </div>
+                          <div className="col-lg-3">
+                            <FormItem
+                              onSelect={(value) =>
+                                this.onChangeTimePicker(value, index, 'afterStart')
+                              }
+                              label="THỜI GIAN ĐI TRỄ (KHÔNG VƯỢT QUÁ)"
+                              name={[field.name, 'afterStart']}
+                              fieldKey={[field.fieldKey, 'afterStart']}
                               rules={[variables.RULES.EMPTY]}
                               type={variables.TIME_PICKER}
                             />

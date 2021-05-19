@@ -118,15 +118,9 @@ class Index extends PureComponent {
           timeIn0:
             get(shiftItem, 'shiftDetail[0].startTime') &&
             moment(get(shiftItem, 'shiftDetail[0].startTime'), variables.DATE_FORMAT.TIME_FULL),
-          timeLate0:
-            get(shiftItem, 'shiftDetail[0].afterStart') &&
-            moment(get(shiftItem, 'shiftDetail[0].afterStart'), variables.DATE_FORMAT.TIME_FULL),
           timeIn1:
-            get(shiftItem, 'shiftDetail[1].startTime') &&
-            moment(get(shiftItem, 'shiftDetail[1].startTime'), variables.DATE_FORMAT.TIME_FULL),
-          timeLate1:
-            get(shiftItem, 'shiftDetail[1].beforeEnd') &&
-            moment(get(shiftItem, 'shiftDetail[1].beforeEnd'), variables.DATE_FORMAT.TIME_FULL),
+            get(shiftItem, 'shiftDetail[1].endTime') &&
+            moment(get(shiftItem, 'shiftDetail[1].endTime'), variables.DATE_FORMAT.TIME_FULL),
         });
       },
     );
@@ -144,15 +138,9 @@ class Index extends PureComponent {
           timeIn0:
             get(shiftItem, 'shiftDetail[0].startTime') &&
             moment(get(shiftItem, 'shiftDetail[0].startTime'), variables.DATE_FORMAT.TIME_FULL),
-          timeLate0:
-            get(shiftItem, 'shiftDetail[0].afterStart') &&
-            moment(get(shiftItem, 'shiftDetail[0].afterStart'), variables.DATE_FORMAT.TIME_FULL),
           timeIn1:
-            get(shiftItem, 'shiftDetail[1].startTime') &&
-            moment(get(shiftItem, 'shiftDetail[1].startTime'), variables.DATE_FORMAT.TIME_FULL),
-          timeLate1:
-            get(shiftItem, 'shiftDetail[1].beforeEnd') &&
-            moment(get(shiftItem, 'shiftDetail[1].beforeEnd'), variables.DATE_FORMAT.TIME_FULL),
+            get(shiftItem, 'shiftDetail[1].endTime') &&
+            moment(get(shiftItem, 'shiftDetail[1].endTime'), variables.DATE_FORMAT.TIME_FULL),
         });
       },
     );
@@ -272,18 +260,6 @@ class Index extends PureComponent {
                               name={`timeIn${index}`}
                               type={variables.TIME_PICKER}
                               disabled
-                            />
-                          </div>
-                          <div className="col-lg-6">
-                            <FormItem
-                              label={
-                                index === 0
-                                  ? 'Thời gian đi trễ (không vượt quá)'
-                                  : 'Thời gian về sớm (không vượt quá)'
-                              }
-                              name={`timeLate${index}`}
-                              disabled
-                              type={variables.TIME_PICKER}
                             />
                           </div>
                         </div>

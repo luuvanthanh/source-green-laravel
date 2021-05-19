@@ -199,7 +199,7 @@ class Index extends PureComponent {
       contractTo: values.contractTo && moment(values.contractTo),
       detail: (parameterValues || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
-        value: ++valueDefault,
+        value: valueDefault,
       })),
     };
     dispatch({
