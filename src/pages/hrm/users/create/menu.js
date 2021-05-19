@@ -6,6 +6,10 @@ export const menu = [
     label: 'Thông tin cơ bản',
   },
   {
+    key: 'position-levels',
+    label: 'Cấp bậc, chức vụ',
+  },
+  {
     key: 'dismisseds',
     label: 'Miễn nhiệm',
   },

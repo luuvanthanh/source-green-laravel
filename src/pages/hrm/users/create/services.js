@@ -146,7 +146,7 @@ export function removeDismisseds(data = {}) {
 }
 // dismisseds
 
-// dismisseds
+// appoints
 export function getAppoints(params = {}) {
   return requestLavarel('/v1/appoints', {
     method: 'GET',
@@ -178,7 +178,7 @@ export function removeAppoints(data = {}) {
     data,
   });
 }
-// dismisseds
+// appoints
 
 // transfers
 export function addTransfers(data = {}) {
@@ -406,3 +406,17 @@ export function getChildren(params = {}) {
   });
 }
 // children
+
+
+// position-levels
+export function getPositionLevels(params = {}) {
+  return requestLavarel('/v1/position-levels', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// position-levels
