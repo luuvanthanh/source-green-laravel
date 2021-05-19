@@ -197,6 +197,42 @@ export const variables = {
       id: '17',
       name: 'Bùi Ngọc Thy Nhân'
     },
+  ],
+  MENU: [
+    {
+      id: 'bus',
+      name: 'Bus',
+      image: '/images/home/road.svg'
+    },
+    {
+      id: 'childrenInClass',
+      name: 'Trẻ vào lớp',
+      image: '/images/home/note.svg',
+    },
+    {
+      id: 'health',
+      name: 'Sức khỏe',
+      image: '/images/home/tumblr.svg',
+    },
+    {
+      id: 'note',
+      name: 'Ghi chú',
+      image: '/images/home/pages.svg',
+    },
+    {
+      id: 'medical',
+      name: 'Y tế',
+      image: '/images/home/balloons.svg',
+    },
+    {
+      id: 'programStudy',
+      name: 'Chương trình học',
+      image: '/images/home/spreadsheet.svg',
+    },
+  ],
+  TABS_BUS: [
+    { id: 'SCHOOLWARD', name: 'Đón trẻ' },
+    { id: 'HOMEAWARD', name: 'Trả trẻ' },
   ]
 };
 
