@@ -281,6 +281,7 @@
     border-radius: 6px;
     margin: 0 15px;
     height: 100%;
+    cursor: pointer;
     :global(.ant-avatar.ant-avatar-icon) {
       width: 100% !important;
       max-height: 90px;
@@ -308,4 +309,45 @@
     background: transparent;
     color: $white;
   }
+}
+.class {
+  font-size: 13px;
+  line-height: 20px;
+  color: #7a7e84;
+}
+.modal-student-detail {
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+}
+.body-modal {
+  display: flex;
+}
+.menu-modal {
+  max-width: 95px;
+  margin: 10px;
+  text-align: center;
+  .item-menu {
+    text-align: center;
+    padding: 13px 20px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    &.actived {
+      background: #DEF4D7;
+      border-radius: 2px;
+      .title-menu {
+        font-weight: 600;
+        color: $text-success;
+      }
+    }
+    .image-menu {
+      max-width: 50px;
+      height: auto;
+      width: 100%;
+    }
+  }
+}
+.container-bus {
+  flex: 1;
+  padding: 0 20px;
 }
