@@ -30,6 +30,7 @@ export function get(data = {}) {
       }),
       order_by_position: true,
       include: Helper.convertIncludes([
+        'absent',
         'schedules.shift',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
