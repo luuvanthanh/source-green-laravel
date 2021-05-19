@@ -40,7 +40,7 @@ const Index = memo(() => {
   });
   const [images, setImages] = useState([]);
 
-  const removeImage = (removeId) => () => {
+  const removeImage = (removeId) => {
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -94,7 +94,7 @@ const Index = memo(() => {
   const classify = () => {
     dispatch({
       type: 'mediaBrowser/CLASSIFY',
-      payload: images,
+      payload: images.filter((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING),
       callback: () => {
         history.push({
           pathname: '/ghi-nhan/duyet-hinh',
@@ -187,13 +187,11 @@ const Index = memo(() => {
                                 {localVariables.CLASSIFY_STATUS_NAME[item.status] ||
                                   localVariables.CLASSIFY_STATUS_NAME.PENDING}
                               </Tag>
-                              {/* <Tag className={csx(styles.tag)}>Đã xử lý</Tag>
-                            <Tag className={csx(styles.tag)}>Không xác định</Tag> */}
                               <div
                                 className={styles['cancel']}
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  removeImage(id);
+                                  removeImage(item.id);
                                 }}
                               >
                                 <span className="icon-cancel"></span>

@@ -31,6 +31,12 @@ export const feature = {
       permission: ['ADMIN', 'TEACHER', 'PARENT', 'PRINCIPAL', 'ALL'],
     },
     {
+      title: 'Ghi chú',
+      src: '/images/home/pages.svg',
+      url: '/ghi-chu',
+      permission: ['ADMIN', 'TEACHER', 'PARENT', 'PRINCIPAL', 'ALL'],
+    },
+    {
       title: 'Điểm danh trẻ',
       src: '/images/home/note.svg',
       url: '/diem-danh',
