@@ -26,7 +26,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['employee']),
+      include: Helper.convertIncludes(['employee.positionLevelNow']),
       search: Helper.convertParamSearchConvert({
         'employee.FullName': data.fullName,
       }),
