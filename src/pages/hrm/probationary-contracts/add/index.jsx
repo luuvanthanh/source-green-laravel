@@ -75,6 +75,7 @@ class Index extends PureComponent {
     const {
       details,
       match: { params },
+      contractTypes,
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
@@ -198,7 +199,7 @@ class Index extends PureComponent {
       contractTo: values.contractTo && moment(values.contractTo),
       detail: (parameterValues || []).map(({ id, valueDefault }) => ({
         parameterValueId: id,
-        value: ++valueDefault,
+        value: valueDefault,
       })),
     };
     dispatch({

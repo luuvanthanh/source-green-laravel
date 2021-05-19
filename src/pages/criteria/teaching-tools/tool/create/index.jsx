@@ -128,11 +128,11 @@ const Index = memo(({ }) => {
                   levels.map((item, index) => (
                     <Pane className={index === 0 ? 'mt10' : 'mt20'} key={index}>
                       <Pane className="d-flex">
-                        <Text size="medium" className="fw-bold mr5 fs-13">{item.name}.</Text>
+                        <Text size="medium" className="fw-bold mr5 font-size-13">{item.name}.</Text>
                         {index !== 0 && (
                           <p
                             onClick={() => handleDelete(index)}
-                            className="btn-delete fs-13 fw-normal"
+                            className="btn-delete font-size-13 fw-normal"
                           >
                             Xóa
                           </p>
@@ -156,7 +156,7 @@ const Index = memo(({ }) => {
                       }
                       <Pane className="mt10 d-flex align-items-center color-success pointer">
                         <span className="icon-plus-circle mr5" />
-                        <span onClick={() => handleCreateCriteria(index)} className="text-uppercase fs-13">Thêm tiêu chí</span>
+                        <span onClick={() => handleCreateCriteria(index)} className="text-uppercase font-size-13">Thêm tiêu chí</span>
                       </Pane>
                     </Pane>
                   ))

@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import styles from '@/assets/styles/Common/common.scss';
+import classnames from 'classnames';
 
 class AvatarTable extends Component {
   render() {
-    const { fileImage, size, fullName, description } = this.props;
+    const { fileImage, size, fullName, description, className } = this.props;
     if (fileImage && fullName) {
       return (
-        <div className={styles['avatar-container']}>
-          <Avatar shape="square" size={40} src={`${API_UPLOAD}${fileImage}`} />
+        <div className={classnames(styles['avatar-container'], `${className ? styles(`${className}`) : ''}`)}>
+          <Avatar shape="square" size={size || 40} src={`${API_UPLOAD}${fileImage}`} />
           {fullName && description && (
             <div className={styles.info}>
               <p className={styles['title']}>{fullName}</p>
@@ -27,8 +28,8 @@ class AvatarTable extends Component {
     }
     if (!fileImage && fullName) {
       return (
-        <div className={styles['avatar-container']}>
-          <Avatar size={size} shape="square" icon={<UserOutlined />} />
+        <div className={classnames(styles['avatar-container'], `${className ? styles[`${className}`] : ''}`)}>
+          <Avatar size={size || 40} shape="square" icon={<UserOutlined />} />
           {fullName && description && (
             <div className={styles.info}>
               <p className={styles['title']}>{fullName}</p>
@@ -44,9 +45,9 @@ class AvatarTable extends Component {
       );
     }
     if (fileImage && !fullName) {
-      return <Avatar shape="square" size={40} src={`${API_UPLOAD}${fileImage}`} />;
+      return <Avatar shape="square" size={size || 40} src={`${API_UPLOAD}${fileImage}`} />;
     }
-    return <Avatar size={size} shape="square" icon={<UserOutlined />} />;
+    return <Avatar size={size || 40} shape="square" icon={<UserOutlined />} />;
   }
 }
 

@@ -381,6 +381,32 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
+    let checkBetween = false;
+    let absentType = '';
+    user?.absent?.forEach((item) => {
+      const itemAbsentDetail = item.absentDetail.find(
+        (itemAbsent) =>
+          Helper.getDate(itemAbsent.date, variables.DATE_FORMAT.DATE_AFTER) ===
+          Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+      );
+      if (itemAbsentDetail) {
+        checkBetween = true;
+        absentType = itemAbsentDetail?.isFullDate ? 'F' : 'F/2';
+      }
+    });
+    if (checkBetween) {
+      return (
+        <div
+          className={classnames(
+            stylesChildren['cell-content'],
+            stylesChildren['cell-content-code'],
+            stylesChildren['cell-heading-weekend'],
+          )}
+        >
+          {absentType}
+        </div>
+      );
+    }
     if (!isEmpty(record)) {
       let dataRRule = [];
       record.forEach((item) => {
@@ -438,7 +464,7 @@ class Index extends PureComponent {
                 )}
               >
                 {get(data, 'shift.shiftCode')}
-                <div className={stylesChildren['fade-cell']}>
+                {/* <div className={stylesChildren['fade-cell']}>
                   <button
                     type="button"
                     className={stylesChildren['fade-cell-item']}
@@ -448,7 +474,7 @@ class Index extends PureComponent {
                   >
                     <CloseOutlined />
                   </button>
-                </div>
+                </div> */}
               </div>
             </Tooltip>
           );

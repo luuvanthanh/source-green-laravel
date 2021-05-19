@@ -72,6 +72,14 @@ export default {
         });
       }
     },
+    *GET_TRACKINGS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getTrackings, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

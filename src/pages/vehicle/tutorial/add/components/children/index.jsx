@@ -162,7 +162,7 @@ class Index extends PureComponent {
           targetKeys={targetKeys}
           showSearch={true}
           onChange={this.onChange}
-          filterOption={(inputValue, item) => item.title.indexOf(inputValue) !== -1}
+          filterOption={(inputValue, item) => item?.fullName?.indexOf(inputValue) !== -1}
           leftColumns={this.header()}
           rightColumns={this.header()}
         />

@@ -780,6 +780,12 @@
   }
 }
 
+.full-name-bold {
+  .name {
+    font-weight: bold;
+  }
+}
+
 .checkbox {
   &--large {
     transform: scale(1.5);
