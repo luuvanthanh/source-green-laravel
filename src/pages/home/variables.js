@@ -4,7 +4,7 @@ export const variables = {
     { id: 'warning', name: 'Cảnh báo' },
     { id: 'activity', name: 'Hoạt động' },
     { id: 'student', name: 'Học sinh' },
-    { id: 'ppplication', name: 'Ứng dụng' },
+    { id: 'application', name: 'Ứng dụng' },
   ],
   NOTE: [
     { id: 'notReceived', name: 'Chưa nhận' },

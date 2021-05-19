@@ -1,20 +1,22 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
+import { Form, Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import styles from './index.scss';
-import { variables } from '@/utils';
-import { Form, Tabs } from 'antd';
 import _ from 'lodash';
-import variablesModules from './variables';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import Overview from './overview';
 
+import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
+
+import styles from './index.scss';
+import variablesModules from './variables';
+import Overview from './overview';
+import Application from './application';
 
 const { TabPane } = Tabs;
 const tables = {
   overview: <Overview />,
+  application: <Application />,
 };
 
 
@@ -35,6 +37,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
+
 class HomePage extends PureComponent {
   formRef = React.createRef();
 
@@ -89,6 +92,7 @@ class HomePage extends PureComponent {
   }
 
   changeTab = (tab) => {
+    this.setStateData({ tab });
   }
 
   render() {
