@@ -100,6 +100,7 @@ export const variables = {
     HRM: 'HRM',
     ADMIN: 'ADMIN',
     ALL: 'ALL',
+    PRINCIPAL: 'PRINCIPAL'
   },
   ROLES_PERMISSIONS: ['ADMIN', 'TEACHER', 'PARENT', 'HRM', 'PRINCIPAL'],
   CHOOSE: [

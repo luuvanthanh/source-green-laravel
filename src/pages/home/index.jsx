@@ -8,7 +8,7 @@ import Slider from 'react-slick';
 import { variables } from '@/utils';
 import { isValidCondition } from '@/utils/authority';
 import feature from '@/services/feature';
-
+import HomePage from './homePage';
 @connect(({ user, loading }) => ({ user, loading }))
 class Index extends PureComponent {
   constructor(props, context) {
@@ -37,6 +37,7 @@ class Index extends PureComponent {
   render() {
     const {
       loading: { effects },
+      user: { user }
     } = this.props;
     const { data } = this.state;
     const settings = {
@@ -96,6 +97,11 @@ class Index extends PureComponent {
         },
       ],
     };
+    if (user?.role?.toUpperCase() === variables.ROLES.PRINCIPAL) {
+      return (
+        <HomePage />
+      )
+    }
     return (
       <div className={styles.block}>
         <Helmet title="Trang Chủ" />
