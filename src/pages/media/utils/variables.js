@@ -8,7 +8,7 @@ export const variables = {
     UNDEFINED: 'UNDEFINED',
   },
   CLASSIFY_STATUS_NAME: {
-    PENDING: 'Đang xử lý',
+    PENDING: 'Chưa xử lý',
     CLASSIFYING: 'Đang xử lý',
     UNDEFINED: 'Không xác định',
     CLASSIFIED: 'Đã xử lý',
