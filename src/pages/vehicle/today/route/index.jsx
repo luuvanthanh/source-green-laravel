@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import Routing from './components/route';
-import { get, head } from 'lodash';
+import { get, head, isEmpty } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -14,6 +14,7 @@ import common from '@/assets/styles/Common/common.scss';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Helper, variables } from '@/utils';
 import variablesModules from '../../utils/variables';
+import moment from 'moment';
 
 const { Item: TimelineItem } = Timeline;
 
@@ -57,11 +58,14 @@ class Index extends PureComponent {
     this.state = {
       position: Helper.centerLatLng(props.routes),
       zoom: 7,
+      trackings: [],
     };
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.loadTracking();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
@@ -79,6 +83,25 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadTracking = () => {
+    const { routes } = this.props;
+    this.props.dispatch({
+      type: 'busToday/GET_TRACKINGS',
+      payload: {
+        id: head(routes)?.busRoute?.busId,
+        startDate: moment().startOf('days'),
+        endDate: moment().endOf('days'),
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            trackings: !isEmpty(response) ? [head(response)] : [],
+          });
+        }
+      },
+    });
   };
 
   loadRouting = () => {
@@ -120,8 +143,7 @@ class Index extends PureComponent {
       summary,
       loading: { effects },
     } = this.props;
-    const { position } = this.state;
-    console.log(routes);
+    const { position, trackings } = this.state;
     return (
       <Modal
         centered
@@ -221,8 +243,10 @@ class Index extends PureComponent {
                     icon={iconStudent}
                   ></Marker>
                 ))}
-                {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker>
-                <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker> */}
+                {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
+                {trackings.map((item) => (
+                  <Marker position={[item.lat, item.long]} icon={iconCar} key={item.id}></Marker>
+                ))}
               </Map>
             </div>
           </div>

@@ -27,3 +27,28 @@ export function get(params = {}) {
     },
   );
 }
+
+export function getTrackings(params = {}) {
+  return request(`/bus-trackings`, {
+    method: 'GET',
+    params: {
+      ...params,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.startDate,
+          targetValue: '00:00:00',
+        }),
+        isUTC: true,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.endDate,
+          targetValue: '23:59:59',
+        }),
+        isUTC: true,
+      }),
+    },
+  });
+}
