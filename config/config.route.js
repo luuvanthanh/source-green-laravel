@@ -291,6 +291,24 @@ export default [
         ],
       },
       // EXCHANGE
+      // NOTE
+      {
+        path: '/ghi-chu',
+        component: './notes/layout',
+        routes: [
+          {
+            path: '/ghi-chu',
+            redirect: '/ghi-chu/danh-sach',
+          },
+          {
+            path: '/ghi-chu/danh-sach',
+            component: './notes/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      // NOTE
       // OBJECT PROFILES
       {
         path: '/ho-so-doi-tuong',
