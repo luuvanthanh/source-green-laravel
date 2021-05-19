@@ -75,6 +75,7 @@ class Index extends PureComponent {
     const {
       details,
       match: { params },
+      contractTypes,
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({

@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import Routing from './components/route';
-import { get, head, isEmpty } from 'lodash';
+import RoutingDefault from './components/route-default';
+import { get, head, isEmpty, last, size } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -97,7 +98,7 @@ class Index extends PureComponent {
       callback: (response) => {
         if (response) {
           this.setStateData({
-            trackings: !isEmpty(response) ? [head(response)] : [],
+            trackings: response,
           });
         }
       },
@@ -109,9 +110,7 @@ class Index extends PureComponent {
       `https://router.project-osrm.org/route/v1/driving/108.169863,16.067899;108.154157,16.053197?overview=false&alternatives=true&steps=true&hints=;`,
     )
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
+      .then((data) => {});
   };
 
   handleCancel = () => {
@@ -133,6 +132,22 @@ class Index extends PureComponent {
     this.setState({
       isMapInit: true,
     });
+  };
+
+  covertGetLocation = (items) => {
+    if (size(items) < 20) {
+      return items;
+    }
+    if (size(items) < 50) {
+      return items.filter((item, index) => index % 5 === 0 || index === 1);
+    }
+    if (size(items) < 200) {
+      return items.filter((item, index) => index % 10 === 0 || index === 1);
+    }
+    if (size(items) < 500) {
+      return items.filter((item, index) => index % 20 === 0 || index === 1);
+    }
+    return items.filter((item, index) => index % 50 === 0 || index === 1);
   };
 
   render() {
@@ -235,7 +250,10 @@ class Index extends PureComponent {
                   url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                   attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
                 />
-                <Routing map={this.map} routes={routes} />
+                {!isEmpty(routes) && <RoutingDefault map={this.map} routes={routes} />}
+                {!isEmpty(this.covertGetLocation(trackings)) && (
+                  <Routing map={this.map} routes={this.covertGetLocation(trackings)} />
+                )}
                 {routes.map((item) => (
                   <Marker
                     key={item.id}
@@ -244,9 +262,12 @@ class Index extends PureComponent {
                   ></Marker>
                 ))}
                 {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
-                {trackings.map((item) => (
-                  <Marker position={[item.lat, item.long]} icon={iconCar} key={item.id}></Marker>
-                ))}
+                {!isEmpty(trackings) && (
+                  <Marker
+                    position={[last(trackings)?.lat, last(trackings)?.long]}
+                    icon={iconCar}
+                  ></Marker>
+                )}
               </Map>
             </div>
           </div>

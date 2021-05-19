@@ -332,6 +332,26 @@ const General = memo(({}) => {
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
             <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
+                <FormItem name="placeOfBirth" label="Nơi sinh" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="nationality" label="Quốc tịch" type={variables.INPUT} />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem
+                  name="permanentAddress"
+                  label="Hộ khẩu thường trú"
+                  type={variables.INPUT}
+                />
+              </Pane>
+              <Pane className="col-lg-4">
+                <FormItem name="address" label="Chổ ở hiện tại" type={variables.INPUT} />
+              </Pane>
+            </Pane>
+          </Pane>
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Pane className="row" {...marginProps}>
+              <Pane className="col-lg-4">
                 <FormItem name="taxCode" label="Mã số thuế" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-4">
@@ -345,8 +365,6 @@ const General = memo(({}) => {
                   type={variables.SELECT}
                 />
               </Pane>
-            </Pane>
-            <Pane className="row" {...marginProps}>
               <Pane className="col-lg-4">
                 <FormItem
                   data={trainningSchool}

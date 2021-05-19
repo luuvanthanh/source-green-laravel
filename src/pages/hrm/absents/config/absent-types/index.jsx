@@ -218,6 +218,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     return [
       {
         title: 'STT',

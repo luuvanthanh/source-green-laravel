@@ -3,7 +3,15 @@ import difference from 'lodash/difference';
 import Table from '@/components/CommonComponent/Table';
 
 const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
-  <Transfer {...restProps} showSelectAll={false}>
+  <Transfer
+    {...restProps}
+    showSelectAll={false}
+    locale={{
+      searchPlaceholder: 'Nhập tên học sinh',
+      itemsUnit: 'Học sinh',
+      itemUnit: 'Học sinh'
+    }}
+  >
     {({
       direction,
       filteredItems,

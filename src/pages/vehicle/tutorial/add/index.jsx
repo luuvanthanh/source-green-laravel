@@ -274,13 +274,13 @@ class Index extends PureComponent {
     }));
   };
 
-  onRemoveChildren = (record) => {
+  onRemoveChildren = (record, object) => {
     this.setStateData((prevState) => ({
       busPlaces: prevState.busPlaces.map((item) => {
-        if (item.id == record.parentId) {
+        if (item.parentId == object.parentId) {
           return {
             ...item,
-            busPlaces: item.busPlaces.filter((itemChildren) => itemChildren.key !== record.key),
+            studentBusPlaces: item.studentBusPlaces.filter((itemChildren) => itemChildren.key !== record.key),
           };
         }
         return item;
@@ -291,7 +291,7 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = (type) => {
+  header = (type, object = {}) => {
     let columns = [];
     if (type === 'CHILDREN') {
       columns = [
@@ -328,7 +328,11 @@ class Index extends PureComponent {
           width: 80,
           render: (record) => (
             <div className={styles['list-button']}>
-              <Button color="danger" icon="remove" onClick={() => this.onRemoveChildren(record)} />
+              <Button
+                color="danger"
+                icon="remove"
+                onClick={() => this.onRemoveChildren(record, object)}
+              />
             </div>
           ),
         },
@@ -683,13 +687,13 @@ class Index extends PureComponent {
                     </div>
                     <Table
                       bordered
-                      columns={this.header('CHILDREN')}
+                      columns={this.header('CHILDREN', item)}
                       dataSource={item.studentBusPlaces || []}
                       className="table-edit"
                       pagination={false}
                       isEmpty
                       params={{
-                        header: this.header('CHILDREN'),
+                        header: this.header('CHILDREN', item),
                         type: 'table',
                       }}
                       rowKey={(record) => record.id || record.key}
