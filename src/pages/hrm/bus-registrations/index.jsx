@@ -250,14 +250,21 @@ class Index extends PureComponent {
       {
         title: 'Nhân viên',
         key: 'fullName',
-        className: 'min-width-200',
-        width: 200,
+        className: 'min-width-220',
+        width: 220,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
             fullName={get(record, 'employee.fullName')}
           />
         ),
+      },
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        width: 170,
+        className: 'min-width-170',
+        render: (record) => record?.employee?.positionLevelNow?.division?.name,
       },
       {
         title: 'Ngày đăng ký',
@@ -267,7 +274,7 @@ class Index extends PureComponent {
         render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Sô giờ',
+        title: 'Số giờ',
         key: 'hours',
         width: 170,
         className: 'min-width-170',
