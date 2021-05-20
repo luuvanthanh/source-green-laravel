@@ -2,15 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect } from 'umi';
 import { Tabs, Form, Typography } from 'antd';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import _ from 'lodash';
 
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
-import variablesModules from './variables';
-import styles from './index.scss';
+import variablesModules from '../variables';
+import styles from '../index.scss';
 
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
