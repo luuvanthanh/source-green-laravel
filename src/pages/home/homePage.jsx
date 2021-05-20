@@ -49,7 +49,7 @@ class HomePage extends PureComponent {
     this.state = {
       branches: [],
       branch: '',
-      tab: 'student'
+      tab: 'overview'
     };
     setIsMounted(true);
   }

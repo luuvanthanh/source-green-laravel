@@ -1,17 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Form, Typography } from 'antd';
+import { Tabs, Form, Typography } from 'antd';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import classnames from 'classnames';
+import _ from 'lodash';
 
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
-import styles from '../index.scss';
+import variablesModules from './variables';
+import styles from './index.scss';
 
 const { Paragraph } = Typography;
+const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -29,7 +31,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
-class ChildrenComponent extends PureComponent {
+class BusComponent extends PureComponent {
   formRef = React.createRef();
 
   constructor(props, context) {
@@ -71,40 +73,21 @@ class ChildrenComponent extends PureComponent {
         key: 'time',
         align: 'center',
         className: 'min-width-100',
-        width: 200,
         render: () => '16/05',
       },
       {
-        title: 'Vào lớp',
+        title: 'Lên xe',
         key: 'getOnBus',
         align: 'center',
-        width: 200,
-        className: 'min-width-200',
-        render: (value, row, index) => {
-          const obj = {
-            children: index === 1 ? 'Không đăng ký xe Bus' : value,
-            props: {
-              colSpan: index === 1 ? 2 : 1
-            }
-          };
-          return obj;
-        }
+        className: 'min-width-100',
+        render: (record) => '07:12:12',
       },
       {
-        title: 'Ra về',
+        title: 'Lên xe',
         key: 'getOffBus',
         align: 'center',
-        width: 200,
-        className: 'min-width-200',
-        render: (value, row, index) => {
-          const obj = {
-            children: '07:21:17',
-            props: {
-              colSpan: index === 1 ? 0 : 1
-            }
-          };
-          return obj;
-        }
+        className: 'min-width-100',
+        render: (record) => '07:21:17',
       },
       {
         title: 'Bảo mẫu',
@@ -124,7 +107,12 @@ class ChildrenComponent extends PureComponent {
 
   render() {
     return (
-      <div className={classnames(styles['container-bus'], 'mt20')}>
+      <div className={styles['container-bus']}>
+        <Tabs>
+          {variablesModules.TABS_BUS.map(({ id, name }) => (
+            <TabPane tab={name} key={id} />
+          ))}
+        </Tabs>
         <Form>
           <div className="row">
             <div className="col-md-4">
@@ -138,7 +126,7 @@ class ChildrenComponent extends PureComponent {
         <Table
           bordered
           columns={this.header()}
-          dataSource={[{id: 1}, {id: 2}, {id:3}]}
+          dataSource={[{id: 1}]}
           // loading={loading}
           pagination={false}
           params={{
@@ -153,16 +141,16 @@ class ChildrenComponent extends PureComponent {
   }
 }
 
-ChildrenComponent.propTypes = {
+BusComponent.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
-ChildrenComponent.defaultProps = {
+BusComponent.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
 };
 
-export default ChildrenComponent ;
+export default BusComponent;
