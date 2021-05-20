@@ -160,6 +160,10 @@ class Index extends PureComponent {
           return {
             ...item,
             isFullDate: value,
+            shiftId: value === 1 ? null : item.shiftId,
+            shiftCode: value === 1 ? null : item.shiftCode,
+            startTime: value === 1 ? '08:00:00' : item.startTime,
+            endTime: value === 1 ? '17:00:00' : item.endTime,
           };
         }
         return item;
@@ -365,6 +369,7 @@ class Index extends PureComponent {
                 }),
               ) || []
             }
+            disabled={record.isFullDate === 1}
             value={record.shiftCode}
             style={{ width: '100%' }}
             placeholder="Chọn"
@@ -380,6 +385,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
+            disabled={record.isFullDate === 1}
             value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeStart(value, record)}
           />
@@ -393,6 +399,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
+            disabled={record.isFullDate === 1}
             value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeEnd(value, record)}
           />
