@@ -9,8 +9,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import variablesModules from './variables';
-import styles from './index.scss';
+import variablesModules from '../variables';
+import styles from '../index.scss';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -30,7 +30,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
-class HealthComponent extends PureComponent {
+class EveryDayComponent extends PureComponent {
   formRef = React.createRef();
 
   constructor(props, context) {
@@ -64,12 +64,7 @@ class HealthComponent extends PureComponent {
 
   render() {
     return (
-      <div className={styles['container-bus']}>
-        <Tabs>
-          {variablesModules.TABS_HEALTH.map(({ id, name }) => (
-            <TabPane tab={name} key={id} />
-          ))}
-        </Tabs>
+      <div>
         <Form>
           <div className="row">
             <div className="col-md-4">
@@ -105,16 +100,16 @@ class HealthComponent extends PureComponent {
   }
 }
 
-HealthComponent.propTypes = {
+EveryDayComponent.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
-HealthComponent.defaultProps = {
+EveryDayComponent.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
 };
 
-export default HealthComponent ;
+export default EveryDayComponent ;

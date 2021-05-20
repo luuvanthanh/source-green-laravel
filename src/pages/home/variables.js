@@ -235,7 +235,7 @@ export const variables = {
     { id: 'HOMEAWARD', name: 'Trả trẻ' },
   ],
   TABS_HEALTH: [
-    { id: 'update', name: 'Thường nhật' },
+    { id: 'everyDay', name: 'Thường nhật' },
     { id: 'chart', name: 'Biểu đồ thống kê' },
     { id: 'history', name: 'Lịch sử nhập' },
   ],
