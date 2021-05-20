@@ -153,4 +153,4 @@ BusComponent.defaultProps = {
   location: {},
 };
 
-export default BusComponent ;
+export default BusComponent;
