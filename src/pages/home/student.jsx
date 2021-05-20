@@ -3,6 +3,7 @@ import { connect } from 'umi';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Form, Modal, Avatar } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -111,28 +112,32 @@ class Student extends PureComponent {
       <div className={classnames(styles['items-container'])}>
         <Form>
           <FormItem
-            className={classnames('mt20', 'mb5', styles['input-search'])}
+            className={classnames('mt20', 'mb35', styles['input-search'])}
             name="fullName"
             onChange={(event) => this.onChange(event, 'fullName')}
             placeholder="Nhập từ khóa tìm kiếm"
             type={variables.INPUT_SEARCH}
           />
         </Form>
-        <div className="row">
-          {
-            variablesModules.STUDENTS.map((item, index) => (
-              <div className={styles['block-student']} key={index}>
-                <div onClick={this.getDetails} className={styles['content-student']}>
-                  <AvatarTable
-                    // fileImage={Helper.getPathAvatarJson(fileImage)}
-                    // fullName={item?.name}
-                    size={90}
-                  />
-                  <p className="font-size-14 mb0 mt5">{item?.name}</p>
-                </div>
-              </div>
-            ))
-          }
+        <div className={styles['container-student']}>
+          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 300}>
+            <div className="d-flex flex-wrap">
+              {
+                variablesModules.STUDENTS.map((item, index) => (
+                  <div className={styles['block-student']} key={index}>
+                    <div onClick={this.getDetails} className={styles['content-student']}>
+                      <AvatarTable
+                        // fileImage={Helper.getPathAvatarJson(fileImage)}
+                        // fullName={item?.name}
+                        size={90}
+                      />
+                      <p className="font-size-14 mb0 mt5">{item?.name}</p>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </Scrollbars>
         </div>
         <Modal
           className={styles['modal-student-detail']}
