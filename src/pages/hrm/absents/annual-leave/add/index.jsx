@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, DatePicker, InputNumber, TimePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last, head } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -146,6 +146,11 @@ class Index extends PureComponent {
   };
 
   onChangeFullDate = (value, record) => {
+    const { shiftUsers } = this.props;
+    let itemShift = {};
+    if (shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]) {
+      itemShift = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
+    }
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item.index === record.index) {
@@ -154,8 +159,8 @@ class Index extends PureComponent {
             isFullDate: value,
             shiftId: value === 1 ? null : item.shiftId,
             shiftCode: value === 1 ? null : item.shiftCode,
-            startTime: value === 1 ? '08:00:00' : item.startTime,
-            endTime: value === 1 ? '17:00:00' : item.endTime,
+            startTime: value === 1 ? head(itemShift)?.startTime : item.startTime,
+            endTime: value === 1 ? last(itemShift)?.endTime : item.endTime,
           };
         }
         return item;
