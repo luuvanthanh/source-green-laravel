@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Form } from 'antd';
+import { Form, Typography } from 'antd';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -9,8 +9,9 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
-import styles from './index.scss';
+import styles from '../index.scss';
 
+const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -77,15 +78,46 @@ class ChildrenComponent extends PureComponent {
         title: 'Vào lớp',
         key: 'getOnBus',
         align: 'center',
-        className: 'min-width-100',
-        render: (record) => '07:12:12',
+        className: 'min-width-200',
+        width: 200,
+        render: (value, row, index) => {
+          const obj = {
+            children: index === 1 ? 'Không đăng ký xe Bus' : value,
+            props: {
+              colSpan: index === 1 ? 2 : 1
+            }
+          };
+          return obj;
+        }
       },
       {
         title: 'Ra về',
         key: 'getOffBus',
         align: 'center',
-        className: 'min-width-100',
-        render: (record) => '07:21:17',
+        className: 'min-width-200',
+        width: 200,
+        render: (value, row, index) => {
+          const obj = {
+            children: '07:21:17',
+            props: {
+              colSpan: index === 1 ? 0 : 1
+            }
+          };
+          return obj;
+        }
+      },
+      {
+        title: 'Bảo mẫu',
+        key: 'shuttler',
+        width: 200,
+        className: 'min-width-200',
+        render: (record) => (
+          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+            {record?.busPlace?.busRoute?.busRouteNannies
+              ?.map((item) => item?.nanny?.fullName)
+              .join(',')}
+          </Paragraph>
+        ),
       },
     ];
   };
@@ -106,7 +138,7 @@ class ChildrenComponent extends PureComponent {
         <Table
           bordered
           columns={this.header()}
-          dataSource={[{id: 1}]}
+          dataSource={[{id: 1}, {id: 2}, {id:3}]}
           // loading={loading}
           pagination={false}
           params={{

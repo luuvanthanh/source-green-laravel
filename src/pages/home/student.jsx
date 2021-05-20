@@ -7,13 +7,14 @@ import { Form, Modal, Avatar } from 'antd';
 import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import BusComponent from './busComponent';
-import ChildrenComponent from './childrenComponent';
-import HealthComponent from './healthComponent';
 
 import styles from './index.scss';
 import variablesModules from './variables';
-
+import BusComponent from './bus';
+import ChildrenComponent from './children';
+import HealthComponent from './health';
+import NoteComponent from './note'
+import MedicalComponent from './medical';
 
 let isMounted = true;
 /**
@@ -86,6 +87,12 @@ class Student extends PureComponent {
 
       case 'health':
         return <HealthComponent />
+
+      case 'note':
+        return <NoteComponent />
+
+      case 'medical':
+        return <MedicalComponent />
 
       default:
         return null

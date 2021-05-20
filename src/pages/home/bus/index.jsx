@@ -1,17 +1,17 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Tabs, Form } from 'antd';
+import { Tabs, Form, Typography } from 'antd';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import _ from 'lodash';
 
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Table from '@/components/CommonComponent/Table';
 
-import variablesModules from './variables';
-import styles from './index.scss';
+import variablesModules from '../variables';
+import styles from '../index.scss';
 
+const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 let isMounted = true;
 /**
@@ -30,7 +30,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
-class HealthComponent extends PureComponent {
+class BusComponent extends PureComponent {
   formRef = React.createRef();
 
   constructor(props, context) {
@@ -62,11 +62,53 @@ class HealthComponent extends PureComponent {
     this.setState(state, callback);
   };
 
+  /**
+   * Function header table
+   */
+   header = () => {
+    return [
+      {
+        title: 'Thời gian',
+        key: 'time',
+        align: 'center',
+        className: 'min-width-100',
+        render: () => '16/05',
+      },
+      {
+        title: 'Lên xe',
+        key: 'getOnBus',
+        align: 'center',
+        className: 'min-width-100',
+        render: (record) => '07:12:12',
+      },
+      {
+        title: 'Lên xe',
+        key: 'getOffBus',
+        align: 'center',
+        className: 'min-width-100',
+        render: (record) => '07:21:17',
+      },
+      {
+        title: 'Bảo mẫu',
+        key: 'shuttler',
+        width: 200,
+        className: 'min-width-200',
+        render: (record) => (
+          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+            {record?.busPlace?.busRoute?.busRouteNannies
+              ?.map((item) => item?.nanny?.fullName)
+              .join(',')}
+          </Paragraph>
+        ),
+      },
+    ];
+  };
+
   render() {
     return (
       <div className={styles['container-bus']}>
         <Tabs>
-          {variablesModules.TABS_HEALTH.map(({ id, name }) => (
+          {variablesModules.TABS_BUS.map(({ id, name }) => (
             <TabPane tab={name} key={id} />
           ))}
         </Tabs>
@@ -74,47 +116,40 @@ class HealthComponent extends PureComponent {
           <div className="row">
             <div className="col-md-4">
               <FormItem
-                className="mb0"
                 name="time"
-                type={variables.DATE_PICKER}
+                type={variables.RANGE_PICKER}
               />
             </div>
           </div>
         </Form>
-        <div className="row py10">
-            {
-              variablesModules.HEALTHS.map((item, index) => (
-                <div className="col-md-6 col-lg-4 my10" key={index}>
-                  <div className={classnames(styles['item-health'], 'd-flex', 'justify-content-between', `${!item.description ? 'align-items-center' : ''}`)}>
-                    <AvatarTable
-                      // fileImage={Helper.getPathAvatarJson(fileImage)}
-                      fullName={item.name}
-                      description={item.description || ''}
-                      size={32}
-                    />
-                    {item.status && (
-                      <p className="font-weight-bold mt0 mb0 ml10 color-success">{item.status}</p>
-                    )}
-                  </div>
-                </div>
-              ))
-            }
-        </div>
+        <Table
+          bordered
+          columns={this.header()}
+          dataSource={[{id: 1}]}
+          // loading={loading}
+          pagination={false}
+          params={{
+            header: this.header(),
+            type: 'table',
+          }}
+          rowKey={(record) => record.id}
+          scroll={{ x: '100%' }}
+        />
       </div>
     );
   }
 }
 
-HealthComponent.propTypes = {
+BusComponent.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
-HealthComponent.defaultProps = {
+BusComponent.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
 };
 
-export default HealthComponent ;
+export default BusComponent;

@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
 import * as services from './services';
-import * as categories from '@/services/categories'
+import * as categories from '@/services/categories';
 
 export default {
   namespace: 'dismissedsAdd',
@@ -92,7 +92,7 @@ export default {
     *GET_CATEGORIES({ payload }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

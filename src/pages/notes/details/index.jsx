@@ -56,11 +56,23 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.loadDetails();
+  }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  loadDetails = () => {
+    const {
+      match: { params },
+    } = this.props;
+    this.props.dispatch({
+      type: 'notesDetails/GET_DATA',
+      payload: params,
+    });
+  };
 
   /**
    * Set state properties
@@ -93,16 +105,18 @@ class Index extends PureComponent {
             <Loading loading={loading} isError={error.isError} params={{ error }}>
               {/* DETAILS CONTAINER */}
               <div className={classnames(styles['info-container'])}>
-                <p className={styles['time']}>10:30, 15/3/2021</p>
-                <h3 className={styles['title']}>Giữ ấm cho bé</h3>
-                <div className={styles['norm']}>
-                  Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt
-                  gió.
-                </div>
+                <p className={styles['time']}>
+                  {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
+                </p>
+                <h3 className={styles['title']}>{details?.name}</h3>
+                <div
+                  className={styles['norm']}
+                  dangerouslySetInnerHTML={{ __html: details.description }}
+                ></div>
                 <div className={styles['list-image']}>
                   <Image.PreviewGroup>
-                    {Helper.isJSON(details.files) &&
-                      JSON.parse(details.files).map((item, index) => (
+                    {Helper.isJSON(details.fileImage) &&
+                      JSON.parse(details.fileImage).map((item, index) => (
                         <Image
                           width={80}
                           height={80}
@@ -123,11 +137,16 @@ class Index extends PureComponent {
                       <p className={styles['norm']}>Phụ huynh</p>
                       <AvatarTable
                         size={50}
-                        fileImage={
-                          Helper.isJSON(get(details, 'creator.objectInfo.fileImage')) &&
-                          head(JSON.parse(get(details, 'creator.objectInfo.fileImage')))
+                        fileImage={head(
+                          JSON.parse(
+                            get(details, 'student.studentParents[0].parent.fileImage') ||
+                              get(details, 'student.studentParents[0].farther.fileImage'),
+                          ),
+                        )}
+                        fullName={
+                          get(details, 'student.studentParents[0].parent.fullName') ||
+                          get(details, 'student.studentParents[0].farther.fullName')
                         }
-                        fullName="Nguyễn Anh"
                       />
                     </div>
                   </div>
@@ -137,10 +156,10 @@ class Index extends PureComponent {
                       <AvatarTable
                         size={50}
                         fileImage={
-                          Helper.isJSON(get(details, 'studentMaster.student.fileImage')) &&
-                          head(JSON.parse(get(details, 'studentMaster.student.fileImage')))
+                          Helper.isJSON(get(details, 'student.fileImage')) &&
+                          head(JSON.parse(get(details, 'student.fileImage')))
                         }
-                        fullName="Su beo"
+                        fullName={get(details, 'student.fullName')}
                       />
                     </div>
                   </div>
@@ -155,7 +174,7 @@ class Index extends PureComponent {
                           <div className={styles.circle}>
                             <span className={'icon-school'}></span>
                           </div>
-                          <p className={styles['norm']}>Lake view</p>
+                          <p className={styles['norm']}>{details?.student?.class?.branch?.name}</p>
                         </div>
                       </div>
                     </div>
@@ -168,7 +187,7 @@ class Index extends PureComponent {
                           <div className={styles.circle}>
                             <span className="icon-open-book"></span>
                           </div>
-                          <p className={styles['norm']}>Preschool</p>
+                          <p className={styles['norm']}>{details?.student?.class?.name}</p>
                         </div>
                       </div>
                     </div>
@@ -177,7 +196,7 @@ class Index extends PureComponent {
                 <hr />
                 <div>
                   <p className={styles['norm']}>Trạng thái</p>
-                  <div className="d-inline-flex">{HelperModules.tagStatus('CLOSED')}</div>
+                  <div className="d-inline-flex">{HelperModules.tagStatus(details.status)}</div>
                 </div>
               </div>
               {/* INFO CONTAINER */}
@@ -186,10 +205,12 @@ class Index extends PureComponent {
               <div className={classnames(styles['feedback-container'], 'mt20')}>
                 <div className="row">
                   <div className="col-4">
-                    <p className={styles['time']}>08:36 - 23/1/2021</p>
+                    <p className={styles['time']}>
+                      {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
+                    </p>
                   </div>
-                  <div className="cl-8">
-                    <p className={styles['norm']}>Nguyễn Thị Vy đã nhận tin</p>
+                  <div className="col-8">
+                    <p className={styles['norm']}>{details?.employee?.fullName} đã nhận tin</p>
                   </div>
                 </div>
               </div>

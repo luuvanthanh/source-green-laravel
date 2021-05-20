@@ -280,7 +280,9 @@ class Index extends PureComponent {
         if (item.parentId == object.parentId) {
           return {
             ...item,
-            studentBusPlaces: item.studentBusPlaces.filter((itemChildren) => itemChildren.key !== record.key),
+            studentBusPlaces: item.studentBusPlaces.filter(
+              (itemChildren) => itemChildren.key !== record.key,
+            ),
           };
         }
         return item;
@@ -478,16 +480,30 @@ class Index extends PureComponent {
     return null;
   };
 
+  onChangeAddress = (event, record) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === record.id) {
+          return {
+            ...item,
+            address: event.target.value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
   render() {
     const {
-      busPlaces,
       visible,
       listId,
-      studentBusPlaces,
-      visibleMap,
       bus,
       busId,
       students,
+      visibleMap,
+      busPlaces,
+      studentBusPlaces,
     } = this.state;
     const {
       menuData,
@@ -657,6 +673,7 @@ class Index extends PureComponent {
                         size="large"
                         value={item.address}
                         style={{ width: '400px' }}
+                        onChange={(event) => this.onChangeAddress(event, item)}
                         suffix={
                           <span
                             className={classnames('icon-map', styles['icon-map'])}

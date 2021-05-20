@@ -1,7 +1,7 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Radio, Checkbox, List, message } from 'antd';
-import { history } from 'umi';
+import { history, useParams } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -26,7 +26,7 @@ const { Item: ListItem } = List;
 const Index = memo(({}) => {
   const [
     menuData,
-    { branches, divisions },
+    { branches, divisions, details },
     loading,
   ] = useSelector(({ menu, notificationAdd, loading: { effects } }) => [
     menu.menuLeftNotification,
@@ -34,9 +34,9 @@ const Index = memo(({}) => {
     effects,
   ]);
 
-  const filterRef = useRef();
   const formRef = useRef();
   const mounted = useRef(false);
+  const params = useParams();
   const mountedSet = (action, value) => mounted?.current && action(value);
   const dispatch = useDispatch();
 
@@ -208,6 +208,7 @@ const Index = memo(({}) => {
   const onFinish = (values) => {
     const payload = {
       ...values,
+      id: params.id,
       content,
       sentDate: moment(),
       isAllEmployees,
@@ -222,7 +223,7 @@ const Index = memo(({}) => {
           : [],
     };
     dispatch({
-      type: 'notificationAdd/ADD',
+      type: params.id ? 'notificationAdd/UPDATE' : 'notificationAdd/ADD',
       payload,
       callback: (response, error) => {
         if (response) {
@@ -231,7 +232,7 @@ const Index = memo(({}) => {
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
-              this.formRef.current.setFields([
+              formRef.current.setFields([
                 {
                   name: head(item.members),
                   errors: [item.message],
@@ -244,212 +245,286 @@ const Index = memo(({}) => {
     });
   };
 
+  useEffect(() => {
+    if (params.id && !isEmpty(employees) && !isEmpty(parents)) {
+      dispatch({
+        type: 'notificationAdd/GET_DETAILS',
+        payload: params,
+        callback: (response, error) => {
+          if (response) {
+            mountedSet(setContent, response.content);
+            mountedSet(
+              setType,
+              !isEmpty(response.employeeNews)
+                ? variablesModules.TYPE.EMPLOYEE
+                : variablesModules.TYPE.PARENT,
+            );
+            formRef.current.setFieldsValue({
+              title: response.title,
+            });
+            mountedSet(
+              setParents,
+              parents.map((item) => {
+                const itemParent = response.parentNews.find(
+                  (itemE) => itemE?.employee?.id === item.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemParent,
+                };
+              }),
+            );
+            mountedSet(
+              setEmployees,
+              employees.map((item) => {
+                const itemEmloyee = response.employeeNews.find(
+                  (itemE) => itemE?.employee?.id === item.id,
+                );
+                return {
+                  ...item,
+                  checked: !!itemEmloyee,
+                };
+              }),
+            );
+          }
+        },
+      });
+    }
+  }, [
+    params.id &&
+      !isEmpty(employees) &&
+      searchEmployee.hasMore &&
+      !isEmpty(parents) &&
+      searchParent.hasMore,
+  ]);
+
   return (
-    <>
-      <Helmet title="Tạo thông báo" />
-      <Breadcrumbs last="Tạo thông báo" menu={menuData} />
+    <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
+      <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
       <Pane className="pr20 pl20">
         <Pane className="row">
           <Pane className="col-lg-6">
             <Pane className="card">
-              <Form layout="vertical" ref={filterRef}>
-                <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
-                  <Pane className="mb20">
-                    <Heading type="form-title">Thông tin chung</Heading>
-                  </Pane>
-
-                  <FormItemAntd label="Đối tượng gửi">
-                    <RadioGroup
-                      options={variablesModules.TYPES}
-                      value={type}
-                      onChange={onChangeType}
-                    />
-                  </FormItemAntd>
+              <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
+                <Pane className="mb20">
+                  <Heading type="form-title">Thông tin chung</Heading>
                 </Pane>
 
-                {type === variablesModules.TYPE.EMPLOYEE && (
-                  <>
-                    <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
-                      <Pane className="row">
-                        <Pane className="col-lg-6">
-                          <FormItem
-                            label="Cơ sở"
-                            name="branchId"
-                            data={branches}
-                            rules={[variables.RULES.EMPTY]}
-                            type={variables.SELECT}
-                          />
-                        </Pane>
-                        <Pane className="col-lg-6">
-                          <FormItem
-                            label="Bộ phận"
-                            name="divisionId"
-                            data={divisions}
-                            rules={[variables.RULES.EMPTY]}
-                            type={variables.SELECT}
-                          />
-                        </Pane>
+                <FormItemAntd label="Đối tượng gửi">
+                  <RadioGroup
+                    options={variablesModules.TYPES}
+                    value={type}
+                    onChange={onChangeType}
+                  />
+                </FormItemAntd>
+              </Pane>
+
+              {type === variablesModules.TYPE.EMPLOYEE && (
+                <>
+                  <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
+                    <Pane className="row">
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          label="Cơ sở"
+                          name="branchId"
+                          data={branches}
+                          type={variables.SELECT}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-6">
+                        <FormItem
+                          label="Bộ phận"
+                          name="divisionId"
+                          data={divisions}
+                          type={variables.SELECT}
+                        />
                       </Pane>
                     </Pane>
-                    <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
-                      <FormItemAntd label="Người nhận thông báo">
-                        <Checkbox
-                          checked={isAllEmployees}
-                          onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
-                        >
-                          Tất cả nhân viên
-                        </Checkbox>
-                      </FormItemAntd>
-                    </Pane>
+                  </Pane>
+                  <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
+                    <FormItemAntd label="Người nhận thông báo">
+                      <Checkbox
+                        checked={isAllEmployees}
+                        onChange={(event) => changeAll(variablesModules.TYPE.EMPLOYEE, event)}
+                      >
+                        Tất cả nhân viên
+                      </Checkbox>
+                    </FormItemAntd>
+                  </Pane>
 
-                    <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
-                        <InfiniteScroll
-                          hasMore={!searchEmployee.loading && searchEmployee.hasMore}
-                          initialLoad={searchEmployee.loading}
-                          loadMore={handleInfiniteOnLoad}
-                          pageStart={0}
-                          useWindow={false}
-                        >
-                          <List
-                            loading={searchEmployee.loading}
-                            dataSource={employees}
-                            renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
-                              <ListItem key={id} className={styles.listItem}>
-                                <Pane className="px20 w-100 d-flex align-items-center">
-                                  <Checkbox
-                                    checked={!!checked}
-                                    className="mr15"
-                                    onChange={(event) => changeCheckboxEmployee(id)}
-                                  />
-                                  <Pane className={styles.userInformation}>
-                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                    <Pane>
-                                      <h3>{fullName}</h3>
-                                      <p>{head(positionLevel)?.position?.name}</p>
-                                    </Pane>
+                  <Pane className="border-bottom">
+                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                      <InfiniteScroll
+                        hasMore={!searchEmployee.loading && searchEmployee.hasMore}
+                        initialLoad={searchEmployee.loading}
+                        loadMore={handleInfiniteOnLoad}
+                        pageStart={0}
+                        useWindow={false}
+                      >
+                        <List
+                          loading={searchEmployee.loading}
+                          dataSource={employees}
+                          renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
+                            <ListItem key={id} className={styles.listItem}>
+                              <Pane className="px20 w-100 d-flex align-items-center">
+                                <Checkbox
+                                  checked={!!checked}
+                                  className="mr15"
+                                  onChange={(event) => changeCheckboxEmployee(id)}
+                                />
+                                <Pane className={styles.userInformation}>
+                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                  <Pane>
+                                    <h3>{fullName}</h3>
+                                    <p>{head(positionLevel)?.position?.name}</p>
                                   </Pane>
                                 </Pane>
-                              </ListItem>
-                            )}
-                          />
-                        </InfiniteScroll>
-                      </Scrollbars>
-                    </Pane>
+                              </Pane>
+                            </ListItem>
+                          )}
+                        />
+                      </InfiniteScroll>
+                    </Scrollbars>
+                  </Pane>
 
-                    <Pane className="p20">
-                      <Text color="dark" size="normal">
-                        Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
-                      </Text>
-                    </Pane>
-                  </>
-                )}
-                {type === variablesModules.TYPE.PARENT && (
-                  <>
-                    <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
-                      <FormItemAntd label="Người nhận thông báo">
-                        <Checkbox
-                          checked={isAllParents}
-                          onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
-                        >
-                          Tất cả phụ huynh
-                        </Checkbox>
-                      </FormItemAntd>
-                    </Pane>
+                  <Pane className="p20">
+                    <Text color="dark" size="normal">
+                      Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
+                    </Text>
+                  </Pane>
+                </>
+              )}
+              {type === variablesModules.TYPE.PARENT && (
+                <>
+                  <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
+                    <FormItemAntd label="Người nhận thông báo">
+                      <Checkbox
+                        checked={isAllParents}
+                        onChange={(event) => changeAll(variablesModules.TYPE.PARENT, event)}
+                      >
+                        Tất cả phụ huynh
+                      </Checkbox>
+                    </FormItemAntd>
+                  </Pane>
 
-                    <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 500}>
-                        <InfiniteScroll
-                          hasMore={!searchParent.loading && searchParent.hasMore}
-                          initialLoad={searchParent.loading}
-                          loadMore={handleInfiniteOnLoadParent}
-                          pageStart={0}
-                          useWindow={false}
-                        >
-                          <List
-                            dataSource={parents}
-                            renderItem={({ id, fullName, fileImage, checked }) => (
-                              <ListItem key={id} className={styles.listItem}>
-                                <Pane className="px20 w-100 d-flex align-items-center">
-                                  <Checkbox
-                                    checked={!!checked}
-                                    className="mr15"
-                                    onChange={(event) => changeCheckboxParent(id)}
-                                  />
-                                  <Pane className={styles.userInformation}>
-                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                    <Pane>
-                                      <h3>{fullName}</h3>
-                                    </Pane>
+                  <Pane className="border-bottom">
+                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 500}>
+                      <InfiniteScroll
+                        hasMore={!searchParent.loading && searchParent.hasMore}
+                        initialLoad={searchParent.loading}
+                        loadMore={handleInfiniteOnLoadParent}
+                        pageStart={0}
+                        useWindow={false}
+                      >
+                        <List
+                          dataSource={parents}
+                          renderItem={({ id, fullName, fileImage, checked }) => (
+                            <ListItem key={id} className={styles.listItem}>
+                              <Pane className="px20 w-100 d-flex align-items-center">
+                                <Checkbox
+                                  checked={!!checked}
+                                  className="mr15"
+                                  onChange={(event) => changeCheckboxParent(id)}
+                                />
+                                <Pane className={styles.userInformation}>
+                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                  <Pane>
+                                    <h3>{fullName}</h3>
                                   </Pane>
                                 </Pane>
-                              </ListItem>
-                            )}
-                          />
-                        </InfiniteScroll>
-                      </Scrollbars>
-                    </Pane>
+                              </Pane>
+                            </ListItem>
+                          )}
+                        />
+                      </InfiniteScroll>
+                    </Scrollbars>
+                  </Pane>
 
-                    <Pane className="p20">
-                      <Text color="dark" size="normal">
-                        Đã chọn {size(parents.filter((item) => item.checked))} phụ huynh
-                      </Text>
-                    </Pane>
-                  </>
-                )}
-              </Form>
+                  <Pane className="p20">
+                    <Text color="dark" size="normal">
+                      Đã chọn {size(parents.filter((item) => item.checked))} phụ huynh
+                    </Text>
+                  </Pane>
+                </>
+              )}
             </Pane>
+            {params.id && (
+              <Pane className="card">
+                <Pane className="border-bottom" style={{ padding: 20 }}>
+                  <Heading type="form-title">Lịch sử</Heading>
+                </Pane>
+                <List
+                  dataSource={Helper.onSortDates(details?.history, 'logtime') || []}
+                  renderItem={(item) => (
+                    <ListItem key={item.id} className={styles.listItem}>
+                      <Pane style={{ width: '100%' }} className="row pr20 pl20">
+                        <Pane className="col-md-5">
+                          <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
+                            {Helper.getDate(item.logtime, variables.DATE_FORMAT.DATE_TIME)}
+                          </Heading>
+                        </Pane>
+                        <Pane className="col-md-7">
+                          <Pane>
+                            {item?.editor?.objectInfo?.fullName || item?.editor?.name}{' '}
+                            {variablesModules?.ACTION_TYPE[item.httpMethod]}
+                          </Pane>
+                        </Pane>
+                      </Pane>
+                    </ListItem>
+                  )}
+                />
+              </Pane>
+            )}
           </Pane>
 
           <Pane className="col-lg-6">
-            <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
-              <Pane className="card">
-                <Pane className="border-bottom" style={{ padding: '20px' }}>
-                  <Pane className="mb20">
-                    <Heading type="form-title">Tạo thông báo</Heading>
-                  </Pane>
+            <Pane className="card">
+              <Pane className="border-bottom" style={{ padding: '20px' }}>
+                <Pane className="mb20">
+                  <Heading type="form-title">Tạo thông báo</Heading>
+                </Pane>
 
-                  <FormItem
-                    name="title"
-                    label="Tiêu đề"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
-                  />
-                  <div className="ant-col ant-form-item-label">
-                    <label>
-                      <span>Nội dung</span>
-                    </label>
-                  </div>
-                  <Quill onChange={onChangeEditor} value={content} />
-                </Pane>
-                <Pane className="p20">
-                  <Button
-                    color="success"
-                    size="large"
-                    loading={
-                      loading['notificationAdd/GET_BRANCHES'] ||
-                      loading['notificationAdd/GET_DIVISIONS'] ||
-                      loading['notificationAdd/ADD'] ||
-                      loading['notificationAdd/UPDATE']
-                    }
-                    style={{ marginLeft: 'auto' }}
-                    htmlType="submit"
-                    disabled={
-                      !employees.find((item) => item.checked) &&
-                      !parents.find((item) => item.checked) &&
-                      !isAllEmployees &&
-                      !isAllParents
-                    }
-                  >
-                    Gửi thông báo
-                  </Button>
-                </Pane>
+                <FormItem
+                  name="title"
+                  label="Tiêu đề"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY_INPUT]}
+                />
+                <div className="ant-col ant-form-item-label">
+                  <label>
+                    <span>Nội dung</span>
+                  </label>
+                </div>
+                <Quill onChange={onChangeEditor} value={content} />
               </Pane>
-            </Form>
+              <Pane className="p20">
+                <Button
+                  color="success"
+                  size="large"
+                  loading={
+                    loading['notificationAdd/GET_BRANCHES'] ||
+                    loading['notificationAdd/GET_DIVISIONS'] ||
+                    loading['notificationAdd/ADD'] ||
+                    loading['notificationAdd/UPDATE']
+                  }
+                  style={{ marginLeft: 'auto' }}
+                  htmlType="submit"
+                  disabled={
+                    !employees.find((item) => item.checked) &&
+                    !parents.find((item) => item.checked) &&
+                    !isAllEmployees &&
+                    !isAllParents
+                  }
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Pane>
           </Pane>
         </Pane>
       </Pane>
-    </>
+    </Form>
   );
 });
 

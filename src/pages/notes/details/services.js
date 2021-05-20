@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/communications', {
+  return request('/notes', {
     method: 'GET',
     params: {
       ...params,
@@ -12,13 +12,13 @@ export function get(params = {}) {
 }
 
 export function details(data) {
-  return request(`/communications/${data.id}`, {
+  return request(`/notes/${data.id}`, {
     method: 'GET',
   });
 }
 
 export function updateCommunications(data = {}) {
-  return request(`/communications/${data.id}`, {
+  return request(`/notes/${data.id}`, {
     method: 'PUT',
     data,
   });
@@ -46,7 +46,7 @@ export function remove(id) {
 }
 
 export function closes(data) {
-  return request(`/communications/${data.id}/close`, {
+  return request(`/notes/${data.id}/close`, {
     method: 'PUT',
     parse: true,
   });

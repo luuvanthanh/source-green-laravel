@@ -220,17 +220,13 @@ class Index extends PureComponent {
             <div className="p20 border-bottom">
               <label className={styles.infoLabel}>Nhân viên</label>
               <Scrollbars autoHeight autoHeightMax={200}>
-                {routes.map((item) => (
-                  <div key={item.id}>
-                    {item?.busRoute?.busRouteNannies?.map((itemBus) => (
-                      <div key={itemBus?.nanny?.id} className="mt10 mb10 ">
-                        <AvatarTable
-                          fullName={itemBus?.nanny?.fullName}
-                          fileImage={Helper.getPathAvatarJson(itemBus?.nanny?.fileImage)}
-                          description="Bảo mẫu"
-                        />
-                      </div>
-                    ))}
+                {head(routes)?.busRoute?.busRouteNannies?.map((itemBus) => (
+                  <div key={itemBus?.nanny?.id} className="mt10 mb10 ">
+                    <AvatarTable
+                      fullName={itemBus?.nanny?.fullName}
+                      fileImage={Helper.getPathAvatarJson(itemBus?.nanny?.fileImage)}
+                      description="Bảo mẫu"
+                    />
                   </div>
                 ))}
               </Scrollbars>

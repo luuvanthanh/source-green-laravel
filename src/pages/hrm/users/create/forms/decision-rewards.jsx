@@ -71,7 +71,10 @@ const Index = memo(() => {
     if (formRefModal.current) {
       formRefModal.current.setFieldsValue({
         ...record,
-        timeApply: record.timeApply && moment(record.timeApply),
+        ...head(record.decisionRewardDetails),
+        timeApply:
+          head(record.decisionRewardDetails)?.timeApply &&
+          moment(head(record.decisionRewardDetails)?.timeApply),
         decisionDate: record.decisionDate && moment(record.decisionDate),
       });
     }
@@ -87,6 +90,7 @@ const Index = memo(() => {
           id: objects.id,
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
+          timeApply: values.timeApply,
           type: values.type,
           reason: values.reason,
           data: [
@@ -176,6 +180,17 @@ const Index = memo(() => {
         className: 'min-width-120',
         width: 120,
         render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Ngày áp dụng',
+        key: 'timeApply',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) =>
+          Helper.getDate(
+            get(record, 'decisionRewardDetails[0].timeApply'),
+            variables.DATE_FORMAT.DATE,
+          ),
       },
       {
         title: 'Lý do',
@@ -279,7 +294,11 @@ const Index = memo(() => {
           ref={formRefModal}
           initialValues={{
             ...objects,
+            ...head(objects.decisionRewardDetails),
             decisionDate: objects.decisionDate && moment(objects.decisionDate),
+            timeApply:
+              head(objects.decisionRewardDetails)?.timeApply &&
+              moment(head(objects.decisionRewardDetails)?.timeApply),
           }}
         >
           <Pane className="row">
@@ -295,6 +314,14 @@ const Index = memo(() => {
               <FormItem
                 label="Ngày quyết định"
                 name="decisionDate"
+                type={variables.DATE_PICKER}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-6">
+              <FormItem
+                label="Ngày áp dụng"
+                name="timeApply"
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
               />

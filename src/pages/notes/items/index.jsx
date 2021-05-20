@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { isEmpty, head, debounce, get } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -15,6 +15,7 @@ import { variables, Helper } from '@/utils';
 import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -52,15 +53,14 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
-        title: query?.title,
+        keyWord: query?.keyWord,
         branchId: query?.branchId,
         classId: query?.classId,
-        fromDate:
-          query?.fromDate && moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        toDate: query?.toDate && moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        from: query?.from && moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER),
+        to: query?.to && moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        status: query?.status || variablesModules.STATUS.NEW,
+        status: query?.status || variablesModules.STATUS.CONFIRMING,
       },
     };
     setIsMounted(true);
@@ -164,13 +164,13 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+  debouncedSearchDateRank = debounce((from, to) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          fromDate,
-          toDate,
+          from,
+          to,
         },
       }),
       () => this.onLoad(),
@@ -391,23 +391,19 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'life',
         className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
-        ),
+        render: (record) => <Text size="normal">{record?.student?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
-        ),
+        render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
       },
       {
         title: 'Tiêu đề',
         key: 'title',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.title}</Text>,
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         title: 'Phụ huynh',
@@ -415,15 +411,22 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (record) => (
           <Text size="normal">
-            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
+            {get(record, 'student.studentParents[0].parent.fullName') ||
+              get(record, 'student.studentParents[0].farther.fullName')}
           </Text>
         ),
       },
       {
         title: 'Dành cho bé',
         key: 'student',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
+            fullName={get(record, 'student.fullName')}
+          />
+        ),
       },
       {
         title: 'Trạng thái',
@@ -438,14 +441,9 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
-            {record.status !== variablesModules.STATUS.CLOSED && (
-              <Button
-                color="success"
-                onClick={() => history.push(`/ghi-chu/${record.id}/chi-tiet`)}
-              >
-                Chi tiết
-              </Button>
-            )}
+            <Button color="success" onClick={() => history.push(`/ghi-chu/${record.id}/chi-tiet`)}>
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -485,8 +483,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                date: search.fromDate &&
-                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
+                date: search.from && search.to && [moment(search.from), moment(search.to)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -494,8 +491,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="title"
-                    onChange={(event) => this.onChange(event, 'title')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

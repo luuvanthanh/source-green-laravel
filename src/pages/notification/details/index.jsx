@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form, List } from 'antd';
 import { Helmet } from 'react-helmet';
-import { connect, useParams } from 'umi';
+import { connect, useParams, history } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { isEmpty } from 'lodash';
+import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
 
@@ -151,6 +152,32 @@ const Index = memo(({}) => {
                     ))}
                 </Pane>
               </Pane>
+
+              <Pane className="card">
+                <Pane className="border-bottom" style={{ padding: 20 }}>
+                  <Heading type="form-title">Lịch sử</Heading>
+                </Pane>
+                <List
+                  dataSource={Helper.onSortDates(details?.history, 'logtime') || []}
+                  renderItem={(item) => (
+                    <ListItem key={item.id} className={styles.listItem}>
+                      <Pane style={{ width: '100%' }} className="row pr20 pl20">
+                        <Pane className="col-md-5">
+                          <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
+                            {Helper.getDate(item.logtime, variables.DATE_FORMAT.DATE_TIME)}
+                          </Heading>
+                        </Pane>
+                        <Pane className="col-md-7">
+                          <Pane>
+                            {item?.editor?.objectInfo?.fullName || item?.editor?.name}{' '}
+                            {variablesModules?.ACTION_TYPE[item.httpMethod]}
+                          </Pane>
+                        </Pane>
+                      </Pane>
+                    </ListItem>
+                  )}
+                />
+              </Pane>
             </Pane>
 
             <Pane className="col-lg-6">
@@ -169,6 +196,16 @@ const Index = memo(({}) => {
                     <label className={styles.infoLabel}>Nội dung</label>
                     <div dangerouslySetInnerHTML={{ __html: details?.content }}></div>
                   </Pane>
+                </Pane>
+                <Pane className="p20">
+                  <Button
+                    color="success"
+                    size="large"
+                    style={{ marginLeft: 'auto' }}
+                    onClick={() => history.push(`/thong-bao/${params.id}/chinh-sua`)}
+                  >
+                    Sửa
+                  </Button>
                 </Pane>
               </Pane>
             </Pane>

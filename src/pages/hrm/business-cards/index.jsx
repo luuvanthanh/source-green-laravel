@@ -249,8 +249,8 @@ class Index extends PureComponent {
       {
         title: 'Nhân viên',
         key: 'fullName',
-        className: 'min-width-200',
-        width: 200,
+        className: 'min-width-220',
+        width: 220,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}

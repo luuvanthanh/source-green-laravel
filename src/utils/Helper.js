@@ -17,6 +17,25 @@ import { variables } from './variables';
 import { Helper } from '.';
 
 export default class Helpers {
+  static tagStatus = (type, statusName) => {
+    if (type === variables.STATUS.PENDING) {
+      return <Tag color="yellow">{statusName || variables.STATUS_NAME.PENDING}</Tag>;
+    }
+    if (type === variables.STATUS.VERIFIED) {
+      return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
+    }
+    if (type === variables.STATUS.PENDING) {
+      return <Tag color="primary">{statusName || variables.STATUS_NAME.PENDING}</Tag>;
+    }
+    if (type === variables.STATUS.EXPIRE) {
+      return <Tag color="danger">{statusName || variables.STATUS_NAME.EXPIRE}</Tag>;
+    }
+    if (type === variables.STATUS.VALID) {
+      return <Tag color="danger">{statusName || variables.STATUS_NAME.VALID}</Tag>;
+    }
+    return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
+  };
+
   static getPrice = (value, number = 0) => {
     if (value) {
       return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ`;

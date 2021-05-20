@@ -76,6 +76,7 @@ class Index extends PureComponent {
         ...details,
         ...head(details.transferDetails),
         decisionDate: details.decisionDate && moment(details.decisionDate),
+        timeApply: details.timeApply && moment(details.timeApply),
       });
     }
   }
@@ -125,6 +126,7 @@ class Index extends PureComponent {
         id: params.id,
         decisionNumber: values.decisionNumber,
         decisionDate: values.decisionDate,
+        timeApply: values.timeApply,
         reason: values.reason,
         data: [
           {
@@ -175,7 +177,10 @@ class Index extends PureComponent {
     const loadingSubmit = effects['transfersAdd/ADD'] || effects['transfersAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last={params.id ? 'Chỉnh sửa điều chuyển' : 'Tạo điều chuyển'} menu={menuData} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa điều chuyển' : 'Tạo điều chuyển'}
+          menu={menuData}
+        />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -218,6 +223,14 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Ngày áp dụng"
+                      name="timeApply"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
                   <div className="col-lg-6">
                     <FormItem
                       data={branches}

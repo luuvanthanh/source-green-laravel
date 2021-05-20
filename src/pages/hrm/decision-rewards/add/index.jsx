@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, head } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -71,8 +71,11 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
+        ...head(details.decisionRewardDetails),
         decisionDate: details.decisionDate && moment(details.decisionDate),
-        timeApply: details.timeApply && moment(details.timeApply),
+        timeApply:
+          head(details.decisionRewardDetails)?.timeApply &&
+          moment(head(details.decisionRewardDetails)?.timeApply),
       });
     }
   }
@@ -170,7 +173,7 @@ class Index extends PureComponent {
                 <div className="col-lg-6">
                   <FormItem
                     data={Helper.convertSelectUsers(categories?.users)}
-                    label="NHÂN VIÊN"
+                    label="Nhân viên"
                     name="employeeId"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
@@ -190,6 +193,14 @@ class Index extends PureComponent {
                   <FormItem
                     label="Ngày quyết định"
                     name="decisionDate"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </div>
+                <div className="col-lg-6">
+                  <FormItem
+                    label="Ngày áp dụng"
+                    name="timeApply"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
