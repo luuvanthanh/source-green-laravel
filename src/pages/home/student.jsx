@@ -8,6 +8,7 @@ import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import BusComponent from './busComponent';
+import ChildrenComponent from './childrenComponent';
 
 import styles from './index.scss';
 import variablesModules from './variables';
@@ -73,6 +74,19 @@ class Student extends PureComponent {
   getDetails = () => {
     this.setStateData({ visible: true });
   }
+
+  tables = (tab) => {
+    switch (tab) {
+      case 'bus':
+        return <BusComponent />
+
+      case 'childrenInClass':
+        return <ChildrenComponent />
+
+      default:
+        return null
+    }
+  };
 
   render() {
     const {
@@ -169,7 +183,7 @@ class Student extends PureComponent {
                 </div>
               ))}
             </div>
-            <BusComponent />
+            {this.tables(tab)}
           </div>
         </Modal>
       </div>
