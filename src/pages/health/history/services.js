@@ -3,19 +3,19 @@ import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/student-criterias/history-by-student', {
+  return request('/student-criterias', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      // reportDate: Helper.getDateTime({
-      //   value: Helper.setDate({
-      //     ...variables.setDateData,
-      //     originValue: params.reportDate,
-      //   }),
-      //   format: variables.DATE_FORMAT.DATE_AFTER,
-      //   isUTC: false,
-      // }),
+      reportDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.reportDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     },
   });
 }

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker, InputNumber } from 'antd';
+import { Form, DatePicker, InputNumber, TimePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty } from 'lodash';
@@ -195,6 +195,34 @@ class Index extends PureComponent {
     }
   };
 
+  onChangeTimeStart = (event, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            startTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeTimeEnd = (event, record) => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item.index === record.index) {
+          return {
+            ...item,
+            endTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
   /**
    * Function header table
    */
@@ -235,7 +263,7 @@ class Index extends PureComponent {
               shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
                 (item) => ({
                   id: item.id,
-                  name: item.shiftCode || item.name,
+                  name: item.name,
                 }),
               ) || []
             }
@@ -250,13 +278,27 @@ class Index extends PureComponent {
         title: 'Thời gian bắt đầu',
         key: 'startTime',
         className: 'min-width-200',
-        render: (record) => record.startTime,
+        render: (record) => (
+          <TimePicker
+            format={variables.DATE_FORMAT.HOUR}
+            placeholder="Chọn"
+            value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
+            onSelect={(value) => this.onChangeTimeStart(value, record)}
+          />
+        ),
       },
       {
         title: 'Thời gian kết thúc',
         key: 'endTime',
         className: 'min-width-200',
-        render: (record) => record.endTime,
+        render: (record) => (
+          <TimePicker
+            format={variables.DATE_FORMAT.HOUR}
+            placeholder="Chọn"
+            value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
+            onSelect={(value) => this.onChangeTimeEnd(value, record)}
+          />
+        ),
       },
     ];
   };
@@ -370,7 +412,7 @@ class Index extends PureComponent {
                 </div>
                 <hr />
                 <Heading type="form-block-title" className="mb10">
-                  Chi tiết phiếu đăng ký
+                  Chi tiết nghỉ phép
                 </Heading>
                 <Table
                   bordered
