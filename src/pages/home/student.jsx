@@ -10,8 +10,8 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from './index.scss';
 import variablesModules from './variables';
-import BusComponent from './busComponent';
-import ChildrenComponent from './childrenComponent';
+import BusComponent from './bus';
+import ChildrenComponent from './children';
 import HealthComponent from './health';
 import NoteComponent from './note'
 import MedicalComponent from './medical';

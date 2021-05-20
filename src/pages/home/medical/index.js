@@ -147,7 +147,6 @@ class MedicalComponent extends PureComponent {
         rowSpan: 2,
         className: 'min-width-300',
         width: 300,
-        render: (record) => 'Cho bé uống thuốc đúng giờ',
         render: (value, row, index) => {
           const obj = {
             children: 'Cho bé uống thuốc đúng giờ',
