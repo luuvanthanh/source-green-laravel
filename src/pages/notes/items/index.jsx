@@ -441,7 +441,7 @@ class Index extends PureComponent {
             {record.status !== variablesModules.STATUS.CLOSED && (
               <Button
                 color="success"
-                onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}
+                onClick={() => history.push(`/ghi-chu/${record.id}/chi-tiet`)}
               >
                 Chi tiết
               </Button>
