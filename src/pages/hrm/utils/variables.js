@@ -118,6 +118,16 @@ export const variables = {
     LATE: 'LATE',
     EARLY: 'EARLY',
   },
+  TYPE_EARLY_LATES: [
+    {
+      id: 'LATE',
+      name: 'Đi trễ',
+    },
+    {
+      id: 'EARLY',
+      name: 'Về sớm',
+    },
+  ],
 };
 
 export default variables;

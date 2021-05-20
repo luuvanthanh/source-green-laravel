@@ -196,8 +196,9 @@ class Index extends PureComponent {
     if (!isEmpty(record)) {
       const timekeeping = record.map((item) => {
         if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${moment(item.attendedAt).format(
-            variables.DATE_FORMAT.DATE_BEFORE_TIME,
+          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDateLocal(
+            item.attendedAt,
+            variables.DATE_FORMAT.DATE_TIME,
           )}`;
         }
         return '';

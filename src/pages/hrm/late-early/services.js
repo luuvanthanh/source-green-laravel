@@ -7,6 +7,7 @@ export function get(data = {}) {
     params: {
       limit: data.limit,
       page: data.page,
+      type: data.type,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
