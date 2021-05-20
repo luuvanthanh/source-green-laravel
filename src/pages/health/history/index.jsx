@@ -51,9 +51,6 @@ class Index extends PureComponent {
       search: {
         branchId: query.branchId,
         classId: query.classId,
-        reportDate: query.reportDate
-          ? moment(query.reportDate).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().format(variables.DATE_FORMAT.DATE_AFTER),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
