@@ -16,6 +16,7 @@ export default {
     category: {
       shifts: [],
     },
+    holidays: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -43,6 +44,10 @@ export default {
         shifts: payload.shifts?.parsePayload || [],
       },
     }),
+    SET_HOLIDAYS: (state, { payload }) => ({
+      ...state,
+      holidays: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -59,6 +64,17 @@ export default {
           type: 'SET_ERROR',
         });
       }
+    },
+    *GET_HOLIDAYS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHolidays, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_HOLIDAYS',
+            payload: response,
+          });
+        }
+      } catch (error) {}
     },
     *GET_CATEGORY({ callback }, saga) {
       try {

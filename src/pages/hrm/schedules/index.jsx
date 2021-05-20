@@ -38,6 +38,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ schedulesChildren, loading }) => ({
   data: schedulesChildren.data,
   category: schedulesChildren.category,
+  holidays: schedulesChildren.holidays,
   pagination: schedulesChildren.pagination,
   loading,
 });
@@ -102,7 +103,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -110,7 +111,12 @@ class Index extends PureComponent {
       type: 'schedulesChildren/GET_DATA',
       payload: {
         ...search,
-        status,
+      },
+    });
+    this.props.dispatch({
+      type: 'schedulesChildren/GET_HOLIDAYS',
+      payload: {
+        ...search,
       },
     });
     history.push({
@@ -381,8 +387,38 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
+    const { holidays } = this.props;
     let checkBetween = false;
     let absentType = '';
+    let isHolidays = false;
+
+    holidays?.forEach((item) => {
+      const itemAbsentDetail = item.holidayDetails?.find(
+        (itemHoliday) =>
+          Helper.getDate(itemHoliday.date, variables.DATE_FORMAT.DATE_AFTER) ===
+          Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+      );
+      if (itemAbsentDetail) {
+        isHolidays = true;
+      } else {
+        isHolidays = false;
+      }
+    });
+
+    if (isHolidays) {
+      return (
+        <div
+          className={classnames(
+            stylesChildren['cell-content'],
+            stylesChildren['cell-content-code'],
+            stylesChildren['cell-heading-weekend'],
+          )}
+        >
+          NL
+        </div>
+      );
+    }
+
     user?.absent?.forEach((item) => {
       const itemAbsentDetail = item.absentDetail.find(
         (itemAbsent) =>
