@@ -390,7 +390,9 @@ class Index extends PureComponent {
     const { holidays } = this.props;
     let checkBetween = false;
     let absentType = '';
+    let absent = {};
     let isHolidays = false;
+    let holiday = {};
 
     holidays?.forEach((item) => {
       const itemAbsentDetail = item.holidayDetails?.find(
@@ -400,6 +402,7 @@ class Index extends PureComponent {
       );
       if (itemAbsentDetail) {
         isHolidays = true;
+        holiday = itemAbsentDetail;
       } else {
         isHolidays = false;
       }
@@ -407,15 +410,26 @@ class Index extends PureComponent {
 
     if (isHolidays) {
       return (
-        <div
-          className={classnames(
-            stylesChildren['cell-content'],
-            stylesChildren['cell-content-code'],
-            stylesChildren['cell-heading-weekend'],
-          )}
+        <Tooltip
+          title={
+            <div className={stylesChildren['tooltip-container']}>
+              <strong>Nghỉ lễ: </strong>
+              <br />
+              {holiday.name}
+            </div>
+          }
+          color="#00B24D"
         >
-          NL
-        </div>
+          <div
+            className={classnames(
+              stylesChildren['cell-content'],
+              stylesChildren['cell-content-code'],
+              stylesChildren['cell-heading-holidays'],
+            )}
+          >
+            Nghỉ lễ
+          </div>
+        </Tooltip>
       );
     }
 
@@ -428,19 +442,35 @@ class Index extends PureComponent {
       if (itemAbsentDetail) {
         checkBetween = true;
         absentType = itemAbsentDetail?.isFullDate ? 'F' : 'F/2';
+        absent = itemAbsentDetail;
       }
     });
     if (checkBetween) {
       return (
-        <div
-          className={classnames(
-            stylesChildren['cell-content'],
-            stylesChildren['cell-content-code'],
-            stylesChildren['cell-heading-weekend'],
-          )}
+        <Tooltip
+          title={
+            <div className={stylesChildren['tooltip-container']}>
+              <strong>Nghỉ phép: </strong>
+              <br />
+              {absent?.isFullDate &&
+                `Nghỉ phép ngày ${Helper.getDate(absent.date, variables.DATE_FORMAT.DATE)}`}
+              {!absent?.isFullDate &&
+                `Nghỉ phép nữa ngày ${Helper.getDate(absent.date, variables.DATE_FORMAT.DATE)}`}
+              {holiday.name}
+            </div>
+          }
+          color="#00B24D"
         >
-          {absentType}
-        </div>
+          <div
+            className={classnames(
+              stylesChildren['cell-content'],
+              stylesChildren['cell-content-code'],
+              stylesChildren['cell-heading-weekend'],
+            )}
+          >
+            {absentType}
+          </div>
+        </Tooltip>
       );
     }
     if (!isEmpty(record)) {

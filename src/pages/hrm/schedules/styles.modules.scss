@@ -79,6 +79,15 @@
   background-color: #fff1f1;
 }
 
+.cell-heading-holidays {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba($color: $text-danger, $alpha: 0.8);
+  color: $text-white;
+}
+
 .modal {
   :global(.ant-modal-footer) {
     display: flex;
