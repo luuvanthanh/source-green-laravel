@@ -76,6 +76,7 @@ class Index extends PureComponent {
         ...details,
         ...head(details.dismissedDetails),
         decisionDate: details.decisionDate && moment(details.decisionDate),
+        timeApply: details.timeApply && moment(details.timeApply),
       });
     }
   }
@@ -125,6 +126,7 @@ class Index extends PureComponent {
         id: params.id,
         decisionNumber: values.decisionNumber,
         decisionDate: values.decisionDate,
+        timeApply: values.timeApply,
         reason: values.reason,
         data: [
           {
@@ -218,6 +220,14 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="Ngày áp dụng"
+                      name="timeApply"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
                   <div className="col-lg-6">
                     <FormItem
                       data={branches}

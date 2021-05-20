@@ -87,6 +87,7 @@ const Index = memo(() => {
           id: objects.id,
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
+          timeApply: values.timeApply,
           type: values.type,
           reason: values.reason,
           data: [
@@ -176,6 +177,13 @@ const Index = memo(() => {
         className: 'min-width-120',
         width: 120,
         render: (record) => Helper.getDate(get(record, 'decisionDate'), variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Ngày áp dụng',
+        key: 'timeApply',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Lý do',
@@ -280,6 +288,7 @@ const Index = memo(() => {
           initialValues={{
             ...objects,
             decisionDate: objects.decisionDate && moment(objects.decisionDate),
+            timeApply: objects.timeApply && moment(objects.timeApply),
           }}
         >
           <Pane className="row">
@@ -295,6 +304,14 @@ const Index = memo(() => {
               <FormItem
                 label="Ngày quyết định"
                 name="decisionDate"
+                type={variables.DATE_PICKER}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-6">
+              <FormItem
+                label="Ngày áp dụng"
+                name="timeApply"
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
               />

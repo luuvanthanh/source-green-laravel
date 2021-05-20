@@ -284,7 +284,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Ngày bắt đầu',
+        title: 'Ngày áp dụng',
         key: 'timeApply',
         className: 'min-width-120',
         width: 120,

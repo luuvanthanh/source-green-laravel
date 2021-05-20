@@ -110,6 +110,7 @@ class Index extends PureComponent {
         id: params.id,
         decisionNumber: values.decisionNumber,
         decisionDate: values.decisionDate,
+        timeApply: values.timeApply,
         type: values.type,
         reason: values.reason,
         data: [
@@ -190,6 +191,14 @@ class Index extends PureComponent {
                   <FormItem
                     label="Ngày quyết định"
                     name="decisionDate"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </div>
+                <div className="col-lg-6">
+                  <FormItem
+                    label="Ngày áp dụng"
+                    name="timeApply"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
