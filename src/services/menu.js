@@ -1222,3 +1222,32 @@ export async function getLeftMenuFeePolicy() {
 export async function getTopMenuData() {
   return [];
 }
+
+export async function getLeftMenuNotes() {
+  return [
+    {
+      title: 'Danh sách',
+      key: 'items',
+      url: ['/ghi-chu/danh-sach', '/ghi-chu/tao-moi', '/ghi-chu/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Thông báo',
+      key: 'notifications',
+      url: ['/ghi-chu/thong-bao'],
+      icon: 'icon icon-notification',
+      permission: [],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'settings',
+      url: ['/ghi-chu/cai-dat'],
+      icon: 'icon icon-setting',
+      permission: [],
+      pro: true,
+    },
+  ];
+}

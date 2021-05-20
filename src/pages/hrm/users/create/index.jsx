@@ -27,6 +27,7 @@ import AccountForm from './forms/account';
 import DismissedsForm from './forms/dismisseds';
 import AppointsForm from './forms/appoints';
 import DecisionRewardsForm from './forms/decision-rewards';
+import PositionLevels from './forms/position-levels';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 
@@ -57,6 +58,7 @@ const forms = {
   account: <AccountForm />,
   dismisseds: <DismissedsForm />,
   appoints: <AppointsForm />,
+  ['position-levels']: <PositionLevels />,
   ['decision-rewards']: <DecisionRewardsForm />,
 };
 

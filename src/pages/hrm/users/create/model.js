@@ -31,6 +31,7 @@ export default {
     paramaterFormulas: [],
     insurrances: [],
     children: [],
+    positionLevels: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -162,6 +163,10 @@ export default {
     SET_REMOVE_CHILDREN: (state, { payload }) => ({
       ...state,
       children: state.children.filter((item) => item.id !== payload.id),
+    }),
+    SET_POSITION_LEVELS: (state, { payload }) => ({
+      ...state,
+      positionLevels: payload.parsePayload,
     }),
   },
   effects: {
@@ -891,6 +896,22 @@ export default {
       }
     },
     // children
+    // Position Levels
+    *GET_POSITION_LEVELS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPositionLevels, payload);
+        yield saga.put({
+          type: 'SET_POSITION_LEVELS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // Position Levels
   },
   subscriptions: {},
 };

@@ -293,7 +293,7 @@ class Index extends PureComponent {
         key: 'contract_category',
         dataIndex: 'salaryRatio',
         className: 'min-width-150',
-        render: (value) => Helper.getPercent(value * 100),
+        render: (value) => Helper.getPercent(value),
       },
       {
         title: 'Lương cơ bản',
