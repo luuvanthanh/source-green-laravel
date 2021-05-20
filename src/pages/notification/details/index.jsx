@@ -51,8 +51,6 @@ const Index = memo(({}) => {
     });
   }, []);
 
-  console.log(details);
-
   return (
     <>
       <Helmet title="Chi tiết thông báo" />

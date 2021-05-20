@@ -6,6 +6,8 @@ export const variables = {
     VALIDATING: 'VALIDATING',
     IN_PROGRESS: 'IN_PROGRESS',
     SENT: 'SENT',
+    CONFIRMING: 'CONFIRMING',
+    CONFIRMED: 'CONFIRMED',
   },
   STATUS_NAME: {
     IN_PROGRESS: 'Đang trao đổi',
@@ -13,23 +15,17 @@ export const variables = {
     VALIDATING: 'Đang xác nhận',
     NEW: 'Mới',
     EXPIRE: 'Hết hạn',
+    CONFIRMING: 'Chờ xác nhận', 
+    CONFIRMED: 'Đã nhận',
   },
   STATUS_TABS: [
     {
-      id: 'NEW',
-      name: 'Mới',
+      id: 'CONFIRMING',
+      name: 'Chờ xác nhận',
     },
     {
-      id: 'IN_PROGRESS',
-      name: 'Đang trao đổi',
-    },
-    {
-      id: 'VALIDATING',
-      name: 'Đang xác nhận',
-    },
-    {
-      id: 'CLOSED',
-      name: 'Đã xác nhận',
+      id: 'CONFIRMED',
+      name: 'Đã nhận',
     },
   ],
   PARENT: 'PARENT',

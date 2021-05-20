@@ -50,6 +50,8 @@
     .circle {
       width: 55px;
       height: 55px;
+      min-height: 55px;
+      min-width: 55px;
       border-radius: 100%;
       background: linear-gradient(0deg, #f1f3f8, #f1f3f8);
       display: flex;
