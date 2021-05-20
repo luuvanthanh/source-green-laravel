@@ -1,19 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Tabs, Form, Typography } from 'antd';
+import { Form } from 'antd';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import _ from 'lodash';
+import classnames from 'classnames';
 
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
-import variablesModules from './variables';
 import styles from './index.scss';
 
-const { Paragraph } = Typography;
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,7 +28,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
-class BusComponent extends PureComponent {
+class ChildrenComponent extends PureComponent {
   formRef = React.createRef();
 
   constructor(props, context) {
@@ -73,46 +70,29 @@ class BusComponent extends PureComponent {
         key: 'time',
         align: 'center',
         className: 'min-width-100',
+        width: 200,
         render: () => '16/05',
       },
       {
-        title: 'Lên xe',
+        title: 'Vào lớp',
         key: 'getOnBus',
         align: 'center',
         className: 'min-width-100',
         render: (record) => '07:12:12',
       },
       {
-        title: 'Lên xe',
+        title: 'Ra về',
         key: 'getOffBus',
         align: 'center',
         className: 'min-width-100',
         render: (record) => '07:21:17',
-      },
-      {
-        title: 'Bảo mẫu',
-        key: 'shuttler',
-        width: 200,
-        className: 'min-width-200',
-        render: (record) => (
-          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-            {record?.busPlace?.busRoute?.busRouteNannies
-              ?.map((item) => item?.nanny?.fullName)
-              .join(',')}
-          </Paragraph>
-        ),
       },
     ];
   };
 
   render() {
     return (
-      <div className={styles['container-bus']}>
-        <Tabs>
-          {variablesModules.TABS_BUS.map(({ id, name }) => (
-            <TabPane tab={name} key={id} />
-          ))}
-        </Tabs>
+      <div className={classnames(styles['container-bus'], 'mt20')}>
         <Form>
           <div className="row">
             <div className="col-md-4">
@@ -141,16 +121,16 @@ class BusComponent extends PureComponent {
   }
 }
 
-BusComponent.propTypes = {
+ChildrenComponent.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
-BusComponent.defaultProps = {
+ChildrenComponent.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
 };
 
-export default BusComponent ;
+export default ChildrenComponent ;

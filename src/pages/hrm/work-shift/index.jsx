@@ -266,7 +266,6 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['workShifts/GET_DATA'];
-    console.log(data)
     return (
       <>
         <Helmet title="Phân ca làm việc" />
