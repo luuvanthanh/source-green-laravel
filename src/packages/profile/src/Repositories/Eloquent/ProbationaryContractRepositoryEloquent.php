@@ -176,6 +176,10 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $labourContract = ProbationaryContract::findOrFail($id);
         $now = Carbon::now();
 
+        $salary = $labourContract->parameterValues->where('Code', 'LUONG')->first() ? $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value : 0;
+        $allowance = $labourContract->parameterValues->where('Code', 'LUONG')->first() ? $labourContract->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
+
+        $total = $salary + $allowance;
         $employee = $labourContract->employee;
         $params = [
             'contractNumber' => $labourContract->ContractNumber,
@@ -189,10 +193,10 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '       ',
             'nationality' => $employee->Nationality ? $employee->Nationality : '       ',
             'idCard' => $employee->IdCard ? $employee->IdCard : '       ',
-            'dateOfIssueCard' => $employee->DateOfIssueCard ? $employee->DateOfIssueCard->format('d-m-Y') : '       ',
-            'placeOfIssueCard' => $employee->PlaceOfIssueCard ? $employee->PlaceOfIssueCard : '       ',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '       ',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '       ',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '       ',
-            'adress' => $employee->Adress ? $employee->Adress : '.......',
+            'adress' => $employee->Address ? $employee->Address : '.......',
             // 'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '       ',
             'month' => $labourContract->Month ? $labourContract->Month : '       ',
@@ -201,7 +205,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . " - " . $labourContract->division->Name : '       ',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Address : '       ',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
-            'salary' => $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
+            'salary' => number_format($salary),
+            'allowance' => number_format($allowance),
+            'total' => number_format($total),
         ];
 
         return $this->wordExporterServices->exportWord('probationary_contract', $params);

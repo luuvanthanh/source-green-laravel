@@ -174,10 +174,10 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '       ',
             'nationality' => $employee->Nationality ? $employee->Nationality : '       ',
             'idCard' => $employee->IdCard ? $employee->IdCard : '       ',
-            'dateOfIssueCard' => $employee->DateOfIssueCard ? $employee->DateOfIssueCard->format('d-m-Y') : '       ',
-            'placeOfIssueCard' => $employee->PlaceOfIssueCard ? $employee->PlaceOfIssueCard : '       ',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '       ',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '       ',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '       ',
-            'adress' => $employee->Adress ? $employee->Adress : '.......',
+            'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '       ',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '       ',
@@ -185,7 +185,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $labourContract->position ? $labourContract->position->Name : '       ',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '       ',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
-            'salary' => $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
+            'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value),
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);

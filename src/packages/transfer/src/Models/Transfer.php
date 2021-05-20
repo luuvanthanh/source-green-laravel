@@ -20,11 +20,12 @@ class Transfer extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'FileImage',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'FileImage', 'TimeApply',
     ];
 
     protected $dateTimeFields = [
         'DecisionDate',
+        'TimeApply',
     ];
 
     /**
@@ -34,6 +35,7 @@ class Transfer extends UuidModel
      */
     protected $casts = [
         'DecisionDate' => 'datetime',
+        'TimeApply' => 'datetime',
     ];
 
     /**

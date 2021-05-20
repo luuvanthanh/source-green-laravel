@@ -117,19 +117,25 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value
         : $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value;
 
+        $salary = $salaryIncrease->parameterValues->where('Code', 'LUONG')->first() ? $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value : 0;
+        $allowance = $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first() ? $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
+
+        $total = $salary + $allowance;
+
         $params = [
             'decisionNumber' => $salaryIncrease->DecisionNumber,
-            'decisionDate' => $salaryIncrease->DecisionDate->format('d-m-Y'),
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
+            'decisionDate' => $salaryIncrease->DecisionDate ? $salaryIncrease->DecisionDate->format('d-m-Y') : '.......',
+            'timeApply' => $salaryIncrease->TimeApply ? $salaryIncrease->TimeApply->format('d-m-Y') : '.......',
+            'dateNow' => $salaryIncrease->DecisionDate ? $salaryIncrease->DecisionDate->format('d') : '.......',
+            'monthNow' => $salaryIncrease->DecisionDate ? $salaryIncrease->DecisionDate->format('m') : '.......',
+            'yearNow' => $salaryIncrease->DecisionDate ? $salaryIncrease->DecisionDate->format('Y') : '.......',
             'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
             'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
-            'salary' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
-            'salaryOld' => $oldSalary,
-            'salatyNew' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
-            'allowance' => $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value,
+            'total' => number_format((int) $total),
+            'salaryOld' => number_format((int) $oldSalary),
+            'salatyNew' => number_format((int) $salary),
+            'allowance' => number_format((int) $allowance),
         ];
 
         return $this->wordExporterServices->exportWord('salary_increase', $params);

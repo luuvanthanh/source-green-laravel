@@ -83,6 +83,25 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         return parent::find($tranfer->Id);
     }
 
+    public function update(array $attributes, $id)
+    {
+        $tranfer = Transfer::findOrfail($id);
+        \DB::beginTransaction();
+        try {
+
+            $tranfer->update($attributes);
+
+            $tranfer->transferDetails()->delete();
+            TransferDetailServices::add($tranfer->Id, $attributes['data']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($tranfer->Id);
+    }
+
     public function getTransfer(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -112,15 +131,20 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
 
         $detail = $transfer->transferDetails->first();
         $employee = $detail->employee;
+        $labourContract = $employee->labourContract->last();
+
         $params = [
             'decisionNumber' => $transfer->DecisionNumber,
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
-            'date' => $transfer->DecisionDate->format('d'),
-            'month' => $transfer->DecisionDate->format('m'),
-            'year' => $transfer->DecisionDate->format('Y'),
-            'decisionDate' => $transfer->DecisionDate->format('d/m/Y'),
+            'decisionNumberLabourContract' => $labourContract ? $labourContract->ContractNumber : '........',
+            'date' => $labourContract ? $labourContract->ContractDate->format('d') : '.......',
+            'month' => $labourContract ? $labourContract->ContractDate->format('m') : '.......',
+            'year' => $labourContract ? $labourContract->ContractDate->format('Y') : '.......',
+            'decisionDate' => $transfer->DecisionDate ? $transfer->DecisionDate->format('d-m-Y') : '.......',
+            'dateNow' => $transfer->DecisionDate ? $transfer->DecisionDate->format('d') : '.......',
+            'monthNow' => $transfer->DecisionDate ? $transfer->DecisionDate->format('m') : '.......',
+            'yearNow' => $transfer->DecisionDate ? $transfer->DecisionDate->format('Y') : '.......',
+            'decisionDate' => $transfer->DecisionDate ? $transfer->DecisionDate->format('d/m/Y') : '.......',
+            'timeApply' => $transfer->TimeApply ? $transfer->TimeApply->format('d/m/Y') : '.......',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
         ];
