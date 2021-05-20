@@ -14,6 +14,7 @@ import { UserOutlined } from '@ant-design/icons';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import variablesModules from '../utils/variables';
+import HelperModules from '../utils/Helper';
 import { Scrollbars } from 'react-custom-scrollbars';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -90,73 +91,63 @@ class Index extends PureComponent {
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
             <Loading loading={loading} isError={error.isError} params={{ error }}>
-              <div
-                className={classnames(
-                  styles['content-form'],
-                  styles['content-form-children'],
-                  styles['content-form-details'],
-                )}
-              >
-                {/* DETAILS CONTAINER */}
-                <div className={classnames(styles['details-container'], 'mt-3')}>
-                  {/* INFO CONTAINER */}
-                  <div className={classnames(styles['info-container'])}>
-                    <p className={styles['time']}>
-                      {Helper.getDate(details.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-                    </p>
-                    <h3 className={styles['title']}>{details.title}</h3>
-                    <div
-                      className={styles['norm']}
-                      dangerouslySetInnerHTML={{ __html: details.description }}
-                    ></div>
-                    <div className={styles['list-image']}>
-                      <Image.PreviewGroup>
-                        {Helper.isJSON(details.files) &&
-                          JSON.parse(details.files).map((item, index) => (
-                            <Image
-                              width={80}
-                              height={80}
-                              src={`${API_UPLOAD}${item}`}
-                              key={index}
-                              preview={{
-                                maskClassName: 'customize-mask',
-                                mask: <EyeOutlined className="mr5" />,
-                              }}
-                            />
-                          ))}
-                      </Image.PreviewGroup>
-                    </div>
-                    <hr />
-                    <div className={styles['group-user']}>
-                      <p className={styles['norm']}>Người tạo</p>
-                      <div className={styles['user-info']}>
-                        <AvatarTable
-                          size={50}
-                          fileImage={
-                            Helper.isJSON(get(details, 'creator.objectInfo.fileImage')) &&
-                            head(JSON.parse(get(details, 'creator.objectInfo.fileImage')))
-                          }
+              {/* DETAILS CONTAINER */}
+              <div className={classnames(styles['info-container'])}>
+                <p className={styles['time']}>10:30, 15/3/2021</p>
+                <h3 className={styles['title']}>Giữ ấm cho bé</h3>
+                <div className={styles['norm']}>
+                  Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt
+                  gió.
+                </div>
+                <div className={styles['list-image']}>
+                  <Image.PreviewGroup>
+                    {Helper.isJSON(details.files) &&
+                      JSON.parse(details.files).map((item, index) => (
+                        <Image
+                          width={80}
+                          height={80}
+                          src={`${API_UPLOAD}${item}`}
+                          key={index}
+                          preview={{
+                            maskClassName: 'customize-mask',
+                            mask: <EyeOutlined className="mr5" />,
+                          }}
                         />
-                        <p className={styles['norm']}>{details?.creator?.objectInfo?.fullName}</p>
-                      </div>
+                      ))}
+                  </Image.PreviewGroup>
+                </div>
+                <hr />
+                <div className="row">
+                  <div className="col-6">
+                    <div className={styles['group-user']}>
+                      <p className={styles['norm']}>Phụ huynh</p>
+                      <AvatarTable
+                        size={50}
+                        fileImage={
+                          Helper.isJSON(get(details, 'creator.objectInfo.fileImage')) &&
+                          head(JSON.parse(get(details, 'creator.objectInfo.fileImage')))
+                        }
+                        fullName="Nguyễn Anh"
+                      />
                     </div>
-                    <hr />
+                  </div>
+                  <div className="col-6">
                     <div className={styles['group-user']}>
                       <p className={styles['norm']}>Dành cho</p>
-                      <div className={styles['user-info']}>
-                        <AvatarTable
-                          size={50}
-                          fileImage={
-                            Helper.isJSON(get(details, 'studentMaster.student.fileImage')) &&
-                            head(JSON.parse(get(details, 'studentMaster.student.fileImage')))
-                          }
-                        />
-                        <p className={styles['norm']}>
-                          {details?.studentMaster?.student?.fullName}
-                        </p>
-                      </div>
+                      <AvatarTable
+                        size={50}
+                        fileImage={
+                          Helper.isJSON(get(details, 'studentMaster.student.fileImage')) &&
+                          head(JSON.parse(get(details, 'studentMaster.student.fileImage')))
+                        }
+                        fullName="Su beo"
+                      />
                     </div>
-                    <hr />
+                  </div>
+                </div>
+                <hr />
+                <div className="row">
+                  <div className="col-6">
                     <div className={styles['info-content']}>
                       <div className={styles['info-item']}>
                         <p className={styles['norm']}>Cơ sở</p>
@@ -164,29 +155,45 @@ class Index extends PureComponent {
                           <div className={styles.circle}>
                             <span className={'icon-school'}></span>
                           </div>
-                          <p className={styles['norm']}>
-                            {get(details, 'studentMaster.student.class.branch.name')}
-                          </p>
+                          <p className={styles['norm']}>Lake view</p>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className={styles['info-content']}>
                       <div className={styles['info-item']}>
                         <p className={styles['norm']}>Lớp</p>
                         <div className={styles['content']}>
                           <div className={styles.circle}>
                             <span className="icon-open-book"></span>
                           </div>
-                          <p className={styles['norm']}>
-                            {get(details, 'studentMaster.student.class.name')}
-                          </p>
+                          <p className={styles['norm']}>Preschool</p>
                         </div>
                       </div>
                     </div>
-                    <hr />
                   </div>
-                  {/* INFO CONTAINER */}
                 </div>
-                {/* DETAILS CONTAINER */}
+                <hr />
+                <div>
+                  <p className={styles['norm']}>Trạng thái</p>
+                  <div className="d-inline-flex">{HelperModules.tagStatus('CLOSED')}</div>
+                </div>
               </div>
+              {/* INFO CONTAINER */}
+
+              {/* INFO FEEDBACK */}
+              <div className={classnames(styles['feedback-container'], 'mt20')}>
+                <div className="row">
+                  <div className="col-4">
+                    <p className={styles['time']}>08:36 - 23/1/2021</p>
+                  </div>
+                  <div className="cl-8">
+                    <p className={styles['norm']}>Nguyễn Thị Vy đã nhận tin</p>
+                  </div>
+                </div>
+              </div>
+              {/* INFO FEEDBACK */}
             </Loading>
           </div>
         </div>
