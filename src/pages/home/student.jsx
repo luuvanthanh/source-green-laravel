@@ -9,7 +9,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import BusComponent from './busComponent';
 import ChildrenComponent from './childrenComponent';
-import HealthComponent from './HealthComponent';
+import HealthComponent from './healthComponent';
 
 import styles from './index.scss';
 import variablesModules from './variables';
