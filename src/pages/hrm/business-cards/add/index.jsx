@@ -298,6 +298,7 @@ class Index extends PureComponent {
             <TimePicker
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
+              disabled
               value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeStart(value, record)}
             />
@@ -311,6 +312,7 @@ class Index extends PureComponent {
             <TimePicker
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
+              disabled
               value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeEnd(value, record)}
             />
@@ -390,7 +392,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
-            disabled={record.isFullDate === 1}
+            disabled
             value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeStart(value, record)}
           />
@@ -404,7 +406,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
-            disabled={record.isFullDate === 1}
+            disabled
             value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeEnd(value, record)}
           />
