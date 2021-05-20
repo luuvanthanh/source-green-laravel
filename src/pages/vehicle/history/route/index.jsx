@@ -8,6 +8,7 @@ import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import Routing from './components/route';
+import { head } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -212,11 +213,11 @@ class Index extends PureComponent {
             <div className="p20">
               <label className={styles.infoLabel}>Nhân viên</label>
               <Scrollbars autoHeight autoHeightMax={340}>
-                {route?.busPlace?.busRoute?.busRouteNannies?.map((item) => (
-                  <div key={item?.nanny?.id} className="mt10 mb10 ">
+                {head(routes)?.busRoute?.busRouteNannies?.map((itemBus) => (
+                  <div key={itemBus?.nanny?.id} className="mt10 mb10 ">
                     <AvatarTable
-                      fullName={item?.nanny?.fullName}
-                      fileImage={Helper.getPathAvatarJson(item?.nanny?.fileImage)}
+                      fullName={itemBus?.nanny?.fullName}
+                      fileImage={Helper.getPathAvatarJson(itemBus?.nanny?.fileImage)}
                       description="Bảo mẫu"
                     />
                   </div>
