@@ -91,7 +91,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
         if (!empty($attributes['type'])) {
             $this->model = $this->model->whereHas('lateEarlyConfig', function ($queryTypeLateEarly) use ($attributes) {
-                $type = explode(',', $attributes['Type']);
+                $type = explode(',', $attributes['type']);
                 $queryTypeLateEarly->whereIn('Type', [$type]);
             });
         }
@@ -152,7 +152,6 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
             $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $date, $date);
 
             if (!empty($employeeTimeWorkShift)) {
-                $timeDeadline = $this->checkTimeAllow($date, end($employeeTimeWorkShift[$date]));
                 $timekeepings = $employee->timekeeping()->whereDate('AttendedAt', date($date))->get();
 
                 $timeShift = [];
@@ -167,22 +166,16 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                     $timeAllow = $this->checkTimeAllow($date, $value);
 
-                    $timeDeadlineLaterly = Config::where('Code', 'TIMEKEEPING_DEADLINE')->first()->value;
-
-                    $formatStartTime = Carbon::parse($date . '' . $value['StartTime'])->addMinutes($timeDeadlineLaterly)->format('Y-m-d H:i:s');
+                    $formatStartTime = Carbon::parse($date . '' . $value['StartTime'])->format('Y-m-d H:i:s');
                     $formatEndTime = Carbon::parse($date . '' . $value['EndTime'])->format('Y-m-d H:i:s');
-                    $startTime = Carbon::parse($date . '' . $value['StartTime'])->addMinutes($timeDeadlineLaterly)->format('H:i:s');
+                    $startTime = Carbon::parse($date . '' . $value['StartTime'])->format('H:i:s');
 
                     // di trễ
                     if ($nowHours > $startTime) {
                         $typeLate = LateEarly::LATE;
 
-                        if ($key >= 1) {
-                            $timeAllow['validBeforeStartTime'] = Carbon::parse($date . '' . $value['StartTime'])->subMinutes(Config::where('Code', 'DURATION_ALLOW_BEFORE_STARTTIME_SECOND')->first()->value)->toDateTimeString();
-                        }
-
                         $timeKeepingAfterTimeStart = $employee->timekeeping()
-                            ->where([['AttendedAt', '>=', $timeAllow['validBeforeStartTime']], ['AttendedAt', '<=', $formatStartTime]])
+                            ->where([['AttendedAt', '<=', $formatStartTime]])
                             ->where('EmployeeId', $employee->Id)->get();
 
                         $timeKeepingBeforTimeStart = $employee->timekeeping()
@@ -190,6 +183,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
                             ->where('EmployeeId', $employee->Id)->orderBy('AttendedAt')->get();
 
                         if (empty(count($timeKeepingAfterTimeStart)) && !empty(count($timeKeepingBeforTimeStart))) {
+                            dd(2);
+
                             //kiểm tra tồn tại đi trễ
                             $existLate = LateEarly::whereHas('lateEarlyConfig', function ($query) use ($employee, $date) {
                                 $query->where('Type', LateEarlyTimeConfig::LATE);
@@ -240,10 +235,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
 
                             //kiểm tra tồn tại về sớm
                             $existEarly = LateEarly::whereHas('lateEarlyConfig', function ($query) use ($employee, $date) {
-                                $query->where('type', LateEarlyTimeConfig::EARLY);
-                            })->where('EmployeeId', $employee->Id)
-                                ->whereDate('Date', $date)
-                                ->whereIn('TimeSlot', [$value['StartTime'] . '-' . $value['EndTime']])
+                                $query->where('Type', LateEarlyTimeConfig::EARLY);
+                            })
                                 ->get();
 
                             if (empty(count($existEarly))) {
@@ -318,15 +311,9 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
      */
     public function checkTimeAllow($dateAttend, $item)
     {
-        $minutesBeforeStart = Config::where('Code', 'DURATION_ALLOW_BEFORE_STARTTIME')->first()->value;
-        $minutesAfterStart = Config::where('Code', 'DURATION_ALLOW_AFTERT_STARTTIME')->first()->value;
-        $minutesBeforeEnd = Config::where('Code', 'DURATION_ALLOW_BEFORE_ENDTIME')->first()->value;
-        $minutesAfterEnd = Config::where('Code', 'DURATION_ALLOW_AFTERT_ENDTIME')->first()->value;
 
-        $durationAllow['validBeforeStartTime'] = !empty($item['StartTime']) ? Carbon::parse($dateAttend . '' . $item['StartTime'])->subMinutes($minutesBeforeStart)->toDateTimeString() : 0;
-        $durationAllow['validAfterStartTime'] = !empty($item['StartTime']) ? Carbon::parse($dateAttend . '' . $item['StartTime'])->addMinutes($minutesAfterStart)->toDateTimeString() : 0;
-        $durationAllow['validBeforeEndTime'] = !empty($item['EndTime']) ? Carbon::parse($dateAttend . '' . $item['EndTime'])->subMinutes($minutesBeforeEnd)->toDateTimeString() : 0;
-        $durationAllow['validAfterEndTime'] = !empty($item['EndTime']) ? Carbon::parse($dateAttend . '' . $item['EndTime'])->addMinutes($minutesAfterEnd)->toDateTimeString() : 0;
+        $durationAllow['validAfterStartTime'] = !empty($item['AfterStart']) ? Carbon::parse($dateAttend . '' . $item['AfterStart'])->toDateTimeString() : 0;
+        $durationAllow['validBeforeEndTime'] = !empty($item['BeforeEnd']) ? Carbon::parse($dateAttend . '' . $item['BeforeEnd'])->toDateTimeString() : 0;
 
         return $durationAllow;
     }

@@ -55,7 +55,7 @@ class LateEarly extends UuidModel
      */
     public function lateEarlyConfig()
     {
-        return $this->belongsTo(LateEarlyTimeConfig::class, 'TimeConfigType');
+        return $this->belongsTo(LateEarlyTimeConfig::class, 'TimeConfigType', 'Id');
     }
 
     /**
