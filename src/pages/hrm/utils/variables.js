@@ -114,6 +114,10 @@ export const variables = {
       name: 'Ca chiều',
     },
   ],
+  TYPE_EARLY_LATE: {
+    LATE: 'LATE',
+    EARLY: 'EARLY',
+  },
 };
 
 export default variables;
