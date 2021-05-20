@@ -13,6 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import variablesModules from '../utils/variables';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Paragraph } = Typography;
@@ -50,6 +51,7 @@ class Index extends PureComponent {
       visible: false,
       search: {
         fullName: query?.fullName,
+        type: query?.type,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -197,7 +199,7 @@ class Index extends PureComponent {
     if (!isEmpty(record)) {
       const lateEarly = record.map((item) => {
         if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
+          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDateLocal(
             item.attendedAt,
             variables.DATE_FORMAT.DATE_TIME,
           )}`;
@@ -268,7 +270,7 @@ class Index extends PureComponent {
         key: 'shift',
         width: 180,
         className: 'min-width-180',
-        render: (record) => `${record?.shiftCode} ${record?.timeShift}`,
+        render: (record) => `${record?.shiftCode ? record?.shiftCode : ''} ${record?.timeShift}`,
       },
       {
         title: 'Thời gian',
@@ -281,7 +283,7 @@ class Index extends PureComponent {
         title: 'Chi tiết',
         key: 'description',
         className: 'min-width-200',
-        render: record => this.renderDescription(get(record, 'timekeeping')),
+        render: (record) => this.renderDescription(get(record, 'timekeeping')),
       },
     ];
     return arrayHeader;
@@ -308,14 +310,15 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
+                type: search.type || null,
                 endDate: search.endDate ? moment(search.endDate) : null,
+                startDate: search.startDate ? moment(search.startDate) : null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -323,14 +326,22 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="type"
+                    onChange={(event) => this.onChangeSelect(event, 'type')}
+                    type={variables.SELECT}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...variablesModules.TYPE_EARLY_LATES]}
+                  />
+                </div>
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
