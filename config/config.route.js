@@ -306,6 +306,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/ghi-chu/:id/chi-tiet',
+            component: './notes/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // NOTE
