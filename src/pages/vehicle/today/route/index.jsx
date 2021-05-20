@@ -66,6 +66,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.loadTracking();
+    this.loadTimeLine();
   }
 
   componentWillUnmount() {
@@ -103,6 +104,18 @@ class Index extends PureComponent {
         }
       },
     });
+  };
+
+  loadTimeLine = () => {
+    const { search, dispatch } = this.props;
+    if (search.id && search.date) {
+      dispatch({
+        type: 'busToday/GET_TIME_LINE',
+        payload: {
+          ...search,
+        },
+      });
+    }
   };
 
   loadRouting = () => {

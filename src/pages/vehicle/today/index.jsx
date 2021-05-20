@@ -93,17 +93,6 @@ const Index = memo(() => {
   }, []);
 
   useEffect(() => {
-    if (search.id && search.date) {
-      dispatch({
-        type: 'busToday/GET_TIME_LINE',
-        payload: {
-          ...search,
-        },
-      });
-    }
-  }, [search]);
-
-  useEffect(() => {
     mounted.current = true;
     return () => (mounted.current = false);
   }, []);
