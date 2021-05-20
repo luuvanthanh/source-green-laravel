@@ -27,6 +27,20 @@ export function get(params = {}) {
     },
   );
 }
+export function getTimeLine(params = {}) {
+  return request(
+    `/bus-places/bus-route/${params.id}/${moment(params.date).format(
+      variables.DATE_FORMAT.DATE_AFTER,
+    )}/time-line`,
+    {
+      method: 'GET',
+      params: {
+        ...omit(params, 'page', 'limit', 'date', 'id'),
+        ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      },
+    },
+  );
+}
 
 export function getTrackings(params = {}) {
   return request(`/bus-trackings`, {

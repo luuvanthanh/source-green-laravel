@@ -22,24 +22,6 @@ import RouteModal from './route';
 
 const { TabPane } = Tabs;
 
-const mockData = [
-  {
-    location: 'Số 45 Hoàng Hoa Thám',
-    list: [
-      { id: 1, name: 'Subeo' },
-      { id: 2, name: 'An Hưng' },
-      { id: 3, name: 'Trần Văn Đức' },
-    ],
-  },
-  {
-    location: 'Số 245 Hoàng Hoa Thám',
-    list: [
-      { id: 4, name: 'Bích Ngọc' },
-      { id: 5, name: 'Ngọc Bảo' },
-    ],
-  },
-];
-
 const Index = memo(() => {
   const filterRef = useRef();
   const formRef = useRef();
@@ -49,12 +31,14 @@ const Index = memo(() => {
     busRoutes,
     summary,
     data,
+    timelines,
   ] = useSelector(({ loading, busToday = {} }) => [
     loading,
     busToday?.pagination,
     busToday?.busRoutes,
     busToday?.summary,
     busToday?.data,
+    busToday?.timelines,
   ]);
   const loading = loadingReducer?.effects['busToday/GET_DATA'];
 
@@ -107,6 +91,17 @@ const Index = memo(() => {
       payload: {},
     });
   }, []);
+
+  useEffect(() => {
+    if (search.id && search.date) {
+      dispatch({
+        type: 'busToday/GET_TIME_LINE',
+        payload: {
+          ...search,
+        },
+      });
+    }
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -256,6 +251,7 @@ const Index = memo(() => {
           routes={data}
           search={search}
           summary={summary}
+          timelines={timelines}
           visible={visibleRoute}
           onCancel={hiddenRoute}
         />

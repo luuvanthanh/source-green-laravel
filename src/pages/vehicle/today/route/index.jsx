@@ -156,6 +156,7 @@ class Index extends PureComponent {
       routes,
       search,
       summary,
+      timelines,
       loading: { effects },
     } = this.props;
     const { position, trackings } = this.state;
@@ -228,15 +229,35 @@ class Index extends PureComponent {
               <Scrollbars autoHeight autoHeightMax={220}>
                 <div className="pt20">
                   <Timeline>
-                    {routes.map(({ time, address }, index) => (
-                      <TimelineItem key={index}>
-                        <Text size="normal">
-                          <b>{time}</b>
-                        </Text>
-                        <Text size="normal" color={!!time ? 'success' : 'dark-opacity'}>
-                          Điểm đón số {index + 1}: {address}
-                        </Text>
-                      </TimelineItem>
+                    {timelines.map((item, index) => (
+                      <div key={index}>
+                        {!isEmpty(item.busPlaceTimeLineLogs) &&
+                          item.busPlaceTimeLineLogs.map((itemBus) => (
+                            <TimelineItem key={itemBus.id}>
+                              <Text size="normal">
+                                <b>
+                                  {Helper.getDate(
+                                    itemBus.trackingTime,
+                                    variables.DATE_FORMAT.TIME_FULL,
+                                  )}
+                                </b>
+                              </Text>
+                              <Text
+                                size="normal"
+                                color={!!itemBus.trackingTime ? 'success' : 'dark-opacity'}
+                              >
+                                Điểm đón số {index + 1}: {item.address}
+                              </Text>
+                            </TimelineItem>
+                          ))}
+                        {isEmpty(item.busPlaceTimeLineLogs) && (
+                          <TimelineItem>
+                            <Text size="normal" color={'dark-opacity'}>
+                              Điểm đón số {index + 1}: {item.address}
+                            </Text>
+                          </TimelineItem>
+                        )}
+                      </div>
                     ))}
                   </Timeline>
                 </div>
