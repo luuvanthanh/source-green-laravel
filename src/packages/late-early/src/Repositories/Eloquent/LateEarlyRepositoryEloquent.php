@@ -92,7 +92,7 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
         if (!empty($attributes['type'])) {
             $this->model = $this->model->whereHas('lateEarlyConfig', function ($queryTypeLateEarly) use ($attributes) {
                 $type = explode(',', $attributes['type']);
-                $queryTypeLateEarly->whereIn('Type', [$type]);
+                $queryTypeLateEarly->whereIn('Type', $type);
             });
         }
 
