@@ -65,6 +65,6 @@ class DivisionShift extends UuidModel
      */
     public function division()
     {
-        return $this->hasOne(\GGPHP\ShiftSchedule\Models\Shift::class, 'Id', 'ShiftId');
+        return $this->hasOne(\GGPHP\Category\Models\Division::class, 'Id', 'DivisionId');
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
@@ -34,9 +35,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
      */
     public function __construct(
         WordExporterServices $wordExporterServices,
+        PositionLevelRepositoryEloquent $positionLevelRepository,
         Application $app
     ) {
         parent::__construct($app);
+        $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
     }
 
@@ -120,6 +123,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
     public function create(array $attributes)
     {
+
         \DB::beginTransaction();
         try {
             $probationaryContract = ProbationaryContract::create($attributes);
@@ -127,6 +131,17 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 $probationaryContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
+            $now = Carbon::now();
+            $dataPosition = [
+                'employeeId' => $attributes['employeeId'],
+                'branchId' => $attributes['branchId'],
+                'positionId' => $attributes['positionId'],
+                'divisionId' => $attributes['divisionId'],
+                'startDate' => $now,
+                'type' => 'PROBATION',
+            ];
+
+            $this->positionLevelRepository->create($dataPosition);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -164,9 +179,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $employee = $labourContract->employee;
         $params = [
             'contractNumber' => $labourContract->ContractNumber,
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
             'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '       ',
             'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
@@ -183,8 +198,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'month' => $labourContract->Month ? $labourContract->Month : '       ',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '       ',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '       ',
-            'position' => $labourContract->position ? $labourContract->position->Name : '       ',
-            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '       ',
+            'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . " - " . $labourContract->division->Name : '       ',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Address : '       ',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
         ];

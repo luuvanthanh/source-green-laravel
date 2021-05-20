@@ -124,9 +124,10 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '       ',
             'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
+            'positionDivision' => $detail->position && $detail->division ? $detail->position->Name . " - " . $detail->division->Name : '       ',
             'position' => $detail->position ? $detail->position->Name : '       ',
             'class' => $detail->class ? $detail->class->Name : '       ',
-            'yearStudy' => $appoint->YearStudy ? $appoint->YearStudy : '       ',
+            'yearStudy' => $appoint->DecisionDate->subYear()->format('Y') . " - " . $appoint->DecisionDate->format('Y'),
         ];
 
         return $this->wordExporterServices->exportWord('appoint', $params);

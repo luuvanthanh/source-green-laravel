@@ -118,6 +118,22 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Define relations store
+     */
+    public function labourContract()
+    {
+        return $this->hasMany(\GGPHP\Profile\Models\LabourContract::class, 'EmployeeId');
+    }
+
+    /**
+     * Define relations store
+     */
+    public function probationaryContract()
+    {
+        return $this->hasMany(\GGPHP\Profile\Models\ProbationaryContract::class, 'EmployeeId');
+    }
+
+    /**
      * Define relations reviews
      */
     public function revokeShifts()

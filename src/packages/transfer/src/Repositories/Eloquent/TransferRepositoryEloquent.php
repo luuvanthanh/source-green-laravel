@@ -128,4 +128,14 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         return $this->wordExporterServices->exportWord('transfer', $params);
     }
 
+    public function delete($id)
+    {
+        $transfer = Transfer::findOrFail($id);
+
+        $transfer->transferDetails()->delete();
+
+        $transfer->delete();
+
+        return true;
+    }
 }

@@ -164,9 +164,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $employee = $labourContract->employee;
         $params = [
             'contractNumber' => $labourContract->ContractNumber,
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
+            'dateNow' => $labourContract->ContractDate->format('d'),
+            'monthNow' => $labourContract->ContractDate->format('m'),
+            'yearNow' => $labourContract->ContractDate->format('Y'),
             'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '       ',
             'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',

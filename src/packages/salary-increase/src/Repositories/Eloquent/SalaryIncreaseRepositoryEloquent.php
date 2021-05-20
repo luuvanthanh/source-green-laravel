@@ -111,6 +111,12 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         $now = Carbon::now();
 
         $employee = $salaryIncrease->employee;
+        $probationaryContract = $employee->probationaryContract->last();
+        $labourContract = $employee->labourContract->last();
+        $oldSalary = is_null($labourContract) ?
+        is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value
+        : $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value;
+
         $params = [
             'decisionNumber' => $salaryIncrease->DecisionNumber,
             'decisionDate' => $salaryIncrease->DecisionDate->format('d-m-Y'),
@@ -121,9 +127,9 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'salary' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
-            'salaryOld' => '........',
+            'salaryOld' => $oldSalary,
             'salatyNew' => $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value,
-            'allowance' => '........',
+            'allowance' => $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value,
         ];
 
         return $this->wordExporterServices->exportWord('salary_increase', $params);
