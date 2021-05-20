@@ -14,6 +14,7 @@ import BusComponent from './busComponent';
 import ChildrenComponent from './childrenComponent';
 import HealthComponent from './health';
 import NoteComponent from './note'
+import MedicalComponent from './medical';
 
 let isMounted = true;
 /**
@@ -89,6 +90,9 @@ class Student extends PureComponent {
 
       case 'note':
         return <NoteComponent />
+
+      case 'medical':
+        return <MedicalComponent />
 
       default:
         return null
