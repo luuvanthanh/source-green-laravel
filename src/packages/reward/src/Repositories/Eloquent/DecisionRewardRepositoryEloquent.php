@@ -77,6 +77,24 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 
     }
 
+    public function update(array $attributes, $id)
+    {
+        $decisionReward = DecisionReward::findOrFail($id);
+        \DB::beginTransaction();
+        try {
+            $decisionReward->update($attributes);
+            $decisionReward->decisionRewardDetails()->delete();
+            DecisionRewardDetailServices::add($decisionReward->Id, $attributes['data']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
+
+        return parent::find($decisionReward->Id);
+    }
+
     public function getDecisionReward(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -296,14 +314,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 
         $detail = $decisionReward->decisionRewardDetails->first();
         $employee = $detail->employee;
-
         $params = [
             'decisionNumber' => $decisionReward->DecisionNumber,
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
-            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->name : '       ',
-            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->name : '       ',
+            'dateNow' => $decisionReward->DecisionDate->format('d'),
+            'monthNow' => $decisionReward->DecisionDate->format('m'),
+            'yearNow' => $decisionReward->DecisionDate->format('Y'),
+            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
+            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
             'reason' => $decisionReward->Reason ? $decisionReward->Reason : '       ',
             'timeApply' => $detail->TimeApply ? $detail->TimeApply->format('m-Y') : '       ',
             'money' => $detail->Money ? number_format($detail->Money) : '       ',

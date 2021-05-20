@@ -114,20 +114,18 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
         $employee = $detail->employee;
         $params = [
             'decisionNumber' => $appoint->DecisionNumber,
-            'dateNow' => $now->format('d'),
-            'monthNow' => $now->format('m'),
-            'yearNow' => $now->format('Y'),
-            'date' => $appoint->DecisionDate->format('d'),
-            'month' => $appoint->DecisionDate->format('m'),
-            'year' => $appoint->DecisionDate->format('Y'),
-            'decisionDate' => $appoint->DecisionDate->format('d/m/Y'),
+            'dateNow' => $appoint->DecisionDate->format('d'),
+            'monthNow' => $appoint->DecisionDate->format('m'),
+            'yearNow' => $appoint->DecisionDate->format('Y'),
+            'decisionDate' => $appoint->DecisionDate ? $appoint->DecisionDate->format('d/m/Y') : '......',
+            'timeApply' => $appoint->TimeApply ? $appoint->TimeApply->format('d/m/Y') : '......',
             'fullName' => $employee->FullName ? $employee->FullName : '       ',
             'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '       ',
             'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
             'positionDivision' => $detail->position && $detail->division ? $detail->position->Name . " - " . $detail->division->Name : '       ',
             'position' => $detail->position ? $detail->position->Name : '       ',
             'class' => $detail->class ? $detail->class->Name : '       ',
-            'yearStudy' => $appoint->DecisionDate->subYear()->format('Y') . " - " . $appoint->DecisionDate->format('Y'),
+            'yearStudy' => $appoint->DecisionDate ? $appoint->DecisionDate->subYear()->format('Y') . " - " . $appoint->DecisionDate->format('Y') : '.......',
         ];
 
         return $this->wordExporterServices->exportWord('appoint', $params);

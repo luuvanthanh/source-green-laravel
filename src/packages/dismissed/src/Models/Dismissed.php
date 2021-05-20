@@ -20,7 +20,7 @@ class Dismissed extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'DecisionNumber', 'DecisionDate', 'Reason', 'FileImage',
+        'DecisionNumber', 'DecisionDate', 'Reason', 'FileImage', 'TimeApply',
     ];
 
     protected $dateTimeFields = [

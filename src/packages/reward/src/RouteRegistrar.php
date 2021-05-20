@@ -66,7 +66,7 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'decision-reward.show',
             ]);
 
-            \Route::patch('decision-rewards/{id}', [
+            \Route::put('decision-rewards/{id}', [
                 'uses' => 'DecisionRewardController@update',
                 'as' => 'decision-reward.update',
             ]);
