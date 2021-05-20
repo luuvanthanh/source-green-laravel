@@ -9,6 +9,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import BusComponent from './busComponent';
 import ChildrenComponent from './childrenComponent';
+import HealthComponent from './HealthComponent';
 
 import styles from './index.scss';
 import variablesModules from './variables';
@@ -82,6 +83,9 @@ class Student extends PureComponent {
 
       case 'childrenInClass':
         return <ChildrenComponent />
+
+      case 'health':
+        return <HealthComponent />
 
       default:
         return null

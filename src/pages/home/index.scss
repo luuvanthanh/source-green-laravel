@@ -329,7 +329,7 @@
   text-align: center;
   .item-menu {
     text-align: center;
-    padding: 13px 20px;
+    padding: 13px 10px;
     cursor: pointer;
     transition: all 0.5s ease;
     &.actived {
@@ -351,4 +351,14 @@
   flex: 1;
   padding: 0 20px;
   overflow: hidden;
+}
+.item-health {
+  padding: 15px;
+  border: 1px solid #DFE6EA;
+  box-sizing: border-box;
+  border-radius: 4px;
+  height: 100%;
+  :global(.ant-avatar) {
+    min-width: 32px;
+  }
 }
