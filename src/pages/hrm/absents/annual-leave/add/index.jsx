@@ -95,7 +95,7 @@ class Index extends PureComponent {
               detail: response.absentDetail.map((item, index) => ({
                 ...item,
                 index,
-                isFullDate: item.isFullDate ? '1' : '0.5',
+                isFullDate: item.isFullDate ? 1 : 0.5,
               })),
             });
           }
@@ -335,6 +335,11 @@ class Index extends PureComponent {
     }
   };
 
+  enableButton = (items) => {
+    const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
+    return !!enable;
+  };
+
   render() {
     const {
       error,
@@ -458,6 +463,7 @@ class Index extends PureComponent {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
+                  disabled={this.enableButton(detail)}
                 >
                   LƯU
                 </Button>
