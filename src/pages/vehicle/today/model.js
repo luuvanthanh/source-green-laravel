@@ -11,6 +11,7 @@ export default {
     },
     busRoutes: [],
     summary: {},
+    timelines: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -19,6 +20,10 @@ export default {
       data: payload.parsePayload,
       pagination: payload.pagination,
       summary: payload.summary,
+    }),
+    SET_TIME_LINE: (state, { payload }) => ({
+      ...state,
+      timelines: payload.items,
     }),
     SET_BUS_ROUTES: (state, { payload }) => ({
       ...state,
@@ -50,6 +55,20 @@ export default {
               total: response.totalCount,
             },
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TIME_LINE({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTimeLine, payload);
+        yield saga.put({
+          type: 'SET_TIME_LINE',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
