@@ -71,7 +71,10 @@ const Index = memo(() => {
     if (formRefModal.current) {
       formRefModal.current.setFieldsValue({
         ...record,
-        timeApply: record.timeApply && moment(record.timeApply),
+        ...head(record.decisionRewardDetails),
+        timeApply:
+          head(record.decisionRewardDetails)?.timeApply &&
+          moment(head(record.decisionRewardDetails)?.timeApply),
         decisionDate: record.decisionDate && moment(record.decisionDate),
       });
     }
@@ -183,7 +186,11 @@ const Index = memo(() => {
         key: 'timeApply',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+        render: (record) =>
+          Helper.getDate(
+            get(record, 'decisionRewardDetails[0].timeApply'),
+            variables.DATE_FORMAT.DATE,
+          ),
       },
       {
         title: 'Lý do',
@@ -287,8 +294,11 @@ const Index = memo(() => {
           ref={formRefModal}
           initialValues={{
             ...objects,
+            ...head(objects.decisionRewardDetails),
             decisionDate: objects.decisionDate && moment(objects.decisionDate),
-            timeApply: objects.timeApply && moment(objects.timeApply),
+            timeApply:
+              head(objects.decisionRewardDetails)?.timeApply &&
+              moment(head(objects.decisionRewardDetails)?.timeApply),
           }}
         >
           <Pane className="row">

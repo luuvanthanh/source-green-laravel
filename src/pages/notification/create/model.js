@@ -7,6 +7,7 @@ export default {
   state: {
     branches: [],
     divisions: [],
+    details: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -27,8 +28,28 @@ export default {
       ...state,
       divisions: payload.parsePayload,
     }),
+    SET_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload,
+    }),
   },
   effects: {
+    *GET_DETAILS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
@@ -90,7 +111,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: error?.data?.error?.message || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error?.data?.error);
       }

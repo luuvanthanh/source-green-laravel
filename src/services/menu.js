@@ -658,7 +658,12 @@ export async function getLeftMenuNotification() {
     {
       title: 'Danh sách',
       key: 'notification',
-      url: ['/thong-bao/danh-sach', '/thong-bao/tao-moi', '/thong-bao/:id/chi-tiet'],
+      url: [
+        '/thong-bao/danh-sach',
+        '/thong-bao/tao-moi',
+        '/thong-bao/:id/chi-tiet',
+        '/thong-bao/:id/chinh-sua',
+      ],
       icon: 'icon icon-list',
       permission: [],
       pro: true,
