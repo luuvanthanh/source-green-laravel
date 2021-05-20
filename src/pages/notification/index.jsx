@@ -254,12 +254,40 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch, pagination } = this.props;
+    const self = this;
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        dispatch({
+          type: 'notifications/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+      onCancel() {},
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
         title: 'Mã ID',
@@ -301,12 +329,21 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
-              ghost
-              onClick={() => history.push(`/thong-bao/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
+              color="primary"
+              icon="edit"
+              onClick={(event) => {
+                event.stopPropagation();
+                history.push(`/thong-bao/${record.id}/chinh-sua`);
+              }}
+            />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={(event) => {
+                event.stopPropagation();
+                this.onRemove(record.id);
+              }}
+            />
           </div>
         ),
       },

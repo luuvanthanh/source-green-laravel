@@ -283,7 +283,11 @@ class Index extends PureComponent {
         key: 'timeApply',
         className: 'min-width-120',
         width: 120,
-        render: (record) => Helper.getDate(get(record, 'timeApply'), variables.DATE_FORMAT.DATE),
+        render: (record) =>
+          Helper.getDate(
+            get(record, 'decisionRewardDetails[0].timeApply'),
+            variables.DATE_FORMAT.DATE,
+          ),
       },
       {
         title: 'Lý do',

@@ -46,3 +46,10 @@ export function getClasses(params = {}) {
     },
   });
 }
+
+export function remove(params = {}) {
+  return request(`/news/${params.id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}

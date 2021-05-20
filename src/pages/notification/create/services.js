@@ -14,3 +14,9 @@ export function update(data = {}) {
     data,
   });
 }
+
+export function get(data = {}) {
+  return request(`/news/${data.id}`, {
+    method: 'GET',
+  });
+}

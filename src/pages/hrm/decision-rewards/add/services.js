@@ -24,8 +24,8 @@ export function update(data = {}) {
   });
 }
 
-export function details(id) {
-  return request(`/v1/decision-rewards/${id}`, {
+export function details(data) {
+  return request(`/v1/decision-rewards/${data.id}`, {
     method: 'GET',
     parse: true,
   });

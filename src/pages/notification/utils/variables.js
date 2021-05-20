@@ -23,6 +23,10 @@ export const variables = {
     EMPLOYEE: 'EMPLOYEE',
     PARENT: 'PARENT',
   },
+  ACTION_TYPE: {
+    POST: 'gửi thông báo',
+    PUT: 'sửa thông báo',
+  },
 };
 
 export default variables;

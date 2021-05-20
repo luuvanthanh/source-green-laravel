@@ -1507,6 +1507,12 @@ export default [
             authority: [],
           },
           {
+            path: '/thong-bao/:id/chinh-sua',
+            component: './notification/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/thong-bao/:id/chi-tiet',
             component: './notification/details',
             wrappers: ['@/wrappers/auth'],
