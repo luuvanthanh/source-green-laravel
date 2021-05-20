@@ -180,8 +180,8 @@ class Index extends PureComponent {
     if (!isEmpty(record)) {
       const absentStudents = record.map((item) => {
         if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDate(
-            item.attended_at,
+          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDateLocal(
+            item.attendedAt,
             variables.DATE_FORMAT.DATE_TIME,
           )}`;
         }

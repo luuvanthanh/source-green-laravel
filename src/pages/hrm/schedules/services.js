@@ -101,3 +101,26 @@ export function removeSchedulesDetail(data) {
     parse: true,
   });
 }
+
+export function getHolidays(data = {}) {
+  return request('/v1/holidays', {
+    method: 'GET',
+    params: {
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['holidayDetails']),
+      search: Helper.convertParamSearchConvert({
+        Name: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: data.startDate,
+            targetValue: '23:59:59',
+          }),
+          format: variables.DATE_FORMAT.YEAR,
+          isUTC: false,
+        }),
+      }),
+    },
+  });
+}
