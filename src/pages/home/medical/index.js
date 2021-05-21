@@ -4,15 +4,11 @@ import { Form, Image, Checkbox } from 'antd';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import _ from 'lodash';
-import moment from 'moment';
 
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
-import Text from '@/components/CommonComponent/Text';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import variablesModules from '../variables';
 import styles from '../index.scss';
 
 let isMounted = true;
@@ -91,9 +87,8 @@ class MedicalComponent extends PureComponent {
             <Image.PreviewGroup>
               {
                 images.map((item, index) => (
-                  <div className={styles['group-image']}>
+                  <div key={index} className={styles['group-image']}>
                     <Image
-                      key={index}
                       width={42}
                       src={item}
                       data-viewmore={`+${images.length - 1}`}

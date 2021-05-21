@@ -142,11 +142,11 @@ class NoteComponent extends PureComponent {
                   </div>
                 </div>
               </div>
-              <div className="col-md-6 py20 border-bottom">
+              <div className="col-md-6 py20 border-top">
                 <p className="mb5">Trạng thái</p>
                 <div className={styles['btn-status']}>{Helper.tagStatus('', 'Đã nhận')}</div>
               </div>
-              <div className="col-md-6 py20 border-bottom">
+              <div className="col-md-6 py20 border-top">
                 <p className="mb5">Giáo viên đã nhận</p>
                 <p className="font-weight-bold">Nguyễn Văn Tuyết lúc 10:35, 15/05/2021</p>
               </div>
