@@ -319,13 +319,13 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             'dateNow' => $decisionReward->DecisionDate->format('d'),
             'monthNow' => $decisionReward->DecisionDate->format('m'),
             'yearNow' => $decisionReward->DecisionDate->format('Y'),
-            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
-            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
-            'reason' => $decisionReward->Reason ? $decisionReward->Reason : '       ',
-            'timeApply' => $detail->TimeApply ? $detail->TimeApply->format('m-Y') : '       ',
-            'money' => $detail->Money ? number_format($detail->Money) : '       ',
-            'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '       ',
-            'fullName' => $employee->FullName ? $employee->FullName : '       ',
+            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '........',
+            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '........',
+            'reason' => $decisionReward->Reason ? $decisionReward->Reason : '........',
+            'timeApply' => $detail->TimeApply ? $detail->TimeApply->format('m-Y') : '........',
+            'money' => $detail->Money ? number_format($detail->Money) : '........',
+            'moneyWord' => $detail->Money ? $this->translateToWords($detail->Money) : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
         ];
 
         return $this->wordExporterServices->exportWord('decision_reward', $params);

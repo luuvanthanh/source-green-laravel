@@ -119,12 +119,12 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
             'yearNow' => $appoint->DecisionDate->format('Y'),
             'decisionDate' => $appoint->DecisionDate ? $appoint->DecisionDate->format('d/m/Y') : '......',
             'timeApply' => $appoint->TimeApply ? $appoint->TimeApply->format('d/m/Y') : '......',
-            'fullName' => $employee->FullName ? $employee->FullName : '       ',
-            'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '       ',
-            'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
-            'positionDivision' => $detail->position && $detail->division ? $detail->position->Name . " - " . $detail->division->Name : '       ',
-            'position' => $detail->position ? $detail->position->Name : '       ',
-            'class' => $detail->class ? $detail->class->Name : '       ',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '........',
+            'branchWord' => $detail->branch ? $detail->branch->Name : '........',
+            'positionDivision' => $detail->position && $detail->division ? $detail->position->Name . " - " . $detail->division->Name : '........',
+            'position' => $detail->position ? $detail->position->Name : '........',
+            'class' => $detail->class ? $detail->class->Name : '........',
             'yearStudy' => $appoint->DecisionDate ? $appoint->DecisionDate->subYear()->format('Y') . " - " . $appoint->DecisionDate->format('Y') : '.......',
         ];
 
