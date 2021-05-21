@@ -201,6 +201,7 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch, pagination } = this.props;
+    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -213,13 +214,9 @@ class Index extends PureComponent {
           type: 'decisionSuspends/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
           },
         });
       },
