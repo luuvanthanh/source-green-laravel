@@ -145,8 +145,8 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             'yearNow' => $transfer->DecisionDate ? $transfer->DecisionDate->format('Y') : '.......',
             'decisionDate' => $transfer->DecisionDate ? $transfer->DecisionDate->format('d/m/Y') : '.......',
             'timeApply' => $transfer->TimeApply ? $transfer->TimeApply->format('d/m/Y') : '.......',
-            'fullName' => $employee->FullName ? $employee->FullName : '       ',
-            'branchWord' => $detail->branch ? $detail->branch->Name : '       ',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'branchWord' => $detail->branch ? $detail->branch->Name : '........',
         ];
 
         return $this->wordExporterServices->exportWord('transfer', $params);

@@ -106,12 +106,12 @@ class DecisionSuspendRepositoryEloquent extends CoreRepositoryEloquent implement
             'date' => !is_null($labourContract) ? $labourContract->ContractDate->format('d') : '......',
             'month' => !is_null($labourContract) ? $labourContract->ContractDate->format('m') : '......',
             'year' => !is_null($labourContract) ? $labourContract->ContractDate->format('Y') : '......',
-            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '       ',
-            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '       ',
-            'fullName' => $employee->FullName ? $employee->FullName : '       ',
-            'from' => $decisionSuspend->From ? $decisionSuspend->From->format('d-m-Y') : '       ',
-            'to' => $decisionSuspend->To ? $decisionSuspend->To->format('d-m-Y') : '       ',
-            'prohibit' => $decisionSuspend->Reason ? $decisionSuspend->Reason : '       ',
+            'branchWord' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Name : '........',
+            'position' => $employee->positionLevelNow ? $employee->positionLevelNow->position->Name : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'from' => $decisionSuspend->From ? $decisionSuspend->From->format('d-m-Y') : '........',
+            'to' => $decisionSuspend->To ? $decisionSuspend->To->format('d-m-Y') : '........',
+            'prohibit' => $decisionSuspend->Reason ? $decisionSuspend->Reason : '........',
         ];
 
         return $this->wordExporterServices->exportWord('decision_suspend', $params);

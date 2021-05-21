@@ -167,27 +167,36 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'dateNow' => $labourContract->ContractDate->format('d'),
             'monthNow' => $labourContract->ContractDate->format('m'),
             'yearNow' => $labourContract->ContractDate->format('Y'),
-            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '       ',
-            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '       ',
-            'fullName' => $employee->FullName ? $employee->FullName : '       ',
-            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '       ',
-            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '       ',
-            'nationality' => $employee->Nationality ? $employee->Nationality : '       ',
-            'idCard' => $employee->IdCard ? $employee->IdCard : '       ',
-            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '       ',
-            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '       ',
-            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '       ',
+            'adressCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->Address : '........',
+            'phoneCompany' => $employee->positionLevelNow ? $employee->positionLevelNow->branch->PhoneNumber : '........',
+            'fullName' => $employee->FullName ? $employee->FullName : '........',
+            'birthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('d-m-Y') : '........',
+            'placeOfBirth' => $employee->PlaceOfBirth ? $employee->PlaceOfBirth : '........',
+            'nationality' => $employee->Nationality ? $employee->Nationality : '........',
+            'idCard' => $employee->IdCard ? $employee->IdCard : '........',
+            'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
             'phone' => $employee->Phone ? $employee->Phone : '.......',
-            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '       ',
-            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '       ',
-            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '       ',
-            'position' => $labourContract->position ? $labourContract->position->Name : '       ',
-            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '       ',
+            'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
+            'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
+            'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
+            'position' => $labourContract->position ? $labourContract->position->Name : '........',
+            'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
             'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value),
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);
+    }
+
+    public function delete($id)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+
+        $labourContract->parameterValues()->detach();
+
+        return $labourContract->delete();
     }
 }
