@@ -108,22 +108,22 @@ export const variables = {
   ],
   ATTENDANCE: [
     {
-      id: '1',
+      id: 'QUANTITY',
       name: 'Sỉ số trẻ',
       number: '150'
     },
     {
-      id: '2',
+      id: 'CHILDREN_IN_CLASS',
       name: 'Điểm danh vào lớp',
       number: '143'
     },
     {
-      id: '3',
+      id: 'UNPAID_LEAVE',
       name: 'Vắng không phép',
       number: '15'
     },
     {
-      id: '4',
+      id: 'ANNUAL_LEAVE',
       name: 'Vắng có phép',
       number: '13'
     }
