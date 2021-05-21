@@ -77,6 +77,9 @@ class WordExporterServices
         }
         //Khởi tạo đối tượng phpWord
         $templateProcessor = new TemplateProcessor($templateFileUrl);
+        foreach ($param as $key => $value) {
+            $param[$key] = htmlspecialchars($value);
+        }
 
         $templateProcessor->setValues($param);
 

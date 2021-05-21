@@ -28,7 +28,16 @@ class ResignationDecisionCreateRequest extends FormRequest
             'decisionDate' => 'required',
             'employeeId' => 'required',
             'timeApply' => 'required',
-            'payEndDate' => 'required|before:timeApply',
+            'payEndDate' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $timeApply = request()->timeApply;
+
+                    if ($value >= $timeApply) {
+                        return $fail('Trường phải là một ngày trước ngày áp dụng');
+                    }
+                },
+            ],
         ];
     }
 }

@@ -72,7 +72,7 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             \Route::delete('decision-rewards/{id}', [
-                'uses' => 'DecisionRewardController@update',
+                'uses' => 'DecisionRewardController@destroy',
                 'as' => 'decision-reward.update',
             ]);
 
