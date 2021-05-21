@@ -17,3 +17,19 @@ export function detailsNote(data) {
     method: 'GET',
   });
 }
+
+export function getMedical(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function detailsMedical(data) {
+  return request(`/medicals/${data.id}`, {
+    method: 'GET',
+  });
+}

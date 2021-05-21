@@ -43,8 +43,8 @@ export const variables = {
     }
   ],
   MEDICAL: [
-    { id: 'notReceived', name: 'Chưa nhận' },
-    { id: 'received', name: 'Đã nhận' },
+    { id: 'PENDING', name: 'Chưa nhận' },
+    { id: 'PROCESSED', name: 'Đã nhận' },
     { id: 'finish', name: 'Hoàn thành' },
   ],
   DATA_MEDICAL: [
