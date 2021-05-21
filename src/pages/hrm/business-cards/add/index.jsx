@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, InputNumber, TimePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last, head } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -97,7 +97,7 @@ class Index extends PureComponent {
               detail: response.businessCardDetail.map((item, index) => ({
                 ...item,
                 index,
-                isFullDate: item.isFullDate ? '1' : '0.5',
+                isFullDate: item.isFullDate ? 1 : 0.5,
               })),
             });
           }
@@ -154,12 +154,21 @@ class Index extends PureComponent {
   };
 
   onChangeFullDate = (value, record) => {
+    const { shiftUsers } = this.props;
+    let itemShift = {};
+    if (shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]) {
+      itemShift = shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)];
+    }
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item.index === record.index) {
           return {
             ...item,
             isFullDate: value,
+            shiftId: value === 1 ? null : item.shiftId,
+            shiftCode: value === 1 ? null : item.shiftCode,
+            startTime: value === 1 ? head(itemShift)?.startTime : item.startTime,
+            endTime: value === 1 ? last(itemShift)?.endTime : item.endTime,
           };
         }
         return item;
@@ -289,6 +298,7 @@ class Index extends PureComponent {
             <TimePicker
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
+              disabled
               value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeStart(value, record)}
             />
@@ -302,6 +312,7 @@ class Index extends PureComponent {
             <TimePicker
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
+              disabled
               value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeEnd(value, record)}
             />
@@ -365,6 +376,7 @@ class Index extends PureComponent {
                 }),
               ) || []
             }
+            disabled={record.isFullDate === 1}
             value={record.shiftCode}
             style={{ width: '100%' }}
             placeholder="Chọn"
@@ -380,6 +392,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
+            disabled
             value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeStart(value, record)}
           />
@@ -393,6 +406,7 @@ class Index extends PureComponent {
           <TimePicker
             format={variables.DATE_FORMAT.HOUR}
             placeholder="Chọn"
+            disabled
             value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
             onSelect={(value) => this.onChangeTimeEnd(value, record)}
           />
@@ -419,6 +433,11 @@ class Index extends PureComponent {
         payload: { ...values },
       });
     }
+  };
+
+  enableButton = (items) => {
+    const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
+    return !!enable;
   };
 
   render() {
@@ -549,6 +568,7 @@ class Index extends PureComponent {
                   htmlType="submit"
                   size="large"
                   loading={loadingSubmit}
+                  disabled={this.enableButton(detail)}
                 >
                   LƯU
                 </Button>

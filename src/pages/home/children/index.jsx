@@ -78,8 +78,8 @@ class ChildrenComponent extends PureComponent {
         title: 'Vào lớp',
         key: 'getOnBus',
         align: 'center',
-        className: 'min-width-200',
         width: 200,
+        className: 'min-width-200',
         render: (value, row, index) => {
           const obj = {
             children: index === 1 ? 'Không đăng ký xe Bus' : value,
@@ -94,8 +94,8 @@ class ChildrenComponent extends PureComponent {
         title: 'Ra về',
         key: 'getOffBus',
         align: 'center',
-        className: 'min-width-200',
         width: 200,
+        className: 'min-width-200',
         render: (value, row, index) => {
           const obj = {
             children: '07:21:17',

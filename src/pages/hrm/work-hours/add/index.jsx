@@ -102,7 +102,7 @@ class Index extends PureComponent {
     dispatch({
       type: params.id ? 'workHoursAdd/UPDATE' : 'workHoursAdd/ADD',
       payload: {
-        employeeId: values.employeeId,
+        ...values,
         employeeCreate: values.employeeId,
         date: Helper.getDateTime({
           value: Helper.setDate({
@@ -116,7 +116,7 @@ class Index extends PureComponent {
           in: moment(item.in).format(variables.DATE_FORMAT.HOUR),
           out: moment(item.out).format(variables.DATE_FORMAT.HOUR),
         })),
-        id: get(params, 'id'),
+        id: params.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -217,7 +217,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={absentTypes}
-                      label="LOẠI"
+                      label="Loại công"
                       name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
@@ -226,7 +226,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={Helper.convertSelectUsers(categories.users)}
-                      label="NHÂN VIÊN"
+                      label="Nhân viên"
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
@@ -236,7 +236,7 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-12">
                     <FormItem
-                      label="NGÀY ÁP DỤNG"
+                      label="Ngày áp dụng"
                       name="date"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
@@ -258,7 +258,7 @@ class Index extends PureComponent {
                           <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'in')}
-                              label="THỜI GIAN TỪ"
+                              label="Thời gian từ"
                               name={[field.name, 'in']}
                               fieldKey={[field.fieldKey, 'in']}
                               rules={[variables.RULES.EMPTY]}
@@ -268,7 +268,7 @@ class Index extends PureComponent {
                           <div className="col-lg-6">
                             <FormItem
                               onSelect={(value) => this.onChangeTimePicker(value, index, 'out')}
-                              label="THỜI GIAN ĐẾN"
+                              label="Thời gian đến"
                               name={[field.name, 'out']}
                               fieldKey={[field.fieldKey, 'out']}
                               rules={[variables.RULES.EMPTY]}
@@ -283,7 +283,7 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-12">
                     <FormItem
-                      label="LÝ DO"
+                      label="Lý do"
                       name="reason"
                       rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
                       type={variables.TEXTAREA}

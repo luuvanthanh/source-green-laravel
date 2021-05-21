@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -13,8 +13,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -46,7 +46,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -54,7 +53,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -184,6 +182,7 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
@@ -237,9 +236,14 @@ class Index extends PureComponent {
       {
         title: 'Nhân viên',
         key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+        className: 'min-width-220',
+        width: 220,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
       },
       {
         title: 'Thời gian',
@@ -312,16 +316,18 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
+                    name="startDate"
+                    onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    name="endDate"
+                    onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>
