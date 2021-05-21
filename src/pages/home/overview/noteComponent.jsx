@@ -108,10 +108,6 @@ const Index = memo(() => {
             </div>
             <div className="col-md-6 py20 border-top">
               <div className="d-flex">
-                {/* <Avatar
-                  src=""
-                  size={50}
-                /> */}
                 <span className={styles['circleIcon']}>
                   <span className={'icon-open-book'} />
                 </span>

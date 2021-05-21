@@ -1,11 +1,11 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'umi';
+import { memo, useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Avatar, Image, Checkbox } from 'antd';
-import PropTypes from 'prop-types';
+import { Tabs, Modal, Avatar, Image, Checkbox, Skeleton } from 'antd';
+import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
 
+import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 
@@ -13,68 +13,58 @@ import styles from '../index.scss';
 import variablesModules from '../variables';
 
 const { TabPane } = Tabs;
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
+const Index = memo(() => {
+  const dispatch = useDispatch();
+  const [ { medicals, detailsMedical }, loading] = useSelector(({ loading: { effects }, overView }) => [
+    overView,
+    effects,
+  ]);
 
-@connect(({ user, loading }) => ({ user, loading }))
-class MedicalComponent extends PureComponent {
-  formRef = React.createRef();
+  const [visible, setVisible ] = useState(false);
+  const [search, setSearch] = useState({
+    classId: undefined,
+    page: variables.PAGINATION.PAGE,
+    limit: variables.PAGINATION.SIZEMAX,
+    status: variables.STATUS.PENDING
+  });
 
-  constructor(props, context) {
-    super(props, context);
-    const { user } = props;
-    this.state = {
-      visible: false,
-    };
-    setIsMounted(true);
+  useEffect(() => {
+    fetchDataNotes();
+  }, [search.status])
+
+  const fetchDataNotes = () => {
+    dispatch({
+      type: 'overView/GET_DATA_MEDICAL',
+      payload: {
+        ...search
+      },
+    });
   }
 
-  componentDidMount() {
+  const cancelModal = () => {
+    setVisible(false);
   }
 
-  componentWillUnmount() {
-    setIsMounted(false);
+  const getDetails = (id) => {
+    setVisible(true);
+    dispatch({
+      type: 'overView/GET_DETAILS_MEDICAL',
+      payload: { id }
+    });
   }
 
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-   setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
-
-  cancelModal= () => {
-    this.setStateData({ visible: false });
+  const changeTab = (tab) => {
+    setSearch((prev) => ({
+      ...prev,
+      status: tab
+    }));
   }
 
-  getDetails = () => {
-    this.setStateData({ visible: true });
-  }
 
   /**
    * Function header table
    */
-   header = () => {
+  const header = () => {
     const images = [
       'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
       'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg',
@@ -86,7 +76,7 @@ class MedicalComponent extends PureComponent {
         key: 'creationTime',
         className: 'min-width-140',
         width: 140,
-        render: (record) => 'Sau ăn sáng'
+        render: (record) => {Helper.getDate(record.appliedDate, variables.DATE_FORMAT.TIME_DATE)}
       },
       {
         title: 'Thuốc',
@@ -114,24 +104,24 @@ class MedicalComponent extends PureComponent {
       },
       {
         title: 'Đơn vị',
-        key: 'position',
+        key: 'unit',
         className: 'min-width-120',
         width: 120,
-        render: (record) => 'Chai'
+        render: (record) => record?.unit || ''
       },
       {
         title: 'Liều lượng',
         key: 'amount',
         className: 'min-width-120',
         width: 120,
-        render: (record) => '5 ml'
+        render: (record) => ''
       },
       {
         title: 'Ghi chú',
         key: 'note',
         className: 'min-width-300',
         width: 300,
-        render: (record) => '',
+        render: (record) => record?.note || ''
       },
       {
         title: 'Nhận thuốc',
@@ -166,141 +156,133 @@ class MedicalComponent extends PureComponent {
     ];
   };
 
-  render() {
-    const { visible, tab } = this.state;
-    return (
-      <>
-        <Modal
-          className={styles['modal-student-detail']}
-          visible={visible}
-          title="Y tế"
-          width={"90%"}
-          onCancel={this.cancelModal}
-          footer={null}
-        >
-          <div className={classnames('p20', 'border-bottom', styles['header-modal'])}>
-            <div className="row">
-              <div className="col-lg-3 mt10">
-                <AvatarTable
-                  // fileImage={Helper.getPathAvatarJson(fileImage)}
-                  fullName={'Bùi Ngọc Thy Nhân'}
-                  description={'32 tháng tuổi'}
-                  size={50}
-                />
-              </div>
-              <div className="col-lg-3 mt10">
-                <AvatarTable
-                  // fileImage={Helper.getPathAvatarJson(fileImage)}
-                  fullName={'Nguyễn Anh'}
-                  description={'Phụ huynh'}
-                  size={50}
-                />
-              </div>
-              <div className="col-lg-2 mt10">
-                <div className="d-flex">
-                  <Avatar
-                    src=""
-                    size={50}
-                  />
-                  <div className="ml10">
-                    <p className={classnames('mb0', styles['class'])}>Lớp</p>
-                    <p className="font-weight-bold font-size-14 mb0">Preschool 2</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 mt10">
-                <div className="d-flex">
-                  <Avatar
-                    src=""
-                    size={50}
-                  />
-                  <div className="ml10">
-                    <p className={classnames('mb0', styles['class'])}>Giáo viên</p>
-                    <p className="font-weight-bold font-size-14 mb0">Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh</p>
-                  </div>
+  return (
+    <>
+      <Modal
+        className={styles['modal-student-detail']}
+        visible={visible}
+        title="Y tế"
+        width={"90%"}
+        onCancel={cancelModal}
+        footer={null}
+      >
+        <div className={classnames('p20', 'border-bottom', styles['header-modal'])}>
+          <div className="row">
+            <div className="col-lg-3 mt10">
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(detailsMedical?.studentMaster?.farther?.fileImage || detailsMedical?.studentMaster?.mother?.fileImage)}
+                fullName={detailsMedical?.studentMaster?.farther?.fullName || detailsMedical?.studentMaster?.mother?.fullName}
+                description={'Phụ huynh'}
+                size={50}
+              />
+            </div>
+            <div className="col-lg-3 mt10">
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(detailsMedical?.student?.fileImage)}
+                fullName={detailsMedical?.student?.fullName || ''}
+                description={`${detailsMedical?.student?.age}tháng tuổi`}
+                size={50}
+              />
+            </div>
+            <div className="col-lg-3 mt10">
+              <div className="d-flex">
+                <span className={styles['circleIcon']}>
+                  <span className={'icon-open-book'} />
+                </span>
+                <div className="ml10">
+                  <p className={classnames('mb0', styles['class'])}>Lớp</p>
+                  <p className="font-weight-bold font-size-14 mb0">{detailsMedical?.studentMaster?.student?.class?.name || 'Preschool'}</p>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="p20">
-            <div className="row">
-              <div className="col-md-6 col-lg-3">
-                <p className="mb20">Thời gian gửi: <span className="font-weight-bold">07:05, 16/05/2021</span></p>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <p className="mb20">Tên bệnh: <span className="font-weight-bold">Ho</span></p>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <p className="mb20">Vị trí đặt thuốc: <span className="font-weight-bold">Trong balo trẻ</span></p>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <p className="mb20">Nhân viên y tế: <span className="font-weight-bold">Phạm Thị Tiên</span></p>
+            <div className="col-lg-3 mt10">
+              <div className="d-flex">
+                <Avatar
+                  src={`${API_UPLOAD}${Helper.getPathAvatarJson(detailsMedical?.studentMaster?.student?.employee?.fileImage)}`}
+                  size={50}
+                />
+                <div className="ml10">
+                  <p className={classnames('mb0', styles['class'])}>Giáo viên</p>
+                  <p className="font-weight-bold font-size-14 mb0">{detailsMedical?.studentMaster?.student?.employee?.fullName || ''}</p>
+                </div>
               </div>
             </div>
-            <Table
-              bordered
-              columns={this.header()}
-              dataSource={[{id: 1}, {id: 2}]}
-              // loading={loading}
-              pagination={false}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
-          </div>
-        </Modal>
-        <div className={classnames(styles['block-category'])}>
-          <div className={styles['body-tab']}>
-            <div className={styles['header-tab']}>
-              <div>
-                <img src={'/images/home/balloons.svg'} alt="notification" className={styles['icon']} />
-                <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Y tế</span>
-              </div>
-              <p className={classnames('mb0', 'font-size-14')}>15</p>
-            </div>
-            <Tabs>
-              {variablesModules.MEDICAL.map(({ id, name }) => (
-                <TabPane tab={name} key={id} />
-              ))}
-            </Tabs>
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
-              {
-                variablesModules.DATA_MEDICAL.map((item, index) => (
-                  <div className={styles['content-tab']} key={index} onClick={this.getDetails}>
-                    <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                      <AvatarTable
-                        className="full-name-bold"
-                        // fileImage={Helper.getPathAvatarJson(fileImage)}
-                        fullName={item?.name}
-                        size={36}
-                      />
-                      <p className={classnames('mb0', styles['date'])}>{item?.date}</p>
-                    </div>
-                    <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.description}</p>
-                  </div>
-                ))
-              }
-            </Scrollbars>
           </div>
         </div>
-      </>
-    );
-  }
-}
+        <div className="p20">
+          <div className="row">
+            <div className="col-md-6 col-lg-3">
+              <p className="mb20">Thời gian gửi: <span className="font-weight-bold">
+                {Helper.getDate(detailsMedical?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}
+              </span></p>
+            </div>
+            <div className="col-md-6 col-lg-3">
+              <p className="mb20">Tên bệnh: <span className="font-weight-bold">{detailsMedical?.diseaseName || ''}</span></p>
+            </div>
+            <div className="col-md-6 col-lg-3">
+              <p className="mb20">Vị trí đặt thuốc: <span className="font-weight-bold">{detailsMedical?.medicineLocation || ''}</span></p>
+            </div>
+            <div className="col-md-6 col-lg-3">
+              <p className="mb20">Nhân viên y tế: <span className="font-weight-bold">{detailsMedical?.creator?.userName}</span></p>
+            </div>
+          </div>
+          <Table
+            bordered
+            columns={header()}
+            dataSource={_.get(detailsMedical, 'medicines', [])}
+            // loading={loading}
+            pagination={false}
+            params={{
+              header: header(),
+              type: 'table',
+            }}
+            rowKey={(record) => record.id}
+            scroll={{ x: '100%' }}
+          />
+        </div>
+      </Modal>
+      <div className={classnames(styles['block-category'])}>
+        <div className={styles['body-tab']}>
+          <div className={styles['header-tab']}>
+            <div>
+              <img src={'/images/home/balloons.svg'} alt="notification" className={styles['icon']} />
+              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Y tế</span>
+            </div>
+            <p className={classnames('mb0', 'font-size-14')}>15</p>
+          </div>
+          <Tabs onChange={changeTab} activeKey={search?.tab}>
+            {variablesModules.MEDICAL.map(({ id, name }) => (
+              <TabPane tab={name} key={id} />
+            ))}
+          </Tabs>
+          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
+            {loading['overView/GET_DATA_MEDICAL'] ? (
+              <>
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+              </>
+            ) : (
+              medicals.map((item, index) => (
+                <div className={styles['content-tab']} key={index} onClick={() => getDetails(item?.id)}>
+                  <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                    <AvatarTable
+                      className="full-name-bold"
+                      fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                      fullName={item?.student?.fullName}
+                      size={36}
+                    />
+                    <p className={classnames('mb0', styles['date'])}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                  </div>
+                  <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.diseaseName || ''}</p>
+                </div>
+              ))
+            )}
+          </Scrollbars>
+        </div>
+      </div>
+    </>
+  );
+});
 
-MedicalComponent.propTypes = {
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-};
-
-MedicalComponent.defaultProps = {
-  dispatch: {},
-  loading: {},
-  location: {},
-};
-
-export default MedicalComponent;
+export default Index;

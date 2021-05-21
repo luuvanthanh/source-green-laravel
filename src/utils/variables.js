@@ -123,7 +123,8 @@ export const variables = {
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
     CONFIRMING: 'CONFIRMING',
-    CONFIRMED: 'CONFIRMED'
+    CONFIRMED: 'CONFIRMED',
+    PROCESSED: 'PROCESSED',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
