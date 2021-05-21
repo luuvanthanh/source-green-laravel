@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, toNumber, last } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,7 +12,6 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import ReactApexChart from 'react-apexcharts';
 
 let isMounted = true;
@@ -26,19 +25,6 @@ const setIsMounted = (value = true) => {
   return isMounted;
 };
 
-function generateDayWiseTimeSeries(baseval, count, yrange) {
-  var i = 0;
-  var series = [];
-  while (i < count) {
-    var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-    series.push([baseval, y]);
-    baseval += 86400000;
-    i++;
-  }
-  return series;
-}
-
 /**
  * Get isMounted
  * @returns {boolean} value of isMounted
@@ -50,6 +36,7 @@ const mapStateToProps = ({ healthStaticstic, loading }) => ({
   pagination: healthStaticstic.pagination,
   branches: healthStaticstic.branches,
   classes: healthStaticstic.classes,
+  students: healthStaticstic.students,
   criteriaGroupProperties: healthStaticstic.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -66,30 +53,20 @@ class Index extends PureComponent {
       search: {
         branchId: query.branchId,
         classId: query.classId,
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        keyWord: query?.keyWord,
+        studentId: query.studentId,
+        propertyId: query.propertyId,
+        fromDate: '2021-05-01',
+        toDate: '2021-05-20',
       },
       series: [
         {
-          name: 'TEAM 1',
-          data: [
-            [1486857600000, 3600],
-            [1486944000000, 4600],
-            [1487030400000, 9600],
-            [1487116800000, 945],
-            [1487203200000, 12600],
-            [1487289600000, 5600],
-            [1487376000000, 7600],
-            [1487462400000, 139],
-            [1487548800000, 8600],
-            [1487548800000, 9600],
-          ],
+          name: 'Thống kê sức khỏe',
+          data: [],
         },
       ],
       options: {
         chart: {
-          height: 350,
+          height: 650,
           type: 'scatter',
           zoom: {
             enabled: false,
@@ -98,6 +75,7 @@ class Index extends PureComponent {
             show: false,
           },
         },
+        colors: ['#27A600'],
         dataLabels: {
           enabled: false,
         },
@@ -115,6 +93,11 @@ class Index extends PureComponent {
         },
         xaxis: {
           type: 'datetime',
+          labels: {
+            formatter: (value) => {
+              return moment(value).format('DD/MM');
+            },
+          },
         },
         yaxis: {
           labels: {
@@ -126,7 +109,7 @@ class Index extends PureComponent {
             offsetY: 0,
             rotate: 0,
             formatter: (value) => {
-              return moment().startOf('day').seconds(value).format('H:mm');
+              return moment().startOf('day').seconds(value).format('HH:mm');
             },
           },
         },
@@ -158,6 +141,14 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  getMiliseconds = (date) => {
+    var a = date.split(':'); // split it at the colons
+
+    // minutes are worth 60 seconds. Hours are worth 60 minutes.
+    var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+    return seconds;
+  };
+
   /**
    * Function load data
    */
@@ -170,6 +161,35 @@ class Index extends PureComponent {
       type: 'healthStaticstic/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          let items = [];
+          response.map((item) => {
+            item.history.map((itemHistory) => {
+              items = [
+                ...items,
+                [
+                  new Date(item.reportDate).getTime(),
+                  this.getMiliseconds(
+                    Helper.getDate(
+                      get(itemHistory, 'studentCritetiaEntityChanges[0].changeTime'),
+                      variables.DATE_FORMAT.TIME_FULL,
+                    ),
+                  ),
+                ],
+              ];
+            });
+          });
+          this.setStateData({
+            series: [
+              {
+                name: 'Thống kê sức khỏe',
+                data: items,
+              },
+            ],
+          });
+        }
       },
     });
     history.push({
@@ -187,6 +207,15 @@ class Index extends PureComponent {
         type: 'healthStaticstic/GET_CLASSES',
         payload: {
           branch: search.branchId,
+        },
+      });
+    }
+    if (search.classId) {
+      this.props.dispatch({
+        type: 'healthStaticstic/GET_STUDENTS',
+        payload: {
+          classStatus: 'HAS_CLASS',
+          class: search.classId,
         },
       });
     }
@@ -250,6 +279,17 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeSelectClass = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'healthStaticstic/GET_STUDENTS',
+      payload: {
+        classStatus: 'HAS_CLASS',
+        class: e,
+      },
+    });
+  };
+
   /**
    * Function change input
    * @param {object} e event of input
@@ -279,26 +319,91 @@ class Index extends PureComponent {
     );
   };
 
+  hms = (seconds) => {
+    return [3600, 60]
+      .reduceRight(
+        (p, b) => (r) => [Math.floor(r / b)].concat(p(r % b)),
+        (r) => [r],
+      )(seconds)
+      .map((a) => a.toString().padStart(2, '0'))
+      .join(':');
+  };
+
   render() {
     const {
-      data,
+      students,
       branches,
       classes,
-      pagination,
+      criteriaGroupProperties,
       match: { params },
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['healthStaticstic/GET_DATA'];
     return (
-      <div id="chart">
-        {/* <ReactApexChart
-          options={this.state.options}
-          series={this.state.series}
-          type="scatter"
-          height={350}
-        /> */}
-      </div>
+      <>
+        <Helmet title="Thống kê sức khỏe" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          {/* FORM SEARCH */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <Text color="dark">Thống kê sức khỏe</Text>
+          </div>
+          <div className={classnames(styles['block-table'])}>
+            <Form
+              initialValues={{
+                ...search,
+              }}
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelectClass(event, 'classId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={Helper.convertSelectUsers(students)}
+                    name="studentId"
+                    onChange={(event) => this.onChangeSelect(event, 'studentId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={criteriaGroupProperties.map((item) => ({
+                      id: item.id,
+                      name: item.property,
+                    }))}
+                    name="propertyId"
+                    onChange={(event) => this.onChangeSelect(event, 'propertyId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+              </div>
+            </Form>
+            <div id="chart">
+              <ReactApexChart
+                options={this.state.options}
+                series={this.state.series}
+                type="scatter"
+                height={600}
+              />
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 }
