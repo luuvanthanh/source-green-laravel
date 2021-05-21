@@ -82,7 +82,7 @@ class BusComponent extends PureComponent {
         render: (record) => '07:12:12',
       },
       {
-        title: 'Lên xe',
+        title: 'Xuống xe',
         key: 'getOffBus',
         align: 'center',
         className: 'min-width-100',
