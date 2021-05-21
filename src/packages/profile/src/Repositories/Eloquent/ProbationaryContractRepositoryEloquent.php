@@ -194,12 +194,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             'nationality' => $employee->Nationality ? $employee->Nationality : '........',
             'idCard' => $employee->IdCard ? $employee->IdCard : '........',
             'dateOfIssueCard' => $employee->DateOfIssueIdCard ? $employee->DateOfIssueIdCard->format('d-m-Y') : '........',
-            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? $employee->PlaceOfIssueIdCard : '........',
+            'placeOfIssueCard' => $employee->PlaceOfIssueIdCard ? ($employee->PlaceOfIssueIdCard) : '........',
             'permanentAddress' => $employee->PermanentAddress ? $employee->PermanentAddress : '........',
             'adress' => $employee->Address ? $employee->Address : '.......',
             // 'phone' => $employee->Phone ? $employee->Phone : '.......',
             'typeContract' => $labourContract->typeOfContract ? $labourContract->typeOfContract->Name : '........',
             'month' => $labourContract->Month ? $labourContract->Month : '........',
+            'salaryRatio' => $labourContract->SalaryRatio ? $labourContract->SalaryRatio : '........',
             'from' => $labourContract->ContractFrom ? $labourContract->ContractFrom->format('d-m-Y') : '........',
             'to' => $labourContract->ContractTo ? $labourContract->ContractTo->format('d-m-Y') : '........',
             'positionDivision' => $labourContract->position && $labourContract->division ? $labourContract->position->Name . " - " . $labourContract->division->Name : '........',
@@ -211,5 +212,14 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         ];
 
         return $this->wordExporterServices->exportWord('probationary_contract', $params);
+    }
+
+    public function delete($id)
+    {
+        $probationaryContract = ProbationaryContract::findOrFail($id);
+
+        $probationaryContract->parameterValues()->detach();
+
+        return $probationaryContract->delete();
     }
 }

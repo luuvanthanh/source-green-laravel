@@ -190,4 +190,13 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);
     }
+
+    public function delete($id)
+    {
+        $labourContract = LabourContract::findOrFail($id);
+
+        $labourContract->parameterValues()->detach();
+
+        return $labourContract->delete();
+    }
 }
