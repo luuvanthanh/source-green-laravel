@@ -105,9 +105,8 @@ class NoteComponent extends PureComponent {
           <Image.PreviewGroup>
             {
               images.map((item, index) => (
-                <div className={styles['group-image']}>
+                <div  key={index} className={styles['group-image']}>
                   <Image
-                    key={index}
                     width={50}
                     src={item}
                     data-viewmore={`+${images.length - 1}`}
