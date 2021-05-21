@@ -96,6 +96,8 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
             });
         }
 
+        $this->model = $this->model->where('Status', '!=', LateEarly::INVALID);
+
         if (!empty($attributes['limit'])) {
             $lateEarlies = $this->paginate($attributes['limit']);
         } else {
