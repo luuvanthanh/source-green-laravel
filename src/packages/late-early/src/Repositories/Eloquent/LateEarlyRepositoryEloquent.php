@@ -183,8 +183,6 @@ class LateEarlyRepositoryEloquent extends CoreRepositoryEloquent implements Late
                             ->where('EmployeeId', $employee->Id)->orderBy('AttendedAt')->get();
 
                         if (empty(count($timeKeepingAfterTimeStart)) && !empty(count($timeKeepingBeforTimeStart))) {
-                            dd(2);
-
                             //kiểm tra tồn tại đi trễ
                             $existLate = LateEarly::whereHas('lateEarlyConfig', function ($query) use ($employee, $date) {
                                 $query->where('Type', LateEarlyTimeConfig::LATE);
