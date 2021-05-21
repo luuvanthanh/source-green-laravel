@@ -7,8 +7,8 @@ export const variables = {
     { id: 'application', name: 'Ứng dụng' },
   ],
   NOTE: [
-    { id: 'notReceived', name: 'Chưa nhận' },
-    { id: 'received', name: 'Đã nhận' },
+    { id: 'CONFIRMING', name: 'Chưa nhận' },
+    { id: 'CONFIRMED', name: 'Đã nhận' },
   ],
   DATA_NOTES: [
     {

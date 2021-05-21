@@ -67,7 +67,8 @@ export const variables = {
   DATE_FORMAT: {
     DATE: 'DD-MM-YYYY',
     DATE_TIME: 'DD-MM-YYYY, HH:mm',
-    TIME_DATE: ' HH:mm, DD-MM-YYYY',
+    TIME_DATE: 'HH:mm, DD-MM-YYYY',
+    TIME_DATE_MONTH: 'HH:mm, DD/MM',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
@@ -76,6 +77,7 @@ export const variables = {
     WEEKLY: 'weekly',
     // TODO: rename
     DATE_VI: 'DD/MM/YYYY',
+    TIME_DATE_VI: 'HH:mm, DD/MM/YYYY',
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
@@ -120,6 +122,8 @@ export const variables = {
     PENDING: 'PENDING',
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
+    CONFIRMING: 'CONFIRMING',
+    CONFIRMED: 'CONFIRMED'
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
