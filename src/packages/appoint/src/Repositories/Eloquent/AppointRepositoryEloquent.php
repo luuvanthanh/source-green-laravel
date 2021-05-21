@@ -130,4 +130,13 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
 
         return $this->wordExporterServices->exportWord('appoint', $params);
     }
+
+    public function delete($id)
+    {
+        $appoint = Appoint::findOrFail($id);
+
+        $appoint->appointDetails()->delete();
+
+        return $appoint->delete();
+    }
 }

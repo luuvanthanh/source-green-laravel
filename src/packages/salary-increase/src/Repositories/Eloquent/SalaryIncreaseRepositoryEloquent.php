@@ -85,6 +85,30 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         return parent::find($tranfer->Id);
     }
 
+    public function update(array $attributes, $id)
+    {
+        $salaryIncrease = SalaryIncrease::findOrFail($id);
+        \DB::beginTransaction();
+        try {
+            $salaryIncrease->update($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $salaryIncrease->parameterValues()->detach();
+
+                foreach ($attributes['detail'] as $value) {
+                    $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                }
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            dd($e);
+            \DB::rollback();
+        }
+
+        return parent::find($salaryIncrease->Id);
+    }
+
     public function getSalaryIncrease(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -139,5 +163,14 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         ];
 
         return $this->wordExporterServices->exportWord('salary_increase', $params);
+    }
+
+    public function delete($id)
+    {
+        $appoint = SalaryIncrease::findOrFail($id);
+
+        $appoint->parameterValues()->detach();
+
+        return $appoint->delete();
     }
 }
