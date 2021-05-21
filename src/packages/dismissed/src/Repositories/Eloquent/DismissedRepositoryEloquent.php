@@ -126,4 +126,13 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
 
         return $this->wordExporterServices->exportWord('dismissed', $params);
     }
+
+    public function delete($id)
+    {
+        $dismissed = Dismissed::findOrFail($id);
+
+        $dismissed->dismissedDetails()->delete();
+
+        return $dismissed->delete();
+    }
 }
