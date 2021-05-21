@@ -1585,6 +1585,12 @@ export default [
             authority: [],
           },
           {
+            path: '/suc-khoe/thong-ke',
+            component: './health/staticstic',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/suc-khoe/hom-nay/tao-moi',
             component: './health/add',
             wrappers: ['@/wrappers/auth'],

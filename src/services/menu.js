@@ -725,6 +725,13 @@ export async function getLeftMenuHealth() {
       icon: 'icon icon-clock',
       permission: [],
     },
+    {
+      title: 'Thống kê',
+      key: 'staticstic',
+      url: ['/suc-khoe/thong-ke'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+    },
   ];
 }
 export async function getLeftMenuHRM() {
