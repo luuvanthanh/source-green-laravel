@@ -1,25 +1,18 @@
 {
   "parser": "babel-eslint",
-  "extends": [
-    "airbnb",
-    "prettier"
-  ],
+  "extends": ["airbnb", "prettier", "plugin:node/recommended", "plugin:security/recommended"],
   "env": {
-    "ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION": true,
-    "page": true,
-    "API_URL": true,
-    "API_SSO_URL": true,
-    "API_URL_LAVAREL": true,
-    "ACCESS_TOKEN_MAPBOX": true,
-    "API_MAP_BOX": true,
-    "URL_AI": true
+    "browser": true,
+    "node": true,
+    "es6": true
   },
   "globals": {
     "IMAGE_URL": true,
     "API_URL": true,
     "NOTIFICATION_APP_ID": true,
     "CLIENT_SECRET": true,
-    "CLIENT_ID": true
+    "CLIENT_ID": true,
+    "API_UPLOAD": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,
@@ -29,10 +22,7 @@
     "import/no-unresolved": [
       2,
       {
-        "ignore": [
-          "^@/",
-          "^umi/"
-        ]
+        "ignore": ["^@/", "^umi/"]
       }
     ],
     "linebreak-style": 0,
@@ -46,16 +36,10 @@
     "react/jsx-filename-extension": [
       0,
       {
-        "extensions": [
-          ".js",
-          ".jsx"
-        ]
+        "extensions": [".js", ".jsx"]
       }
     ],
-    "react/destructuring-assignment": [
-      0,
-      "always"
-    ],
+    "react/destructuring-assignment": [0, "always"],
     "no-unused-vars": [
       "error",
       {
@@ -70,13 +54,15 @@
     "react/no-array-index-key": 0,
     "camelcase": 0,
     "no-shadow": 0,
-    "react/sort-comp": 0
+    "react/sort-comp": 0,
+    "node/no-unsupported-features/es-syntax": 0,
+    "node/no-missing-import": 0
   },
   "settings": {
-    "polyfills": [
-      "fetch",
-      "promises",
-      "url"
-    ]
-  }
+    "polyfills": ["fetch", "promises", "url"]
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": ["react"]
 }

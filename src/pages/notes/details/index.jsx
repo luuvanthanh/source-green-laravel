@@ -1,22 +1,17 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Typography, Form, message, Select, Image } from 'antd';
-import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { Image } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import { isEmpty, get, head } from 'lodash';
+import { get, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 
-import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
 import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { UserOutlined } from '@ant-design/icons';
-import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../utils/variables';
-import HelperModules from '../utils/Helper';
-import { Scrollbars } from 'react-custom-scrollbars';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
 import styles from './styles.module.scss';
 
@@ -35,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ notesDetails, loading, menu, user }) => ({
   loading,
   user: user.user,
@@ -49,10 +43,7 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.state = {
-      description: null,
-      objects: {},
-    };
+    this.state = {};
     setIsMounted(true);
   }
 
@@ -105,14 +96,14 @@ class Index extends PureComponent {
             <Loading loading={loading} isError={error.isError} params={{ error }}>
               {/* DETAILS CONTAINER */}
               <div className={classnames(styles['info-container'])}>
-                <p className={styles['time']}>
+                <p className={styles.time}>
                   {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
                 </p>
-                <h3 className={styles['title']}>{details?.name}</h3>
+                <h3 className={styles.title}>{details?.name}</h3>
                 <div
-                  className={styles['norm']}
+                  className={styles.norm}
                   dangerouslySetInnerHTML={{ __html: details.description }}
-                ></div>
+                />
                 <div className={styles['list-image']}>
                   <Image.PreviewGroup>
                     {Helper.isJSON(details.fileImage) &&
@@ -134,7 +125,7 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-6">
                     <div className={styles['group-user']}>
-                      <p className={styles['norm']}>Phụ huynh</p>
+                      <p className={styles.norm}>Phụ huynh</p>
                       <AvatarTable
                         size={50}
                         fileImage={head(
@@ -158,7 +149,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-6">
                     <div className={styles['group-user']}>
-                      <p className={styles['norm']}>Dành cho</p>
+                      <p className={styles.norm}>Dành cho</p>
                       <AvatarTable
                         size={50}
                         fileImage={
@@ -175,12 +166,12 @@ class Index extends PureComponent {
                   <div className="col-6">
                     <div className={styles['info-content']}>
                       <div className={styles['info-item']}>
-                        <p className={styles['norm']}>Cơ sở</p>
-                        <div className={styles['content']}>
+                        <p className={styles.norm}>Cơ sở</p>
+                        <div className={styles.content}>
                           <div className={styles.circle}>
-                            <span className={'icon-school'}></span>
+                            <span className="icon-school" />
                           </div>
-                          <p className={styles['norm']}>{details?.student?.class?.branch?.name}</p>
+                          <p className={styles.norm}>{details?.student?.class?.branch?.name}</p>
                         </div>
                       </div>
                     </div>
@@ -188,12 +179,12 @@ class Index extends PureComponent {
                   <div className="col-6">
                     <div className={styles['info-content']}>
                       <div className={styles['info-item']}>
-                        <p className={styles['norm']}>Lớp</p>
-                        <div className={styles['content']}>
+                        <p className={styles.norm}>Lớp</p>
+                        <div className={styles.content}>
                           <div className={styles.circle}>
-                            <span className="icon-open-book"></span>
+                            <span className="icon-open-book" />
                           </div>
-                          <p className={styles['norm']}>{details?.student?.class?.name}</p>
+                          <p className={styles.norm}>{details?.student?.class?.name}</p>
                         </div>
                       </div>
                     </div>
@@ -201,7 +192,7 @@ class Index extends PureComponent {
                 </div>
                 <hr />
                 <div>
-                  <p className={styles['norm']}>Trạng thái</p>
+                  <p className={styles.norm}>Trạng thái</p>
                   <div className="d-inline-flex">{HelperModules.tagStatus(details.status)}</div>
                 </div>
               </div>
@@ -211,12 +202,12 @@ class Index extends PureComponent {
               <div className={classnames(styles['feedback-container'], 'mt20')}>
                 <div className="row">
                   <div className="col-4">
-                    <p className={styles['time']}>
+                    <p className={styles.time}>
                       {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
                     </p>
                   </div>
                   <div className="col-8">
-                    <p className={styles['norm']}>{details?.employee?.fullName} đã nhận tin</p>
+                    <p className={styles.norm}>{details?.employee?.fullName} đã nhận tin</p>
                   </div>
                 </div>
               </div>
@@ -231,20 +222,20 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
-  data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
-  location: {},
+  details: {},
+  error: {},
+  menuData: [],
 };
 
 export default Index;
