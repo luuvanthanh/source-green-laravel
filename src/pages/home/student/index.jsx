@@ -79,7 +79,7 @@ const Index = memo(() => {
         return <BusComponent studentId={studentId} />;
 
       case 'childrenInClass':
-        return <ChildrenComponent />;
+        return <ChildrenComponent studentId={studentId} />;
 
       case 'health':
         return <HealthComponent />;
@@ -92,7 +92,7 @@ const Index = memo(() => {
 
       default:
         return null;
-    }
+    };
   };
 
   return (

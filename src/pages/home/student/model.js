@@ -5,7 +5,8 @@ export default {
   state: {
     students: [],
     detailsStudent: {},
-    bus: []
+    bus: [],
+    childrensInClass: []
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -21,6 +22,10 @@ export default {
     SET_DATA_BUS: (state, { payload }) => ({
       ...state,
       bus: payload.parsePayload,
+    }),
+    SET_DATA_CHILD_IN_CLASS: (state, { payload }) => ({
+      ...state,
+      childrensInClass: payload.parsePayload,
     }),
   },
   effects: {
@@ -53,6 +58,19 @@ export default {
         const response = yield saga.call(services.getBusByStudent, payload);
         yield saga.put({
           type: 'SET_DATA_BUS',
+          payload: {
+            parsePayload: response.items,
+          },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_CHILD_IN_CLASS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getChildInClass, payload);
+        yield saga.put({
+          type: 'SET_DATA_CHILD_IN_CLASS',
           payload: {
             parsePayload: response.items,
           },
