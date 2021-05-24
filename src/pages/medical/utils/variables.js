@@ -25,6 +25,14 @@ export const variables = {
       label: 'Sau ăn sáng',
     },
     {
+      value: 'BEFORE_SECOND_BREAKFAST',
+      label: 'Trước xế sáng'
+    },
+    {
+      value: 'AFTER_SECOND_BREAKFAST',
+      label: 'Sau xế sáng'
+    },
+    {
       value: 'BEFORE_LUNCH',
       label: 'Trước ăn trưa',
     },
@@ -32,12 +40,34 @@ export const variables = {
       value: 'AFTER_LUNCH',
       label: 'Sau ăn trưa',
     },
+    {
+      value: 'BEFORE_SECOND_LUNCH',
+      label: 'Trước xế trưa',
+    },
+    {
+      value: 'AFTER_SECOND_LUNCH',
+      label: 'Sau xế trưa',
+    },
+    {
+      value: 'BEFORE_TEA_TIME',
+      label: 'Trước xế chiều',
+    },
+    {
+      value: 'AFTER_TEA_TIME',
+      label: 'Sau xế chiều',
+    },
   ],
   STATUS_TIME_CODE_NAME: {
     BEFORE_BREAKFAST: 'Trước ăn sáng',
     AFTER_BREAKFAST: 'Sau ăn sáng',
     BEFORE_LUNCH: 'Trước ăn trưa',
     AFTER_LUNCH: 'Sau ăn trưa',
+    BEFORE_SECOND_BREAKFAST: 'Trước xế sáng',
+    AFTER_SECOND_BREAKFAST: 'Sau xế sáng',
+    BEFORE_SECOND_LUNCH: 'Trước xế trưa',
+    AFTER_SECOND_LUNCH: 'Sau xế trưa',
+    BEFORE_TEA_TIME: 'Trước xế chiều',
+    AFTER_TEA_TIME: 'Sau xế chiều'
   },
   STATUS_TABS: [
     {
@@ -53,6 +83,10 @@ export const variables = {
     {
       id: 'RECEIVED',
       name: 'Đã nhận thuốc',
+    },
+    {
+      id: 'CREATE',
+      name: 'Tạo mới dặn thuốc',
     },
     {
       id: 'NOT_RECEIVED',

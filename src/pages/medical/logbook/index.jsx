@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Form, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,10 +12,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import variablesModules from '../utils/variables';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -32,13 +30,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ medicalItems, loading }) => ({
-  data: medicalItems.data,
-  branches: medicalItems.branches,
-  classes: medicalItems.classes,
-  pagination: medicalItems.pagination,
-  error: medicalItems.error,
+const mapStateToProps = ({ medicalLogBook, loading }) => ({
+  data: medicalLogBook.data,
+  branches: medicalLogBook.branches,
+  classes: medicalLogBook.classes,
+  pagination: medicalLogBook.pagination,
+  error: medicalLogBook.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -54,10 +51,12 @@ class Index extends PureComponent {
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId,
+        appliedDate: query?.appliedDate ? moment(query.appliedDate) : moment(),
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      dataSource: [],
     };
     setIsMounted(true);
   }
@@ -94,14 +93,28 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'medicalItems/GET_DATA',
+      type: 'medicalLogBook/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        this.setStateData({
+          dataSource: response.map((item) => ({
+            ...item,
+            children: item.drinkingTimes.map((itemDrink) => ({
+              ...itemDrink,
+              children: itemDrink.medicineTimes,
+            })),
+          })),
+        });
       },
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        appliedDate: Helper.getDate(search.appliedDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   };
 
@@ -113,12 +126,12 @@ class Index extends PureComponent {
     const { search } = this.state;
     if (search.branchId) {
       dispatch({
-        type: 'medicalItems/GET_CLASSES',
+        type: 'medicalLogBook/GET_CLASSES',
         payload: search,
       });
     }
     dispatch({
-      type: 'medicalItems/GET_BRACHES',
+      type: 'medicalLogBook/GET_BRACHES',
       payload: {},
     });
   };
@@ -184,7 +197,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     this.debouncedSearch(e, type);
     dispatch({
-      type: 'medicalItems/GET_CLASSES',
+      type: 'medicalLogBook/GET_CLASSES',
       payload: {
         branch: e,
       },
@@ -197,7 +210,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.debouncedSearch(Helper.getDate(e, variables.DATE_FORMAT.DATE_AFTER), type);
   };
 
   /**
@@ -230,149 +243,100 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return {
-      size: 'default',
-      total: pagination.total,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(this.state.search.page),
-      current: Number(this.state.search.page),
-      hideOnSinglePage: pagination.total <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, size) => {
-        this.changePagination(page, size);
-      },
-      onShowSizeChange: (current, size) => {
-        this.changePagination(current, size);
-      },
-      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-    };
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'medicalItems/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
-
-  /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
-        title: 'STT',
-        key: 'index',
-        align: 'center',
-        className: 'min-width-60',
-        width: 60,
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        title: 'Trẻ',
+        key: 'student',
+        className: 'min-width-200',
+        width: 200,
+        fixed: 'left',
+        render: (record) =>
+          record.drinkingTimes && (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(
+                record?.medical?.studentMaster?.student?.fileImage,
+              )}
+              fullName={record?.medical?.studentMaster?.student?.fullName}
+            />
+          ),
       },
       {
-        title: 'Thời gian tạo',
-        key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-          </Text>
-        ),
-      },
-      {
-        title: 'Cơ sở',
-        key: 'life',
-        className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
-        ),
-      },
-      {
-        title: 'Lớp',
-        key: 'class',
-        className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
-        ),
-      },
-      {
-        title: 'Tiêu đề',
+        title: 'Tên bệnh',
         key: 'title',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.diseaseName}</Text>,
+        render: (record) => (
+          <Text size="normal">{record.drinkingTimes && record?.medical?.diseaseName}</Text>
+        ),
       },
       {
-        title: 'Phụ huynh',
-        key: 'parents',
+        title: 'Vị trí đặt thuốc',
+        key: 'title',
+        className: 'min-width-150',
+        render: (record) => (
+          <Text size="normal">{record.drinkingTimes && record?.medical?.medicineLocation}</Text>
+        ),
+      },
+      {
+        title: 'Thời gian uống',
+        key: 'title',
         className: 'min-width-150',
         render: (record) => (
           <Text size="normal">
-            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
+            {!record.drinkingTimes && variablesModules.STATUS_TIME_CODE_NAME[record.timeCode]}
           </Text>
         ),
       },
       {
-        title: 'Dành cho bé',
-        key: 'student',
+        title: 'Thuốc',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
+        render: (record) =>
+          !record.children && (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record?.medicine?.files)}
+              fullName={record?.medicine?.name}
+            />
+          ),
       },
       {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-150',
-        render: (record) => HelperModules.tagStatus(record.status),
+        title: 'Đơn vị',
+        key: 'unit',
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => <Text size="normal">{!record.children && record?.medicine?.unit}</Text>,
       },
       {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="success"
-              ghost
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
-          </div>
-        ),
+        title: 'Liều lượng',
+        key: 'medicineAmount',
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => <Text size="normal">{record?.medicineAmount}</Text>,
+      },
+      {
+        title: 'Ghi chú',
+        key: 'note',
+        className: 'min-width-100',
+        width: 100,
+        render: (record) => <Text size="normal">{record?.note}</Text>,
+      },
+      {
+        title: 'Đã nhận',
+        key: 'isReceived',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: (record) => !record.children && <Checkbox checked={record.isReceived} />,
+      },
+      {
+        title: 'Đã cho uống',
+        key: 'isDrunk',
+        className: 'min-width-100',
+        width: 100,
+        align: 'center',
+        render: (record) => !record.children && <Checkbox checked={record.isDrunk} />,
       },
     ];
     return columns;
@@ -380,59 +344,35 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
       error,
       classes,
       branches,
-      pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
-    const { search } = this.state;
-    const loading = effects['medicalItems/GET_DATA'];
+    const { search, dataSource } = this.state;
+    const loading = effects['medicalLogBook/GET_DATA'];
     return (
       <>
-        <Helmet title="Thống kê y tế" />
+        <Helmet title="Danh sách đơn thuốc" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Thống kê y tế</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}
-            >
-              Tạo y tế
-            </Button>
+            <Text color="dark">Danh sách đơn thuốc</Text>
+            <Button color="success">Lưu cập nhật</Button>
           </div>
-          <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
-            <Tabs
-              activeKey={search?.status || variablesModules.STATUS.PENDING}
-              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
-            >
-              {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={item.name} key={item.id} />
-              ))}
-            </Tabs>
+          <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                appliedDate: search.appliedDate && moment(search.appliedDate),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="diseaseName"
-                    onChange={(event) => this.onChange(event, 'diseaseName')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
@@ -451,8 +391,8 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
+                    name="appliedDate"
+                    onChange={(event) => this.onChangeDate(event, 'appliedDate')}
                     type={variables.DATE_PICKER}
                   />
                 </div>
@@ -460,21 +400,17 @@ class Index extends PureComponent {
             </Form>
             <Table
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
               error={error}
               isError={error.isError}
-              pagination={this.pagination(pagination)}
+              pagination={false}
+              defaultExpandAllRows
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              onRow={(record) => ({
-                onClick: () => {
-                  history.push(`${pathname}/${record.id}/chi-tiet`);
-                },
-              })}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record?.medical?.id || record?.timeCode || record?.id}
               scroll={{ x: '100%' }}
             />
           </div>
@@ -486,8 +422,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
@@ -498,8 +432,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
   location: {},

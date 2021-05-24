@@ -56,7 +56,8 @@
     "no-shadow": 0,
     "react/sort-comp": 0,
     "node/no-unsupported-features/es-syntax": 0,
-    "node/no-missing-import": 0
+    "node/no-missing-import": 0,
+    "security/detect-object-injection": 0
   },
   "settings": {
     "polyfills": ["fetch", "promises", "url"]

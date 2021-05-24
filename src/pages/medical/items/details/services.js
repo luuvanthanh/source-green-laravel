@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
   return request(`/medicals/${params.id}`, {
@@ -15,7 +14,7 @@ export function add(data = {}) {
 }
 
 export function updateStatus(data = {}) {
-  return request('/medicals/update-status', {
+  return request('/medicals/update-medicine-time-status', {
     method: 'PUT',
     data,
   });

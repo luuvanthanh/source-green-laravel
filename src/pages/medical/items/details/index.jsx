@@ -3,6 +3,7 @@ import { Form, List } from 'antd';
 import { Helmet } from 'react-helmet';
 import Pane from '@/components/CommonComponent/Pane';
 import { isArray } from 'lodash';
+import classnames from 'classnames';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -10,15 +11,15 @@ import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
-import variablesModules from '../../utils/variables';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import variablesModules from '../../utils/variables';
 
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const dispatch = useDispatch();
   const {
     loading: { effects },
@@ -36,15 +37,15 @@ const Index = memo(({}) => {
   const loading = effects[`medicalItemsDetails/GET_DETAILS`];
   const loadingSubmit = effects[`medicalItemsDetails/UPDATE_STATUS`];
   const mounted = useRef(false);
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
+  // const mountedSet = (action, value) => {
+  //   if (mounted.current) {
+  //     action(value);
+  //   }
+  // };
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted?.current;
   }, []);
 
   useEffect(() => {
@@ -108,9 +109,9 @@ const Index = memo(({}) => {
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <label className={styles.infoLabel}>Học sinh</label>
                   <AvatarTable
-                    fileImage={Helper.getPathAvatarJson(details?.student?.fileImage)}
-                    fullName={details?.student?.fullName}
-                    description={`${details?.student?.age} tháng tuổi`}
+                    fileImage={Helper.getPathAvatarJson(details?.studentMaster?.student?.fileImage)}
+                    fullName={details?.studentMaster?.student?.fullName}
+                    description={`${details?.studentMaster?.student?.age || ''} tháng tuổi`}
                   />
                 </Pane>
 
@@ -120,7 +121,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Cơ sở</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-school'} />
+                          <span className="icon-school" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.studentMaster?.student?.class?.branch?.name || 'Preschool'}
@@ -132,7 +133,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Lớp</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-open-book'} />
+                          <span className="icon-open-book" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.studentMaster?.student?.class?.name || 'Preschool'}
@@ -283,9 +284,9 @@ const Index = memo(({}) => {
                                 JSON.parse(files).map((item) => (
                                   <Pane className="col-lg-3" key={item}>
                                     <img
-                                      className={styles.thumb}
+                                      className={classnames(styles.thumb, 'd-block w-100')}
                                       src={`${API_UPLOAD}${item}`}
-                                      className="d-block w-100"
+                                      alt={item}
                                     />
                                   </Pane>
                                 ))}
