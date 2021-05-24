@@ -1020,13 +1020,6 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Đi trễ về sớm',
-          key: 'lateEarly',
-          url: ['/quan-ly-nhan-su/di-tre-ve-som'],
-          permission: [],
-          pro: true,
-        },
-        {
           title: 'Cấu hình vân tay',
           key: 'fingerprints',
           url: ['/quan-ly-nhan-su/may-cham-cong-van-tay'],
