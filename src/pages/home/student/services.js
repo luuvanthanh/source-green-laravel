@@ -35,3 +35,12 @@ export function getChildInClass(params) {
     }
   });
 }
+
+export function getHealthEveryDay(params = {}) {
+  return request(`/student-criterias/${params.id}/by-student`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}

@@ -6,7 +6,10 @@ export default {
     students: [],
     detailsStudent: {},
     bus: [],
-    childrensInClass: []
+    childrensInClass: [],
+    health: {
+      everyDay: [],
+    }
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -26,6 +29,13 @@ export default {
     SET_DATA_CHILD_IN_CLASS: (state, { payload }) => ({
       ...state,
       childrensInClass: payload.parsePayload,
+    }),
+    SET_DATA_HEALTH_EVERY_DATE: (state, { payload }) => ({
+      ...state,
+      health: {
+        ...state.health,
+        everyDay: payload.parsePayload,
+      }
     }),
   },
   effects: {
@@ -73,6 +83,19 @@ export default {
           type: 'SET_DATA_CHILD_IN_CLASS',
           payload: {
             parsePayload: response.items,
+          },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_HEALTH_EVERY_DAY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHealthEveryDay, payload);
+        yield saga.put({
+          type: 'SET_DATA_HEALTH_EVERY_DATE',
+          payload: {
+            parsePayload: response.studentCriterias,
           },
         });
       } catch (error) {

@@ -58,7 +58,7 @@ const Index = memo(({ studentId }) => {
 
   useEffect(() => {
     fetchDataBus();
-  }, [search.rangeTime, studentId, tab]);
+  }, [search.rangeTime, studentId]);
 
 
   /**
@@ -78,7 +78,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       className: 'min-width-100',
       render: (record) => Helper.getDate(
-        record[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetIn' : 'schoolwardGetOff'}`],
+        record[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetIn' : 'schoolwardGetIn'}`],
         variables.DATE_FORMAT.TIME_FULL
       )
     },
@@ -88,7 +88,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       className: 'min-width-100',
       render: (record) => Helper.getDate(
-        record[`${tab === variablesModules.TABS_BUS[0] ? 'schoolwardGetIn' : 'homewardGetOff'}`],
+        record[`${tab === variablesModules.TABS_BUS[0] ? 'homewardGetOff' : 'schoolwardGetOff'}`],
         variables.DATE_FORMAT.TIME_FULL
       )
     },
