@@ -28,10 +28,6 @@ const Index = memo(() => {
     status: variables.STATUS.CONFIRMING
   });
 
-  useEffect(() => {
-    fetchDataNotes();
-  }, [search.status])
-
   const fetchDataNotes = () => {
     dispatch({
       type: 'overView/GET_DATA_NOTE',
@@ -39,11 +35,15 @@ const Index = memo(() => {
         ...search
       },
     });
-  }
+  };
+
+  useEffect(() => {
+    fetchDataNotes();
+  }, [search.status]);
 
   const cancelModal = () => {
     setVisible(false);
-  }
+  };
 
   const getDetails = (id) => {
     setVisible(true);
@@ -51,14 +51,14 @@ const Index = memo(() => {
       type: 'overView/GET_DETAILS_NOTE',
       payload: { id }
     });
-  }
+  };
 
   const changeTab = (tab) => {
     setSearch((prev) => ({
       ...prev,
       status: tab
     }));
-  }
+  };
 
   return (
     <>
@@ -79,8 +79,9 @@ const Index = memo(() => {
               {
                 !_.isEmpty(detailsNote.fileImage) && (
                   <Image.PreviewGroup>
-                    {fileImage.map((item, index) => (
+                    {detailsNote.fileImage.map((item, index) => (
                       <Image
+                        key={index}
                         width={110}
                         className="mb10"
                         src={`${API_UPLOAD}${Helper.getPathAvatarJson(item)}`}
@@ -94,7 +95,7 @@ const Index = memo(() => {
               <AvatarTable
                 fileImage={Helper.getPathAvatarJson(detailsNote?.student?.studentParents[0]?.parent?.fileImage)}
                 fullName={detailsNote?.student?.studentParents[0]?.parent?.fullName}
-                description={'Phụ huynh'}
+                description="Phụ huynh"
                 size={50}
               />
             </div>
@@ -108,11 +109,11 @@ const Index = memo(() => {
             </div>
             <div className="col-md-6 py20 border-top">
               <div className="d-flex">
-                <span className={styles['circleIcon']}>
-                  <span className={'icon-open-book'} />
+                <span className={styles.circleIcon}>
+                  <span className="icon-open-book" />
                 </span>
                 <div className="ml10">
-                  <p className={classnames('mb0', styles['class'])}>Lớp</p>
+                  <p className={classnames('mb0', styles.class)}>Lớp</p>
                   <p className="font-weight-bold font-size-14 mb0">{detailsNote?.student?.class?.name || ''}</p>
                 </div>
               </div>
@@ -124,7 +125,7 @@ const Index = memo(() => {
                   size={50}
                 />
                 <div className="ml10">
-                  <p className={classnames('mb0', styles['class'])}>Giáo viên</p>
+                  <p className={classnames('mb0', styles.class)}>Giáo viên</p>
                   <p className="font-weight-bold font-size-14 mb0">{detailsNote?.employee?.fullName || ''}</p>
                 </div>
               </div>
@@ -152,7 +153,7 @@ const Index = memo(() => {
         <div className={styles['body-tab']}>
           <div className={styles['header-tab']}>
             <div>
-              <img src={'/images/home/speech.svg'} alt="notification" className={styles['icon']} />
+              <img src='/images/home/speech.svg' alt="notification" className={styles.icon} />
               <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Ghi chú</span>
             </div>
             <p className={classnames('mb0', 'font-size-14')}>15</p>
@@ -163,6 +164,9 @@ const Index = memo(() => {
             ))}
           </Tabs>
           <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
+            {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(notes) && (
+              <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+            )}
             {loading['overView/GET_DATA_NOTE'] ? (
               <>
                 <Skeleton avatar paragraph={{ rows: 4 }} active />
@@ -171,7 +175,12 @@ const Index = memo(() => {
               </>
             ) : (
               notes.map((item, index) => (
-                <div className={styles['content-tab']} key={index} onClick={() => getDetails(item.id)}>
+                <div
+                  className={styles['content-tab']}
+                  key={index}
+                  onClick={() => getDetails(item.id)}
+                  aria-hidden="true"
+                >
                   <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
                     <AvatarTable
                       className="full-name-bold"
@@ -179,7 +188,7 @@ const Index = memo(() => {
                       fullName={item?.student?.fullName}
                       size={36}
                     />
-                    <p className={classnames('mb0', styles['date'])}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                    <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
                   </div>
                   <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.name || ''}</p>
                 </div>

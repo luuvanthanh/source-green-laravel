@@ -28,10 +28,6 @@ const Index = memo(() => {
     status: variables.STATUS.PENDING
   });
 
-  useEffect(() => {
-    fetchDataNotes();
-  }, [search.status])
-
   const fetchDataNotes = () => {
     dispatch({
       type: 'overView/GET_DATA_MEDICAL',
@@ -39,11 +35,15 @@ const Index = memo(() => {
         ...search
       },
     });
-  }
+  };
+
+  useEffect(() => {
+    fetchDataNotes();
+  }, [search.status]);
 
   const cancelModal = () => {
     setVisible(false);
-  }
+  };
 
   const getDetails = (id) => {
     setVisible(true);
@@ -51,15 +51,14 @@ const Index = memo(() => {
       type: 'overView/GET_DETAILS_MEDICAL',
       payload: { id }
     });
-  }
+  };
 
   const changeTab = (tab) => {
     setSearch((prev) => ({
       ...prev,
       status: tab
     }));
-  }
-
+  };
 
   /**
    * Function header table
@@ -69,21 +68,21 @@ const Index = memo(() => {
       'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
       'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg',
       'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-    ]
+    ];
     return [
       {
         title: 'Thời gian uống',
         key: 'creationTime',
         className: 'min-width-140',
         width: 140,
-        render: (record) => {Helper.getDate(record.appliedDate, variables.DATE_FORMAT.TIME_DATE)}
+        render: (record) => {Helper.getDate(record.appliedDate, variables.DATE_FORMAT.TIME_DATE);}
       },
       {
         title: 'Thuốc',
         key: 'image',
         className: 'min-width-300',
         width: 300,
-        render: (record) => (
+        render: () => (
           <div className="d-flex align-items-center">
             <Image.PreviewGroup>
               {
@@ -114,7 +113,7 @@ const Index = memo(() => {
         key: 'amount',
         className: 'min-width-120',
         width: 120,
-        render: (record) => ''
+        render: () => ''
       },
       {
         title: 'Ghi chú',
@@ -162,7 +161,7 @@ const Index = memo(() => {
         className={styles['modal-student-detail']}
         visible={visible}
         title="Y tế"
-        width={"90%"}
+        width="90%"
         onCancel={cancelModal}
         footer={null}
       >
@@ -172,7 +171,7 @@ const Index = memo(() => {
               <AvatarTable
                 fileImage={Helper.getPathAvatarJson(detailsMedical?.studentMaster?.farther?.fileImage || detailsMedical?.studentMaster?.mother?.fileImage)}
                 fullName={detailsMedical?.studentMaster?.farther?.fullName || detailsMedical?.studentMaster?.mother?.fullName}
-                description={'Phụ huynh'}
+                description="Phụ huynh"
                 size={50}
               />
             </div>
@@ -186,11 +185,11 @@ const Index = memo(() => {
             </div>
             <div className="col-lg-3 mt10">
               <div className="d-flex">
-                <span className={styles['circleIcon']}>
-                  <span className={'icon-open-book'} />
+                <span className={styles.circleIcon}>
+                  <span className="icon-open-book" />
                 </span>
                 <div className="ml10">
-                  <p className={classnames('mb0', styles['class'])}>Lớp</p>
+                  <p className={classnames('mb0', styles.class)}>Lớp</p>
                   <p className="font-weight-bold font-size-14 mb0">{detailsMedical?.studentMaster?.student?.class?.name || 'Preschool'}</p>
                 </div>
               </div>
@@ -202,7 +201,7 @@ const Index = memo(() => {
                   size={50}
                 />
                 <div className="ml10">
-                  <p className={classnames('mb0', styles['class'])}>Giáo viên</p>
+                  <p className={classnames('mb0', styles.class)}>Giáo viên</p>
                   <p className="font-weight-bold font-size-14 mb0">{detailsMedical?.studentMaster?.student?.employee?.fullName || ''}</p>
                 </div>
               </div>
@@ -245,7 +244,7 @@ const Index = memo(() => {
         <div className={styles['body-tab']}>
           <div className={styles['header-tab']}>
             <div>
-              <img src={'/images/home/balloons.svg'} alt="notification" className={styles['icon']} />
+              <img src="/images/home/balloons.svg" alt="notification" className={styles.icon} />
               <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Y tế</span>
             </div>
             <p className={classnames('mb0', 'font-size-14')}>15</p>
@@ -256,6 +255,9 @@ const Index = memo(() => {
             ))}
           </Tabs>
           <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
+            {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(medicals) && (
+              <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+            )}
             {loading['overView/GET_DATA_MEDICAL'] ? (
               <>
                 <Skeleton avatar paragraph={{ rows: 4 }} active />
@@ -264,7 +266,12 @@ const Index = memo(() => {
               </>
             ) : (
               medicals.map((item, index) => (
-                <div className={styles['content-tab']} key={index} onClick={() => getDetails(item?.id)}>
+                <div
+                  className={styles['content-tab']}
+                  key={index}
+                  onClick={() => getDetails(item?.id)}
+                  aria-hidden="true"
+                >
                   <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
                     <AvatarTable
                       className="full-name-bold"
@@ -272,7 +279,7 @@ const Index = memo(() => {
                       fullName={item?.student?.fullName}
                       size={36}
                     />
-                    <p className={classnames('mb0', styles['date'])}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                    <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
                   </div>
                   <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.diseaseName || ''}</p>
                 </div>

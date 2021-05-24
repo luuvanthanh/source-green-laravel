@@ -145,6 +145,7 @@ export const variables = {
     HAVE_IN: 'Đã vào lớp',
     HAVE_OUT: 'Ra về',
   },
+  NO_DATA: 'Không có dữ liệu'
 };
 
 export default variables;
