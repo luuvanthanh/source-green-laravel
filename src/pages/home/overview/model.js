@@ -37,7 +37,9 @@ export default {
             parsePayload: response.items,
           },
         });
-      } catch (error) {}
+      } catch (error) {
+        // continue regardless of error
+      }
     },
     *GET_DETAILS_NOTE({ payload }, saga) {
       try {
@@ -46,7 +48,9 @@ export default {
           type: 'SET_DATA_DETAILS_NOTE',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        // continue regardless of error
+      }
     },
     *GET_DATA_MEDICAL({ payload }, saga) {
       try {
@@ -57,7 +61,9 @@ export default {
             parsePayload: response.items,
           },
         });
-      } catch (error) {}
+      } catch (error) {
+        // continue regardless of error
+      }
     },
     *GET_DETAILS_MEDICAL({ payload }, saga) {
       try {
@@ -66,7 +72,9 @@ export default {
           type: 'SET_DATA_DETAILS_MEDICAL',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        // continue regardless of error
+      }
     }
   },
   subscriptions: {},

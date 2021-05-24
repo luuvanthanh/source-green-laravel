@@ -12,7 +12,7 @@ import styles from './index.scss';
 import variablesModules from './variables';
 import Overview from './overview';
 import Application from './application';
-import Student from './student'
+import Student from './student';
 
 const { TabPane } = Tabs;
 const tables = {
@@ -45,7 +45,6 @@ class HomePage extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { user } = props;
     this.state = {
       branches: [],
       branch: '',
@@ -90,7 +89,7 @@ class HomePage extends PureComponent {
     this.setState(state, callback);
   };
 
-  fetchClasses = (branchId) => {
+  fetchClasses = () => {
   }
 
   changeTab = (tab) => {
@@ -102,12 +101,12 @@ class HomePage extends PureComponent {
     return (
       <div className={styles.container}>
         <div className={styles.title}>Lake View</div>
-        <div className={styles['flex']}>
+        <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
             <div className={styles['date-header']}>16/05</div>
             <Form layout="vertical" ref={this.formRef} initialValues={{ branch }} >
               <FormItem
-                className={classnames('mb0', styles['select'])}
+                className={classnames('mb0', styles.select)}
                 name="branch"
                 type={variables.SELECT}
                 placeholder="Chọn cơ sở"
@@ -126,7 +125,7 @@ class HomePage extends PureComponent {
               ))}
             </Tabs>
           </div>
-          {tables[tab]}
+          {tables[`${tab}`]}
         </div>
       </div>
     );
@@ -135,14 +134,10 @@ class HomePage extends PureComponent {
 
 HomePage.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
 };
 
 HomePage.defaultProps = {
   dispatch: {},
-  loading: {},
-  location: {},
 };
 
 export default HomePage ;
