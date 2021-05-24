@@ -1464,6 +1464,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/y-te/so-theo-doi',
+            component: './medical/logbook',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       {

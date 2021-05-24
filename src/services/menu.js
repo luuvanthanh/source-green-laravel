@@ -639,6 +639,14 @@ export async function getLeftMenuMedical() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Sổ theo dõi',
+      key: 'logbook',
+      url: ['/y-te/so-theo-doi'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {

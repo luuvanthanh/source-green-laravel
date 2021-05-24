@@ -4,8 +4,8 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
-import { find, omit, isEmpty, head } from 'lodash';
-import { history, useParams } from 'umi';
+import { find, omit } from 'lodash';
+import { history } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -15,20 +15,18 @@ import { useSelector, useDispatch } from 'dva';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/information.module.scss';
-import variablesModules from '../../utils/variables';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import InfiniteScroll from 'react-infinite-scroller';
+import variablesModules from '../../utils/variables';
 
 const { Item: ListItem } = List;
 const { List: FormList, Item: FormItemAntd } = Form;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const formRef = useRef();
   const {
-    user,
     loading: { effects },
-    error,
     menuData,
     branches,
     classes,
@@ -40,7 +38,6 @@ const Index = memo(({}) => {
     menuData: menu.menuLeftMedical,
   }));
   const dispatch = useDispatch();
-  const params = useParams();
   const loading =
     effects[`medicalItemsAdd/GET_DETAILS`] || effects[`medicalItemsAdd/GET_EMPLOYEES`];
   const loadingSubmit = effects[`medicalItemsAdd/ADD`] || effects[`medicalItemsAdd/UPDATE`];
@@ -76,7 +73,7 @@ const Index = memo(({}) => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted?.current;
   }, []);
 
   useEffect(() => {
@@ -105,7 +102,7 @@ const Index = memo(({}) => {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           mountedSet(setStudents, response.items);
           mountedSet(setSearchStudents, {
@@ -127,7 +124,7 @@ const Index = memo(({}) => {
       payload: {
         ...searchStudents,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           mountedSet(setLoadingStudents, false);
           mountedSet(setStudents, response.items);
@@ -188,7 +185,7 @@ const Index = memo(({}) => {
       appliedDateTo: values.appliedDate[1],
       medicines: values.medicines.map((item, index) => {
         let medicineTimes = [];
-        Object.keys(item.pillTimeNote).map(function (key) {
+        Object.keys(item.pillTimeNote).forEach((key) => {
           medicineTimes = [
             ...medicineTimes,
             {
@@ -392,7 +389,7 @@ const Index = memo(({}) => {
                                 />
                               </Pane>
 
-                              <Pane className="col-lg-12">
+                              <Pane className="col-lg-12 checkbox-group-container">
                                 <FormItem
                                   label="Thời gian uống"
                                   name={[name, 'pillTimes']}
