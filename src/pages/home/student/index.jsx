@@ -13,7 +13,7 @@ import styles from '../index.scss';
 import variablesModules from '../variables';
 import BusComponent from './bus';
 import ChildrenComponent from './children';
-import HealthComponent from '../health';
+import HealthComponent from './health';
 import NoteComponent from '../note';
 import MedicalComponent from '../medical';
 
@@ -82,7 +82,7 @@ const Index = memo(() => {
         return <ChildrenComponent studentId={studentId} />;
 
       case 'health':
-        return <HealthComponent />;
+        return <HealthComponent studentId={studentId} />;
 
       case 'note':
         return <NoteComponent />;
