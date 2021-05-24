@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Input } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -49,10 +49,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        diseaseName: query?.diseaseName,
         branchId: query?.branchId,
+        timeCode: query?.timeCode,
         appliedDate: query?.appliedDate ? moment(query.appliedDate) : moment(),
-        status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -99,11 +98,17 @@ class Index extends PureComponent {
       },
       callback: (response) => {
         this.setStateData({
-          dataSource: response.map((item) => ({
+          dataSource: response.map((item, index) => ({
             ...item,
+            level: 1,
             children: item.drinkingTimes.map((itemDrink) => ({
               ...itemDrink,
-              children: itemDrink.medicineTimes,
+              level: 2,
+              children: itemDrink.medicineTimes.map((itemMedicine) => ({
+                ...itemMedicine,
+                level: 3,
+                parentId: index,
+              })),
             })),
           })),
         });
@@ -242,6 +247,96 @@ class Index extends PureComponent {
     );
   };
 
+  onChangeReceived = (event, record) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item, index) => {
+        if (index === record.parentId) {
+          return {
+            ...item,
+            children: item.children.map((itemChildren) => {
+              if (itemChildren.timeCode === record.timeCode) {
+                return {
+                  ...itemChildren,
+                  children: itemChildren.children.map((itemMedicine) => {
+                    if (itemMedicine.id === record.id) {
+                      return {
+                        ...itemMedicine,
+                        isReceived: event.target.checked,
+                      };
+                    }
+                    return itemMedicine;
+                  }),
+                };
+              }
+              return itemChildren;
+            }),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeDrunk = (event, record) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item, index) => {
+        if (index === record.parentId) {
+          return {
+            ...item,
+            children: item.children.map((itemChildren) => {
+              if (itemChildren.timeCode === record.timeCode) {
+                return {
+                  ...itemChildren,
+                  children: itemChildren.children.map((itemMedicine) => {
+                    if (itemMedicine.id === record.id) {
+                      return {
+                        ...itemMedicine,
+                        isDrunk: event.target.checked,
+                      };
+                    }
+                    return itemMedicine;
+                  }),
+                };
+              }
+              return itemChildren;
+            }),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeNote = (event, record) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item, index) => {
+        if (index === record.parentId) {
+          return {
+            ...item,
+            children: item.children.map((itemChildren) => {
+              if (itemChildren.timeCode === record.timeCode) {
+                return {
+                  ...itemChildren,
+                  children: itemChildren.children.map((itemMedicine) => {
+                    if (itemMedicine.id === record.id) {
+                      return {
+                        ...itemMedicine,
+                        note: event.target.value,
+                      };
+                    }
+                    return itemMedicine;
+                  }),
+                };
+              }
+              return itemChildren;
+            }),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
   /**
    * Function header table
    */
@@ -285,14 +380,15 @@ class Index extends PureComponent {
         className: 'min-width-150',
         render: (record) => (
           <Text size="normal">
-            {!record.drinkingTimes && variablesModules.STATUS_TIME_CODE_NAME[record.timeCode]}
+            {record.level === 2 && variablesModules.STATUS_TIME_CODE_NAME[record.timeCode]}
           </Text>
         ),
       },
       {
         title: 'Thuốc',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-200',
+        width: 200,
         render: (record) =>
           !record.children && (
             <AvatarTable
@@ -306,6 +402,7 @@ class Index extends PureComponent {
         key: 'unit',
         className: 'min-width-100',
         width: 100,
+        align: 'center',
         render: (record) => <Text size="normal">{!record.children && record?.medicine?.unit}</Text>,
       },
       {
@@ -313,14 +410,8 @@ class Index extends PureComponent {
         key: 'medicineAmount',
         className: 'min-width-100',
         width: 100,
+        align: 'center',
         render: (record) => <Text size="normal">{record?.medicineAmount}</Text>,
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => <Text size="normal">{record?.note}</Text>,
       },
       {
         title: 'Đã nhận',
@@ -328,7 +419,13 @@ class Index extends PureComponent {
         className: 'min-width-100',
         width: 100,
         align: 'center',
-        render: (record) => !record.children && <Checkbox checked={record.isReceived} />,
+        render: (record) =>
+          !record.children && (
+            <Checkbox
+              checked={record.isReceived}
+              onChange={(event) => this.onChangeReceived(event, record)}
+            />
+          ),
       },
       {
         title: 'Đã cho uống',
@@ -336,10 +433,56 @@ class Index extends PureComponent {
         className: 'min-width-100',
         width: 100,
         align: 'center',
-        render: (record) => !record.children && <Checkbox checked={record.isDrunk} />,
+        render: (record) =>
+          !record.children && (
+            <Checkbox
+              checked={record.isDrunk}
+              onChange={(event) => this.onChangeDrunk(event, record)}
+            />
+          ),
+      },
+      {
+        title: 'Ghi chú',
+        key: 'note',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          !record.children && (
+            <Input value={record.note} onChange={(event) => this.onChangeNote(event, record)} />
+          ),
       },
     ];
     return columns;
+  };
+
+  onSave = () => {
+    const { dataSource } = this.state;
+    let data = [];
+    dataSource.forEach((item) => {
+      item.children.forEach((itemChildren) => {
+        itemChildren.children.forEach((itemMedicine) => {
+          data = [
+            ...data,
+            {
+              medicalId: item?.medical?.id,
+              medicineTimeId: itemMedicine.id,
+              isReceived: itemMedicine.isReceived,
+              isDrunk: itemMedicine.isDrunk,
+              note: itemMedicine.note,
+            },
+          ];
+        });
+      });
+    });
+    this.props.dispatch({
+      type: 'medicalLogBook/UPDATE',
+      payload: data,
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
   };
 
   render() {
@@ -352,6 +495,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search, dataSource } = this.state;
     const loading = effects['medicalLogBook/GET_DATA'];
+    const loadingSubmit = effects['medicalLogBook/UPDATE'];
     return (
       <>
         <Helmet title="Danh sách đơn thuốc" />
@@ -359,7 +503,9 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách đơn thuốc</Text>
-            <Button color="success">Lưu cập nhật</Button>
+            <Button color="success" onClick={this.onSave} loading={loadingSubmit}>
+              Lưu cập nhật
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -367,12 +513,21 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                timeCode: search.classId || null,
                 appliedDate: search.appliedDate && moment(search.appliedDate),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="appliedDate"
+                    onChange={(event) => this.onChangeDate(event, 'appliedDate')}
+                    type={variables.DATE_PICKER}
+                    allowClear={false}
+                  />
+                </div>
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Tất cả cơ sở ' }, ...branches]}
@@ -391,9 +546,16 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="appliedDate"
-                    onChange={(event) => this.onChangeDate(event, 'appliedDate')}
-                    type={variables.DATE_PICKER}
+                    data={[
+                      { id: null, name: 'Tất cả thời gian' },
+                      ...variablesModules.STATUS_TIME_CODE.map((item) => ({
+                        id: item.value,
+                        name: item.label,
+                      })),
+                    ]}
+                    name="timeCode"
+                    onChange={(event) => this.onChangeSelect(event, 'timeCode')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>

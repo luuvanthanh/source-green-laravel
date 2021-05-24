@@ -18,3 +18,10 @@ export function get(params = {}) {
     },
   });
 }
+
+export function update(data = {}) {
+  return request('/medicals/update-medicine-time-status', {
+    method: 'PUT',
+    data,
+  });
+}

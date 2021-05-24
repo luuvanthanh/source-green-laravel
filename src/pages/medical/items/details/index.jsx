@@ -1,12 +1,10 @@
 import { memo, useRef, useEffect } from 'react';
-import { Form, List } from 'antd';
+import { List } from 'antd';
 import { Helmet } from 'react-helmet';
 import Pane from '@/components/CommonComponent/Pane';
 import { isArray } from 'lodash';
 import classnames from 'classnames';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
@@ -33,9 +31,7 @@ const Index = memo(() => {
     menuData: menu.menuLeftMedical,
   }));
   const params = useParams();
-  const formRef = useRef();
   const loading = effects[`medicalItemsDetails/GET_DETAILS`];
-  const loadingSubmit = effects[`medicalItemsDetails/UPDATE_STATUS`];
   const mounted = useRef(false);
   // const mountedSet = (action, value) => {
   //   if (mounted.current) {
@@ -56,24 +52,6 @@ const Index = memo(() => {
       });
     }
   }, [params.id]);
-
-  const onFinish = (values) => {
-    dispatch({
-      type: 'medicalItemsDetails/UPDATE_STATUS',
-      payload: {
-        ...values,
-        id: params.id,
-      },
-      callback: (response) => {
-        if (response) {
-          dispatch({
-            type: 'medicalItemsDetails/GET_DETAILS',
-            payload: params,
-          });
-        }
-      },
-    });
-  };
 
   return (
     <>
@@ -142,44 +120,6 @@ const Index = memo(() => {
                     </Pane>
                   </Pane>
                 </Pane>
-
-                <Pane style={{ padding: 20 }}>
-                  <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-                    <Pane className="row">
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Trạng thái nhận thuốc"
-                          type={variables.SELECT}
-                          name="receivingStatus"
-                          data={variablesModules.STATUS_MEDICAL_RECEIVING}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Trạng thái cho uống"
-                          type={variables.SELECT}
-                          name="drinkingStatus"
-                          data={variablesModules.STATUS_MEDICAL_DRINKING}
-                        />
-                      </Pane>
-
-                      <Pane className="col-lg-12">
-                        <FormItem label="Ghi chú" name="note" type={variables.INPUT} />
-                      </Pane>
-
-                      <Pane className="col-lg-12">
-                        <Button
-                          color="success"
-                          htmlType="submit"
-                          style={{ marginLeft: 'auto' }}
-                          loading={loadingSubmit}
-                        >
-                          Cập nhật
-                        </Button>
-                      </Pane>
-                    </Pane>
-                  </Form>
-                </Pane>
               </Pane>
 
               <Pane className="card">
@@ -187,9 +127,9 @@ const Index = memo(() => {
                   dataSource={details?.medicalLogs || []}
                   renderItem={(item) => (
                     <ListItem key={item.id} className={styles.listItem}>
-                      <Pane style={{ padding: 20, width: '100%' }} className="row">
+                      <Pane style={{ padding: '0px 20px', width: '100%' }} className="row">
                         <Pane className="col-md-5">
-                          <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
+                          <Heading type="form-sub-title">
                             {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                           </Heading>
                         </Pane>
