@@ -2,13 +2,11 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get, toNumber, last } from 'lodash';
+import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -49,14 +47,14 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         branchId: query.branchId,
         classId: query.classId,
         studentId: query.studentId,
         propertyId: query.propertyId,
-        fromDate: '2021-05-01',
-        toDate: '2021-05-20',
+        fromDate:
+          query?.fromDate && moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        toDate: query?.toDate && moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
       },
       series: [
         {
@@ -94,9 +92,7 @@ class Index extends PureComponent {
         xaxis: {
           type: 'datetime',
           labels: {
-            formatter: (value) => {
-              return moment(value).format('DD/MM');
-            },
+            formatter: (value) => moment(value).format('DD/MM'),
           },
         },
         yaxis: {
@@ -108,9 +104,7 @@ class Index extends PureComponent {
             offsetX: 0,
             offsetY: 0,
             rotate: 0,
-            formatter: (value) => {
-              return moment().startOf('day').seconds(value).format('HH:mm');
-            },
+            formatter: (value) => moment().startOf('day').seconds(value).format('HH:mm'),
           },
         },
       },
@@ -142,10 +136,10 @@ class Index extends PureComponent {
   };
 
   getMiliseconds = (date) => {
-    var a = date.split(':'); // split it at the colons
+    const a = date.split(':'); // split it at the colons
 
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
-    var seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
+    const seconds = +a[0] * 60 * 60 + +a[1] * 60 + +a[2];
     return seconds;
   };
 
@@ -165,8 +159,8 @@ class Index extends PureComponent {
       callback: (response) => {
         if (response) {
           let items = [];
-          response.map((item) => {
-            item.history.map((itemHistory) => {
+          response.forEach((item) => {
+            item.history.forEach((itemHistory) => {
               items = [
                 ...items,
                 [
@@ -197,6 +191,7 @@ class Index extends PureComponent {
       query: Helper.convertParamSearch(search),
     });
   };
+
   /**
    * Function load data
    */
@@ -245,6 +240,24 @@ class Index extends PureComponent {
       () => this.onLoad(),
     );
   }, 300);
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          fromDate,
+          toDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
 
   /**
    * Function change input
@@ -300,6 +313,18 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
+  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -319,25 +344,17 @@ class Index extends PureComponent {
     );
   };
 
-  hms = (seconds) => {
-    return [3600, 60]
+  hms = (seconds) =>
+    [3600, 60]
       .reduceRight(
         (p, b) => (r) => [Math.floor(r / b)].concat(p(r % b)),
         (r) => [r],
       )(seconds)
       .map((a) => a.toString().padStart(2, '0'))
       .join(':');
-  };
 
   render() {
-    const {
-      students,
-      branches,
-      classes,
-      criteriaGroupProperties,
-      match: { params },
-      loading: { effects },
-    } = this.props;
+    const { students, branches, classes, criteriaGroupProperties } = this.props;
     const { search } = this.state;
     return (
       <>
@@ -351,6 +368,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                date: search.fromDate &&
+                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -391,6 +410,13 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                  />
+                </div>
               </div>
             </Form>
             <div id="chart">
@@ -409,21 +435,21 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  criteriaGroupProperties: PropTypes.arrayOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
-  loading: {},
   dispatch: {},
   location: {},
+  criteriaGroupProperties: [],
+  students: [],
+  branches: [],
+  classes: [],
 };
 
 export default Index;
