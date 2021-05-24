@@ -502,6 +502,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
 
             foreach ($shiftDetail as $key => $detail) {
                 $shiftDetail[$key]['ShiftCode'] = $value->shift->ShiftCode;
+                $shiftDetail[$key]['ShiftName'] = $value->shift->Name;
             }
 
             foreach ($workDate as $day) {

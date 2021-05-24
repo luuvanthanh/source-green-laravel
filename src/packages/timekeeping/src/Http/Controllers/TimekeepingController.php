@@ -110,4 +110,18 @@ class TimekeepingController extends Controller
 
         return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function invalidTimekeeping(Request $request)
+    {
+        $employeesByStore = $this->timekeepingRepository->invalidTimekeeping($request->all());
+
+        return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));
+    }
+
 }

@@ -60,6 +60,7 @@ class UserTransformer extends BaseTransformer
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
+            'responseInvalid' => $model->responseInvalid,
             'Status' => $status,
         ];
 

@@ -88,12 +88,12 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Đi trễ về sớm',
             ]);
 
-            \Route::get('timekeeping-invalid', [
-                'comment' => 'Tổng hợp công không xác định',
-                'uses' => 'LateEarlyController@invalidTimekeeping',
-                'as' => 'timekeeping.invalid.summary',
-                'group' => 'Công',
-            ]);
+            // \Route::get('timekeeping-invalid', [
+            //     'comment' => 'Tổng hợp công không xác định',
+            //     'uses' => 'LateEarlyController@invalidTimekeeping',
+            //     'as' => 'timekeeping.invalid.summary',
+            //     'group' => 'Công',
+            // ]);
 
         });
     }
