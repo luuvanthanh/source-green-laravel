@@ -506,17 +506,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
     }
 
     /**
-     * Convert hour to minutes
-     * @param $time
-     * @return float|int
-     */
-    public function hourToMinutes($time)
-    {
-        $timesplit = explode(':', $time);
-        return ($timesplit[0] * 60) + ($timesplit[1]) + ($timesplit[2] > 30 ? 1 : 0);
-    }
-
-    /**
      * Calculator Absents
      * @param object $employee
      * @param string $startDate
@@ -564,7 +553,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function calculatorBusinessTravel(&$employee, $startDate, $endDate, $responseTimeKeepingUser)
     {
-
         $businessCards = $employee->businessCard()->whereHas('businessCardDetail', function ($query) use ($startDate, $endDate) {
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
         })->whereHas('absentType', function ($query) {
@@ -596,5 +584,33 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         return $responseTimeKeepingUser;
+    }
+
+    public function invalidTimekeeping(array $attributes)
+    {
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['timekeeping' => function ($query) use ($attribute) {
+            if (!empty($attribute['type'])) {
+                $query->where('Type', $attribute['type']);
+            }
+
+            if (!empty($attribute['deviceId'])) {
+                $query->where('DeviceId', $attribute['deviceId']);
+            }
+
+            if (!empty($attribute['startDate']) && !empty($attribute['endDate'])) {
+                $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
+                    ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
+            };
+        }]);
+
+        if (!empty($attribute['EmployeeId'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
+                $query->whereIn('EmployeeId', explode(',', $attribute['EmployeeId']));
+            });
+        }
+
+        $timekeeping = !empty($attribute['limit']) ? $this->employeeRepositoryEloquent->paginate($attribute['limit']) : $this->employeeRepositoryEloquent->get();
+
+        return $timekeeping;
     }
 }

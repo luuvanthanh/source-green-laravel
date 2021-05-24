@@ -51,6 +51,13 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'timekeeping.summary',
                 'group' => 'Công',
             ]);
+
+            \Route::get('timekeeping-invalid', [
+                'comment' => 'Tổng hợp công không xác định',
+                'uses' => 'TimekeepingController@invalidTimekeeping',
+                'as' => 'timekeeping.invalid.summary',
+                'group' => 'Công',
+            ]);
         });
     }
 
