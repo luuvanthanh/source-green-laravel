@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -78,6 +79,22 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Cập nhật thất bại',
+        });
+        callback(null, error?.data?.error);
       }
     },
   },
