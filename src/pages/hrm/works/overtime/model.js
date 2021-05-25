@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'works',
+  namespace: 'worksOvertime',
   state: {
     data: [],
     pagination: {},

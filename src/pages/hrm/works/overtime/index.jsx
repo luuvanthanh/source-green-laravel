@@ -30,10 +30,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ works, loading }) => ({
-  data: works.data,
-  pagination: works.pagination,
-  error: works.error,
+const mapStateToProps = ({ worksOvertime, loading }) => ({
+  data: worksOvertime.data,
+  pagination: worksOvertime.pagination,
+  error: worksOvertime.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -89,7 +89,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'works/GET_DATA',
+      type: 'worksOvertime/GET_DATA',
       payload: {
         ...search,
       },
@@ -281,7 +281,7 @@ class Index extends PureComponent {
     )}`;
   };
 
-  renderWorkShift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
+  renderworksOvertimehift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
       if (get(data, 'type')) return data.type;
@@ -301,13 +301,13 @@ class Index extends PureComponent {
     const { search } = this.state;
     const headerWork = [
       {
-        title: 'Thực công',
+        title: 'Tổng cộng',
         key: 'date_work',
         align: 'center',
         width: 100,
         fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
-        render: (record) => record.totalWorks,
+        render: (record) => record.totalworksOvertime,
       },
     ];
     const arrayHeader = [
@@ -338,7 +338,7 @@ class Index extends PureComponent {
           align: 'center',
           render: (record) => (
             <Link className={styles['item-schedules']} to={this.redirectHistory(item, record)}>
-              {this.renderWorkShift(record.timeKeepingReport, currentDate)}
+              {this.renderworksOvertimehift(record.timeKeepingReport, currentDate)}
             </Link>
           ),
         };
@@ -356,14 +356,14 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['works/GET_DATA'];
+    const loading = effects['worksOvertime/GET_DATA'];
     return (
       <>
-        <Helmet title="Tổng hợp công" />
-        <div className={classnames(styles['content-form'], styles['content-form-works'])}>
+        <Helmet title="Tổng hợp công thêm ngoài giờ" />
+        <div className={classnames(styles['content-form'], styles['content-form-worksOvertime'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Tổng hợp công</Text>
+            <Text color="dark">Tổng hợp công thêm ngoài giờ</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

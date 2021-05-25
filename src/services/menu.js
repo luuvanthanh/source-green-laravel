@@ -1128,6 +1128,20 @@ export async function getLeftMenuHRM() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Bảng chấm công thêm ngoài giờ',
+          key: 'totalOvertime',
+          url: ['/quan-ly-nhan-su/bang-cham-cong-them-ngoai-gio'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Bảng chấm công xe bus',
+          key: 'totalBus',
+          url: ['/quan-ly-nhan-su/bang-cham-cong-xe-bus'],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
