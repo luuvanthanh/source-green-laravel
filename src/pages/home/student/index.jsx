@@ -15,7 +15,7 @@ import BusComponent from './bus';
 import ChildrenComponent from './children';
 import HealthComponent from './health';
 import NoteComponent from './note';
-import MedicalComponent from '../medical';
+import MedicalComponent from './medical';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
@@ -88,7 +88,7 @@ const Index = memo(() => {
         return <NoteComponent studentId={studentId} />;
 
       case 'medical':
-        return <MedicalComponent />;
+        return <MedicalComponent studentId={studentId} />;
 
       default:
         return null;

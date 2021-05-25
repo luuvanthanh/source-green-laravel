@@ -13,7 +13,9 @@ export default {
     },
     criteriaGroupProperties: [],
     notes: [],
-    paginationNote: {}
+    paginationNote: {},
+    medicals: [],
+    paginationMedical: {}
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -56,6 +58,11 @@ export default {
       ...state,
       notes: payload.parsePayload,
       paginationNote: payload.pagination,
+    }),
+    SET_DATA_MEDICAL: (state, { payload }) => ({
+      ...state,
+      medicals: payload.parsePayload,
+      paginationMedical: payload.pagination,
     }),
   },
   effects: {
@@ -162,7 +169,23 @@ export default {
           payload: {
             parsePayload: response.items,
             pagination: {
-              total: response.totalCount,
+              total: response.totalCount || 0,
+            },
+          },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_MEDICAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getMedical, payload);
+        yield saga.put({
+          type: 'SET_DATA_MEDICAL',
+          payload: {
+            parsePayload: response,
+            pagination: {
+              total: response.totalCount || 0,
             },
           },
         });
