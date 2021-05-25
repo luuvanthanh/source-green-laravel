@@ -9,6 +9,7 @@ export default {
     childrensInClass: [],
     health: {
       everyDay: [],
+      history: []
     }
   },
   reducers: {
@@ -35,6 +36,13 @@ export default {
       health: {
         ...state.health,
         everyDay: payload.parsePayload,
+      }
+    }),
+    SET_DATA_HEALTH_HISTORY: (state, { payload }) => ({
+      ...state,
+      health: {
+        ...state.health,
+        history: payload.parsePayload,
       }
     }),
   },
@@ -96,6 +104,19 @@ export default {
           type: 'SET_DATA_HEALTH_EVERY_DATE',
           payload: {
             parsePayload: response.studentCriterias,
+          },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_HEALTH_HISTORY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getHealthHistory, payload);
+        yield saga.put({
+          type: 'SET_DATA_HEALTH_HISTORY',
+          payload: {
+            parsePayload: response || [],
           },
         });
       } catch (error) {
