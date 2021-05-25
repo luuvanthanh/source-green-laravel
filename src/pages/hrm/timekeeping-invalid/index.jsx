@@ -198,7 +198,7 @@ class Index extends PureComponent {
             variables.DATE_FORMAT.DATE_TIME,
           )}`;
         }
-        return '';
+        return Helper.getDateLocal(item.attendedAt, variables.DATE_FORMAT.DATE_TIME);
       });
       return timekeeping.map((item, index) => (
         <span key={index}>
@@ -258,11 +258,11 @@ class Index extends PureComponent {
               <br />
               Ca sáng:
               <br />
-              {get(record, 'shift[0].startTime') || get(record, 'shift[0].endTime')}
+              {get(record, 'shift[0].startTime')} - {get(record, 'shift[0].endTime')}
               <br />
               Ca chiều:
               <br />
-              {get(record, 'shift[1].startTime') || get(record, 'shift[1].endTime')}
+              {get(record, 'shift[1].startTime')} - {get(record, 'shift[1].endTime')}
             </div>
           );
         }
