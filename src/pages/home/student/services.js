@@ -44,3 +44,12 @@ export function getHealthEveryDay(params = {}) {
     },
   });
 }
+
+export function getHealthHistory(params = {}) {
+  return request('/student-criterias/history-by-student', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}

@@ -80,6 +80,7 @@ export const variables = {
     TIME_DATE_VI: 'HH:mm, DD/MM/YYYY',
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
     DATE_MONTH: 'DD/MM',
+    SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
