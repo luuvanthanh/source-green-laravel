@@ -59,7 +59,8 @@
     "node/no-missing-import": 0,
     "security/detect-object-injection": 0,
     "import/no-extraneous-dependencies": 0,
-    "node/no-extraneous-import": 0
+    "node/no-extraneous-import": 0,
+    "react/jsx-props-no-spreading": 0
   },
   "settings": {
     "polyfills": ["fetch", "promises", "url"]

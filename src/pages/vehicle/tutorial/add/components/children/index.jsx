@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { isEmpty, head, omit } from 'lodash';
-import { Modal, Avatar } from 'antd';
+import { Modal } from 'antd';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
@@ -9,7 +8,7 @@ import PropTypes from 'prop-types';
 import TableTransfer from '@/components/CommonComponent/TableTransfer';
 import Text from '@/components/CommonComponent/Text';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import { variables, Helper } from '@/utils';
+import { Helper } from '@/utils';
 
 let isMounted = true;
 /**
@@ -74,9 +73,7 @@ class Index extends PureComponent {
 
   onSubmit = () => {
     const { targetKeys, listId, dataSource } = this.state;
-    const users = dataSource.filter(function (item) {
-      return targetKeys.includes(item.key);
-    });
+    const users = dataSource.filter((item) => targetKeys.includes(item.key));
     this.props.onSave(
       users.map((item) => ({ ...item })),
       listId,
@@ -101,14 +98,12 @@ class Index extends PureComponent {
         title: 'HỌC SINH',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record.fileImage)}
-              fullName={record.fullName}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'ĐỊA CHỈ',
@@ -122,7 +117,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      students,
       loading: { effects },
     } = this.props;
     const { targetKeys, dataSource } = this.state;
@@ -130,7 +124,7 @@ class Index extends PureComponent {
     return (
       <Modal
         centered
-        className={styles['modal-container']}
+        className={classnames(styles['modal-container'], styles['modal-container-children'])}
         footer={[
           <div className={classnames('d-flex', 'justify-content-end')} key="action">
             <Button
@@ -160,11 +154,12 @@ class Index extends PureComponent {
         <TableTransfer
           dataSource={dataSource}
           targetKeys={targetKeys}
-          showSearch={true}
+          showSearch
           onChange={this.onChange}
           filterOption={(inputValue, item) => item?.fullName?.indexOf(inputValue) !== -1}
           leftColumns={this.header()}
           rightColumns={this.header()}
+          showSelectAll={false}
         />
       </Modal>
     );
@@ -174,25 +169,21 @@ class Index extends PureComponent {
 Index.propTypes = {
   visible: PropTypes.bool,
   handleCancel: PropTypes.func,
-  categories: PropTypes.objectOf(PropTypes.any),
-  match: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  objects: PropTypes.objectOf(PropTypes.any),
-  list: PropTypes.arrayOf(PropTypes.any),
-  board: PropTypes.objectOf(PropTypes.any),
+  onSave: PropTypes.func,
+  listId: PropTypes.any,
+  studentBusPlaces: PropTypes.arrayOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   visible: false,
   handleCancel: () => {},
-  categories: {},
-  match: {},
-  dispatch: {},
   loading: {},
-  objects: {},
-  list: [],
-  board: {},
+  onSave: () => {},
+  listId: [],
+  studentBusPlaces: [],
+  students: [],
 };
 
 export default withRouter(Index);
