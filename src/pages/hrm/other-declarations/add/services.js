@@ -32,6 +32,9 @@ export function update(data = {}) {
 export function details(data) {
   return request(`/v1/other-declarations/${data.id}`, {
     method: 'GET',
+    params: {
+      include: 'otherDeclarationDetail.employee',
+    },
     parse: true,
   });
 }

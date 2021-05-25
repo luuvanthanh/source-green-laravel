@@ -101,7 +101,7 @@ export const variables = {
     HRM: 'HRM',
     ADMIN: 'ADMIN',
     ALL: 'ALL',
-    PRINCIPAL: 'PRINCIPAL'
+    PRINCIPAL: 'PRINCIPAL',
   },
   ROLES_PERMISSIONS: ['ADMIN', 'TEACHER', 'PARENT', 'HRM', 'PRINCIPAL'],
   CHOOSE: [
@@ -143,7 +143,9 @@ export const variables = {
     HAVE_IN: 'Đã vào lớp',
     HAVE_OUT: 'Ra về',
   },
-  NO_DATA: 'Không có dữ liệu'
+  NO_DATA: 'Không có dữ liệu',
+  // eslint-disable-next-line security/detect-unsafe-regex
+  REGEX_NUMBER: /\B(?=(\d{3})+(?!\d))/g,
 };
 
 export default variables;
