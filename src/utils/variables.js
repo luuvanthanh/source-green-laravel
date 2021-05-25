@@ -79,7 +79,8 @@ export const variables = {
     DATE_VI: 'DD/MM/YYYY',
     TIME_DATE_VI: 'HH:mm, DD/MM/YYYY',
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
-    DATE_MONTH: 'DD/MM'
+    DATE_MONTH: 'DD/MM',
+    SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -93,10 +94,6 @@ export const variables = {
   STATUS_404: 404,
   STATUS_500: 500,
   QUERY_STRING: 'queryString',
-  setDateData: {
-    format: { targetValue: 'HH:mm:ss' },
-    attributes: ['hour', 'minute', 'second'],
-  },
   EMPTY_DATA_TEXT: 'Chưa có dữ liệu',
   ROLES: {
     PARENT: 'PARENT',

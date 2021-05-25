@@ -52,11 +52,6 @@ const Index = memo(({ studentId, status }) => {
         ...prevSearch,
         date: value
       }));
-    } else {
-      setSearch((prevSearch) => ({
-        ...prevSearch,
-        date: moment().clone().startOf('week').format(variables.DATE_FORMAT.DATE_AFTER)
-      }));
     }
   }, 300);
 
@@ -89,15 +84,24 @@ const Index = memo(({ studentId, status }) => {
     }
   };
 
+  const getName = (name) => {
+    if (!name) {
+      return '';
+    };
+    return String(name).charAt(0).toUpperCase() + String(name).slice(1).toLocaleLowerCase();
+  };
 
   return (
     <div>
-      <Form>
+      <Form initialValues={{
+        ...search,
+        date: search?.date ? moment(search?.date) : null,
+      }}>
         <div className="row">
           <div className="col-md-4">
             <FormItem
               className="mb0"
-              name="time"
+              name="date"
               type={variables.DATE_PICKER}
               onChange={handleSearch}
             />
@@ -125,7 +129,12 @@ const Index = memo(({ studentId, status }) => {
                     size={32}
                     icon={<UserOutlined />}
                   />
-                  <p className="mb0 font-weight-bold ml10">{item?.criteriaGroupProperty?.property?.toLowerCase()}</p>
+                  <div>
+                    <p className="mb0 font-weight-bold ml10">{getName(item?.criteriaGroupProperty?.property)}</p>
+                    {item?.note && (
+                      <p className="mb0 ml10 font-size-13">{item?.note}</p>
+                    )}
+                  </div>
                 </div>
                 {item.value && (
                   <p className="font-weight-bold mt0 mb0 ml10 color-success">{item.value}</p>
