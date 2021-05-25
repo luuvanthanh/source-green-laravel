@@ -10,37 +10,19 @@ export const variables = {
     { id: 'CONFIRMING', name: 'Chưa nhận' },
     { id: 'CONFIRMED', name: 'Đã nhận' },
   ],
-  DATA_NOTES: [
+  STATUS_NOTE: [
     {
-      id: '1',
-      name: 'Su Beo',
-      description: 'Giữ ấm cho bé',
-      date: '15:30, 16/05'
+      id: '',
+      name: 'Tất cả trạng thái'
     },
     {
-      id: '2',
-      name: 'Vân Khánh',
-      description: 'Quàng khăn cổ cho bé',
-      date: '15:30, 16/05'
+      id: 'CONFIRMING',
+      name: 'Chờ xác nhận',
     },
     {
-      id: '3',
-      name: 'Trần Tùng',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
+      id: 'CONFIRMED',
+      name: 'Đã nhận',
     },
-    {
-      id: '4',
-      name: 'Quốc Bảo',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '5',
-      name: 'Như Hưng',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
-    }
   ],
   MEDICAL: [
     { id: 'PENDING', name: 'Chưa nhận' },

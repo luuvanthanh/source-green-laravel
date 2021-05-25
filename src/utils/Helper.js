@@ -33,6 +33,9 @@ export default class Helpers {
     if (type === variables.STATUS.VALID) {
       return <Tag color="danger">{statusName || variables.STATUS_NAME.VALID}</Tag>;
     }
+    if (type === variables.STATUS.CONFIRMING) {
+      return <Tag color="warning">{statusName || variables.STATUS_NAME.CONFIRMING}</Tag>;
+    }
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
