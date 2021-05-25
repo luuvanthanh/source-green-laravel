@@ -7,6 +7,7 @@ import variablesModules from '../../variables';
 import styles from '../../index.scss';
 import EveryDayComponent from './everyDayComponent';
 import HistoryComponent from './historyComponent';
+import ChartComponent from './chartComponent';
 
 const { TabPane } = Tabs;
 
@@ -18,6 +19,9 @@ const Index = memo(({ studentId }) => {
     switch (tab) {
       case 'everyDay':
         return <EveryDayComponent studentId={studentId} status={tab} />;
+
+      case 'chart':
+        return <ChartComponent studentId={studentId} status={tab} />;
 
       case 'history':
         return <HistoryComponent studentId={studentId} status={tab} />;

@@ -9,8 +9,9 @@ export default {
     childrensInClass: [],
     health: {
       everyDay: [],
-      history: []
-    }
+      history: [],
+    },
+    criteriaGroupProperties: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -44,6 +45,10 @@ export default {
         ...state.health,
         history: payload.parsePayload,
       }
+    }),
+    SET_CRITERIA_GROUP_PROPERTIES: (state, { payload }) => ({
+      ...state,
+      criteriaGroupProperties: payload.items,
     }),
   },
   effects: {
@@ -118,6 +123,25 @@ export default {
           payload: {
             parsePayload: response || [],
           },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_HEALTH_CHART({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getHealthChart, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_CRITERIA_GROUP_PROPERTIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCriteriaGroupProperties, payload);
+        yield saga.put({
+          type: 'SET_CRITERIA_GROUP_PROPERTIES',
+          payload: response,
         });
       } catch (error) {
         // continue regardless of error

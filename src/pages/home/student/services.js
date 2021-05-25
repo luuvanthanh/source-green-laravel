@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function getStudent(params = {}) {
   return request('/students', {
@@ -50,6 +50,25 @@ export function getHealthHistory(params = {}) {
     method: 'GET',
     params: {
       ...params,
+    },
+  });
+}
+
+export function getHealthChart(params = {}) {
+  return request('/student-criterias/statistic-by-property', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getCriteriaGroupProperties() {
+  return request('/criteria-group-properties', {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      type: 'HEALTH',
     },
   });
 }
