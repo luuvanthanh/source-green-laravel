@@ -1,20 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -30,7 +29,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ timekeepingInvalid, loading }) => ({
   data: timekeepingInvalid.data,
   pagination: timekeepingInvalid.pagination,
@@ -46,7 +44,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -54,7 +51,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -217,52 +213,84 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 80,
+      className: 'min-width-80',
+      align: 'center',
+      render: (text, record, index) =>
+        record.responseInvalid &&
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Nhân viên',
+      key: 'fullName',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) =>
+        record.responseInvalid && (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.fileImage)}
+            fullName={record?.fullName}
+          />
+        ),
+    },
+    {
+      title: 'Ngày',
+      key: 'date',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) =>
+        !record.responseInvalid && Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Ca làm việc',
+      key: 'shift',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => {
+        if (!record.responseInvalid) {
+          return (
+            <div>
+              {get(record, 'shift[0].name') || get(record, 'shift[0].shiftCode')}
+              <br />
+              Ca sáng:
+              <br />
+              {get(record, 'shift[0].startTime') || get(record, 'shift[0].endTime')}
+              <br />
+              Ca chiều:
+              <br />
+              {get(record, 'shift[1].startTime') || get(record, 'shift[1].endTime')}
+            </div>
+          );
+        }
+        return null;
       },
-      {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
-      },
-      {
-        title: 'Ngày',
-        key: 'date',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ca làm việc',
-        key: 'shift',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) => `${get(record, 'shiftCode')} ${get(record, 'timeShift')}`,
-      },
-      {
-        title: 'Chi tiết',
-        key: 'description',
-        className: 'min-width-200',
-        render: (record) => this.renderDescription(record.timekeeping),
-      },
-    ];
-  };
+    },
+    {
+      title: 'Chi tiết',
+      key: 'description',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => !record.responseInvalid && this.renderDescription(record.timekeeping),
+    },
+    {
+      title: 'Giờ vào',
+      key: 'checkIn',
+      className: 'min-width-100',
+      width: 100,
+      render: (record) => !record.responseInvalid && record.checkIn,
+    },
+    {
+      title: 'Giờ ra',
+      key: 'checkOut',
+      className: 'min-width-100',
+      width: 100,
+      render: (record) => !record.responseInvalid && record.checkOut,
+    },
+  ];
 
   render() {
     const {
@@ -270,7 +298,6 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['timekeepingInvalid/GET_DATA'];
@@ -327,12 +354,14 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
+              childrenColumnName="responseInvalid"
+              defaultExpandAllRows
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              rowKey={(record) => record.date || record.id}
+              scroll={{ x: '100%', y: '80vh' }}
             />
           </div>
         </div>

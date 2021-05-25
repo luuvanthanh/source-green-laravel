@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -12,7 +10,10 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: payload.parsePayload.map((item) => ({
+        ...item,
+        responseInvalid: item.responseInvalid.filter((itemInvalid) => itemInvalid.isInvalid),
+      })),
       pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
