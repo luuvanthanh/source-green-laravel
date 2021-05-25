@@ -82,3 +82,13 @@ export function getNote(params = {}) {
     },
   });
 }
+
+export function getMedical(params = {}) {
+  return request('/medicals/record-books', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}

@@ -110,7 +110,9 @@ const Index = memo(({ studentId, status }) => {
       </Form>
       <div className="row py10">
         {!loading['studentHomePage/GET_DATA_HEALTH_EVERY_DAY'] && _.isEmpty(health.everyDay) && (
-          <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+          <div className="col-12">
+            <p className="mb0 p20 border text-center font-weight-bold w-100">{variables.NO_DATA}</p>
+          </div>
         )}
         {loading['studentHomePage/GET_DATA_HEALTH_EVERY_DAY'] ? (
           <>

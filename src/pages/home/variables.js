@@ -29,38 +29,6 @@ export const variables = {
     { id: 'RECEIVED', name: 'Đã nhận' },
     { id: 'PROCESSED', name: 'Hoàn thành' },
   ],
-  DATA_MEDICAL: [
-    {
-      id: '1',
-      name: 'Su Beo',
-      description: 'Bệnh Ho',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '2',
-      name: 'Vân Khánh',
-      description: 'Bệnh xổ mũi',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '3',
-      name: 'Trần Tùng',
-      description: 'Bệnh đỏ mắt',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '4',
-      name: 'Quốc Bảo',
-      description: 'Bệnh ho',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '5',
-      name: 'Như Hưng',
-      description: 'Bệnh bầm da',
-      date: '15:30, 16/05'
-    }
-  ],
   DATA_BUS: [
     {
       id: '1',
@@ -151,6 +119,64 @@ export const variables = {
     { id: 'chart', name: 'Biểu đồ thống kê' },
     { id: 'history', name: 'Lịch sử nhập' },
   ],
+  STATUS_TIME_CODE: [
+    {
+      id: '',
+      name: 'Tất cả thời gian'
+    },
+    {
+      id: 'BEFORE_BREAKFAST',
+      name: 'Trước ăn sáng',
+    },
+    {
+      id: 'AFTER_BREAKFAST',
+      name: 'Sau ăn sáng',
+    },
+    {
+      id: 'BEFORE_SECOND_BREAKFAST',
+      name: 'Trước xế sáng'
+    },
+    {
+      id: 'AFTER_SECOND_BREAKFAST',
+      name: 'Sau xế sáng'
+    },
+    {
+      id: 'BEFORE_LUNCH',
+      name: 'Trước ăn trưa',
+    },
+    {
+      id: 'AFTER_LUNCH',
+      name: 'Sau ăn trưa',
+    },
+    {
+      id: 'BEFORE_SECOND_LUNCH',
+      name: 'Trước xế trưa',
+    },
+    {
+      id: 'AFTER_SECOND_LUNCH',
+      name: 'Sau xế trưa',
+    },
+    {
+      id: 'BEFORE_TEA_TIME',
+      name: 'Trước xế chiều',
+    },
+    {
+      id: 'AFTER_TEA_TIME',
+      name: 'Sau xế chiều',
+    },
+  ],
+  STATUS_TIME_CODE_NAME: {
+    BEFORE_BREAKFAST: 'Trước ăn sáng',
+    AFTER_BREAKFAST: 'Sau ăn sáng',
+    BEFORE_LUNCH: 'Trước ăn trưa',
+    AFTER_LUNCH: 'Sau ăn trưa',
+    BEFORE_SECOND_BREAKFAST: 'Trước xế sáng',
+    AFTER_SECOND_BREAKFAST: 'Sau xế sáng',
+    BEFORE_SECOND_LUNCH: 'Trước xế trưa',
+    AFTER_SECOND_LUNCH: 'Sau xế trưa',
+    BEFORE_TEA_TIME: 'Trước xế chiều',
+    AFTER_TEA_TIME: 'Sau xế chiều'
+  },
 };
 
 export default variables;

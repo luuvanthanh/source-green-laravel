@@ -37,7 +37,7 @@ const Index = memo(({ studentId }) => {
     dispatch({
       type: 'studentHomePage/GET_DATA_NOTE',
       payload: {
-        studentId,
+        StudentId: studentId,
         ...search,
         rangeTime: undefined,
         From: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
@@ -196,7 +196,7 @@ const Index = memo(({ studentId }) => {
    */
   const pagination = (pagination) => ({
     size: 'default',
-    total: pagination.total,
+    total: pagination?.total,
     pageSize: search.limit,
     defaultCurrent: Number(search.page),
     current: Number(search.page),
