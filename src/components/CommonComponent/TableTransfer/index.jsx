@@ -1,6 +1,7 @@
 import { Transfer } from 'antd';
 import difference from 'lodash/difference';
 import Table from '@/components/CommonComponent/Table';
+import PropTypes from 'prop-types';
 
 const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
   <Transfer
@@ -9,7 +10,7 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
     locale={{
       searchPlaceholder: 'Nhập tên học sinh',
       itemsUnit: 'Học sinh',
-      itemUnit: 'Học sinh'
+      itemUnit: 'Học sinh',
     }}
   >
     {({
@@ -44,8 +45,9 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
           rowSelection={rowSelection}
           columns={columns}
           dataSource={filteredItems}
-          pagination={true}
+          pagination
           isEmpty
+          scroll={{ x: '100%', y: '50vh' }}
           className="table-transfer table-edit"
           style={{ pointerEvents: listDisabled ? 'none' : null }}
           onRow={({ key, disabled: itemDisabled }) => ({
@@ -59,5 +61,17 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
     }}
   </Transfer>
 );
+
+TableTransfer.propTypes = {
+  leftColumns: PropTypes.any,
+  rightColumns: PropTypes.any,
+  restProps: PropTypes.any,
+};
+
+TableTransfer.defaultProps = {
+  rightColumns: [],
+  leftColumns: [],
+  restProps: {},
+};
 
 export default TableTransfer;
