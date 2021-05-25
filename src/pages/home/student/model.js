@@ -12,6 +12,8 @@ export default {
       history: [],
     },
     criteriaGroupProperties: [],
+    notes: [],
+    paginationNote: {}
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -49,6 +51,11 @@ export default {
     SET_CRITERIA_GROUP_PROPERTIES: (state, { payload }) => ({
       ...state,
       criteriaGroupProperties: payload.items,
+    }),
+    SET_DATA_NOTE: (state, { payload }) => ({
+      ...state,
+      notes: payload.parsePayload,
+      paginationNote: payload.pagination,
     }),
   },
   effects: {
@@ -142,6 +149,22 @@ export default {
         yield saga.put({
           type: 'SET_CRITERIA_GROUP_PROPERTIES',
           payload: response,
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_NOTE({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getNote, payload);
+        yield saga.put({
+          type: 'SET_DATA_NOTE',
+          payload: {
+            parsePayload: response.items,
+            pagination: {
+              total: response.totalCount,
+            },
+          },
         });
       } catch (error) {
         // continue regardless of error

@@ -57,6 +57,7 @@ export const variables = {
   // PAGINATION
   PAGINATION: {
     PAGE: 1,
+    PAGE_SIZE_SMALL: 5,
     PAGE_SIZE: 10,
     SIZEMAX: 1000,
     PAGE_SIZE_OPTIONS: ['10', '20', '50', '100'],
@@ -130,6 +131,7 @@ export const variables = {
     PENDING: 'Làm thủ tục',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
+    CONFIRMING: 'Chờ xác nhận'
   },
   STATUS_ABSENT: {
     ANNUAL_LEAVE: 'ANNUAL_LEAVE',

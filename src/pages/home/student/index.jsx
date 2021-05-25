@@ -14,7 +14,7 @@ import variablesModules from '../variables';
 import BusComponent from './bus';
 import ChildrenComponent from './children';
 import HealthComponent from './health';
-import NoteComponent from '../note';
+import NoteComponent from './note';
 import MedicalComponent from '../medical';
 
 const Index = memo(() => {
@@ -85,7 +85,7 @@ const Index = memo(() => {
         return <HealthComponent studentId={studentId} />;
 
       case 'note':
-        return <NoteComponent />;
+        return <NoteComponent studentId={studentId} />;
 
       case 'medical':
         return <MedicalComponent />;
