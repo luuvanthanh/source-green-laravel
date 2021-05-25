@@ -107,8 +107,8 @@ const Index = memo(({ studentId }) => {
             ) : (
               <>
                 {health?.history.map((item, index) => (
-                  <>
-                    <h5 key={index} className="color-success mb20">{Helper.getDate(item?.reportDate, variables.DATE_FORMAT.SHOW_FULL_DATE)}</h5>
+                  <div key={index}>
+                    <h5 className="color-success mb20">{Helper.getDate(item?.reportDate, variables.DATE_FORMAT.SHOW_FULL_DATE)}</h5>
                     <Timeline>
                       {item?.history.map((itemChild, indexChild) => (
                         <Timeline.Item color="red" key={indexChild}>
@@ -117,7 +117,7 @@ const Index = memo(({ studentId }) => {
                         </Timeline.Item>
                       ))}
                     </Timeline>
-                  </>
+                  </div>
                 ))}
               </>
             )}
