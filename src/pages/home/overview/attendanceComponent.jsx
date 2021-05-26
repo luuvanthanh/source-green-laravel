@@ -1,20 +1,17 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Form } from 'antd';
-import PropTypes from 'prop-types';
+import { Modal, Form, Avatar } from 'antd';
 import classnames from 'classnames';
-import _ from 'lodash';
 
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 
+import { variables } from '@/utils';
 import styles from '../index.scss';
 import variablesModules from '../variables';
-import { variables } from '@/utils';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -37,7 +34,6 @@ class AttendanceComponent extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { user } = props;
     this.state = {
       title: '',
       visible: false
@@ -77,23 +73,22 @@ class AttendanceComponent extends PureComponent {
         title: `Danh sách trẻ ${(record?.name).toLowerCase()}`
       });
     }
-    return;
+
   }
 
   /**
    * Function header table
    */
-   header = () => {
-    return [
+   header = () => [
       {
         title: 'Trẻ',
         key: 'children',
         className: 'min-width-250',
         width: 250,
-        render: (record) => (
+        render: () => (
           <AvatarTable
             // fileImage={Helper.getPathAvatarJson(fileImage)}
-            fullName={'Vân Khánh'}
+            fullName="Vân Khánh"
             size={40}
           />
         )
@@ -103,24 +98,24 @@ class AttendanceComponent extends PureComponent {
         key: 'age',
         className: 'min-width-150',
         width: 150,
-        render: (record) => '32 tháng'
+        render: () => '32 tháng'
       },
       {
         title: 'Lớp',
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => 'Preschool 1'
+        render: () => 'Preschool 1'
       },
       {
         title: 'Phụ huynh',
         key: 'parents',
         className: 'min-width-250',
         width: 250,
-        render: (record) => (
+        render: () => (
           <AvatarTable
             // fileImage={Helper.getPathAvatarJson(fileImage)}
-            fullName={'Lê Tường Vy'}
+            fullName="Lê Tường Vy"
             size={40}
           />
         )
@@ -130,10 +125,9 @@ class AttendanceComponent extends PureComponent {
         key: 'teacher',
         className: 'min-width-300',
         width: 300,
-        render: (record) => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
+        render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
       },
     ];
-  };
 
   selectBranch = () => {
 
@@ -147,7 +141,7 @@ class AttendanceComponent extends PureComponent {
           className={styles['modal-student-detail']}
           visible={visible}
           title={title}
-          width={"90%"}
+          width="90%"
           onCancel={this.cancelModal}
           footer={null}
         >
@@ -194,7 +188,7 @@ class AttendanceComponent extends PureComponent {
           <div className={styles['body-tab']}>
             <div className={styles['header-tab']}>
               <div>
-                <img src={'/images/home/note.svg'} alt="notification" className={styles['icon']} />
+                <img src="/images/home/note.svg" alt="notification" className={styles.icon} />
                 <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Điểm danh vào lớp</span>
               </div>
             </div>
@@ -211,13 +205,14 @@ class AttendanceComponent extends PureComponent {
                         )
                       }
                       onClick={() => this.getDetails(item)}
+                      aria-hidden="true"
                     >
-                      <AvatarTable
-                        // fileImage={Helper.getPathAvatarJson(fileImage)}
+                      <Avatar
+                        src={item.image}
                         size={30}
                       />
                       <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
-                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles['number'])}>{item.number}</p>
+                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
                     </div>
                   )}
                 </div>
@@ -229,17 +224,5 @@ class AttendanceComponent extends PureComponent {
     );
   }
 }
-
-AttendanceComponent.propTypes = {
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-};
-
-AttendanceComponent.defaultProps = {
-  dispatch: {},
-  loading: {},
-  location: {},
-};
 
 export default AttendanceComponent;

@@ -37,10 +37,6 @@ class Application extends PureComponent {
   }
 
   render() {
-    const {
-      loading: { effects },
-      user: { user }
-    } = this.props;
     const { data } = this.state;
     const settings = {
       arrows: false,
@@ -106,12 +102,12 @@ class Application extends PureComponent {
           {data.map((item, index) => (
             <div key={index}>
               {item.target && (
-                <a href={item.url} target="_blank" className={styles.item}>
+                <a href={item.url} target="_blank" className={styles.item} rel="noreferrer">
                   <div className={styles['item-image']}>
                     <img src={item.src} alt="notification" className={styles.icon} />
                   </div>
                   <div className={styles['item-content']}>
-                    <p className={styles['norm']}>{item.title}</p>
+                    <p className={styles.norm}>{item.title}</p>
                   </div>
                 </a>
               )}
@@ -121,7 +117,7 @@ class Application extends PureComponent {
                     <img src={item.src} alt="notification" className={styles.icon} />
                   </div>
                   <div className={styles['item-content']}>
-                    <p className={styles['norm']}>{item.title}</p>
+                    <p className={styles.norm}>{item.title}</p>
                   </div>
                 </Link>
               )}

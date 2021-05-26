@@ -58,27 +58,27 @@ const Index = memo(({ studentId, status }) => {
   const getIcon = (icon) => {
     switch (icon) {
       case 'LƯỢNG NƯỚC UỐNG':
-        return '/images/icon/cup.png';
+        return '/images/icon/cup.svg';
       case 'NGỦ TRƯA':
-        return '/images/icon/sleeping.png';
+        return '/images/icon/sleeping.svg';
       case 'BỮA UỐNG':
-        return '/images/icon/blender.png';
+        return '/images/icon/blender.svg';
       case 'BỮA NGOÀI GIỜ':
-        return '/images/icon/sandwich.png';
+        return '/images/icon/sandwich.svg';
       case 'PIPI':
-        return '/images/icon/pipi.png';
+        return '/images/icon/pipi.svg';
       case 'PUPU':
-        return '/images/icon/pupu.png';
+        return '/images/icon/pupu.svg';
       case 'ĂN SÁNG':
       case 'XẾ SÁNG':
-        return '/images/icon/sunrise.png';
+        return '/images/icon/sunrise.svg';
       case 'ĂN TRƯA':
       case 'XẾ TRƯA':
-        return '/images/icon/sun.png';
+        return '/images/icon/sun.svg';
       case 'XẾ CHIỀU':
-          return '/images/icon/dawn.png';
+          return '/images/icon/dawn.svg';
       case 'TÌNH HUỐNG':
-        return '/images/icon/note.png';
+        return '/images/icon/note.svg';
       default:
         return '';
     }
