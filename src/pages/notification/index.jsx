@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -12,10 +12,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from './utils/Helper';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -89,7 +87,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -198,7 +196,7 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChangeDateRank = (e, type) => {
+  onChangeDateRank = (e) => {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -258,7 +256,7 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
     const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
@@ -323,6 +321,17 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.title}</Text>,
       },
       {
+        title: 'Nội dung',
+        key: 'content',
+        className: 'min-width-200',
+        render: (record) => (
+          <div
+            style={{ maxHeight: '50px', overflowY: 'auto' }}
+            dangerouslySetInnerHTML={{ __html: record.content }}
+          />
+        ),
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -358,7 +367,6 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['notifications/GET_DATA'];
@@ -412,13 +420,11 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: () => {
-                    history.push(`/thong-bao/${record.id}/chi-tiet`);
-                  },
-                };
-              }}
+              onRow={(record) => ({
+                onClick: () => {
+                  history.push(`/thong-bao/${record.id}/chi-tiet`);
+                },
+              })}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
@@ -436,6 +442,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -445,6 +452,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

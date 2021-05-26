@@ -254,13 +254,13 @@ class Index extends PureComponent {
         if (!record.responseInvalid) {
           return (
             <div>
-              {get(record, 'shift[0].name') || get(record, 'shift[0].shiftCode')}
+              {get(record, 'shift[0].shiftCode')}
               <br />
-              Ca sáng:
+              {get(record, 'shift[0].name') || get(record, 'shift[0].shiftCode')}:
               <br />
               {get(record, 'shift[0].startTime')} - {get(record, 'shift[0].endTime')}
               <br />
-              Ca chiều:
+              {get(record, 'shift[1].name') || get(record, 'shift[1].shiftCode')}:
               <br />
               {get(record, 'shift[1].startTime')} - {get(record, 'shift[1].endTime')}
             </div>

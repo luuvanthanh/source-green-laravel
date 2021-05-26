@@ -163,6 +163,12 @@
   }
 }
 
+.ant-transfer-list-header {
+  .ant-transfer-list-header-dropdown {
+    display: none;
+  }
+}
+
 .ant-transfer-list-body {
   padding: 10px 20px;
 }
@@ -181,6 +187,5 @@
     .ant-table-cell-fix-right.ant-table-cell-scrollbar {
       display: none;
     }
-    
   }
 }

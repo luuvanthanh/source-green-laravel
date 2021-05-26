@@ -10,7 +10,6 @@ import Quill from '@/components/CommonComponent/Quill';
 import Text from '@/components/CommonComponent/Text';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import styles from '@/assets/styles/Common/information.module.scss';
-import variablesModules from '../utils/variables';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
@@ -18,12 +17,13 @@ import { head, size, isEmpty } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
+import variablesModules from '../utils/variables';
 
 const { Item: FormItemAntd } = Form;
 const { Group: RadioGroup } = Radio;
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const [
     menuData,
     { branches, divisions, details },
@@ -50,6 +50,8 @@ const Index = memo(({}) => {
     total: 0,
     hasMore: true,
     loading: false,
+    branchId: null,
+    divisionId: null,
   });
   const [searchParent, setSearchParent] = useState({
     page: variables.PAGINATION.PAGE,
@@ -71,7 +73,7 @@ const Index = memo(({}) => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -120,6 +122,58 @@ const Index = memo(({}) => {
       },
     });
   }, []);
+
+  const onChangeBranch = (value) => {
+    mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
+    dispatch({
+      type: 'notificationAdd/GET_EMPLOYEES',
+      payload: {
+        ...searchEmployee,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        branchId: value,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setEmployees, response.parsePayload);
+          mountedSet(setSearchEmployee, {
+            ...searchEmployee,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+            branchId: value,
+            total: response.pagination.total,
+            loading: false,
+          });
+        }
+      },
+    });
+  };
+
+  const onChangeDivision = (value) => {
+    mountedSet(setSearchEmployee, { ...searchEmployee, loading: true });
+    dispatch({
+      type: 'notificationAdd/GET_EMPLOYEES',
+      payload: {
+        ...searchEmployee,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        divisionId: value,
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setEmployees, response.parsePayload);
+          mountedSet(setSearchEmployee, {
+            ...searchEmployee,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+            divisionId: value,
+            total: response.pagination.total,
+            loading: false,
+          });
+        }
+      },
+    });
+  };
 
   const changeCheckboxEmployee = (id) => {
     mountedSet(
@@ -250,7 +304,7 @@ const Index = memo(({}) => {
       dispatch({
         type: 'notificationAdd/GET_DETAILS',
         payload: params,
-        callback: (response, error) => {
+        callback: (response) => {
           if (response) {
             mountedSet(setContent, response.content);
             mountedSet(
@@ -330,6 +384,7 @@ const Index = memo(({}) => {
                           name="branchId"
                           data={branches}
                           type={variables.SELECT}
+                          onChange={onChangeBranch}
                         />
                       </Pane>
                       <Pane className="col-lg-6">
@@ -338,6 +393,7 @@ const Index = memo(({}) => {
                           name="divisionId"
                           data={divisions}
                           type={variables.SELECT}
+                          onChange={onChangeDivision}
                         />
                       </Pane>
                     </Pane>
@@ -371,7 +427,7 @@ const Index = memo(({}) => {
                                 <Checkbox
                                   checked={!!checked}
                                   className="mr15"
-                                  onChange={(event) => changeCheckboxEmployee(id)}
+                                  onChange={() => changeCheckboxEmployee(id)}
                                 />
                                 <Pane className={styles.userInformation}>
                                   <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
@@ -425,7 +481,7 @@ const Index = memo(({}) => {
                                 <Checkbox
                                   checked={!!checked}
                                   className="mr15"
-                                  onChange={(event) => changeCheckboxParent(id)}
+                                  onChange={() => changeCheckboxParent(id)}
                                 />
                                 <Pane className={styles.userInformation}>
                                   <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
