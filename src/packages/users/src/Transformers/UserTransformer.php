@@ -2,6 +2,7 @@
 
 namespace GGPHP\Users\Transformers;
 
+use Carbon\Carbon;
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Transformers\AbsentTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
@@ -57,11 +58,39 @@ class UserTransformer extends BaseTransformer
             }
         }
 
+        $newWorkHours = [];
+
+        if (request()->isWorkHourSummary) {
+            $workHours = $model->workHours->toArray();
+            if (count($workHours) > 0) {
+                foreach ($workHours as $key => $workHour) {
+                    $date = Carbon::parse($workHour['Date'])->format('Y-m-d');
+                    $hours = json_decode($workHour['Hours'])[0];
+                    $time = (strtotime($hours->out) - strtotime($hours->in)) / 3600;
+
+                    if (array_key_exists($date, $newWorkHours)) {
+                        $newWorkHours[$date] += $time;
+                    } else {
+                        $newWorkHours[$date] = $time;
+                    }
+                }
+
+                foreach ($newWorkHours as $key => $value) {
+                    $newWorkHours[] = [
+                        'date' => $key,
+                        'value' => $value,
+                    ];
+                    unset($newWorkHours[$key]);
+                }
+            }
+        }
+
         $attributes = [
             'timeKeepingReport' => $model->timeKeepingReport ? $model->timeKeepingReport : [],
             'totalWorks' => $model->totalWorks,
             'responseInvalid' => $model->responseInvalid,
             'Status' => $status,
+            'workHourSummary' => $newWorkHours,
         ];
 
         return $attributes;

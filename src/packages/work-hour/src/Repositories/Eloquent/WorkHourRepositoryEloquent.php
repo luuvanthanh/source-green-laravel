@@ -3,9 +3,11 @@
 namespace GGPHP\WorkHour\Repositories\Eloquent;
 
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use GGPHP\WorkHour\Models\WorkHour;
 use GGPHP\WorkHour\Presenters\WorkHourPresenter;
 use GGPHP\WorkHour\Repositories\Contracts\WorkHourRepository;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -19,6 +21,14 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         'Id',
         'CreationTime',
     ];
+
+    public function __construct(
+        UserRepositoryEloquent $employeeRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
+    }
 
     /**
      * Specify Model class name
@@ -86,6 +96,28 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         $workHour->update($attributes);
 
         return parent::find($workHour->Id);
+    }
+
+    public function workHourSummary(array $attributes)
+    {
+        $employees = $this->employeeRepositoryEloquent->model()::whereHas('workHours', function ($query) use ($attributes) {
+            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        })->with(['workHours' => function ($query) use ($attributes) {
+            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        }]);
+
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $employees->whereIn('Id', $employeeId);
+        }
+
+        if (empty($attributes['limit'])) {
+            $result = $employees->get();
+        } else {
+            $result = $employees->paginate($attributes['limit']);
+        }
+
+        return $this->employeeRepositoryEloquent->parserResult($result);
     }
 
 }

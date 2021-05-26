@@ -21,7 +21,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements TimekeepingRepository
 {
-    protected $employeeRepositoryEloquent, $employee, $quotaWork;
+    protected $employeeRepositoryEloquent;
 
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
@@ -29,8 +29,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
     ) {
         parent::__construct($app);
         $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
-        $this->employee = null;
-        $this->quotaWork = null;
     }
 
     /**
@@ -91,9 +89,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             };
         }]);
 
-        if (!empty($attribute['EmployeeId'])) {
+        if (!empty($attribute['employeeId'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
-                $query->whereIn('EmployeeId', explode(',', $attribute['EmployeeId']));
+                $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
             });
         }
 
