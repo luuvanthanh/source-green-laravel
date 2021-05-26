@@ -12,9 +12,7 @@ import {
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
-import Text from '@/components/CommonComponent/Text';
 import { variables } from './variables';
-import { Helper } from '.';
 
 export default class Helpers {
   static tagStatus = (type, statusName) => {
@@ -442,47 +440,35 @@ export default class Helpers {
     return arr.join(';');
   };
 
-  static disabledDate = (current) => {
-    return current && current <= moment().startOf('day');
-  };
+  static disabledDate = (current) => current && current <= moment().startOf('day');
 
-  static disabledDateFuture = (current) => {
-    return current && current >= moment().endOf('day');
-  };
+  static disabledDateFuture = (current) => current && current >= moment().endOf('day');
 
   static serialOrder = (page, index, size = variables.PAGINATION.PAGE_SIZE) => {
     const num = (page - 1) * size + index + 1;
     return num;
   };
 
-  static getPagination = (page, limit) => {
-    return {
+  static getPagination = (page, limit) => ({
       skipCount: toString((Number(page) - 1) * Number(limit)),
       maxResultCount: limit,
-    };
-  };
+    });
 
-  static convertTreeSelect = (items = [], keyValue = 'value', keyLabel = 'label') => {
-    return items.map((item) => ({
+  static convertTreeSelect = (items = [], keyValue = 'value', keyLabel = 'label') => items.map((item) => ({
       [`${keyValue}`]: item.id,
       [`${keyLabel}`]: item.name,
       children: this.convertTreeSelect(item.children),
     }));
-  };
 
-  static convertSelectSingle = (items = []) => {
-    return items.map((item) => ({
+  static convertSelectSingle = (items = []) => items.map((item) => ({
       id: item,
       name: item,
     }));
-  };
 
-  static convertRadioSingle = (items = []) => {
-    return items.map((item) => ({
+  static convertRadioSingle = (items = []) => items.map((item) => ({
       value: item,
       label: item,
     }));
-  };
 
   static isJSON = (text) => {
     if (text) {
@@ -537,7 +523,7 @@ export default class Helpers {
       return array.reduce((acc, value) => {
         let dataNew = acc.push(omit(value, 'children'));
         if (value.children) {
-          dataNew = acc.concat(Helper.flatten(value.children));
+          dataNew = acc.concat(this.flatten(value.children));
           delete dataNew.children;
         }
         return dataNew;
@@ -555,20 +541,18 @@ export default class Helpers {
   static nest = (items, id = null, key = 'parentId') =>
     items
       .filter((item) => item[key] === id)
-      .map((item) => ({ ...item, children: Helper.nest(items, item.id) }));
+      .map((item) => ({ ...item, children: this.nest(items, item.id) }));
 
-  static removeEmptyChildren = (items = []) => {
-    return items.map((item) => {
+  static removeEmptyChildren = (items = []) => items.map((item) => {
       const { children, ...other } = item;
       if (size(children)) {
         return {
           ...other,
-          children: Helper.removeEmptyChildren(item.children),
+          children: this.removeEmptyChildren(item.children),
         };
       }
       return other;
     });
-  };
 
   static exportExcel = async (path, paramSearch, nameFile = 'total.xlsx') => {
     const params = {
@@ -633,28 +617,27 @@ export default class Helpers {
 
   static toFixed = (num) => {
     if (!num) return;
+    // eslint-disable-next-line consistent-return
     return num.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0];
   };
 
   static getDates(startDate, stopDate) {
-    var dateArray = [];
-    var currentDate = moment(startDate).startOf('day');
-    var stopDate = moment(stopDate).startOf('day');
-    while (currentDate <= stopDate) {
+    const dateArray = [];
+    let currentDate = moment(startDate).startOf('day');
+    const stopDate1 = moment(stopDate).startOf('day');
+    while (currentDate <= stopDate1) {
       dateArray.push(moment(currentDate));
       currentDate = moment(currentDate).add(1, 'days');
     }
     return dateArray;
   }
 
-  static joinDateTime = (date, time) => {
-    return `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
+  static joinDateTime = (date, time) => `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
-  };
 
   static getPathAvatarJson = (fileImage) => {
-    if (Helper.isJSON(fileImage)) {
+    if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
       if (!isEmpty(files) && isArray(files)) return head(files);
       return null;
@@ -678,9 +661,7 @@ export default class Helpers {
 
   static onSortDates = (data = [], key = 'created_at') => {
     if (!isEmpty(data)) {
-      return data.sort((a, b) => {
-        return new Date(b[`${key}`]) - new Date(a[`${key}`]);
-      });
+      return data.sort((a, b) => new Date(b[`${key}`]) - new Date(a[`${key}`]));
     }
     return [];
   };
@@ -694,7 +675,7 @@ export default class Helpers {
   static disabledDateTo = (current, formRef, key = 'startDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current <= moment(data[key]).startOf('day');
+      if (data[key]) return current && current < moment(data[key]).startOf('day');
       return null;
     }
     return null;
@@ -703,7 +684,7 @@ export default class Helpers {
   static disabledDateFrom = (current, formRef, key = 'endDate') => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current >= moment(data[key]).endOf('day');
+      if (data[key]) return current && current >= moment(data[key]).startOf('day');
       return null;
     }
     return null;

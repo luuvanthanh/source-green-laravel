@@ -48,7 +48,6 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        type: query?.type,
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -235,14 +234,14 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'NGÀY',
+        title: 'Các tháng đã khai báo',
         key: 'time',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.DATE),
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => Helper.getDate(record.time, variables.DATE_FORMAT.MONTH_FULL),
       },
       {
-        title: 'GIỜ CÔNG',
+        title: 'Giờ công',
         key: 'numberOfWorkdays',
         className: 'min-width-150',
         width: 150,
@@ -265,7 +264,7 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'Phụ cấp',
+        title: 'Phụ cấp HT-TCSK',
         key: 'allowance',
         className: 'min-width-150',
         width: 150,
@@ -293,7 +292,7 @@ class Index extends PureComponent {
         render: (record) => Helper.getPrice(record.paymentOfSocialInsurance),
       },
       {
-        title: 'Điều chỉnh BHXH NLD',
+        title: 'Điều chỉnh BHXH NLĐ',
         key: 'employeeSocialInsurance',
         className: 'min-width-120',
         width: 120,
@@ -381,20 +380,10 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[
-                      { id: 'REWARD', name: 'Khen thưởng' },
-                      { id: 'DISCIPLINE', name: 'Kỷ luật' },
-                    ]}
-                    name="type"
-                    type={variables.SELECT}
-                    onChange={(event) => this.onChangeSelect(event, 'type')}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -402,6 +391,7 @@ class Index extends PureComponent {
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>
