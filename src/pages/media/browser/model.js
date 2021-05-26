@@ -12,6 +12,7 @@ export default {
       isError: false,
       data: {},
     },
+    progess: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -19,6 +20,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_PROGRESS: (state, { payload }) => ({
+      ...state,
+      progess: payload.data,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -31,9 +36,10 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
+        callback(response);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
@@ -44,6 +50,23 @@ export default {
           },
         });
       } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PROGRESS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getProgress, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_PROGRESS',
+          payload: response,
+        });
+      } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -53,7 +76,7 @@ export default {
     *CLASSIFY({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.classify, payload);
-        callback && callback(response);
+        callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Tiến trình đang xử lý vui lòng chờ...',
@@ -68,13 +91,13 @@ export default {
     *REMOVE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.remove, payload);
-        callback && callback(response);
+        callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
-        callback && callback(null, error);
+        callback(null, error);
         notification.error({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thất bại',
