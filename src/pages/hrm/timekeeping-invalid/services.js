@@ -26,9 +26,9 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['timekeeping', 'employee']),
+      include: Helper.convertIncludes(['timekeeping']),
       search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
+        FullName: data.fullName,
       }),
     },
   });

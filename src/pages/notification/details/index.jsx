@@ -1,11 +1,10 @@
 import { memo, useRef, useEffect } from 'react';
-import { Form, List } from 'antd';
+import { List } from 'antd';
 import { Helmet } from 'react-helmet';
-import { connect, useParams, history } from 'umi';
+import { useParams, history } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
@@ -18,7 +17,7 @@ import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const [
     menuData,
     { details, error },
@@ -31,17 +30,17 @@ const Index = memo(({}) => {
   const dispatch = useDispatch();
   const params = useParams();
 
-  const formRef = useRef();
+  // const formRef = useRef();
   const mounted = useRef(false);
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
+  // const mountedSet = (action, value) => {
+  //   if (mounted.current) {
+  //     action(value);
+  //   }
+  // };
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -94,7 +93,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Cơ sở</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-school'} />
+                          <span className="icon-school" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.sender?.objectInfo?.class?.branch?.name}
@@ -106,7 +105,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Lớp</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-open-book'} />
+                          <span className="icon-open-book" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.sender?.objectInfo?.class?.name}
@@ -130,7 +129,7 @@ const Index = memo(({}) => {
                         />
                         <Pane>
                           <h3>{item?.parent?.fullName}</h3>
-                          <p>{'Phụ Huynh'}</p>
+                          <p>Phụ Huynh</p>
                         </Pane>
                       </Pane>
                     ))}
@@ -146,7 +145,7 @@ const Index = memo(({}) => {
                         />
                         <Pane>
                           <h3>{item?.employee?.fullName}</h3>
-                          <p>{'Nhân viên'}</p>
+                          <p>Nhân viên</p>
                         </Pane>
                       </Pane>
                     ))}
@@ -194,7 +193,7 @@ const Index = memo(({}) => {
 
                   <Pane className="mt10">
                     <label className={styles.infoLabel}>Nội dung</label>
-                    <div dangerouslySetInnerHTML={{ __html: details?.content }}></div>
+                    <div dangerouslySetInnerHTML={{ __html: details?.content }} />
                   </Pane>
                 </Pane>
                 <Pane className="p20">
