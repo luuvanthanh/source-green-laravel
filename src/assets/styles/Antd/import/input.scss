@@ -106,3 +106,14 @@
     }
   }
 }
+
+.checkbox-group-container {
+  .ant-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .ant-checkbox-wrapper {
+    width: calc(100% / 3);
+    margin: 10px 0;
+  }
+}

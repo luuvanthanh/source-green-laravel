@@ -639,6 +639,14 @@ export async function getLeftMenuMedical() {
       permission: [],
       pro: true,
     },
+    {
+      title: 'Sổ theo dõi',
+      key: 'logbook',
+      url: ['/y-te/so-theo-doi'],
+      icon: 'icon icon-checkmark',
+      permission: [],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {
@@ -1012,13 +1020,6 @@ export async function getLeftMenuHRM() {
           pro: true,
         },
         {
-          title: 'Đi trễ về sớm',
-          key: 'lateEarly',
-          url: ['/quan-ly-nhan-su/di-tre-ve-som'],
-          permission: [],
-          pro: true,
-        },
-        {
           title: 'Cấu hình vân tay',
           key: 'fingerprints',
           url: ['/quan-ly-nhan-su/may-cham-cong-van-tay'],
@@ -1127,11 +1128,25 @@ export async function getLeftMenuHRM() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Bảng chấm công thêm ngoài giờ',
+          key: 'totalOvertime',
+          url: ['/quan-ly-nhan-su/bang-cham-cong-them-ngoai-gio'],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Bảng chấm công xe bus',
+          key: 'totalBus',
+          url: ['/quan-ly-nhan-su/bang-cham-cong-xe-bus'],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
       title: 'Cấu hình',
-      key: 'categories',
+      key: 'categoriesParamater',
       icon: 'icon icon-list',
       permission: [],
       children: [

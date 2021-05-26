@@ -7,196 +7,89 @@ export const variables = {
     { id: 'application', name: 'Ứng dụng' },
   ],
   NOTE: [
-    { id: 'notReceived', name: 'Chưa nhận' },
-    { id: 'received', name: 'Đã nhận' },
+    { id: 'CONFIRMING', name: 'Chưa nhận' },
+    { id: 'CONFIRMED', name: 'Đã nhận' },
   ],
-  DATA_NOTES: [
+  STATUS_NOTE: [
     {
-      id: '1',
-      name: 'Su Beo',
-      description: 'Giữ ấm cho bé',
-      date: '15:30, 16/05'
+      id: '',
+      name: 'Tất cả trạng thái'
     },
     {
-      id: '2',
-      name: 'Vân Khánh',
-      description: 'Quàng khăn cổ cho bé',
-      date: '15:30, 16/05'
+      id: 'CONFIRMING',
+      name: 'Chờ xác nhận',
     },
     {
-      id: '3',
-      name: 'Trần Tùng',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
+      id: 'CONFIRMED',
+      name: 'Đã nhận',
     },
-    {
-      id: '4',
-      name: 'Quốc Bảo',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '5',
-      name: 'Như Hưng',
-      description: 'Cho bé uống nước nhiều',
-      date: '15:30, 16/05'
-    }
   ],
   MEDICAL: [
-    { id: 'notReceived', name: 'Chưa nhận' },
-    { id: 'received', name: 'Đã nhận' },
-    { id: 'finish', name: 'Hoàn thành' },
-  ],
-  DATA_MEDICAL: [
-    {
-      id: '1',
-      name: 'Su Beo',
-      description: 'Bệnh Ho',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '2',
-      name: 'Vân Khánh',
-      description: 'Bệnh xổ mũi',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '3',
-      name: 'Trần Tùng',
-      description: 'Bệnh đỏ mắt',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '4',
-      name: 'Quốc Bảo',
-      description: 'Bệnh ho',
-      date: '15:30, 16/05'
-    },
-    {
-      id: '5',
-      name: 'Như Hưng',
-      description: 'Bệnh bầm da',
-      date: '15:30, 16/05'
-    }
+    { id: 'PENDING', name: 'Chưa nhận' },
+    { id: 'RECEIVED', name: 'Đã nhận' },
+    { id: 'PROCESSED', name: 'Hoàn thành' },
   ],
   DATA_BUS: [
     {
       id: '1',
       name: 'Số trẻ đăng ký xe bus',
-      number: '56'
+      number: '56',
+      image: '/images/icon/letter.svg'
     },
     {
       id: '2',
       name: 'Đón trẻ lên xe',
-      number: '56'
+      number: '56',
+      image: '/images/icon/up-arrow.svg'
     },
     {
       id: '3',
       name: 'Đón trẻ xuống xe',
-      number: '56'
+      number: '56',
+      image: '/images/icon/down-arrow.svg'
     },
     {
       id: '4',
       name: 'Trả trẻ lên xe',
-      number: '56'
+      number: '56',
+      image: '/images/icon/up-arrow.svg'
     },
     {
       id: '5',
       name: 'Trả trẻ xuống xe',
-      number: '56'
+      number: '56',
+      image: '/images/icon/down-arrow.svg'
     }
   ],
   ATTENDANCE: [
     {
       id: 'QUANTITY',
       name: 'Sỉ số trẻ',
-      number: '150'
+      number: '150',
+      image: '/images/icon/contacts.svg',
+      title: 'Danh sách sỉ số trẻ'
     },
     {
       id: 'CHILDREN_IN_CLASS',
       name: 'Điểm danh vào lớp',
-      number: '143'
+      number: '143',
+      image: '/images/icon/books.svg',
+      title: 'Danh sách điểm danh vào lớp'
     },
     {
       id: 'UNPAID_LEAVE',
       name: 'Vắng không phép',
-      number: '15'
+      number: '15',
+      image: '/images/icon/sad.svg',
+      title: 'Danh sách trẻ vắng không phép'
     },
     {
       id: 'ANNUAL_LEAVE',
       name: 'Vắng có phép',
-      number: '13'
+      number: '13',
+      image: '/images/icon/happy.svg',
+      title: 'Danh sách trẻ vắng có phép'
     }
-  ],
-  STUDENTS: [
-    {
-      id: '1',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '2',
-      name: 'Lâm Thị Minh Khuê'
-    },
-    {
-      id: '3',
-      name: 'Thạch Tuấn Khang'
-    },
-    {
-      id: '4',
-      name: 'Trần Tuấn Khương'
-    },
-    {
-      id: '5',
-      name: 'Trần Khôi Khải Vĩ'
-    },
-    {
-      id: '6',
-      name: 'Trần Hải'
-    },
-    {
-      id: '7',
-      name: 'Phạm Trương Bảo Nguyên'
-    },
-    {
-      id: '8',
-      name: 'Lâm Thị Tố Trinh'
-    },
-    {
-      id: '9',
-      name: 'Lyu You Lin'
-    },
-    {
-      id: '10',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '11',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '12',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '13',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '14',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '15',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '16',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
-    {
-      id: '17',
-      name: 'Bùi Ngọc Thy Nhân'
-    },
   ],
   MENU: [
     {
@@ -239,80 +132,64 @@ export const variables = {
     { id: 'chart', name: 'Biểu đồ thống kê' },
     { id: 'history', name: 'Lịch sử nhập' },
   ],
-  HEALTHS: [
+  STATUS_TIME_CODE: [
     {
-      id: '1',
-      name: 'Số lần pipi',
-      description: 'Bé thường xuyên đi pipi mặc dù uống ít nước',
-      status: '3',
+      id: '',
+      name: 'Tất cả thời gian'
     },
     {
-      id: '2',
-      name: 'Ăn sáng',
-      description: '',
-      status: 'Tốt',
+      id: 'BEFORE_BREAKFAST',
+      name: 'Trước ăn sáng',
     },
     {
-      id: '3',
-      name: 'Xế sáng',
-      description: '',
-      status: 'Tốt',
+      id: 'AFTER_BREAKFAST',
+      name: 'Sau ăn sáng',
     },
     {
-      id: '4',
-      name: 'Số lần pupu',
-      description: '',
-      status: '1',
+      id: 'BEFORE_SECOND_BREAKFAST',
+      name: 'Trước xế sáng'
     },
     {
-      id: '5',
-      name: 'Ăn trưa',
-      description: '',
-      status: 'Tốt',
+      id: 'AFTER_SECOND_BREAKFAST',
+      name: 'Sau xế sáng'
     },
     {
-      id: '6',
-      name: 'Xế trưa',
-      description: '',
-      status: 'Tốt',
+      id: 'BEFORE_LUNCH',
+      name: 'Trước ăn trưa',
     },
     {
-      id: '7',
-      name: 'Lượng nước uống',
-      description: 'Bình 50ml',
-      status: '3 bình',
+      id: 'AFTER_LUNCH',
+      name: 'Sau ăn trưa',
     },
     {
-      id: '8',
-      name: 'Ngủ trưa',
-      description: '',
-      status: 'Tốt',
+      id: 'BEFORE_SECOND_LUNCH',
+      name: 'Trước xế trưa',
     },
     {
-      id: '9',
-      name: 'Xế chiều',
-      description: 'Bé không muốn ăn',
-      status: 'Khác',
+      id: 'AFTER_SECOND_LUNCH',
+      name: 'Sau xế trưa',
     },
     {
-      id: '10',
-      name: 'Bữa uống',
-      description: '',
-      status: 'Tốt',
+      id: 'BEFORE_TEA_TIME',
+      name: 'Trước xế chiều',
     },
     {
-      id: '11',
-      name: 'Bữa ngoài giờ',
-      description: '',
-      status: 'Tốt',
+      id: 'AFTER_TEA_TIME',
+      name: 'Sau xế chiều',
     },
-    {
-      id: '12',
-      name: 'Tình huống',
-      description: 'Bé hay khóc nhè',
-      status: '',
-    },
-  ]
+  ],
+  STATUS_TIME_CODE_NAME: {
+    BEFORE_BREAKFAST: 'Trước ăn sáng',
+    AFTER_BREAKFAST: 'Sau ăn sáng',
+    BEFORE_LUNCH: 'Trước ăn trưa',
+    AFTER_LUNCH: 'Sau ăn trưa',
+    BEFORE_SECOND_BREAKFAST: 'Trước xế sáng',
+    AFTER_SECOND_BREAKFAST: 'Sau xế sáng',
+    BEFORE_SECOND_LUNCH: 'Trước xế trưa',
+    AFTER_SECOND_LUNCH: 'Sau xế trưa',
+    BEFORE_TEA_TIME: 'Trước xế chiều',
+    AFTER_TEA_TIME: 'Sau xế chiều'
+  },
 };
 
 export default variables;

@@ -11,13 +11,17 @@ export default {
     criteriaGroupProperties: [],
     branches: [],
     classes: [],
+    students: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      data: payload,
+    }),
+    SET_STUDENTS: (state, { payload }) => ({
+      ...state,
+      students: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -42,6 +46,15 @@ export default {
     }),
   },
   effects: {
+    *GET_STUDENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getStudents, payload);
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: response,
+        });
+      } catch (error) {}
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
@@ -60,19 +73,12 @@ export default {
         });
       } catch (error) {}
     },
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
+        callback(response);
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

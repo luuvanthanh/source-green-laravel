@@ -1,208 +1,204 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'umi';
+import { memo, useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Avatar, Image } from 'antd';
-import PropTypes from 'prop-types';
+import { Tabs, Modal, Avatar, Image, Skeleton } from 'antd';
+import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
 
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from '../index.scss';
 import variablesModules from '../variables';
 
 const { TabPane } = Tabs;
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
 
-@connect(({ user, loading }) => ({ user, loading }))
-class NoteComponent extends PureComponent {
-  formRef = React.createRef();
+const Index = memo(() => {
+  const dispatch = useDispatch();
+  const [ { notes, detailsNote }, loading] = useSelector(({ loading: { effects }, overView }) => [
+    overView,
+    effects,
+  ]);
 
-  constructor(props, context) {
-    super(props, context);
-    const { user } = props;
-    this.state = {
-      visible: false
-    };
-    setIsMounted(true);
-  }
+  const [visible, setVisible ] = useState(false);
+  const [search, setSearch] = useState({
+    classId: undefined,
+    page: variables.PAGINATION.PAGE,
+    limit: variables.PAGINATION.SIZEMAX,
+    status: variables.STATUS.CONFIRMING
+  });
 
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
-
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-   setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
+  const fetchDataNotes = () => {
+    dispatch({
+      type: 'overView/GET_DATA_NOTE',
+      payload: {
+        ...search
+      },
+    });
   };
 
-  cancelModal = () => {
-    this.setStateData({ visible: false });
-  }
+  useEffect(() => {
+    fetchDataNotes();
+  }, [search.status]);
 
-  getDetails = () => {
-    this.setStateData({ visible: true });
-  }
+  const cancelModal = () => {
+    setVisible(false);
+  };
 
-  render() {
-    const { visible } = this.state;
-    return (
-      <>
-        <Modal
-          className={styles['modal-note']}
-          title="Ghi chú"
-          visible={visible}
-          width={576}
-          onCancel={this.cancelModal}
-          footer={null}
-        >
-          <div className={classnames('px15', styles['header-modal'])}>
-            <div className="row">
-              <div className="col-12 mt20">
-                <p className="mb0">10:30, 16/05/2021</p>
-                <h5 className="font-size-24 my5">Giữ ấm cho bé</h5>
-                <p className="mb0 font-size-16">Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió.</p>
-                <Image.PreviewGroup>
-                  <Image
-                    width={110}
-                    className="my10"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-                  />
-                  <Image
-                    width={110}
-                    className="my10"
-                    src="https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg"
-                  />
-                </Image.PreviewGroup>
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <AvatarTable
-                  // fileImage={Helper.getPathAvatarJson(fileImage)}
-                  fullName={'Bùi Ngọc Thy Nhân'}
-                  description={'32 tháng tuổi'}
-                  size={50}
-                />
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <AvatarTable
-                  // fileImage={Helper.getPathAvatarJson(fileImage)}
-                  fullName={'Nguyễn Anh'}
-                  description={'Phụ huynh'}
-                  size={50}
-                />
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <div className="d-flex">
-                  <Avatar
-                    src=""
-                    size={50}
-                  />
-                  <div className="ml10">
-                    <p className={classnames('mb0', styles['class'])}>Lớp</p>
-                    <p className="font-weight-bold font-size-14 mb0">Preschool 2</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <div className="d-flex">
-                  <Avatar
-                    src=""
-                    size={50}
-                  />
-                  <div className="ml10">
-                    <p className={classnames('mb0', styles['class'])}>Giáo viên</p>
-                    <p className="font-weight-bold font-size-14 mb0">Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <p className="mb5">Trạng thái</p>
-                <div className={styles['btn-status']}>{Helper.tagStatus('', 'Đã nhận')}</div>
-              </div>
-              <div className="col-md-6 py20 border-top">
-                <p className="mb5">Giáo viên đã nhận</p>
-                <p className="font-weight-bold">Nguyễn Văn Tuyết lúc 10:35, 15/05/2021</p>
-              </div>
-            </div>
-          </div>
-        </Modal>
+  const getDetails = (id) => {
+    setVisible(true);
+    dispatch({
+      type: 'overView/GET_DETAILS_NOTE',
+      payload: { id }
+    });
+  };
 
-        <div className={classnames(styles['block-category'])}>
-          <div className={styles['body-tab']}>
-            <div className={styles['header-tab']}>
-              <div>
-                <img src={'/images/home/speech.svg'} alt="notification" className={styles['icon']} />
-                <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Ghi chú</span>
-              </div>
-              <p className={classnames('mb0', 'font-size-14')}>15</p>
-            </div>
-            <Tabs>
-              {variablesModules.NOTE.map(({ id, name }) => (
-                <TabPane tab={name} key={id} />
-              ))}
-            </Tabs>
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
+  const changeTab = (tab) => {
+    setSearch((prev) => ({
+      ...prev,
+      status: tab
+    }));
+  };
+
+  return (
+    <>
+      <Modal
+        className={styles['modal-note']}
+        title="Ghi chú"
+        visible={visible}
+        width={576}
+        onCancel={cancelModal}
+        footer={null}
+      >
+        <div className={classnames('px15', styles['header-modal'])}>
+          <div className="row">
+            <div className="col-12 mt20">
+              <p className="mb0">{Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}</p>
+              <h5 className="font-size-24 my5">{detailsNote?.name}</h5>
+              <p className="font-size-16">{detailsNote?.description}</p>
               {
-                variablesModules.DATA_NOTES.map((item, index) => (
-                  <div className={styles['content-tab']} key={index} onClick={this.getDetails}>
-                    <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                      <AvatarTable
-                        className="full-name-bold"
-                        // fileImage={Helper.getPathAvatarJson(fileImage)}
-                        fullName={item?.name}
-                        size={36}
+                !_.isEmpty(detailsNote.fileImage) && (
+                  <Image.PreviewGroup>
+                    {detailsNote.fileImage.map((item, index) => (
+                      <Image
+                        key={index}
+                        width={110}
+                        className="mb10"
+                        src={`${API_UPLOAD}${Helper.getPathAvatarJson(item)}`}
                       />
-                      <p className={classnames('mb0', styles['date'])}>{item?.date}</p>
-                    </div>
-                    <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.description}</p>
-                  </div>
-                ))
+                    ))}
+                  </Image.PreviewGroup>
+                )
               }
-            </Scrollbars>
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(detailsNote?.student?.studentParents[0]?.parent?.fileImage)}
+                fullName={detailsNote?.student?.studentParents[0]?.parent?.fullName}
+                description="Phụ huynh"
+                size={50}
+              />
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(detailsNote?.student?.fileImage)}
+                fullName={detailsNote?.student?.fullName || ''}
+                description={`${detailsNote?.student?.age || ''} tháng tuổi`}
+                size={50}
+              />
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <div className="d-flex">
+                <span className={styles.circleIcon}>
+                  <span className="icon-open-book" />
+                </span>
+                <div className="ml10">
+                  <p className={classnames('mb0', styles.class)}>Lớp</p>
+                  <p className="font-weight-bold font-size-14 mb0">{detailsNote?.student?.class?.name || ''}</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <div className="d-flex">
+                <Avatar
+                  src={`${API_UPLOAD}${Helper.getPathAvatarJson(detailsNote?.employee?.fileImage)}`}
+                  size={50}
+                />
+                <div className="ml10">
+                  <p className={classnames('mb0', styles.class)}>Giáo viên</p>
+                  <p className="font-weight-bold font-size-14 mb0">{detailsNote?.employee?.fullName || ''}</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <p className="mb5">Trạng thái</p>
+              <div className={styles['btn-status']}>
+                {Helper.tagStatus(
+                  `${detailsNote?.status === variables.STATUS.CONFIRMING ? variables.STATUS.VALID : ''}`,
+                  `${detailsNote?.status === variables.STATUS.CONFIRMING ? 'Chưa nhận' : 'Đã nhận'}`
+                )}
+              </div>
+            </div>
+            <div className="col-md-6 py20 border-top">
+              <p className="mb5">Giáo viên đã nhận</p>
+              <p className="font-weight-bold">
+                {`${detailsNote?.employee?.fullName} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
+              </p>
+            </div>
           </div>
         </div>
-      </>
-    );
-  }
-}
+      </Modal>
 
-NoteComponent.propTypes = {
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-};
+      <div className={classnames(styles['block-category'])}>
+        <div className={styles['body-tab']}>
+          <div className={styles['header-tab']}>
+            <div>
+              <img src='/images/home/speech.svg' alt="notification" className={styles.icon} />
+              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Ghi chú</span>
+            </div>
+            <p className={classnames('mb0', 'font-size-14')}>15</p>
+          </div>
+          <Tabs onChange={changeTab} activeKey={search?.tab}>
+            {variablesModules.NOTE.map(({ id, name }) => (
+              <TabPane tab={name} key={id} />
+            ))}
+          </Tabs>
+          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
+            {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(notes) && (
+              <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+            )}
+            {loading['overView/GET_DATA_NOTE'] ? (
+              <>
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+                <Skeleton avatar paragraph={{ rows: 4 }} active />
+              </>
+            ) : (
+              notes.map((item, index) => (
+                <div
+                  className={styles['content-tab']}
+                  key={index}
+                  onClick={() => getDetails(item.id)}
+                  aria-hidden="true"
+                >
+                  <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                    <AvatarTable
+                      className="full-name-bold"
+                      fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                      fullName={item?.student?.fullName}
+                      size={36}
+                    />
+                    <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                  </div>
+                  <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.name || ''}</p>
+                </div>
+              ))
+            )}
+          </Scrollbars>
+        </div>
+      </div>
+    </>
+  );
+});
 
-NoteComponent.defaultProps = {
-  dispatch: {},
-  loading: {},
-  location: {},
-};
-
-export default NoteComponent ;
+export default Index;

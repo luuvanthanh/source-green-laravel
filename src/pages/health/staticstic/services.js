@@ -3,19 +3,10 @@ import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/student-criterias', {
+  return request('/student-criterias/statistic-by-property', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
-      reportDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.reportDate,
-        }),
-        format: variables.DATE_FORMAT.DATE_AFTER,
-        isUTC: false,
-      }),
+      ...params,
     },
   });
 }
@@ -25,7 +16,7 @@ export function getCriteriaGroupProperties(params = {}) {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-      type: 'HEALTH'
+      type: 'HEALTH',
     },
   });
 }

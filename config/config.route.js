@@ -781,6 +781,18 @@ export default [
             authority: [],
           },
           {
+            path: '/quan-ly-nhan-su/bang-cham-cong-them-ngoai-gio',
+            component: './hrm/works/overtime',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-cham-cong-xe-bus',
+            component: './hrm/works/bus',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/quan-ly-nhan-su/tong-hop-cong-gio',
             component: './hrm/works/hours',
             wrappers: ['@/wrappers/auth'],
@@ -1461,6 +1473,12 @@ export default [
           {
             path: '/y-te/lich-su',
             component: './medical/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/y-te/so-theo-doi',
+            component: './medical/logbook',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },

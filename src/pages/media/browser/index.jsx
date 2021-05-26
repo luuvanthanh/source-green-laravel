@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
-import { Form, Image, Tag, Modal } from 'antd';
+import { Form, Image, Tag, Modal, Progress } from 'antd';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory, useLocation } from 'umi';
@@ -14,10 +14,10 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import NoData from '@/components/CommonComponent/NoData';
-import UploadModal from './upload';
 import Loading from '@/components/CommonComponent/Loading';
 
 import { Helper, variables } from '@/utils';
+import UploadModal from './upload';
 import localVariables from '../utils/variables';
 import styles from './style.module.scss';
 
@@ -28,12 +28,13 @@ const Index = memo(() => {
   const history = useHistory();
   const { query, pathname } = useLocation();
 
-  const [{ data }, loading] = useSelector(({ mediaBrowser, loading: { effects } }) => [
+  const [{ data, progess }, loading] = useSelector(({ mediaBrowser, loading: { effects } }) => [
     mediaBrowser,
     effects,
   ]);
   const dispatch = useDispatch();
 
+  const [visibleProgress, setVisibleProgress] = useState(false);
   const [visibleUpload, setVisibleUpload] = useState(false);
   const [search, setSearch] = useState({
     uploadDate: query?.uploadDate || moment(),
@@ -63,6 +64,41 @@ const Index = memo(() => {
     });
   };
 
+  const getProgress = () => {
+    dispatch({
+      type: 'mediaBrowser/GET_PROGRESS',
+      payload: {},
+      callback: (response) => {
+        if (response) {
+          if (response?.data?.status !== 'starting') {
+            setVisibleProgress(true);
+          }
+        }
+      },
+    });
+  };
+
+  const fetchMedia = useCallback(() => {
+    dispatch({
+      type: 'mediaBrowser/GET_DATA',
+      payload: {
+        ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          getProgress();
+        }
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        ...search,
+        uploadDate: Helper.getDate(search.uploadDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
+    });
+  }, [search]);
+
   const onOk = useCallback(() => {
     setVisibleUpload(false);
     fetchMedia();
@@ -75,31 +111,12 @@ const Index = memo(() => {
     }));
   };
 
-  const fetchMedia = useCallback(() => {
-    dispatch({
-      type: 'mediaBrowser/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({
-        ...search,
-        uploadDate: Helper.getDate(search.uploadDate, variables.DATE_FORMAT.DATE_AFTER),
-      }),
-    });
-  }, [search]);
-
   const classify = () => {
     dispatch({
       type: 'mediaBrowser/CLASSIFY',
       payload: images.filter((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING),
       callback: () => {
-        history.push({
-          pathname: '/ghi-nhan/duyet-hinh',
-          // query: Helper.convertParamSearch(search),
-        });
+        fetchMedia();
       },
     });
   };
@@ -112,11 +129,38 @@ const Index = memo(() => {
     setImages(data);
   }, [data]);
 
+  const hiddenProgress = () => {
+    setVisibleProgress(false);
+  };
+
   return (
     <>
+      {visibleProgress && (
+        <div className={styles['progress-container']}>
+          <div
+            className={csx(
+              styles['progess-content'],
+              'd-flex',
+              'justify-content-between',
+              'align-items-center',
+              'mb10',
+            )}
+          >
+            <p className={styles.norm}>Đang xử lý lọc hình ảnh</p>
+            <p
+              className={csx(styles.norm, styles.cancel)}
+              onClick={hiddenProgress}
+              role="presentation"
+            >
+              Hủy
+            </p>
+          </div>
+          <Progress strokeLinecap="square" percent={progess?.progress || 0} />
+        </div>
+      )}
       <Helmet title="Duyệt hình" />
       <Pane className="p20">
-        <Pane className="d-flex mb20">
+        <Pane className="d-flex mb20 align-items-center">
           <Heading type="page-title">Danh sách hình ảnh đã tải lên</Heading>
           <Button
             className="ml-auto"
@@ -188,13 +232,14 @@ const Index = memo(() => {
                                   localVariables.CLASSIFY_STATUS_NAME.PENDING}
                               </Tag>
                               <div
-                                className={styles['cancel']}
+                                className={styles.cancel}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   removeImage(item.id);
                                 }}
+                                role="presentation"
                               >
-                                <span className="icon-cancel"></span>
+                                <span className="icon-cancel" />
                               </div>
                             </>
                           ),
@@ -210,7 +255,10 @@ const Index = memo(() => {
 
         <Pane>
           <Button
-            disabled={!size(images)}
+            disabled={
+              !size(images) ||
+              !images.find((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING)
+            }
             loading={loading['mediaBrowser/CLASSIFY']}
             className="mx-auto"
             color="success"

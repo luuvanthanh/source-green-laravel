@@ -1,16 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last, omit } from 'lodash';
 import moment from 'moment';
-import { DeleteOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
+import Table from '@/components/CommonComponent/Table';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -40,7 +42,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      detail: [],
+    };
     setIsMounted(true);
   }
 
@@ -69,26 +73,13 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params?.id) {
       this.formRef.current.setFieldsValue({
         ...details,
-        startDate: details.startDate && moment(details.startDate),
-        endDate: details.endDate && moment(details.endDate),
-        detail: details.businessCardDetail.map((item) => ({
-          ...item,
-          date: item.date && moment(details.date),
-          startTime:
-            item.startTime &&
-            moment(
-              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.startTime}`,
-            ),
-          endTime:
-            item.endTime &&
-            moment(
-              `${moment(details.date).format(variables.DATE_FORMAT.DATE_AFTER)} ${item.endTime}`,
-            ),
-        })),
+        time: details.time && moment(details.time),
+        employeeId: details.otherDeclarationDetail.map((item) => item.employeeId),
       });
+      this.onSetDetail(details.otherDeclarationDetail);
     }
   }
 
@@ -114,18 +105,27 @@ class Index extends PureComponent {
     });
   };
 
+  onSetDetail = (detail) => {
+    this.setStateData({
+      detail,
+    });
+  };
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: params.id ? 'otherDeclarationsAdd/UPDATE' : 'otherDeclarationsAdd/ADD',
       payload: {
         id: params.id,
         ...values,
-        detail: values.detail.map((item) => ({
-          ...item,
+        time: moment(values.time).startOf('months'),
+        detail: detail.map((item) => ({
+          ...omit(item, 'employee'),
+          employeeId: item?.employee?.id,
         })),
       },
       callback: (response, error) => {
@@ -133,7 +133,7 @@ class Index extends PureComponent {
           history.goBack();
         }
         if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+          if (error?.data?.errors && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {
               this.formRef.current.setFields([
                 {
@@ -148,50 +148,206 @@ class Index extends PureComponent {
     });
   };
 
-  onChangeTimePicker = (timeChoose, index, type = 'startTime') => {
-    if (this.formRef.current) {
-      const { detail } = this.formRef.current.getFieldsValue();
-      this.formRef.current.setFieldsValue({
-        detail: detail.map((item, indexTime) => {
-          if (indexTime === index) {
-            return {
-              ...item,
-              startTime: type === 'startTime' ? timeChoose : item.startTime,
-              endTime: type === 'endTime' ? timeChoose : item.endTime,
-            };
-          }
-          return item;
-        }),
-      });
-    }
+  onChangeEmployee = (value) => {
+    const { categories } = this.props;
+    const employee = categories.users.find((item) => item.id === last(value));
+    this.setStateData((prevState) => ({
+      detail: [
+        ...prevState.detail,
+        {
+          employee,
+          allowance: 0,
+          bonus: 0,
+          retrieval: 0,
+          paymentOfSocialInsurance: 0,
+          employeeSocialInsurance: 0,
+          charity: 0,
+          companySocialInsurance: 0,
+        },
+      ],
+    }));
   };
+
+  onChangeNumber = (value, record, key = 'allowance') => {
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.map((item) => {
+        if (item?.employee?.id === record?.employee?.id) {
+          return {
+            ...item,
+            [key]: value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onRemove = (record) => {
+    const data = this.formRef.current.getFieldsValue();
+    this.setStateData((prevState) => ({
+      detail: prevState.detail.filter((item) => item?.employee?.id !== record?.employee?.id),
+    }));
+    this.formRef.current.setFieldsValue({
+      ...data,
+      employeeId: data.employeeId.filter((item) => item !== record?.employee?.id),
+    });
+  };
+
+  /**
+   * Function header table
+   */
+  header = () => [
+    {
+      title: 'Nhân viên',
+      key: 'user',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+          fullName={get(record, 'employee.fullName')}
+        />
+      ),
+    },
+    {
+      title: 'Phụ cấp HT-TCSK',
+      key: 'allowance',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.allowance}
+          onChange={(value) => this.onChangeNumber(value, record, 'allowance')}
+        />
+      ),
+    },
+    {
+      title: 'Thưởng tháng 13',
+      key: 'bonus',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.bonus}
+          onChange={(value) => this.onChangeNumber(value, record, 'bonus')}
+        />
+      ),
+    },
+    {
+      title: 'Truy lĩnh',
+      key: 'retrieval',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.retrieval}
+          onChange={(value) => this.onChangeNumber(value, record, 'retrieval')}
+        />
+      ),
+    },
+    {
+      title: 'Thanh toán từ BHXH',
+      key: 'paymentOfSocialInsurance',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.paymentOfSocialInsurance}
+          onChange={(value) => this.onChangeNumber(value, record, 'paymentOfSocialInsurance')}
+        />
+      ),
+    },
+    {
+      title: 'Điều chỉnh BHXH NLĐ',
+      key: 'employeeSocialInsurance',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.employeeSocialInsurance}
+          onChange={(value) => this.onChangeNumber(value, record, 'employeeSocialInsurance')}
+        />
+      ),
+    },
+    {
+      title: 'Điều chỉnh BHXH CTT',
+      key: 'companySocialInsurance',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.companySocialInsurance}
+          onChange={(value) => this.onChangeNumber(value, record, 'companySocialInsurance')}
+        />
+      ),
+    },
+    {
+      title: 'Đóng góp từ thiện',
+      key: 'charity',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <InputNumber
+          className={classnames('input-number', styles['input-number-container'])}
+          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+          placeholder="Nhập"
+          value={record.charity}
+          onChange={(value) => this.onChangeNumber(value, record, 'charity')}
+        />
+      ),
+    },
+    {
+      key: 'action',
+      className: 'min-width-80',
+      width: 80,
+      fixed: 'right',
+      render: (record) => (
+        <div className={styles['list-button']}>
+          <Button color="danger" icon="remove" onClick={() => this.onRemove(record)} />
+        </div>
+      ),
+    },
+  ];
 
   render() {
     const {
-      categories,
       menuData,
+      categories,
       loading: { effects },
       match: { params },
     } = this.props;
+    const { detail } = this.state;
     const loadingSubmit =
       effects['otherDeclarationsAdd/ADD'] || effects['otherDeclarationsAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs
-          last={
-            params.id
-              ? 'Chỉnh sửa Khai báo các khoản khác'
-              : 'Tạo Khai báo các khoản khác'
-          }
+          last={params.id ? 'Chỉnh sửa Khai báo các khoản khác' : 'Tạo Khai báo các khoản khác'}
           menu={menuData}
         />
         <Form
           className={styles['layout-form']}
           layout="vertical"
           ref={this.formRef}
-          initialValues={{
-            detail: [{}],
-          }}
+          initialValues={{}}
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
@@ -203,140 +359,48 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="THỜI GIAN"
+                    label="Thời gian"
                     name="time"
                     rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_PICKER}
                   />
                 </div>
                 <div className="col-lg-6">
                   <FormItem
-                    label="SỐ CÔNG"
+                    label="Số công"
                     name="numberOfWorkdays"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.INPUT_COUNT}
                   />
                 </div>
               </div>
-              <hr />
               <div className="row">
                 <div className="col-lg-12">
-                  <Form.List name="detail">
-                    {(fields, { add, remove }) => (
-                      <div>
-                        {fields.map((field, index) => (
-                          <div
-                            className={classnames(
-                              'row',
-                              styles['form-item'],
-                              styles['form-item-advance'],
-                            )}
-                            key={field.key}
-                          >
-                            <div className="col-lg-6">
-                              <FormItem
-                                data={Helper.convertSelectUsers(categories?.users)}
-                                label="NHÂN VIÊN"
-                                name={[field.name, 'employeeId']}
-                                fieldKey={[field.fieldKey, 'employeeId']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.SELECT}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="PHỤ CẤP"
-                                name={[field.name, 'allowance']}
-                                fieldKey={[field.fieldKey, 'allowance']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_COUNT}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="THƯỞNG THÁNG 13"
-                                name={[field.name, 'bonus']}
-                                fieldKey={[field.fieldKey, 'bonus']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="TRUY LĨNH"
-                                name={[field.name, 'retrieval']}
-                                fieldKey={[field.fieldKey, 'retrieval']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="THANH TOÁN TỪ BHXH"
-                                name={[field.name, 'paymentOfSocialInsurance']}
-                                fieldKey={[field.fieldKey, 'paymentOfSocialInsurance']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="ĐIỀU CHỈNH BHXH NLD"
-                                name={[field.name, 'employeeSocialInsurance']}
-                                fieldKey={[field.fieldKey, 'employeeSocialInsurance']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="ĐIỀU CHỈNH BHXH CTT"
-                                name={[field.name, 'companySocialInsurance']}
-                                fieldKey={[field.fieldKey, 'companySocialInsurance']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-                            <div className="col-lg-6">
-                              <FormItem
-                                label="ĐÓNG GÓP TỪ THIỆN"
-                                name={[field.name, 'charity']}
-                                fieldKey={[field.fieldKey, 'charity']}
-                                rules={[variables.RULES.EMPTY]}
-                                type={variables.INPUT_NUMBER}
-                              />
-                            </div>
-
-                            <>
-                              {fields?.length > 1 ? (
-                                <DeleteOutlined
-                                  className={classnames(styles['icon-delete'], 'ml-1')}
-                                  onClick={() => {
-                                    remove(field.name);
-                                  }}
-                                />
-                              ) : null}
-                            </>
-                          </div>
-                        ))}
-                        <div className="row mb-3">
-                          <div className="col-lg-3">
-                            <Button
-                              color="success"
-                              icon="plusMain"
-                              onClick={() => {
-                                add();
-                              }}
-                            >
-                              Thêm dòng
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </Form.List>
+                  <FormItem
+                    data={Helper.convertSelectUsers(categories?.users)}
+                    label="Nhân viên"
+                    name="employeeId"
+                    rules={[variables.RULES.EMPTY]}
+                    type={variables.SELECT_MUTILPLE}
+                    onChange={this.onChangeEmployee}
+                  />
                 </div>
               </div>
+              <hr />
+              <Table
+                bordered
+                columns={this.header()}
+                dataSource={detail}
+                isEmpty
+                className="table-edit"
+                pagination={false}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record?.employee?.id || record.id}
+                scroll={{ x: '100%' }}
+              />
             </div>
             <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
               <Button
@@ -366,6 +430,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.func,
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  categories: {},
+  menuData: [],
+  loading: {},
+};
 
 export default Index;

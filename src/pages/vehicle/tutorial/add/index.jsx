@@ -1,22 +1,22 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Avatar, Modal, Input } from 'antd';
+import { Form, Avatar, Input } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Select from '@/components/CommonComponent/Select';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
-import Children from './components/children';
-import Maps from './components/maps';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import variablesModules from '../../utils/variables';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import { head, isEmpty, omit } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
+import Maps from './components/maps';
+import Children from './components/children';
 
 let isMounted = true;
 /**
@@ -42,7 +42,6 @@ const mapStateToProps = ({ menu, tutorialAdd, loading }) => ({
   students: tutorialAdd.students,
   busInformations: tutorialAdd.busInformations,
 });
-const { confirm } = Modal;
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
@@ -72,7 +71,7 @@ class Index extends PureComponent {
     this.loadCategories();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const {
       details,
       match: { params },
@@ -277,7 +276,7 @@ class Index extends PureComponent {
   onRemoveChildren = (record, object) => {
     this.setStateData((prevState) => ({
       busPlaces: prevState.busPlaces.map((item) => {
-        if (item.parentId == object.parentId) {
+        if (item.parentId === object.parentId) {
           return {
             ...item,
             studentBusPlaces: item.studentBusPlaces.filter(
@@ -309,14 +308,12 @@ class Index extends PureComponent {
           title: 'HỌC SINH',
           key: 'name',
           className: 'min-width-200',
-          render: (record) => {
-            return (
-              <AvatarTable
-                fileImage={Helper.getPathAvatarJson(record.fileImage)}
-                fullName={record.fullName}
-              />
-            );
-          },
+          render: (record) => (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record.fileImage)}
+              fullName={record.fullName}
+            />
+          ),
         },
         {
           title: 'ĐỊA CHỈ',
@@ -418,7 +415,7 @@ class Index extends PureComponent {
       busRouteNannies: values.busRouteNannies.map((item) => ({
         nannyId: item,
       })),
-      busId: busId,
+      busId,
     };
     dispatch({
       type: params.id ? 'tutorialAdd/UPDATE' : 'tutorialAdd/ADD',
@@ -430,7 +427,7 @@ class Index extends PureComponent {
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
-              formRef.current.setFields([
+              this.formRef.current.setFields([
                 {
                   name: head(item.members),
                   errors: [item.message],
@@ -677,8 +674,9 @@ class Index extends PureComponent {
                         suffix={
                           <span
                             className={classnames('icon-map', styles['icon-map'])}
+                            role="presentation"
                             onClick={() => this.showMap(item)}
-                          ></span>
+                          />
                         }
                       />
                     </div>
@@ -751,7 +749,28 @@ class Index extends PureComponent {
     );
   }
 }
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  busInformations: PropTypes.arrayOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+};
 
-Index.propTypes = {};
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  branches: [],
+  busInformations: [],
+  details: {},
+  students: [],
+  menuData: [],
+  employees: [],
+};
 
 export default Index;

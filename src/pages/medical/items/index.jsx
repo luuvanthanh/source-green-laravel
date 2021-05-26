@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -12,8 +12,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
+import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 
 const { TabPane } = Tabs;
@@ -51,7 +51,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId,
@@ -59,7 +58,6 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -91,7 +89,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -260,61 +258,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
-      });
-    }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'medicalItems/UPDATE' : 'medicalItems/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    });
-  };
-
-  /**
    * Function remove items
    * @param {uid} id id of items
    */
@@ -407,7 +350,7 @@ class Index extends PureComponent {
         title: 'Dành cho bé',
         key: 'student',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.student?.fullName}</Text>,
+        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
       },
       {
         title: 'Trạng thái',
@@ -469,7 +412,7 @@ class Index extends PureComponent {
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={item.name} key={item.id}></TabPane>
+                <TabPane tab={item.name} key={item.id} />
               ))}
             </Tabs>
             <Form
@@ -526,13 +469,11 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: () => {
-                    history.push(`${pathname}/${record.id}/chi-tiet`);
-                  },
-                };
-              }}
+              onRow={(record) => ({
+                onClick: () => {
+                  history.push(`${pathname}/${record.id}/chi-tiet`);
+                },
+              })}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
@@ -550,6 +491,9 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -559,6 +503,9 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  error: {},
+  classes: [],
 };
 
 export default Index;

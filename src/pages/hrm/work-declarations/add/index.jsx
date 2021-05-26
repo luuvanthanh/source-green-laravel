@@ -2,11 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
@@ -14,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -32,7 +30,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ workDeclarationsAdd, loading, menu }) => ({
   dataStores: workDeclarationsAdd.dataStores,
-  loading: loading,
+  loading,
   error: workDeclarationsAdd.error,
   details: workDeclarationsAdd.details,
   categories: workDeclarationsAdd.categories,
@@ -110,12 +108,11 @@ class Index extends PureComponent {
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: values.time,
-            targetValue: '23:59:59',
           }),
           format: variables.DATE_FORMAT.TIME_FULL,
           isUTC: false,
         }),
-        id: get(params, 'id'),
+        id: params.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -233,6 +230,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  menuData: [],
+  categories: {},
+};
 
 export default Index;

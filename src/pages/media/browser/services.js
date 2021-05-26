@@ -18,6 +18,15 @@ export function get(params) {
   });
 }
 
+export function getProgress(params) {
+  return request('/posts/progress-image/current-user', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
 export function classify(data) {
   return request('/recorded-files/classify', {
     method: 'POST',

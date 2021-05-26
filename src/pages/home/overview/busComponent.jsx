@@ -1,73 +1,160 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'umi';
+import { memo, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs } from 'antd';
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import _ from 'lodash';
+import { Avatar, Form, Modal } from 'antd';
 
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Table from '@/components/CommonComponent/Table';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables } from '@/utils';
 
 import styles from '../index.scss';
 import variablesModules from '../variables';
 
-const { TabPane } = Tabs;
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
+const Index = memo(() => {
 
-@connect(({ user, loading }) => ({ user, loading }))
-class BusComponent extends PureComponent {
-  formRef = React.createRef();
-
-  constructor(props, context) {
-    super(props, context);
-    const { user } = props;
-    this.state = {
-    };
-    setIsMounted(true);
-  }
-
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState('');
+  const [details, setDetails] = useState({});
 
   /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
+   * Function header table
    */
-   setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
+  const header = () => [
+    {
+      title: 'Trẻ',
+      key: 'children',
+      className: 'min-width-250',
+      width: 250,
+      render: () => (
+        <div className="d-flex align-items-center">
+          <Avatar
+            src="/images/slice/avatar_02.png"
+            shape="square"
+            size={40}
+          />
+          <p className="mb0 ml10">Su Beo</p>
+        </div>
+      )
+    },
+    {
+      title: 'Tuổi (tháng)',
+      key: 'age',
+      className: 'min-width-120',
+      width: 120,
+      render: () => '32 tháng'
+    },
+    {
+      title: 'Thời gian lên xe',
+      key: 'time',
+      className: 'min-width-120',
+      width: 120,
+      render: () => '07:01:12'
+    },
+    {
+      title: 'Phụ huynh',
+      key: 'parents',
+      className: 'min-width-250',
+      width: 250,
+      render: () => (
+        <div className="d-flex align-items-center">
+          <Avatar
+            src="/images/slice/avatar.png"
+            shape="square"
+            size={40}
+          />
+          <p className="mb0 ml10">Nguyễn Anh</p>
+        </div>
+      )
+    },
+    {
+      title: 'Lớp',
+      key: 'class',
+      className: 'min-width-120',
+      width: 120,
+      render: () => 'Preschool 1'
+    },
+    {
+      title: 'Giáo viên',
+      key: 'teacher',
+      className: 'min-width-250',
+      width: 250,
+      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
+    },
+  ];
+
+  const getDetail = (record) => {
+    setVisible(true);
+    setTitle(`Danh sách ${record?.name?.toLowerCase()}`);
+    setDetails(record);
   };
 
-  render() {
-    return (
+  const cancelModal = () => {
+    setVisible(false);
+  };
+
+  const selectBranch = () => {};
+
+  const onChange = () => {};
+
+  return (
+    <>
+      <Modal
+        className={styles['modal-student-detail']}
+        visible={visible}
+        title={title}
+        width="95%"
+        onCancel={cancelModal}
+        footer={null}
+      >
+        <div className="p20">
+          <Form>
+            <div className="row">
+              <div className="col-md-4 col-xl-3">
+                <FormItem
+                  className="mb-10"
+                  name="name"
+                  onChange={(event) => onChange(event, 'name')}
+                  placeholder="Nhập từ khóa tìm kiếm"
+                  type={variables.INPUT_SEARCH}
+                />
+              </div>
+              <div className="col-md-4 col-xl-2">
+                <FormItem
+                  className="mb-10"
+                  name="class"
+                  type={variables.SELECT}
+                  data={[]}
+                  onChange={selectBranch}
+                  allowClear={false}
+                />
+              </div>
+              <div className="col-md-4 col-xl-7">
+                <p className="d-flex align-items-center justify-content-end mb0">
+                  {details?.name} <span className="text-success font-size-30 font-weight-bold ml10">56</span>
+                </p>
+              </div>
+            </div>
+          </Form>
+          <Table
+            bordered
+            columns={header()}
+            dataSource={[{id: 1}, {id: 2}]}
+            // loading={loading}
+            pagination={false}
+            params={{
+              header: header(),
+              type: 'table',
+            }}
+            rowKey={(record) => record.id}
+            scroll={{ x: '100%' }}
+          />
+        </div>
+      </Modal>
       <div className={classnames(styles['block-category'])}>
         <div className={styles['body-tab']}>
           <div className={styles['header-tab']}>
             <div>
-              <img src={'/images/home/road.svg'} alt="notification" className={styles['icon']} />
+              <img src="/images/home/road.svg" alt="notification" className={styles.icon} />
               <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Bus</span>
             </div>
           </div>
@@ -77,48 +164,48 @@ class BusComponent extends PureComponent {
                 {variablesModules.DATA_BUS.map((item, index) => {
                   if (index === 0) {
                     return (
-                      <div key={index} className={classnames(styles['content-tab'], styles['bus'], 'width-100p', 'mb12')}>
+                      <div
+                        key={index}
+                        className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                        onClick={() => getDetail(item)}
+                        aria-hidden="true"
+                      >
                         <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                          <AvatarTable
-                            // fileImage={Helper.getPathAvatarJson(fileImage)}
-                            fullName={item.name}
-                            size={24}
-                          />
-                          <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black')}>{item.number}</p>
+                          <div className="d-flex align-items-center font-weight-bold ">
+                            <Avatar
+                              src={item.image}
+                              size={24}
+                            />
+                            <p className="mb0 ml10">{item?.name}</p>
+                          </div>
+                          <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{item.number}</p>
                         </div>
                       </div>
-                    )
+                    );
                   }
                   return (
-                    <div key={index} className={styles['half-width']}>
-                      <AvatarTable
-                        // fileImage={Helper.getPathAvatarJson(fileImage)}
+                    <div
+                      key={index}
+                      className={classnames(styles['half-width'], 'pointer')}
+                      onClick={() => getDetail(item)}
+                      aria-hidden="true"
+                    >
+                      <Avatar
+                        src={item.image}
                         size={30}
                       />
                       <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
-                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles['number'])}>{item.number}</p>
+                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </Scrollbars>
           </div>
         </div>
       </div>
-    );
-  }
-}
+    </>
+  );
+});
 
-BusComponent.propTypes = {
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-};
-
-BusComponent.defaultProps = {
-  dispatch: {},
-  loading: {},
-  location: {},
-};
-
-export default BusComponent;
+export default Index;

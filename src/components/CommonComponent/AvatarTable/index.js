@@ -10,7 +10,7 @@ class AvatarTable extends Component {
     const { fileImage, size, fullName, description, className } = this.props;
     if (fileImage && fullName) {
       return (
-        <div className={classnames(styles['avatar-container'], `${className ? styles(`${className}`) : ''}`)}>
+        <div className={classnames(styles['avatar-container'], styles[className])}>
           <Avatar shape="square" size={size || 40} src={`${API_UPLOAD}${fileImage}`} />
           {fullName && description && (
             <div className={styles.info}>

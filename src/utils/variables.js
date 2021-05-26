@@ -57,6 +57,7 @@ export const variables = {
   // PAGINATION
   PAGINATION: {
     PAGE: 1,
+    PAGE_SIZE_SMALL: 5,
     PAGE_SIZE: 10,
     SIZEMAX: 1000,
     PAGE_SIZE_OPTIONS: ['10', '20', '50', '100'],
@@ -67,7 +68,8 @@ export const variables = {
   DATE_FORMAT: {
     DATE: 'DD-MM-YYYY',
     DATE_TIME: 'DD-MM-YYYY, HH:mm',
-    TIME_DATE: ' HH:mm, DD-MM-YYYY',
+    TIME_DATE: 'HH:mm, DD-MM-YYYY',
+    TIME_DATE_MONTH: 'HH:mm, DD/MM',
     YEAR: 'YYYY',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
@@ -76,7 +78,11 @@ export const variables = {
     WEEKLY: 'weekly',
     // TODO: rename
     DATE_VI: 'DD/MM/YYYY',
+    TIME_DATE_VI: 'HH:mm, DD/MM/YYYY',
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
+    DATE_MONTH: 'DD/MM',
+    SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
+    MONTH_FULL: '[Tháng] MM/YYYY'
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -90,10 +96,6 @@ export const variables = {
   STATUS_404: 404,
   STATUS_500: 500,
   QUERY_STRING: 'queryString',
-  setDateData: {
-    format: { targetValue: 'HH:mm:ss' },
-    attributes: ['hour', 'minute', 'second'],
-  },
   EMPTY_DATA_TEXT: 'Chưa có dữ liệu',
   ROLES: {
     PARENT: 'PARENT',
@@ -101,7 +103,7 @@ export const variables = {
     HRM: 'HRM',
     ADMIN: 'ADMIN',
     ALL: 'ALL',
-    PRINCIPAL: 'PRINCIPAL'
+    PRINCIPAL: 'PRINCIPAL',
   },
   ROLES_PERMISSIONS: ['ADMIN', 'TEACHER', 'PARENT', 'HRM', 'PRINCIPAL'],
   CHOOSE: [
@@ -120,6 +122,9 @@ export const variables = {
     PENDING: 'PENDING',
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
+    CONFIRMING: 'CONFIRMING',
+    CONFIRMED: 'CONFIRMED',
+    PROCESSED: 'PROCESSED',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
@@ -127,6 +132,7 @@ export const variables = {
     PENDING: 'Làm thủ tục',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
+    CONFIRMING: 'Chờ xác nhận'
   },
   STATUS_ABSENT: {
     ANNUAL_LEAVE: 'ANNUAL_LEAVE',
@@ -140,6 +146,9 @@ export const variables = {
     HAVE_IN: 'Đã vào lớp',
     HAVE_OUT: 'Ra về',
   },
+  NO_DATA: 'Không có dữ liệu',
+  // eslint-disable-next-line security/detect-unsafe-regex
+  REGEX_NUMBER: /\B(?=(\d{3})+(?!\d))/g,
 };
 
 export default variables;

@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react';
-import { connect, history, Link } from 'umi';
-import { Form, Avatar } from 'antd';
+import { connect, history } from 'umi';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get, isInteger } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
+import { isEmpty, debounce, get, isInteger } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../../utils/Helper';
 import PropTypes from 'prop-types';
-import { CHOOSE } from './data.json';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../../utils/Helper';
+import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -48,7 +46,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         type: query?.type || 'DATE',
         fullName: query?.fullName,
@@ -57,7 +54,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -251,8 +247,8 @@ class Index extends PureComponent {
     return null;
   };
 
-  redirectHistory = (item, record) => {
-    return `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
+  redirectHistory = (item, record) =>
+    `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
       {
         startDate: Helper.getDate(item),
         endDate: Helper.getDate(item),
@@ -260,52 +256,60 @@ class Index extends PureComponent {
       },
       variables.QUERY_STRING,
     )}`;
-  };
-
-  redirectAdditionaltime = (record) => {
-    const { search } = this.state;
-    return `/cong-them?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  redirectSubtractionTime = (record) => {
-    const { search } = this.state;
-    return `/cong-tru?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
 
   renderWorkShift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
-      if (get(data, 'type')) return data.type;
-      if (data)
-        return isInteger(data.timekeepingReport)
-          ? data.timekeepingReport
-          : Helper.toFixed(data.timekeepingReport);
-      return '-';
+      if (get(data, 'type')) {
+        return (
+          <div
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+              [styles[`cell-heading-kc`]]: data.type === 'KC',
+            })}
+          >
+            {data.type}
+          </div>
+        );
+      }
+      if (data) {
+        return (
+          <div
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            })}
+          >
+            {isInteger(data.timekeepingReport)
+              ? data.timekeepingReport
+              : Helper.toFixed(data.timekeepingReport)}
+          </div>
+        );
+      }
+      return (
+        <div
+          className={classnames(styles['item-schedules'], {
+            [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        >
+          -
+        </div>
+      );
     }
-    return '-';
+    return (
+      <div
+        className={classnames(styles['item-schedules'], {
+          [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+        })}
+      >
+        -
+      </div>
+    );
   };
 
   /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const { search } = this.state;
     const headerWork = [
       {
@@ -320,7 +324,7 @@ class Index extends PureComponent {
     ];
     const arrayHeader = [
       {
-        title: 'Họ và Tên',
+        title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-200 col-fixed-200',
         width: 200,
@@ -341,14 +345,10 @@ class Index extends PureComponent {
         return {
           title: this.renderTitleHeader(index, item),
           key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100'),
+          className: classnames('min-width-100', 'max-width-100', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
           width: 100,
           align: 'center',
-          render: (record) => (
-            <Link className={styles['item-schedules']} to={this.redirectHistory(item, record)}>
-              {this.renderWorkShift(record.timeKeepingReport, currentDate)}
-            </Link>
-          ),
+          render: (record) => this.renderWorkShift(record.timeKeepingReport, currentDate),
         };
       },
     );
@@ -432,7 +432,6 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              bordered
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '60vh' }}
             />
@@ -450,6 +449,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -459,6 +459,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

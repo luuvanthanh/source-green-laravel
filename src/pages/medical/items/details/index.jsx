@@ -1,24 +1,23 @@
 import { memo, useRef, useEffect } from 'react';
-import { Form, List } from 'antd';
+import { List } from 'antd';
 import { Helmet } from 'react-helmet';
 import Pane from '@/components/CommonComponent/Pane';
 import { isArray } from 'lodash';
+import classnames from 'classnames';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
-import variablesModules from '../../utils/variables';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import variablesModules from '../../utils/variables';
 
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const dispatch = useDispatch();
   const {
     loading: { effects },
@@ -32,19 +31,17 @@ const Index = memo(({}) => {
     menuData: menu.menuLeftMedical,
   }));
   const params = useParams();
-  const formRef = useRef();
   const loading = effects[`medicalItemsDetails/GET_DETAILS`];
-  const loadingSubmit = effects[`medicalItemsDetails/UPDATE_STATUS`];
   const mounted = useRef(false);
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
+  // const mountedSet = (action, value) => {
+  //   if (mounted.current) {
+  //     action(value);
+  //   }
+  // };
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted?.current;
   }, []);
 
   useEffect(() => {
@@ -55,24 +52,6 @@ const Index = memo(({}) => {
       });
     }
   }, [params.id]);
-
-  const onFinish = (values) => {
-    dispatch({
-      type: 'medicalItemsDetails/UPDATE_STATUS',
-      payload: {
-        ...values,
-        id: params.id,
-      },
-      callback: (response) => {
-        if (response) {
-          dispatch({
-            type: 'medicalItemsDetails/GET_DETAILS',
-            payload: params,
-          });
-        }
-      },
-    });
-  };
 
   return (
     <>
@@ -108,9 +87,9 @@ const Index = memo(({}) => {
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <label className={styles.infoLabel}>Học sinh</label>
                   <AvatarTable
-                    fileImage={Helper.getPathAvatarJson(details?.student?.fileImage)}
-                    fullName={details?.student?.fullName}
-                    description={`${details?.student?.age} tháng tuổi`}
+                    fileImage={Helper.getPathAvatarJson(details?.studentMaster?.student?.fileImage)}
+                    fullName={details?.studentMaster?.student?.fullName}
+                    description={`${details?.studentMaster?.student?.age || ''} tháng tuổi`}
                   />
                 </Pane>
 
@@ -120,7 +99,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Cơ sở</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-school'} />
+                          <span className="icon-school" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.studentMaster?.student?.class?.branch?.name || 'Preschool'}
@@ -132,7 +111,7 @@ const Index = memo(({}) => {
                       <label className={styles.infoLabel}>Lớp</label>
                       <Pane className="d-flex align-items-center">
                         <span className={styles.circleIcon}>
-                          <span className={'icon-open-book'} />
+                          <span className="icon-open-book" />
                         </span>
                         <span className={styles.infoText}>
                           {details?.studentMaster?.student?.class?.name || 'Preschool'}
@@ -141,44 +120,6 @@ const Index = memo(({}) => {
                     </Pane>
                   </Pane>
                 </Pane>
-
-                <Pane style={{ padding: 20 }}>
-                  <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-                    <Pane className="row">
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Trạng thái nhận thuốc"
-                          type={variables.SELECT}
-                          name="receivingStatus"
-                          data={variablesModules.STATUS_MEDICAL_RECEIVING}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Trạng thái cho uống"
-                          type={variables.SELECT}
-                          name="drinkingStatus"
-                          data={variablesModules.STATUS_MEDICAL_DRINKING}
-                        />
-                      </Pane>
-
-                      <Pane className="col-lg-12">
-                        <FormItem label="Ghi chú" name="note" type={variables.INPUT} />
-                      </Pane>
-
-                      <Pane className="col-lg-12">
-                        <Button
-                          color="success"
-                          htmlType="submit"
-                          style={{ marginLeft: 'auto' }}
-                          loading={loadingSubmit}
-                        >
-                          Cập nhật
-                        </Button>
-                      </Pane>
-                    </Pane>
-                  </Form>
-                </Pane>
               </Pane>
 
               <Pane className="card">
@@ -186,9 +127,9 @@ const Index = memo(({}) => {
                   dataSource={details?.medicalLogs || []}
                   renderItem={(item) => (
                     <ListItem key={item.id} className={styles.listItem}>
-                      <Pane style={{ padding: 20, width: '100%' }} className="row">
+                      <Pane style={{ padding: '0px 20px', width: '100%' }} className="row">
                         <Pane className="col-md-5">
-                          <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
+                          <Heading type="form-sub-title">
                             {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                           </Heading>
                         </Pane>
@@ -283,9 +224,9 @@ const Index = memo(({}) => {
                                 JSON.parse(files).map((item) => (
                                   <Pane className="col-lg-3" key={item}>
                                     <img
-                                      className={styles.thumb}
+                                      className={classnames(styles.thumb, 'd-block w-100')}
                                       src={`${API_UPLOAD}${item}`}
-                                      className="d-block w-100"
+                                      alt={item}
                                     />
                                   </Pane>
                                 ))}
