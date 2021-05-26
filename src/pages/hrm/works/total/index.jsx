@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { connect, history, Link } from 'umi';
+import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, get, isInteger } from 'lodash';
@@ -257,41 +257,53 @@ class Index extends PureComponent {
       variables.QUERY_STRING,
     )}`;
 
-  redirectAdditionaltime = (record) => {
-    const { search } = this.state;
-    return `/cong-them?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  redirectSubtractionTime = (record) => {
-    const { search } = this.state;
-    return `/cong-tru?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
   renderWorkShift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
-      if (get(data, 'type')) return data.type;
-      if (data)
-        return isInteger(data.timekeepingReport)
-          ? data.timekeepingReport
-          : Helper.toFixed(data.timekeepingReport);
-      return '-';
+      if (get(data, 'type')) {
+        return (
+          <div
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+              [styles[`cell-heading-kc`]]: data.type === 'KC',
+            })}
+          >
+            {data.type}
+          </div>
+        );
+      }
+      if (data) {
+        return (
+          <div
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            })}
+          >
+            {isInteger(data.timekeepingReport)
+              ? data.timekeepingReport
+              : Helper.toFixed(data.timekeepingReport)}
+          </div>
+        );
+      }
+      return (
+        <div
+          className={classnames(styles['item-schedules'], {
+            [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        >
+          -
+        </div>
+      );
     }
-    return '-';
+    return (
+      <div
+        className={classnames(styles['item-schedules'], {
+          [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+        })}
+      >
+        -
+      </div>
+    );
   };
 
   /**
@@ -312,7 +324,7 @@ class Index extends PureComponent {
     ];
     const arrayHeader = [
       {
-        title: 'Họ và Tên',
+        title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-200 col-fixed-200',
         width: 200,
@@ -333,14 +345,10 @@ class Index extends PureComponent {
         return {
           title: this.renderTitleHeader(index, item),
           key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100'),
+          className: classnames('min-width-100', 'max-width-100', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
           width: 100,
           align: 'center',
-          render: (record) => (
-            <Link className={styles['item-schedules']} to={this.redirectHistory(item, record)}>
-              {this.renderWorkShift(record.timeKeepingReport, currentDate)}
-            </Link>
-          ),
+          render: (record) => this.renderWorkShift(record.timeKeepingReport, currentDate),
         };
       },
     );
