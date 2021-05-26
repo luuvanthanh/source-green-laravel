@@ -58,6 +58,7 @@ const Index = memo(() => {
 
   const cancelModal = () => {
     setVisible(false);
+    setTab('bus');
   };
 
   const changeTab = (tab) => {
