@@ -28,6 +28,16 @@ export function getMedical(params = {}) {
   });
 }
 
+export function listMedicalbyStudent(params = {}) {
+  return request('/medicals/record-books', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
 export function detailsMedical(data) {
   return request(`/medicals/${data.id}`, {
     method: 'GET',

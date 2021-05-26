@@ -4,6 +4,7 @@ import { Tabs, Modal, Avatar, Image, Checkbox, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
@@ -15,7 +16,7 @@ import variablesModules from '../variables';
 const { TabPane } = Tabs;
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [ { medicals, detailsMedical }, loading] = useSelector(({ loading: { effects }, overView }) => [
+  const [ { medicals, detailsMedical, medicalsStudent }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
     effects,
   ]);
@@ -45,11 +46,28 @@ const Index = memo(() => {
     setVisible(false);
   };
 
-  const getDetails = (id) => {
+  const getDetails = (record) => {
     setVisible(true);
     dispatch({
       type: 'overView/GET_DETAILS_MEDICAL',
-      payload: { id }
+      payload: {
+        id:record.id
+      }
+    });
+    dispatch({
+      type: 'overView/GET_LIST_MEDICAL_BY_STUDENT',
+      payload: {
+        StudentId: record.studentId,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+        AppliedDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: record.creationTime,
+          }),
+          isUTC: true,
+        }),
+      }
     });
   };
 
@@ -63,96 +81,148 @@ const Index = memo(() => {
   /**
    * Function header table
    */
-  const header = () => {
-    const images = [
-      'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-      'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg',
-      'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-    ];
-    return [
-      {
-        title: 'Thời gian uống',
-        key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
-        render: (record) => {Helper.getDate(record.appliedDate, variables.DATE_FORMAT.TIME_DATE);}
-      },
-      {
-        title: 'Thuốc',
-        key: 'image',
-        className: 'min-width-300',
-        width: 300,
-        render: () => (
-          <div className="d-flex align-items-center">
-            <Image.PreviewGroup>
-              {
-                images.map((item, index) => (
-                  <div className={styles['group-image']} key={index}>
-                    <Image
-                      width={42}
-                      src={item}
-                      data-viewmore={`+${images.length - 1}`}
-                    />
-                  </div>
-                ))
-              }
-            </Image.PreviewGroup>
-            <p className="mb0 ml10">Siro Prosan</p>
-          </div>
-        ),
-      },
-      {
-        title: 'Đơn vị',
-        key: 'unit',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => record?.unit || ''
-      },
-      {
-        title: 'Liều lượng',
-        key: 'amount',
-        className: 'min-width-120',
-        width: 120,
-        render: () => ''
-      },
-      {
-        title: 'Ghi chú',
-        key: 'note',
-        className: 'min-width-300',
-        width: 300,
-        render: (record) => record?.note || ''
-      },
-      {
-        title: 'Nhận thuốc',
-        key: 'getMedicine',
-        align: 'center',
-        className: 'min-width-120',
-        render: () => <Checkbox />,
-      },
-      {
-        title: 'Cho thuốc',
-        key: 'giveMedicine',
-        align: 'center',
-        className: 'min-width-120',
-        render: () => <Checkbox />,
-      },
-      {
-        title: 'Ghi chú',
-        key: 'noteAll',
-        rowSpan: 2,
-        className: 'min-width-300',
-        width: 300,
-        render: (value, row, index) => {
-          const obj = {
-            children: 'Cho bé uống thuốc đúng giờ',
-            props: {
-              rowSpan: index === 0 ? 2 : 0
-            }
-          };
-          return obj;
-        }
-      },
-    ];
+   const header = () => [
+    {
+      title: 'Tên Bệnh',
+      key: 'diseaseName',
+      className: 'min-width-250',
+      width: 250,
+      render: (record) => {
+        const obj = {
+          children:  record?.diseaseName || '',
+          props: {
+            rowSpan: record?.lengthDrinkingTimes || 0
+          }
+        };
+        return obj;
+      }
+    },
+    {
+      title: 'Thời gian uống',
+      key: 'timeCode',
+      className: 'min-width-140',
+      width: 140,
+      render: (row) => {
+        const obj = {
+          children: row?.timeCode ? variablesModules.STATUS_TIME_CODE_NAME[row?.timeCode] : '',
+          props: {
+            rowSpan: row?.lengthMedicineTime || 0
+          }
+        };
+        return obj;
+      }
+    },
+    {
+      title: 'Thuốc',
+      key: 'image',
+      className: 'min-width-300',
+      width: 300,
+      render: (record) => (
+        <div className="d-flex align-items-center">
+          <Image.PreviewGroup>
+            <Image
+              width={42}
+              src={`${API_UPLOAD}${Helper.getPathAvatarJson(record?.medicine?.files)}`}
+              // data-viewmore={`+${images.length - 1}`}
+              fallback="/default-upload.png"
+            />
+          </Image.PreviewGroup>
+          <p className="mb0 ml10">{record?.medicine?.name}</p>
+        </div>
+      ),
+    },
+    {
+      title: 'Đơn vị',
+      key: 'position',
+      className: 'min-width-120',
+      align: 'center',
+      width: 120,
+      render: (record) => record?.medicine.unit || ''
+    },
+    {
+      title: 'Liều lượng',
+      key: 'amount',
+      className: 'min-width-120',
+      align: 'center',
+      width: 120,
+      render: (record) => record?.medicineAmount || ''
+    },
+    {
+      title: 'Ghi chú',
+      key: 'note',
+      className: 'min-width-300',
+      width: 300,
+      render: (record) => record?.medicine?.note
+    },
+    {
+      title: 'Nhận thuốc',
+      key: 'getMedicine',
+      align: 'center',
+      className: 'min-width-120',
+      render: (record) => <Checkbox checked={record?.isReceived || false} />,
+    },
+    {
+      title: 'Cho thuốc',
+      key: 'giveMedicine',
+      align: 'center',
+      className: 'min-width-120',
+      render: (record) => <Checkbox checked={record?.isDrunk || false} />,
+    },
+  ];
+
+  const getLengthMedicineTime = (data, index) => {
+    if (data?.length > 0) {
+      if (index === 0) {
+        return data?.length;
+      }
+      return 0;
+    }
+    return 1;
+  };
+
+  const getLenghtDrinkingTimes = (data, index, indexChild) => {
+    let length = 0;
+    data.forEach(item => {
+      length += item.medicineTimes.length;
+    });
+    if (length > 0) {
+      if (index === 0 && indexChild === 0) {
+        return length;
+      }
+      return 0;
+    }
+    return 1;
+  };
+
+  const convertMedical = (data) => {
+    if (_.isEmpty(data)) {
+      return [];
+    }
+    const result = [];
+    data.forEach(item => {
+      if (!_.isEmpty(item.drinkingTimes)) {
+        item.drinkingTimes.forEach((child, index) => {
+          if (!_.isEmpty(child.medicineTimes)) {
+            child?.medicineTimes.forEach((itemChild, indexChild) => result.push({
+              id: uuidv4(),
+              lengthDrinkingTimes: getLenghtDrinkingTimes(item.drinkingTimes, index, indexChild),
+              appliedDate: item.medical.appliedDate,
+              creationTime: item.medical.creationTime,
+              diseaseName: item.medical.diseaseName,
+              medicineLocation: item.medical.medicineLocation,
+              status: item.medical.status,
+              timeCode: child.timeCode,
+              lengthMedicineTime: getLengthMedicineTime(child?.medicineTimes, indexChild),
+              medicineAmount: itemChild.medicineAmount,
+              isDrunk: itemChild?.isDrunk,
+              isReceived: itemChild?.isReceived,
+              medicine: { ...itemChild?.medicine }
+            }));
+          }
+        });
+      }
+    });
+    return result;
   };
 
   return (
@@ -177,9 +247,9 @@ const Index = memo(() => {
             </div>
             <div className="col-lg-3 mt10">
               <AvatarTable
-                fileImage={Helper.getPathAvatarJson(detailsMedical?.student?.fileImage)}
-                fullName={detailsMedical?.student?.fullName || ''}
-                description={`${detailsMedical?.student?.age}tháng tuổi`}
+                fileImage={Helper.getPathAvatarJson(detailsMedical?.studentMaster?.student?.fileImage)}
+                fullName={detailsMedical?.studentMaster?.student?.fullName || ''}
+                description={`${detailsMedical?.studentMaster?.student?.age}tháng tuổi`}
                 size={50}
               />
             </div>
@@ -228,15 +298,15 @@ const Index = memo(() => {
           <Table
             bordered
             columns={header()}
-            dataSource={_.get(detailsMedical, 'medicines', [])}
-            // loading={loading}
+            dataSource={convertMedical(medicalsStudent)}
+            loading={loading['overView/GET_LIST_MEDICAL_BY_STUDENT']}
             pagination={false}
             params={{
               header: header(),
               type: 'table',
             }}
             rowKey={(record) => record.id}
-            scroll={{ x: '100%' }}
+            scroll={{ x: '100%'}}
           />
         </div>
       </Modal>
@@ -269,14 +339,14 @@ const Index = memo(() => {
                 <div
                   className={styles['content-tab']}
                   key={index}
-                  onClick={() => getDetails(item?.id)}
+                  onClick={() => getDetails(item)}
                   aria-hidden="true"
                 >
                   <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
                     <AvatarTable
                       className="full-name-bold"
-                      fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
-                      fullName={item?.student?.fullName}
+                      fileImage={Helper.getPathAvatarJson(item?.studentMaster?.student?.fileImage)}
+                      fullName={item?.studentMaster?.student?.fullName}
                       size={36}
                     />
                     <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
