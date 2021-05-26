@@ -66,25 +66,29 @@ export const variables = {
       id: 'QUANTITY',
       name: 'Sỉ số trẻ',
       number: '150',
-      image: '/images/icon/contacts.svg'
+      image: '/images/icon/contacts.svg',
+      title: 'Danh sách sỉ số trẻ'
     },
     {
       id: 'CHILDREN_IN_CLASS',
       name: 'Điểm danh vào lớp',
       number: '143',
-      image: '/images/icon/books.svg'
+      image: '/images/icon/books.svg',
+      title: 'Danh sách điểm danh vào lớp'
     },
     {
       id: 'UNPAID_LEAVE',
       name: 'Vắng không phép',
       number: '15',
-      image: '/images/icon/sad.svg'
+      image: '/images/icon/sad.svg',
+      title: 'Danh sách trẻ vắng không phép'
     },
     {
       id: 'ANNUAL_LEAVE',
       name: 'Vắng có phép',
       number: '13',
-      image: '/images/icon/happy.svg'
+      image: '/images/icon/happy.svg',
+      title: 'Danh sách trẻ vắng có phép'
     }
   ],
   MENU: [

@@ -72,7 +72,7 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Thời gian tạo',
       key: 'creationTime',
-      className: 'min-width-140',
+      className: 'min-width-100',
       width: 140,
       render: (record) => (
         <Text size="normal">
@@ -83,7 +83,7 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Nội dung',
       key: 'note',
-      className: 'min-width-300',
+      className: 'min-width-250',
       render: (record) => (
         <>
           <p className="font-weight-bold font-size-14 mb5">{record?.name}</p>
@@ -96,8 +96,8 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Hình ảnh',
       key: 'image',
-      className: 'min-width-200',
-      width: 200,
+      className: 'min-width-100',
+      width: 170,
       render: (record) => (
         <Image.PreviewGroup>
           {Helper.isJSON(record.fileImage) &&
@@ -118,7 +118,7 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Phụ huynh',
       key: 'parents',
-      className: 'min-width-250',
+      className: 'min-width-190',
       width: 250,
       render: (record) => (
         <AvatarTable
@@ -131,8 +131,8 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Trạng thái',
       key: 'status',
-      className: 'min-width-120',
-      width: 120,
+      className: 'min-width-100',
+      width: 140,
       render: (record) =>Helper.tagStatus(
         `${record?.status === variables.STATUS.CONFIRMING ? variables.STATUS.CONFIRMING : ''}`,
         `${record?.status === variables.STATUS.CONFIRMING ? 'Chờ xác nhận' : 'Đã nhận'}`
@@ -141,7 +141,7 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Giáo viên đã nhận',
       key: 'teacher',
-      className: 'min-width-250',
+      className: 'min-width-190',
       width: 250,
       render: (record) => (
         <AvatarTable
@@ -154,8 +154,8 @@ const Index = memo(({ studentId }) => {
     {
       title: 'Thời gian đã nhận',
       key: 'timeReceived',
-      className: 'min-width-160',
-      width: 160,
+      className: 'min-width-100',
+      width: 150,
       render: (record) => (
         <Text size="normal">
           {Helper.getDate(record?.confirmedTime, variables.DATE_FORMAT.TIME_DATE)}
