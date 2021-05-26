@@ -122,6 +122,7 @@ class Index extends PureComponent {
       payload: {
         id: params.id,
         ...values,
+        time: moment(values.time).startOf('months'),
         detail: detail.map((item) => ({
           ...omit(item, 'employee'),
           employeeId: item?.employee?.id,
@@ -161,6 +162,7 @@ class Index extends PureComponent {
           paymentOfSocialInsurance: 0,
           employeeSocialInsurance: 0,
           charity: 0,
+          companySocialInsurance: 0,
         },
       ],
     }));
@@ -208,7 +210,7 @@ class Index extends PureComponent {
       ),
     },
     {
-      title: 'Phụ cấp',
+      title: 'Phụ cấp HT-TCSK',
       key: 'allowance',
       className: 'min-width-200',
       width: 200,
@@ -268,7 +270,7 @@ class Index extends PureComponent {
       ),
     },
     {
-      title: 'Điều chỉnh BHXH NLD',
+      title: 'Điều chỉnh BHXH NLĐ',
       key: 'employeeSocialInsurance',
       className: 'min-width-200',
       width: 200,
@@ -283,7 +285,7 @@ class Index extends PureComponent {
       ),
     },
     {
-      title: 'CTT Điều chỉnh BHXH CTT',
+      title: 'Điều chỉnh BHXH CTT',
       key: 'companySocialInsurance',
       className: 'min-width-200',
       width: 200,

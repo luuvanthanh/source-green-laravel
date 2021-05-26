@@ -17,7 +17,8 @@
     "NOTIFICATION_APP_ID": true,
     "CLIENT_SECRET": true,
     "CLIENT_ID": true,
-    "API_UPLOAD": true
+    "API_UPLOAD": true,
+    "API_URL_LAVAREL": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,

@@ -1146,7 +1146,7 @@ export async function getLeftMenuHRM() {
     },
     {
       title: 'Cấu hình',
-      key: 'categories',
+      key: 'categoriesParamater',
       icon: 'icon icon-list',
       permission: [],
       children: [
