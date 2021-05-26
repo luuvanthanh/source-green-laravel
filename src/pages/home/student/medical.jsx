@@ -94,12 +94,19 @@ const Index = memo(({ studentId }) => {
       render: (record) => (
         <div className="d-flex align-items-center">
           <Image.PreviewGroup>
-            <Image
-              width={42}
-              src={`${API_UPLOAD}${Helper.getPathAvatarJson(record?.medicine?.files)}`}
-              // data-viewmore={`+${images.length - 1}`}
-              fallback="/default-upload.png"
-            />
+            {Helper.isJSON(record?.medicine?.files) &&
+              JSON.parse(record?.medicine?.files).map((item, index) => (
+                <div key={index} className={styles['group-image']}>
+                  <Image
+                    key={index}
+                    width={42}
+                    height={42}
+                    src={`${API_UPLOAD}${item}`}
+                    data-viewmore={`+${JSON.parse(record?.medicine?.files)?.length - 1}`}
+                    fallback="/default-upload.png"
+                  />
+                </div>
+            ))}
           </Image.PreviewGroup>
           <p className="mb0 ml10">{record?.medicine?.name}</p>
         </div>

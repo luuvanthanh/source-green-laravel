@@ -68,107 +68,101 @@ const Index = memo(({ studentId }) => {
   /**
    * Function header table
    */
-  const header = () => {
-    const images = [
-      'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-      'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg',
-      'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-    ];
-    return [
-      {
-        title: 'Thời gian tạo',
-        key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record?.creationTime, variables.DATE_FORMAT.TIME_DATE)}
-          </Text>
-        ),
-      },
-      {
-        title: 'Nội dung',
-        key: 'note',
-        className: 'min-width-300',
-        render: (record) => (
-          <>
-            <p className="font-weight-bold font-size-14 mb5">{record?.name}</p>
-            {record?.description && (
-              <p className="font-size-14 mb0">Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió nhé.</p>
-            )}
-          </>
-        ),
-      },
-      {
-        title: 'Hình ảnh',
-        key: 'image',
-        className: 'min-width-200',
-        width: 200,
-        render: () => (
-          <Image.PreviewGroup>
-            {
-              images.map((item, index) => (
-                <div  key={index} className={styles['group-image']}>
-                  <Image
-                    width={50}
-                    src={item}
-                    data-viewmore={`+${images.length - 1}`}
-                  />
-                </div>
-              ))
-            }
-          </Image.PreviewGroup>
-        ),
-      },
-      {
-        title: 'Phụ huynh',
-        key: 'parents',
-        className: 'min-width-250',
-        width: 250,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(_.get(record, 'student.studentParents[0].parent.fileImage'))}
-            fullName={_.get(record, 'student.studentParents[0].parent.fullName')}
-            size={50}
-          />
-        ),
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) =>Helper.tagStatus(
-          `${record?.status === variables.STATUS.CONFIRMING ? variables.STATUS.CONFIRMING : ''}`,
-          `${record?.status === variables.STATUS.CONFIRMING ? 'Chờ xác nhận' : 'Đã nhận'}`
-        )
-      },
-      {
-        title: 'Giáo viên đã nhận',
-        key: 'teacher',
-        className: 'min-width-250',
-        width: 250,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName || ''}
-            size={50}
-          />
-        ),
-      },
-      {
-        title: 'Thời gian đã nhận',
-        key: 'timeReceived',
-        className: 'min-width-160',
-        width: 160,
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record?.confirmedTime, variables.DATE_FORMAT.TIME_DATE)}
-          </Text>
-        ),
-      },
-    ];
-  };
+  const header = () => [
+    {
+      title: 'Thời gian tạo',
+      key: 'creationTime',
+      className: 'min-width-140',
+      width: 140,
+      render: (record) => (
+        <Text size="normal">
+          {Helper.getDate(record?.creationTime, variables.DATE_FORMAT.TIME_DATE)}
+        </Text>
+      ),
+    },
+    {
+      title: 'Nội dung',
+      key: 'note',
+      className: 'min-width-300',
+      render: (record) => (
+        <>
+          <p className="font-weight-bold font-size-14 mb5">{record?.name}</p>
+          {record?.description && (
+            <p className="font-size-14 mb0">Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió nhé.</p>
+          )}
+        </>
+      ),
+    },
+    {
+      title: 'Hình ảnh',
+      key: 'image',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        <Image.PreviewGroup>
+          {Helper.isJSON(record.fileImage) &&
+            JSON.parse(record.fileImage).map((item, index) => (
+              <div  key={index} className={styles['group-image']}>
+                <Image
+                  key={index}
+                  width={50}
+                  height={50}
+                  src={`${API_UPLOAD}${item}`}
+                  data-viewmore={`+${JSON.parse(record?.fileImage)?.length - 1}`}
+                />
+              </div>
+          ))}
+        </Image.PreviewGroup>
+      ),
+    },
+    {
+      title: 'Phụ huynh',
+      key: 'parents',
+      className: 'min-width-250',
+      width: 250,
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(_.get(record, 'student.studentParents[0].parent.fileImage'))}
+          fullName={_.get(record, 'student.studentParents[0].parent.fullName')}
+          size={50}
+        />
+      ),
+    },
+    {
+      title: 'Trạng thái',
+      key: 'status',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) =>Helper.tagStatus(
+        `${record?.status === variables.STATUS.CONFIRMING ? variables.STATUS.CONFIRMING : ''}`,
+        `${record?.status === variables.STATUS.CONFIRMING ? 'Chờ xác nhận' : 'Đã nhận'}`
+      )
+    },
+    {
+      title: 'Giáo viên đã nhận',
+      key: 'teacher',
+      className: 'min-width-250',
+      width: 250,
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+          fullName={record?.employee?.fullName || ''}
+          size={50}
+        />
+      ),
+    },
+    {
+      title: 'Thời gian đã nhận',
+      key: 'timeReceived',
+      className: 'min-width-160',
+      width: 160,
+      render: (record) => (
+        <Text size="normal">
+          {Helper.getDate(record?.confirmedTime, variables.DATE_FORMAT.TIME_DATE)}
+        </Text>
+      ),
+    },
+  ];
 
   const handleSearch = _.debounce((value, name) => {
     setSearch((prevSearch) => ({
