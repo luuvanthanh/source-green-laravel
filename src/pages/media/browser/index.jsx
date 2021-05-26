@@ -70,7 +70,9 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setVisibleProgress(true);
+          if (response?.data?.status !== 'starting') {
+            setVisibleProgress(true);
+          }
         }
       },
     });
