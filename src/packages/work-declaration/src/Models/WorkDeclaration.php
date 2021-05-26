@@ -15,6 +15,14 @@ class WorkDeclaration extends UuidModel
 
     protected $fillable = ['EmployeeId', 'Date', 'Time'];
 
+    protected $dateTimeFields = [
+        'Date',
+    ];
+
+    protected $casts = [
+        'Date' => 'datetime',
+    ];
+
     /**
      * Define relations workDeclarationDetails
      */
