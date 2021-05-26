@@ -6,7 +6,8 @@ export default {
     notes: [],
     detailsNote: {},
     medicals: [],
-    detailsMedical: {}
+    detailsMedical: {},
+    medicalsStudent: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -25,6 +26,10 @@ export default {
     SET_DATA_DETAILS_MEDICAL: (state, { payload }) => ({
       ...state,
       detailsMedical: payload,
+    }),
+    SET_LIST_MEDICAL_BY_STUDENT: (state, { payload }) => ({
+      ...state,
+      medicalsStudent: payload,
     }),
   },
   effects: {
@@ -70,6 +75,17 @@ export default {
         const response = yield saga.call(services.detailsMedical, payload);
         yield saga.put({
           type: 'SET_DATA_DETAILS_MEDICAL',
+          payload: response,
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_LIST_MEDICAL_BY_STUDENT({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.listMedicalbyStudent, payload);
+        yield saga.put({
+          type: 'SET_LIST_MEDICAL_BY_STUDENT',
           payload: response,
         });
       } catch (error) {

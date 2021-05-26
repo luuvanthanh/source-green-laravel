@@ -24,7 +24,7 @@ const Index = memo(({ studentId }) => {
   const [search, setSearch] = useState({
     classId: undefined,
     page: variables.PAGINATION.PAGE,
-    limit: variables.PAGINATION.PAGE_SIZE_SMALL,
+    limit: variables.PAGINATION.SIZEMAX,
     status: '',
     TimeCode: '',
     AppliedDate: null
@@ -40,7 +40,6 @@ const Index = memo(({ studentId }) => {
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: search.AppliedDate,
-            targetValue: '23:59:59',
           }),
           isUTC: true,
         }),

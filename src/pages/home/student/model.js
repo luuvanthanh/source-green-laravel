@@ -184,9 +184,6 @@ export default {
           type: 'SET_DATA_MEDICAL',
           payload: {
             parsePayload: response,
-            pagination: {
-              total: response.totalCount || 0,
-            },
           },
         });
       } catch (error) {
