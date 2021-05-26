@@ -162,13 +162,13 @@ const Index = memo(({ studentId }) => {
     return 1;
   };
 
-  const getLenghtDrinkingTimes = (data, index) => {
+  const getLenghtDrinkingTimes = (data, index, indexChild) => {
     let length = 0;
     data.forEach(item => {
       length += item.medicineTimes.length;
     });
     if (length > 0) {
-      if (index === 0) {
+      if (index === 0 && indexChild === 0) {
         return length;
       }
       return 0;
@@ -187,7 +187,7 @@ const Index = memo(({ studentId }) => {
           if (!_.isEmpty(child.medicineTimes)) {
             child?.medicineTimes.forEach((itemChild, indexChild) => result.push({
               id: uuidv4(),
-              lengthDrinkingTimes: getLenghtDrinkingTimes(item.drinkingTimes, index),
+              lengthDrinkingTimes: getLenghtDrinkingTimes(item.drinkingTimes, index, indexChild),
               appliedDate: item.medical.appliedDate,
               creationTime: item.medical.creationTime,
               diseaseName: item.medical.diseaseName,
@@ -218,7 +218,7 @@ const Index = memo(({ studentId }) => {
             <FormItem
               name="AppliedDate"
               type={variables.DATE_PICKER}
-              onChange={(event) => handleSearch(event, 'date')}
+              onChange={(event) => handleSearch(event, 'AppliedDate')}
             />
           </div>
           <div className="col-md-4 col-xl-2">
