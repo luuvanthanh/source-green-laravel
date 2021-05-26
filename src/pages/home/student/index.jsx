@@ -145,7 +145,7 @@ const Index = memo(() => {
       <Modal
         className={styles['modal-student-detail']}
         visible={visible}
-        width="90%"
+        width="99%"
         onCancel={cancelModal}
         footer={null}
       >
