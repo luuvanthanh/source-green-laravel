@@ -2,7 +2,7 @@ import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/timekeeping-report', {
+  return request('/v1/bus-registrations-summary', {
     method: 'GET',
     params: {
       limit: data.limit,
