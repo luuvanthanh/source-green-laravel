@@ -62,3 +62,22 @@ export function getBusByStatus(params = {}) {
     },
   });
 }
+
+export function getAttendance(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getAttendanceByStatus(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
