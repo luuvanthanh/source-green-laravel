@@ -64,6 +64,13 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'work-hours.destroy',
                 'group' => 'Công bù giờ',
             ]);
+
+            \Route::get('work-hours-summary', [
+                'comment' => 'Tổng hợp công ngoài giờ',
+                'uses' => 'WorkHourController@workHourSummary',
+                'as' => 'timekeeping.invalid.summary',
+                'group' => 'Công',
+            ]);
         });
     }
 }

@@ -6,6 +6,8 @@ use GGPHP\BusRegistration\Models\BusRegistration;
 use GGPHP\BusRegistration\Presenters\BusRegistrationPresenter;
 use GGPHP\BusRegistration\Repositories\Contracts\BusRegistrationRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
+use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -20,6 +22,14 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
         'CreationTime',
         'employee.FullName' => 'like',
     ];
+
+    public function __construct(
+        UserRepositoryEloquent $employeeRepositoryEloquent,
+        Application $app
+    ) {
+        parent::__construct($app);
+        $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
+    }
 
     /**
      * Specify Model class name
@@ -66,4 +76,25 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
         return $busRegistration;
     }
 
+    public function busRegistrationSummary(array $attributes)
+    {
+        $employees = $this->employeeRepositoryEloquent->model()::whereHas('busRegistrations', function ($query) use ($attributes) {
+            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        })->with(['busRegistrations' => function ($query) use ($attributes) {
+            $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        }]);
+
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $employees->whereIn('Id', $employeeId);
+        }
+
+        if (empty($attributes['limit'])) {
+            $result = $employees->get();
+        } else {
+            $result = $employees->paginate($attributes['limit']);
+        }
+
+        return $this->employeeRepositoryEloquent->parserResult($result);
+    }
 }

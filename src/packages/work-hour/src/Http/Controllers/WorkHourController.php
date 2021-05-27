@@ -89,4 +89,19 @@ class WorkHourController extends Controller
         $this->workHourRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function workHourSummary(Request $request)
+    {
+        $request->isWorkHourSummary = true;
+
+        $employees = $this->workHourRepository->workHourSummary($request->all());
+
+        return $this->success($employees, trans('lang::messages.common.getListSuccess'));
+    }
 }

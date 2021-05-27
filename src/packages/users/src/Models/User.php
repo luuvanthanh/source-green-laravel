@@ -177,6 +177,16 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Get workHours of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function busRegistrations()
+    {
+        return $this->hasMany(\GGPHP\BusRegistration\Models\BusRegistration::class, 'EmployeeId');
+    }
+
+    /**
      * Get profiles of user
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
