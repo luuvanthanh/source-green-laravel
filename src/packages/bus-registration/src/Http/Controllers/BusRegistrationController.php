@@ -89,4 +89,12 @@ class BusRegistrationController extends Controller
         $this->busRegistrationRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
     }
+
+    public function busRegistrationSummary(Request $request)
+    {
+        $request->isBusRegistrationSummary = true;
+        $busRegistrations = $this->busRegistrationRepository->busRegistrationSummary($request->all());
+
+        return $this->success($busRegistrations, trans('lang::messages.common.getListSuccess'));
+    }
 }

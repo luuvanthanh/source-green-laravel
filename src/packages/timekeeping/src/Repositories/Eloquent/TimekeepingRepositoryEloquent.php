@@ -4,7 +4,6 @@ namespace GGPHP\Timekeeping\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
-use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\Timekeeping\Presenters\TimekeepingPresenter;
@@ -168,6 +167,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
     {
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
+        $now = Carbon::now();
+        // dd($now);
         $type = !empty($attributes['type']) ? $attributes['type'] : null;
 
         $this->employee = $employee;
@@ -203,8 +204,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     "type" => "KC",
                 ];
             }
-
-            if (!array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
+            if ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
                 $responseTimeKeepingUser[] = [
                     "date" => $date->format('Y-m-d'),
                     "timekeepingReport" => 0,
@@ -435,11 +435,23 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
     public function invalidTimekeeping(array $attributes)
     {
-        $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
+        $employeesByStore = $this->employeeRepositoryEloquent->model()::whereHas('timekeeping', function ($query) use ($attributes) {
+            $query->whereDate('AttendedAt', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))
+                ->whereDate('AttendedAt', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'))
+                ->orderBy('AttendedAt');
+        })->with(['timekeeping' => function ($query) use ($attributes) {
             $query->whereDate('AttendedAt', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))
                 ->whereDate('AttendedAt', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'))
                 ->orderBy('AttendedAt');
         }]);
+
+        $employeesByStore->whereHas('schedules', function ($query) use ($attributes) {
+            $query->where(function ($q2) use ($attributes) {
+                $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
+            });
+        });
 
         $employeesByStore->with(['workDeclarations' => function ($query) use ($attributes) {
             $query->where('Date', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))->where('Date', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'));
@@ -484,8 +496,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
         $type = !empty($attributes['type']) ? $attributes['type'] : null;
-
-        $this->employee = $employee;
         $employeeTimekeeping = [];
         $result = [];
         $responseInvalid = [];
@@ -518,111 +528,102 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
         }
 
-        $lateEarly = $employee->lateEarly;
-
         $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $startDate, $endDate);
 
-        $begin = new \DateTime($startDate);
-        $end = new \DateTime($endDate);
-        $intervalDate = \DateInterval::createFromDateString('1 day');
-        $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+        foreach ($employeeTimeWorkShift as $key => $value) {
+            $checkAbsent = isset($absentByDate[$key]) ? $absentByDate[$key][0]->IsFullDate : false;
+            $checkBusinessCard = isset($businessCardByDate[$key]) ? $businessCardByDate[$key][0]->IsFullDate : false;
 
-        if (count($employeeHasTimekeeping) > 0) {
-            $count = count($employeeTimeWorkShift);
+            if (!empty($timeKeepingByDate[$key]) && !$checkAbsent && !$checkBusinessCard) {
 
-            foreach ($employeeTimeWorkShift as $key => $value) {
-                if (!empty($timeKeepingByDate[$key])) {
+                $isInvalid = false;
 
-                    $isInvalid = false;
+                $startTime = $value[0]['AfterStart'];
+                $endTime = end($value)['BeforeEnd'];
 
-                    $startTime = $value[0]['AfterStart'];
-                    $endTime = end($value)['BeforeEnd'];
+                $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
+                $checkOut = count($timeKeepingByDate[$key]) > 1 ? end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s') : null;
+                if (isset($businessCardByDate[$key])) {
+                    foreach ($businessCardByDate[$key] as $businessCard) {
+                        if ($businessCard->StartTime < $checkIn) {
+                            $checkIn = $businessCard->StartTime;
+                        }
 
-                    $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
-                    $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
-
-                    if (isset($businessCardByDate[$key])) {
-                        foreach ($businessCardByDate[$key] as $businessCard) {
-                            if ($businessCard->StartTime < $checkIn) {
-                                $checkIn = $businessCard->StartTime;
-                            }
-
-                            if ($businessCard->EndTime > $checkOut) {
-                                $checkOut = $businessCard->EndTime;
-                            }
+                        if ($businessCard->EndTime > $checkOut) {
+                            $checkOut = $businessCard->EndTime;
                         }
                     }
-
-                    if (isset($absentByDate[$key])) {
-                        foreach ($absentByDate[$key] as $absent) {
-                            if ($absent->StartTime < $checkIn) {
-                                $checkIn = $absent->StartTime;
-                            }
-
-                            if ($absent->EndTime > $checkOut) {
-                                $checkOut = $absent->EndTime;
-                            }
-                        }
-                    }
-
-                    if (isset($workDeclarationByDate[$key])) {
-                        foreach ($workDeclarationByDate[$key] as $workDeclaration) {
-                            if ($workDeclaration->Time < $checkIn) {
-                                $checkIn = $workDeclaration->Time;
-                            }
-
-                            if ($workDeclaration->Time > $checkOut) {
-                                $checkOut = $workDeclaration->Time;
-                            }
-                        }
-                    }
-
-                    if (count($timeKeepingByDate[$key]) < 1) {
-                        $isInvalid = true;
-                    }
-
-                    if ($checkIn > $startTime || $checkOut < $endTime) {
-                        $isInvalid = true;
-                    }
-
-                    foreach ($value as $keyItem => $item) {
-                        foreach ($item as $keyItem2 => $item2) {
-                            $newkeyItem2 = dashesToCamelCase($keyItem2, false);
-                            if ($keyItem2 != $newkeyItem2) {
-                                $item[$newkeyItem2] = $item[$keyItem2];
-
-                                unset($item[$keyItem2]);
-                            }
-                        }
-                        $value[$keyItem] = $item;
-                    }
-
-                    $timekeeping = [];
-                    foreach ($timeKeepingByDate[$key] as $attribute) {
-                        $attributes = $attribute->toArray();
-
-                        foreach ($attributes as $keyItem => $item) {
-                            $newkeyItem = dashesToCamelCase($keyItem, false);
-
-                            if ($keyItem != $newkeyItem) {
-                                $attributes[$newkeyItem] = $attributes[$keyItem];
-                                unset($attributes[$keyItem]);
-                            }
-                        }
-                        $timekeeping[] = $attributes;
-                    }
-
-                    $result = [
-                        'date' => $key,
-                        'shift' => $value,
-                        'timekeeping' => $timekeeping,
-                        'checkIn' => $checkIn,
-                        'checkOut' => $checkOut,
-                        'isInvalid' => $isInvalid,
-                    ];
-
-                    $responseInvalid[] = $result;
                 }
+
+                if (isset($absentByDate[$key])) {
+                    foreach ($absentByDate[$key] as $absent) {
+                        if ($absent->StartTime < $checkIn) {
+                            $checkIn = $absent->StartTime;
+                        }
+
+                        if ($absent->EndTime > $checkOut) {
+                            $checkOut = $absent->EndTime;
+                        }
+                    }
+                }
+
+                if (isset($workDeclarationByDate[$key])) {
+                    foreach ($workDeclarationByDate[$key] as $workDeclaration) {
+                        if ($workDeclaration->Time < $checkIn) {
+                            $checkIn = $workDeclaration->Time;
+                        }
+
+                        if ($workDeclaration->Time > $checkOut) {
+                            $checkOut = $workDeclaration->Time;
+                        }
+                    }
+                }
+
+                if (count($timeKeepingByDate[$key]) < 1) {
+                    $isInvalid = true;
+                }
+
+                if ($checkIn > $startTime || $checkOut < $endTime) {
+                    $isInvalid = true;
+                }
+
+                foreach ($value as $keyItem => $item) {
+                    foreach ($item as $keyItem2 => $item2) {
+                        $newkeyItem2 = dashesToCamelCase($keyItem2, false);
+                        if ($keyItem2 != $newkeyItem2) {
+                            $item[$newkeyItem2] = $item[$keyItem2];
+
+                            unset($item[$keyItem2]);
+                        }
+                    }
+                    $value[$keyItem] = $item;
+                }
+
+                $timekeeping = [];
+                foreach ($timeKeepingByDate[$key] as $attribute) {
+                    $attributes = $attribute->toArray();
+
+                    foreach ($attributes as $keyItem => $item) {
+                        $newkeyItem = dashesToCamelCase($keyItem, false);
+
+                        if ($keyItem != $newkeyItem) {
+                            $attributes[$newkeyItem] = $attributes[$keyItem];
+                            unset($attributes[$keyItem]);
+                        }
+                    }
+                    $timekeeping[] = $attributes;
+                }
+
+                $result = [
+                    'date' => $key,
+                    'shift' => $value,
+                    'timekeeping' => $timekeeping,
+                    'checkIn' => $checkIn,
+                    'checkOut' => $checkOut,
+                    'isInvalid' => $isInvalid,
+                ];
+
+                $responseInvalid[] = $result;
             }
         }
 

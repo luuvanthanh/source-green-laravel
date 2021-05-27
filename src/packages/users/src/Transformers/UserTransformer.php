@@ -58,8 +58,9 @@ class UserTransformer extends BaseTransformer
             }
         }
 
+        //work-hours
         $newWorkHours = [];
-
+        $totalWorkHourSummary = 0;
         if (request()->isWorkHourSummary) {
             $workHours = $model->workHours->toArray();
             if (count($workHours) > 0) {
@@ -80,7 +81,36 @@ class UserTransformer extends BaseTransformer
                         'date' => $key,
                         'value' => $value,
                     ];
+                    $totalWorkHourSummary += $value;
                     unset($newWorkHours[$key]);
+                }
+            }
+        }
+
+        //bus-registrations
+        $newBusRegistration = [];
+        $totalBusRegistration = 0;
+        if (request()->isBusRegistrationSummary) {
+            $busRegistrations = $model->busRegistrations->toArray();
+
+            if (count($busRegistrations) > 0) {
+                foreach ($busRegistrations as $key => $busRegistration) {
+                    $date = Carbon::parse($busRegistration['Date'])->format('Y-m-d');
+
+                    if (array_key_exists($date, $newBusRegistration)) {
+                        $newBusRegistration[$date] += $busRegistration['HourNumber'];
+                    } else {
+                        $newBusRegistration[$date] = $busRegistration['HourNumber'];
+                    }
+                }
+
+                foreach ($newBusRegistration as $key => $value) {
+                    $newBusRegistration[] = [
+                        'date' => $key,
+                        'value' => $value,
+                    ];
+                    $totalBusRegistration += $value;
+                    unset($newBusRegistration[$key]);
                 }
             }
         }
@@ -91,6 +121,9 @@ class UserTransformer extends BaseTransformer
             'responseInvalid' => $model->responseInvalid,
             'Status' => $status,
             'workHourSummary' => $newWorkHours,
+            'totalWorkHourSummary' => $totalWorkHourSummary,
+            'busRegistrationSummary' => $newBusRegistration,
+            'totalBusRegistration' => $totalBusRegistration,
         ];
 
         return $attributes;
