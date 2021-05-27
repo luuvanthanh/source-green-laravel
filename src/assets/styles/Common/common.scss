@@ -728,23 +728,33 @@
   color: rgba($color: $black, $alpha: 0.85);
   cursor: pointer;
   &.cell-heading-weekend {
-    background-color: $background-primary !important;
-    color: $background-primary !important;
+    background-color: #5b9bd5 !important;
+    color: #5b9bd5 !important;
     &:focus,
     &:hover {
-      background-color: $background-primary !important;
-      color: $background-primary !important;
+      background-color: #5b9bd5 !important;
+      color: #5b9bd5 !important;
     }
   }
   &.cell-heading-kc {
-    background-color: gray;
+    background-color: #a5a5a5;
     color: $white;
     &:focus,
     &:hover {
-      background-color: gray;
+      background-color: #a5a5a5;
       color: $white;
     }
   }
+  &.cell-heading-holidays {
+    background-color: #fbe4d5 !important;
+    color: #fbe4d5 !important;
+    &:focus,
+    &:hover {
+      background-color: #fbe4d5 !important;
+      color: #fbe4d5 !important;
+    }
+  }
+
   &:focus,
   &:hover {
     color: rgba($color: $black, $alpha: 0.85);

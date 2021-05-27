@@ -82,7 +82,8 @@ export const variables = {
     DATE_TIME_UTC: 'YYYY-MM-DD[T]HH:mm:ss',
     DATE_MONTH: 'DD/MM',
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
-    MONTH_FULL: '[Tháng] MM/YYYY'
+    MONTH_FULL: '[Tháng] MM/YYYY',
+    MONTH_NAME: '[Tháng] MM'
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
