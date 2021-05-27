@@ -240,6 +240,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/quan-ly-phuong-tien/phu-huynh-hom-nay',
+            component: './vehicle/parent',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // VEHICEL
