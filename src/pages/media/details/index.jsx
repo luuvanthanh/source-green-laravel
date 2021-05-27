@@ -12,7 +12,6 @@ import Loading from '@/components/CommonComponent/Loading';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/information.module.scss';
-import Button from '@/components/CommonComponent/Button';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 const { confirm } = Modal;
@@ -67,7 +66,7 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Chi tiết ghi nhận" />
-      <Breadcrumbs last={'Chi tiết ghi nhận'} menu={menuLeftMedia} />
+      <Breadcrumbs last="Chi tiết ghi nhận" menu={menuLeftMedia} />
       <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
         <Loading
           loading={loading['mediaDetails/GET_DETAILS']}
@@ -83,25 +82,20 @@ const Index = memo(() => {
                 <Heading type="form-sub-title">
                   {Helper.getDate(details, variables.DATE_FORMAT.DATE_TIME)}
                 </Heading>
-                <p className={styles['text-delete']} onClick={remove}>
+                <p className={styles['text-delete']} role="presentation" onClick={remove}>
                   Xóa ghi nhận
                 </p>
-              </Pane>
-              <Pane style={{ marginBottom: 10 }}>
-                <Heading type="form-sub-title">Mã ID: {details?.id}</Heading>
               </Pane>
               <Pane style={{ marginBottom: 20 }}>
                 <Heading type="page-title">{details?.description}</Heading>
               </Pane>
 
               <Pane className="row">
-                {(details?.files || []).map(({ id, name, url, extension }) => {
-                  return (
-                    <Pane className="col-lg-2" key={id}>
-                      <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
-                    </Pane>
-                  );
-                })}
+                {(details?.files || []).map(({ id, name, url }) => (
+                  <Pane className="col-lg-2" key={id}>
+                    <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
+                  </Pane>
+                ))}
               </Pane>
             </Pane>
 
@@ -110,7 +104,12 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <label className={styles.infoLabel}>Phụ huynh</label>
                   <Pane className={styles.userInformation}>
-                    <AvatarTable fileImage={details?.parent?.fileImage} />
+                    <AvatarTable
+                      fileImage={Helper.getPathAvatarJson(
+                        details?.studentMaster?.farther?.fileImage ||
+                          details?.studentMaster?.mother?.fileImage,
+                      )}
+                    />
                     <Pane>
                       <h3>
                         {details?.studentMaster?.farther?.fullName ||
@@ -123,7 +122,9 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <label className={styles.infoLabel}>Học sinh</label>
                   <Pane className={styles.userInformation}>
-                    <AvatarTable fileImage={details?.student?.fileImage} />
+                    <AvatarTable
+                      fileImage={Helper.getPathAvatarJson(details?.student?.fileImage)}
+                    />
                     <Pane>
                       <h3>{details?.student?.fullName || 'Su Beo'}</h3>
                     </Pane>
@@ -133,7 +134,7 @@ const Index = memo(() => {
                   <label className={styles.infoLabel}>Cơ sở</label>
                   <Pane className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-school'} />
+                      <span className="icon-school" />
                     </span>
                     <span className={styles.infoText}>
                       {details?.class?.branch?.name || 'Lake view'}
@@ -144,7 +145,7 @@ const Index = memo(() => {
                   <label className={styles.infoLabel}>Lớp</label>
                   <Pane className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-open-book'} />
+                      <span className="icon-open-book" />
                     </span>
                     <span className={styles.infoText}>{details?.class?.name || 'Preschool 2'}</span>
                   </Pane>
@@ -157,10 +158,11 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <label className={styles.infoLabel}>Nhân viên</label>
                   <Pane className={styles.userInformation}>
-                    <AvatarTable fileImage={details?.teacher?.fileImage} />
+                    <AvatarTable
+                      fileImage={Helper.getPathAvatarJson(details?.creator?.objectInfo?.fileImage)}
+                    />
                     <Pane>
                       <h3>{details?.creator?.objectInfo?.fullName || 'Lê Thị Vân'}</h3>
-                      {/* <p>{details?.teacher?.position}</p> */}
                     </Pane>
                   </Pane>
                 </Pane>

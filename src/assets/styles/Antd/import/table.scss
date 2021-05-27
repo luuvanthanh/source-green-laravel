@@ -189,3 +189,14 @@
     }
   }
 }
+
+.table-work {
+  .ant-table-tbody {
+    .ant-table-row {
+      td {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+      }
+    }
+  }
+}
