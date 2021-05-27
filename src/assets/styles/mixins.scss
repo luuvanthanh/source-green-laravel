@@ -72,7 +72,11 @@ $warning: #f39834;
 $secondary: #6a7a84;
 
 // Font Family
-$base__font-family: "Roboto", sans-serif !important;
+$base__font-family: "ProximaNovaRegular", sans-serif;
+$bold-italic__font-family: "ProximaNovaBoldItalic", sans-serif;
+$bold__font-family: "ProximaNovaBold", sans-serif;
+$semi-bold__font-family: "ProximaNovaSemibold", sans-serif;
+$semi-bold-italic__font-family: "ProximaNovaSemiboldItalic", sans-serif;
 
 // Font Size
 $base__font-size: 13 !default;

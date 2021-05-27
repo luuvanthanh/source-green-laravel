@@ -3,7 +3,7 @@
 .breadcrumbs {
   padding: rem(10) rem(20);
   :global(.text-muted) {
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
@@ -29,7 +29,7 @@
   }
 }
 .title {
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: 500;
   font-size: 13px;

@@ -1,3 +1,5 @@
+@import "@/assets/styles/mixins.scss";
+
 @for $i from 0 through 100 {
   $value: $i * 5;
   $unit: "";
@@ -42,7 +44,7 @@
 .table-edit-discount {
   .editable-cell-value-wrap {
     font-size: 13px;
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     padding: 0px !important;
     margin: 0 !important;
     min-height: 20px !important;
@@ -55,14 +57,14 @@
     }
     &.ant-table-cell {
       font-size: 13px;
-      font-family: "Roboto", sans-serif;
+      font-family: $base__font-family;
       padding: 5px 10px !important;
     }
   }
   th {
     &.ant-table-cell {
       font-size: 13px;
-      font-family: "Roboto", sans-serif;
+      font-family: $base__font-family;
       padding: 5px 10px !important;
     }
   }
@@ -117,7 +119,7 @@
   color: $text-success !important;
 }
 .table-edit {
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-weight: normal;
   .table-edit-row-0 {
     font-weight: bold;

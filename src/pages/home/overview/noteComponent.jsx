@@ -143,7 +143,7 @@ const Index = memo(() => {
             <div className="col-md-6 py20 border-top">
               <p className="mb5">Giáo viên đã nhận</p>
               <p className="font-weight-bold">
-                {`${detailsNote?.employee?.fullName} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
+                {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
               </p>
             </div>
           </div>

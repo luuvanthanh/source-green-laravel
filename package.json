@@ -70,6 +70,7 @@
     "leaflet": "^1.5.1",
     "leaflet-routing-machine": "^3.2.12",
     "lodash": "^4.17.11",
+    "lottie-web": "^5.7.8",
     "lrm-google": "^1.0.1",
     "moment": "^2.25.3",
     "node-sass": "^4.14.1",
