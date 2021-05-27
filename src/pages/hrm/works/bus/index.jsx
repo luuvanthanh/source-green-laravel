@@ -12,7 +12,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import HelperModules from '../../utils/Helper';
 
 let isMounted = true;
 /**
@@ -238,11 +237,7 @@ class Index extends PureComponent {
 
   renderTitleHeader = (index, item) => {
     if (index !== null && item) {
-      return (
-        <div>
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
-        </div>
-      );
+      return <div>{moment(item).format('DD-MM')}</div>;
     }
     return null;
   };
@@ -347,10 +342,11 @@ class Index extends PureComponent {
         return {
           title: this.renderTitleHeader(index, item),
           key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
+          className: classnames('min-width-50', 'max-width-50', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
           width: 100,
           align: 'center',
-          render: (record) => this.renderworksBushift(record.busRegistrationSummary, currentDate, record),
+          render: (record) =>
+            this.renderworksBushift(record.busRegistrationSummary, currentDate, record),
         };
       },
     );
@@ -369,11 +365,11 @@ class Index extends PureComponent {
     const loading = effects['worksBus/GET_DATA'];
     return (
       <>
-        <Helmet title="Tổng hợp công thêm ngoài giờ" />
+        <Helmet title="CHẤM CÔNG BUS THÁNG" />
         <div className={classnames(styles['content-form'], styles['content-form-worksBus'])}>
           {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Tổng hợp công thêm ngoài giờ</Text>
+          <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
+            <Text color="dark">CHẤM CÔNG BUS THÁNG</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -421,6 +417,7 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               error={error}
+              className="table-work"
               isError={error.isError}
               pagination={this.pagination(pagination)}
               params={{

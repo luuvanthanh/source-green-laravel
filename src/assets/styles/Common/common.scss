@@ -720,10 +720,10 @@
   background-color: transparent;
   border: none;
   outline: none;
-  margin-top: -24px;
-  padding-top: 24px;
-  margin-bottom: -24px;
-  padding-bottom: 24px;
+  margin-top: -15px;
+  padding-top: 15px;
+  margin-bottom: -15px;
+  padding-bottom: 15px;
   width: 100%;
   color: rgba($color: $black, $alpha: 0.85);
   cursor: pointer;
@@ -853,5 +853,18 @@
         color: $text-white;
       }
     }
+  }
+}
+
+.leaflet-wrapper {
+  height: 75vh;
+  width: 100%;
+  overflow: hidden;
+  :global(.leaflet-container) {
+    width: 100%;
+    height: 100%;
+  }
+  :global(.leaflet-routing-container) {
+    display: none;
   }
 }
