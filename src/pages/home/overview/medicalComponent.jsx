@@ -85,7 +85,7 @@ const Index = memo(() => {
     {
       title: 'Tên Bệnh',
       key: 'diseaseName',
-      className: 'min-width-250',
+      className: 'min-width-170',
       width: 250,
       render: (record) => {
         const obj = {
@@ -115,8 +115,8 @@ const Index = memo(() => {
     {
       title: 'Thuốc',
       key: 'image',
-      className: 'min-width-300',
-      width: 300,
+      className: 'min-width-250',
+      width: 250,
       render: (record) => (
         <div className="d-flex align-items-center">
           <Image.PreviewGroup>
@@ -141,7 +141,7 @@ const Index = memo(() => {
     {
       title: 'Đơn vị',
       key: 'position',
-      className: 'min-width-120',
+      className: 'min-width-80',
       align: 'center',
       width: 120,
       render: (record) => record?.medicine.unit || ''
@@ -149,7 +149,7 @@ const Index = memo(() => {
     {
       title: 'Liều lượng',
       key: 'amount',
-      className: 'min-width-120',
+      className: 'min-width-90',
       align: 'center',
       width: 120,
       render: (record) => record?.medicineAmount || ''
@@ -157,7 +157,7 @@ const Index = memo(() => {
     {
       title: 'Ghi chú',
       key: 'note',
-      className: 'min-width-300',
+      className: 'min-width-200',
       width: 300,
       render: (record) => record?.medicine?.note
     },
@@ -165,14 +165,16 @@ const Index = memo(() => {
       title: 'Nhận thuốc',
       key: 'getMedicine',
       align: 'center',
-      className: 'min-width-120',
+      className: 'min-width-80',
+      width: 120,
       render: (record) => <Checkbox checked={record?.isReceived || false} />,
     },
     {
       title: 'Cho thuốc',
       key: 'giveMedicine',
       align: 'center',
-      className: 'min-width-120',
+      className: 'min-width-80',
+      width: 120,
       render: (record) => <Checkbox checked={record?.isDrunk || false} />,
     },
   ];

@@ -79,12 +79,13 @@ const Index = memo(() => {
               {
                 !_.isEmpty(detailsNote.fileImage) && (
                   <Image.PreviewGroup>
-                    {detailsNote.fileImage.map((item, index) => (
+                    {JSON.parse(detailsNote.fileImage).map((item, index) => (
                       <Image
                         key={index}
                         width={110}
+                        height={100}
                         className="mb10"
-                        src={`${API_UPLOAD}${Helper.getPathAvatarJson(item)}`}
+                        src={`${API_UPLOAD}${item}`}
                       />
                     ))}
                   </Image.PreviewGroup>
