@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Tabs, Checkbox, Input } from 'antd';
 import csx from 'classnames';
@@ -14,10 +14,9 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import variablesModules from '../utils/variables';
 import styles from '@/assets/styles/Common/common.scss';
-import infoStyles from '@/assets/styles/Common/information.module.scss';
 import { Helper, variables } from '@/utils';
+import variablesModules from '../utils/variables';
 import RouteModal from './route';
 
 const { TabPane } = Tabs;
@@ -25,22 +24,12 @@ const { TabPane } = Tabs;
 const Index = memo(() => {
   const filterRef = useRef();
   const formRef = useRef();
-  const [
-    loadingReducer,
-    paginationReducer,
-    busRoutes,
-    summary,
-    data,
-    timelines,
-  ] = useSelector(({ loading, busToday = {} }) => [
-    loading,
-    busToday?.pagination,
+  const [busRoutes, summary, data, timelines] = useSelector(({ busToday = {} }) => [
     busToday?.busRoutes,
     busToday?.summary,
     busToday?.data,
     busToday?.timelines,
   ]);
-  const loading = loadingReducer?.effects['busToday/GET_DATA'];
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -58,10 +47,6 @@ const Index = memo(() => {
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
   });
-
-  const showRoute = (record) => {
-    mountedSet(setVisibleRoute, true);
-  };
 
   const hiddenRoute = () => {
     mountedSet(setVisibleRoute, false);
@@ -94,7 +79,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -182,7 +167,7 @@ const Index = memo(() => {
                   </Button>
                 </Pane>
 
-                {data.map(({ address, studentBusPlaces = [], status }, index) => (
+                {data.map(({ address, studentBusPlaces = [] }, index) => (
                   <Pane key={index} className="pt20 border-bottom">
                     <Pane className="mb10">
                       <Text size="normal">

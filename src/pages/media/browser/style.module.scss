@@ -69,14 +69,11 @@
 }
 
 .progress-container {
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
-  padding: 20px;
   background-color: $background-white;
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12);
   border-radius: 2px;
+  margin-bottom: 20px;
+  padding: 20px;
   .progess-content {
     .norm {
       font-weight: 600;
@@ -92,5 +89,18 @@
         cursor: pointer;
       }
     }
+  }
+}
+
+.container-success {
+  span[class*="icon"] {
+    font-size: 50px;
+    color: $text-success;
+  }
+  p {
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 20px;
+    color: #3e4247;
   }
 }

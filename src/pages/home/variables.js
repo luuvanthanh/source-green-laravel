@@ -61,7 +61,7 @@ export const variables = {
       image: '/images/icon/down-arrow.svg'
     }
   ],
-  ATTENDANCE: [
+  DATA_ATTENDANCE: [
     {
       id: 'QUANTITY',
       name: 'Sỉ số trẻ',

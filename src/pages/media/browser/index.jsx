@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory, useLocation } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { size } from 'lodash';
+import { size, isEmpty } from 'lodash';
 import moment from 'moment';
 import csx from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -35,8 +35,10 @@ const Index = memo(() => {
   const dispatch = useDispatch();
 
   const [visibleProgress, setVisibleProgress] = useState(false);
+  const [inProgessSuccess, setInProgessSuccess] = useState(false);
   const [visibleUpload, setVisibleUpload] = useState(false);
   const [search, setSearch] = useState({
+    status: 'PENDING',
     uploadDate: query?.uploadDate || moment(),
   });
   const [images, setImages] = useState([]);
@@ -70,7 +72,12 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          if (response?.data?.status !== 'starting') {
+          if (isEmpty(images)) {
+            if (response?.data?.status === 'finished') {
+              setInProgessSuccess(true);
+            }
+          }
+          if (response?.data?.status !== 'starting' && response?.data?.status !== 'finished') {
             setVisibleProgress(true);
           }
         }
@@ -86,7 +93,11 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          getProgress();
+          setVisibleProgress(false);
+          setInProgessSuccess(false);
+          if (isEmpty(response.items)) {
+            getProgress();
+          }
         }
       },
     });
@@ -135,29 +146,6 @@ const Index = memo(() => {
 
   return (
     <>
-      {visibleProgress && (
-        <div className={styles['progress-container']}>
-          <div
-            className={csx(
-              styles['progess-content'],
-              'd-flex',
-              'justify-content-between',
-              'align-items-center',
-              'mb10',
-            )}
-          >
-            <p className={styles.norm}>Đang xử lý lọc hình ảnh</p>
-            <p
-              className={csx(styles.norm, styles.cancel)}
-              onClick={hiddenProgress}
-              role="presentation"
-            >
-              Hủy
-            </p>
-          </div>
-          <Progress strokeLinecap="square" percent={progess?.progress || 0} />
-        </div>
-      )}
       <Helmet title="Duyệt hình" />
       <Pane className="p20">
         <Pane className="d-flex mb20 align-items-center">
@@ -171,6 +159,29 @@ const Index = memo(() => {
             Tải ảnh lên
           </Button>
         </Pane>
+        {visibleProgress && (
+          <div className={styles['progress-container']}>
+            <div
+              className={csx(
+                styles['progess-content'],
+                'd-flex',
+                'justify-content-between',
+                'align-items-center',
+                'mb10',
+              )}
+            >
+              <p className={styles.norm}>Đang xử lý lọc hình ảnh</p>
+              <p
+                className={csx(styles.norm, styles.cancel)}
+                onClick={hiddenProgress}
+                role="presentation"
+              >
+                Hủy
+              </p>
+            </div>
+            <Progress strokeLinecap="square" percent={progess?.progress || 0} />
+          </div>
+        )}
 
         <Pane className="card">
           <Pane className="pt20 px20 border-bottom">
@@ -199,74 +210,96 @@ const Index = memo(() => {
           </Pane>
 
           <Loading loading={loading['mediaBrowser/GET_DATA']} params={{ type: 'container' }}>
-            {!size(images) ? (
-              <Pane className="p20">
-                <NoData />
+            {inProgessSuccess && (
+              <Pane className={csx('p20 text-center', styles['container-success'])}>
+                <div>
+                  <span className="icon-checkmark" />
+                </div>
+                <p>Hoàn tất lọc hình ảnh</p>
+                <Button
+                  className="mx-auto"
+                  color="success"
+                  size="large"
+                  onClick={() => history.push('/ghi-nhan/duyet-hinh')}
+                >
+                  Xem kết quả
+                </Button>
               </Pane>
-            ) : (
-              <Scrollbars autoHeight autoHeightMax={window.innerHeight - 312}>
-                <Pane className={csx('px20 py10', styles['preview-image'])}>
-                  <Image.PreviewGroup>
-                    {(images || []).map((item, index) => (
-                      <Image
-                        width={175}
-                        height={138}
-                        src={`${API_UPLOAD}${item.url}`}
-                        key={index}
-                        preview={{
-                          maskClassName: 'customize-mask',
-                          mask: (
-                            <>
-                              <Tag
-                                className={csx(styles.tag, {
-                                  [`${styles.yellow}`]:
-                                    item.status === localVariables.CLASSIFY_STATUS.PENDING ||
-                                    item.status === localVariables.CLASSIFY_STATUS.CLASSIFYING,
-                                  [`${styles.success}`]:
-                                    item.status === localVariables.CLASSIFY_STATUS.CLASSIFIED,
-                                  [`${styles.danger}`]:
-                                    item.status === localVariables.CLASSIFY_STATUS.UNDEFINED,
-                                })}
-                              >
-                                {localVariables.CLASSIFY_STATUS_NAME[item.status] ||
-                                  localVariables.CLASSIFY_STATUS_NAME.PENDING}
-                              </Tag>
-                              <div
-                                className={styles.cancel}
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  removeImage(item.id);
-                                }}
-                                role="presentation"
-                              >
-                                <span className="icon-cancel" />
-                              </div>
-                            </>
-                          ),
-                        }}
-                      />
-                    ))}
-                  </Image.PreviewGroup>
-                </Pane>
-              </Scrollbars>
+            )}
+            {!inProgessSuccess && (
+              <>
+                {!size(images) ? (
+                  <Pane className="p20">
+                    <NoData />
+                  </Pane>
+                ) : (
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 312}>
+                    <Pane className={csx('px20 py10', styles['preview-image'])}>
+                      <Image.PreviewGroup>
+                        {(images || []).map((item, index) => (
+                          <Image
+                            width={175}
+                            height={138}
+                            src={`${API_UPLOAD}${item.url}`}
+                            key={index}
+                            preview={{
+                              maskClassName: 'customize-mask',
+                              mask: (
+                                <>
+                                  <Tag
+                                    className={csx(styles.tag, {
+                                      [`${styles.yellow}`]:
+                                        item.status === localVariables.CLASSIFY_STATUS.PENDING ||
+                                        item.status === localVariables.CLASSIFY_STATUS.CLASSIFYING,
+                                      [`${styles.success}`]:
+                                        item.status === localVariables.CLASSIFY_STATUS.CLASSIFIED,
+                                      [`${styles.danger}`]:
+                                        item.status === localVariables.CLASSIFY_STATUS.UNDEFINED,
+                                    })}
+                                  >
+                                    {localVariables.CLASSIFY_STATUS_NAME[item.status] ||
+                                      localVariables.CLASSIFY_STATUS_NAME.PENDING}
+                                  </Tag>
+                                  <div
+                                    className={styles.cancel}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      removeImage(item.id);
+                                    }}
+                                    role="presentation"
+                                  >
+                                    <span className="icon-cancel" />
+                                  </div>
+                                </>
+                              ),
+                            }}
+                          />
+                        ))}
+                      </Image.PreviewGroup>
+                    </Pane>
+                  </Scrollbars>
+                )}
+              </>
             )}
           </Loading>
         </Pane>
 
         <Pane>
-          <Button
-            disabled={
-              !size(images) ||
-              !images.find((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING)
-            }
-            loading={loading['mediaBrowser/CLASSIFY']}
-            className="mx-auto"
-            color="success"
-            size="large"
-            onClick={classify}
-          >
-            Lọc hình ảnh
-          </Button>
+          {!isEmpty(images) && (
+            <Button
+              disabled={
+                !size(images) ||
+                !images.find((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING)
+              }
+              loading={loading['mediaBrowser/CLASSIFY']}
+              className="mx-auto"
+              color="success"
+              size="large"
+              onClick={classify}
+            >
+              Lọc hình ảnh
+            </Button>
+          )}
         </Pane>
       </Pane>
 

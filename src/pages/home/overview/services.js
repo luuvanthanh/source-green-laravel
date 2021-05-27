@@ -43,3 +43,41 @@ export function detailsMedical(data) {
     method: 'GET',
   });
 }
+
+export function getBus(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getBusByStatus(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function getAttendance(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getAttendanceByStatus(params = {}) {
+  return request('/medicals', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}

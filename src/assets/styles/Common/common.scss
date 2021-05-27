@@ -728,12 +728,12 @@
   color: rgba($color: $black, $alpha: 0.85);
   cursor: pointer;
   &.cell-heading-weekend {
-    background-color: $background-primary;
-    color: $white;
+    background-color: $background-primary !important;
+    color: $background-primary !important;
     &:focus,
     &:hover {
-      background-color: $background-primary;
-      color: $white;
+      background-color: $background-primary !important;
+      color: $background-primary !important;
     }
   }
   &.cell-heading-kc {

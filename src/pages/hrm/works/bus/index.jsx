@@ -13,7 +13,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../../utils/Helper';
-import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -47,12 +46,13 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        type: query?.type || 'DATE',
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().add(1, 'months').subtract(1, 'days'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment(),
       },
     };
     setIsMounted(true);
@@ -247,51 +247,65 @@ class Index extends PureComponent {
     return null;
   };
 
-  redirectHistory = (item, record) =>
-    `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
+  redirectHistory = (item, record, user) =>
+    `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
       {
-        startDate: Helper.getDate(item),
-        endDate: Helper.getDate(item),
-        user_id: record.id,
+        startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        fullName: user.fullName,
       },
       variables.QUERY_STRING,
     )}`;
 
-  redirectAdditionaltime = (record) => {
-    const { search } = this.state;
-    return `/cong-them?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  redirectSubtractionTime = (record) => {
-    const { search } = this.state;
-    return `/cong-tru?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  renderworksBushift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
+  renderworksBushift = (record = [], dayOfWeek = Helper.getDate(moment()), user = {}) => {
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
-      if (get(data, 'type')) return data.type;
-      if (data)
-        return isInteger(data.timekeepingReport)
-          ? data.timekeepingReport
-          : Helper.toFixed(data.timekeepingReport);
-      return '-';
+      if (get(data, 'type')) {
+        return (
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+              [styles[`cell-heading-kc`]]: data.type === 'KC',
+            })}
+          >
+            {data.type}
+          </Link>
+        );
+      }
+      if (data) {
+        return (
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            })}
+          >
+            {isInteger(data.value) ? data.value : Helper.toFixed(data.value)}
+          </Link>
+        );
+      }
+      return (
+        <Link
+          to={this.redirectHistory(dayOfWeek, record, user)}
+          className={classnames(styles['item-schedules'], {
+            [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        >
+          -
+        </Link>
+      );
     }
-    return '-';
+    return (
+      <Link
+        to={this.redirectHistory(dayOfWeek, record, user)}
+        className={classnames(styles['item-schedules'], {
+          [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+        })}
+      >
+        -
+      </Link>
+    );
   };
 
   /**
@@ -301,18 +315,18 @@ class Index extends PureComponent {
     const { search } = this.state;
     const headerWork = [
       {
-        title: 'Tổng cộng',
+        title: 'Thực công',
         key: 'date_work',
         align: 'center',
         width: 100,
         fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
-        render: (record) => record.totalworksBus,
+        render: (record) => record.totalBusRegistration,
       },
     ];
     const arrayHeader = [
       {
-        title: 'Họ và Tên',
+        title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-200 col-fixed-200',
         width: 200,
@@ -333,14 +347,10 @@ class Index extends PureComponent {
         return {
           title: this.renderTitleHeader(index, item),
           key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100'),
+          className: classnames('min-width-100', 'max-width-100', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
           width: 100,
           align: 'center',
-          render: (record) => (
-            <Link className={styles['item-schedules']} to={this.redirectHistory(item, record)}>
-              {this.renderworksBushift(record.timeKeepingReport, currentDate)}
-            </Link>
-          ),
+          render: (record) => this.renderworksBushift(record.busRegistrationSummary, currentDate, record),
         };
       },
     );
@@ -359,11 +369,11 @@ class Index extends PureComponent {
     const loading = effects['worksBus/GET_DATA'];
     return (
       <>
-        <Helmet title="Tổng hợp công xe bus" />
+        <Helmet title="Tổng hợp công thêm ngoài giờ" />
         <div className={classnames(styles['content-form'], styles['content-form-worksBus'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Tổng hợp công xe bus</Text>
+            <Text color="dark">Tổng hợp công thêm ngoài giờ</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -387,19 +397,11 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={CHOOSE}
-                    name="type"
-                    allowClear={false}
-                    onChange={this.onChangeType}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -408,6 +410,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>

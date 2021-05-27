@@ -1,20 +1,70 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
-import { Avatar, Form, Modal } from 'antd';
+import { Avatar, Form, Modal, Skeleton } from 'antd';
+import { useSelector, useDispatch } from 'dva';
+import _ from 'lodash';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
 import styles from '../index.scss';
-import variablesModules from '../variables';
 
 const Index = memo(() => {
+  const dispatch = useDispatch();
+  const [ { bus, listBusByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
+    overView,
+    effects,
+  ]);
 
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState({});
+  const [classes, setClasses] = useState([]);
+  const [search, setSearch] = useState({
+    page: variables.PAGINATION.PAGE,
+    limit: variables.PAGINATION.PAGE_SIZE,
+    classId: '',
+    keyWord: ''
+  });
+
+  const fetchDataNotes = () => {
+    dispatch({
+      type: 'overView/GET_DATA_BUS',
+    });
+  };
+
+  const getListBusByStatus = () => {
+    dispatch({
+      type: 'overView/GET_DATA_BUS_BY_STATUS',
+      payload: {
+        ...search
+      }
+    });
+  };
+
+  const getClasses = () => {
+    dispatch({
+      type: 'categories/GET_CLASSES',
+      payload: {
+        branch: '',
+      },
+      callback: (res) => {
+        if (!_.isEmpty(res.items)) {
+          setClasses(res.items);
+        }
+      },
+    });
+  };
+
+  useEffect(() => {
+    fetchDataNotes();
+  }, []);
+
+  useEffect(() => {
+    getListBusByStatus();
+  }, [search]);
 
   /**
    * Function header table
@@ -86,15 +136,56 @@ const Index = memo(() => {
     setVisible(true);
     setTitle(`Danh sách ${record?.name?.toLowerCase()}`);
     setDetails(record);
+    getListBusByStatus();
+    getClasses();
   };
 
   const cancelModal = () => {
     setVisible(false);
   };
 
-  const selectBranch = () => {};
+  const handleSearch = _.debounce((value, name) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value
+    }));
+  }, 300);
 
-  const onChange = () => {};
+  /**
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
+   const changePagination = (page, limit) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      page,
+      limit,
+    }));
+  };
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  const pagination = (pagination) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: search.limit,
+    defaultCurrent: Number(search.page),
+    current: Number(search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+    onChange: (page, size) => {
+      changePagination(page, size);
+    },
+    onShowSizeChange: (current, size) => {
+      changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
+  });
 
   return (
     <>
@@ -112,23 +203,23 @@ const Index = memo(() => {
               <div className="col-md-4 col-xl-3">
                 <FormItem
                   className="mb-10"
-                  name="name"
-                  onChange={(event) => onChange(event, 'name')}
+                  name="keyWord"
+                  onChange={(event) => handleSearch(event.target.value, 'keyWord')}
                   placeholder="Nhập từ khóa tìm kiếm"
                   type={variables.INPUT_SEARCH}
                 />
               </div>
-              <div className="col-md-4 col-xl-2">
+              <div className="col-md-4 col-xl-3">
                 <FormItem
                   className="mb-10"
                   name="class"
                   type={variables.SELECT}
-                  data={[]}
-                  onChange={selectBranch}
+                  data={[{ id: '', name: 'Tất cả các lớp' }, ...classes]}
+                  onChange={(event) => handleSearch(event, 'classId')}
                   allowClear={false}
                 />
               </div>
-              <div className="col-md-4 col-xl-7">
+              <div className="col-md-4 col-xl-6">
                 <p className="d-flex align-items-center justify-content-end mb0">
                   {details?.name} <span className="text-success font-size-30 font-weight-bold ml10">56</span>
                 </p>
@@ -138,9 +229,9 @@ const Index = memo(() => {
           <Table
             bordered
             columns={header()}
-            dataSource={[{id: 1}, {id: 2}]}
-            // loading={loading}
-            pagination={false}
+            dataSource={listBusByStatus?.data}
+            loading={loading['overView/GET_DATA_BUS_BY_STATUS']}
+            pagination={pagination(listBusByStatus?.pagination)}
             params={{
               header: header(),
               type: 'table',
@@ -161,44 +252,52 @@ const Index = memo(() => {
           <div className="mt50">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
               <div className={styles['content-bus']}>
-                {variablesModules.DATA_BUS.map((item, index) => {
-                  if (index === 0) {
+                {loading['overView/GET_DATA_BUS'] ? (
+                  <>
+                    <Skeleton avatar paragraph={{ rows: 4 }} active />
+                    <Skeleton avatar paragraph={{ rows: 4 }} active />
+                    <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  </>
+                ) : (
+                  bus.map((item, index) => {
+                    if (index === 0) {
+                      return (
+                        <div
+                          key={index}
+                          className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                          onClick={() => getDetail(item)}
+                          aria-hidden="true"
+                        >
+                          <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                            <div className="d-flex align-items-center font-weight-bold ">
+                              <Avatar
+                                src={item.image}
+                                size={24}
+                              />
+                              <p className="mb0 ml10">{item?.name}</p>
+                            </div>
+                            <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{item.number}</p>
+                          </div>
+                        </div>
+                      );
+                    }
                     return (
                       <div
                         key={index}
-                        className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                        className={classnames(styles['half-width'], 'pointer')}
                         onClick={() => getDetail(item)}
                         aria-hidden="true"
                       >
-                        <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                          <div className="d-flex align-items-center font-weight-bold ">
-                            <Avatar
-                              src={item.image}
-                              size={24}
-                            />
-                            <p className="mb0 ml10">{item?.name}</p>
-                          </div>
-                          <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{item.number}</p>
-                        </div>
+                        <Avatar
+                          src={item.image}
+                          size={30}
+                        />
+                        <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
+                        <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
                       </div>
                     );
-                  }
-                  return (
-                    <div
-                      key={index}
-                      className={classnames(styles['half-width'], 'pointer')}
-                      onClick={() => getDetail(item)}
-                      aria-hidden="true"
-                    >
-                      <Avatar
-                        src={item.image}
-                        size={30}
-                      />
-                      <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
-                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
-                    </div>
-                  );
-                })}
+                  })
+                )}
               </div>
             </Scrollbars>
           </div>

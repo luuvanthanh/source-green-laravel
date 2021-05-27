@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
+import { connect, history, Link } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, get, isInteger } from 'lodash';
@@ -13,7 +13,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../../utils/Helper';
-import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -47,12 +46,13 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        type: query?.type || 'DATE',
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().add(1, 'months').subtract(1, 'days'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment(),
       },
     };
     setIsMounted(true);
@@ -247,34 +247,36 @@ class Index extends PureComponent {
     return null;
   };
 
-  redirectHistory = (item, record) =>
-    `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
+  redirectHistory = (item, record, user) =>
+    `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
       {
-        startDate: Helper.getDate(item),
-        endDate: Helper.getDate(item),
-        user_id: record.id,
+        startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        fullName: user.fullName,
       },
       variables.QUERY_STRING,
     )}`;
 
-  renderWorkShift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
+  renderWorkShift = (record = [], dayOfWeek = Helper.getDate(moment()), user = {}) => {
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
       if (get(data, 'type')) {
         return (
-          <div
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
               [styles[`cell-heading-kc`]]: data.type === 'KC',
             })}
           >
             {data.type}
-          </div>
+          </Link>
         );
       }
       if (data) {
         return (
-          <div
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
             })}
@@ -282,27 +284,29 @@ class Index extends PureComponent {
             {isInteger(data.timekeepingReport)
               ? data.timekeepingReport
               : Helper.toFixed(data.timekeepingReport)}
-          </div>
+          </Link>
         );
       }
       return (
-        <div
+        <Link
+          to={this.redirectHistory(dayOfWeek, record, user)}
           className={classnames(styles['item-schedules'], {
             [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
           })}
         >
           -
-        </div>
+        </Link>
       );
     }
     return (
-      <div
+      <Link
+        to={this.redirectHistory(dayOfWeek, record, user)}
         className={classnames(styles['item-schedules'], {
           [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
         })}
       >
         -
-      </div>
+      </Link>
     );
   };
 
@@ -348,7 +352,7 @@ class Index extends PureComponent {
           className: classnames('min-width-100', 'max-width-100', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
           width: 100,
           align: 'center',
-          render: (record) => this.renderWorkShift(record.timeKeepingReport, currentDate),
+          render: (record) => this.renderWorkShift(record.timeKeepingReport, currentDate, record),
         };
       },
     );
@@ -395,19 +399,11 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={CHOOSE}
-                    name="type"
-                    allowClear={false}
-                    onChange={this.onChangeType}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -416,6 +412,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>
