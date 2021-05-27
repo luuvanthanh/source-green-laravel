@@ -168,7 +168,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
         $now = Carbon::now();
-        // dd($now);
+
         $type = !empty($attributes['type']) ? $attributes['type'] : null;
 
         $this->employee = $employee;
@@ -484,14 +484,17 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $result = $employeesByStore->paginate($attributes['limit']);
         }
 
-        foreach ($result as &$employee) {
-            $employee = $this->calculatorInvalidReport($employee, $attributes);
-        }
+        foreach ($result as $key => &$employee) {
+            $employee = $this->calculatorInvalidReport($employee, $attributes, $key);
 
+            if (!$employee) {
+                unset($result[$key]);
+            }
+        }
         return $this->employeeRepositoryEloquent->parserResult($result);
     }
 
-    public function calculatorInvalidReport($employee, $attributes)
+    public function calculatorInvalidReport($employee, $attributes, $key)
     {
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
@@ -614,24 +617,28 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $timekeeping[] = $attributes;
                 }
 
-                $result = [
-                    'date' => $key,
-                    'shift' => $value,
-                    'timekeeping' => $timekeeping,
-                    'checkIn' => $checkIn,
-                    'checkOut' => $checkOut,
-                    'isInvalid' => $isInvalid,
-                ];
+                if ($isInvalid) {
+                    $result = [
+                        'date' => $key,
+                        'shift' => $value,
+                        'timekeeping' => $timekeeping,
+                        'checkIn' => $checkIn,
+                        'checkOut' => $checkOut,
+                        'isInvalid' => $isInvalid,
+                    ];
 
-                $responseInvalid[] = $result;
+                    $responseInvalid[] = $result;
+                }
+
             }
         }
-
-        $totalWorks = 0;
-
         $employee->responseInvalid = $responseInvalid;
 
-        return $employee;
+        if (empty($responseInvalid)) {
+            return false;
+        }
+
+        return true;
     }
 
 }

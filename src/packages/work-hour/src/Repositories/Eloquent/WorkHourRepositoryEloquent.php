@@ -100,7 +100,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
     public function workHourSummary(array $attributes)
     {
-        $employees = $this->employeeRepositoryEloquent->model()::whereHas('workHours', function ($query) use ($attributes) {
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('workHours', function ($query) use ($attributes) {
             $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
         })->with(['workHours' => function ($query) use ($attributes) {
             $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
@@ -108,16 +108,16 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
-            $employees->whereIn('Id', $employeeId);
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereIn('Id', $employeeId);
         }
 
         if (empty($attributes['limit'])) {
-            $result = $employees->get();
+            $result = $this->employeeRepositoryEloquent->get();
         } else {
-            $result = $employees->paginate($attributes['limit']);
+            $result = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
         }
 
-        return $this->employeeRepositoryEloquent->parserResult($result);
+        return $result;
     }
 
 }
