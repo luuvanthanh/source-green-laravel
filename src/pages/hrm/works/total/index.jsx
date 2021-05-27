@@ -13,7 +13,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../../utils/Helper';
-import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -47,12 +46,11 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        type: query?.type || 'DATE',
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate ? moment(query?.endDate) : moment().add(1, 'months'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment(),
       },
     };
     setIsMounted(true);
@@ -395,19 +393,11 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={CHOOSE}
-                    name="type"
-                    allowClear={false}
-                    onChange={this.onChangeType}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -416,6 +406,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>
