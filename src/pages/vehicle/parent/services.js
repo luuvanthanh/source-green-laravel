@@ -18,24 +18,10 @@ export function get(params = {}) {
 }
 
 export function getTrackingCurrent(params = {}) {
-  return request(`/bus-trackings`, {
+  return request(`/bus-trackings/${params.id}/current-location`, {
     method: 'GET',
     params: {
       ...params,
-      fromDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.fromDate,
-        }),
-        isUTC: true,
-      }),
-      toDate: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.toDate,
-        }),
-        isUTC: true,
-      }),
     },
   });
 }

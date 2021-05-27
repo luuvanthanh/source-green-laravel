@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, size, last } from 'lodash';
+import { debounce, isEmpty, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -13,7 +13,8 @@ import PropTypes from 'prop-types';
 import L from 'leaflet';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import moment from 'moment';
-import Routing from './route';
+// import Routing from './route';
+// import RoutingDefault from './route-default';
 
 const iconStudent = new L.Icon({
   iconUrl: '/images/marker-student.svg',
@@ -64,10 +65,11 @@ class Index extends PureComponent {
         date: moment(),
         id: null,
       },
-      position: [18.3452, 105.886093],
+      position: [16.07111, 108.224022],
       routes: [],
       parent: user?.objectInfo?.id,
       isAuto: false,
+      current: {},
     };
     setIsMounted(true);
   }
@@ -79,7 +81,7 @@ class Index extends PureComponent {
       if (this.state.isAuto) {
         self.onLoadTracking();
       }
-    }, 20000);
+    }, 2000);
   }
 
   componentWillUnmount() {
@@ -119,17 +121,12 @@ class Index extends PureComponent {
         type: 'busParent/GET_TRACKING_CURRENT',
         payload: {
           id: data?.busPlace?.busRoute?.busId,
-          formDate: moment(),
-          toDate: moment(),
         },
         callback: (res) => {
           if (res) {
-            const result = Array.from(new Set(res.map((item) => item.long))).map((id) => ({
-              ...res.find((item) => item.long === id),
-            }));
             this.setStateData({
-              routes: result,
-              position: Helper.centerLatLng(result),
+              current: res,
+              position: [res.lat, res.long],
             });
           }
         },
@@ -205,14 +202,14 @@ class Index extends PureComponent {
   };
 
   auto = () => {
-    this.setStateData({
-      isAuto: true,
-    });
+    this.setStateData((prevState) => ({
+      isAuto: !prevState.isAuto,
+    }));
   };
 
   render() {
     const { data, students } = this.props;
-    const { search, position, routes } = this.state;
+    const { search, position, routes, current, isAuto } = this.state;
     return (
       <>
         <Helmet title="Lộ trình xe bus hôm nay" />
@@ -220,7 +217,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Lộ trình xe bus hôm nay</Text>
             <Button color="success" icon="plus" onClick={this.auto}>
-              Tự động
+              {isAuto ? ' Đang Tự động' : ' Tự động'}
             </Button>
           </div>
           <div className={styles['block-table']}>
@@ -248,17 +245,8 @@ class Index extends PureComponent {
                   url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                   attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
                 />
-                {!isEmpty(this.covertGetLocation(routes)) && this.map && (
-                  <Routing map={this.map} routes={this.covertGetLocation(routes)} />
-                )}
-                {!isEmpty(this.covertGetLocation(routes)) && (
-                  <Marker
-                    position={[
-                      last(this.covertGetLocation(routes))?.lat,
-                      last(this.covertGetLocation(routes))?.long,
-                    ]}
-                    icon={iconCar}
-                  />
+                {!isEmpty(current) && (
+                  <Marker position={[current?.lat, current?.long]} icon={iconCar} />
                 )}
                 {!isEmpty(data) && (
                   <Marker
