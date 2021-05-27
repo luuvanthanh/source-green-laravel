@@ -1,3 +1,5 @@
+import { head } from 'lodash';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -8,6 +10,7 @@ export default {
     error: {
       isError: false,
     },
+    holidays: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -15,6 +18,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_HOLIDAYS: (state, { payload }) => ({
+      ...state,
+      holidays: head(payload?.parsePayload)?.holidayDetails || [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -38,6 +45,22 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_HOLIDAYS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getHolidays, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_HOLIDAYS',
             payload: response,
           });
         }

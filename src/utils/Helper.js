@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {
   isArray,
   pickBy,
@@ -703,5 +704,17 @@ export default class Helpers {
       lng += item.long;
     });
     return [lat / items.length, lng / items.length];
+  };
+
+  static treeDate = (data) => {
+    const groups = data.reduce((r, o) => {
+      const m = moment(o).format('MM');
+      // eslint-disable-next-line no-unused-expressions
+      r[m] ? r[m].data.push(o) : (r[m] = { month: moment(o), data: [o] });
+      return r;
+    }, {});
+
+    const result = Object.keys(groups).map((k) => groups[k]);
+    return result;
   };
 }

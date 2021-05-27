@@ -135,3 +135,18 @@ export function getShifts(params = {}) {
     },
   });
 }
+
+export function getHolidays(params = {}) {
+  return requestLaravel('/v1/holidays', {
+    method: 'GET',
+    params: {
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['holidayDetails']),
+      search: Helper.convertParamSearchConvert({
+        Name: params.name,
+      }),
+    },
+  });
+}
