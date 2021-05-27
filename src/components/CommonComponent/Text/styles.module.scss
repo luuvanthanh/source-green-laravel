@@ -3,7 +3,7 @@
 .text-large {
   color: rgba($text-dark, 0.85);
   line-height: 30px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 20px;
@@ -13,7 +13,7 @@
 .text-large-medium {
   color: rgba($text-dark, 0.85);
   line-height: 20px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
@@ -23,7 +23,7 @@
 .text-large-normal {
   color: rgba($text-dark, 0.85);
   line-height: 20px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: 500;
   font-size: 13px;
@@ -33,7 +33,7 @@
 .text-normal {
   color: rgba($text-dark, 0.85);
   line-height: 20px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -43,7 +43,7 @@
 .text-medium {
   color: rgba($text-dark, 0.85);
   line-height: 20px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -53,7 +53,7 @@
 .text-description {
   color: rgba($text-dark, 0.85);
   line-height: 24px;
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
@@ -85,7 +85,7 @@
 }
 
 .extra {
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: italic;
   font-weight: normal;
   font-size: 12px;

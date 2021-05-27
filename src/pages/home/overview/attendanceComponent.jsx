@@ -274,6 +274,7 @@ const Index = memo(() => {
                       <Avatar
                         src={item.image}
                         size={30}
+                        shape="square"
                       />
                       <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
                       <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>

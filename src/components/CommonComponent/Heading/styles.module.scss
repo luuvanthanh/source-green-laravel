@@ -1,7 +1,7 @@
 @import '@/assets/styles/mixins.scss';
 
 @mixin title( $font-weight, $font-size, $line-height, $color) {
-  font: $font-weight #{$font-size}/#{$line-height} $base__font-family;
+  font: $font-weight #{$font-size}/#{$line-height} $bold__font-family;
   font-style: normal;
   color: $color;
   margin-bottom: 0;

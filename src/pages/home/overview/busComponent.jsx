@@ -269,7 +269,7 @@ const Index = memo(() => {
                           aria-hidden="true"
                         >
                           <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                            <div className="d-flex align-items-center font-weight-bold ">
+                            <div className="d-flex align-items-center">
                               <Avatar
                                 src={item.image}
                                 size={24}

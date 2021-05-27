@@ -191,7 +191,7 @@
 
 .text-tooltip-white {
   color: rgba($color: $text-dark, $alpha: 0.85);
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 12px;
