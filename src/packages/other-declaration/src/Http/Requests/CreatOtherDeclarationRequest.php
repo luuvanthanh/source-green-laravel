@@ -25,7 +25,7 @@ class CreatOtherDeclarationRequest extends FormRequest
     {
 
         return [
-
+            'time' => 'unique:OtherDeclarations,Time',
         ];
     }
 }

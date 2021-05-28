@@ -89,6 +89,8 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereIn('Id', $employeeId);
         }
 
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->tranferHistory($attributes);
+
         if (empty($attributes['limit'])) {
             $result = $this->employeeRepositoryEloquent->get();
         } else {

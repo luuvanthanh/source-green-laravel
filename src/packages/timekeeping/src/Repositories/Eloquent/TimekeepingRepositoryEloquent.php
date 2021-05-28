@@ -88,6 +88,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             };
         }]);
 
+        if (!empty($attributes['fullName'])) {
+            $name = strtoupper($attributes['fullName']);
+            $key = '"FullName"';
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereRaw("UPPER($key) LIKE '%{$name}%' ");
+        }
+
         if (!empty($attribute['employeeId'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
                 $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
@@ -134,13 +140,17 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         if (!empty($attributes['fullName'])) {
-            $employeesByStore->where('FullName', 'like', '%' . $attributes['fullName'] . '%');
+            $name = mb_strtoupper($attributes['fullName']);
+            $key = '"FullName"';
+            $employeesByStore->whereRaw("UPPER($key) LIKE '%{$name}%' ");
         }
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $employeesByStore->whereIn('Id', $employeeId);
         }
+
+        $employeesByStore->tranferHistory($attributes);
 
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
@@ -191,7 +201,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $startDate, $endDate);
-
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
         $intervalDate = \DateInterval::createFromDateString('1 day');
@@ -219,8 +228,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             foreach ($employeeTimeWorkShift as $key => $value) {
 
                 if (!empty($timeKeepingByDate[$key])) {
-                    $startTime = $value[0]['AfterStart'];
-                    $endTime = end($value)['BeforeEnd'];
+                    $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
+                    $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
                     $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                     $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
 
@@ -237,7 +246,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'timekeepingReport' => $timekeepingReport,
                         'type' => $type,
                     ];
-
                     $responseTimeKeepingUser[] = $result;
                     $i++;
                 }
@@ -470,8 +478,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }]);
 
         if (!empty($attributes['fullName'])) {
-            $employeesByStore->where('FullName', 'like', '%' . $attributes['fullName'] . '%');
+            $name = strtoupper($attributes['fullName']);
+            $key = '"FullName"';
+            $employeesByStore->whereRaw("UPPER($key) LIKE '%{$name}%' ");
         }
+
+        $employeesByStore->tranferHistory($attributes);
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
@@ -541,8 +553,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 $isInvalid = false;
 
-                $startTime = $value[0]['AfterStart'];
-                $endTime = end($value)['BeforeEnd'];
+                $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
+                $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
 
                 $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                 $checkOut = count($timeKeepingByDate[$key]) > 1 ? end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s') : null;

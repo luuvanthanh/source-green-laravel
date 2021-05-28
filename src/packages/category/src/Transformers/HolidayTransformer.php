@@ -19,7 +19,7 @@ class HolidayTransformer extends BaseTransformer
      * @var array
      */
 
-    protected $availableIncludes = ['holidayDetails'];
+    protected $defaultIncludes = ['holidayDetails'];
 
     /**
      * Include HolidayDetail

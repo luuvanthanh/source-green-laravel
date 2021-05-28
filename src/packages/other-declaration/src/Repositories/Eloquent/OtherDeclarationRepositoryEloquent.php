@@ -90,8 +90,19 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
     {
         $otherDeclaration = OtherDeclaration::findOrFail($id);
 
-        $attributes['hours'] = json_encode($attributes['hours']);
-        $otherDeclaration->update($attributes);
+        \DB::beginTransaction();
+        try {
+            $otherDeclaration->update($attributes);
+
+            $otherDeclaration->otherDeclarationDetail()->delete();
+
+            OtherDeclarationDetailServices::add($otherDeclaration->Id, $attributes['detail']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
 
         return parent::find($otherDeclaration->Id);
     }

@@ -26,7 +26,7 @@ class HolidayCreateRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            "name" => 'required|string',
+            'name' => 'required',
         ];
     }
 
