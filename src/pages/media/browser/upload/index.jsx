@@ -4,6 +4,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { isEqual, size } from 'lodash';
 import { useDispatch, useSelector } from 'dva';
 import csx from 'classnames';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -11,9 +12,9 @@ import Text from '@/components/CommonComponent/Text';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 import { imageUploadProps } from '@/utils/upload';
+import { variables, Helper } from '@/utils';
 import styles from './style.module.scss';
 import imageStyles from '../style.module.scss';
-import { variables, Helper } from '@/utils';
 
 const { Dragger } = Upload;
 
@@ -45,23 +46,6 @@ const Index = memo(({ onOk, ...props }) => {
     setFileList((prev) => prev.filter((file) => !isEqual(file, removeFile)));
   };
 
-  const upload = () => {
-    dispatch({
-      type: 'upload/UPLOAD',
-      payload: fileList,
-      showNotification: false,
-      callback: ({ results = [] }) => {
-        const files = results.map((result) => result?.fileInfo);
-        if (type === 'AUTO') {
-          recordedUpload(files);
-        }
-        if (type === 'TARGET') {
-          recorded(files);
-        }
-      },
-    });
-  };
-
   const recordedUpload = (infoFiles) => {
     dispatch({
       type: 'mediaUpload/UPLOAD',
@@ -87,6 +71,23 @@ const Index = memo(({ onOk, ...props }) => {
       callback: () => {
         setFileList([]);
         onOk();
+      },
+    });
+  };
+
+  const upload = () => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: fileList,
+      showNotification: false,
+      callback: ({ results = [] }) => {
+        const files = results.map((result) => result?.fileInfo);
+        if (type === 'AUTO') {
+          recordedUpload(files);
+        }
+        if (type === 'TARGET') {
+          recorded(files);
+        }
       },
     });
   };
@@ -172,7 +173,7 @@ const Index = memo(({ onOk, ...props }) => {
         <Pane className="text-center p20">
           <span className={csx('icon-images', styles.icon)} />
           <Text size="normal">Kéo thả hình ảnh vào đây để tải lên hoặc click vào đây</Text>
-          <Text size="normal">(Chỉ gồm định dạng .JPG,.PNG. Dung lượng &lt; 2MB)</Text>
+          <Text size="normal">(Chỉ gồm định dạng .JPG,.PNG. Dung lượng &lt; 5MB)</Text>
         </Pane>
       </Dragger>
 
@@ -188,7 +189,7 @@ const Index = memo(({ onOk, ...props }) => {
                   <img
                     className="d-block w-100"
                     src={window.URL.createObjectURL(file)}
-                    alt={`preview-image-${index}`}
+                    alt={`preview${index}`}
                   />
 
                   <Button
@@ -205,5 +206,13 @@ const Index = memo(({ onOk, ...props }) => {
     </Modal>
   );
 });
+
+Index.propTypes = {
+  onOk: PropTypes.func,
+};
+
+Index.defaultProps = {
+  onOk: () => {},
+};
 
 export default Index;
