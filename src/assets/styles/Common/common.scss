@@ -782,11 +782,11 @@
   }
   .title {
     font-style: normal;
-    font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     color: $text;
     margin-bottom: 0;
+    font-family: $bold__font-family;
   }
   .norm {
     font-style: normal;

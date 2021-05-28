@@ -1,14 +1,15 @@
 import { memo, useState, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Modal, Form, Avatar, Skeleton } from 'antd';
+import { Modal, Form, Skeleton } from 'antd';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables } from '@/utils';
+
 import styles from '../index.scss';
 
 const Index = memo(() => {
@@ -77,8 +78,9 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <Avatar
-            src="/images/slice/avatar_02.png"
+          <AvatarTable
+            fileImage="/images/slice/avatar_02.png"
+            srcLocal
             shape="square"
             size={40}
           />
@@ -107,8 +109,9 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <Avatar
-            src="/images/slice/avatar.png"
+          <AvatarTable
+            fileImage="/images/slice/avatar.png"
+            srcLocal
             shape="square"
             size={40}
           />
@@ -271,10 +274,10 @@ const Index = memo(() => {
                       onClick={() => getDetails(item)}
                       aria-hidden="true"
                     >
-                      <Avatar
-                        src={item.image}
+                      <AvatarTable
+                        fileImage={item.image}
+                        srcLocal
                         size={30}
-                        shape="square"
                       />
                       <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
                       <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
