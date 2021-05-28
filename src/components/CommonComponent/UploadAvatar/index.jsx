@@ -1,5 +1,5 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Upload, Modal, Image } from 'antd';
+import { Upload, Image } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch } from 'dva';
 import { get } from 'lodash';
@@ -7,7 +7,6 @@ import { get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 
 import { imageUploadProps } from '@/utils/upload';
-import styles from './styles.module.scss';
 import { Helper } from '@/utils';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
@@ -36,9 +35,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
     () => ({
       ...otherProps,
       multiple: true,
-      beforeUpload: (file) => {
-        return null;
-      },
+      beforeUpload: () => null,
       customRequest({ file }) {
         const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
         const maxSize = 20 * 2 ** 20;
@@ -78,7 +75,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                   <Image
                     width={105}
                     height={105}
-                    src={`/image-default.png`}
+                    src="/image-default.png"
                     key={index}
                     preview={{
                       maskClassName: 'customize-mask',
@@ -99,27 +96,28 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                 );
               }
               return (
-                <Image
-                  width={105}
-                  height={105}
-                  src={`${API_UPLOAD}${item}`}
-                  key={index}
-                  preview={{
-                    maskClassName: 'customize-mask',
-                    mask: (
-                      <>
-                        <EyeOutlined className="mr5" />
-                        <DeleteOutlined
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setImages((prev) => prev.filter((image) => image !== item));
-                            removeFiles && removeFiles(images.filter((image) => image !== item));
-                          }}
-                        />
-                      </>
-                    ),
-                  }}
-                />
+                <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
+                  <Image
+                    width={102}
+                    height={102}
+                    src={`${API_UPLOAD}${item}`}
+                    preview={{
+                      maskClassName: 'customize-mask',
+                      mask: (
+                        <>
+                          <EyeOutlined className="mr5" />
+                          <DeleteOutlined
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setImages((prev) => prev.filter((image) => image !== item));
+                              removeFiles && removeFiles(images.filter((image) => image !== item));
+                            }}
+                          />
+                        </>
+                      ),
+                    }}
+                  />
+                </div>
               );
             })}
           </Image.PreviewGroup>

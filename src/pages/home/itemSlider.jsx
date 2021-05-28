@@ -17,10 +17,12 @@ const Index = memo(({ animation, title, url, target }) => {
     });
 
     refCategory.addEventListener('mouseenter', () => {
+      animationMenu.setSpeed(1.1);
       animationMenu.play();
     });
 
     refCategory.addEventListener('mouseleave', () => {
+      animationMenu.setSpeed(1.1);
       animationMenu.stop();
     });
   }, []);
@@ -39,7 +41,6 @@ const Index = memo(({ animation, title, url, target }) => {
         <div
           ref={(element) => getSelectorAnimation(element)}
           className={`${styles.animation}`}
-          style={{ width: 60, height: 60 }}
         />
         <div className={styles['item-content']}>
           <p className={styles.norm}>{title}</p>
@@ -52,7 +53,7 @@ const Index = memo(({ animation, title, url, target }) => {
       <div
         ref={(element) => getSelectorAnimation(element)}
         className={`${styles.animation}`}
-        style={{ width: 60, height: 60 }}
+        style={{ height: 60 }}
       />
       <div className={styles['item-content']}>
         <p className={styles.norm}>{title}</p>
