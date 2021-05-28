@@ -1,5 +1,5 @@
 import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
+import { head } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -12,7 +12,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: head(payload?.parsePayload)?.holidayDetails || [],
       pagination: payload.pagination,
     }),
     SET_ERROR: (state, { payload }) => ({
@@ -26,16 +26,12 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        callback(head(response?.parsePayload)?.holidayDetails || []);
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -58,6 +54,22 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Cập nhật thất bại',
+        });
+        callback(null, error);
       }
     },
   },

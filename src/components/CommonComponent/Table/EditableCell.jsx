@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Input, Form, Select, DatePicker, InputNumber } from 'antd';
+import { Input, Form, Select, DatePicker, InputNumber, message } from 'antd';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { isEmpty, omit } from 'lodash';
@@ -78,7 +78,9 @@ const EditableCell = ({
       toggleEdit();
       const values = await form.validateFields();
       handleSave({ ...record, ...values });
-    } catch (errInfo) {}
+    } catch (errInfo) {
+      message.error(errInfo && 'Error');
+    }
   };
 
   const save = async () => {
@@ -87,22 +89,23 @@ const EditableCell = ({
       const values = await form.validateFields();
       toggleEdit();
       handleSave({ ...record, ...values });
-    } catch (errInfo) {}
+    } catch (errInfo) {
+      message.error(errInfo && 'Error');
+    }
   };
 
   const onChangeDatePicker = async () => {
     try {
-      const values = await form.validateFields(['startDate', 'endDate', 'birthday', 'dateRange']);
+      const values = await form.validateFields(['date']);
       toggleEdit();
       handleSave({
         ...record,
-        startDate: values.startDate || record.startDate,
-        endDate: values.endDate || record.endDate,
-        birthday: values.birthday || record.birthday,
-        dateRange: values.dateRange || record.dateRange,
+        date: values.date || record.date,
       });
       mountedSet(setOpen, false);
-    } catch (errInfo) {}
+    } catch (errInfo) {
+      message.error(errInfo && 'Error');
+    }
   };
 
   let childNode = children;
@@ -110,13 +113,7 @@ const EditableCell = ({
   const renderForm = () => {
     if (type === variables.INPUT) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.MAX_LENGTH_INPUT]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_LENGTH_INPUT]}>
           <Input
             onBlur={save}
             onPressEnter={save}
@@ -129,13 +126,7 @@ const EditableCell = ({
     }
     if (type === variables.INPUT_NOTE) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}>
           <Input
             onBlur={save}
             onPressEnter={save}
@@ -148,13 +139,7 @@ const EditableCell = ({
     }
     if (type === variables.PERCENT) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.MAX_NUMBER, variables.RULES.NUMBER]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_NUMBER, variables.RULES.NUMBER]}>
           <Input
             onBlur={save}
             onPressEnter={save}
@@ -167,16 +152,10 @@ const EditableCell = ({
     }
     if (type === variables.PRICE) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.NUMBER]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.NUMBER]}>
           <InputNumber
             className={classnames('input-number', styles['input-number-container'])}
-            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
             onBlur={save}
             onPressEnter={save}
             placeholder="Nhập"
@@ -187,13 +166,7 @@ const EditableCell = ({
     }
     if (type === variables.INPUT_DATE) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.NUMBER]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.NUMBER]}>
           <InputNumber
             className={classnames(
               'input-number',
@@ -210,13 +183,7 @@ const EditableCell = ({
     }
     if (type === variables.INPUT_NUMBER) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.NUMBER]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.NUMBER]}>
           <InputNumber
             className={classnames(
               'input-number',
@@ -233,13 +200,7 @@ const EditableCell = ({
     }
     if (type === variables.SELECT) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.MAX_LENGTH_INPUT]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_LENGTH_INPUT]}>
           <Select
             onBlur={save}
             placeholder="Chọn"
@@ -258,26 +219,14 @@ const EditableCell = ({
     }
     if (type === variables.TEXTAREA) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[variables.RULES.MAX_LENGTH_INPUT]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_LENGTH_INPUT]}>
           <Input onBlur={save} onPressEnter={save} placeholder="Nhập" ref={inputRef} />
         </Form.Item>
       );
     }
     if (type === variables.DATE_PICKER) {
       return (
-        <Form.Item
-          name={dataIndex}
-          rules={[]}
-          style={{
-            margin: 0,
-          }}
-        >
+        <Form.Item name={dataIndex} rules={[]}>
           <DatePicker
             disabledDate={disabledDateFuture && Helper.disabledDateFuture}
             format={variables.DATE_FORMAT.DATE}
@@ -291,13 +240,7 @@ const EditableCell = ({
       );
     }
     return (
-      <Form.Item
-        name={dataIndex}
-        rules={[]}
-        style={{
-          margin: 0,
-        }}
-      >
+      <Form.Item name={dataIndex} rules={[]}>
         <Input onBlur={save} onPressEnter={save} ref={inputRef} />
       </Form.Item>
     );
@@ -309,13 +252,7 @@ const EditableCell = ({
     }
     if (!editing) {
       childNode = (
-        <div
-          className="editable-cell-value-wrap"
-          onClick={toggleEdit}
-          style={{
-            paddingRight: 24,
-          }}
-        >
+        <div className="editable-cell-value-wrap" onClick={toggleEdit} role="presentation">
           {children}
         </div>
       );
@@ -372,8 +309,6 @@ const SortableItem = sortableElement((props) => {
 });
 const SortableContainer = sortableContainer((props) => <tbody {...props} />);
 
-const DragHandle = sortableHandle(() => (
-  <span className="icon-drag" style={{ cursor: 'pointer', color: '#999' }} />
-));
+const DragHandle = sortableHandle(() => <span className="icon-drag" />);
 
 export { EditableRow, EditableCell, SortableItem, SortableContainer, DragHandle };
