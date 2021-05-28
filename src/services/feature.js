@@ -96,7 +96,7 @@ export const feature = {
     {
       title: 'Bảng lương',
       src: '/images/home/drive.svg',
-      animation: animationImage.notification,
+      animation: animationImage.salary,
       url: '/',
       permission: ['ADMIN', 'HRM'],
     },
@@ -110,7 +110,7 @@ export const feature = {
     {
       title: 'Quản trị nhân sự',
       src: '/images/home/hrm.svg',
-      animation: animationImage.notification,
+      animation: animationImage.administration,
       url: '/quan-ly-nhan-su',
       permission: ['ADMIN', 'HRM'],
     },
