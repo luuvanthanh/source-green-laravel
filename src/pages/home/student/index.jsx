@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'dva';
-import { Form, Modal, Avatar, Skeleton } from 'antd';
+import { Form, Modal, Skeleton } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -97,7 +97,7 @@ const Index = memo(() => {
   };
 
   return (
-    <div className={classnames(styles['items-container'])}>
+    <div>
       <Form>
         <FormItem
           className={classnames('mt20', 'mb35', styles['input-search'])}
@@ -180,9 +180,10 @@ const Index = memo(() => {
             </div>
             <div className="col-lg-3 mt10">
               <div className="d-flex">
-                <Avatar
-                  src={`${API_UPLOAD}${Helper.getPathAvatarJson(detailsStudent?.student?.employee?.fileImage)}`}
+                <AvatarTable
+                  fileImage={Helper.getPathAvatarJson(detailsStudent?.student?.employee?.fileImage)}
                   size={50}
+                  shape="circle"
                 />
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>

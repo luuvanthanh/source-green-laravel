@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Avatar, Image, Checkbox, Skeleton } from 'antd';
+import { Tabs, Modal, Image, Checkbox, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -275,9 +275,10 @@ const Index = memo(() => {
             </div>
             <div className="col-lg-3 mt10">
               <div className="d-flex">
-                <Avatar
-                  src={`${API_UPLOAD}${Helper.getPathAvatarJson(detailsMedical?.studentMaster?.student?.employee?.fileImage)}`}
+                <AvatarTable
+                  fileImage={Helper.getPathAvatarJson(detailsMedical?.studentMaster?.student?.employee?.fileImage)}
                   size={50}
+                  shape="circle"
                 />
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>
