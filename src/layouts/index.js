@@ -1,9 +1,11 @@
 import React, { Fragment } from 'react';
 import { connect, Redirect } from 'umi';
-import NProgress from 'nprogress';
+import { LocaleProvider } from 'antd';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
+import viVN from 'antd/es/locale-provider/vi_VN';
+import moment from 'moment';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
@@ -24,6 +26,9 @@ import HealthLayout from './Health';
 import HRMLayout from './HRM';
 import FeePolicyLayout from './Fee-Policy';
 import NotesLayout from './Notes';
+import 'moment/locale/vi';
+
+moment.locale('vi');
 
 const Layouts = {
   public: PublicLayout,
@@ -39,7 +44,7 @@ const Layouts = {
   allocation: AllocationLayout,
   medical: MedicalLayout,
   attendance: AttendanceLayout,
-  timetable: TimetableLayout,
+  timetable1: TimetableLayout,
   notification: NotificationLayout,
   media: MediaLayout,
   health: HealthLayout,
@@ -150,10 +155,10 @@ class IndexLayout extends React.PureComponent {
     };
 
     return (
-      <Fragment>
+      <>
         <Helmet title="Clover" titleTemplate="Clover | %s" />
-        {BootstrappedLayout()}
-      </Fragment>
+        <LocaleProvider locale={viVN}>{BootstrappedLayout()}</LocaleProvider>
+      </>
     );
   }
 }
@@ -163,7 +168,6 @@ IndexLayout.propTypes = {
   children: PropTypes.any,
   loading: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
-  prevLocation: PropTypes.objectOf(PropTypes.any),
 };
 
 IndexLayout.defaultProps = {
@@ -171,7 +175,6 @@ IndexLayout.defaultProps = {
   children: {},
   loading: {},
   user: {},
-  prevLocation: {},
 };
 
 export default IndexLayout;
