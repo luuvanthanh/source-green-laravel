@@ -1,4 +1,5 @@
 import request from '@/utils/requestLavarel';
+import { Helper, variables } from '@/utils';
 
 export function getUsers(params = {}) {
   return request('/v1/employees', {
@@ -18,14 +19,34 @@ export function getAbsentTypes() {
 export function add(data = {}) {
   return request('/v1/other-declarations', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+      time: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.time,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 
 export function update(data = {}) {
   return request(`/v1/other-declarations/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+      time: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.time,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 

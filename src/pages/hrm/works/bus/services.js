@@ -2,9 +2,10 @@ import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/timekeeping-report', {
+  return request('/v1/bus-registrations-summary', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       searchJoin: 'and',
@@ -26,9 +27,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      include: Helper.convertIncludes(['positionLevelNow']),
     },
   });
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import {
   isArray,
   pickBy,
@@ -450,22 +451,25 @@ export default class Helpers {
   };
 
   static getPagination = (page, limit) => ({
-      skipCount: toString((Number(page) - 1) * Number(limit)),
-      maxResultCount: limit,
-    });
+    skipCount: toString((Number(page) - 1) * Number(limit)),
+    maxResultCount: limit,
+  });
 
-  static convertTreeSelect = (items = [], keyValue = 'value', keyLabel = 'label') => items.map((item) => ({
+  static convertTreeSelect = (items = [], keyValue = 'value', keyLabel = 'label') =>
+    items.map((item) => ({
       [`${keyValue}`]: item.id,
       [`${keyLabel}`]: item.name,
       children: this.convertTreeSelect(item.children),
     }));
 
-  static convertSelectSingle = (items = []) => items.map((item) => ({
+  static convertSelectSingle = (items = []) =>
+    items.map((item) => ({
       id: item,
       name: item,
     }));
 
-  static convertRadioSingle = (items = []) => items.map((item) => ({
+  static convertRadioSingle = (items = []) =>
+    items.map((item) => ({
       value: item,
       label: item,
     }));
@@ -543,7 +547,8 @@ export default class Helpers {
       .filter((item) => item[key] === id)
       .map((item) => ({ ...item, children: this.nest(items, item.id) }));
 
-  static removeEmptyChildren = (items = []) => items.map((item) => {
+  static removeEmptyChildren = (items = []) =>
+    items.map((item) => {
       const { children, ...other } = item;
       if (size(children)) {
         return {
@@ -608,7 +613,7 @@ export default class Helpers {
   static convertArrayDays = (start_date = moment(), end_date = moment()) => {
     const days = [];
     let day = moment(start_date);
-    while (day <= moment(end_date)) {
+    while (day <= moment(end_date).endOf('days')) {
       days.push(day.toDate());
       day = day.clone().add(1, 'd');
     }
@@ -632,7 +637,8 @@ export default class Helpers {
     return dateArray;
   }
 
-  static joinDateTime = (date, time) => `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
+  static joinDateTime = (date, time) =>
+    `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
 
@@ -698,5 +704,17 @@ export default class Helpers {
       lng += item.long;
     });
     return [lat / items.length, lng / items.length];
+  };
+
+  static treeDate = (data) => {
+    const groups = data.reduce((r, o) => {
+      const m = moment(o).format('MM');
+      // eslint-disable-next-line no-unused-expressions
+      r[m] ? r[m].data.push(o) : (r[m] = { month: moment(o), data: [o] });
+      return r;
+    }, {});
+
+    const result = Object.keys(groups).map((k) => groups[k]);
+    return result;
   };
 }

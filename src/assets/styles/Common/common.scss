@@ -720,31 +720,42 @@
   background-color: transparent;
   border: none;
   outline: none;
-  margin-top: -24px;
-  padding-top: 24px;
-  margin-bottom: -24px;
-  padding-bottom: 24px;
+  margin-top: -20px;
+  padding-top: 20px;
+  margin-bottom: -20px;
+  padding-bottom: 20px;
   width: 100%;
   color: rgba($color: $black, $alpha: 0.85);
+  font-size: 10px;
   cursor: pointer;
   &.cell-heading-weekend {
-    background-color: $background-primary;
-    color: $white;
+    background-color: #5b9bd5 !important;
+    color: #5b9bd5 !important;
     &:focus,
     &:hover {
-      background-color: $background-primary;
-      color: $white;
+      background-color: #5b9bd5 !important;
+      color: #5b9bd5 !important;
     }
   }
   &.cell-heading-kc {
-    background-color: gray;
+    background-color: #a5a5a5;
     color: $white;
     &:focus,
     &:hover {
-      background-color: gray;
+      background-color: #a5a5a5;
       color: $white;
     }
   }
+  &.cell-heading-holidays {
+    background-color: #fbe4d5 !important;
+    color: $text !important;
+    &:focus,
+    &:hover {
+      background-color: #fbe4d5 !important;
+      color: $text !important;
+    }
+  }
+
   &:focus,
   &:hover {
     color: rgba($color: $black, $alpha: 0.85);
@@ -774,8 +785,10 @@
     margin-left: 10px;
   }
   .name {
+    font-family: "Roboto", sans-serif;
     font-style: normal;
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 500;
     line-height: 20px;
     color: $text;
     margin-bottom: 0;
@@ -853,5 +866,26 @@
         color: $text-white;
       }
     }
+  }
+}
+
+.leaflet-wrapper {
+  height: 75vh;
+  width: 100%;
+  overflow: hidden;
+  :global(.leaflet-container) {
+    width: 100%;
+    height: 100%;
+  }
+  :global(.leaflet-routing-container) {
+    display: none;
+  }
+}
+
+
+.tooltip-container {
+  strong {
+    text-align: center;
+    color: $text-white;
   }
 }

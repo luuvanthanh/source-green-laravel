@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, get, isInteger } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -12,8 +12,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import HelperModules from '../../utils/Helper';
-import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -34,6 +32,9 @@ const mapStateToProps = ({ worksBus, loading }) => ({
   data: worksBus.data,
   pagination: worksBus.pagination,
   error: worksBus.error,
+  holidays: worksBus.holidays,
+  branches: worksBus.branches,
+  divisions: worksBus.divisions,
   loading,
 });
 @connect(mapStateToProps)
@@ -47,18 +48,24 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        type: query?.type || 'DATE',
         fullName: query?.fullName,
+        branchId: query?.branchId,
+        divisionId: query?.divisionId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().startOf('month').add(24, 'days'),
+        startDate: query?.startDate
+          ? moment(query?.startDate)
+          : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
       },
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
+    this.loadCategories();
     this.onLoad();
   }
 
@@ -80,6 +87,17 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'worksBus/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'worksBus/GET_DIVISIONS',
+      payload: {},
+    });
+  };
+
   /**
    * Function load data
    */
@@ -88,6 +106,12 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
+    this.props.dispatch({
+      type: 'worksBus/GET_HOLIDAYS',
+      payload: {
+        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
+      },
+    });
     this.props.dispatch({
       type: 'worksBus/GET_DATA',
       payload: {
@@ -150,41 +174,28 @@ class Index extends PureComponent {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
   };
 
+  onChangeMonth = (e) => {
+    this.debouncedSearchMonth(e);
+  };
+
   /**
    * Function debounce search
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearchType = debounce((value) => {
-    if (value === 'MONTH') {
-      this.setStateData(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            type: value,
-            startDate: moment(prevState.search.startDate).startOf('month'),
-            endDate: moment(prevState.search.endDate).endOf('month'),
-          },
-        }),
-        () => {
-          this.formRef.current.setFieldsValue({
-            startDate: moment(this.state.search.startDate).startOf('month'),
-            endDate: moment(this.state.search.endDate).endOf('month'),
-          });
-          this.onLoad();
+  debouncedSearchMonth = debounce((value) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate: moment(value).startOf('month').subtract(1, 'months').add(25, 'days'),
+          endDate: moment(value).startOf('month').add(24, 'days'),
         },
-      );
-    } else {
-      this.setStateData(
-        (prevState) => ({
-          search: {
-            ...prevState.search,
-            type: value,
-          },
-        }),
-        () => this.onLoad(),
-      );
-    }
+      }),
+      () => {
+        this.onLoad();
+      },
+    );
   }, 300);
 
   /**
@@ -238,60 +249,103 @@ class Index extends PureComponent {
 
   renderTitleHeader = (index, item) => {
     if (index !== null && item) {
-      return (
-        <div>
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
-        </div>
-      );
+      return <div>{moment(item).format('DD')}</div>;
     }
     return null;
   };
 
-  redirectHistory = (item, record) =>
-    `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
+  redirectHistory = (item, record, user) =>
+    `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
       {
-        startDate: Helper.getDate(item),
-        endDate: Helper.getDate(item),
-        user_id: record.id,
+        startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        fullName: user.fullName,
       },
       variables.QUERY_STRING,
     )}`;
 
-  redirectAdditionaltime = (record) => {
-    const { search } = this.state;
-    return `/cong-them?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  redirectSubtractionTime = (record) => {
-    const { search } = this.state;
-    return `/cong-tru?${Helper.convertParamSearch(
-      {
-        startDate: Helper.getDate(search.startDate),
-        endDate: Helper.getDate(search.endDate),
-        search: record.fullName,
-      },
-      variables.QUERY_STRING,
-    )}`;
-  };
-
-  renderworksBushift = (record = [], dayOfWeek = Helper.getDate(moment())) => {
+  renderworksBushift = (
+    record = [],
+    dayOfWeek = Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
+    user = {},
+  ) => {
+    const { holidays } = this.props;
+    const holiday = holidays.find(
+      (item) =>
+        Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
+        Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+    );
+    if (holiday) {
+      return (
+        <Tooltip
+          title={
+            <div className={styles['tooltip-container']}>
+              <strong>Nghỉ lễ: </strong>
+              <br />
+              {holiday.name}
+            </div>
+          }
+          color="#00B24D"
+        >
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-holidays`]]: !!holiday,
+            })}
+          >
+            Nghỉ lễ
+          </Link>
+        </Tooltip>
+      );
+    }
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
-      if (get(data, 'type')) return data.type;
-      if (data)
-        return isInteger(data.timekeepingReport)
-          ? data.timekeepingReport
-          : Helper.toFixed(data.timekeepingReport);
-      return '-';
+      if (get(data, 'type')) {
+        return (
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+              [styles[`cell-heading-kc`]]: data.type === 'KC',
+            })}
+          >
+            {data.type}
+          </Link>
+        );
+      }
+      if (data) {
+        return (
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            })}
+          >
+            {isInteger(data.value) ? data.value : Helper.toFixed(data.value)}
+          </Link>
+        );
+      }
+      return (
+        <Link
+          to={this.redirectHistory(dayOfWeek, record, user)}
+          className={classnames(styles['item-schedules'], {
+            [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        >
+          -
+        </Link>
+      );
     }
-    return '-';
+    return (
+      <Link
+        to={this.redirectHistory(dayOfWeek, record, user)}
+        className={classnames(styles['item-schedules'], {
+          [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+        })}
+      >
+        -
+      </Link>
+    );
   };
 
   /**
@@ -301,18 +355,18 @@ class Index extends PureComponent {
     const { search } = this.state;
     const headerWork = [
       {
-        title: 'Tổng cộng',
+        title: 'Thực công',
         key: 'date_work',
         align: 'center',
         width: 100,
         fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
-        render: (record) => record.totalworksBus,
+        render: (record) => record.totalBusRegistration,
       },
     ];
     const arrayHeader = [
       {
-        title: 'Họ và Tên',
+        title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-200 col-fixed-200',
         width: 200,
@@ -324,27 +378,32 @@ class Index extends PureComponent {
           />
         ),
       },
-    ];
-    const arrayHeaderDate = Helper.convertArrayDays(search.startDate, search.endDate).map(
-      (item, index) => {
-        const startDate = moment(search.startDate);
-        const endDate = moment(search.endDate);
-        const currentDate = Helper.convertArrayDays(startDate, endDate)[index];
-        return {
-          title: this.renderTitleHeader(index, item),
-          key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-100', 'max-width-100'),
-          width: 100,
-          align: 'center',
-          render: (record) => (
-            <Link className={styles['item-schedules']} to={this.redirectHistory(item, record)}>
-              {this.renderworksBushift(record.timeKeepingReport, currentDate)}
-            </Link>
-          ),
-        };
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        align: 'center',
+        width: 120,
+        fixed: 'left',
+        className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
+        render: (record) => record?.positionLevelNow?.division?.name,
       },
-    );
-    return arrayHeader.concat(arrayHeaderDate).concat(headerWork);
+    ];
+
+    const arrayMonth = Helper.treeDate(
+      Helper.convertArrayDays(search.startDate, search.endDate),
+    ).map((itemMonth) => ({
+      title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
+      key: itemMonth.month,
+      children: itemMonth.data.map((item, index) => ({
+        title: this.renderTitleHeader(index, item),
+        key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
+        className: classnames('min-width-50', 'max-width-50', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
+        width: 40,
+        align: 'center',
+        render: (record) => this.renderworksBushift(record.busRegistrationSummary, item, record),
+      })),
+    }));
+    return arrayHeader.concat(arrayMonth).concat(headerWork);
   };
 
   render() {
@@ -354,24 +413,26 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      divisions,
+      branches,
     } = this.props;
     const { search } = this.state;
     const loading = effects['worksBus/GET_DATA'];
     return (
       <>
-        <Helmet title="Tổng hợp công xe bus" />
-        <div className={classnames(styles['content-form'], styles['content-form-worksBus'])}>
+        <Helmet title="Chấm công bus" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Tổng hợp công xe bus</Text>
+          <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
+            <Text color="dark">CHẤM CÔNG BUS</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                type: search.type || 'DATE',
-                startDate: search.startDate && moment(search.startDate),
-                endDate: search.endDate && moment(search.endDate),
+                date: search.endDate && moment(search.endDate),
+                divisionId: search.divisionId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -387,27 +448,26 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={CHOOSE}
-                    name="type"
+                    name="date"
+                    onChange={(event) => this.onChangeMonth(event, 'date')}
+                    type={variables.MONTH_PICKER}
                     allowClear={false}
-                    onChange={this.onChangeType}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>
@@ -419,6 +479,7 @@ class Index extends PureComponent {
               loading={loading}
               error={error}
               isError={error.isError}
+              className="table-work"
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -442,6 +503,9 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  holidays: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -452,6 +516,9 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  holidays: [],
+  divisions: [],
+  branches: [],
 };
 
 export default Index;

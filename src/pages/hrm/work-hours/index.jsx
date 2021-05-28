@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -12,8 +12,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -30,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ workHours, loading }) => ({
   data: workHours.data,
   pagination: workHours.pagination,
@@ -215,64 +214,55 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Nhân viên',
-        key: 'fullName',
-        className: 'min-width-220',
-        width: 220,
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Thời gian',
-        key: 'hours',
-        width: 170,
-        className: 'min-width-170',
-        render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
-      },
-      {
-        title: 'Ngày áp dụng',
-        key: 'date',
-        width: 120,
-        className: 'min-width-120',
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Loại',
-        key: 'absentType',
-        className: 'min-width-120',
-        render: (record) => record?.absentType?.name,
-      },
-      {
-        title: 'Lý do',
-        key: 'reason',
-        className: 'min-width-120',
-        render: (record) => record.reason,
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Nhân viên',
+      key: 'fullName',
+      className: 'min-width-220',
+      width: 220,
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+          fullName={record?.employee?.fullName}
+        />
+      ),
+    },
+    {
+      title: 'Thời gian',
+      key: 'hours',
+      width: 170,
+      className: 'min-width-170',
+      render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
+    },
+    {
+      title: 'Ngày áp dụng',
+      key: 'date',
+      width: 120,
+      className: 'min-width-120',
+      render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Loại',
+      key: 'absentType',
+      className: 'min-width-120',
+      render: (record) => record?.absentType?.name,
+    },
+    {
+      title: 'Lý do',
+      key: 'reason',
+      className: 'min-width-120',
+      render: (record) => record.reason,
+    },
+  ];
 
   render() {
     const {

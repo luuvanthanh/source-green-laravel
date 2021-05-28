@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -13,6 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/EditableCell';
 
 let isMounted = true;
 /**
@@ -45,7 +46,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -54,7 +54,7 @@ class Index extends PureComponent {
           ? Helper.getDate(query.date, variables.DATE_FORMAT.DATE_AFTER)
           : Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
       },
-      objects: {},
+      dataSource: [],
     };
     setIsMounted(true);
   }
@@ -85,7 +85,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -93,7 +93,14 @@ class Index extends PureComponent {
       type: 'holidays/GET_DATA',
       payload: {
         ...search,
-        status,
+      },
+      callback: (response) => {
+        this.setStateData({
+          dataSource: response.map((item) => ({
+            ...item,
+            date: moment(item.date),
+          })),
+        });
       },
     });
     history.push(
@@ -225,70 +232,88 @@ class Index extends PureComponent {
     });
   };
 
+  handleSave = (record) => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    const payload = {
+      name: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
+      updateRows: [{ ...record, date: Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER) }],
+    };
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item) => (item.id === record.id ? record : item)),
+    }));
+    dispatch({
+      type: 'holidays/ADD',
+      payload,
+      callback: () => {},
+    });
+  };
+
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) => {
-          if (record.holidayDetails) {
-            return null;
-          }
-          return Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
+  header = () => [
+    {
+      title: 'Tên ngày lễ',
+      key: 'name',
+      dataIndex: 'name',
+      editable: true,
+      className: classnames('min-width-150', 'max-width-150'),
+      type: variables.TEXTAREA,
+    },
+    {
+      title: 'Ngày',
+      key: 'date',
+      className: classnames('min-width-150', 'max-width-150'),
+      width: 150,
+      dataIndex: 'date',
+      editable: true,
+      type: variables.DATE_PICKER,
+      render: (values, record) => Helper.getDate(record.date),
+    },
+    {
+      key: 'action',
+      className: 'min-width-80',
+      width: 80,
+      render: (record) => {
+        if (!record.holidayDetails) {
+          return (
+            <div className={styles['list-button']}>
+              <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            </div>
           );
-        },
+        }
+        return null;
       },
-      {
-        title: 'Tên ngày lễ',
-        key: 'insurrance_number',
-        className: 'min-width-150',
-        render: (record) => get(record, 'name'),
-      },
-      {
-        title: 'Ngày',
-        key: 'date',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(get(record, 'date'), variables.DATE_FORMAT.DATE),
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => {
-          if (!record.holidayDetails) {
-            return (
-              <div className={styles['list-button']}>
-                <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-              </div>
-            );
-          }
-        },
-      },
-    ];
-  };
+    },
+  ];
 
   render() {
     const {
-      data,
-      pagination,
-      match: { params },
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { search } = this.state;
+    const { search, dataSource } = this.state;
     const loading = effects['holidays/GET_DATA'];
+
+    const mergedColumns = this.header().map((col) => {
+      if (!col.editable) {
+        return col;
+      }
+
+      return {
+        ...col,
+        onCell: (record) => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          type: col.type,
+          prefix: col.prefix,
+          handleSave: this.handleSave,
+        }),
+      };
+    });
     return (
       <>
         <Helmet title="Danh sách ngày nghỉ lễ" />
@@ -321,12 +346,16 @@ class Index extends PureComponent {
             </Form>
             <Table
               bordered
-              columns={this.header(params)}
-              dataSource={data}
+              columns={mergedColumns}
+              components={{
+                body: {
+                  row: EditableRow,
+                  cell: EditableCell,
+                },
+              }}
+              dataSource={dataSource}
               loading={loading}
-              childrenColumnName="holidayDetails"
-              defaultExpandAllRows={true}
-              pagination={this.pagination(pagination)}
+              pagination={false}
               params={{
                 header: this.header(),
                 type: 'table',
@@ -342,8 +371,6 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -351,8 +378,6 @@ Index.propTypes = {
 };
 
 Index.defaultProps = {
-  match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},

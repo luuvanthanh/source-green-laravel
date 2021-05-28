@@ -191,3 +191,22 @@
     }
   }
 }
+
+.table-work {
+  .ant-table-tbody {
+    .ant-table-row {
+      td {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+      }
+    }
+  }
+  .ant-table-thead {
+    .ant-table-cell {
+      border: 1px solid rgba($color: $border-dark, $alpha: 0.35);
+    }
+    th {
+      border-bottom: 1px solid rgba($color: $border-dark, $alpha: 0.35);
+    }
+  }
+}
