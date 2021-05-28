@@ -37,15 +37,13 @@ export default function ButtonCustom({
   icon,
   color,
   size,
-  action,
-  subject,
-  isPermission,
   className,
+  permission,
   ...rest
 }) {
   if (children) {
     return (
-      <Can a={action} I={subject} passThrough={!isPermission}>
+      <Can a={permission} I={permission} passThrough={!permission}>
         <Button
           {...rest}
           className={classnames(
@@ -68,7 +66,7 @@ export default function ButtonCustom({
     );
   }
   return (
-    <Can a={action} I={subject} passThrough={!isPermission}>
+    <Can a={permission} I={permission} passThrough={!permission}>
       <Button
         {...rest}
         className={classnames(
@@ -98,8 +96,9 @@ ButtonCustom.propTypes = {
   size: PropTypes.string,
   action: PropTypes.string,
   subject: PropTypes.string,
-  isPermission: PropTypes.bool,
   className: PropTypes.string,
+  permission: PropTypes.string,
+  ghost: PropTypes.any,
 };
 
 ButtonCustom.defaultProps = {
@@ -109,8 +108,9 @@ ButtonCustom.defaultProps = {
   size: '',
   action: '',
   subject: '',
-  isPermission: false,
   className: '',
+  permission: null,
+  ghost: false,
 };
 
 ButtonCustom.displayName = 'Button';

@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,9 +12,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import ability from '@/utils/ability';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -47,14 +48,12 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
         isStoreStaus: false,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -234,20 +233,18 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => `PH${Helper.serialOrder(this.state.search?.page, index)}`,
       },
       {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record.fileImage)}
-              fullName={record.fullName}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'Số điện thoại',
@@ -274,15 +271,17 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
               ghost
               onClick={() => history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`)}
+              permission="HSDT_PH_XEM"
             >
               Chi tiết
             </Button>
@@ -290,7 +289,9 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return columns;
+    return !ability.can('HSDT_PH_XEM', 'HSDT_PH_XEM')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -312,6 +313,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
+              permission="HSDT_PH_THEM"
               onClick={() => history.push(`/ho-so-doi-tuong/phu-huynh/tao-moi`)}
             >
               Tạo hồ sơ
@@ -337,7 +339,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -346,6 +347,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('HSDT_PH_XEM', 'HSDT_PH_XEM')) {
+                    history.push(`/ho-so-doi-tuong/phu-huynh/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}

@@ -18,7 +18,8 @@
     "CLIENT_SECRET": true,
     "CLIENT_ID": true,
     "API_UPLOAD": true,
-    "API_URL_LAVAREL": true
+    "API_URL_LAVAREL": true,
+    "URL_AI": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,

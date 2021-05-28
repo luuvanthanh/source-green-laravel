@@ -1,17 +1,10 @@
 import * as services from '@/services/login';
 import { history } from 'umi';
 import { notification } from 'antd';
-import { last } from 'lodash';
 import Cookies from 'universal-cookie';
 import { AbilityBuilder } from '@casl/ability';
 import ability from '@/utils/ability';
 
-const permission = ['QLTK', 'QLTK_VIEW', 'QLTK_NEW', 'QLTK_EDIT', 'QLTK_DELETE'];
-const splitPermission = (string) => {
-  const type = last(string?.split('_'));
-  const name = string?.slice(0, string.length - type.length - 1);
-  return [type, name];
-};
 const cookies = new Cookies();
 const UserModel = {
   namespace: 'user',
@@ -19,7 +12,7 @@ const UserModel = {
     currentUser: {},
     authorized: false,
     user: {},
-    permissions: ['QLTK', 'QLTK_VIEW', 'QLTK_NEW', 'QLTK_EDIT', 'QLTK_DELETE'],
+    permissions: [],
   },
   effects: {
     *login({ payload }, { call, put }) {
@@ -35,19 +28,14 @@ const UserModel = {
             payload: {
               ...me,
               authorized: true,
-              permissions: permission,
+              permissions: me.permissionGrants,
             },
           });
           cookies.set('access_token', response.access_token, { path: '/' });
           cookies.set('token_type', response.token_type, { path: '/' });
           const { can, rules } = new AbilityBuilder();
-          permission.forEach((item) => {
-            if (splitPermission(item)[0] === 'VIEW') {
-              can(['VIEW'], splitPermission(item)[1]);
-            }
-            if (splitPermission(item)[0] === 'NEW') {
-              can(['NEW'], splitPermission(item)[1]);
-            }
+          me.permissionGrants.forEach((item) => {
+            can([item], item);
           });
           ability.update(rules);
         }
@@ -73,9 +61,14 @@ const UserModel = {
             payload: {
               ...response,
               authorized: true,
-              permissions: permission,
+              permissions: response.permissionGrants,
             },
           });
+          const { can, rules } = new AbilityBuilder();
+          response.permissionGrants.forEach((item) => {
+            can([item], item);
+          });
+          ability.update(rules);
         }
       } catch (error) {
         yield saga.put({

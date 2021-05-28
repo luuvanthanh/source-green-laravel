@@ -44,7 +44,7 @@ const Layouts = {
   allocation: AllocationLayout,
   medical: MedicalLayout,
   attendance: AttendanceLayout,
-  timetable1: TimetableLayout,
+  timetableSchedule: TimetableLayout,
   notification: NotificationLayout,
   media: MediaLayout,
   health: HealthLayout,
@@ -104,7 +104,7 @@ class IndexLayout extends React.PureComponent {
         return 'medical';
       }
       if (/^\/thoi-khoa-bieu(?=\/|$)/i.test(pathname)) {
-        return 'timetable';
+        return 'timetableSchedule';
       }
       if (/^\/thong-bao(?=\/|$)/i.test(pathname)) {
         return 'notification';

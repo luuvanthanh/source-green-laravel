@@ -208,7 +208,7 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChangeDateRank = (e, type) => {
+  onChangeDateRank = (e) => {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -262,8 +262,8 @@ class Index extends PureComponent {
   convertData = (items) => {
     if (!isEmpty(items)) {
       let array = [];
-      items.map((item) => {
-        item.timetableDetails.map((itemTime) => {
+      items.forEach((item) => {
+        item.timetableDetails.forEach((itemTime) => {
           const durations = moment(itemTime.toTime).diff(moment(itemTime.fromTime), 'seconds');
           array = [
             ...array,
@@ -275,14 +275,8 @@ class Index extends PureComponent {
                 byweekday: item.timetableWeeks.map(
                   (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
                 ),
-                dtstart: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
-                  format: variables.DATE_FORMAT.DATE_TIME_UTC,
-                }),
-                until: Helper.getDateTimeFromUTC({
-                  value: Helper.joinDateTime(item.toDate, itemTime.toTime),
-                  format: variables.DATE_FORMAT.DATE_TIME_UTC,
-                }),
+                dtstart: Helper.joinDateTime(item.fromDate, itemTime.toTime),
+                until: Helper.joinDateTime(item.toDate, itemTime.toTime),
               },
               duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
             },
@@ -299,31 +293,21 @@ class Index extends PureComponent {
       branches,
       classes,
       data,
-      match: { params },
-      loading: { effects },
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['timeTables/GET_DATA'];
-    const loadingSubmit = effects['timeTables/ADD'] || effects['timeTables/UPDATE'];
     const CustomViewConfig = {
       classNames: ['custom-view'],
 
-      content: function (props) {
-        let segs = sliceEvents(props, true); // allDay=true
-        let html =
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-events">' +
-          segs.length +
-          ' events' +
-          '</div>';
+      content(props) {
+        const segs = sliceEvents(props, true); // allDay=true
+        const html =
+          `<div class="view-title">${props.dateProfile.currentRange.start.toUTCString()}</div>` +
+          `<div class="view-title">${props.dateProfile.currentRange.start.toUTCString()}</div>` +
+          `<div class="view-events">${segs.length} events` +
+          `</div>`;
 
-        return { html: html };
+        return { html };
       },
     };
 
@@ -375,7 +359,12 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Thời khóa biểu</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="TKB"
+            >
               Thêm mới
             </Button>
           </div>
@@ -398,7 +387,7 @@ class Index extends PureComponent {
               }}
               customButtons={{
                 next: {
-                  click: (event) => {
+                  click: () => {
                     const { search } = this.state;
                     const { current } = this.calendarComponentRef;
                     if (current) {
@@ -443,7 +432,7 @@ class Index extends PureComponent {
                   },
                 },
                 prev: {
-                  click: (event) => {
+                  click: () => {
                     const { search } = this.state;
                     const { current } = this.calendarComponentRef;
                     if (current) {
@@ -489,7 +478,7 @@ class Index extends PureComponent {
                 },
                 dayGridMonth: {
                   text: 'Tháng',
-                  click: (event) => {
+                  click: () => {
                     if (this.calendarComponentRef.current) {
                       const calendarApi = this.calendarComponentRef.current.getApi();
                       calendarApi.changeView('dayGridMonth');
@@ -503,7 +492,7 @@ class Index extends PureComponent {
                 },
                 timeGridWeek: {
                   text: 'Tuần',
-                  click: (event) => {
+                  click: () => {
                     if (this.calendarComponentRef.current) {
                       const calendarApi = this.calendarComponentRef.current.getApi();
                       calendarApi.changeView('timeGridWeek');
@@ -523,7 +512,7 @@ class Index extends PureComponent {
                 },
                 timeGridDay: {
                   text: 'Ngày',
-                  click: (event) => {
+                  click: () => {
                     if (this.calendarComponentRef.current) {
                       const calendarApi = this.calendarComponentRef.current.getApi();
                       calendarApi.changeView('timeGridDay');
@@ -540,7 +529,7 @@ class Index extends PureComponent {
                 },
                 listDay: {
                   text: 'Lịch biểu',
-                  click: (event) => {
+                  click: () => {
                     if (this.calendarComponentRef.current) {
                       const calendarApi = this.calendarComponentRef.current.getApi();
                       calendarApi.changeView('listDay');
@@ -573,9 +562,9 @@ class Index extends PureComponent {
               locale="vi"
               slotMinTime="04:00"
               slotMaxTime="20:00"
-              editable={true}
+              editable
               fixedWeekCount={false}
-              showNonCurrentDates={true}
+              showNonCurrentDates
               locales={allLocales}
               allDaySlot={false}
               height={650}
@@ -591,21 +580,19 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
   data: [],
-  pagination: {},
-  loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;
