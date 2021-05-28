@@ -11,6 +11,8 @@ export default {
       isError: false,
     },
     holidays: [],
+    divisions: [],
+    branches: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -37,8 +39,44 @@ export default {
         item.id === payload.id ? { ...item, status: payload.status } : item,
       ),
     }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

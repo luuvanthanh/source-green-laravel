@@ -5,6 +5,7 @@ export function get(data = {}) {
   return request('/v1/timekeeping', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       orderBy: 'CreationTime',
@@ -27,9 +28,6 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['timekeeping']),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.full_name,
-      }),
     },
   });
 }

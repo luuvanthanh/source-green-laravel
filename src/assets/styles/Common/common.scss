@@ -720,12 +720,13 @@
   background-color: transparent;
   border: none;
   outline: none;
-  margin-top: -15px;
-  padding-top: 15px;
-  margin-bottom: -15px;
-  padding-bottom: 15px;
+  margin-top: -20px;
+  padding-top: 20px;
+  margin-bottom: -20px;
+  padding-bottom: 20px;
   width: 100%;
   color: rgba($color: $black, $alpha: 0.85);
+  font-size: 10px;
   cursor: pointer;
   &.cell-heading-weekend {
     background-color: #5b9bd5 !important;
@@ -747,11 +748,11 @@
   }
   &.cell-heading-holidays {
     background-color: #fbe4d5 !important;
-    color: #fbe4d5 !important;
+    color: $text !important;
     &:focus,
     &:hover {
       background-color: #fbe4d5 !important;
-      color: #fbe4d5 !important;
+      color: $text !important;
     }
   }
 
@@ -784,8 +785,10 @@
     margin-left: 10px;
   }
   .name {
+    font-family: "Roboto", sans-serif;
     font-style: normal;
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 500;
     line-height: 20px;
     color: $text;
     margin-bottom: 0;
@@ -876,5 +879,13 @@
   }
   :global(.leaflet-routing-container) {
     display: none;
+  }
+}
+
+
+.tooltip-container {
+  strong {
+    text-align: center;
+    color: $text-white;
   }
 }
