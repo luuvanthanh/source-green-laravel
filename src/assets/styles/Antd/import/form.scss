@@ -201,6 +201,15 @@ form .ant-cascader-picker:only-child {
   .ant-checkbox-wrapper {
     margin-left: 0;
   }
+  &.group-column {
+    .ant-checkbox-wrapper {
+      margin-top: 15px;
+      font-weight: normal;
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
 }
 
 .checkbox-column {

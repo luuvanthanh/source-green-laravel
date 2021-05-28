@@ -258,8 +258,8 @@ const Index = memo(() => {
             </div>
           </div>
           <div className="mt50">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
-              <div className={classnames(styles['content-bus'])}>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+              <div className={classnames(styles['content-bus'], 'px20')}>
                 {loading['overView/GET_DATA_ATTENDANCE'] ? (
                   <>
                     <Skeleton avatar paragraph={{ rows: 4 }} active />

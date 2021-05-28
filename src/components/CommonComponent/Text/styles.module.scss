@@ -3,9 +3,8 @@
 .text-large {
   color: rgba($text-dark, 0.85);
   line-height: 30px;
-  font-family: $base__font-family;
+  font-family: $bold__font-family;
   font-style: normal;
-  font-weight: bold;
   font-size: 20px;
   margin-bottom: 0;
 }
@@ -13,9 +12,8 @@
 .text-large-medium {
   color: rgba($text-dark, 0.85);
   line-height: 20px;
-  font-family: $base__font-family;
+  font-family: $bold__font-family;
   font-style: normal;
-  font-weight: bold;
   font-size: 16px;
   margin-bottom: 0;
 }

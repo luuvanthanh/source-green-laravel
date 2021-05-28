@@ -163,16 +163,20 @@
 .body-tab {
   background: rgba($color: #EDF0F4, $alpha: 0.96);
   border-radius: 10px;
-  padding: 15px 20px;
+  padding: 15px 0;
   height: 100%;
   .header-tab {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 20px;
     .icon {
       width: 20px;
       height: auto;
     }
+  }
+  :global(.ant-tabs) {
+    padding: 0 20px;
   }
   :global(.ant-tabs>.ant-tabs-nav) {
     justify-content: center;
