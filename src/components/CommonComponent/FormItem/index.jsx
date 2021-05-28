@@ -370,7 +370,6 @@ FormItem.propTypes = {
   disabledMinutes: PropTypes.any,
   radioInline: PropTypes.bool,
   disabledKeys: PropTypes.any,
-  options: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -396,7 +395,6 @@ FormItem.defaultProps = {
   disabledMinutes: null,
   radioInline: false,
   disabledKeys: null,
-  options: null,
 };
 
 FormItem.displayName = 'Form';
