@@ -67,7 +67,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
   return (
     <>
       <Pane className="row">
-        <div className="pl10">
+        <div className="pl15">
           <Image.PreviewGroup>
             {(images || []).map((item, index) => {
               if (Helper.isVideo(item)) {
