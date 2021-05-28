@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, get, isInteger } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -33,6 +33,8 @@ const mapStateToProps = ({ worksBus, loading }) => ({
   pagination: worksBus.pagination,
   error: worksBus.error,
   holidays: worksBus.holidays,
+  branches: worksBus.branches,
+  divisions: worksBus.divisions,
   loading,
 });
 @connect(mapStateToProps)
@@ -47,6 +49,8 @@ class Index extends PureComponent {
     this.state = {
       search: {
         fullName: query?.fullName,
+        branchId: query?.branchId,
+        divisionId: query?.divisionId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate
@@ -61,6 +65,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    this.loadCategories();
     this.onLoad();
   }
 
@@ -80,6 +85,17 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'worksBus/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'worksBus/GET_DIVISIONS',
+      payload: {},
+    });
   };
 
   /**
@@ -248,13 +264,40 @@ class Index extends PureComponent {
       variables.QUERY_STRING,
     )}`;
 
-  renderworksBushift = (record = [], dayOfWeek = Helper.getDate(moment()), user = {}) => {
+  renderworksBushift = (
+    record = [],
+    dayOfWeek = Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER),
+    user = {},
+  ) => {
     const { holidays } = this.props;
-    const isHolidays = !!holidays.find(
+    const holiday = holidays.find(
       (item) =>
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
+    if (holiday) {
+      return (
+        <Tooltip
+          title={
+            <div className={styles['tooltip-container']}>
+              <strong>Nghỉ lễ: </strong>
+              <br />
+              {holiday.name}
+            </div>
+          }
+          color="#00B24D"
+        >
+          <Link
+            to={this.redirectHistory(dayOfWeek, record, user)}
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-holidays`]]: !!holiday,
+            })}
+          >
+            Nghỉ lễ
+          </Link>
+        </Tooltip>
+      );
+    }
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
       if (get(data, 'type')) {
@@ -264,7 +307,6 @@ class Index extends PureComponent {
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
               [styles[`cell-heading-kc`]]: data.type === 'KC',
-              [styles[`cell-heading-holidays`]]: isHolidays,
             })}
           >
             {data.type}
@@ -277,7 +319,6 @@ class Index extends PureComponent {
             to={this.redirectHistory(dayOfWeek, record, user)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
-              [styles[`cell-heading-holidays`]]: isHolidays,
             })}
           >
             {isInteger(data.value) ? data.value : Helper.toFixed(data.value)}
@@ -289,7 +330,6 @@ class Index extends PureComponent {
           to={this.redirectHistory(dayOfWeek, record, user)}
           className={classnames(styles['item-schedules'], {
             [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
-            [styles[`cell-heading-holidays`]]: isHolidays,
           })}
         >
           -
@@ -301,7 +341,6 @@ class Index extends PureComponent {
         to={this.redirectHistory(dayOfWeek, record, user)}
         className={classnames(styles['item-schedules'], {
           [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
-          [styles[`cell-heading-holidays`]]: isHolidays,
         })}
       >
         -
@@ -339,6 +378,15 @@ class Index extends PureComponent {
           />
         ),
       },
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        align: 'center',
+        width: 120,
+        fixed: 'left',
+        className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
+        render: (record) => record?.positionLevelNow?.division?.name,
+      },
     ];
 
     const arrayMonth = Helper.treeDate(
@@ -346,20 +394,14 @@ class Index extends PureComponent {
     ).map((itemMonth) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
-      children: itemMonth.data.map((item, index) => {
-        const startDate = moment(search.startDate);
-        const endDate = moment(search.endDate);
-        const currentDate = Helper.convertArrayDays(startDate, endDate)[index];
-        return {
-          title: this.renderTitleHeader(index, item),
-          key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-40', 'max-width-40', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
-          width: 40,
-          align: 'center',
-          render: (record) =>
-            this.renderworksBushift(record.busRegistrationSummary, currentDate, record),
-        };
-      }),
+      children: itemMonth.data.map((item, index) => ({
+        title: this.renderTitleHeader(index, item),
+        key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
+        className: classnames('min-width-50', 'max-width-50', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
+        width: 40,
+        align: 'center',
+        render: (record) => this.renderworksBushift(record.busRegistrationSummary, item, record),
+      })),
     }));
     return arrayHeader.concat(arrayMonth).concat(headerWork);
   };
@@ -371,13 +413,15 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      divisions,
+      branches,
     } = this.props;
     const { search } = this.state;
     const loading = effects['worksBus/GET_DATA'];
     return (
       <>
         <Helmet title="Chấm công bus" />
-        <div className={classnames(styles['content-form'], styles['content-form-worksBus'])}>
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
             <Text color="dark">CHẤM CÔNG BUS</Text>
@@ -387,6 +431,8 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 date: search.endDate && moment(search.endDate),
+                divisionId: search.divisionId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -406,6 +452,22 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeMonth(event, 'date')}
                     type={variables.MONTH_PICKER}
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>
@@ -442,6 +504,8 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -453,6 +517,8 @@ Index.defaultProps = {
   location: {},
   error: {},
   holidays: [],
+  divisions: [],
+  branches: [],
 };
 
 export default Index;
