@@ -34,3 +34,10 @@ export function remove(data) {
     parse: true,
   });
 }
+
+export function add(data = {}) {
+  return request('/v1/holidays', {
+    method: 'POST',
+    data,
+  });
+}
