@@ -152,7 +152,7 @@ const Index = memo(
                             label="Chọn lớp"
                             name="classTimetables"
                             type={variables.CHECKBOX}
-                            className="checkbox-group"
+                            className="checkbox-group group-column"
                             data={classes.map((item) => ({
                               value: item.id,
                               label: item.name,

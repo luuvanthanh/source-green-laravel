@@ -334,37 +334,39 @@ const Index = memo(() => {
               <TabPane tab={name} key={id} />
             ))}
           </Tabs>
-          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
-            {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(medicals) && (
-              <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
-            )}
-            {loading['overView/GET_DATA_MEDICAL'] ? (
-              <>
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-              </>
-            ) : (
-              medicals.map((item, index) => (
-                <div
-                  className={styles['content-tab']}
-                  key={index}
-                  onClick={() => getDetails(item)}
-                  aria-hidden="true"
-                >
-                  <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                    <AvatarTable
-                      className="full-name-bold"
-                      fileImage={Helper.getPathAvatarJson(item?.studentMaster?.student?.fileImage)}
-                      fullName={item?.studentMaster?.student?.fullName}
-                      size={36}
-                    />
-                    <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+            <div className="px20">
+              {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(medicals) && (
+                <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+              )}
+              {loading['overView/GET_DATA_MEDICAL'] ? (
+                <>
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                </>
+              ) : (
+                medicals.map((item, index) => (
+                  <div
+                    className={styles['content-tab']}
+                    key={index}
+                    onClick={() => getDetails(item)}
+                    aria-hidden="true"
+                  >
+                    <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <AvatarTable
+                        className="full-name-bold"
+                        fileImage={Helper.getPathAvatarJson(item?.studentMaster?.student?.fileImage)}
+                        fullName={item?.studentMaster?.student?.fullName}
+                        size={36}
+                      />
+                      <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                    </div>
+                    <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.diseaseName || ''}</p>
                   </div>
-                  <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.diseaseName || ''}</p>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </Scrollbars>
         </div>
       </div>
