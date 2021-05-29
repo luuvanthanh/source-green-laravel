@@ -1,9 +1,8 @@
 import { memo, useRef, useState, useEffect, useCallback } from 'react';
-import { Form, Checkbox } from 'antd';
+import { Form } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Helmet } from 'react-helmet';
 import { isEmpty } from 'lodash';
-import { useHistory, useLocation, useDispatch, useSelector } from 'dva';
+import { useHistory, useDispatch, useSelector } from 'dva';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
 
@@ -11,13 +10,12 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
-import variablesModules from '../utils/variables';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 
 import variables from '@/utils/variables';
 import { Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 
 const { List: FormList, Item: FormItemAntd } = Form;
 
@@ -31,7 +29,7 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
   const mounted = useRef(false);
-  const mountedSet = (action, value) => mounted?.current && action(value);
+  // const mountedSet = (action, value) => mounted?.current && action(value);
 
   const [type, setType] = useState(1);
   const [files, setFiles] = useState([]);
@@ -46,18 +44,16 @@ const Index = memo(() => {
         menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         dayOfWeek: item,
       })),
-      menuDetails: values.menuDetails.map((item, index) => {
-        return {
-          ...item,
-          foods: item.foods.map((itemFood, indexDishes) => ({
-            ...itemFood,
-            imageUrl: JSON.stringify(
-              files?.find((item) => item.index === index && item.indexDishes === indexDishes)?.file,
-            ),
-          })),
-          menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        };
-      }),
+      menuDetails: values.menuDetails.map((item, index) => ({
+        ...item,
+        foods: item.foods.map((itemFood, indexDishes) => ({
+          ...itemFood,
+          imageUrl: JSON.stringify(
+            files?.find((item) => item.index === index && item.indexDishes === indexDishes)?.file,
+          ),
+        })),
+        menuId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      })),
       classMenus: values.classMenus
         ? values.classMenus.map((item) => ({
             classId: item,
@@ -72,7 +68,7 @@ const Index = memo(() => {
     dispatch({
       type: 'menuKidCreate/ADD',
       payload,
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           history.goBack();
         }
@@ -89,7 +85,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   const onChangeBranch = (branch) => {
@@ -117,18 +113,17 @@ const Index = memo(() => {
         (item) => item.index === index && item.indexDishes === indexDishes,
       );
       if (!fileItem) {
-        return [...prev, { index: index, file: [filesList], indexDishes: indexDishes }];
-      } else {
-        return prev.map((item) => {
-          if (item.index === index && item.indexDishes === indexDishes) {
-            return {
-              ...item,
-              file: [...item.file, filesList],
-            };
-          }
-          return item;
-        });
+        return [...prev, { index, file: [filesList], indexDishes }];
       }
+      return prev.map((item) => {
+        if (item.index === index && item.indexDishes === indexDishes) {
+          return {
+            ...item,
+            file: [...item.file, filesList],
+          };
+        }
+        return item;
+      });
     });
   });
 
@@ -148,12 +143,13 @@ const Index = memo(() => {
           return item;
         });
       }
+      return prev;
     });
   };
 
   const removeFilesFoods = (index, indexDishes) => {
-    setFiles((prev) => {
-      return prev
+    setFiles((prev) =>
+      prev
         .filter(
           (item) =>
             (item.index === index && item.indexDishes !== indexDishes) || item.index !== index,
@@ -167,21 +163,19 @@ const Index = memo(() => {
             };
           }
           return item;
-        });
-    });
+        }),
+    );
   };
 
   const removeFilesMenuDetails = (index) => {
-    setFiles((prev) => {
-      return prev
+    setFiles((prev) =>
+      prev
         .filter((item) => item.index !== index)
-        .map((item) => {
-          return {
-            ...item,
-            index: item.index >= index ? item.index - 1 : item.index,
-          };
-        });
-    });
+        .map((item) => ({
+          ...item,
+          index: item.index >= index ? item.index - 1 : item.index,
+        })),
+    );
   };
 
   const getFiles = (listFiles, index, indexDishes) => {
@@ -196,7 +190,7 @@ const Index = memo(() => {
 
   return (
     <>
-      <Breadcrumbs last={'Tạo thực đơn'} menu={menuLeftChildren} />
+      <Breadcrumbs last="Tạo thực đơn" menu={menuLeftChildren} />
       <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
         <Form
           layout="vertical"

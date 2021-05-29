@@ -154,13 +154,13 @@ export default [
         routes: [
           {
             path: '/thuc-don',
-            component: './menu/index-v2',
+            component: './menu/index',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
           {
             path: '/thuc-don/tao-moi',
-            component: './menu/create-v2',
+            component: './menu/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP_THEM],
           },

@@ -595,7 +595,7 @@ export async function getLeftMenuChildren() {
       key: 'menu',
       url: ['/thuc-don', '/thuc-don/tao-moi'],
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions.BEP],
       pro: true,
     },
   ];
