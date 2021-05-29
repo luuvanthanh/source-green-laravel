@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar, Typography } from 'antd';
+import { Form, Typography } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, get } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,8 +12,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../../utils/Helper';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -32,7 +31,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ absentStudents, loading }) => ({
   data: absentStudents.data,
   pagination: absentStudents.pagination,
@@ -48,7 +46,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -56,7 +53,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -225,65 +221,58 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Bé',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
-            fullName={get(record, 'student.fullName')}
-          />
-        ),
-      },
-      {
-        title: 'Phụ huynh',
-        key: 'parent',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(get(record, 'parent.fileImage'))}
-            fullName={get(record, 'parent.fullName')}
-          />
-        ),
-      },
-      {
-        title: 'Ngày',
-        key: 'count',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) =>
-          `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
-      },
-      {
-        title: 'Loại',
-        key: 'absentType',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => record?.absentType?.name,
-      },
-      {
-        title: 'Lý do',
-        key: 'absentReason',
-        className: 'min-width-200',
-        render: (record) => record?.absentReason?.name,
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 50,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Bé',
+      key: 'name',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
+          fullName={get(record, 'student.fullName')}
+        />
+      ),
+    },
+    {
+      title: 'Phụ huynh',
+      key: 'parent',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(get(record, 'parent.fileImage'))}
+          fullName={get(record, 'parent.fullName')}
+        />
+      ),
+    },
+    {
+      title: 'Ngày',
+      key: 'count',
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
+    },
+    {
+      title: 'Loại',
+      key: 'absentType',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => record?.absentType?.name,
+    },
+    {
+      title: 'Lý do',
+      key: 'absentReason',
+      className: 'min-width-200',
+      render: (record) => record?.absentReason?.name,
+    },
+  ];
 
   render() {
     const {

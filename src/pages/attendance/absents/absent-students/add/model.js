@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -50,7 +49,7 @@ export default {
     }),
   },
   effects: {
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
           absentTypes: saga.call(services.getAbsentTypes),

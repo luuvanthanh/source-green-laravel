@@ -431,7 +431,7 @@ export default [
             path: '/diem-danh/lich-hoc-tre',
             component: './attendance/schedule-students',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.DDLS],
+            authority: [],
           },
           {
             path: '/diem-danh/lich-su-vao-ra-lop',

@@ -37,7 +37,7 @@ export function get(data = {}) {
 export function add(data) {
   return request('/v1/attendances', {
     method: 'POST',
-    data: data,
+    data,
     params: {
       include: Helper.convertIncludes(['timekeeping', 'class', 'attendance']),
     },

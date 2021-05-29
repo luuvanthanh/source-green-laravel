@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Checkbox, Tooltip, Avatar } from 'antd';
+import { Modal, Form, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get } from 'lodash';
+import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
-import { CloseOutlined, UserOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -13,12 +13,12 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
-import PropTypes from 'prop-types';
 import stylesChildren from './styles.modules.scss';
 import { REPEAT, CHOOSE } from './data.json';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -44,6 +44,7 @@ const mapStateToProps = ({ scheduleStudents, loading }) => ({
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
+
   formRefShift = React.createRef();
 
   constructor(props) {
@@ -255,7 +256,6 @@ class Index extends PureComponent {
    * Function reset form
    */
   onReset = () => {
-    const { category } = this.props;
     this.setState(
       {
         visible: false,
@@ -445,7 +445,7 @@ class Index extends PureComponent {
           icon="plusMain"
           type="dashed"
           onClick={() => this.onShowModal(dayOfWeek, record, user)}
-        ></Button>
+        />
       </div>
     );
   };
@@ -559,11 +559,11 @@ class Index extends PureComponent {
     });
   };
 
-  convertTreeSelect = (items = [], keyValue = 'id', keyLabel = 'name') => {
-    return items.map((item) => {
+  convertTreeSelect = (items = [], keyValue = 'id', keyLabel = 'name') =>
+    items.map((item) => {
       let details = [];
       if (!isEmpty(item.shiftDetail)) {
-        details = item.shiftDetail.map((item, index) => {
+        details = item.shiftDetail.map((item) => {
           const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL).format(
             variables.DATE_FORMAT.HOUR,
           );
@@ -578,7 +578,6 @@ class Index extends PureComponent {
         [`${keyLabel}`]: `${item.shiftCode} (${details.join(', ')})`,
       };
     });
-  };
 
   render() {
     const {
@@ -721,7 +720,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -749,6 +747,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  category: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -758,6 +757,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  category: {},
 };
 
 export default Index;

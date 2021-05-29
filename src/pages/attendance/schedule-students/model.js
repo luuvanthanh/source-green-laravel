@@ -1,6 +1,4 @@
 import { notification } from 'antd';
-import * as categories from '@/services/categories';
-import { variables } from '@/utils';
 import * as services from './services';
 
 export default {
