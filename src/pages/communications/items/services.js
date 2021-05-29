@@ -22,7 +22,7 @@ export function get(params = {}) {
           originValue: params.toDate,
           targetValue: '23:59:59',
         }),
-        isUTC: false,
+        isUTC: true,
       }),
     },
   });

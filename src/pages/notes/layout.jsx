@@ -11,40 +11,25 @@ const mapStateToProps = ({ settings }) => ({
 @withRouter
 @connect(mapStateToProps)
 class Index extends PureComponent {
-  activeMenu = (pathname) => {
-    const arrayURL = pathname.split('/');
-    if (arrayURL.includes('tao-moi') && pathname.search('/tao-moi') > -1) {
-      return arrayURL.slice(0, -1).join('/');
-    }
-    return pathname;
-  };
-
   render() {
-    const {
-      children,
-      isMenuCollapsed,
-      location: { pathname },
-    } = this.props;
+    const { children, isMenuCollapsed } = this.props;
     return (
       <Layout.Content
         className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
         style={{ height: '100%', position: 'relative' }}
       >
-        <div className={styles.content}>{this.props.children}</div>
+        <div className={styles.content}>{children}</div>
       </Layout.Content>
     );
   }
 }
 
 Index.propTypes = {
-  children: PropTypes.any.isRequired,
-  location: PropTypes.objectOf(PropTypes.any),
   children: PropTypes.any,
   isMenuCollapsed: PropTypes.bool,
 };
 
 Index.defaultProps = {
-  location: {},
   children: null,
   isMenuCollapsed: false,
 };
