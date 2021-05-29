@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
+import { Form, List, Avatar, Radio, Upload, Spin, message } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
+import InfiniteScroll from 'react-infinite-scroller';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { isEmpty, get } from 'lodash';
@@ -14,8 +16,6 @@ import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.s
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Quill from '@/components/CommonComponent/Quill';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
-import { Scrollbars } from 'react-custom-scrollbars';
-import InfiniteScroll from 'react-infinite-scroller';
 
 let isMounted = true;
 /**
@@ -32,11 +32,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ exchangeAdd, loading, menu, user }) => ({
+const mapStateToProps = ({ communicationsAdd, loading, menu, user }) => ({
   loading,
   user: user.user,
-  branches: exchangeAdd.branches,
-  classes: exchangeAdd.classes,
+  branches: communicationsAdd.branches,
+  classes: communicationsAdd.classes,
   menuData: menu.menuLeftExchange,
 });
 @connect(mapStateToProps)
@@ -117,7 +117,7 @@ class Index extends PureComponent {
       loadingStudents: true,
     });
     dispatch({
-      type: 'exchangeAdd/GET_STUDENTS',
+      type: 'communicationsAdd/GET_STUDENTS',
       payload: searchStudents,
       callback: (response) => {
         if (response) {
@@ -140,7 +140,7 @@ class Index extends PureComponent {
   loadBranches = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'exchangeAdd/GET_BRANCHES',
+      type: 'communicationsAdd/GET_BRANCHES',
       payload: {},
     });
   };
@@ -148,7 +148,7 @@ class Index extends PureComponent {
   onChangeBranch = (branch) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'exchangeAdd/GET_CLASSES',
+      type: 'communicationsAdd/GET_CLASSES',
       payload: {
         branch,
       },
@@ -159,7 +159,7 @@ class Index extends PureComponent {
     const { searchStudents } = this.state;
     const { dispatch, user } = this.props;
     dispatch({
-      type: 'exchangeAdd/GET_STUDENTS',
+      type: 'communicationsAdd/GET_STUDENTS',
       payload: {
         ...searchStudents,
         page: variables.PAGINATION.PAGE,
@@ -167,7 +167,7 @@ class Index extends PureComponent {
         class: value,
         parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           this.setStateData({
             students: response.items,
@@ -205,7 +205,7 @@ class Index extends PureComponent {
     const { description, studentId, files } = this.state;
     const { user } = this.props;
     this.props.dispatch({
-      type: 'exchangeAdd/ADD',
+      type: 'communicationsAdd/ADD',
       payload: {
         ...values,
         description,
@@ -235,7 +235,7 @@ class Index extends PureComponent {
       return;
     }
     this.props.dispatch({
-      type: 'exchangeAdd/GET_STUDENTS',
+      type: 'communicationsAdd/GET_STUDENTS',
       payload: {
         ...searchStudents,
         page: searchStudents.page + 1,
@@ -267,16 +267,12 @@ class Index extends PureComponent {
       classes,
       branches,
       menuData,
-      match: { params },
       loading: { effects },
     } = this.props;
     const { description, students, studentId, files, loadingStudents, hasMore } = this.state;
-    const loading = effects['exchangeAdd/GET_DATA'];
-    const loadingSubmit = effects['exchangeAdd/ADD'];
+    const loadingSubmit = effects['communicationsAdd/ADD'];
     const props = {
-      beforeUpload: (file) => {
-        return null;
-      },
+      beforeUpload: () => null,
       customRequest: this.customRequest,
       showUploadList: false,
       multiple: true,
@@ -296,8 +292,8 @@ class Index extends PureComponent {
           {/* MAIN CONTAINER */}
           <div className={stylesAllocation['main-container']}>
             <div className={stylesAllocation['left-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Thông tin trẻ
                   </Text>
@@ -338,31 +334,29 @@ class Index extends PureComponent {
                         className={stylesAllocation.list}
                         dataSource={students}
                         loading={loadingStudents}
-                        renderItem={(item) => {
-                          return (
-                            <List.Item key={item.id}>
-                              <Radio
-                                className={stylesAllocation.radio}
-                                value={item.id}
-                                onChange={(event) => this.onChangeRadio(event, item)}
+                        renderItem={(item) => (
+                          <List.Item key={item.id}>
+                            <Radio
+                              className={stylesAllocation.radio}
+                              value={item.id}
+                              onChange={(event) => this.onChangeRadio(event, item)}
+                            />
+                            <div className={stylesAllocation['group-info']}>
+                              <Avatar
+                                shape="square"
+                                size={40}
+                                src={
+                                  Helper.getPathAvatarJson(item.fileImage) &&
+                                  `${API_UPLOAD}${Helper.getPathAvatarJson(item.fileImage)}`
+                                }
                               />
-                              <div className={stylesAllocation['group-info']}>
-                                <Avatar
-                                  shape="square"
-                                  size={40}
-                                  src={
-                                    Helper.getPathAvatarJson(item.fileImage) &&
-                                    `${API_UPLOAD}${Helper.getPathAvatarJson(item.fileImage)}`
-                                  }
-                                />
-                                <div className={stylesAllocation['info']}>
-                                  <h3 className={stylesAllocation['title']}>{item.fullName}</h3>
-                                  <p className={stylesAllocation['norm']}>{item.age} tháng tuổi</p>
-                                </div>
+                              <div className={stylesAllocation.info}>
+                                <h3 className={stylesAllocation.title}>{item.fullName}</h3>
+                                <p className={stylesAllocation.norm}>{item.age} tháng tuổi</p>
                               </div>
-                            </List.Item>
-                          );
-                        }}
+                            </div>
+                          </List.Item>
+                        )}
                       >
                         {loadingStudents && hasMore && (
                           <div className="demo-loading-container">
@@ -376,8 +370,8 @@ class Index extends PureComponent {
               </div>
             </div>
             <div className={stylesAllocation['right-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Chi tiết trao đổi
                   </Text>
@@ -421,7 +415,11 @@ class Index extends PureComponent {
                       >
                         {files.map((item) => (
                           <div className={stylesExchange['image-item']} key={item}>
-                            <img src={`${API_UPLOAD}${item}`} className={stylesExchange['image']} />
+                            <img
+                              src={`${API_UPLOAD}${item}`}
+                              className={stylesExchange.image}
+                              alt="ImageUpload"
+                            />
                           </div>
                         ))}
                       </div>
@@ -459,6 +457,10 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -468,6 +470,10 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  user: {},
+  classes: [],
+  branches: [],
+  menuData: [],
 };
 
 export default Index;

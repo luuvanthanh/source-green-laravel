@@ -1,10 +1,10 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
-  namespace: 'exchangeAdd',
+  namespace: 'communicationsAdd',
   state: {
     data: [],
     pagination: {
@@ -49,7 +49,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_CLASSES({ payload }, saga) {
       try {
@@ -58,7 +63,12 @@ export default {
           type: 'SET_CLASSES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
@@ -91,7 +101,17 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description:
+            get(error.data, 'error.validationErrors[0].message') ||
+            'Vui lòng kiểm tra lại hệ thống',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -99,7 +119,17 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description:
+            get(error.data, 'error.validationErrors[0].message') ||
+            'Vui lòng kiểm tra lại hệ thống',
+        });
         callback(null, error?.data?.error);
       }
     },

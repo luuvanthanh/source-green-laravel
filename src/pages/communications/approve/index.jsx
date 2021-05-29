@@ -7,11 +7,10 @@ import { head, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { UserOutlined } from '@ant-design/icons';
 import stylesExchange from '@/assets/styles/Modules/Exchange/styles.module.scss';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../utils/variables';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import variablesModules from '../utils/variables';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -29,9 +28,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ exchangeApprove, loading }) => ({
+const mapStateToProps = ({ communicationsApprove, loading }) => ({
   loading,
-  data: exchangeApprove.data,
+  data: communicationsApprove.data,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -69,12 +68,8 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
     this.props.dispatch({
-      type: 'exchangeApprove/GET_DATA',
+      type: 'communicationsApprove/GET_DATA',
       payload: {},
     });
   };
@@ -82,13 +77,13 @@ class Index extends PureComponent {
   approve = (record) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'exchangeApprove/UPDATE',
+      type: 'communicationsApprove/UPDATE',
       payload: {
         id: record.id,
         description: record.description,
         status: variablesModules.STATUS.SENT,
       },
-      callback: (response) => {},
+      callback: () => {},
     });
   };
 
@@ -118,28 +113,32 @@ class Index extends PureComponent {
                 key={item.id}
               >
                 <div className="d-flex justify-content-between">
-                  <h3 className={stylesExchange['title']}>{item.title}</h3>
-                  <p className={stylesExchange['time']}>
+                  <h3 className={stylesExchange.title}>{item.title}</h3>
+                  <p className={stylesExchange.time}>
                     {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                   </p>
                 </div>
                 <div className="d-flex">
-                  <p className={stylesExchange['norm']}>
+                  <p className={stylesExchange.norm}>
                     Người tạo: <strong>{item?.creator?.objectInfo?.fullName}</strong>
                   </p>
-                  <p className={classnames(stylesExchange['norm'], 'ml-4')}>
+                  <p className={classnames(stylesExchange.norm, 'ml-4')}>
                     Dành cho: <strong>{item?.student?.fullName}</strong>
                   </p>
                 </div>
                 <div
-                  className={stylesExchange['norm']}
+                  className={stylesExchange.norm}
                   dangerouslySetInnerHTML={{ __html: item.description }}
-                ></div>
+                />
                 <div className={stylesExchange['list-image']}>
                   {Helper.isJSON(item.files) &&
                     JSON.parse(item.files).map((item) => (
                       <div className={stylesExchange['image-item']} key={item}>
-                        <img src={`${API_UPLOAD}${item}`} className={stylesExchange['image']} />
+                        <img
+                          src={`${API_UPLOAD}${item}`}
+                          className={stylesExchange.image}
+                          alt="imageFile"
+                        />
                       </div>
                     ))}
                 </div>
@@ -149,14 +148,15 @@ class Index extends PureComponent {
                     <div className={stylesExchange['chat-item']} key={itemFeedbacks.id}>
                       {itemFeedbacks.status !== variablesModules.STATUS.SENT && (
                         <div
+                          role="presentation"
                           className={stylesExchange['chat-aprrove']}
                           onClick={() => this.approve(itemFeedbacks)}
                         >
-                          <span className="icon-checkmark"></span>
-                          <p className={stylesExchange['norm']}>Duyệt</p>
+                          <span className="icon-checkmark" />
+                          <p className={stylesExchange.norm}>Duyệt</p>
                         </div>
                       )}
-                      <div className={stylesExchange['heading']}>
+                      <div className={stylesExchange.heading}>
                         <div className={stylesExchange['group-user']}>
                           <div className={stylesExchange['user-info']}>
                             <AvatarTable
@@ -166,8 +166,8 @@ class Index extends PureComponent {
                                 head(JSON.parse(get(itemFeedbacks, 'creator.objectInfo.fileImage')))
                               }
                             />
-                            <div className={stylesExchange['info']}>
-                              <p className={stylesExchange['norm']}>
+                            <div className={stylesExchange.info}>
+                              <p className={stylesExchange.norm}>
                                 {itemFeedbacks?.creator?.objectInfo?.fullName}
                               </p>
                               <p className={stylesExchange['sub-norm']}>
@@ -176,7 +176,7 @@ class Index extends PureComponent {
                             </div>
                           </div>
                           <div className={stylesExchange['wrapper-content']}>
-                            <div className={stylesExchange['content']}>
+                            <div className={stylesExchange.content}>
                               {itemFeedbacks.description.length < 20 && itemFeedbacks.description}
                               {itemFeedbacks.description.length > 20 && (
                                 <Paragraph
@@ -192,7 +192,7 @@ class Index extends PureComponent {
                             </div>
                           </div>
                         </div>
-                        <p className={stylesExchange['time']}>
+                        <p className={stylesExchange.time}>
                           {Helper.getDate(item.creationTime, variables.DATE_FORMAT.DATE_TIME)}
                         </p>
                       </div>
@@ -213,21 +213,13 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
   data: [],
-  pagination: {},
-  loading: {},
   dispatch: {},
-  location: {},
 };
 
 export default Index;

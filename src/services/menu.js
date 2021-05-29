@@ -118,7 +118,7 @@ export async function getLeftMenuExchange() {
       key: 'approve',
       url: ['/trao-doi/can-duyet'],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.TD],
       pro: true,
     },
     {
@@ -126,7 +126,7 @@ export async function getLeftMenuExchange() {
       key: 'items',
       url: ['/trao-doi/danh-sach', '/trao-doi/tao-moi', '/trao-doi/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions.TD],
       pro: true,
     },
     {
@@ -134,15 +134,15 @@ export async function getLeftMenuExchange() {
       key: 'notifications',
       url: ['/trao-doi/thong-bao'],
       icon: 'icon icon-notification',
-      permission: [],
+      permission: [permissions.TD],
       pro: true,
     },
     {
       title: 'Cấu hình',
-      key: 'settings',
+      key: 'config',
       url: ['/trao-doi/cai-dat'],
       icon: 'icon icon-setting',
-      permission: [],
+      permission: [permissions.TD],
       pro: true,
     },
   ];

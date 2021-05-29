@@ -1,9 +1,8 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'exchangeApprove',
+  namespace: 'communicationsApprove',
   state: {
     data: [],
   },

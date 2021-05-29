@@ -1,11 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect, Redirect } from 'umi';
-import { LocaleProvider } from 'antd';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
-import viVN from 'antd/es/locale-provider/vi_VN';
-import moment from 'moment';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
@@ -26,15 +23,12 @@ import HealthLayout from './Health';
 import HRMLayout from './HRM';
 import FeePolicyLayout from './Fee-Policy';
 import NotesLayout from './Notes';
-import 'moment/locale/vi';
-
-moment.locale('vi');
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
-  exchange: ExchangeLayout,
+  communications: ExchangeLayout,
   objectProfiles: ObjectProfiles,
   timetable: SchedulesLayout,
   configuration: ConfigurationLayout,
@@ -77,7 +71,7 @@ class IndexLayout extends React.PureComponent {
         return 'hrm';
       }
       if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
-        return 'exchange';
+        return 'communications';
       }
       if (/^\/ho-so-doi-tuong(?=\/|$)/i.test(pathname)) {
         return 'objectProfiles';
@@ -157,7 +151,7 @@ class IndexLayout extends React.PureComponent {
     return (
       <>
         <Helmet title="Clover" titleTemplate="Clover | %s" />
-        <LocaleProvider locale={viVN}>{BootstrappedLayout()}</LocaleProvider>
+        {BootstrappedLayout()}
       </>
     );
   }

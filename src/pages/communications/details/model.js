@@ -4,7 +4,7 @@ import * as services from './services';
 import variablesModules from '../utils/variables';
 
 export default {
-  namespace: 'exchangeDetails',
+  namespace: 'communicationsDetails',
   state: {
     details: {},
     error: {
@@ -155,7 +155,7 @@ export default {
         yield saga.call(services.remove, payload.id);
         yield saga.put({
           type: 'SET_REMOVE',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',

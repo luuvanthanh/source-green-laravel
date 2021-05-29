@@ -265,7 +265,7 @@ export default [
       // EXCHANGE
       {
         path: '/trao-doi',
-        component: './exchange/layout',
+        component: './communications/layout',
         routes: [
           {
             path: '/trao-doi',
@@ -273,25 +273,25 @@ export default [
           },
           {
             path: '/trao-doi/danh-sach',
-            component: './exchange/items',
+            component: './communications/items',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TD],
           },
           {
             path: '/trao-doi/tao-moi',
-            component: './exchange/add',
+            component: './communications/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TD_PH_THEM],
           },
           {
             path: '/trao-doi/:id/chi-tiet',
-            component: './exchange/details',
+            component: './communications/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TD_PH_SUA],
           },
           {
             path: '/trao-doi/can-duyet',
-            component: './exchange/approve',
+            component: './communications/approve',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TD],
           },

@@ -64,7 +64,7 @@ AvatarTable.propTypes = {
   fullName: PropTypes.string,
   description: PropTypes.string,
   className: PropTypes.string,
-  fileImage: PropTypes.string,
+  fileImage: PropTypes.any,
   shape:  PropTypes.string,
   srcLocal:  PropTypes.bool,
 };

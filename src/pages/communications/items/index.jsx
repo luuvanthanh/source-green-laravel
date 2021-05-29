@@ -5,16 +5,19 @@ import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
+import PropTypes from 'prop-types';
 import moment from 'moment';
+
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import ability from '@/utils/ability';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
-import PropTypes from 'prop-types';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -33,11 +36,11 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ exchangeItems, loading }) => ({
-  data: exchangeItems.data,
-  pagination: exchangeItems.pagination,
-  classes: exchangeItems.classes,
-  branches: exchangeItems.branches,
+const mapStateToProps = ({ communicationsItems, loading }) => ({
+  data: communicationsItems.data,
+  pagination: communicationsItems.pagination,
+  classes: communicationsItems.classes,
+  branches: communicationsItems.branches,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,14 +53,16 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         title: query?.title,
         branchId: query?.branchId,
         classId: query?.classId,
-        fromDate:
-          query?.fromDate && moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
-        toDate: query?.toDate && moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
+        fromDate: query?.fromDate
+          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().startOf('months'),
+        toDate: query?.toDate
+          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().endOf('months'),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.NEW,
@@ -93,14 +98,14 @@ class Index extends PureComponent {
     const { search } = this.state;
     if (search.branchId) {
       this.props.dispatch({
-        type: 'exchangeItems/GET_CLASSES',
+        type: 'communicationsItems/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
       });
     }
     this.props.dispatch({
-      type: 'exchangeItems/GET_BRANCHES',
+      type: 'communicationsItems/GET_BRANCHES',
       payload: {},
     });
   };
@@ -114,14 +119,18 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'exchangeItems/GET_DATA',
+      type: 'communicationsItems/GET_DATA',
       payload: {
         ...search,
       },
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        fromDate: Helper.getDate(search.fromDate, variables.DATE_FORMAT.DATE_AFTER),
+        toDate: Helper.getDate(search.toDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   };
 
@@ -203,7 +212,7 @@ class Index extends PureComponent {
   onChangeSelectBranch = (e, type) => {
     this.debouncedSearch(e, type);
     this.props.dispatch({
-      type: 'exchangeItems/GET_CLASSES',
+      type: 'communicationsItems/GET_CLASSES',
       payload: {
         branch: e,
       },
@@ -233,7 +242,7 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChangeDateRank = (e, type) => {
+  onChangeDateRank = (e) => {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -306,7 +315,7 @@ class Index extends PureComponent {
     const { objects } = this.state;
     this.formRef.current.validateFields().then((values) => {
       this.props.dispatch({
-        type: !isEmpty(objects) ? 'exchangeItems/UPDATE' : 'exchangeItems/ADD',
+        type: !isEmpty(objects) ? 'communicationsItems/UPDATE' : 'communicationsItems/ADD',
         payload: {
           ...values,
           id: objects.id,
@@ -349,7 +358,7 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'exchangeItems/REMOVE',
+          type: 'communicationsItems/REMOVE',
           payload: {
             id,
             pagination: {
@@ -374,13 +383,13 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-60',
         width: 60,
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => `TD${Helper.serialOrder(this.state.search?.page, index)}`,
       },
       {
         title: 'Thời gian tạo',
         key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
+        className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
@@ -390,7 +399,8 @@ class Index extends PureComponent {
       {
         title: 'Cơ sở',
         key: 'life',
-        className: 'min-width-150',
+        width: 180,
+        className: 'min-width-180',
         render: (record) => (
           <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
         ),
@@ -398,7 +408,8 @@ class Index extends PureComponent {
       {
         title: 'Lớp',
         key: 'class',
-        className: 'min-width-150',
+        width: 180,
+        className: 'min-width-180',
         render: (record) => (
           <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
         ),
@@ -406,24 +417,36 @@ class Index extends PureComponent {
       {
         title: 'Tiêu đề',
         key: 'title',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) => <Text size="normal">{record.title}</Text>,
       },
       {
         title: 'Phụ huynh',
         key: 'parents',
-        className: 'min-width-150',
+        className: 'min-width-200',
+        width: 200,
         render: (record) => (
-          <Text size="normal">
-            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
-          </Text>
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(
+              record?.studentMaster?.farther?.fileImage || record?.studentMaster?.mother?.fileImage,
+            )}
+            fullName={
+              record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName
+            }
+          />
         ),
       },
       {
         title: 'Dành cho bé',
         key: 'student',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.studentMaster?.student?.fileImage)}
+            fullName={record?.studentMaster?.student?.fullName}
+          />
+        ),
       },
       {
         title: 'Trạng thái',
@@ -432,15 +455,17 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             {record.status !== variablesModules.STATUS.CLOSED && (
               <Button
                 color="success"
                 onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}
+                permission="TD_PH_SUA"
               >
                 Chi tiết
               </Button>
@@ -449,7 +474,9 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return columns;
+    return !ability.can('TD_PH_SUA', 'TD_PH_SUA')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -460,10 +487,9 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['exchangeItems/GET_DATA'];
+    const loading = effects['communicationsItems/GET_DATA'];
     return (
       <>
         <Helmet title="Danh sách phụ huynh" />
@@ -471,17 +497,22 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách trao đổi</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`/trao-doi/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`/trao-doi/tao-moi`)}
+              permission="TD_PH_THEM"
+            >
               Tạo trao đổi
             </Button>
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              accessKey={search?.status || variablesModules.STATUS.NEW}
+              defaultActiveKey={search?.status || variablesModules.STATUS.NEW}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={item.name} key={item.id}></TabPane>
+                <TabPane tab={item.name} key={item.id} />
               ))}
             </Tabs>
             <Form
@@ -537,6 +568,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('TD_PH_SUA', 'TD_PH_SUA')) {
+                    history.push(`/trao-doi/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
@@ -554,6 +592,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -563,6 +603,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  classes: [],
+  branches: [],
 };
 
 export default Index;
