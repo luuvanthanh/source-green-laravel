@@ -368,24 +368,6 @@ export default [
             authority: [permissions.HSDT_PH_SUA],
           },
           {
-            path: '/ho-so-doi-tuong/nhan-vien',
-            component: './object-profiles/users',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HSDT_NV],
-          },
-          {
-            path: '/ho-so-doi-tuong/nhan-vien/tao-moi',
-            component: './object-profiles/users/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HSDT_NV_THEM],
-          },
-          {
-            path: '/ho-so-doi-tuong/nhan-vien/:id/chi-tiet',
-            component: './object-profiles/users/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HSDT_NV_SUA],
-          },
-          {
             path: '/ho-so-doi-tuong/phu-huynh/luu-tru',
             component: './object-profiles/stores/parents',
             wrappers: ['@/wrappers/auth'],
@@ -396,12 +378,6 @@ export default [
             component: './object-profiles/stores/students',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HSDT_HS],
-          },
-          {
-            path: '/ho-so-doi-tuong/nhan-vien/luu-tru',
-            component: './object-profiles/stores/employees',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HSDT_NV],
           },
           {
             path: '/ho-so-doi-tuong/cau-hinh/lop-hoc',

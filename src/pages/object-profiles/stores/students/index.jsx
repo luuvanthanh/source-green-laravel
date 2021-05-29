@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,9 +11,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import ability from '@/utils/ability';
+import HelperModules from '../../utils/Helper';
 
 let isMounted = true;
 /**
@@ -31,7 +31,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ storeStudents, loading }) => ({
   data: storeStudents.data,
   pagination: storeStudents.pagination,
@@ -47,14 +46,12 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         isStoreStaus: true,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -195,36 +192,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'storeStudents/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
-
-  /**
    * Function header table
    */
   header = () => {
@@ -235,7 +202,7 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => `HS${Helper.serialOrder(this.state.search?.page, index)}`,
       },
       {
         title: 'Họ và Tên',
@@ -287,12 +254,14 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
               ghost
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
+              permission="HSDT_HS_XEM"
             >
               Chi tiết
             </Button>
@@ -300,7 +269,9 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return columns;
+    return !ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -363,7 +334,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -372,6 +342,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')) {
+                    history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}

@@ -35,7 +35,7 @@
     }
     .title {
       font-style: normal;
-      font-weight: bold;
+      font-family: $bold__font-family;
       font-size: 24px;
       line-height: 20px;
       color: $text;
@@ -67,7 +67,7 @@
         .norm {
           margin-bottom: 0;
           margin-left: 10px;
-          font-weight: 600;
+          font-family: $bold__font-family;
         }
       }
     }
@@ -101,7 +101,7 @@
         .norm {
           margin-bottom: 0;
           margin-left: 10px;
-          font-weight: 600;
+          font-family: $bold__font-family;
         }
       }
     }
@@ -148,11 +148,11 @@
           .norm {
             margin-bottom: 0;
             margin-left: 10px;
-            font-weight: 600;
+            font-family: $bold__font-family;
           }
           .sub-norm {
+            font-family: $bold__font-family;
             font-style: normal;
-            font-weight: 600;
             font-size: 13px;
             line-height: 20px;
             color: #7a7e84;
@@ -262,11 +262,11 @@
         .norm {
           margin-bottom: 0;
           margin-left: 10px;
-          font-weight: 600;
+          font-family: $bold__font-family;
         }
         .sub-norm {
+          font-family: $bold__font-family;
           font-style: normal;
-          font-weight: 600;
           font-size: 13px;
           line-height: 20px;
           color: #7a7e84;

@@ -108,16 +108,18 @@ class Index extends PureComponent {
                   <Image.PreviewGroup>
                     {Helper.isJSON(details.fileImage) &&
                       JSON.parse(details.fileImage).map((item, index) => (
-                        <Image
-                          width={80}
-                          height={80}
-                          src={`${API_UPLOAD}${item}`}
-                          key={index}
-                          preview={{
-                            maskClassName: 'customize-mask',
-                            mask: <EyeOutlined className="mr5" />,
-                          }}
-                        />
+                        <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
+                          <Image
+                            width={80}
+                            height={80}
+                            src={`${API_UPLOAD}${item}`}
+                            key={index}
+                            preview={{
+                              maskClassName: 'customize-mask',
+                              mask: <EyeOutlined className="mr5" />,
+                            }}
+                          />
+                        </div>
                       ))}
                   </Image.PreviewGroup>
                 </div>

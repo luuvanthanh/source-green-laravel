@@ -1,13 +1,13 @@
 import { memo, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'dva';
-import { Form, Skeleton, Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Form, Skeleton } from 'antd';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
 
 import FormItem from '@/components/CommonComponent/FormItem';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 
 import styles from '../../index.scss';
@@ -125,21 +125,20 @@ const Index = memo(({ studentId, status }) => {
             <div className="col-md-6 col-lg-4 my10" key={index}>
               <div className={classnames(styles['item-health'], 'd-flex', 'justify-content-between', `${!item.description ? 'align-items-center' : ''}`)}>
                 <div className="d-flex align-items-center">
-                  <Avatar
-                    src={getIcon(item?.criteriaGroupProperty?.property)}
-                    shape="square"
+                  <AvatarTable
+                    fileImage={getIcon(item?.criteriaGroupProperty?.property)}
+                    srcLocal
                     size={32}
-                    icon={<UserOutlined />}
                   />
                   <div>
                     <p className="mb0 font-weight-bold ml10">{getName(item?.criteriaGroupProperty?.property)}</p>
                     {item?.note && (
-                      <p className="mb0 ml10 font-size-13">{item?.note}</p>
+                      <p className="mb0 ml10 font-size-13">{item?.note || ''}</p>
                     )}
                   </div>
                 </div>
                 {item.value && (
-                  <p className="font-weight-bold mt0 mb0 ml10 color-success">{item.value}</p>
+                  <p className="font-weight-bold mt0 mb0 ml10 color-success">{item.value || ''}</p>
                 )}
               </div>
             </div>

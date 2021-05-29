@@ -3,16 +3,21 @@ import { Upload, Image } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch } from 'dva';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 
 import { imageUploadProps } from '@/utils/upload';
 import { Helper } from '@/utils';
 
+// eslint-disable-next-line no-unused-vars
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
 const ImageUpload = memo(({ callback, removeFiles, files }) => {
+  // eslint-disable-next-line no-underscore-dangle
   const _mounted = useRef(false);
+
+  // eslint-disable-next-line no-underscore-dangle
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
@@ -25,7 +30,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
       callback: (res) => {
         if (res) {
           _mountedSet(setImages, (prev) => [...prev, get(res, 'results[0].fileInfo.url')]);
-          callback && callback(get(res, 'results[0].fileInfo.url'));
+          callback(get(res, 'results[0].fileInfo.url'));
         }
       },
     });
@@ -57,7 +62,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   useEffect(() => {
     _mounted.current = true;
-    return () => (_mounted.current = false);
+    return _mounted.current;
   }, []);
 
   useEffect(() => {
@@ -86,7 +91,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                             onClick={(event) => {
                               event.stopPropagation();
                               setImages((prev) => prev.filter((image) => image !== item));
-                              removeFiles && removeFiles(images.filter((image) => image !== item));
+                              removeFiles(images.filter((image) => image !== item));
                             }}
                           />
                         </>
@@ -96,7 +101,11 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                 );
               }
               return (
-                <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
+                <div
+                  key={index}
+                  className="container-preview-image"
+                  style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
+                >
                   <Image
                     width={102}
                     height={102}
@@ -110,7 +119,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                             onClick={(event) => {
                               event.stopPropagation();
                               setImages((prev) => prev.filter((image) => image !== item));
-                              removeFiles && removeFiles(images.filter((image) => image !== item));
+                              removeFiles(images.filter((image) => image !== item));
                             }}
                           />
                         </>
@@ -132,5 +141,17 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
     </>
   );
 });
+
+ImageUpload.propTypes = {
+  callback: PropTypes.any,
+  removeFiles: PropTypes.func,
+  files: PropTypes.arrayOf(PropTypes.any),
+};
+
+ImageUpload.defaultProps = {
+  callback: null,
+  removeFiles: () => {},
+  files: [],
+};
 
 export default ImageUpload;

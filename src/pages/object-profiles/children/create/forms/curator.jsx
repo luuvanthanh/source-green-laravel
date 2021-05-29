@@ -1,8 +1,9 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import { connect, withRouter } from 'umi';
 
-import { connect, history, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -23,11 +24,11 @@ const Curator = memo(
     const loading = effects[`OPchildrenAdd/GET_DETAILS`] || effects[`OPchildrenAdd/GET_EMPLOYEES`];
     const loadingSubmit = effects[`OPchildrenAdd/ADD`] || effects[`OPchildrenAdd/UPDATE`];
     const mounted = useRef(false);
-    const mountedSet = (action, value) => {
-      if (mounted.current) {
-        action(value);
-      }
-    };
+    // const mountedSet = (action, value) => {
+    //   if (mounted.current) {
+    //     action(value);
+    //   }
+    // };
 
     /**
      * Function submit form modal
@@ -63,7 +64,7 @@ const Curator = memo(
 
     useEffect(() => {
       mounted.current = true;
-      return () => (mounted.current = false);
+      return mounted.current;
     }, []);
 
     useEffect(() => {
@@ -97,7 +98,7 @@ const Curator = memo(
               </Heading>
 
               <Pane className="row">
-                <Pane className="col-lg-4">
+                <Pane className="col-lg-6">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
                     name="employeeId"
@@ -126,5 +127,23 @@ const Curator = memo(
     );
   },
 );
+
+Curator.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+};
+
+Curator.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+  employees: [],
+};
 
 export default withRouter(connect(mapStateToProps)(Curator));

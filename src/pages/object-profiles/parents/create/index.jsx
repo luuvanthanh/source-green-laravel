@@ -1,13 +1,14 @@
 import { memo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'antd';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import { Link } from 'umi';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
 import AccountForm from './forms/account';
-import { Link } from 'umi';
 
 import { menu, defaultKey } from './menu';
 
@@ -20,7 +21,7 @@ const forms = {
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
-  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
+  const [activeMenuItem] = useState(defaultKey);
   return (
     <Pane style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ học sinh" />
@@ -55,5 +56,17 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     </Pane>
   );
 });
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  query: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  location: {},
+  query: {},
+};
 
 export default Index;

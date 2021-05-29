@@ -3,15 +3,16 @@ import { Form } from 'antd';
 import { head, isEmpty } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
+import variablesModules from '../../../utils/variables';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -80,7 +81,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
             : variablesModules.STATUS.STORE,
         id: params.id,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           history.push(`/ho-so-doi-tuong/phu-huynh`);
         }
@@ -111,7 +112,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   const uploadFiles = (file) => {
@@ -190,10 +191,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
             </Pane>
 
-            {/* <Heading type="form-block-title" {...marginProps}>
-              Địa chỉ
-            </Heading> */}
-
             <Pane className="row border-bottom" {...marginProps}>
               <Pane className="col-lg-12">
                 <FormItem name="address" label="Địa chỉ" type={variables.INPUT} />
@@ -250,5 +247,21 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     </Form>
   );
 });
+
+General.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+};
+
+General.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+};
 
 export default withRouter(connect(mapStateToProps)(General));

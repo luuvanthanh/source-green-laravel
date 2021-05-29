@@ -1,13 +1,14 @@
 import { memo, useState, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
-import { Avatar, Form, Modal, Skeleton } from 'antd';
+import { Form, Modal, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from '../index.scss';
 
@@ -77,8 +78,9 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <Avatar
-            src="/images/slice/avatar_02.png"
+          <AvatarTable
+            fileImage="/images/slice/avatar_02.png"
+            srcLocal
             shape="square"
             size={40}
           />
@@ -107,8 +109,9 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <Avatar
-            src="/images/slice/avatar.png"
+          <AvatarTable
+            fileImage="/images/slice/avatar.png"
+            srcLocal
             shape="square"
             size={40}
           />
@@ -250,8 +253,8 @@ const Index = memo(() => {
             </div>
           </div>
           <div className="mt50">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
-              <div className={styles['content-bus']}>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+              <div className={classnames(styles['content-bus'], 'px20')}>
                 {loading['overView/GET_DATA_BUS'] ? (
                   <>
                     <Skeleton avatar paragraph={{ rows: 4 }} active />
@@ -270,8 +273,9 @@ const Index = memo(() => {
                         >
                           <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
                             <div className="d-flex align-items-center">
-                              <Avatar
-                                src={item.image}
+                              <AvatarTable
+                                fileImage={item.image}
+                                srcLocal
                                 size={24}
                               />
                               <p className="mb0 ml10">{item?.name}</p>
@@ -288,8 +292,9 @@ const Index = memo(() => {
                         onClick={() => getDetail(item)}
                         aria-hidden="true"
                       >
-                        <Avatar
-                          src={item.image}
+                        <AvatarTable
+                          fileImage={item.image}
+                          srcLocal
                           size={30}
                         />
                         <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>

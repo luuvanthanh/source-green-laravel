@@ -177,7 +177,7 @@ export async function getLeftMenuProfile() {
       title: 'Hồ sơ đã lưu trữ',
       key: 'stores',
       icon: 'icon icon-fileText',
-      permission: [],
+      permission: [permissions.HSDT_HS, permissions.HSDT_PH],
       children: [
         {
           title: 'Học sinh',
