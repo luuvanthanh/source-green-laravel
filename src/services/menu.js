@@ -639,7 +639,7 @@ export async function getLeftMenuMedical() {
       key: 'children',
       url: ['/y-te/thong-ke', '/y-te/thong-ke/tao-moi', '/y-te/thong-ke/:id/chi-tiet'],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.YTE],
       pro: true,
     },
     {
@@ -647,7 +647,7 @@ export async function getLeftMenuMedical() {
       key: 'clock',
       url: ['/y-te/lich-su'],
       icon: 'icon icon-alarm',
-      permission: [],
+      permission: [permissions.YTE],
       pro: true,
     },
     {
@@ -655,7 +655,7 @@ export async function getLeftMenuMedical() {
       key: 'logbook',
       url: ['/y-te/so-theo-doi'],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.YTE],
       pro: true,
     },
   ];
