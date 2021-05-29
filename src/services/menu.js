@@ -696,7 +696,7 @@ export async function getLeftMenuMedia() {
       key: 'upload',
       url: ['/ghi-nhan/dang-hinh'],
       icon: 'icon icon-file',
-      permission: [],
+      permission: [permissions.HA],
       pro: true,
     },
     {
@@ -704,7 +704,7 @@ export async function getLeftMenuMedia() {
       key: 'browser',
       url: ['/ghi-nhan/duyet-hinh'],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.HA_DUYET],
       pro: true,
     },
     {
@@ -712,7 +712,7 @@ export async function getLeftMenuMedia() {
       key: 'list',
       url: ['/ghi-nhan/danh-sach', '/ghi-nhan/:id/chi-tiet'],
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions.HA],
       pro: true,
     },
   ];

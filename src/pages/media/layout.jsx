@@ -19,7 +19,6 @@ class Index extends PureComponent {
     return pathname;
   };
 
-
   render() {
     const {
       children,
@@ -38,14 +37,11 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  children: PropTypes.any.isRequired,
-  location: PropTypes.objectOf(PropTypes.any),
   children: PropTypes.any,
   isMenuCollapsed: PropTypes.bool,
 };
 
 Index.defaultProps = {
-  location: {},
   children: null,
   isMenuCollapsed: false,
 };

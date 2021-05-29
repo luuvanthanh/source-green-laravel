@@ -14,11 +14,11 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
-import localVariables from './utils/variables';
 import styles from '@/assets/styles/Common/common.scss';
+import localVariables from './utils/variables';
 
 const Index = memo(() => {
-  let mounted = useRef(false);
+  const mounted = useRef(false);
   const mountedSet = (f) => (v) => mounted?.current && f(v);
 
   const dispatch = useDispatch();
@@ -152,6 +152,23 @@ const Index = memo(() => {
     changeFilterDebouce(name, value);
   };
 
+  const fetchClasses = (branchId) => {
+    dispatch({
+      type: 'categories/GET_CLASSES',
+      payload: {
+        branch: branchId,
+      },
+      callback: (res) => {
+        if (res) {
+          mountedSet(setCategory)((prev) => ({
+            ...prev,
+            classes: res?.items || [],
+          }));
+        }
+      },
+    });
+  };
+
   const changeFilterBranch = (name) => (value) => {
     changeFilterDebouce(name, value);
     fetchClasses(name);
@@ -196,26 +213,9 @@ const Index = memo(() => {
     });
   };
 
-  const fetchClasses = (branchId) => {
-    dispatch({
-      type: 'categories/GET_CLASSES',
-      payload: {
-        branch: branchId,
-      },
-      callback: (res) => {
-        if (res) {
-          mountedSet(setCategory)((prev) => ({
-            ...prev,
-            classes: res?.items || [],
-          }));
-        }
-      },
-    });
-  };
-
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {

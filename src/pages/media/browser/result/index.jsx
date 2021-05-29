@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox, Image } from 'antd';
+import { Form, Checkbox } from 'antd';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -16,8 +16,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 import infoStyles from '@/assets/styles/Common/information.module.scss';
-import styles from '../style.module.scss';
 import { variables, Helper } from '@/utils';
+import styles from '../style.module.scss';
 import localVariables from '../../utils/variables';
 
 const Index = memo(() => {
@@ -36,8 +36,10 @@ const Index = memo(() => {
   const [classifyData, setClassifyData] = useState([]);
   const [search, setSearch] = useState({
     search: query?.search,
-    creationTimeFrom: query?.creationTimeFrom,
-    creationTimeTo: query?.creationTimeTo,
+    creationTimeFrom: query?.creationTimeFrom
+      ? moment(query?.creationTimeFrom)
+      : moment().startOf('weeks'),
+    creationTimeTo: query?.creationTimeTo ? moment(query?.creationTimeTo) : moment().endOf('weeks'),
   });
   const [groupIds, setGroupIds] = useState([]);
 
@@ -64,7 +66,11 @@ const Index = memo(() => {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        creationTimeFrom: Helper.getDate(search.creationTimeFrom, variables.DATE_FORMAT.DATE_AFTER),
+        creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   }, [search]);
 
@@ -194,7 +200,7 @@ const Index = memo(() => {
 
   const postAll = async () => {
     const { errorFields } = await formRef.current?.validateFields();
-    if (!!size(errorFields)) {
+    if (size(errorFields)) {
       return;
     }
 
@@ -255,29 +261,28 @@ const Index = memo(() => {
 
               <Pane className="col-lg-9 d-flex justify-content-end">
                 <Button
-                  disabled={loading['mediaResult/GET_DATA']}
                   className="mr20"
                   color="dark"
                   type="link"
                   onClick={removeAllPost}
                   disabled={isEmpty(classifyData)}
+                  loading={loading['mediaResult/GET_DATA']}
                 >
                   Xóa tất cả ghi nhận
                 </Button>
                 <Button
-                  disabled={loading['mediaResult/GET_DATA']}
                   className="mr20"
                   color="primary"
                   onClick={merge}
                   disabled={isEmpty(groupIds) || groupIds.length <= 1}
+                  loading={loading['mediaResult/GET_DATA']}
                 >
                   Gộp ghi nhận
                 </Button>
                 <Button
-                  disabled={loading['mediaResult/GET_DATA']}
                   color="success"
                   onClick={postAll}
-                  loading={loading['mediaResult/VALIDATE_ALL']}
+                  loading={loading['mediaResult/VALIDATE_ALL'] || loading['mediaResult/GET_DATA']}
                 >
                   Gửi tất cả
                 </Button>
@@ -366,7 +371,7 @@ const Index = memo(() => {
                         <img
                           className="d-block w-100"
                           src={`${API_UPLOAD}${image?.url}`}
-                          alt={image?.name}
+                          alt="imageUpload"
                         />
                         <Button
                           icon="cancel"
@@ -387,12 +392,11 @@ const Index = memo(() => {
             <Pane className="mt20 mb20 d-flex justify-content-between">
               <Heading type="page-title">Những ảnh không xác định</Heading>
               <Button
-                disabled={loading['mediaResult/GET_DATA']}
                 className="mr20"
                 color="dark"
                 type="link"
                 onClick={removeRecordFiles}
-                disabled={isEmpty(recordedFiles)}
+                disabled={isEmpty(recordedFiles) || loading['mediaResult/GET_DATA']}
               >
                 Xóa tất cả
               </Button>
@@ -405,7 +409,7 @@ const Index = memo(() => {
                     <img
                       className="d-block w-100"
                       src={`${API_UPLOAD}${image?.url}`}
-                      alt={image?.name}
+                      alt="imageUpload"
                     />
                     <Button
                       icon="cancel"
