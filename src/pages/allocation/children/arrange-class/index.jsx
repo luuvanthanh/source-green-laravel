@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
 import { Form, List, Checkbox, Spin, message } from 'antd';
@@ -42,7 +42,6 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      search: {},
       searchStudents: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.PAGE_SIZE,
@@ -124,7 +123,7 @@ class Index extends PureComponent {
           this.setStateData(({ categories }) => ({
             categories: {
               ...categories,
-              branches: res?. parsePayload || [],
+              branches: res?.parsePayload || [],
             },
           }));
         }
@@ -249,15 +248,15 @@ class Index extends PureComponent {
             <div className={stylesAllocation['tabs-link']}>
               <NavLink
                 to="/phan-bo/hoc-sinh/tre-chua-xep-lop"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Trẻ chưa xếp lớp
               </NavLink>
               <NavLink
                 to="/phan-bo/hoc-sinh/chuyen-lop"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Chuyển lớp
               </NavLink>
@@ -267,8 +266,8 @@ class Index extends PureComponent {
           {/* MAIN CONTAINER */}
           <div className={stylesAllocation['main-container']}>
             <div className={stylesAllocation['left-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Danh sách trẻ chưa xếp lớp
                   </Text>
@@ -332,8 +331,8 @@ class Index extends PureComponent {
             </div>
 
             <div className={stylesAllocation['right-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Danh sách cơ sở/lớp
                   </Text>
@@ -388,21 +387,13 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
-  location: {},
 };
 
 export default Index;

@@ -52,6 +52,19 @@ class MenuLeft extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this.setSelectedKeys(this.props);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.isMenuCollapsed && !newProps.isMobileView) {
+      this.setState({
+        openedKeys: [],
+      });
+    }
+    this.setSelectedKeys(newProps);
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.badges !== prevProps.badges) {
       this.onSetMenu(this.props.badges);

@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, NavLink } from 'umi';
 import { Form, List } from 'antd';
@@ -77,7 +77,7 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: res?. parsePayload || [],
+            branches: res?.parsePayload || [],
           });
         }
       },
@@ -167,22 +167,22 @@ class Index extends PureComponent {
             <div className={stylesAllocation['tabs-link']}>
               <NavLink
                 to="/phan-bo/giao-vien/chua-xep-lop"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Giáo viên chưa xếp lớp
               </NavLink>
               <NavLink
                 to="/phan-bo/giao-vien/danh-sach"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Danh sách giáo viên và trẻ
               </NavLink>
               <NavLink
                 to="/phan-bo/giao-vien/dieu-chuyen"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Điều chuyển giáo viên
               </NavLink>
@@ -198,7 +198,6 @@ class Index extends PureComponent {
                     name="branch"
                     type={variables.SELECT}
                     placeholder="Chọn cơ sở"
-                    allowClear={false}
                     onChange={this.fetchClasses}
                     data={branches}
                   />
@@ -219,7 +218,7 @@ class Index extends PureComponent {
             <div className={stylesAllocation['main-container']}>
               <div className={stylesAllocation['left-container']}>
                 {!isEmpty(students) && (
-                  <div className={stylesAllocation['content']}>
+                  <div className={stylesAllocation.content}>
                     <div className={stylesAllocation['heading-list']}>
                       <Text color="dark" size="large-medium">
                         Danh sách trẻ
@@ -233,9 +232,9 @@ class Index extends PureComponent {
                           <List.Item key={id + index}>
                             <div className={stylesAllocation['group-info']}>
                               <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                              <div className={stylesAllocation['info']}>
-                                <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                                <p className={stylesAllocation['norm']}>{age} tháng tuổi</p>
+                              <div className={stylesAllocation.info}>
+                                <h3 className={stylesAllocation.title}>{fullName}</h3>
+                                <p className={stylesAllocation.norm}>{age} tháng tuổi</p>
                               </div>
                             </div>
                           </List.Item>
@@ -247,7 +246,7 @@ class Index extends PureComponent {
               </div>
               <div className={stylesAllocation['right-container']}>
                 {!isEmpty(teachers) && (
-                  <div className={stylesAllocation['content']}>
+                  <div className={stylesAllocation.content}>
                     <div className={stylesAllocation['heading-list']}>
                       <Text color="dark" size="large-medium">
                         Danh sách giáo viên
@@ -261,9 +260,9 @@ class Index extends PureComponent {
                           <List.Item key={id + index}>
                             <div className={stylesAllocation['group-info']}>
                               <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                              <div className={stylesAllocation['info']}>
-                                <h3 className={stylesAllocation['title']}>{fullName}</h3>
-                                <p className={stylesAllocation['norm']}></p>
+                              <div className={stylesAllocation.info}>
+                                <h3 className={stylesAllocation.title}>{fullName}</h3>
+                                <p className={stylesAllocation.norm} />
                               </div>
                             </div>
                           </List.Item>
@@ -284,21 +283,11 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
-  loading: {},
   dispatch: {},
-  location: {},
 };
 
 export default Index;

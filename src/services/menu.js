@@ -607,7 +607,7 @@ export async function getLeftMenuAllocation() {
       key: 'children',
       url: ['/phan-bo/hoc-sinh/tre-chua-xep-lop', '/phan-bo/hoc-sinh/chuyen-lop'],
       icon: 'icon icon-baby',
-      permission: [],
+      permission: [permissions.PB_HS],
       pro: true,
     },
     {
@@ -619,7 +619,7 @@ export async function getLeftMenuAllocation() {
         '/phan-bo/giao-vien/chua-xep-lop',
       ],
       icon: 'icon icon-woman',
-      permission: [],
+      permission: [permissions.PB_GV],
       pro: true,
     },
     {
@@ -627,7 +627,7 @@ export async function getLeftMenuAllocation() {
       key: 'clock',
       url: ['/phan-bo/lich-su'],
       icon: 'icon icon-alarm',
-      permission: [],
+      permission: [permissions.PB_NV_LS],
       pro: true,
     },
   ];

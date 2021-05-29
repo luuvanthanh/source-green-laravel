@@ -27,12 +27,14 @@ const Index = memo(
 
     const [visible, setVisible] = useState(false);
 
-    const loadingSubmit = effects[`OPParentsAdd/ADD_ACCOUNT`];
+    const loadingSubmit =
+      effects[`OPParentsAdd/ADD_ACCOUNT`] || effects[`OPParentsAdd/CHANGE_PASSWORD`];
     const loading =
       effects[`OPParentsAdd/GET_DETAILS_ACCOUNT`] || effects[`OPParentsAdd/GET_ROLES`];
 
     const handleCancel = () => {
       setVisible(false);
+      formRefModal.current.resetFields();
     };
 
     const showModal = () => {
@@ -92,7 +94,29 @@ const Index = memo(
     };
 
     const changePassword = () => {
-      formRefModal.current.validateFields().then(() => {});
+      formRefModal.current.validateFields().then((values) => {
+        dispatch({
+          type: 'OPParentsAdd/CHANGE_PASSWORD',
+          payload: { ...values },
+          callback: (response, error) => {
+            if (response) {
+              handleCancel();
+            }
+            if (error) {
+              if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+                error?.validationErrors.forEach((item) => {
+                  formRefModal.current.setFields([
+                    {
+                      name: head(item.members),
+                      errors: [item.message],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      });
     };
 
     useEffect(() => {
@@ -144,6 +168,7 @@ const Index = memo(
           ]}
           title="Đổi mật khẩu"
           visible={visible}
+          onCancel={handleCancel}
         >
           <Form layout="vertical" ref={formRefModal}>
             <div className="row">

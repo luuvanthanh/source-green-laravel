@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
+import PropTypes from 'prop-types';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { isEmpty, get } from 'lodash';
@@ -27,10 +28,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, loading, branchesAdd }) => ({
-  menuData: menu.menuLeftObjectProfiles,
   loading,
-  details: branchesAdd.details,
   error: branchesAdd.error,
+  details: branchesAdd.details,
+  menuData: menu.menuLeftObjectProfiles,
 });
 
 @connect(mapStateToProps)
@@ -209,6 +210,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  menuData: [],
+};
 
 export default Index;

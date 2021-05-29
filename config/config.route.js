@@ -275,7 +275,7 @@ export default [
             path: '/trao-doi/danh-sach',
             component: './exchange/items',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TD_XEM],
+            authority: [permissions.TD],
           },
           {
             path: '/trao-doi/tao-moi',
@@ -293,7 +293,7 @@ export default [
             path: '/trao-doi/can-duyet',
             component: './exchange/approve',
             wrappers: ['@/wrappers/auth'],
-            authority: [permissions.TD_XEM],
+            authority: [permissions.TD],
           },
         ],
       },
