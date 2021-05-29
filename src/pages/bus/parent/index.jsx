@@ -66,7 +66,6 @@ class Index extends PureComponent {
         id: null,
       },
       position: [16.07111, 108.224022],
-      routes: [],
       parent: user?.objectInfo?.id,
       isAuto: false,
       current: {},
@@ -209,7 +208,7 @@ class Index extends PureComponent {
 
   render() {
     const { data, students } = this.props;
-    const { search, position, routes, current, isAuto } = this.state;
+    const { search, position, current, isAuto } = this.state;
     return (
       <>
         <Helmet title="Lộ trình xe bus hôm nay" />

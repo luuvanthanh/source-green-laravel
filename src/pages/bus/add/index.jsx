@@ -1,14 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Upload } from 'antd';
+import PropTypes from 'prop-types';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Select from '@/components/CommonComponent/Select';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { head, isEmpty } from 'lodash';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import ListUpload from '@/components/CommonComponent/ListUpload';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
@@ -28,10 +28,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, vehicleAdd }) => ({
+const mapStateToProps = ({ menu, loading, busAdd }) => ({
   loading,
-  data: vehicleAdd.data,
-  error: vehicleAdd.error,
+  data: busAdd.data,
+  error: busAdd.error,
   menuData: menu.menuLeftVehicel,
 });
 
@@ -53,7 +53,7 @@ class Index extends PureComponent {
     } = this.props;
     if (params.id) {
       this.props.dispatch({
-        type: 'vehicleAdd/GET_DATA',
+        type: 'busAdd/GET_DATA',
         payload: params,
       });
     }
@@ -119,7 +119,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     dispatch({
-      type: params?.id ? 'vehicleAdd/UPDATE' : 'vehicleAdd/ADD',
+      type: params?.id ? 'busAdd/UPDATE' : 'busAdd/ADD',
       payload: {
         ...data,
         ...values,
@@ -154,17 +154,15 @@ class Index extends PureComponent {
     const { fileImage } = this.state;
     const self = this;
     const props = {
-      beforeUpload: (file) => {
-        return null;
-      },
+      beforeUpload: () => null,
       customRequest({ file }) {
         self.onUploadFile(file);
       },
       showUploadList: false,
       fileList: [],
     };
-    const loading = effects['vehicleAdd/GET_DATA'];
-    const loadingSubmit = effects['vehicleAdd/ADD'] || effects['vehicleAdd/UPDATE'];
+    const loading = effects['busAdd/GET_DATA'];
+    const loadingSubmit = effects['busAdd/ADD'] || effects['busAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last="Chi tiết xe" menu={menuData} />
@@ -186,7 +184,7 @@ class Index extends PureComponent {
                     <div className="col-lg-12">
                       <Form.Item
                         label={<span>HÌNH ẢNH</span>}
-                        name={'files'}
+                        name="files"
                         rules={[
                           { required: true, message: 'Vui lòng không được để trống trường này' },
                         ]}
@@ -301,6 +299,28 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  user: {},
+  students: [],
+  error: {},
+  menuData: [],
+  categories: {},
+  data: {},
+};
 
 export default Index;

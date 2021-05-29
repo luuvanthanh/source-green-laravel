@@ -1,7 +1,6 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'tutorialAdd',
@@ -78,7 +77,12 @@ export default {
           type: 'SET_EMPLOYEES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_BRANCHES({ payload }, saga) {
       try {
@@ -87,7 +91,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_BUS_INFORMATIONS({ payload }, saga) {
       try {
@@ -96,7 +105,12 @@ export default {
           type: 'SET_BUS_INFORMATIONS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *ADD({ payload, callback }, saga) {
       try {

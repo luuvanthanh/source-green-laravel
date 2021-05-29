@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import * as services from './services';
 
 export default {
-  namespace: 'vehicleAdd',
+  namespace: 'busAdd',
   state: {
     data: {},
     error: {

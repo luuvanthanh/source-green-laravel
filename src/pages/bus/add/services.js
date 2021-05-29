@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { Helper } from '@/utils';
 
 export function get(params = {}) {
   return request(`/bus-informations/${params.id}`, {

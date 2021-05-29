@@ -39,11 +39,8 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      listId: props.listId,
-      targetKeys: props.targetKeys || [],
       position: [16.050051, 108.155123],
       zoom: 15,
-      loading: false,
     };
     setIsMounted(true);
   }
@@ -99,9 +96,6 @@ class Index extends PureComponent {
 
   saveMap = (map) => {
     this.map = map;
-    this.setState({
-      isMapInit: true,
-    });
   };
 
   render() {
@@ -109,7 +103,7 @@ class Index extends PureComponent {
       loading: { effects },
       visible,
     } = this.props;
-    const { targetKeys, position, zoom } = this.state;
+    const { position, zoom } = this.state;
     const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
@@ -157,7 +151,7 @@ class Index extends PureComponent {
               // minZoom="0"
               // maxZoom="23"
             />
-            <Marker position={position} icon={iconStudent}></Marker>
+            <Marker position={position} icon={iconStudent} />
           </Map>
         </div>
       </Modal>
@@ -168,25 +162,13 @@ class Index extends PureComponent {
 Index.propTypes = {
   visible: PropTypes.bool,
   handleCancel: PropTypes.func,
-  categories: PropTypes.objectOf(PropTypes.any),
-  match: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  objects: PropTypes.objectOf(PropTypes.any),
-  list: PropTypes.arrayOf(PropTypes.any),
-  board: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   visible: false,
   handleCancel: () => {},
-  categories: {},
-  match: {},
-  dispatch: {},
   loading: {},
-  objects: {},
-  list: [],
-  board: {},
 };
 
 export default withRouter(Index);

@@ -4,9 +4,7 @@ import { Modal, Timeline } from 'antd';
 import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import Routing from './components/route';
-import RoutingDefault from './components/route-default';
-import { get, head, isEmpty, last, size } from 'lodash';
+import { head, isEmpty, last, size } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -14,8 +12,10 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import common from '@/assets/styles/Common/common.scss';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Helper, variables } from '@/utils';
-import variablesModules from '../../utils/variables';
 import moment from 'moment';
+import variablesModules from '../../utils/variables';
+import RoutingDefault from './components/route-default';
+import Routing from './components/route';
 
 const { Item: TimelineItem } = Timeline;
 
@@ -23,10 +23,10 @@ const iconStudent = new L.Icon({
   iconUrl: '/images/marker-student.svg',
   iconAnchor: [17, 46],
 });
-const iconSchool = new L.Icon({
-  iconUrl: '/images/marker-location.svg',
-  iconAnchor: [17, 46],
-});
+// const iconSchool = new L.Icon({
+//   iconUrl: '/images/marker-location.svg',
+//   iconAnchor: [17, 46],
+// });
 const iconCar = new L.Icon({
   iconUrl: '/images/marker-car.svg',
   iconAnchor: [17, 46],
@@ -58,7 +58,6 @@ class Index extends PureComponent {
     super(props);
     this.state = {
       position: Helper.centerLatLng(props.routes),
-      zoom: 7,
       trackings: [],
     };
     setIsMounted(true);
@@ -123,7 +122,7 @@ class Index extends PureComponent {
       `https://router.project-osrm.org/route/v1/driving/108.169863,16.067899;108.154157,16.053197?overview=false&alternatives=true&steps=true&hints=;`,
     )
       .then((response) => response.json())
-      .then((data) => {});
+      .then(() => {});
   };
 
   handleCancel = () => {
@@ -138,13 +137,10 @@ class Index extends PureComponent {
 
   onSubmit = () => {};
 
-  handleClick = (e) => {};
+  handleClick = () => {};
 
   saveMap = (map) => {
     this.map = map;
-    this.setState({
-      isMapInit: true,
-    });
   };
 
   covertGetLocation = (items) => {
@@ -164,14 +160,7 @@ class Index extends PureComponent {
   };
 
   render() {
-    const {
-      visible,
-      routes,
-      search,
-      summary,
-      timelines,
-      loading: { effects },
-    } = this.props;
+    const { visible, routes, search, summary, timelines } = this.props;
     const { position, trackings } = this.state;
     return (
       <Modal
@@ -207,7 +196,7 @@ class Index extends PureComponent {
                   <label className={styles.infoLabel}>Cơ sở</label>
                   <div className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-school'} />
+                      <span className="icon-school" />
                     </span>
                     <span className={styles.infoText}>
                       {head(routes)?.busRoute?.branch?.name || 'Lake view'}
@@ -253,7 +242,7 @@ class Index extends PureComponent {
                               </Text>
                               <Text
                                 size="normal"
-                                color={!!itemBus.trackingTime ? 'success' : 'dark-opacity'}
+                                color={itemBus.trackingTime ? 'success' : 'dark-opacity'}
                               >
                                 Điểm đón số {index + 1}: {item.address}
                               </Text>
@@ -261,7 +250,7 @@ class Index extends PureComponent {
                           ))}
                         {isEmpty(item.busPlaceTimeLineLogs) && (
                           <TimelineItem>
-                            <Text size="normal" color={'dark-opacity'}>
+                            <Text size="normal" color="dark-opacity">
                               Điểm đón số {index + 1}: {item.address}
                             </Text>
                           </TimelineItem>
@@ -285,18 +274,11 @@ class Index extends PureComponent {
                   <Routing map={this.map} routes={this.covertGetLocation(trackings)} />
                 )}
                 {routes.map((item) => (
-                  <Marker
-                    key={item.id}
-                    position={[item.lat, item.long]}
-                    icon={iconStudent}
-                  ></Marker>
+                  <Marker key={item.id} position={[item.lat, item.long]} icon={iconStudent} />
                 ))}
                 {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
                 {!isEmpty(trackings) && (
-                  <Marker
-                    position={[last(trackings)?.lat, last(trackings)?.long]}
-                    icon={iconCar}
-                  ></Marker>
+                  <Marker position={[last(trackings)?.lat, last(trackings)?.long]} icon={iconCar} />
                 )}
               </Map>
             </div>
@@ -310,25 +292,27 @@ class Index extends PureComponent {
 Index.propTypes = {
   visible: PropTypes.bool,
   handleCancel: PropTypes.func,
-  categories: PropTypes.objectOf(PropTypes.any),
-  match: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  objects: PropTypes.objectOf(PropTypes.any),
-  list: PropTypes.arrayOf(PropTypes.any),
-  board: PropTypes.objectOf(PropTypes.any),
+  routes: PropTypes.arrayOf(PropTypes.any),
+  status: PropTypes.string,
+  onCancel: PropTypes.func,
+  date: PropTypes.string,
+  dispatch: PropTypes.func,
+  search: PropTypes.objectOf(PropTypes.any),
+  summary: PropTypes.objectOf(PropTypes.any),
+  timelines: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   visible: false,
   handleCancel: () => {},
-  categories: {},
-  match: {},
-  dispatch: {},
-  loading: {},
-  objects: {},
-  list: [],
-  board: {},
+  onCancel: () => {},
+  dispatch: () => {},
+  routes: [],
+  status: '',
+  date: null,
+  search: {},
+  summary: {},
+  timelines: [],
 };
 
 export default withRouter(Index);

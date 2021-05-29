@@ -44,7 +44,7 @@ export async function getLeftMenuData() {
     },
     {
       title: 'Quản lý xe bus',
-      key: 'vehicle',
+      key: 'bus',
       url: [
         '/quan-ly-phuong-tien/xe',
         '/quan-ly-phuong-tien/xe/tao-moi',
@@ -434,7 +434,7 @@ export async function getLeftMenuVehicel() {
         '/quan-ly-phuong-tien/xe/:id/chi-tiet',
       ],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.BUS_CAUHINH_XE],
       pro: true,
     },
     {
@@ -446,7 +446,7 @@ export async function getLeftMenuVehicel() {
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
       icon: 'icon icon-notification',
-      permission: [],
+      permission: [permissions.BUS_LOTRINH],
       pro: true,
     },
     {
@@ -454,7 +454,7 @@ export async function getLeftMenuVehicel() {
       key: 'history',
       url: ['/quan-ly-phuong-tien/lich-su'],
       icon: 'icon icon-notification',
-      permission: [],
+      permission: [permissions.BUS_LOTRINH_DD],
       pro: true,
     },
     {
@@ -462,7 +462,7 @@ export async function getLeftMenuVehicel() {
       key: 'today',
       url: ['/quan-ly-phuong-tien/hom-nay'],
       icon: 'icon icon-notification',
-      permission: [],
+      permission: [permissions.BUS_LOTRINH_DD],
       pro: true,
     },
     {
@@ -470,7 +470,7 @@ export async function getLeftMenuVehicel() {
       key: 'todayParent',
       url: ['/quan-ly-phuong-tien/phu-huynh-hom-nay'],
       icon: 'icon icon-notification',
-      permission: [],
+      permission: [permissions.BUS_LOTRINH_DD],
       pro: true,
     },
   ];

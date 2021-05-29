@@ -358,7 +358,7 @@ class Index extends PureComponent {
         },
         {
           title: 'XE',
-          key: 'vehicle',
+          key: 'bus',
           className: 'min-width-200',
           render: (record) => (
             <Text size="normal">

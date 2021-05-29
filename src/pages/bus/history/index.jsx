@@ -15,9 +15,9 @@ import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-import variablesModules from '../utils/variables';
 import styles from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
+import variablesModules from '../utils/variables';
 
 import RouteModal from './route';
 
@@ -231,7 +231,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   const debouncedSearchStatus = debounce((value) => {

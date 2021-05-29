@@ -1,18 +1,12 @@
-import { MapLayer } from 'react-leaflet';
-import { isEmpty } from 'lodash';
+import { MapLayer, withLeaflet } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
-import { withLeaflet } from 'react-leaflet';
 
 class Routing extends MapLayer {
   createLeafletElement() {
-    const { map, routes } = this.props;
-    let waypoints = [];
-    if (!isEmpty(routes)) {
-      waypoints = routes.map((item) => L.latLng(item?.busPlace?.lat, item?.busPlace?.long));
-    }
-    let leafletElement = L.Routing.control({
-      waypoints: waypoints,
+    const { map } = this.props;
+    const leafletElement = L.Routing.control({
+      waypoints: [L.latLng(16.050051, 108.155123), L.latLng(16.06471, 108.15115)],
       lineOptions: {
         styles: [
           {
@@ -22,9 +16,7 @@ class Routing extends MapLayer {
           },
         ],
       },
-      createMarker: () => {
-        return null;
-      },
+      createMarker: () => null,
       show: false,
       addWaypoints: false,
       draggableWaypoints: false,
@@ -33,6 +25,7 @@ class Routing extends MapLayer {
     }).addTo(map.leafletElement);
     return leafletElement.getPlan();
   }
+
   render() {
     return null;
   }

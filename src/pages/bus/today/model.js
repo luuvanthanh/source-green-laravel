@@ -70,7 +70,12 @@ export default {
           type: 'SET_TIME_LINE',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_BUS_ROUTES({ payload }, saga) {
       try {

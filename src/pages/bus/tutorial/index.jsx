@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,6 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -29,9 +30,9 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const { confirm } = Modal;
-const mapStateToProps = ({ vehicle, loading }) => ({
-  data: vehicle.data,
-  pagination: vehicle.pagination,
+const mapStateToProps = ({ tutorial, loading }) => ({
+  data: tutorial.data,
+  pagination: tutorial.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,12 +45,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
+        keyWord: query?.keyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -85,7 +85,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'vehicle/GET_DATA',
+      type: 'tutorial/GET_DATA',
       payload: {
         ...search,
         status,
@@ -143,33 +143,27 @@ class Index extends PureComponent {
     );
   };
 
-   /**
+  /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return {
-      size: 'default',
-      total: pagination.total,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(this.state.search.page),
-      current: Number(this.state.search.page),
-      hideOnSinglePage: pagination.total <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, size) => {
-        this.changePagination(page, size);
-      },
-      onShowSizeChange: (current, size) => {
-        this.changePagination(current, size);
-      },
-      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-    };
-  };
+  pagination = (pagination) => ({
+    size: 'default',
+    total: pagination.total,
+    pageSize: variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(this.state.search.page),
+    current: Number(this.state.search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: false,
+    pageSizeOptions: false,
+    onChange: (page, size) => {
+      this.changePagination(page, size);
+    },
+    onShowSizeChange: (current, size) => {
+      this.changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
+  });
 
   /**
    * Function remove items
@@ -178,7 +172,6 @@ class Index extends PureComponent {
   onRemove = (id) => {
     const { dispatch } = this.props;
     const { search } = this.state;
-    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -188,14 +181,13 @@ class Index extends PureComponent {
       content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
       onOk() {
         dispatch({
-          type: 'vehicle/REMOVE',
+          type: 'tutorial/REMOVE',
           payload: {
             id,
-          },
-          callback: (response) => {
-            if (response) {
-              self.onLoad();
-            }
+            pagination: {
+              limit: search.limit,
+              page: search.page,
+            },
           },
         });
       },
@@ -207,96 +199,124 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
-        title: 'MÃ SỐ',
-        key: 'code',
+        title: 'STT',
+        key: 'index',
+        className: 'min-width-60',
+        width: 60,
+        align: 'center',
+        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+      },
+      {
+        title: 'TÊN LỘ TRÌNH',
+        key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        render: (record) => <Text size="normal">{record?.busRoute?.name}</Text>,
       },
       {
-        title: 'HÃNG',
-        key: 'manufacturer',
+        title: 'SỐ ĐIỂM ĐÓN',
+        key: 'count',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.manufacturer}</Text>,
+        render: (record) => <Text size="normal">{record?.stationTotal}</Text>,
       },
       {
-        title: 'SỐ CHỔ NGỒI',
-        key: 'seats',
+        title: 'SỐ LƯỢNG TRẺ ĐÓN',
+        key: 'children',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.seats} chỗ</Text>,
+        render: (record) => <Text size="normal">{record?.studentTotal}</Text>,
       },
       {
-        title: 'XE',
-        key: 'vehicle',
-        className: 'min-width-200',
-        render: (record) => (
-          <Text size="normal">
-            <Avatar
-              size={32}
-              shape="circle"
-              className="mr-2"
-              src={record.fileImage && `${API_UPLOAD}${record.fileImage}`}
-            />
-            {record.name}
-          </Text>
-        ),
-      },
-      {
-        title: 'ĐỜI',
-        key: 'life',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal"> {record.year}</Text>,
-      },
-      {
-        title: 'TRUYỀN ĐỘNG',
-        key: 'movement',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.transmission}</Text>,
-      },
-      {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`/quan-ly-phuong-tien/xe/${record.id}/chi-tiet`)}
+              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
+              permission="BUS_LOTRINH_SUA"
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
     ];
-    return columns;
+    return !ability.can('BUS_LOTRINH_SUA', 'BUS_LOTRINH_SUA')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
     const {
+      match: { params },
       data,
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['vehicle/GET_DATA'];
-    const loadingSubmit = effects['vehicle/ADD'] || effects['vehicle/UPDATE'];
+    const loading = effects['tutorial/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách xe" />
+        <Helmet title="Danh lộ trình" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH XE</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Text color="dark">DANH SÁCH LỘ TRÌNH</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="BUS_LOTRINH_THEM"
+            >
               Thêm mới
             </Button>
           </div>
           <div className={styles['block-table']}>
+            <Form
+              initialValues={{
+                ...search,
+              }}
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-6">
+                  <FormItem
+                    label="TÌM KIẾM"
+                    name="keyword"
+                    placeholder="Nhập từ khóa"
+                    onChange={(event) => this.onChange(event, 'keyword')}
+                    type={variables.INPUT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[]}
+                    label="TÀI XẾ"
+                    name="type"
+                    onChange={(event) => this.onChange(event, 'type')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[]}
+                    label="BẢO MẪU"
+                    name="life"
+                    onChange={(event) => this.onChange(event, 'life')}
+                    type={variables.SELECT}
+                  />
+                </div>
+              </div>
+            </Form>
             <Table
               bordered
-              columns={this.header()}
+              columns={this.header(params)}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
@@ -304,7 +324,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record.id || record?.busRoute?.id}
               scroll={{ x: '100%' }}
             />
           </div>

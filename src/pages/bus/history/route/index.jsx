@@ -1,13 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
 import { Modal } from 'antd';
-import classnames from 'classnames';
-import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import Routing from './components/route';
 import { head } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
@@ -15,21 +12,22 @@ import Text from '@/components/CommonComponent/Text';
 import styles from '@/assets/styles/Common/information.module.scss';
 import common from '@/assets/styles/Common/common.scss';
 import { Helper, variables } from '@/utils';
-import variablesModules from '../../utils/variables';
 import { Scrollbars } from 'react-custom-scrollbars';
+import variablesModules from '../../utils/variables';
+import Routing from './components/route';
 
 const iconStudent = new L.Icon({
   iconUrl: '/images/marker-student.svg',
   iconAnchor: [17, 46],
 });
-const iconSchool = new L.Icon({
-  iconUrl: '/images/marker-location.svg',
-  iconAnchor: [17, 46],
-});
-const iconCar = new L.Icon({
-  iconUrl: '/images/marker-car.svg',
-  iconAnchor: [17, 46],
-});
+// const iconSchool = new L.Icon({
+//   iconUrl: '/images/marker-location.svg',
+//   iconAnchor: [17, 46],
+// });
+// const iconCar = new L.Icon({
+//   iconUrl: '/images/marker-car.svg',
+//   iconAnchor: [17, 46],
+// });
 
 let isMounted = true;
 /**
@@ -62,7 +60,6 @@ class Index extends PureComponent {
           long: item?.busPlace?.long,
         })),
       ),
-      zoom: 7,
     };
     setIsMounted(true);
   }
@@ -97,24 +94,14 @@ class Index extends PureComponent {
 
   onSubmit = () => {};
 
-  handleClick = (e) => {};
+  handleClick = () => {};
 
   saveMap = (map) => {
     this.map = map;
-    this.setState({
-      isMapInit: true,
-    });
   };
 
   render() {
-    const {
-      visible,
-      route,
-      routes,
-      date,
-      loading: { effects },
-      status,
-    } = this.props;
+    const { visible, route, routes, date, status } = this.props;
     const { position } = this.state;
     return (
       <Modal
@@ -154,7 +141,7 @@ class Index extends PureComponent {
                   <label className={styles.infoLabel}>Cơ sở</label>
                   <div className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-school'} />
+                      <span className="icon-school" />
                     </span>
                     <span className={styles.infoText}>
                       {route?.busPlace?.busRoute?.branch?.name || 'Lake view'}
@@ -170,7 +157,7 @@ class Index extends PureComponent {
                   <label className={styles.infoLabel}>Lên xe</label>
                   <div className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-clock'} />
+                      <span className="icon-clock" />
                     </span>
                     <span className={styles.infoText}>
                       {status === variablesModules.STATUS_TABS.HOMEAWARD &&
@@ -191,7 +178,7 @@ class Index extends PureComponent {
                   <label className={styles.infoLabel}>Xuống xe</label>
                   <div className="d-flex align-items-center">
                     <span className={styles.circleIcon}>
-                      <span className={'icon-open-book'} />
+                      <span className="icon-open-book" />
                     </span>
                     <span className={styles.infoText}>
                       {status === variablesModules.STATUS_TABS.HOMEAWARD &&
@@ -237,7 +224,7 @@ class Index extends PureComponent {
                   <Marker
                     position={[route?.busPlace?.lat, route?.busPlace?.long]}
                     icon={iconStudent}
-                  ></Marker>
+                  />
                 )}
                 {/* MARKER HOME */}
                 {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
@@ -257,25 +244,21 @@ class Index extends PureComponent {
 Index.propTypes = {
   visible: PropTypes.bool,
   handleCancel: PropTypes.func,
-  categories: PropTypes.objectOf(PropTypes.any),
-  match: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  objects: PropTypes.objectOf(PropTypes.any),
-  list: PropTypes.arrayOf(PropTypes.any),
-  board: PropTypes.objectOf(PropTypes.any),
+  routes: PropTypes.arrayOf(PropTypes.any),
+  route: PropTypes.objectOf(PropTypes.any),
+  status: PropTypes.string,
+  onCancel: PropTypes.func,
+  date: PropTypes.string,
 };
 
 Index.defaultProps = {
   visible: false,
   handleCancel: () => {},
-  categories: {},
-  match: {},
-  dispatch: {},
-  loading: {},
-  objects: {},
-  list: [],
-  board: {},
+  onCancel: () => {},
+  routes: [],
+  route: {},
+  status: '',
+  date: null,
 };
 
 export default withRouter(Index);
