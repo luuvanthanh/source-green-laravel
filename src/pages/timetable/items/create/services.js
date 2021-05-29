@@ -15,6 +15,7 @@ export function getBranches(params = {}) {
   return request('/branches', {
     method: 'GET',
     params: {
+      ...params,
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });

@@ -14,7 +14,7 @@ export function get(params = {}) {
           originValue: params.fromDate,
           targetValue: '00:00:00',
         }),
-        isUTC: false,
+        isUTC: true,
       }),
       toDate: Helper.getDateTime({
         value: Helper.setDate({
@@ -22,7 +22,7 @@ export function get(params = {}) {
           originValue: params.toDate,
           targetValue: '23:59:59',
         }),
-        isUTC: false,
+        isUTC: true,
       }),
     },
   });
