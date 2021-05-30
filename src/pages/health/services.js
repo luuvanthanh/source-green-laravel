@@ -20,7 +20,7 @@ export function get(params = {}) {
   });
 }
 
-export function getCriteriaGroupProperties(params = {}) {
+export function getCriteriaGroupProperties(_params = {}) {
   return request('/criteria-group-properties', {
     method: 'GET',
     params: {

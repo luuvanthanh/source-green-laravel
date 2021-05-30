@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,6 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -45,13 +46,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -214,7 +213,7 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => `CS${Helper.serialOrder(this.state.search?.page, index)}`,
       },
       {
         title: 'TÊN',
@@ -241,7 +240,7 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
         render: (record) => (
@@ -250,13 +249,22 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              permission="CAUHINH_COSO_SUA"
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            <Button
+              color="danger"
+              icon="remove"
+              onClick={() => this.onRemove(record.id)}
+              permission="CAUHINH_COSO_XOA"
+            />
           </div>
         ),
       },
     ];
-    return columns;
+    return !ability.can('CAUHINH_COSO_SUA', 'CAUHINH_COSO_SUA') &&
+      !ability.can('CAUHINH_COSO_XOA', 'CAUHINH_COSO_XOA')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -276,7 +284,12 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH CƠ SỞ</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="CAUHINH_COSO_THEM"
+            >
               Thêm mới
             </Button>
           </div>
@@ -328,6 +341,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -337,6 +351,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

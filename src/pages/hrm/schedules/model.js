@@ -1,6 +1,6 @@
 import { notification } from 'antd';
-import * as categories from '@/services/categories';
-import { variables } from '@/utils';
+import { head } from 'lodash';
+import { Helper } from '@/utils';
 import * as services from './services';
 
 export default {
@@ -46,7 +46,9 @@ export default {
     }),
     SET_HOLIDAYS: (state, { payload }) => ({
       ...state,
-      holidays: payload.parsePayload,
+      holidays: head(payload?.parsePayload)?.holidayDetails
+        ? Helper.getArrayHolidays(head(payload?.parsePayload)?.holidayDetails)
+        : [],
     }),
   },
   effects: {
@@ -74,7 +76,12 @@ export default {
             payload: response,
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_CATEGORY({ callback }, saga) {
       try {

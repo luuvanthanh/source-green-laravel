@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Switch } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,8 +12,6 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../../../utils/Helper';
-import variablesModules from '../../../utils/variables';
 import PropTypes from 'prop-types';
 
 let isMounted = true;
@@ -47,13 +45,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -84,7 +80,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -92,7 +88,6 @@ class Index extends PureComponent {
       type: 'absentReasonStudents/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
@@ -279,7 +274,12 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách lý do nghỉ phép" />
-        <div className={classnames(styles['content-form'], styles['content-form-absentReasonStudents'])}>
+        <div
+          className={classnames(
+            styles['content-form'],
+            styles['content-form-absentReasonStudents'],
+          )}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách lý do nghỉ phép</Text>
@@ -307,7 +307,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

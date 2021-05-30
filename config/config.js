@@ -22,7 +22,7 @@ export default {
     implementation: require('node-sass'),
   },
   locale: {
-    default: 'en-US',
+    default: 'vi-VN',
     antd: true,
     baseNavigator: false,
     title: false,

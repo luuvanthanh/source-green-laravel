@@ -15,15 +15,15 @@ import Button from '@/components/CommonComponent/Button';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import variables from '@/utils/variables';
-import variablesModules from '..//utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import { isEmpty, head, get, toString } from 'lodash';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const formRef = useRef();
   const formRefModal = useRef();
   const [visible, setVisible] = useState(false);
@@ -73,7 +73,7 @@ const Index = memo(({}) => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -194,7 +194,7 @@ const Index = memo(({}) => {
           </div>,
         ]}
         onCancel={handleCancel}
-        title={'CẤU HÌNH BÌNH NƯỚC'}
+        title="CẤU HÌNH BÌNH NƯỚC"
         visible={visible}
       >
         <Form
@@ -337,7 +337,7 @@ const Index = memo(({}) => {
                         <label className={styles.infoLabel}>Cơ sở</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
-                            <span className={'icon-school'} />
+                            <span className="icon-school" />
                           </span>
                           <span className={styles.infoText}>
                             {get(head(details.studentCriterias), 'student.class.branch.name')}
@@ -349,7 +349,7 @@ const Index = memo(({}) => {
                         <label className={styles.infoLabel}>Lớp</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
-                            <span className={'icon-open-book'} />
+                            <span className="icon-open-book" />
                           </span>
                           <span className={styles.infoText}>
                             {get(head(details.studentCriterias), 'student.class.name')}
@@ -365,7 +365,7 @@ const Index = memo(({}) => {
                         <label className={styles.infoLabel}>Bình nước đang áp dụng</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
-                            <span className={'icon-baby-bottle'} />
+                            <span className="icon-baby-bottle" />
                           </span>
                           <span className={styles.infoText}>
                             {!isEmpty(waterBottles)
@@ -381,7 +381,7 @@ const Index = memo(({}) => {
                           onClick={showModal}
                         >
                           <span className={styles.circleIcon}>
-                            <span className={'icon-setting'} />
+                            <span className="icon-setting" />
                           </span>
                           <span className={styles.infoText}>Cấu hình</span>
                         </Pane>
@@ -431,10 +431,10 @@ const Index = memo(({}) => {
                   </Pane>
 
                   <Form.List name="data">
-                    {(fields, { add, remove }) => (
+                    {(fields) => (
                       <>
                         <Scrollbars autoHeight autoHeightMax={window.innerHeight - 300}>
-                          {fields.map(({ key, name, criteriaGroupProperty }, index) => {
+                          {fields.map(({ key }, index) => {
                             const item = details.studentCriterias.find(
                               (itemCriteria, indexCriteria) => indexCriteria === index,
                             );

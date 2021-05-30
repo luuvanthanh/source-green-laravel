@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
@@ -11,7 +10,7 @@ export function get(params = {}) {
   });
 }
 
-export function getCriteriaGroupProperties(params = {}) {
+export function getCriteriaGroupProperties() {
   return request('/criteria-group-properties', {
     method: 'GET',
     params: {

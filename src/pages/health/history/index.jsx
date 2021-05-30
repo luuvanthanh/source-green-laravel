@@ -47,7 +47,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         branchId: query.branchId,
         classId: query.classId,
@@ -55,7 +54,6 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -102,6 +100,7 @@ class Index extends PureComponent {
       query: Helper.convertParamSearch(search),
     });
   };
+
   /**
    * Function load data
    */
@@ -234,20 +233,14 @@ class Index extends PureComponent {
 
   getStudentCriteria = (items, key) => {
     const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
-    if (itemCriteria) {
-      return itemCriteria.value;
-    }
-    return null;
+    return itemCriteria?.value;
   };
 
   /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-      criteriaGroupProperties,
-    } = this.props;
+    const { criteriaGroupProperties } = this.props;
     const columns = [
       {
         title: 'Cơ sở',
@@ -265,14 +258,12 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
-              fullName={record?.student?.fullName}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fullName={record?.student?.fullName}
+          />
+        ),
       },
       {
         key: 'action',
@@ -365,7 +356,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -390,8 +380,11 @@ Index.propTypes = {
   data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.func,
   location: PropTypes.objectOf(PropTypes.any),
+  criteriaGroupProperties: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -399,8 +392,11 @@ Index.defaultProps = {
   data: [],
   pagination: {},
   loading: {},
-  dispatch: {},
+  dispatch: () => {},
   location: {},
+  criteriaGroupProperties: [],
+  branches: [],
+  classes: [],
 };
 
 export default Index;

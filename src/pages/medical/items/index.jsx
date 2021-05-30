@@ -13,6 +13,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import ability from '@/utils/ability';
 import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
 
@@ -306,8 +308,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian tạo',
         key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
+        className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
@@ -325,7 +327,7 @@ class Index extends PureComponent {
       {
         title: 'Lớp',
         key: 'class',
-        className: 'min-width-150',
+        className: 'min-width-180',
         render: (record) => (
           <Text size="normal">{record?.studentMaster?.student?.class?.name}</Text>
         ),
@@ -333,24 +335,36 @@ class Index extends PureComponent {
       {
         title: 'Tiêu đề',
         key: 'title',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) => <Text size="normal">{record.diseaseName}</Text>,
       },
       {
         title: 'Phụ huynh',
         key: 'parents',
-        className: 'min-width-150',
+        width: 200,
+        className: 'min-width-200',
         render: (record) => (
-          <Text size="normal">
-            {record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName}
-          </Text>
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(
+              record?.studentMaster?.farther?.fileImage || record?.studentMaster?.mother?.fileImage,
+            )}
+            fullName={
+              record?.studentMaster?.farther?.fullName || record?.studentMaster?.mother?.fullName
+            }
+          />
         ),
       },
       {
         title: 'Dành cho bé',
         key: 'student',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.studentMaster?.student?.fullName}</Text>,
+        width: 200,
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.studentMaster?.student?.fileImage)}
+            fullName={record?.studentMaster?.student?.fullName}
+          />
+        ),
       },
       {
         title: 'Trạng thái',
@@ -359,15 +373,17 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
               ghost
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+              permission="YTE_SUA"
             >
               Chi tiết
             </Button>
@@ -375,7 +391,9 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return columns;
+    return !ability.can('YTE_SUA', 'YTE_SUA')
+    ? columns.filter((item) => item.key !== 'actions')
+    : columns;
   };
 
   render() {
@@ -402,13 +420,14 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}
+              permission="YTE_THEM"
             >
               Tạo y tế
             </Button>
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              activeKey={search?.status || variablesModules.STATUS.PENDING}
+              defaultActiveKey={search?.status || variablesModules.STATUS.PENDING}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (

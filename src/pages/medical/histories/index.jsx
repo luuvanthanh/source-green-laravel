@@ -1,20 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import variablesModules from '../utils/variables';
 
 let isMounted = true;
 /**
@@ -47,13 +45,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         actionType: query?.actionType,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -225,42 +221,37 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'Thời gian',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-          </Text>
-        ),
-      },
-      {
-        title: 'Tên tài khoản',
-        key: 'name',
-        className: 'min-width-130',
-        render: (record) => 'Nguyễn Ngọc Bích',
-      },
-      {
-        title: 'Hành động',
-        key: 'action',
-        className: 'min-width-130',
-        render: (record) => variablesModules.MEDICAL_ACTION_TYPE[`${record.actionType}`],
-      },
-      {
-        title: 'Nội dung',
-        key: 'status',
-        className: 'min-width-120',
-        render: (record) => <Text size="normal">{record.logContent}</Text>,
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'Thời gian',
+      key: 'code',
+      width: 150,
+      className: 'min-width-130',
+      render: (record) => (
+        <Text size="normal">
+          {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+        </Text>
+      ),
+    },
+    {
+      title: 'Tên tài khoản',
+      key: 'name',
+      className: 'min-width-130',
+      render: () => 'Nguyễn Ngọc Bích',
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      className: 'min-width-130',
+      render: (record) => variablesModules.MEDICAL_ACTION_TYPE[`${record.actionType}`],
+    },
+    {
+      title: 'Nội dung',
+      key: 'status',
+      className: 'min-width-120',
+      render: (record) => <Text size="normal">{record.logContent}</Text>,
+    },
+  ];
 
   render() {
     const {
@@ -320,7 +311,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

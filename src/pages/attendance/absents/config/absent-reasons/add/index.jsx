@@ -1,17 +1,15 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
+import PropTypes from 'prop-types';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
-import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
@@ -30,7 +28,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ absentReasonStudentAdd, loading, menu }) => ({
-  loading: loading,
+  loading,
   error: absentReasonStudentAdd.error,
   details: absentReasonStudentAdd.details,
   categories: absentReasonStudentAdd.categories,
@@ -139,8 +137,10 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const loading =
-      effects['absentReasonStudentAdd/GET_DETAILS'] || effects['absentReasonStudentAdd/GET_CATEGORIES'];
-    const loadingSubmit = effects['absentReasonStudentAdd/ADD'] || effects['absentReasonStudentAdd/UPDATE'];
+      effects['absentReasonStudentAdd/GET_DETAILS'] ||
+      effects['absentReasonStudentAdd/GET_CATEGORIES'];
+    const loadingSubmit =
+      effects['absentReasonStudentAdd/ADD'] || effects['absentReasonStudentAdd/UPDATE'];
     return (
       <>
         <Breadcrumbs last={params.id ? 'Chỉnh sửa lý do' : 'Tạo lý do'} menu={menuData} />
@@ -208,6 +208,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  menuData: [],
+  details: {},
+  categories: {},
+};
 
 export default Index;

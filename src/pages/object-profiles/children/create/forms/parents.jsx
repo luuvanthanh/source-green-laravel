@@ -1,6 +1,7 @@
 import { memo, useRef, useMemo, useState, useCallback, useEffect } from 'react';
 import { Form, Radio } from 'antd';
-import { head, isEmpty, get, omit } from 'lodash';
+import { head, isEmpty, omit } from 'lodash';
+import PropTypes from 'prop-types';
 import { connect, history, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -9,7 +10,7 @@ import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Loading from '@/components/CommonComponent/Loading';
 import FormItem from '@/components/CommonComponent/FormItem';
 
-import { variables } from '@/utils/variables';
+import { Helper, variables } from '@/utils';
 
 const { Group: RadioGroup } = Radio;
 
@@ -159,10 +160,7 @@ const Parents = memo(
                 <Pane className="row">
                   <Pane className="col-lg-4">
                     <FormItem
-                      data={parents.map((item) => ({
-                        id: item.id,
-                        name: item.fullName,
-                      }))}
+                      data={Helper.convertSelectUsers(parents)}
                       name={`${key}Id`}
                       label="Tên phụ huynh"
                       type={variables.SELECT}
@@ -239,7 +237,7 @@ const Parents = memo(
 
     useEffect(() => {
       mounted.current = true;
-      return () => (mounted.current = false);
+      return mounted.current;
     }, []);
 
     useEffect(() => {
@@ -321,5 +319,23 @@ const Parents = memo(
     );
   },
 );
+
+Parents.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  parents: PropTypes.arrayOf(PropTypes.any),
+};
+
+Parents.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+  parents: [],
+};
 
 export default withRouter(connect(mapStateToProps)(Parents));

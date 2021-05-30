@@ -717,4 +717,17 @@ export default class Helpers {
     const result = Object.keys(groups).map((k) => groups[k]);
     return result;
   };
+
+  static getArrayHolidays(items) {
+    let dataSource = [];
+    items.forEach((item) => {
+      let currentDate = moment(item.startDate).startOf('day');
+      const endDate = moment(item.endDate).startOf('day');
+      while (currentDate <= endDate) {
+        dataSource = [...dataSource, { ...item, date: currentDate }];
+        currentDate = moment(currentDate).add(1, 'days');
+      }
+    });
+    return dataSource;
+  }
 }

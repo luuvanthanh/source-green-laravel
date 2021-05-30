@@ -13,6 +13,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import ability from '@/utils/ability';
 
 let isMounted = true;
 /**
@@ -298,8 +299,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian gửi',
         key: 'sentDate',
-        className: 'min-width-140',
-        width: 140,
+        className: 'min-width-180',
+        width: 180,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.sentDate, variables.DATE_FORMAT.DATE_TIME)}
@@ -332,7 +333,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
         render: (record) => (
@@ -344,6 +345,7 @@ class Index extends PureComponent {
                 event.stopPropagation();
                 history.push(`/thong-bao/${record.id}/chinh-sua`);
               }}
+              permission="THONGBAO_SUA"
             />
             <Button
               color="danger"
@@ -352,12 +354,16 @@ class Index extends PureComponent {
                 event.stopPropagation();
                 this.onRemove(record.id);
               }}
+              permission="THONGBAO_XOA"
             />
           </div>
         ),
       },
     ];
-    return columns;
+    return !ability.can('THONGBAO_SUA', 'THONGBAO_SUA') &&
+      !ability.can('THONGBAO_XOA', 'THONGBAO_XOA')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -377,7 +383,12 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách thông báo</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`/thong-bao/tao-moi`)}>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`/thong-bao/tao-moi`)}
+              permission="THONGBAO_THEM"
+            >
               Tạo thông báo
             </Button>
           </div>
@@ -422,7 +433,9 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  history.push(`/thong-bao/${record.id}/chi-tiet`);
+                  if (ability.can('THONGBAO_XEM', 'THONGBAO_XEM')) {
+                    history.push(`/thong-bao/${record.id}/chi-tiet`);
+                  }
                 },
               })}
               rowKey={(record) => record.id}

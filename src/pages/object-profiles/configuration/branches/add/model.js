@@ -1,5 +1,4 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {

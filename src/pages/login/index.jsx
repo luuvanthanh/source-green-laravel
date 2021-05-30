@@ -49,7 +49,7 @@ class Index extends PureComponent {
             <div
               className={classnames(styles['logo-container'], 'd-flex', 'justify-content-center')}
             >
-              <img src="images/login/logo.png" className={styles.logo} />
+              <img src="images/login/logo.png" alt="imageLogin" className={styles.logo} />
             </div>
             <Form
               hideRequiredMark

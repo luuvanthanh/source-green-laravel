@@ -18,12 +18,12 @@ export function get(params = {}) {
   });
 }
 
-export function getCriteriaGroupProperties(params = {}) {
+export function getCriteriaGroupProperties() {
   return request('/criteria-group-properties', {
     method: 'GET',
     params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-      type: 'HEALTH'
+      type: 'HEALTH',
     },
   });
 }

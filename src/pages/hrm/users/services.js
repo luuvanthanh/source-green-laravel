@@ -1,5 +1,4 @@
 import request from '@/utils/requestLavarel';
-import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
@@ -18,7 +17,7 @@ export function get(params = {}) {
   });
 }
 
-export function getBranches(params = {}) {
+export function getBranches(_params = {}) {
   return request('/v1/branches', {
     method: 'GET',
     params: {
@@ -28,7 +27,7 @@ export function getBranches(params = {}) {
   });
 }
 
-export function getDivisions(params = {}) {
+export function getDivisions(_params = {}) {
   return request('/v1/divisions', {
     method: 'GET',
     params: {
@@ -38,7 +37,7 @@ export function getDivisions(params = {}) {
   });
 }
 
-export function getPositions(params = {}) {
+export function getPositions(_params = {}) {
   return request('/v1/positions', {
     method: 'GET',
     params: {

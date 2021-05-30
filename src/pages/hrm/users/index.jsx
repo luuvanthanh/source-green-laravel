@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { get, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,7 +12,6 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -50,14 +49,12 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         ...query,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         fullName: query?.fullName,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -396,7 +393,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -423,6 +419,9 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  positions: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -432,6 +431,9 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  positions: [],
+  divisions: [],
 };
 
 export default Index;

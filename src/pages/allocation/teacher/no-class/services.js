@@ -3,7 +3,7 @@ import request from '@/utils/request';
 export function createClassTeacher(data) {
   return request('/class-teachers', {
     method: 'POST',
-    data
+    data,
   });
 }
 
@@ -15,8 +15,8 @@ export function getTeachers(params = {}) {
 }
 
 export function changeClassTeacher({ id, data }) {
-  return request(`/class-teachers/change-to-class/{id}`, {
+  return request(`/class-teachers/change-to-class/${id}`, {
     method: 'PUT',
-    data
+    data,
   });
 }

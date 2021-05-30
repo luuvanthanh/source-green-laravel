@@ -64,7 +64,7 @@ const Index = memo((props) => {
    * @param {object} pagination value of pagination items
    */
   const pagination = (pagination) => ({
-    classNames: "p20",
+    classnames: "p20",
     size: 'default',
     total: pagination.total,
     pageSize: variables.PAGINATION.PAGE_SIZE,

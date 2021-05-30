@@ -96,11 +96,13 @@ const EditableCell = ({
 
   const onChangeDatePicker = async () => {
     try {
-      const values = await form.validateFields(['date']);
+      const values = await form.validateFields(['date', 'endDate', 'startDate']);
       toggleEdit();
       handleSave({
         ...record,
         date: values.date || record.date,
+        startDate: values.startDate || record.startDate,
+        endDate: values.endDate || record.endDate,
       });
       mountedSet(setOpen, false);
     } catch (errInfo) {

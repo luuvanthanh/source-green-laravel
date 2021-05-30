@@ -1,9 +1,11 @@
 import { memo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'antd';
+import PropTypes from 'prop-types';
 
-import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { Link } from 'umi';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
 import LevelForm from './forms/level';
@@ -15,7 +17,7 @@ import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
 import TransfersForm from './forms/transfers';
 import ContractForm from './forms/contract';
-import ProbationaryContractForm from '././forms/probationaryContract';
+import ProbationaryContractForm from './forms/probationaryContract';
 import InsurranceForm from './forms/insurrance';
 import InsurranceHealthForm from './forms/InsurranceHealth';
 import DaysOffForm from './forms/daysOff';
@@ -28,8 +30,6 @@ import DismissedsForm from './forms/dismisseds';
 import AppointsForm from './forms/appoints';
 import DecisionRewardsForm from './forms/decision-rewards';
 import PositionLevels from './forms/position-levels';
-import { Scrollbars } from 'react-custom-scrollbars';
-import { Link } from 'umi';
 
 import { menu, defaultKey } from './menu';
 
@@ -58,23 +58,23 @@ const forms = {
   account: <AccountForm />,
   dismisseds: <DismissedsForm />,
   appoints: <AppointsForm />,
-  ['position-levels']: <PositionLevels />,
-  ['decision-rewards']: <DecisionRewardsForm />,
+  'position-levels': <PositionLevels />,
+  'decision-rewards': <DecisionRewardsForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
-  const [activeMenuItem, setActiveMenuItem] = useState(defaultKey);
+  const [activeMenuItem] = useState(defaultKey);
   return (
-    <Pane style={{ padding: 20 }}>
+    <div style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ nhân viên" />
-      <Pane className="row" style={{ marginBottom: 20 }}>
-        <Pane className="col">
+      <div className="row" style={{ marginBottom: 20 }}>
+        <div className="col">
           <Heading type="page-title">Tạo hồ sơ nhân viên</Heading>
-        </Pane>
-      </Pane>
-      <Pane className="row">
-        <Pane className="col-lg-3">
-          <Pane className="card">
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-lg-3">
+          <div className="card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
               <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
                 {params.id &&
@@ -93,12 +93,22 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
                     ))}
               </Menu>
             </Scrollbars>
-          </Pane>
-        </Pane>
-        <Pane className="col-lg-9">{forms[query.type || defaultKey]}</Pane>
-      </Pane>
-    </Pane>
+          </div>
+        </div>
+        <div className="col-lg-9">{forms[query.type || defaultKey]}</div>
+      </div>
+    </div>
   );
 });
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  location: {},
+};
 
 export default Index;

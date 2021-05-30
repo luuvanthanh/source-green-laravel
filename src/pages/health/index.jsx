@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get } from 'lodash';
+import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -47,7 +47,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         branchId: query.branchId,
         classId: query.classId,
@@ -56,7 +55,6 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -237,10 +235,7 @@ class Index extends PureComponent {
   getStudentCriteria = (items, key) => {
     if (items) {
       const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
-      if (itemCriteria) {
-        return itemCriteria.value;
-      }
-      return null;
+      return itemCriteria?.value;
     }
     return null;
   };
@@ -249,10 +244,7 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-      criteriaGroupProperties,
-    } = this.props;
+    const { criteriaGroupProperties } = this.props;
     const columns = [
       {
         title: 'Cơ sở',
@@ -270,14 +262,12 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
-              fullName={record?.student?.fullName}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fullName={record?.student?.fullName}
+          />
+        ),
       },
       {
         key: 'action',
@@ -375,7 +365,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -402,6 +391,9 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  criteriaGroupProperties: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -411,6 +403,9 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  criteriaGroupProperties: [],
+  branches: [],
+  classes: [],
 };
 
 export default Index;

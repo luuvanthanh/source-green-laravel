@@ -1,4 +1,5 @@
 import { head } from 'lodash';
+import { Helper } from '@/utils';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -23,7 +24,9 @@ export default {
     }),
     SET_HOLIDAYS: (state, { payload }) => ({
       ...state,
-      holidays: head(payload?.parsePayload)?.holidayDetails || [],
+      holidays: head(payload?.parsePayload)?.holidayDetails
+        ? Helper.getArrayHolidays(head(payload?.parsePayload)?.holidayDetails)
+        : [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

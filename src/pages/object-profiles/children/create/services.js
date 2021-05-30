@@ -2,9 +2,8 @@ import request from '@/utils/request';
 import { omit, pickBy } from 'lodash';
 import { Helper, variables } from '@/utils';
 
-const removeParams = (params) => {
-  return omit(pickBy(params, (value) => value !== null && value !== undefined));
-};
+const removeParams = (params) =>
+  omit(pickBy(params, (value) => value !== null && value !== undefined));
 
 export function add(data = {}) {
   return request('/students', {
@@ -32,34 +31,6 @@ export function getParents() {
   return request(`/parents`, {
     method: 'GET',
     params: {
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-    },
-  });
-}
-
-export function getEmployees() {
-  return request(`/employees`, {
-    method: 'GET',
-    params: {
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-    },
-  });
-}
-
-export function getBranches() {
-  return request(`/branches`, {
-    method: 'GET',
-    params: {
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-    },
-  });
-}
-
-export function getClasses(params) {
-  return request(`/classes`, {
-    method: 'GET',
-    params: {
-      ...params,
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });

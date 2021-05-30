@@ -1,8 +1,8 @@
 // import { variables } from '@/utils';
 import { notification } from 'antd';
 import { get } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'HRMusersAdd',
@@ -172,13 +172,17 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.add, payload);
-        // yield saga.call(services.addPositionLevels, {
-        //   ...payload,
-        //   employeeId: response?.parsePayload?.id,
-        // });
+        yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
         callback(null, error);
       }
     },
@@ -202,8 +206,16 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
-        callback(null, error?.data?.error);
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
       }
     },
     *UPDATE_STATUS({ payload, callback }, saga) {
@@ -336,7 +348,7 @@ export default {
     },
     *GET_DIVISIONS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getDivisions, payload);
+        const response = yield saga.call(categories.getDivisions, payload);
         yield saga.put({
           type: 'SET_DIVISIONS',
           payload: response,
@@ -350,7 +362,7 @@ export default {
     },
     *GET_POSITIONS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getPositions, payload);
+        const response = yield saga.call(categories.getPositions, payload);
         yield saga.put({
           type: 'SET_POSITIONS',
           payload: response,
@@ -369,7 +381,12 @@ export default {
           type: 'SET_ROLES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     // dismisseds
     *ADD_DIMISSEDS({ payload, callback }, saga) {
@@ -409,7 +426,7 @@ export default {
         yield saga.call(services.removeDismisseds, payload);
         yield saga.put({
           type: 'SET_REMOVE_DIMISSEDS',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -475,7 +492,7 @@ export default {
         yield saga.call(services.removeAppoints, payload);
         yield saga.put({
           type: 'SET_REMOVE_APPOINTS',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -537,12 +554,12 @@ export default {
         callback(null, error);
       }
     },
-    *REMOVE_TRANSFERS({ payload, callback }, saga) {
+    *REMOVE_TRANSFERS({ payload }, saga) {
       try {
         yield saga.call(services.removeTransfers, payload);
         yield saga.put({
           type: 'SET_REMOVE_TRANSFERS',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -714,12 +731,12 @@ export default {
         callback(null, error);
       }
     },
-    *REMOVE_DECISION_REWARDS({ payload, callback }, saga) {
+    *REMOVE_DECISION_REWARDS({ payload }, saga) {
       try {
         yield saga.call(services.removeDecisionRewards, payload);
         yield saga.put({
           type: 'SET_REMOVE_DECISION_REWARDS',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',
@@ -801,7 +818,7 @@ export default {
         yield saga.call(services.removeInsurrances, payload);
         yield saga.put({
           type: 'SET_REMOVE_INSURRANCES',
-          payload: payload,
+          payload,
         });
         callback(payload);
         notification.success({
@@ -863,12 +880,12 @@ export default {
         callback(null, error);
       }
     },
-    *REMOVE_CHILDREN({ payload, callback }, saga) {
+    *REMOVE_CHILDREN({ payload }, saga) {
       try {
         yield saga.call(services.removeChildren, payload);
         yield saga.put({
           type: 'SET_REMOVE_CHILDREN',
-          payload: payload,
+          payload,
         });
         notification.success({
           message: 'THÔNG BÁO',

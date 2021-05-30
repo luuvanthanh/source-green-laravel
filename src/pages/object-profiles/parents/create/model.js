@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { variables } from '@/utils';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'OPParentsAdd',
@@ -27,7 +27,7 @@ export default {
     }),
     SET_EMPLOYEES: (state, { payload }) => ({
       ...state,
-      employees: payload.items,
+      employees: payload.parsePayload,
     }),
     SET_ROLES: (state, { payload }) => ({
       ...state,
@@ -134,7 +134,7 @@ export default {
     },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getEmployees, payload);
+        const response = yield saga.call(categories.getEmployees, payload);
         yield saga.put({
           type: 'SET_EMPLOYEES',
           payload: response,
@@ -153,7 +153,12 @@ export default {
           type: 'SET_ROLES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_DETAILS({ payload }, saga) {
       try {
@@ -198,6 +203,22 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *CHANGE_PASSWORD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.changePassword, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error?.data?.error);
       }
     },
   },

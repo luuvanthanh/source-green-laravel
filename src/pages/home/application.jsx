@@ -3,8 +3,8 @@ import { connect } from 'umi';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Slider from 'react-slick';
+import { isEmpty } from 'lodash';
 
-import { variables } from '@/utils';
 import { isValidCondition } from '@/utils/authority';
 import feature from '@/services/feature';
 import ItemSlider from './itemSlider';
@@ -12,25 +12,23 @@ import ItemSlider from './itemSlider';
 import styles from './index.scss';
 
 @connect(({ user, loading }) => ({ user, loading }))
-
 class Application extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { user } = props;
     this.state = {
       data: feature.FEATURES.filter((menuItem) => {
+        if (isEmpty(menuItem.permission)) {
+          return true;
+        }
         const showMenu = isValidCondition({
           conditions: [
             {
-              permission: menuItem.permission || [''],
-              isOrPermission: true,
+              permission: !isEmpty(menuItem.permission) ? menuItem.permission : [],
+              isOrPermission: menuItem.multiple || false,
             },
           ],
-          userPermission: [
-            variables.ROLES_PERMISSIONS.includes(user?.user?.role?.toUpperCase())
-              ? user?.user?.role?.toUpperCase()
-              : variables.ROLES.ALL,
-          ],
+          userPermission: user.permissions,
         });
         return showMenu;
       }),

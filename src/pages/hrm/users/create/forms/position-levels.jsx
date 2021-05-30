@@ -4,13 +4,9 @@ import { get } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
   const {
@@ -20,19 +16,11 @@ const Index = memo(() => {
     loading,
     positionLevels: HRMusersAdd.positionLevels,
   }));
-  const loadingSubmit =
-    effects[`HRMusersAdd/ADD_DIMISSEDS`] || effects[`HRMusersAdd/UPDATE_DIMISSEDS`];
   const loading = effects[`HRMusersAdd/GET_POSITION_LEVELS`];
   const dispatch = useDispatch();
   const params = useParams();
   const formRef = useRef();
   const mounted = useRef(false);
-  const formRefModal = useRef();
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
 
   useEffect(() => {
     mounted.current = true;
@@ -97,7 +85,6 @@ const Index = memo(() => {
           </Pane>
           <Pane style={{ padding: 20 }}>
             <Table
-              bordered
               columns={header()}
               dataSource={positionLevels}
               pagination={false}

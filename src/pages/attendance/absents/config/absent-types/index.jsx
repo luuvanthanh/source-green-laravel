@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -8,13 +8,11 @@ import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -46,13 +44,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         name: query?.name,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -216,28 +212,22 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 60,
-        className: 'min-width-60',
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'LOẠI PHÉP',
-        key: 'typeAbsent',
-        render: (record) => record.name,
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 60,
+      className: 'min-width-60',
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'LOẠI PHÉP',
+      key: 'typeAbsent',
+      render: (record) => record.name,
+    },
+  ];
 
   render() {
     const {
@@ -251,7 +241,9 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách loại nghỉ phép" />
-        <div className={classnames(styles['content-form'], styles['content-form-absentTypesStudent'])}>
+        <div
+          className={classnames(styles['content-form'], styles['content-form-absentTypesStudent'])}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách loại nghỉ phép</Text>
@@ -276,7 +268,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

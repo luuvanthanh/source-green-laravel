@@ -98,7 +98,8 @@ class Index extends PureComponent {
         this.setStateData({
           dataSource: response.map((item) => ({
             ...item,
-            date: moment(item.date),
+            startDate: moment(item.startDate),
+            endDate: moment(item.endDate),
           })),
         });
       },
@@ -203,8 +204,9 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
     const { search } = this.state;
+    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -218,13 +220,11 @@ class Index extends PureComponent {
           payload: {
             name: moment(search.date).format(variables.DATE_FORMAT.YEAR),
             deleteIds: [id],
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
           },
         });
       },
@@ -237,7 +237,13 @@ class Index extends PureComponent {
     const { search } = this.state;
     const payload = {
       name: Helper.getDate(search.date, variables.DATE_FORMAT.YEAR),
-      updateRows: [{ ...record, date: Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER) }],
+      updateRows: [
+        {
+          ...record,
+          startDate: Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(record.endDate, variables.DATE_FORMAT.DATE_AFTER),
+        },
+      ],
     };
     this.setStateData((prevState) => ({
       dataSource: prevState.dataSource.map((item) => (item.id === record.id ? record : item)),
@@ -262,14 +268,24 @@ class Index extends PureComponent {
       type: variables.TEXTAREA,
     },
     {
-      title: 'Ngày',
-      key: 'date',
+      title: 'Từ ngày',
+      key: 'startDate',
       className: classnames('min-width-150', 'max-width-150'),
       width: 150,
-      dataIndex: 'date',
+      dataIndex: 'startDate',
       editable: true,
       type: variables.DATE_PICKER,
-      render: (values, record) => Helper.getDate(record.date),
+      render: (values, record) => Helper.getDate(record.startDate),
+    },
+    {
+      title: 'Đến ngày',
+      key: 'endDate',
+      className: classnames('min-width-150', 'max-width-150'),
+      width: 150,
+      dataIndex: 'endDate',
+      editable: true,
+      type: variables.DATE_PICKER,
+      render: (values, record) => Helper.getDate(record.endDate),
     },
     {
       key: 'action',
@@ -354,6 +370,7 @@ class Index extends PureComponent {
                 },
               }}
               dataSource={dataSource}
+              className="table-edit"
               loading={loading}
               pagination={false}
               params={{
@@ -371,14 +388,12 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  pagination: {},
   loading: {},
   dispatch: {},
   location: {},

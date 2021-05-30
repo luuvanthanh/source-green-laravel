@@ -1,10 +1,12 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
-import { connect, history, withRouter } from 'umi';
+import { connect, withRouter } from 'umi';
+import PropTypes from 'prop-types';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
@@ -88,12 +90,7 @@ const Curator = memo(
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem
-                    data={[]}
-                    name="source"
-                    label="Nguồn khách hàng"
-                    type={variables.SELECT}
-                  />
+                  <FormItem name="source" label="Nguồn khách hàng" type={variables.INPUT} />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem name="code" label="Mã khách hàng" type={variables.INPUT} />
@@ -118,5 +115,23 @@ const Curator = memo(
     );
   },
 );
+
+Curator.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+};
+
+Curator.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+  employees: [],
+};
 
 export default withRouter(connect(mapStateToProps)(Curator));

@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography, Button } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get, head, size } from 'lodash';
+import { debounce, isEmpty, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -11,11 +11,10 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../utils/Helper';
 import variablesModules from '../utils/variables';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -46,7 +45,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         type: query?.type || 'DATE',
@@ -55,7 +53,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -372,20 +369,16 @@ class Index extends PureComponent {
       },
     ];
     const arrayHeaderDate = Helper.convertArrayDays(search.startDate, search.endDate).map(
-      (item, index) => {
-        const startDate = moment(search.startDate);
-        const endDate = moment(search.endDate);
-        return {
-          title: this.renderTitleHeader(index, item),
-          key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-          className: classnames('min-width-80', 'max-width-80'),
-          width: 80,
-          align: 'center',
-          render: (record) => (
-            <div className={styles['item-schedules']}>{this.renderContentDate(item, record)}</div>
-          ),
-        };
-      },
+      (item, index) => ({
+        title: this.renderTitleHeader(index, item),
+        key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
+        className: classnames('min-width-80', 'max-width-80'),
+        width: 80,
+        align: 'center',
+        render: (record) => (
+          <div className={styles['item-schedules']}>{this.renderContentDate(item, record)}</div>
+        ),
+      }),
     );
     return [...arrayHeader.slice(0, 3), ...arrayHeaderDate, ...arrayHeader.slice(3)];
   };
