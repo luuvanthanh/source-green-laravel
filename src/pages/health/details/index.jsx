@@ -1,9 +1,8 @@
 import { memo, useEffect, useRef } from 'react';
 import { List } from 'antd';
 import { Helmet } from 'react-helmet';
-import { connect } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { history, useParams, useLocation } from 'umi';
+import { useParams, useLocation } from 'umi';
 import classnames from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -13,15 +12,15 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import variables from '@/utils/variables';
 import moment from 'moment';
-import variablesModules from '..//utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { isEmpty, get, head } from 'lodash';
+import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
 
-const Index = memo(({}) => {
+const Index = memo(() => {
   const mounted = useRef(false);
   const {
     loading: { effects },
@@ -39,11 +38,11 @@ const Index = memo(({}) => {
   const params = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
-  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
+  // const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -110,7 +109,7 @@ const Index = memo(({}) => {
                         <label className={styles.infoLabel}>Cơ sở</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
-                            <span className={'icon-school'} />
+                            <span className="icon-school" />
                           </span>
                           <span className={styles.infoText}>
                             {get(head(details.studentCriterias), 'student.class.branch.name')}
@@ -122,7 +121,7 @@ const Index = memo(({}) => {
                         <label className={styles.infoLabel}>Lớp</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
-                            <span className={'icon-open-book'} />
+                            <span className="icon-open-book" />
                           </span>
                           <span className={styles.infoText}>
                             {get(head(details.studentCriterias), 'student.class.name')}

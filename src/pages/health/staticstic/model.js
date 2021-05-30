@@ -1,5 +1,5 @@
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'healthStaticstic',
@@ -53,7 +53,12 @@ export default {
           type: 'SET_STUDENTS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_BRANCHES({ payload }, saga) {
       try {
@@ -62,7 +67,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_CLASSES({ payload }, saga) {
       try {
@@ -71,7 +81,12 @@ export default {
           type: 'SET_CLASSES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_DATA({ payload, callback }, saga) {
       try {
@@ -92,7 +107,12 @@ export default {
           type: 'SET_CRITERIA_GROUP_PROPERTIES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
   },
   subscriptions: {},

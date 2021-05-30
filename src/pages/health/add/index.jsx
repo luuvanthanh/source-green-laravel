@@ -1,8 +1,8 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import { List, Radio, Avatar, Form, message, Spin } from 'antd';
+import { List, Radio, Form, message, Spin } from 'antd';
 import { Helmet } from 'react-helmet';
-import { connect } from 'umi';
-import { isEmpty, head, toString } from 'lodash';
+import { history, useParams } from 'umi';
+import { isEmpty, toString } from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -11,10 +11,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { history, useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import variables from '@/utils/variables';
-import variablesModules from '..//utils/variables';
 import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -23,7 +21,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 const { Item: ListItem } = List;
-const Index = memo(({}) => {
+const Index = memo(() => {
   const {
     loading: { effects },
     error,
@@ -71,7 +69,7 @@ const Index = memo(({}) => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -143,7 +141,7 @@ const Index = memo(({}) => {
       payload: {
         ...searchStudents,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           mountedSet(setLoadingStudents, false);
           mountedSet(setStudents, response.items);
@@ -294,10 +292,10 @@ const Index = memo(({}) => {
                   </Pane>
 
                   <Form.List name="data">
-                    {(fields, { add, remove }) => (
+                    {(fields) => (
                       <>
                         <Scrollbars autoHeight autoHeightMax={window.innerHeight - 300}>
-                          {fields.map(({ key, name }, index) => {
+                          {fields.map(({ key }, index) => {
                             const criteria = criteriaGroupProperties.find(
                               (itemCriteria, indexCriteria) => indexCriteria === index,
                             );
