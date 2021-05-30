@@ -7,13 +7,11 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
-import styles from '@/assets/styles/Common/common.scss';
 
 const { confirm } = Modal;
 const Index = memo(() => {
@@ -21,15 +19,11 @@ const Index = memo(() => {
   const [objects, setObjects] = useState({});
 
   const {
-    details,
     loading: { effects },
     decisionRewards,
-    error,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
-    details: HRMusersAdd.details,
     decisionRewards: HRMusersAdd.decisionRewards,
-    error: HRMusersAdd.error,
   }));
   const loadingSubmit =
     effects[`HRMusersAdd/ADD_DECISION_REWARDS`] || effects[`HRMusersAdd/UPDATE_DECISION_REWARDS`];
@@ -102,7 +96,7 @@ const Index = memo(() => {
             },
           ],
         },
-        callback: (response, error) => {
+        callback: (response, err) => {
           if (response) {
             dispatch({
               type: 'HRMusersAdd/GET_DECISION_REWARDS',
@@ -110,9 +104,9 @@ const Index = memo(() => {
             });
             mountedSet(setVisible, false);
           }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
+          if (err) {
+            if (get(err, 'data.status') === 400 && !isEmpty(err?.data?.errors)) {
+              err.data.errors.forEach((item) => {
                 formRefModal.current.setFields([
                   {
                     name: get(item, 'source.pointer'),
@@ -376,7 +370,6 @@ const Index = memo(() => {
           </Pane>
           <Pane style={{ padding: 20 }} className="pb-0">
             <Table
-              bordered
               columns={header()}
               dataSource={decisionRewards}
               pagination={false}

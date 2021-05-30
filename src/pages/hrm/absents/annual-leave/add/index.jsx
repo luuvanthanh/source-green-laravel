@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, DatePicker, InputNumber, TimePicker } from 'antd';
+import { Form, InputNumber, TimePicker } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty, last, head } from 'lodash';
+import PropTypes from 'prop-types';
+
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -13,8 +15,8 @@ import Loading from '@/components/CommonComponent/Loading';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
-import variablesModules from '../../../utils/variables';
 import moment from 'moment';
+import variablesModules from '../../../utils/variables';
 
 let isMounted = true;
 /**
@@ -83,7 +85,7 @@ class Index extends PureComponent {
       dispatch({
         type: 'absentsAdd/GET_DATA',
         payload: params,
-        callback: (response, error) => {
+        callback: (response) => {
           if (response) {
             this.formRef.current.setFieldsValue({
               ...response,
@@ -343,7 +345,6 @@ class Index extends PureComponent {
   render() {
     const {
       error,
-      details,
       categories,
       match: { params },
       menuLeftSchedules,
@@ -476,6 +477,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  shiftUsers: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  shiftUsers: [],
+  error: {},
+  menuLeftSchedules: [],
+  categories: {},
+};
 
 export default Index;

@@ -24,15 +24,15 @@ const Level = memo(() => {
               <FormItem name="cm" label="Chủ tài khoản" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem name={'weight'} label="Số tài khoản" type={variables.INPUT} />
+              <FormItem name="weight" label="Số tài khoản" type={variables.INPUT} />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem name={'location'} label="Ngân hàng" type={variables.INPUT} />
+              <FormItem name="location" label="Ngân hàng" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem name={'status'} label="Chi nhánh" type={variables.INPUT} />
+              <FormItem name="status" label="Chi nhánh" type={variables.INPUT} />
             </Pane>
           </Pane>
         </Pane>

@@ -4,6 +4,8 @@ import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, size } from 'lodash';
 import { Helmet } from 'react-helmet';
+import * as signalR from '@aspnet/signalr';
+
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -70,22 +72,57 @@ class Index extends PureComponent {
       isAuto: false,
       current: {},
     };
+    this.connection = null;
     setIsMounted(true);
   }
 
   componentDidMount() {
-    const self = this;
     this.loadCategories();
-    setInterval(() => {
-      if (this.state.isAuto) {
-        self.onLoadTracking();
-      }
-    }, 2000);
+    this.connectHubs();
   }
 
   componentWillUnmount() {
+    this.connection?.stop();
     setIsMounted(false);
   }
+
+  connectHubs = () => {
+    const { search } = this.state;
+    if (search.id) {
+      const protocol = new signalR.JsonHubProtocol();
+
+      const transport = signalR.HttpTransportType.WebSockets;
+
+      const options = {
+        transport,
+        logMessageContent: true,
+        logger: signalR.LogLevel.Trace,
+      };
+
+      // create the connection instance
+      this.connection = new signalR.HubConnectionBuilder()
+        .withUrl(
+          `https://erp-clover-api.demo.greenglobal.com.vn/hubs/bus-trackings?busId=${search.id}`,
+          options,
+        )
+        .withHubProtocol(protocol)
+        .build();
+
+      this.connection.on('DatabaseOperation', this.onNotifReceived);
+      this.connection.on('DownloadSession', this.onNotifReceived);
+      this.connection.on('UploadSession', this.onNotifReceived);
+
+      this.connection
+        .start()
+        .then(() => console.info('SignalR Connected'))
+        .catch((err) => console.error('SignalR Connection Error: ', err));
+    }
+  };
+
+  onNotifReceived = (res) => {
+    this.onLoadTracking();
+    console.info('Tracking', res);
+  };
 
   /**
    * Set state properties
@@ -167,7 +204,10 @@ class Index extends PureComponent {
           [`${type}`]: value,
         },
       }),
-      () => this.onLoad(),
+      () => {
+        this.onLoad();
+        this.connectHubs();
+      },
     );
   }, 300);
 

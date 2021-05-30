@@ -26,37 +26,37 @@ const Level = memo(() => {
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-6">
-              <FormItem name={'zalo'} label="Zalo" type={variables.INPUT} />
+              <FormItem name="zalo" label="Zalo" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-6">
-              <FormItem name={'facebook'} label="Facebook" type={variables.INPUT} />
+              <FormItem name="facebook" label="Facebook" type={variables.INPUT} />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-4">
-              <FormItem name={'contact'} label="Người liên hệ" type={variables.INPUT} />
+              <FormItem name="contact" label="Người liên hệ" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name={'contactUser'} label="Quan hệ với nhân viên" type={variables.INPUT} />
+              <FormItem name="contactUser" label="Quan hệ với nhân viên" type={variables.INPUT} />
             </Pane>
             <Pane className="col-lg-4">
-              <FormItem name={'phone'} label="Số điện thoại khẩn cấp" type={variables.INPUT} />
-            </Pane>
-          </Pane>
-          <Pane className="row">
-            <Pane className="col-lg-4">
-              <FormItem name={'born'} label="Quê quán" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name={'stress'} label="Phường (xã, thị trấn)" type={variables.INPUT} />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem name={'provice'} label="Quận/Huyện" type={variables.INPUT} />
+              <FormItem name="phone" label="Số điện thoại khẩn cấp" type={variables.INPUT} />
             </Pane>
           </Pane>
           <Pane className="row">
             <Pane className="col-lg-4">
-              <FormItem name={'city'} label="Tỉnh/Thành phố" type={variables.INPUT} />
+              <FormItem name="born" label="Quê quán" type={variables.INPUT} />
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="stress" label="Phường (xã, thị trấn)" type={variables.INPUT} />
+            </Pane>
+            <Pane className="col-lg-4">
+              <FormItem name="provice" label="Quận/Huyện" type={variables.INPUT} />
+            </Pane>
+          </Pane>
+          <Pane className="row">
+            <Pane className="col-lg-4">
+              <FormItem name="city" label="Tỉnh/Thành phố" type={variables.INPUT} />
             </Pane>
           </Pane>
         </Pane>
