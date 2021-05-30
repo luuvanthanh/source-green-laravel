@@ -52,4 +52,8 @@ MainLayout.propTypes = {
   children: ptx.any,
 };
 
+MainLayout.defaultProps = {
+  children: '',
+};
+
 export default MainLayout;

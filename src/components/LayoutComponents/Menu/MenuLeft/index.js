@@ -52,10 +52,12 @@ class MenuLeft extends React.Component {
     };
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillMount() {
     this.setSelectedKeys(this.props);
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
     if (newProps.isMenuCollapsed && !newProps.isMobileView) {
       this.setState({

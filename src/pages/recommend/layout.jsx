@@ -1,31 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { Link } from 'umi';
-import { Menu } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
-import ProfileMenu from '@/components/LayoutComponents/TopBar/ProfileMenu';
-import Notification from '@/components/LayoutComponents/TopBar/Notification';
 import { Layout } from 'antd';
-import classNames from 'classnames';
+import classnames from 'classnames';
 
-const MENU_MAIN = [
-  {
-    key: 'PARENT',
-    title: 'Phụ huynh',
-    url: '/ho-so-doi-tuong/phu-huynh',
-  },
-  {
-    key: 'CHILDREN',
-    title: 'Học sinh',
-    url: '/ho-so-doi-tuong/hoc-sinh',
-  },
-  {
-    key: 'PERSONAL',
-    title: 'Nhân sự',
-    url: '/ho-so-doi-tuong/nhan-su',
-  },
-];
 const mapStateToProps = ({ settings }) => ({
   isMenuCollapsed: settings.isMenuCollapsed,
 });
@@ -41,43 +20,24 @@ class Index extends PureComponent {
   };
 
   render() {
-    const {
-      children,
-      isMenuCollapsed,
-      location: { pathname },
-    } = this.props;
+    const { children, isMenuCollapsed } = this.props;
     return (
-      <>
-        <Layout.Header>
-          <div className={styles.topbar}>
-            <div className="mr-4" />
-            <div className="mr-auto" />
-            <div className="mr-4">
-              <Notification />
-            </div>
-            <ProfileMenu />
-          </div>
-        </Layout.Header>
-        <Layout.Content
-          className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
-          style={{ height: '100%', position: 'relative' }}
-        >
-          <div className={styles.content}>{this.props.children}</div>
-        </Layout.Content>
-      </>
+      <Layout.Content
+        className={classnames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
+        style={{ height: '100%', position: 'relative' }}
+      >
+        <div className={styles.content}>{children}</div>
+      </Layout.Content>
     );
   }
 }
 
 Index.propTypes = {
-  children: PropTypes.any.isRequired,
-  location: PropTypes.objectOf(PropTypes.any),
   children: PropTypes.any,
   isMenuCollapsed: PropTypes.bool,
 };
 
 Index.defaultProps = {
-  location: {},
   children: null,
   isMenuCollapsed: false,
 };

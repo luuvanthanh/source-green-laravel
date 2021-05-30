@@ -5,19 +5,14 @@ import { useDispatch } from 'dva';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
-import Pane from '@/components/CommonComponent/Pane';
-
 import { imageUploadProps } from '@/utils/upload';
 import { Helper } from '@/utils';
 
-// eslint-disable-next-line no-unused-vars
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
 const ImageUpload = memo(({ callback, removeFiles, files }) => {
-  // eslint-disable-next-line no-underscore-dangle
   const _mounted = useRef(false);
 
-  // eslint-disable-next-line no-underscore-dangle
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
@@ -71,7 +66,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   return (
     <>
-      <Pane className="row">
+      <div className="row">
         <div className="pl15">
           <Image.PreviewGroup>
             {(images || []).map((item, index) => {
@@ -132,12 +127,12 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
           </Image.PreviewGroup>
         </div>
 
-        <Pane className="col d-flex align-items-center">
+        <div className="col d-flex align-items-center">
           <Upload {...uploadProps} listType="picture-card">
             <CloudUploadOutlined />
           </Upload>
-        </Pane>
-      </Pane>
+        </div>
+      </div>
     </>
   );
 });

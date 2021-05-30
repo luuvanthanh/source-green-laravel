@@ -3,7 +3,7 @@ import { connect, withRouter } from 'umi';
 import styles from '@/assets/styles/Common/common.scss';
 import PropTypes from 'prop-types';
 import { Layout } from 'antd';
-import classNames from 'classnames';
+import classnames from 'classnames';
 
 const mapStateToProps = ({ settings }) => ({
   isMenuCollapsed: settings.isMenuCollapsed,
@@ -15,7 +15,7 @@ class Index extends PureComponent {
     const { children, isMenuCollapsed } = this.props;
     return (
       <Layout.Content
-        className={classNames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
+        className={classnames({ [`${styles['layout-collapse']}`]: isMenuCollapsed })}
         style={{ height: '100%', position: 'relative' }}
       >
         <div className={styles.content}>{children}</div>

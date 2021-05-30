@@ -347,7 +347,7 @@ export async function getLeftMenuConfiguration() {
         '/cau-hinh/tai-khoan/:id/chi-tiet',
       ],
       icon: 'icon icon-checkmark',
-      permission: [],
+      permission: [permissions.CAUHINH_TK],
       pro: true,
     },
     {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'umi';
 import classnames from 'classnames';
-import { Menu, Dropdown, Badge } from 'antd';
+import PropTypes from 'prop-types';
 import styles from './style.module.scss';
-import store from 'store';
 
 const mapStateToProps = ({ settings }) => ({
   isSettingsOpen: settings.isSettingsOpen,
@@ -11,7 +10,7 @@ const mapStateToProps = ({ settings }) => ({
 
 @connect(mapStateToProps)
 class Settings extends React.Component {
-  handleClick = (e) => {
+  handleClick = () => {
     const { dispatch, isSettingsOpen } = this.props;
     dispatch({
       type: 'settings/CHANGE_SETTING',
@@ -24,9 +23,23 @@ class Settings extends React.Component {
 
   render() {
     return (
-      <span className={classnames('icon-setting', styles.toggle)} onClick={this.handleClick}></span>
+      <span
+        className={classnames('icon-setting', styles.toggle)}
+        role="presentation"
+        onClick={this.handleClick}
+      />
     );
   }
 }
+
+Settings.propTypes = {
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  isSettingsOpen: PropTypes.bool,
+};
+
+Settings.defaultProps = {
+  dispatch: {},
+  isSettingsOpen: false,
+};
 
 export default Settings;

@@ -297,7 +297,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const CustomViewConfig = {
-      classNames: ['custom-view'],
+      classnames: ['custom-view'],
 
       content(props) {
         const segs = sliceEvents(props, true); // allDay=true

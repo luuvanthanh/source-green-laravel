@@ -356,7 +356,7 @@ FormItem.propTypes = {
   data: PropTypes.arrayOf(PropTypes.any),
   handleScroll: PropTypes.func,
   onChange: PropTypes.func,
-  disabled: PropTypes.bool,
+  disabled: PropTypes.any,
   disabledDate: PropTypes.func,
   fieldNames: PropTypes.objectOf(PropTypes.any),
   maxTagCount: PropTypes.number,
@@ -370,6 +370,7 @@ FormItem.propTypes = {
   disabledMinutes: PropTypes.any,
   radioInline: PropTypes.bool,
   disabledKeys: PropTypes.any,
+  options: PropTypes.arrayOf(PropTypes.any),
 };
 
 FormItem.defaultProps = {
@@ -383,7 +384,7 @@ FormItem.defaultProps = {
   onChange: () => {},
   onSearch: () => {},
   onBlur: () => {},
-  disabled: false,
+  disabled: null,
   disabledDate: () => false,
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
@@ -395,6 +396,7 @@ FormItem.defaultProps = {
   disabledMinutes: null,
   radioInline: false,
   disabledKeys: null,
+  options: ['id', 'name'],
 };
 
 FormItem.displayName = 'Form';

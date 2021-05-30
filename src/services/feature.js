@@ -128,7 +128,7 @@ export const feature = {
       src: '/images/home/gear.svg',
       animation: animationImage.setting,
       url: '/cau-hinh',
-      permission: [],
+      permission: [permissions.CAUHINH],
     },
     {
       title: 'Camera AI',

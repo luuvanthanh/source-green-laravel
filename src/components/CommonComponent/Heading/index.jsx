@@ -1,16 +1,24 @@
-import { memo } from 'react'
-import PropTypes from 'prop-types'
-import csx from 'classnames'
+import { memo } from 'react';
+import PropTypes from 'prop-types';
+import csx from 'classnames';
 
-import styles from './styles.module.scss'
+import styles from './styles.module.scss';
 
 const Heading = memo(({ type, children, className, ...props }) => (
-  <h2 className={csx(styles[type], className)} {...props}>{children}</h2>
-))
+  <h2 className={csx(styles[type], className)} {...props}>
+    {children}
+  </h2>
+));
 
 Heading.propTypes = {
   type: PropTypes.string.isRequired,
-  children: PropTypes.node
-}
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
 
-export default Heading
+Heading.defaultProps = {
+  children: null,
+  className: '',
+};
+
+export default Heading;

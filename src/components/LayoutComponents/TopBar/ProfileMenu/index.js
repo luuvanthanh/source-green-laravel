@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'umi';
-import { Menu, Dropdown, Avatar } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import PropTypes from 'prop-types';
-import { UserOutlined } from '@ant-design/icons';
 import styles from './style.module.scss';
 
 @connect(({ user }) => ({ user }))
