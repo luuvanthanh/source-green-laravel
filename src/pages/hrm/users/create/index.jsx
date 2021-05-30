@@ -7,12 +7,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
 import GeneralForm from './forms/general';
-import CuratorForm from './forms/curator';
-import LevelForm from './forms/level';
 import CertificateForm from './forms/certificate';
-import HistoryForm from './forms/history';
 import ContactForm from './forms/contact';
-import HealthForm from './forms/health';
 import BankForm from './forms/bank';
 import TimeworkForm from './forms/timework';
 import TransfersForm from './forms/transfers';
@@ -20,7 +16,6 @@ import ContractForm from './forms/contract';
 import ProbationaryContractForm from './forms/probationaryContract';
 import InsurranceForm from './forms/insurrance';
 import InsurranceHealthForm from './forms/InsurranceHealth';
-import DaysOffForm from './forms/daysOff';
 import ChildrenForm from './forms/children';
 import SalaryForm from './forms/salary';
 import RewardForm from './forms/reward';
@@ -37,12 +32,8 @@ const { Item: MenuItem } = Menu;
 
 const forms = {
   general: <GeneralForm />,
-  curator: <CuratorForm />,
-  level: <LevelForm />,
   certificate: <CertificateForm />,
-  history: <HistoryForm />,
   contact: <ContactForm />,
-  health: <HealthForm />,
   bank: <BankForm />,
   timework: <TimeworkForm />,
   transfers: <TransfersForm />,
@@ -50,7 +41,6 @@ const forms = {
   probationaryContract: <ProbationaryContractForm />,
   insurrances: <InsurranceForm />,
   healthInsurrance: <InsurranceHealthForm />,
-  daysOff: <DaysOffForm />,
   children: <ChildrenForm />,
   salary: <SalaryForm />,
   reward: <RewardForm />,

@@ -31,7 +31,7 @@ const Index = memo(() => {
           {(fields, { add, remove }) => (
             <>
               <Scrollbars autoHeight autoHeightMax={window.innerHeight - 400}>
-                {fields.map(({ key, name }, index) => (
+                {fields.map(({ key, name }, _index) => (
                   <Pane
                     key={key}
                     className={csx('pb-0', 'border-bottom', 'position-relative')}

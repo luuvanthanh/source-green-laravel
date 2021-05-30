@@ -784,42 +784,6 @@ export default [
             authority: [],
           },
           {
-            path: '/quan-ly-nhan-su/cong-them',
-            component: './hrm/additional-times',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-nhan-su/cong-them/tao-moi',
-            component: './hrm/additional-times/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-nhan-su/cong-them/:id/chi-tiet',
-            component: './hrm/additional-times/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-nhan-su/cong-tru',
-            component: './hrm/subtraction-times',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-nhan-su/cong-tru/tao-moi',
-            component: './hrm/subtraction-times/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
-            path: '/quan-ly-nhan-su/cong-tru/:id/chi-tiet',
-            component: './hrm/subtraction-times/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-          {
             path: '/quan-ly-nhan-su/khong-xac-dinh-cong',
             component: './hrm/timekeeping-invalid',
             wrappers: ['@/wrappers/auth'],

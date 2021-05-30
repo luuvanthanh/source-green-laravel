@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar, Typography } from 'antd';
+import { Modal, Form, Typography } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, get } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -13,8 +13,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../../utils/Helper';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -48,7 +48,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -56,7 +55,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }

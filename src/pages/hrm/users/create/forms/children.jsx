@@ -1,16 +1,15 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get, isEmpty, head } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
 import classnames from 'classnames';
 import Table from '@/components/CommonComponent/Table';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
@@ -23,9 +22,7 @@ const Index = memo(() => {
 
   const {
     children,
-    details,
     loading: { effects },
-    error,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     children: HRMusersAdd.children,
@@ -36,7 +33,6 @@ const Index = memo(() => {
   const loading = effects[`HRMusersAdd/GET_CHILDREN`];
   const dispatch = useDispatch();
   const params = useParams();
-  const formRef = useRef();
   const mounted = useRef(false);
   const formRefModal = useRef();
   const mountedSet = (action, value) => {
@@ -258,9 +254,9 @@ const Index = memo(() => {
           <div className="row">
             <div className="col-lg-12">
               <Form.List name="data">
-                {(fields, { add, remove }) => (
+                {(fields) => (
                   <div>
-                    {fields.map((field, index) => (
+                    {fields.map((field) => (
                       <div
                         className={classnames(
                           'row',
@@ -311,7 +307,6 @@ const Index = memo(() => {
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table
-            bordered
             columns={header()}
             dataSource={children}
             pagination={false}
