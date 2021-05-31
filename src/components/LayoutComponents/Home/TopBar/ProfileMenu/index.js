@@ -1,10 +1,16 @@
 import React from 'react';
 import { connect } from 'umi';
-import { Menu, Dropdown, Avatar } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import PropTypes from 'prop-types';
-import { UserOutlined } from '@ant-design/icons';
+import classnames from 'classnames';
+import Cookies from 'universal-cookie';
+
+import { variables } from '@/utils';
+
 import styles from './style.module.scss';
 
+
+const cookies = new Cookies();
 @connect(({ user }) => ({ user }))
 class ProfileMenu extends React.Component {
   logout = () => {
@@ -14,23 +20,51 @@ class ProfileMenu extends React.Component {
     });
   };
 
+  swichRole = (role) => {
+    const { dispatch, user } = this.props;
+    if (role?.name?.toUpperCase() === user?.user?.role?.toUpperCase()) {
+      return;
+    }
+    dispatch({
+      type: 'user/SWITCH_ACCOUNT',
+      payload: {
+        access_token: cookies.get('access_token'),
+        token_type: cookies.get('token_type'),
+      }
+    });
+  }
+
   render() {
     const { user } = this.props;
     const menu = (
       <Menu selectable={false}>
         <Menu.Item>
-          <strong>Hello, {user?.user?.userName || 'Anonymous'}</strong>
+          <span className="font-weight-bold">Hello {user?.user?.userName || 'Anonymous'}</span>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item>
           <div>
-            <strong className="mr-1">Email:</strong>
+            <span className="mr-1 font-weight-bold">Email:</span>
             {user?.user?.email}
             <br />
-            <strong className="mr-1">Phone:</strong>
+            <span className="mr-1 font-weight-bold">Phone:</span>
             {user?.user?.phone || '-'}
           </div>
         </Menu.Item>
+        <Menu.Divider />
+          <Menu.Item>
+            <p className="font-weight-bold mb0">Vai trò</p>
+            {(user?.user?.roles || [{name: user?.user?.role}]).map((item, index) => (
+              <p
+                key={index}
+                onClick={() => this.swichRole(item)}
+                className={classnames(styles.role, `${user?.user?.role?.toUpperCase() === item?.name?.toUpperCase() ? styles.actived : ''}`)}
+                aria-hidden
+              >
+                {variables.ROLES_NAME[item?.name?.toUpperCase()] || ''}
+              </p>
+            ))}
+          </Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={this.logout}>
           <span>
