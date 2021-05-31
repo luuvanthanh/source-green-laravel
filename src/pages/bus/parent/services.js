@@ -9,10 +9,6 @@ export function get(params = {}) {
     )}`,
     {
       method: 'GET',
-      params: {
-        ...params,
-        ...Helper.getPagination(params.page, params.limit),
-      },
     },
   );
 }
