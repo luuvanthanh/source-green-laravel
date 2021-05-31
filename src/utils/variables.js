@@ -106,6 +106,14 @@ export const variables = {
     ALL: 'ALL',
     PRINCIPAL: 'PRINCIPAL',
   },
+  ROLES_NAME: {
+    PARENT: 'Phụ huynh',
+    TEACHER: 'Giáo viên',
+    HRM: 'Hrm',
+    ADMIN: 'Admin',
+    ALL: 'All',
+    PRINCIPAL: 'Hiệu trưởng',
+  },
   ROLES_PERMISSIONS: ['ADMIN', 'TEACHER', 'PARENT', 'HRM', 'PRINCIPAL'],
   CHOOSE: [
     {

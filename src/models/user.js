@@ -76,6 +76,33 @@ const UserModel = {
         });
       }
     },
+    *SWITCH_ACCOUNT({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.switchAccount, {
+          access_token: payload.access_token,
+          token_type: payload.token_type,
+        });
+        if (response) {
+          yield saga.put({
+            type: 'SET_USER',
+            payload: {
+              ...response,
+              authorized: true,
+              permissions: response.permissionGrants,
+            },
+          });
+          const { can, rules } = new AbilityBuilder();
+          response.permissionGrants.forEach((item) => {
+            can([item], item);
+          });
+          ability.update(rules);
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+        });
+      }
+    },
     *LOGOUT(_, saga) {
       try {
         cookies.remove('access_token', { path: '/' });

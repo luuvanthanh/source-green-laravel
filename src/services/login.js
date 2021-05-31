@@ -24,6 +24,15 @@ export function me(data) {
   });
 }
 
+export async function switchAccount(data) {
+  return request('/user/me', {
+    method: 'GET',
+    headers: {
+      Authorization: `${data.token_type} ${data.access_token}`,
+    },
+  });
+}
+
 export async function logout() {
   return requestLogin('/api/logout', {
     method: 'POST',
