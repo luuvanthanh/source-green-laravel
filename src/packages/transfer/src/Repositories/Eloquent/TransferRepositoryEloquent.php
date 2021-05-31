@@ -115,6 +115,14 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             });
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('transferDetails', function ($query) use ($attributes) {
+                $query->whereHas('employee', function ($q2) use ($attributes) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $transfer = $this->paginate($attributes['limit']);
         } else {

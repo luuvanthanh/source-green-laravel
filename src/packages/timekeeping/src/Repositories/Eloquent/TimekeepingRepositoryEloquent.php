@@ -89,9 +89,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }]);
 
         if (!empty($attributes['fullName'])) {
-            $name = strtoupper($attributes['fullName']);
-            $key = '"FullName"';
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereRaw("UPPER($key) LIKE '%{$name}%' ");
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
         }
 
         if (!empty($attribute['employeeId'])) {
@@ -121,6 +119,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function timekeepingReport(array $attributes)
     {
+
         $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
             $query->whereDate('AttendedAt', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))
                 ->whereDate('AttendedAt', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'))
@@ -140,9 +139,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         if (!empty($attributes['fullName'])) {
-            $name = mb_strtoupper($attributes['fullName']);
-            $key = '"FullName"';
-            $employeesByStore->whereRaw("UPPER($key) LIKE '%{$name}%' ");
+            $employeesByStore->whereLike('FullName', $attributes['fullName']);
         }
 
         if (!empty($attributes['employeeId'])) {
@@ -478,9 +475,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }]);
 
         if (!empty($attributes['fullName'])) {
-            $name = strtoupper($attributes['fullName']);
-            $key = '"FullName"';
-            $employeesByStore->whereRaw("UPPER($key) LIKE '%{$name}%' ");
+            $employeesByStore->whereLike('FullName', $attributes['fullName']);
         }
 
         $employeesByStore->tranferHistory($attributes);

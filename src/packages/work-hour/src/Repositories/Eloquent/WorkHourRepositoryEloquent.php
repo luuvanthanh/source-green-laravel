@@ -70,6 +70,12 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $workHour = $this->paginate($attributes['limit']);
         } else {

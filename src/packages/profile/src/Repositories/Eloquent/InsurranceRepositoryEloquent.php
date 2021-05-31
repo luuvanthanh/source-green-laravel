@@ -63,6 +63,12 @@ class InsurranceRepositoryEloquent extends CoreRepositoryEloquent implements Ins
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
             $query->tranferHistory($attributes);
         });
