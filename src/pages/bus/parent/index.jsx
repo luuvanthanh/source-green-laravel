@@ -102,7 +102,7 @@ class Index extends PureComponent {
       // create the connection instance
       this.connection = new signalR.HubConnectionBuilder()
         .withUrl(
-          `https://erp-clover-api.demo.greenglobal.com.vn/hubs/bus-trackings?busId=${search.id}`,
+          'https://erp-clover-api.demo.greenglobal.com.vn/messaging-hub',
           options,
         )
         .withHubProtocol(protocol)
@@ -120,8 +120,8 @@ class Index extends PureComponent {
   };
 
   onNotifReceived = (res) => {
+    console.info('onNotifReceived', res);
     this.onLoadTracking();
-    console.info('Tracking', res);
   };
 
   /**
