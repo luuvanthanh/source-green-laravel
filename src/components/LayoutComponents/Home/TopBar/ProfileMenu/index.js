@@ -37,7 +37,7 @@ class ProfileMenu extends React.Component {
   render() {
     const { user } = this.props;
     const menu = (
-      <Menu selectable={false}>
+      <Menu selectable={false} className={styles.dropdownUser}>
         <Menu.Item>
           <span className="font-weight-bold">Hello {user?.user?.userName || 'Anonymous'}</span>
         </Menu.Item>
@@ -52,19 +52,19 @@ class ProfileMenu extends React.Component {
           </div>
         </Menu.Item>
         <Menu.Divider />
-          <Menu.Item>
-            <p className="font-weight-bold mb0">Vai trò</p>
-            {(user?.user?.roles || [{name: user?.user?.role}]).map((item, index) => (
-              <p
-                key={index}
-                onClick={() => this.swichRole(item)}
-                className={classnames(styles.role, `${user?.user?.role?.toUpperCase() === item?.name?.toUpperCase() ? styles.actived : ''}`)}
-                aria-hidden
-              >
-                {variables.ROLES_NAME[item?.name?.toUpperCase()] || ''}
-              </p>
-            ))}
-          </Menu.Item>
+        <Menu.Item>
+          <p className="font-weight-bold mb0">Vai trò</p>
+          {(user?.user?.roles || [{name: user?.user?.role}]).map((item, index) => (
+            <p
+              key={index}
+              onClick={() => this.swichRole(item)}
+              className={classnames(styles.role, `${user?.user?.role?.toUpperCase() === item?.name?.toUpperCase() ? styles.actived : ''}`)}
+              aria-hidden
+            >
+              {variables.ROLES_NAME[item?.name?.toUpperCase()] || ''}
+            </p>
+          ))}
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={this.logout}>
           <span>

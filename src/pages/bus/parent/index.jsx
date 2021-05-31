@@ -108,9 +108,7 @@ class Index extends PureComponent {
         .withHubProtocol(protocol)
         .build();
 
-      this.connection.on('DatabaseOperation', this.onNotifReceived);
-      this.connection.on('DownloadSession', this.onNotifReceived);
-      this.connection.on('UploadSession', this.onNotifReceived);
+      this.connection.on('CurrentBusLocation', this.onNotifReceived);
 
       this.connection
         .start()
@@ -119,8 +117,7 @@ class Index extends PureComponent {
     }
   };
 
-  onNotifReceived = (res) => {
-    console.info('onNotifReceived', res);
+  onNotifReceived = () => {
     this.onLoadTracking();
   };
 
