@@ -52,7 +52,7 @@ const Index = memo(
             userName: values.userName,
             password: values.password,
             email: values.email,
-            roleId: values.roleId,
+            roles: values.roles,
           },
         },
         callback: (response, error) => {
@@ -143,6 +143,7 @@ const Index = memo(
         formRef.current.setFieldsValue({
           ...details,
           ...details.user,
+          roles: details?.user?.roles?.map((item) => item?.id),
         });
       }
     }, [details]);
@@ -234,12 +235,12 @@ const Index = memo(
                 </Pane>
                 <hr />
                 <Pane className="row">
-                  <Pane className="col-lg-4">
+                  <Pane className="col-lg-6">
                     <FormItem
                       data={roles}
-                      name="roleId"
+                      name="roles"
                       label="Vai trò"
-                      type={variables.SELECT}
+                      type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>

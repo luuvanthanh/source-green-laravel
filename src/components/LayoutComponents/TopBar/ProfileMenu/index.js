@@ -3,13 +3,10 @@ import { connect } from 'umi';
 import { Menu, Dropdown } from 'antd';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import Cookies from 'universal-cookie';
 
 import { variables } from '@/utils';
 
 import styles from './style.module.scss';
-
-const cookies = new Cookies();
 
 @connect(({ user }) => ({ user }))
 class ProfileMenu extends React.Component {
@@ -28,11 +25,10 @@ class ProfileMenu extends React.Component {
     dispatch({
       type: 'user/SWITCH_ACCOUNT',
       payload: {
-        access_token: cookies.get('access_token'),
-        token_type: cookies.get('token_type'),
-      }
+        role,
+      },
     });
-  }
+  };
 
   render() {
     const { user } = this.props;
@@ -51,11 +47,18 @@ class ProfileMenu extends React.Component {
         <Menu.Divider />
         <Menu.Item>
           <p className="font-weight-bold mb0">Vai trò</p>
-          {(user?.user?.roles || [{name: user?.user?.role}]).map((item, index) => (
+          {(user?.user?.roles || [{ name: user?.user?.role }]).map((item, index) => (
             <p
               key={index}
               onClick={() => this.swichRole(item)}
-              className={classnames(styles.role, `${user?.user?.role?.toUpperCase() === item?.name?.toUpperCase() ? styles.actived : ''}`)}
+              className={classnames(
+                styles.role,
+                `${
+                  user?.user?.role?.toUpperCase() === item?.name?.toUpperCase()
+                    ? styles.actived
+                    : ''
+                }`,
+              )}
               aria-hidden
             >
               {variables.ROLES_NAME[item?.name?.toUpperCase()] || ''}
@@ -64,7 +67,7 @@ class ProfileMenu extends React.Component {
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={this.logout}>
-          <span>
+          <span className="d-flex align-items-center">
             <i className={`${styles.menuIcon} icon-exit`} />
             Logout
           </span>

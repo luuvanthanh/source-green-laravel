@@ -22,23 +22,21 @@ const UserModel = {
           access_token: response.access_token,
           token_type: response.token_type,
         });
-        if (me) {
-          yield put({
-            type: 'SET_USER',
-            payload: {
-              ...me,
-              authorized: true,
-              permissions: me.permissionGrants,
-            },
-          });
-          cookies.set('access_token', response.access_token, { path: '/' });
-          cookies.set('token_type', response.token_type, { path: '/' });
-          const { can, rules } = new AbilityBuilder();
-          me.permissionGrants.forEach((item) => {
-            can([item], item);
-          });
-          ability.update(rules);
-        }
+        yield put({
+          type: 'SET_USER',
+          payload: {
+            ...me,
+            authorized: true,
+            permissions: me.permissionGrants,
+          },
+        });
+        cookies.set('access_token', response.access_token, { path: '/' });
+        cookies.set('token_type', response.token_type, { path: '/' });
+        const { can, rules } = new AbilityBuilder();
+        me.permissionGrants.forEach((item) => {
+          can([item], item);
+        });
+        ability.update(rules);
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
@@ -78,25 +76,25 @@ const UserModel = {
     },
     *SWITCH_ACCOUNT({ payload }, saga) {
       try {
-        const response = yield saga.call(services.switchAccount, {
-          access_token: payload.access_token,
-          token_type: payload.token_type,
-        });
-        if (response) {
+        const { user } = yield saga.select();
+        const roleCurrent = user?.user?.roles?.find((item) => item.name === payload?.role?.name);
+        if (roleCurrent) {
           yield saga.put({
             type: 'SET_USER',
             payload: {
-              ...response,
+              ...user?.user,
               authorized: true,
-              permissions: response.permissionGrants,
+              role: roleCurrent.name,
+              permissions: roleCurrent.permissionGrants,
             },
           });
           const { can, rules } = new AbilityBuilder();
-          response.permissionGrants.forEach((item) => {
+          roleCurrent.permissionGrants.forEach((item) => {
             can([item], item);
           });
           ability.update(rules);
         }
+        history.push('/login');
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
