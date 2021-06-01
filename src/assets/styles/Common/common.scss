@@ -719,13 +719,13 @@
   background-color: transparent;
   border: none;
   outline: none;
-  margin-top: -20px;
-  padding-top: 20px;
-  margin-bottom: -20px;
-  padding-bottom: 20px;
+  margin-top: -16px;
+  padding-top: 16px;
+  margin-bottom: -16px;
+  padding-bottom: 16px;
   width: 100%;
   color: rgba($color: $black, $alpha: 0.85);
-  font-size: 10px;
+  font-size: 14px;
   cursor: pointer;
   &.cell-heading-weekend {
     background-color: #5b9bd5 !important;

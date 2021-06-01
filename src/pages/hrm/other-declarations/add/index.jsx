@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, last, omit } from 'lodash';
+import { get, isEmpty, last, omit, differenceWith, size } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -149,23 +149,34 @@ class Index extends PureComponent {
   };
 
   onChangeEmployee = (value) => {
+    const { detail } = this.state;
     const { categories } = this.props;
-    const employee = categories.users.find((item) => item.id === last(value));
-    this.setStateData((prevState) => ({
-      detail: [
-        ...prevState.detail,
-        {
-          employee,
-          allowance: 0,
-          bonus: 0,
-          retrieval: 0,
-          paymentOfSocialInsurance: 0,
-          employeeSocialInsurance: 0,
-          charity: 0,
-          companySocialInsurance: 0,
-        },
-      ],
-    }));
+    if (size(value) < size(detail)) {
+      const diffirence = differenceWith(
+        detail.map((item) => item?.employee?.id),
+        value,
+      );
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.filter((item) => item?.employee?.id !== last(diffirence)),
+      }));
+    } else {
+      const employee = categories.users.find((item) => item.id === last(value));
+      this.setStateData((prevState) => ({
+        detail: [
+          ...prevState.detail,
+          {
+            employee,
+            allowance: 0,
+            bonus: 0,
+            retrieval: 0,
+            paymentOfSocialInsurance: 0,
+            employeeSocialInsurance: 0,
+            charity: 0,
+            companySocialInsurance: 0,
+          },
+        ],
+      }));
+    }
   };
 
   onChangeNumber = (value, record, key = 'allowance') => {

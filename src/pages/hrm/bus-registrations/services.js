@@ -26,10 +26,8 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
+      fullName: data.fullName,
       include: Helper.convertIncludes(['employee.positionLevelNow']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
     },
   });
 }

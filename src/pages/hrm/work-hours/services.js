@@ -27,9 +27,7 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['employee', 'absentType']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
+      fullName: data.fullName,
     },
   });
 }

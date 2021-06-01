@@ -26,10 +26,8 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
+      fullName: data.fullName,
       include: Helper.convertIncludes(['employee', 'addSubTimeDetail.user']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
     },
   });
 }

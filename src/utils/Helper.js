@@ -724,7 +724,7 @@ export default class Helpers {
       let currentDate = moment(item.startDate).startOf('day');
       const endDate = moment(item.endDate).startOf('day');
       while (currentDate <= endDate) {
-        dataSource = [...dataSource, { ...item, date: currentDate }];
+        dataSource = [...dataSource, { ...item, date: moment(currentDate).endOf('days') }];
         currentDate = moment(currentDate).add(1, 'days');
       }
     });

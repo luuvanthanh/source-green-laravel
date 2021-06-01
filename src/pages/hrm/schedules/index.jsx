@@ -158,13 +158,13 @@ class Index extends PureComponent {
           search: {
             ...prevState.search,
             type: value,
-            startDate: moment(prevState.search.startDate).startOf('month'),
+            startDate: moment(prevState.search.endDate).startOf('month'),
             endDate: moment(prevState.search.endDate).endOf('month'),
           },
         }),
         () => {
           this.formRef.current.setFieldsValue({
-            startDate: moment(this.state.search.startDate).startOf('month'),
+            startDate: moment(this.state.search.endDate).startOf('month'),
             endDate: moment(this.state.search.endDate).endOf('month'),
           });
           this.onLoad();
@@ -817,6 +817,7 @@ class Index extends PureComponent {
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
 
@@ -825,6 +826,7 @@ class Index extends PureComponent {
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>

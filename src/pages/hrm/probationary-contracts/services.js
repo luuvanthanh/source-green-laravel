@@ -27,8 +27,8 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['employee', 'typeOfContract', 'position', 'branch']),
+      fullName: data.fullName,
       search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
         type: data.type,
       }),
     },

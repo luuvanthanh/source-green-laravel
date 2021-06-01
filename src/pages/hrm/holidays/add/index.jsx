@@ -106,12 +106,12 @@ class Index extends PureComponent {
     let payload = {};
     if (params.id) {
       payload = {
-        name: moment(values.date).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
         updateRows: [{ ...values, id: params.id }],
       };
     } else {
       payload = {
-        name: moment(values.date).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
         createRows: [{ ...values }],
       };
     }
