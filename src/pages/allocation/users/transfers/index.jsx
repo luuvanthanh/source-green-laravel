@@ -144,7 +144,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-4">
                       <FormItem
-                        label="Chức danh"
+                        label="Chức vụ"
                         name="position"
                         type={variables.SELECT}
                         data={[]}
@@ -224,7 +224,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-4">
                       <FormItem
-                        label="Chức danh"
+                        label="Chức vụ"
                         name="position"
                         rules={[variables.RULES.EMPTY]}
                         type={variables.INPUT_PASSWORD}

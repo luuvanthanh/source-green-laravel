@@ -210,3 +210,11 @@
     }
   }
 }
+
+.ant-table {
+  .ant-table-container {
+    &:after{
+      background-color: $background-white;
+    }
+  }
+}

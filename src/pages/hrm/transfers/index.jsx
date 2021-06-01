@@ -13,8 +13,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -47,7 +47,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -55,7 +54,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -199,7 +197,7 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
+    const { dispatch } = this.props;
     const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
@@ -296,7 +294,7 @@ class Index extends PureComponent {
         render: (record) => get(record, 'transferDetails[0].division.name'),
       },
       {
-        title: 'Chức danh mới',
+        title: 'Chức vụ mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,

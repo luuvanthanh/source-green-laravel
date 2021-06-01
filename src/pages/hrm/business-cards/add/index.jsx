@@ -258,9 +258,64 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const { type } = this.state;
+  header = (type) => {
     const { shiftUsers } = this.props;
+    if (type === variablesModules.TYPE_ABSENTS.GO_OUT) {
+      return [
+        {
+          title: 'Thời gian',
+          key: 'date',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Thời gian bắt đầu',
+          key: 'startTime',
+          className: 'min-width-200',
+          render: (record) => (
+            <TimePicker
+              format={variables.DATE_FORMAT.HOUR}
+              placeholder="Chọn"
+              disabled
+              value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
+              onSelect={(value) => this.onChangeTimeStart(value, record)}
+            />
+          ),
+        },
+        {
+          title: 'Thời gian kết thúc',
+          key: 'endTime',
+          className: 'min-width-200',
+          render: (record) => (
+            <TimePicker
+              format={variables.DATE_FORMAT.HOUR}
+              placeholder="Chọn"
+              disabled
+              value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
+              onSelect={(value) => this.onChangeTimeEnd(value, record)}
+            />
+          ),
+        },
+        {
+          title: 'Số giờ',
+          key: 'number',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.number}
+              min="0"
+              max="10"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeNumber(event, record)}
+            />
+          ),
+        },
+      ];
+    }
     if (type === variablesModules.TYPE_ABSENTS.BUSINESS_TRAVEL) {
       return [
         {
@@ -466,7 +521,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { detail } = this.state;
+    const { detail, type } = this.state;
     const loading =
       effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['businessCardsAdd/ADD'] || effects['businessCardsAdd/UPDTE'];
@@ -556,13 +611,13 @@ class Index extends PureComponent {
                 </Heading>
                 <Table
                   bordered
-                  columns={this.header()}
+                  columns={this.header(type)}
                   dataSource={detail}
                   isEmpty
                   className="table-edit"
                   pagination={false}
                   params={{
-                    header: this.header(),
+                    header: this.header(type),
                     type: 'table',
                   }}
                   rowKey={(record) => record.id || record.index}

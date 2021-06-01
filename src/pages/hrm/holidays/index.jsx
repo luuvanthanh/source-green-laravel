@@ -356,6 +356,7 @@ class Index extends PureComponent {
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
                     type={variables.YEAR_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>

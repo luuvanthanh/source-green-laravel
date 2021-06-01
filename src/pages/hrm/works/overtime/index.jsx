@@ -291,6 +291,7 @@ class Index extends PureComponent {
             to={this.redirectHistory(dayOfWeek, record, user)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-holidays`]]: !!holiday,
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
             })}
           >
             Nghỉ lễ
@@ -395,6 +396,7 @@ class Index extends PureComponent {
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
       className: 'min-width-200',
+      width: 200,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],

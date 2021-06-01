@@ -789,7 +789,7 @@ export async function getLeftMenuHRM() {
               pro: true,
             },
             {
-              title: 'Chức danh',
+              title: 'Chức vụ',
               key: 'positions',
               url: [
                 '/quan-ly-nhan-su/cau-hinh/chuc-vu',

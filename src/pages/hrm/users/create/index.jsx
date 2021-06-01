@@ -1,7 +1,8 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'antd';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'dva';
 
 import Heading from '@/components/CommonComponent/Heading';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -54,13 +55,36 @@ const forms = {
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem] = useState(defaultKey);
+
+  const dispatch = useDispatch();
+
+  const { details } = useSelector(({ HRMusersAdd }) => ({
+    details: HRMusersAdd.details,
+  }));
+
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'HRMusersAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, [params.id]);
+
   return (
     <div style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ nhân viên" />
       <div className="row" style={{ marginBottom: 20 }}>
-        <div className="col">
-          <Heading type="page-title">Tạo hồ sơ nhân viên</Heading>
-        </div>
+        {!params.id && (
+          <div className="col">
+            <Heading type="page-title">Tạo hồ sơ nhân viên</Heading>
+          </div>
+        )}
+        {params.id && (
+          <div className="col">
+            <Heading type="page-title">Chi tiết hồ sơ nhân viên ({details?.fullName})</Heading>
+          </div>
+        )}
       </div>
       <div className="row">
         <div className="col-lg-3">

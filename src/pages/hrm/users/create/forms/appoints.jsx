@@ -206,7 +206,7 @@ const Index = memo(() => {
         render: (record) => get(record, 'appointDetails[0].division.name'),
       },
       {
-        title: 'Chức danh mới',
+        title: 'Chức vụ mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,
@@ -394,7 +394,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={positions}
-                label="Chức danh mới"
+                label="Chức vụ mới"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}

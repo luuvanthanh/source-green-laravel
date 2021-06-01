@@ -296,7 +296,7 @@ class Index extends PureComponent {
         render: (record) => get(record, 'dismissedDetails[0].division.name'),
       },
       {
-        title: 'Chức danh mới',
+        title: 'Chức vụ mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,

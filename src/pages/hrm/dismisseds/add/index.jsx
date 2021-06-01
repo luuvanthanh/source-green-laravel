@@ -249,7 +249,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={positions}
-                      label="Chức danh mới"
+                      label="Chức vụ mới"
                       name="positionId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}

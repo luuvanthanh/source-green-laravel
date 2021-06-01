@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -45,13 +45,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -245,8 +243,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      error,
-      data,
       match: { params },
       pagination,
       loading: { effects },
@@ -286,11 +282,9 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={[{ id: 1 }]}
               loading={loading}
               pagination={this.pagination(pagination)}
-              error={error}
-              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',
@@ -307,7 +301,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -316,7 +309,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},

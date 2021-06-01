@@ -326,7 +326,10 @@ class Index extends PureComponent {
       values.absentTypeId &&
       values.type
     ) {
-      const dates = Helper.convertArrayDays(values.startDate, values.endDate);
+      const dates = Helper.convertArrayDays(
+        moment(values.startDate).startOf('days'),
+        moment(values.endDate).endOf('days'),
+      );
       this.setStateData({
         detail: dates.map((item, index) => ({ date: item, index })),
       });
