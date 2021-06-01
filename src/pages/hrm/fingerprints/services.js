@@ -11,9 +11,7 @@ export function get(data = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['shiftDetail']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
+      fullName: data.fullName,
     },
   });
 }

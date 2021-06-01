@@ -13,8 +13,9 @@ import Loading from '@/components/CommonComponent/Loading';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
-import variablesModules from '../../utils/variables';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -84,7 +85,7 @@ class Index extends PureComponent {
       dispatch({
         type: 'businessCardsAdd/GET_DATA',
         payload: params,
-        callback: (response, error) => {
+        callback: (response) => {
           if (response) {
             this.formRef.current.setFieldsValue({
               ...response,
@@ -268,6 +269,23 @@ class Index extends PureComponent {
           className: 'min-width-200',
           width: 200,
           render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Số ngày',
+          key: 'isFullDate',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.isFullDate}
+              min="0.5"
+              max="1"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeFullDate(event, record)}
+            />
+          ),
         },
         {
           title: 'Loại ca',
@@ -482,7 +500,7 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -491,7 +509,7 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                 </div>
@@ -581,6 +599,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.func,
+  shiftUsers: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  categories: {},
+  dispatch: () => {},
+  shiftUsers: {},
+  error: {},
+  menuLeftSchedules: [],
+  loading: {},
+};
 
 export default Index;

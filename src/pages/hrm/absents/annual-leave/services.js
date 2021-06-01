@@ -27,10 +27,8 @@ export function get(data = {}) {
         isUTC: false,
       }),
       type: 'ABSENT',
+      fullName: data.fullName,
       include: Helper.convertIncludes(['employee', 'absentType', 'absentReason']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
     },
   });
 }

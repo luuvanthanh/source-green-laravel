@@ -255,7 +255,7 @@ class Index extends PureComponent {
   };
 
   redirectHistory = (item, record, user) =>
-    `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
+    `/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them?${Helper.convertParamSearchConvert(
       {
         startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
         endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
@@ -355,13 +355,13 @@ class Index extends PureComponent {
     const { search } = this.state;
     const headerWork = [
       {
-        title: 'Thực công',
+        title: 'Tổng cộng (Giờ)',
         key: 'date_work',
         align: 'center',
         width: 100,
         fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
-        render: (record) => record.totalWorkHourSummary,
+        render: (record) => Helper.toFixed(record.totalWorkHourSummary),
       },
     ];
     const arrayHeader = [
@@ -394,11 +394,12 @@ class Index extends PureComponent {
     ).map((itemMonth) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
+      className: 'min-width-200',
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
         className: classnames('min-width-50', 'max-width-50', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
-        width: 40,
+        width: 50,
         align: 'center',
         render: (record) => this.renderworksOvertimehift(record.workHourSummary, item, record),
       })),
