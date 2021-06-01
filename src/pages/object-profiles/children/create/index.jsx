@@ -1,8 +1,9 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'antd';
 import { Link } from 'umi';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -26,12 +27,31 @@ const forms = {
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [activeMenuItem] = useState(defaultKey);
+
+  const dispatch = useDispatch();
+
+  const { details } = useSelector(({ OPchildrenAdd }) => ({
+    details: OPchildrenAdd.details,
+  }));
+
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'OPchildrenAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, [params.id]);
+
   return (
     <Pane style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ học sinh" />
       <Pane className="row" style={{ marginBottom: 20 }}>
         <Pane className="col">
-          <Heading type="page-title">Tạo hồ sơ học sinh</Heading>
+          {!params.id && <Heading type="page-title">Tạo hồ sơ học sinh</Heading>}
+          {params.id && (
+            <Heading type="page-title">Chi tiết hồ sơ học sinh ({details?.student?.fullName})</Heading>
+          )}
         </Pane>
       </Pane>
       <Pane className="row">

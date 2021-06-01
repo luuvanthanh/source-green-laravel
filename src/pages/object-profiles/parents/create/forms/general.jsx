@@ -90,15 +90,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   };
 
   useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'OPParentsAdd/GET_DETAILS',
-        payload: params,
-      });
-    }
-  }, [params.id]);
-
-  useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
         ...details,
