@@ -126,15 +126,6 @@ const General = memo(
     };
 
     useEffect(() => {
-      if (params.id) {
-        dispatch({
-          type: 'OPchildrenAdd/GET_DETAILS',
-          payload: params,
-        });
-      }
-    }, [params.id]);
-
-    useEffect(() => {
       dispatch({
         type: 'OPchildrenAdd/GET_BRANCHES',
         payload: params,
