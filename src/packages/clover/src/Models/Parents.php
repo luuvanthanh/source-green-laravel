@@ -23,4 +23,9 @@ class Parents extends UuidModel
         'Instagram', 'Hobby', 'Referent', 'Status', 'JobTile', 'FileImage', 'ExtraProperties', 'ConcurrencyStamp',
         'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime', 'City', 'District', 'Street', 'Ward', 'Source',
     ];
+
+    public function account()
+    {
+        return $this->hasOne(\GGPHP\Clover\Models\ParentAccount::class, 'ParentId');
+    }
 }

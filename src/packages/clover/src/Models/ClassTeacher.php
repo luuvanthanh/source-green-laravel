@@ -26,4 +26,9 @@ class ClassTeacher extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Classes::class, 'ClassId');
     }
+
+    public function teacher()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
+    }
 }

@@ -132,9 +132,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         if (!empty($attributes['isShift'])) {
             $employeesByStore->whereHas('schedules', function ($query) use ($attributes) {
-                $query->where([['StartDate', '<=', $attributes['StartDate']], ['EndDate', '>=', $attributes['endDate']]])
-                    ->orWhere([['StartDate', '>', $attributes['StartDate']], ['StartDate', '<=', $attributes['endDate']]])
-                    ->orWhere([['EndDate', '>=', $attributes['StartDate']], ['EndDate', '<', $attributes['endDate']]]);
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             });
         }
 
@@ -175,8 +175,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
         $now = Carbon::now();
-
-        $type = !empty($attributes['type']) ? $attributes['type'] : null;
 
         $this->employee = $employee;
         $employeeTimekeeping = [];

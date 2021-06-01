@@ -11,7 +11,7 @@ class Absent extends UuidModel
     protected $table = 'AbsentStudents';
 
     protected $fillable = [
-        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate',
+        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId',
     ];
 
     protected $dateTimeFields = [
@@ -30,6 +30,14 @@ class Absent extends UuidModel
     public function parent()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Parents::class, 'ParentId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function employee()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
     }
 
     /**

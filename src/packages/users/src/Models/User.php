@@ -253,4 +253,9 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class)->withTrashed();
     }
 
+    public function account()
+    {
+        return $this->hasOne(\GGPHP\Clover\Models\EmployeeAccount::class, 'EmployeeId');
+    }
+
 }

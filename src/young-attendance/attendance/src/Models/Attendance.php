@@ -26,7 +26,7 @@ class Attendance extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'Date', 'Status',
+        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason',
     ];
 
     protected $dateTimeFields = [
@@ -39,5 +39,21 @@ class Attendance extends UuidModel
     public function student()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Student::class, 'StudentId');
+    }
+
+    /**
+     * Define relations user
+     */
+    public function attendanceReason()
+    {
+        return $this->hasOne(\GGPHP\Attendance\Models\AttendanceReason::class, 'Id', 'ReasonId');
+    }
+
+    /**
+     * Define relations user
+     */
+    public function attendanceLog()
+    {
+        return $this->hasMany(\GGPHP\Attendance\Models\AttendanceLog::class, 'AttendanceId');
     }
 }
