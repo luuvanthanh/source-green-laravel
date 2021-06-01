@@ -60,4 +60,12 @@ class Student extends UuidModel
     {
         return $this->hasMany(\GGPHP\YoungAttendance\Absent\Models\Absent::class, 'StudentId');
     }
+
+    /**
+     * Define relations Schedule
+     */
+    public function parent()
+    {
+        return $this->belongsToMany(\GGPHP\Clover\Models\Parents::class, 'object.StudentParents', 'StudentId', 'ParentId');
+    }
 }

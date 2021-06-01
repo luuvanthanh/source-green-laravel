@@ -97,19 +97,14 @@ class AttendanceController extends Controller
     }
 
     /**
-     * @param Request $request
+     * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function export(Request $request)
+    public function attendancesSummary(Request $request)
     {
-        \DB::enableQueryLog();
-        $result = $this->attendanceRepository->export($request);
+        $attendance = $this->attendanceRepository->attendanceCrontab($request->all());
 
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang-program::messages.attendance.export.template-not-found'), 400);
-        }
-
-        return $result;
+        return $this->success([], trans('lang-program::messages.attendance.getListSuccess'));
     }
 }

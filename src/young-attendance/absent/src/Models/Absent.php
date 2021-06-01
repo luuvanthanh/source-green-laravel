@@ -11,7 +11,7 @@ class Absent extends UuidModel
     protected $table = 'AbsentStudents';
 
     protected $fillable = [
-        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate',
+        'AbsentTypeId', 'AbsentReasonId', 'ParentId', 'StudentId', 'StartDate', 'EndDate', 'Status', 'EmployeeId',
     ];
 
     protected $dateTimeFields = [

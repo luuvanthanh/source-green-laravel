@@ -61,6 +61,9 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function filterBusRegistration(array $attributes)
     {
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        }
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);

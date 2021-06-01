@@ -2,7 +2,8 @@
 
 namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
-use GGPHP\Clover\Repositories\Eloquent\ParentRepositoryEloquent;
+use GGPHP\Attendance\Models\Attendance;
+use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
@@ -17,20 +18,19 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
-    protected $parentRepositoryEloquent;
+    protected $studentRepositoryEloquent;
 
     public function __construct(
-        ParentRepositoryEloquent $parentRepositoryEloquent,
+        StudentRepositoryEloquent $studentRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
-        $this->parentRepositoryEloquent = $parentRepositoryEloquent;
+        $this->studentRepositoryEloquent = $studentRepositoryEloquent;
     }
 
     protected $fieldSearchable = [
         'AbsentTypeId',
         'AbsentReasonId',
-        'Parent.FullName' => 'like',
     ];
     /**
      * Specify Model class name
@@ -73,12 +73,16 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         if (!empty($attributes['parentId'])) {
             $parentId = explode(',', $attributes['parentId']);
-            $this->model = $this->model->where('ParentId', $parentId);
+            $this->model = $this->model->whereIn('ParentId', $parentId);
         }
 
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
-            $this->model = $this->model->where('StudentId', $studentId);
+            $this->model = $this->model->whereIn('StudentId', $studentId);
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('status', $attributes['status']);
         }
 
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
@@ -105,9 +109,9 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
      */
     public function getAbsent($attributes)
     {
-        $this->parentRepositoryEloquent->model = $this->parentRepositoryEloquent->model->query();
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->query();
 
-        $this->parentRepositoryEloquent->model = $this->parentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->whereDate('StartDate', '>=', $attributes['startDate'])->whereDate('StartDate', '<=', $attributes['endDate']);
             }
@@ -119,15 +123,97 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }]);
 
         if (!empty($attributes['parentId'])) {
-            $this->parentRepositoryEloquent->model->whereIn('Id', explode(',', $attributes['parentId']));
+            $this->studentRepositoryEloquent->model->whereIn('Id', explode(',', $attributes['parentId']));
         }
 
         if (!empty($attributes['limit'])) {
-            $parents = $this->parentRepositoryEloquent->paginate($attributes['limit']);
+            $parents = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
-            $parents = $this->parentRepositoryEloquent->get();
+            $parents = $this->studentRepositoryEloquent->get();
         }
 
         return $parents;
+    }
+
+    public function create(array $attributes)
+    {
+        $absent = Absent::create($attributes);
+
+        if ($absent->Status == 'CONFIRM') {
+            $begin = new \DateTime($startDate);
+            $end = new \DateTime($endDate);
+            $intervalDate = \DateInterval::createFromDateString('1 day');
+            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+
+            foreach ($periodDate as $date) {
+                $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
+                if (is_null($attendance)) {
+                    $attendance = Attendance::create([
+                        'StudentId' => $attributes['studentId'],
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                } else {
+                    $attendance->update([
+                        'StudentId' => $attributes['studentId'],
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                }
+
+            }
+        } else {
+
+            $urlNoti = env('NOTI_URL') . '/api/notification';
+
+            $parentId = $absent->student->parent->pluck('Id')->toArray();
+            $nameStudent = $absent->student->FullName;
+            $imageUrl = $absent->student->FileImage;
+            $startDate = $absent->StartDate->format('d-m');
+            $endDate = $absent->EndDate->format('d-m');
+            if (!empty($parentId)) {
+                Http::post("$urlNoti", [
+                    'users' => $parentId,
+                    'title' => 'Clover',
+                    'imageURL' => $imageUrl,
+                    'message' => "Đơn xin phép nghỉ được tạo từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
+                ]);
+            }
+        }
+
+        return parent::find($absent->id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $absent = Absent::findOrFail($id);
+
+        $absent->update($attributes);
+
+        if ($attributes['status'] == 'CONFIRM') {
+            $begin = new \DateTime($startDate);
+            $end = new \DateTime($endDate);
+            $intervalDate = \DateInterval::createFromDateString('1 day');
+            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+
+            foreach ($periodDate as $date) {
+                $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
+                if (is_null($attendance)) {
+                    $attendance = Attendance::create([
+                        'StudentId' => $attributes['studentId'],
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                } else {
+                    $attendance->update([
+                        'StudentId' => $attributes['studentId'],
+                        'Date' => $date->format('Y-m-d'),
+                        'Status' => Attendance::STATUS['ANNUAL_LEAVE'],
+                    ]);
+                }
+            }
+        }
+
+        return parent::find($id);
     }
 }

@@ -30,6 +30,10 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('attendances', 'AttendanceController');
+            \Route::resource('attendance-logs', 'AttendanceLogController');
+            \Route::resource('attendances-reasons', 'AttendanceReasonController');
+
+            \Route::get('attendances-summary', 'AttendanceController@attendancesSummary');
         });
     }
 }
