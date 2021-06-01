@@ -293,7 +293,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Chức danh',
+        title: 'Chức vụ',
         key: 'position',
         className: 'min-width-150',
         render: (record) => (
@@ -336,7 +336,7 @@ class Index extends PureComponent {
     const loading = effects['HRMusers/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách phụ huynh" />
+        <Helmet title="Danh sách hồ sơ cán bộ nhân viên" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">

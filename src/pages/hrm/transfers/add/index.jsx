@@ -4,6 +4,7 @@ import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty, head } from 'lodash';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -252,7 +253,7 @@ class Index extends PureComponent {
                   <div className="col-lg-6">
                     <FormItem
                       data={positions}
-                      label="Chức danh mới"
+                      label="Chức vụ mới"
                       name="positionId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
@@ -289,6 +290,30 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  positions: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  details: {},
+  positions: [],
+  error: {},
+  branches: [],
+  divisions: [],
+  categories: {},
+  menuData: [],
+};
 
 export default Index;

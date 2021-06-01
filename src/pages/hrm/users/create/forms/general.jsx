@@ -383,7 +383,7 @@ const General = memo(() => {
               <div className="col-lg-6">
                 <FormItem
                   data={positions}
-                  label="Chức danh"
+                  label="Chức vụ"
                   name="positionId"
                   type={variables.SELECT}
                   // rules={[variables.RULES.EMPTY]}

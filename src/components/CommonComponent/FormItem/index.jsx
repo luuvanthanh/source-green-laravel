@@ -187,6 +187,7 @@ const renderChildren = (
       onChange={onChange}
       placeholder="Chọn"
       picker="month"
+      allowClear={allowClear}
     />
   ),
   yearPicker: (
@@ -197,6 +198,7 @@ const renderChildren = (
       onChange={onChange}
       placeholder="Chọn"
       picker="year"
+      allowClear={allowClear}
     />
   ),
   dateTimePicker: (
@@ -224,6 +226,7 @@ const renderChildren = (
       disabledMinutes={disabledMinutes}
       placeholder="Chọn"
       disabled={disabled}
+      minuteStep={30}
     />
   ),
   treeSelect: (

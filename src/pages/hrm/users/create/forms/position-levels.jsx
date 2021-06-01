@@ -7,6 +7,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
+import { Helper } from '@/utils';
 
 const Index = memo(() => {
   const {
@@ -43,6 +44,25 @@ const Index = memo(() => {
         render: (text, record, index) => index + 1,
       },
       {
+        title: 'Thời gian bắt đầu',
+        key: 'startDate',
+        className: 'min-width-150',
+        render: (record) => Helper.getDate(record.startDate),
+      },
+      {
+        title: 'Thời gian kết thúc',
+        key: 'endDate',
+        className: 'min-width-150',
+        render: (record) => Helper.getDate(record.endDate),
+      },
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => get(record, 'division.name'),
+      },
+      {
         title: 'Cơ sở',
         key: 'branch',
         className: 'min-width-150',
@@ -56,7 +76,7 @@ const Index = memo(() => {
         render: (record) => get(record, 'division.name'),
       },
       {
-        title: 'Chức danh',
+        title: 'Chức vụ',
         key: 'position',
         className: 'min-width-150',
         width: 150,

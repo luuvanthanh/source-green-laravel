@@ -273,7 +273,7 @@ const Index = memo(() => {
         render: (value) => value?.name,
       },
       {
-        title: 'Chức danh',
+        title: 'Chức vụ',
         key: 'position',
         dataIndex: 'position',
         className: 'min-width-150',
@@ -524,7 +524,7 @@ const Index = memo(() => {
             <Pane className="col-lg-4">
               <FormItem
                 data={positions}
-                label="Chức danh"
+                label="Chức vụ"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}

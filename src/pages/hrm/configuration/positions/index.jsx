@@ -260,7 +260,7 @@ class Index extends PureComponent {
     const loading = effects['positions/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách chức danh" />
+        <Helmet title="Danh sách chức vụ" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH CHỨC VỤ</Text>

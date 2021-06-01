@@ -727,15 +727,6 @@
   color: rgba($color: $black, $alpha: 0.85);
   font-size: 14px;
   cursor: pointer;
-  &.cell-heading-weekend {
-    background-color: #5b9bd5 !important;
-    color: #5b9bd5 !important;
-    &:focus,
-    &:hover {
-      background-color: #5b9bd5 !important;
-      color: #5b9bd5 !important;
-    }
-  }
   &.cell-heading-kc {
     background-color: #a5a5a5;
     color: $white;
@@ -752,6 +743,15 @@
     &:hover {
       background-color: #fbe4d5 !important;
       color: $text !important;
+    }
+  }
+  &.cell-heading-weekend {
+    background-color: #5b9bd5 !important;
+    color: #5b9bd5 !important;
+    &:focus,
+    &:hover {
+      background-color: #5b9bd5 !important;
+      color: #5b9bd5 !important;
     }
   }
 
@@ -880,7 +880,6 @@
     display: none;
   }
 }
-
 
 .tooltip-container {
   strong {
