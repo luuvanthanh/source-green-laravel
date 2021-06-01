@@ -87,7 +87,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
+          description: error.data?.error?.message || 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
         callback(null, error?.data?.error);
       }

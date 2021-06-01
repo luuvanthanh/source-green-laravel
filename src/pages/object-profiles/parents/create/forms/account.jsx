@@ -136,6 +136,7 @@ const Index = memo(
       if (!isEmpty(details) && params.id) {
         formRef.current.setFieldsValue({
           ...details.user,
+          roles: details.user?.roles?.map((item) => item.id),
         });
       }
     }, [details]);
@@ -230,9 +231,9 @@ const Index = memo(
                   <Pane className="col-lg-4">
                     <FormItem
                       data={roles}
-                      name="roleId"
+                      name="roles"
                       label="Vai trò"
-                      type={variables.SELECT}
+                      type={variables.SELECT_MUTILPLE}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
