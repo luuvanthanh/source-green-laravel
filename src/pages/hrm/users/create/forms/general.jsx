@@ -89,15 +89,6 @@ const General = memo(() => {
     });
   };
 
-  useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'HRMusersAdd/GET_DETAILS',
-        payload: params,
-      });
-    }
-  }, [params.id]);
-
   /**
    * Load Items Degres
    */
