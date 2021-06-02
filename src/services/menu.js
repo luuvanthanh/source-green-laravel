@@ -292,6 +292,17 @@ export async function getLeftMenuSchedules() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Lý do điểm danh',
+          key: 'attendances-reasons',
+          url: [
+            '/diem-danh/ly-do-diem-danh',
+            '/diem-danh/ly-do-diem-danh/tao-moi',
+            '/diem-danh/ly-do-diem-danh/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {
