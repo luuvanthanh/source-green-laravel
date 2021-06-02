@@ -18,7 +18,13 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance', 'absent']),
+      include: Helper.convertIncludes([
+        'timekeeping',
+        'class',
+        'attendance',
+        'absent',
+        'classStudent.class',
+      ]),
       search: Helper.convertParamSearchConvert({
         FullName: data.fullName,
       }),
@@ -29,7 +35,7 @@ export function get(data = {}) {
 export function add(data) {
   return request('/v1/attendances', {
     method: 'POST',
-    data: data,
+    data,
     params: {
       include: Helper.convertIncludes(['timekeeping', 'class', 'attendance']),
     },

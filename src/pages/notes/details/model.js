@@ -1,7 +1,4 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
-import variablesModules from '../utils/variables';
 
 export default {
   namespace: 'notesDetails',

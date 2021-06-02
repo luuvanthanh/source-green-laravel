@@ -14,13 +14,13 @@
   h3 {
     margin: 0;
     color: #36383a;
-    font: 600 14px/20px "Roboto";
+    font: 14px/20px $bold__font-family;;
   }
 
   p {
     margin: 0;
     color: #7a7e84;
-    font: 400 13px/20px "Roboto";
+    font: 400 13px/20px $base__font-family;;
   }
 }
 
@@ -34,7 +34,7 @@
 
 .infoText {
   @extend .infoLabel;
-  font-weight: 600;
+  font-family: $bold__font-family;
 }
 
 .circleIcon {

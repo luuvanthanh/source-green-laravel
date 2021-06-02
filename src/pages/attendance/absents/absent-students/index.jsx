@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Avatar, Typography } from 'antd';
+import { Form, Typography } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, get } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,8 +12,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../../utils/Helper';
+import variablesModules from '../../utils/variables';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -32,7 +32,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ absentStudents, loading }) => ({
   data: absentStudents.data,
   pagination: absentStudents.pagination,
@@ -48,7 +47,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -56,7 +54,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -226,6 +223,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     return [
       {
         title: 'STT',
@@ -251,13 +251,13 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Phụ huynh',
-        key: 'parent',
+        title: 'Nhân viên',
+        key: 'employee',
         className: 'min-width-200',
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(get(record, 'parent.fileImage'))}
-            fullName={get(record, 'parent.fullName')}
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
           />
         ),
       },
@@ -281,6 +281,30 @@ class Index extends PureComponent {
         key: 'absentReason',
         className: 'min-width-200',
         render: (record) => record?.absentReason?.name,
+      },
+      {
+        title: 'Trạng thái',
+        key: 'status',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => HelperModules.tagStatus(record.status),
+      },
+      {
+        key: 'actions',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            {record.status === variablesModules.STATUS.PENDING && (
+              <Button
+                color="primary"
+                icon="edit"
+                onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+              />
+            )}
+          </div>
+        ),
       },
     ];
   };
@@ -330,6 +354,8 @@ class Index extends PureComponent {
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -337,6 +363,8 @@ class Index extends PureComponent {
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>

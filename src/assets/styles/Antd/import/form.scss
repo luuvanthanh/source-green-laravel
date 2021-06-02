@@ -20,7 +20,7 @@
   color: rgba($color: $text-dark, $alpha: 0.65);
   line-height: 22px;
   margin-top: 16px;
-  font-family: "Roboto";
+  font-family: $base__font-family;
   font-style: italic;
   font-weight: normal;
   font-size: 13px;
@@ -45,7 +45,7 @@ form .ant-cascader-picker:only-child {
   label {
     // color: rgba($color: $text-dark, $alpha: 0.65);
     color: $text-form-label;
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
@@ -63,7 +63,7 @@ form .ant-cascader-picker:only-child {
       white-space: pre;
       padding-right: 2px;
       i {
-        font-family: "Roboto", sans-serif;
+        font-family: $base__font-family;
         font-style: italic;
         font-weight: normal;
         font-size: 13px;
@@ -201,6 +201,15 @@ form .ant-cascader-picker:only-child {
   .ant-checkbox-wrapper {
     margin-left: 0;
   }
+  &.group-column {
+    .ant-checkbox-wrapper {
+      margin-top: 15px;
+      font-family: $base__font-family;
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
 }
 
 .checkbox-column {
@@ -269,4 +278,9 @@ form .ant-cascader-picker:only-child {
 
 .pointer {
   cursor: pointer;
+}
+
+.font-weight-bold {
+  font-family: $bold__font-family;
+  font-weight: unset !important;
 }

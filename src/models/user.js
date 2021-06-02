@@ -1,17 +1,10 @@
 import * as services from '@/services/login';
 import { history } from 'umi';
 import { notification } from 'antd';
-import { last } from 'lodash';
 import Cookies from 'universal-cookie';
 import { AbilityBuilder } from '@casl/ability';
 import ability from '@/utils/ability';
 
-const permission = ['QLTK', 'QLTK_VIEW', 'QLTK_NEW', 'QLTK_EDIT', 'QLTK_DELETE'];
-const splitPermission = (string) => {
-  const type = last(string?.split('_'));
-  const name = string?.slice(0, string.length - type.length - 1);
-  return [type, name];
-};
 const cookies = new Cookies();
 const UserModel = {
   namespace: 'user',
@@ -19,7 +12,7 @@ const UserModel = {
     currentUser: {},
     authorized: false,
     user: {},
-    permissions: ['QLTK', 'QLTK_VIEW', 'QLTK_NEW', 'QLTK_EDIT', 'QLTK_DELETE'],
+    permissions: [],
   },
   effects: {
     *login({ payload }, { call, put }) {
@@ -29,28 +22,21 @@ const UserModel = {
           access_token: response.access_token,
           token_type: response.token_type,
         });
-        if (me) {
-          yield put({
-            type: 'SET_USER',
-            payload: {
-              ...me,
-              authorized: true,
-              permissions: permission,
-            },
-          });
-          cookies.set('access_token', response.access_token, { path: '/' });
-          cookies.set('token_type', response.token_type, { path: '/' });
-          const { can, rules } = new AbilityBuilder();
-          permission.forEach((item) => {
-            if (splitPermission(item)[0] === 'VIEW') {
-              can(['VIEW'], splitPermission(item)[1]);
-            }
-            if (splitPermission(item)[0] === 'NEW') {
-              can(['NEW'], splitPermission(item)[1]);
-            }
-          });
-          ability.update(rules);
-        }
+        yield put({
+          type: 'SET_USER',
+          payload: {
+            ...me,
+            authorized: true,
+            permissions: me.permissionGrants,
+          },
+        });
+        cookies.set('access_token', response.access_token, { path: '/' });
+        cookies.set('token_type', response.token_type, { path: '/' });
+        const { can, rules } = new AbilityBuilder();
+        me.permissionGrants.forEach((item) => {
+          can([item], item);
+        });
+        ability.update(rules);
       } catch (error) {
         notification.error({
           message: 'THÔNG BÁO',
@@ -73,10 +59,42 @@ const UserModel = {
             payload: {
               ...response,
               authorized: true,
-              permissions: permission,
+              permissions: response.permissionGrants,
             },
           });
+          const { can, rules } = new AbilityBuilder();
+          response.permissionGrants.forEach((item) => {
+            can([item], item);
+          });
+          ability.update(rules);
         }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+        });
+      }
+    },
+    *SWITCH_ACCOUNT({ payload }, saga) {
+      try {
+        const { user } = yield saga.select();
+        const roleCurrent = user?.user?.roles?.find((item) => item.name === payload?.role?.name);
+        if (roleCurrent) {
+          yield saga.put({
+            type: 'SET_USER',
+            payload: {
+              ...user?.user,
+              authorized: true,
+              role: roleCurrent.name,
+              permissions: roleCurrent.permissionGrants,
+            },
+          });
+          const { can, rules } = new AbilityBuilder();
+          roleCurrent.permissionGrants.forEach((item) => {
+            can([item], item);
+          });
+          ability.update(rules);
+        }
+        history.push('/login');
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

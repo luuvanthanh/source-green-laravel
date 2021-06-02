@@ -5,6 +5,7 @@ export function get(data = {}) {
   return request('/v1/work-hours-summary', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       searchJoin: 'and',
@@ -26,9 +27,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      include: Helper.convertIncludes(['positionLevelNow']),
     },
   });
 }

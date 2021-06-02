@@ -2,19 +2,16 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Typography, Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import variablesModules from '../utils/variables';
 
 let isMounted = true;
 /**
@@ -35,6 +32,7 @@ const { Paragraph } = Typography;
 const mapStateToProps = ({ AllocationHistories, loading }) => ({
   data: AllocationHistories.data,
   pagination: AllocationHistories.pagination,
+  employees: AllocationHistories.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -47,13 +45,12 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         action: query?.action,
+        creator: query?.creator,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -96,6 +93,13 @@ class Index extends PureComponent {
       },
     });
     history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'AllocationHistories/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -193,43 +197,41 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'Thời gian',
-        key: 'code',
-        width: 150,
-        className: 'min-width-130',
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
-          </Text>
-        ),
-      },
-      {
-        title: 'Tên tài khoản',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => record?.creator?.name,
-      },
-      {
-        title: 'Hành động',
-        key: 'action',
-        className: 'min-width-130',
-        render: (record) => variablesModules.ACTION_TYPE[record.action],
-      },
-      {
-        title: 'Nội dung',
-        key: 'status',
-        className: 'min-width-120',
-        render: (record) => (
-          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-            {record.content}
-          </Paragraph>
-        ),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'Thời gian',
+      key: 'code',
+      width: 150,
+      className: 'min-width-130',
+      render: (record) => (
+        <Text size="normal">
+          {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+        </Text>
+      ),
+    },
+    {
+      title: 'Tên tài khoản',
+      key: 'name',
+      className: 'min-width-150',
+      render: (record) => record?.creator?.name,
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      className: 'min-width-130',
+      render: (record) => variablesModules.ACTION_TYPE[record.action],
+    },
+    {
+      title: 'Nội dung',
+      key: 'status',
+      className: 'min-width-120',
+      render: (record) => (
+        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+          {record.content}
+        </Paragraph>
+      ),
+    },
+  ];
 
   render() {
     const {
@@ -237,6 +239,7 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      employees,
     } = this.props;
     const { search } = this.state;
     const loading = effects['AllocationHistories/GET_DATA'];
@@ -261,9 +264,9 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="user_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'user_id')}
+                    name="creator"
+                    data={Helper.convertSelectUsers(employees)}
+                    onChange={(event) => this.onChangeSelect(event, 'creator')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -285,7 +288,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -312,6 +314,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -321,6 +324,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
 };
 
 export default Index;

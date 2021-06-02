@@ -10,6 +10,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -69,9 +70,8 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        decisionDate: details.decisionDate && moment(details.decisionDate),
-        from: details.from && moment(details.from),
-        to: details.to && moment(details.to),
+        startDate: details.startDate && moment(details.startDate),
+        endDate: details.endDate && moment(details.endDate),
       });
     }
   }
@@ -106,12 +106,12 @@ class Index extends PureComponent {
     let payload = {};
     if (params.id) {
       payload = {
-        name: moment(values.date).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
         updateRows: [{ ...values, id: params.id }],
       };
     } else {
       payload = {
-        name: moment(values.date).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
         createRows: [{ ...values }],
       };
     }
@@ -140,18 +140,14 @@ class Index extends PureComponent {
 
   render() {
     const {
-      categories,
       menuData,
-      loading: { effects },
       match: { params },
+      loading: { effects },
     } = this.props;
     const loadingSubmit = effects['holidaysAdd/ADD'] || effects['holidaysAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs
-          last={params.id ? 'Tạo ngày nghỉ lễ' : 'Tạo ngày nghỉ lễ'}
-          menu={menuData}
-        />
+        <Breadcrumbs last={params.id ? 'Tạo ngày nghỉ lễ' : 'Tạo ngày nghỉ lễ'} menu={menuData} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -166,12 +162,24 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
-                    label="Ngày"
-                    name="date"
+                    label="Từ ngày"
+                    name="startDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
+                <div className="col-lg-6">
+                  <FormItem
+                    label="Đến ngày"
+                    name="endDate"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                  />
+                </div>
+              </div>
+              <div className="row">
                 <div className="col-lg-6">
                   <FormItem
                     label="Tên ngày lễ"
@@ -210,6 +218,20 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  loading: {},
+  dispatch: {},
+  match: {},
+  menuData: [],
+  details: {},
+};
 
 export default Index;

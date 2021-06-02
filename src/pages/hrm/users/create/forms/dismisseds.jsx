@@ -7,13 +7,11 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
-import styles from '@/assets/styles/Common/common.scss';
 
 const { confirm } = Modal;
 const Index = memo(() => {
@@ -21,13 +19,11 @@ const Index = memo(() => {
   const [objects, setObjects] = useState({});
 
   const {
-    details,
     loading: { effects },
     branches,
     divisions,
     positions,
     dismisseds,
-    error,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     details: HRMusersAdd.details,
@@ -211,7 +207,7 @@ const Index = memo(() => {
         render: (record) => get(record, 'dismissedDetails[0].division.name'),
       },
       {
-        title: 'Chức danh mới',
+        title: 'Chức vụ mới',
         key: 'position',
         className: 'min-width-150',
         width: 150,
@@ -398,7 +394,7 @@ const Index = memo(() => {
             <Pane className="col-lg-6">
               <FormItem
                 data={positions}
-                label="Chức danh mới"
+                label="Chức vụ mới"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
@@ -429,7 +425,6 @@ const Index = memo(() => {
           </Pane>
           <Pane style={{ padding: 20 }} className="pb-0">
             <Table
-              bordered
               columns={header()}
               dataSource={dismisseds}
               pagination={false}

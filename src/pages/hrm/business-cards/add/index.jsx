@@ -13,8 +13,9 @@ import Loading from '@/components/CommonComponent/Loading';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
-import variablesModules from '../../utils/variables';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -84,7 +85,7 @@ class Index extends PureComponent {
       dispatch({
         type: 'businessCardsAdd/GET_DATA',
         payload: params,
-        callback: (response, error) => {
+        callback: (response) => {
           if (response) {
             this.formRef.current.setFieldsValue({
               ...response,
@@ -257,9 +258,62 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const { type } = this.state;
+  header = (type) => {
     const { shiftUsers } = this.props;
+    if (type === variablesModules.TYPE_ABSENTS.GO_OUT) {
+      return [
+        {
+          title: 'Thời gian',
+          key: 'date',
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Thời gian bắt đầu',
+          key: 'startTime',
+          className: 'min-width-200',
+          render: (record) => (
+            <TimePicker
+              format={variables.DATE_FORMAT.HOUR}
+              placeholder="Chọn"
+              value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
+              onSelect={(value) => this.onChangeTimeStart(value, record)}
+            />
+          ),
+        },
+        {
+          title: 'Thời gian kết thúc',
+          key: 'endTime',
+          className: 'min-width-200',
+          render: (record) => (
+            <TimePicker
+              format={variables.DATE_FORMAT.HOUR}
+              placeholder="Chọn"
+              value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
+              onSelect={(value) => this.onChangeTimeEnd(value, record)}
+            />
+          ),
+        },
+        {
+          title: 'Số giờ',
+          key: 'number',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.number}
+              min="0"
+              max="10"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeNumber(event, record)}
+            />
+          ),
+        },
+      ];
+    }
     if (type === variablesModules.TYPE_ABSENTS.BUSINESS_TRAVEL) {
       return [
         {
@@ -268,6 +322,23 @@ class Index extends PureComponent {
           className: 'min-width-200',
           width: 200,
           render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+        },
+        {
+          title: 'Số ngày',
+          key: 'isFullDate',
+          className: 'min-width-150',
+          width: 150,
+          render: (record) => (
+            <InputNumber
+              value={record.isFullDate}
+              min="0.5"
+              max="1"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeFullDate(event, record)}
+            />
+          ),
         },
         {
           title: 'Loại ca',
@@ -448,7 +519,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { detail } = this.state;
+    const { detail, type } = this.state;
     const loading =
       effects['businessCardsAdd/GET_DETAILS'] || effects['businessCardsAdd/GET_CATEGORIES'];
     const loadingSubmit = effects['businessCardsAdd/ADD'] || effects['businessCardsAdd/UPDTE'];
@@ -482,7 +553,7 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -491,7 +562,7 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                 </div>
@@ -538,13 +609,13 @@ class Index extends PureComponent {
                 </Heading>
                 <Table
                   bordered
-                  columns={this.header()}
+                  columns={this.header(type)}
                   dataSource={detail}
                   isEmpty
                   className="table-edit"
                   pagination={false}
                   params={{
-                    header: this.header(),
+                    header: this.header(type),
                     type: 'table',
                   }}
                   rowKey={(record) => record.id || record.index}
@@ -581,6 +652,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.func,
+  shiftUsers: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  categories: {},
+  dispatch: () => {},
+  shiftUsers: {},
+  error: {},
+  menuLeftSchedules: [],
+  loading: {},
+};
 
 export default Index;

@@ -9,7 +9,7 @@ export default {
     *UPLOAD({ payload, callback }, { call }) {
       try {
         const response = yield call(services.upload, payload);
-        callback && callback(response)
+        callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
@@ -24,7 +24,7 @@ export default {
     *CREATE({ payload, callback }, { call }) {
       try {
         const response = yield call(services.create, payload);
-        callback && callback(response)
+        callback(response);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',

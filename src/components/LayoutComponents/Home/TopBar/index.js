@@ -7,8 +7,8 @@ class TopBar extends React.Component {
   render() {
     return (
       <div className={styles.topbar}>
-        <div className="mr-4"></div>
-        <div className="mr-auto"></div>
+        <div className="mr-4" />
+        <div className="mr-auto" />
         <div className="mr-5">
           <Setting />
         </div>

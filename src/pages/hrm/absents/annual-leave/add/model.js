@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { get, isEmpty } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'absentsAdd',
@@ -45,7 +45,7 @@ export default {
     }),
   },
   effects: {
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
           absentTypes: saga.call(services.getAbsentTypes),

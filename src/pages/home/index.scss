@@ -78,6 +78,9 @@
       height: 60px;
       width: 60px;
     }
+    .animation {
+      height: 60px;
+    }
     .item-content {
       position: absolute;
       width: 100%;
@@ -86,7 +89,7 @@
       bottom: 15px;
     }
     .norm {
-      font-family: "Roboto", sans-serif;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -102,6 +105,19 @@
   flex: 1;
   padding: 20px;
   z-index: 1;
+  .items-container {
+    padding: 0 80px;
+    z-index: 1;
+    @media (max-width: $xl-min-width) {
+      padding: 0 30px;
+    }
+    @media (max-width: $md-max-width) {
+      padding: 0 10px;
+    }
+    @media (max-width: $xs-min-width) {
+      padding: 0;
+    }
+  }
   .title {
     font-size: 31px;
     line-height: 40px;
@@ -147,16 +163,20 @@
 .body-tab {
   background: rgba($color: #EDF0F4, $alpha: 0.96);
   border-radius: 10px;
-  padding: 15px 20px;
+  padding: 15px 0;
   height: 100%;
   .header-tab {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 20px;
     .icon {
       width: 20px;
       height: auto;
     }
+  }
+  :global(.ant-tabs) {
+    padding: 0 20px;
   }
   :global(.ant-tabs>.ant-tabs-nav) {
     justify-content: center;
@@ -169,7 +189,7 @@
     display: none;
   }
   :global(.ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn) {
-    font-weight: 600;
+    font-family: $bold__font-family;
   }
   :global(.ant-tabs-tab) {
     padding: 15px 0;
@@ -212,8 +232,6 @@
   flex-wrap: wrap;
   justify-content: space-between;
   .half-width {
-    display: flex;
-    flex-direction: column;
     width: calc(50% - 6px);
     padding: 12px;
     background: $background-white;
@@ -232,9 +250,10 @@
     background: rgba($color: #464646, $alpha: 0.1);
     min-width: 156px;
     justify-content: center;
+    padding: 8px;
     &:global(.ant-tabs-tab-btn) {
       color: $white;
-      font-weight: 600;
+      font-family: $bold__font-family;
     }
   }
   :global(.ant-tabs-top > .ant-tabs-nav) {
@@ -245,7 +264,7 @@
   }
   :global(.ant-tabs-tab-btn) {
     color: $white !important;
-    font-weight: 600 !important;
+    font-family: $bold__font-family;
     font-size: 16px;
     line-height: 24px;
   }
@@ -359,7 +378,7 @@
       background: #DEF4D7;
       border-radius: 2px;
       .title-menu {
-        font-weight: 600;
+        font-family: $bold__font-family;
         color: $text-success;
       }
     }
@@ -413,7 +432,7 @@
       justify-content: center;
       align-items: center;
       color: #fff;
-      font-weight: 600;
+      font-family: $bold__font-family;
       cursor: pointer;
       border-radius: 4px;
     }

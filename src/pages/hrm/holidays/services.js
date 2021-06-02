@@ -12,7 +12,6 @@ export function get(data = {}) {
       searchJoin: 'and',
       include: Helper.convertIncludes(['holidayDetails']),
       search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
         Name: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -32,5 +31,12 @@ export function remove(data) {
     method: 'POST',
     data,
     parse: true,
+  });
+}
+
+export function add(data = {}) {
+  return request('/v1/holidays', {
+    method: 'POST',
+    data,
   });
 }

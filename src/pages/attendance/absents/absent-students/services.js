@@ -26,10 +26,15 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['student', 'parent', 'absentType', 'absentReason']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
+      fullName: data.fullName,
+      include: Helper.convertIncludes([
+        'student',
+        'parent',
+        'absentType',
+        'absentReason',
+        'employee',
+      ]),
+      search: Helper.convertParamSearchConvert({}),
     },
   });
 }

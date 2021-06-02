@@ -1,7 +1,6 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
+import * as categories from '@/services/categories';
 import * as services from './services';
-import * as categories from '@/services/categories'
 
 export default {
   namespace: 'classesAdd',
@@ -41,7 +40,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_DETAILS({ payload }, saga) {
       try {
@@ -63,7 +67,15 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
+        });
         callback(null, error?.data?.error);
       }
     },
@@ -71,7 +83,15 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
       } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: 'Vui lòng kiểm tra lại hệ thống',
+        });
         callback(null, error?.data?.error);
       }
     },

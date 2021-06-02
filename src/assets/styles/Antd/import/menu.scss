@@ -46,8 +46,8 @@
 
     &.ant-menu-item-selected {
       background: transparent;
-      font-weight: 700;
       color: $text-success;
+      font-family: $bold__font-family;
 
       > a {
         color: $text-success;

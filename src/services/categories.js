@@ -135,3 +135,34 @@ export function getShifts(params = {}) {
     },
   });
 }
+
+export function getHolidays(params = {}) {
+  return requestLaravel('/v1/holidays', {
+    method: 'GET',
+    params: {
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['holidayDetails']),
+      search: Helper.convertParamSearchConvert({
+        Name: params.name,
+      }),
+    },
+  });
+}
+
+export function getAttendancesReasons(data = {}) {
+  return requestLaravel('/v1/attendances-reasons', {
+    method: 'GET',
+    params: {
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      search: Helper.convertParamSearchConvert({
+        Name: data.name,
+      }),
+    },
+  });
+}

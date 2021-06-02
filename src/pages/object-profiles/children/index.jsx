@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, head } from 'lodash';
+import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -12,9 +12,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import ability from '@/utils/ability';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -49,7 +50,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -59,7 +59,6 @@ class Index extends PureComponent {
         classStatus: 'ALL',
         isStoreStaus: false,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -286,20 +285,18 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) => `HS${Helper.serialOrder(this.state.search?.page, index)}`,
       },
       {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
-        render: (record) => {
-          return (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record.fileImage)}
-              fullName={record.fullName}
-            />
-          );
-        },
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
+        ),
       },
       {
         title: 'Tuổi (tháng)',
@@ -337,15 +334,17 @@ class Index extends PureComponent {
         render: (record) => HelperModules.tagStatus(record.status),
       },
       {
-        key: 'action',
+        key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
               ghost
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
+              permission="HSDT_HS_XEM"
             >
               Chi tiết
             </Button>
@@ -353,7 +352,9 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return columns;
+    return !ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')
+      ? columns.filter((item) => item.key !== 'actions')
+      : columns;
   };
 
   render() {
@@ -370,13 +371,16 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách học sinh" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+        <div
+          className={classnames(styles['content-form'], styles['content-form-children'], 'pb30')}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Học sinh</Text>
             <Button
               color="success"
               icon="plus"
+              permission="HSDT_HS_THEM"
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/tao-moi`)}
             >
               Tạo hồ sơ
@@ -426,7 +430,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -435,6 +438,13 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              onRow={(record) => ({
+                onClick: () => {
+                  if (ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')) {
+                    history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
+                  }
+                },
+              })}
               bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
@@ -453,6 +463,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -462,6 +474,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;

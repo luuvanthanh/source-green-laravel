@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Select } from 'antd';
 import Helper from '@/utils/Helper';
 
-import NoData from '../NoData'
+import NoData from '../NoData';
+
 export default function SelectCustom({ options, dataSet, ...rest }) {
   return (
     <Select
@@ -13,7 +14,7 @@ export default function SelectCustom({ options, dataSet, ...rest }) {
       }
       notFoundContent={<NoData simple />}
     >
-      {dataSet.map(item => (
+      {dataSet.map((item) => (
         <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]}>
           {item[`${options[1]}`]}
         </Select.Option>

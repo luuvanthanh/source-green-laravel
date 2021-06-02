@@ -1,3 +1,6 @@
+import { head } from 'lodash';
+import { Helper } from '@/utils';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -8,6 +11,9 @@ export default {
     error: {
       isError: false,
     },
+    holidays: [],
+    divisions: [],
+    branches: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -15,6 +21,12 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_HOLIDAYS: (state, { payload }) => ({
+      ...state,
+      holidays: head(payload?.parsePayload)?.holidayDetails
+        ? Helper.getArrayHolidays(head(payload?.parsePayload)?.holidayDetails)
+        : [],
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -30,14 +42,66 @@ export default {
         item.id === payload.id ? { ...item, status: payload.status } : item,
       ),
     }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         if (response) {
           yield saga.put({
             type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_HOLIDAYS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getHolidays, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_HOLIDAYS',
             payload: response,
           });
         }

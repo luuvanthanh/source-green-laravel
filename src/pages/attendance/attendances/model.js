@@ -1,4 +1,5 @@
 import { notification } from 'antd';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -6,6 +7,7 @@ export default {
   state: {
     data: [],
     pagination: {},
+    attendancesReasons: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -13,6 +15,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_ATTENDANCES_REASONS: (state, { payload }) => ({
+      ...state,
+      attendancesReasons: payload.parsePayload,
     }),
     SET_ADD: (state, { payload }) => ({
       ...state,
@@ -40,6 +46,22 @@ export default {
     }),
   },
   effects: {
+    *GET_ATTENDANCES_REASONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getAttendancesReasons, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_ATTENDANCES_REASONS',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

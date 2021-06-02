@@ -4,12 +4,10 @@ import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { history, useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables, Helper } from '@/utils';
-import variablesModules from '../../../utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 
@@ -19,9 +17,8 @@ const genders = [
 ];
 
 const marginProps = { style: { marginBottom: 12 } };
-const General = memo(({}) => {
+const General = memo(() => {
   const formRef = useRef();
-  const [fileImage, setFileImage] = useState(null);
   const {
     error,
     degrees,
@@ -91,37 +88,6 @@ const General = memo(({}) => {
       },
     });
   };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  const updateStatus = () => {
-    dispatch({
-      type: 'HRMusersAdd/UPDATE_STATUS',
-      payload: {
-        status:
-          details?.status === variablesModules.STATUS.STORE
-            ? variablesModules.STATUS.REGIST
-            : variablesModules.STATUS.STORE,
-        id: params.id,
-      },
-      callback: (response, error) => {
-        if (response) {
-          history.push(`/ho-so-doi-tuong/nhan-vien`);
-        }
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'HRMusersAdd/GET_DETAILS',
-        payload: params,
-      });
-    }
-  }, [params.id]);
 
   /**
    * Load Items Degres
@@ -202,7 +168,7 @@ const General = memo(({}) => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   const uploadFiles = (file) => {
@@ -211,41 +177,44 @@ const General = memo(({}) => {
 
   return (
     <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
-      <Pane className="card">
+      <div className="card">
         <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+          <div style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin cơ bản
             </Heading>
-            <Pane className="row">
-              <Pane className="col">
-                <Form.Item name="avatar" label="Hình ảnh nhân viên">
-                  <MultipleImageUpload
-                    files={files}
-                    callback={(files) => uploadFiles(files)}
-                    removeFiles={(files) => mountedSet(setFiles, files)}
-                  />
-                </Form.Item>
-              </Pane>
-            </Pane>
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+            <div className="row">
+              <div className="col">
+                <div className="ant-col ant-form-item-label">
+                  <label className="ant-form-item-required">
+                    <span>Hình ảnh nhân viên</span>
+                  </label>
+                </div>
+                <MultipleImageUpload
+                  files={files}
+                  callback={(files) => uploadFiles(files)}
+                  removeFiles={(files) => mountedSet(setFiles, files)}
+                />
+              </div>
+            </div>
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem
                   name="fullName"
                   label="Tên nhân viên"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="code"
                   label="Mã nhân viên"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="dateOfBirth"
                   label="Ngày sinh"
@@ -253,28 +222,28 @@ const General = memo(({}) => {
                   rules={[variables.RULES.EMPTY]}
                   disabledDate={(current) => current > moment()}
                 />
-              </Pane>
-            </Pane>
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+              </div>
+            </div>
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem
                   name="phoneNumber"
                   label="Số điện thoại"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="email"
                   label="Email"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                 />
-              </Pane>
-            </Pane>
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+              </div>
+            </div>
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem
                   data={genders}
                   name="gender"
@@ -282,41 +251,41 @@ const General = memo(({}) => {
                   type={variables.SELECT}
                   rules={[variables.RULES.EMPTY]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="idCard"
                   label="Số CMND"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="dateOfIssueIdCard"
                   label="Ngày cấp"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
                 />
-              </Pane>
-            </Pane>
+              </div>
+            </div>
 
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem
                   name="placeOfIssueIdCard"
                   label="Nơi cấp"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem name="nation" label="Dân tộc" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem name="religion" label="Tôn giáo" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   data={[
                     { value: false, label: 'Độc thân' },
@@ -326,63 +295,63 @@ const General = memo(({}) => {
                   label="Tình trạng hôn nhân"
                   type={variables.RADIO}
                 />
-              </Pane>
-            </Pane>
-          </Pane>
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: 20 }} className="pb-0 border-bottom">
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem name="placeOfBirth" label="Nơi sinh" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem name="nationality" label="Quốc tịch" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   name="permanentAddress"
                   label="Hộ khẩu thường trú"
                   type={variables.INPUT}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem name="address" label="Chổ ở hiện tại" type={variables.INPUT} />
-              </Pane>
-            </Pane>
-          </Pane>
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-            <Pane className="row" {...marginProps}>
-              <Pane className="col-lg-4">
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: 20 }} className="pb-0 border-bottom">
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
                 <FormItem name="taxCode" label="Mã số thuế" type={variables.INPUT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem data={degrees} name="degreeId" label="Bằng cấp" type={variables.SELECT} />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   data={trainningMajors}
                   name="trainingMajorId"
                   label="Ngành đào tạo"
                   type={variables.SELECT}
                 />
-              </Pane>
-              <Pane className="col-lg-4">
+              </div>
+              <div className="col-lg-4">
                 <FormItem
                   data={trainningSchool}
                   name="trainingSchoolId"
                   label="Trường đào tạo"
                   type={variables.SELECT}
                 />
-              </Pane>
+              </div>
               {params.id && (
-                <Pane className="col-lg-4">
+                <div className="col-lg-4">
                   <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
-                </Pane>
+                </div>
               )}
-            </Pane>
-          </Pane>
-          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-            <Pane className="row">
-              <Pane className="col-lg-6">
+            </div>
+          </div>
+          <div style={{ padding: 20 }} className="pb-0 border-bottom">
+            <div className="row">
+              <div className="col-lg-6">
                 <FormItem
                   data={branches}
                   label="Cơ sở"
@@ -391,8 +360,8 @@ const General = memo(({}) => {
                   // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
-              </Pane>
-              <Pane className="col-lg-6">
+              </div>
+              <div className="col-lg-6">
                 <FormItem
                   data={divisions}
                   label="Bộ phận"
@@ -401,18 +370,18 @@ const General = memo(({}) => {
                   // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
-              </Pane>
-              <Pane className="col-lg-6">
+              </div>
+              <div className="col-lg-6">
                 <FormItem
                   data={positions}
-                  label="Chức danh"
+                  label="Chức vụ"
                   name="positionId"
                   type={variables.SELECT}
                   // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
-              </Pane>
-              <Pane className="col-lg-6">
+              </div>
+              <div className="col-lg-6">
                 <FormItem
                   label="Thời gian bắt đầu"
                   name="startDate"
@@ -420,17 +389,17 @@ const General = memo(({}) => {
                   // rules={[variables.RULES.EMPTY]}
                   disabled={params.id}
                 />
-              </Pane>
-            </Pane>
-          </Pane>
+              </div>
+            </div>
+          </div>
 
-          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+          <div className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
               Lưu
             </Button>
-          </Pane>
+          </div>
         </Loading>
-      </Pane>
+      </div>
     </Form>
   );
 });

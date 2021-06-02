@@ -1,19 +1,18 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Upload, Modal, Image } from 'antd';
+import { Upload, Image } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useDispatch } from 'dva';
 import { get } from 'lodash';
-
-import Pane from '@/components/CommonComponent/Pane';
+import PropTypes from 'prop-types';
 
 import { imageUploadProps } from '@/utils/upload';
-import styles from './styles.module.scss';
 import { Helper } from '@/utils';
 
 const { beforeUpload, ...otherProps } = imageUploadProps;
 
 const ImageUpload = memo(({ callback, removeFiles, files }) => {
   const _mounted = useRef(false);
+
   const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
       callback: (res) => {
         if (res) {
           _mountedSet(setImages, (prev) => [...prev, get(res, 'results[0].fileInfo.url')]);
-          callback && callback(get(res, 'results[0].fileInfo.url'));
+          callback(get(res, 'results[0].fileInfo.url'));
         }
       },
     });
@@ -36,9 +35,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
     () => ({
       ...otherProps,
       multiple: true,
-      beforeUpload: (file) => {
-        return null;
-      },
+      beforeUpload: () => null,
       customRequest({ file }) {
         const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4'];
         const maxSize = 20 * 2 ** 20;
@@ -60,7 +57,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   useEffect(() => {
     _mounted.current = true;
-    return () => (_mounted.current = false);
+    return _mounted.current;
   }, []);
 
   useEffect(() => {
@@ -69,8 +66,8 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
 
   return (
     <>
-      <Pane className="row">
-        <div className="pl10">
+      <div className="row">
+        <div className="pl15">
           <Image.PreviewGroup>
             {(images || []).map((item, index) => {
               if (Helper.isVideo(item)) {
@@ -78,7 +75,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                   <Image
                     width={105}
                     height={105}
-                    src={`/image-default.png`}
+                    src="/image-default.png"
                     key={index}
                     preview={{
                       maskClassName: 'customize-mask',
@@ -89,7 +86,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                             onClick={(event) => {
                               event.stopPropagation();
                               setImages((prev) => prev.filter((image) => image !== item));
-                              removeFiles && removeFiles(images.filter((image) => image !== item));
+                              removeFiles(images.filter((image) => image !== item));
                             }}
                           />
                         </>
@@ -99,40 +96,57 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
                 );
               }
               return (
-                <Image
-                  width={105}
-                  height={105}
-                  src={`${API_UPLOAD}${item}`}
+                <div
                   key={index}
-                  preview={{
-                    maskClassName: 'customize-mask',
-                    mask: (
-                      <>
-                        <EyeOutlined className="mr5" />
-                        <DeleteOutlined
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setImages((prev) => prev.filter((image) => image !== item));
-                            removeFiles && removeFiles(images.filter((image) => image !== item));
-                          }}
-                        />
-                      </>
-                    ),
-                  }}
-                />
+                  className="container-preview-image"
+                  style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
+                >
+                  <Image
+                    width={102}
+                    height={102}
+                    src={`${API_UPLOAD}${item}`}
+                    preview={{
+                      maskClassName: 'customize-mask',
+                      mask: (
+                        <>
+                          <EyeOutlined className="mr5" />
+                          <DeleteOutlined
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setImages((prev) => prev.filter((image) => image !== item));
+                              removeFiles(images.filter((image) => image !== item));
+                            }}
+                          />
+                        </>
+                      ),
+                    }}
+                  />
+                </div>
               );
             })}
           </Image.PreviewGroup>
         </div>
 
-        <Pane className="col d-flex align-items-center">
+        <div className="col d-flex align-items-center">
           <Upload {...uploadProps} listType="picture-card">
             <CloudUploadOutlined />
           </Upload>
-        </Pane>
-      </Pane>
+        </div>
+      </div>
     </>
   );
 });
+
+ImageUpload.propTypes = {
+  callback: PropTypes.any,
+  removeFiles: PropTypes.func,
+  files: PropTypes.arrayOf(PropTypes.any),
+};
+
+ImageUpload.defaultProps = {
+  callback: null,
+  removeFiles: () => {},
+  files: [],
+};
 
 export default ImageUpload;

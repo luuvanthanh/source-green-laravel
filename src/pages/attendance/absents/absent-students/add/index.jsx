@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, message } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
+import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -10,6 +11,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -30,6 +32,7 @@ const mapStateToProps = ({ menu, absentStudentsAdd, loading, user }) => ({
   loading,
   user: user.user,
   error: absentStudentsAdd.error,
+  details: absentStudentsAdd.details,
   students: absentStudentsAdd.students,
   categories: absentStudentsAdd.categories,
   menuLeftSchedules: menu.menuLeftSchedules,
@@ -45,12 +48,26 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
-
   componentDidMount() {
     this.loadCategories();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      details,
+      match: { params },
+    } = this.props;
+    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+      this.formRef.current.setFieldsValue({
+        ...details,
+        startDate: moment(details?.startDate),
+        endDate: moment(details?.endDate),
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    setIsMounted(false);
   }
 
   /**
@@ -68,7 +85,19 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
-    const { dispatch, user } = this.props;
+    const {
+      dispatch,
+      user,
+      match: { params },
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'absentStudentsAdd/GET_DETAILS',
+        payload: {
+          ...params,
+        },
+      });
+    }
     dispatch({
       type: 'absentStudentsAdd/GET_CATEGORIES',
       payload: {},
@@ -85,23 +114,20 @@ class Index extends PureComponent {
   onFinish = (values) => {
     const {
       user,
-      students,
       dispatch,
       match: { params },
     } = this.props;
-    let parentId = null;
-    if (!isEmpty(students)) {
-      const student = students.find((item) => item.id === values.studentId);
-      parentId = student?.fartherId || student?.motherId || user?.objectInfo?.id;
-    } else {
-      parentId = user?.objectInfo?.id;
+    if (!user?.objectInfo?.id) {
+      message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
+      return;
     }
     dispatch({
       type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
         ...values,
-        parentId,
         id: params.id,
+        status: 'PENDING',
+        employeeId: user?.objectInfo?.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -135,7 +161,8 @@ class Index extends PureComponent {
     const loading =
       effects['absentStudentsAdd/GET_DETAILS'] ||
       effects['absentStudentsAdd/GET_CATEGORIES'] ||
-      effects['absentStudentsAdd/GET_STUDENTS'];
+      effects['absentStudentsAdd/GET_STUDENTS'] ||
+      effects['absentStudentsAdd/GET_DETAILS'];
     const loadingSubmit = effects['absentStudentsAdd/ADD'];
     return (
       <>
@@ -182,6 +209,7 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -190,6 +218,7 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                 </div>
@@ -234,6 +263,28 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  user: {},
+  students: [],
+  error: {},
+  menuLeftSchedules: [],
+  categories: {},
+  details: {},
+};
 
 export default Index;

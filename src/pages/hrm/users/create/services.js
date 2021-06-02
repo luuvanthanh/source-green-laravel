@@ -1,8 +1,9 @@
 import requestLavarel from '@/utils/requestLavarel';
 import request from '@/utils/request';
+import requestLogin from '@/utils/requestLogin';
 import { Helper, variables } from '@/utils';
 
-export function getDegrees(params = {}) {
+export function getDegrees(_params = {}) {
   return requestLavarel('/v1/degrees', {
     method: 'GET',
     params: {
@@ -12,7 +13,7 @@ export function getDegrees(params = {}) {
   });
 }
 
-export function getTrainingMajors(params = {}) {
+export function getTrainingMajors(_params = {}) {
   return requestLavarel('/v1/training-majors', {
     method: 'GET',
     params: {
@@ -22,38 +23,8 @@ export function getTrainingMajors(params = {}) {
   });
 }
 
-export function getTrainingSchools(params = {}) {
+export function getTrainingSchools(_params = {}) {
   return requestLavarel('/v1/training-schools', {
-    method: 'GET',
-    params: {
-      limit: variables.PAGINATION.SIZEMAX,
-      page: variables.PAGINATION.PAGE,
-    },
-  });
-}
-
-export function getBranches(params = {}) {
-  return requestLavarel('/v1/branches', {
-    method: 'GET',
-    params: {
-      limit: variables.PAGINATION.SIZEMAX,
-      page: variables.PAGINATION.PAGE,
-    },
-  });
-}
-
-export function getDivisions(params = {}) {
-  return requestLavarel('/v1/divisions', {
-    method: 'GET',
-    params: {
-      limit: variables.PAGINATION.SIZEMAX,
-      page: variables.PAGINATION.PAGE,
-    },
-  });
-}
-
-export function getPositions(params = {}) {
-  return requestLavarel('/v1/positions', {
     method: 'GET',
     params: {
       limit: variables.PAGINATION.SIZEMAX,
@@ -313,7 +284,7 @@ export function getDecisionRewards(params = {}) {
 // decision-rewards
 
 // paramater-values
-export function getParamaterValues(params = {}) {
+export function getParamaterValues(_params = {}) {
   return requestLavarel('/v1/paramater-values', {
     method: 'GET',
     params: {
@@ -326,7 +297,7 @@ export function getParamaterValues(params = {}) {
 // paramater-values
 
 // paramater-formulas
-export function getParamaterFormulas(params = {}) {
+export function getParamaterFormulas(_params = {}) {
   return requestLavarel('/v1/paramater-formulas', {
     method: 'GET',
     params: {
@@ -407,7 +378,6 @@ export function getChildren(params = {}) {
 }
 // children
 
-
 // position-levels
 export function getPositionLevels(params = {}) {
   return requestLavarel('/v1/position-levels', {
@@ -420,3 +390,10 @@ export function getPositionLevels(params = {}) {
   });
 }
 // position-levels
+
+export function changePassword(data = {}) {
+  return requestLogin(`/api/account/check-password`, {
+    method: 'POST',
+    data,
+  });
+}

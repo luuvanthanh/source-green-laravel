@@ -1,12 +1,14 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
+import PropTypes from 'prop-types';
+
 import styles from '@/assets/styles/Common/common.scss';
 import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
 import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import moment from 'moment';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, uniqBy } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
@@ -40,7 +42,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ shiftStudentsAdd, loading, menu }) => ({
-  loading: loading,
+  loading,
   menuData: menu.menuLeftSchedules,
   error: shiftStudentsAdd.error,
   branches: shiftStudentsAdd.branches,
@@ -426,6 +428,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  menuData: [],
+  details: {},
+  branches: [],
+};
 
 export default Index;

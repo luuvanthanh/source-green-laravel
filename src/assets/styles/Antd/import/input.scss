@@ -64,7 +64,7 @@
 }
 
 .ant-checkbox-wrapper {
-  font-weight: 600;
+  font-family: $bold__font-family;
   font-size: 14px;
   line-height: 20px;
   color: #36383a;
@@ -93,7 +93,7 @@
 
 .checkbox-large {
   .ant-checkbox-wrapper {
-    font-weight: normal;
+    font-family: $base__font-family;
     font-size: 13px;
     line-height: 22px;
     color: $text;

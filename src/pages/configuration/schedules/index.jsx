@@ -329,7 +329,7 @@ class Index extends PureComponent {
     const loading = effects['managerSchedules/GET_DATA'];
     const loadingSubmit = effects['managerSchedules/ADD'] || effects['managerSchedules/UPDATE'];
     const CustomViewConfig = {
-      classNames: ['custom-view'],
+      classnames: ['custom-view'],
 
       content: function (props) {
         let segs = sliceEvents(props, true); // allDay=true

@@ -1,18 +1,19 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import moment from 'moment';
 import { connect, history, withRouter } from 'umi';
+import PropTypes from 'prop-types';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import variablesModules from '../../../utils/variables';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
+import variablesModules from '../../../utils/variables';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -116,22 +117,13 @@ const General = memo(
               : variablesModules.STATUS.STORE,
           id: params.id,
         },
-        callback: (response, error) => {
+        callback: (response) => {
           if (response) {
             history.push(`/ho-so-doi-tuong/hoc-sinh`);
           }
         },
       });
     };
-
-    useEffect(() => {
-      if (params.id) {
-        dispatch({
-          type: 'OPchildrenAdd/GET_DETAILS',
-          payload: params,
-        });
-      }
-    }, [params.id]);
 
     useEffect(() => {
       dispatch({
@@ -142,7 +134,7 @@ const General = memo(
 
     useEffect(() => {
       mounted.current = true;
-      return () => (mounted.current = false);
+      return mounted.current;
     }, []);
 
     useEffect(() => {
@@ -295,5 +287,25 @@ const General = memo(
     );
   },
 );
+
+General.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+};
+
+General.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+  branches: [],
+  classes: [],
+};
 
 export default withRouter(connect(mapStateToProps)(General));

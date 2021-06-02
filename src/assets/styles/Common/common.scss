@@ -122,7 +122,7 @@
 .itemChildren {
   &:global(.ant-menu-item) {
     color: rgba($color: $text-dark, $alpha: 0.65);
-    font-family: "Roboto";
+    font-family: $base__font-family;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -223,7 +223,6 @@
 
 .content-form {
   padding: 8px 24px 24px;
-  margin-bottom: 15px;
   &.content-form-children {
     margin-top: 14px;
     padding: 0 24px;
@@ -264,7 +263,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white;
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -332,7 +331,7 @@
     }
   }
   :global(.ant-collapse-header) {
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
@@ -402,7 +401,7 @@
   :global(.ant-select-selection-item) {
     background-color: $background-success !important;
     color: $text-white !important;
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -636,7 +635,7 @@
       position: absolute;
       right: 5px;
       top: 4px;
-      font-family: "Roboto", sans-serif;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -656,7 +655,7 @@
     padding-right: 10px;
   }
   span {
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -666,7 +665,7 @@
 }
 
 .description-upload {
-  font-family: "Roboto", sans-serif;
+  font-family: $base__font-family;
   font-style: italic;
   font-weight: normal;
   font-size: 13px;
@@ -695,7 +694,7 @@
 .table-switch {
   span {
     padding-left: 10px;
-    font-family: "Roboto";
+    font-family: $base__font-family;
     font-size: 13px;
     line-height: 22px;
     color: rgba($color: $black, $alpha: 0.85);
@@ -720,31 +719,42 @@
   background-color: transparent;
   border: none;
   outline: none;
-  margin-top: -15px;
-  padding-top: 15px;
-  margin-bottom: -15px;
-  padding-bottom: 15px;
+  margin-top: -16px;
+  padding-top: 16px;
+  margin-bottom: -16px;
+  padding-bottom: 16px;
   width: 100%;
   color: rgba($color: $black, $alpha: 0.85);
+  font-size: 14px;
   cursor: pointer;
-  &.cell-heading-weekend {
-    background-color: $background-primary !important;
-    color: $background-primary !important;
-    &:focus,
-    &:hover {
-      background-color: $background-primary !important;
-      color: $background-primary !important;
-    }
-  }
   &.cell-heading-kc {
-    background-color: gray;
+    background-color: #a5a5a5;
     color: $white;
     &:focus,
     &:hover {
-      background-color: gray;
+      background-color: #a5a5a5;
       color: $white;
     }
   }
+  &.cell-heading-holidays {
+    background-color: #fbe4d5 !important;
+    color: $text !important;
+    &:focus,
+    &:hover {
+      background-color: #fbe4d5 !important;
+      color: $text !important;
+    }
+  }
+  &.cell-heading-weekend {
+    background-color: #5b9bd5 !important;
+    color: #5b9bd5 !important;
+    &:focus,
+    &:hover {
+      background-color: #5b9bd5 !important;
+      color: #5b9bd5 !important;
+    }
+  }
+
   &:focus,
   &:hover {
     color: rgba($color: $black, $alpha: 0.85);
@@ -774,19 +784,21 @@
     margin-left: 10px;
   }
   .name {
+    font-family: $base__font-family;
     font-style: normal;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 500;
     line-height: 20px;
     color: $text;
     margin-bottom: 0;
   }
   .title {
     font-style: normal;
-    font-weight: 600;
     font-size: 14px;
     line-height: 20px;
     color: $text;
     margin-bottom: 0;
+    font-family: $bold__font-family;
   }
   .norm {
     font-style: normal;
@@ -800,7 +812,7 @@
 
 .full-name-bold {
   .name {
-    font-weight: bold;
+    font-family: $bold__font-family;
   }
 }
 
@@ -866,5 +878,12 @@
   }
   :global(.leaflet-routing-container) {
     display: none;
+  }
+}
+
+.tooltip-container {
+  strong {
+    text-align: center;
+    color: $text-white;
   }
 }

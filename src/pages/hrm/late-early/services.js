@@ -28,9 +28,7 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['timekeeping', 'lateEarlyConfig', 'employee']),
-      search: Helper.convertParamSearchConvert({
-        'employee.FullName': data.fullName,
-      }),
+      fullName: data.fullName,
     },
   });
 }

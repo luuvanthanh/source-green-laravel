@@ -1,35 +1,34 @@
 import React, { PureComponent } from 'react';
-import { connect, Link } from 'umi';
+import { connect } from 'umi';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Slider from 'react-slick';
+import { isEmpty } from 'lodash';
 
-import { variables } from '@/utils';
 import { isValidCondition } from '@/utils/authority';
 import feature from '@/services/feature';
+import ItemSlider from './itemSlider';
 
 import styles from './index.scss';
 
 @connect(({ user, loading }) => ({ user, loading }))
-
 class Application extends PureComponent {
   constructor(props, context) {
     super(props, context);
     const { user } = props;
     this.state = {
       data: feature.FEATURES.filter((menuItem) => {
+        if (isEmpty(menuItem.permission)) {
+          return true;
+        }
         const showMenu = isValidCondition({
           conditions: [
             {
-              permission: menuItem.permission || [''],
-              isOrPermission: true,
+              permission: !isEmpty(menuItem.permission) ? menuItem.permission : [],
+              isOrPermission: menuItem.multiple || false,
             },
           ],
-          userPermission: [
-            variables.ROLES_PERMISSIONS.includes(user?.user?.role?.toUpperCase())
-              ? user?.user?.role?.toUpperCase()
-              : variables.ROLES.ALL,
-          ],
+          userPermission: user.permissions,
         });
         return showMenu;
       }),
@@ -101,26 +100,7 @@ class Application extends PureComponent {
         <Slider {...settings}>
           {data.map((item, index) => (
             <div key={index}>
-              {item.target && (
-                <a href={item.url} target="_blank" className={styles.item} rel="noreferrer">
-                  <div className={styles['item-image']}>
-                    <img src={item.src} alt="notification" className={styles.icon} />
-                  </div>
-                  <div className={styles['item-content']}>
-                    <p className={styles.norm}>{item.title}</p>
-                  </div>
-                </a>
-              )}
-              {!item.target && (
-                <Link to={item.url} className={styles.item}>
-                  <div className={styles['item-image']}>
-                    <img src={item.src} alt="notification" className={styles.icon} />
-                  </div>
-                  <div className={styles['item-content']}>
-                    <p className={styles.norm}>{item.title}</p>
-                  </div>
-                </Link>
-              )}
+              <ItemSlider {...item} />
             </div>
           ))}
         </Slider>
@@ -133,12 +113,14 @@ Application.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Application.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
+  user: {},
 };
 
 export default Application;

@@ -1,12 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Typography, Form, Modal } from 'antd';
+import { Form, Modal, message } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { isEmpty, head, debounce, get } from 'lodash';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
-import { get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -15,7 +14,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import { DeleteOutlined } from '@ant-design/icons';
 
 let isMounted = true;
 /**
@@ -32,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { Paragraph } = Typography;
 const mapStateToProps = ({ waterBottles, loading }) => ({
   data: waterBottles.data,
   pagination: waterBottles.pagination,
@@ -56,7 +53,6 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
       waterBottles: [],
       student: {},
     };
@@ -198,51 +194,49 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'Cơ sở',
-        key: 'branch',
-        className: 'min-width-150',
-        render: (record) => record?.student?.class?.branch?.name,
-      },
-      {
-        title: 'Lớp',
-        key: 'class',
-        className: 'min-width-150',
-        render: (record) => record?.student?.class?.name,
-      },
-      {
-        title: 'Trẻ',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
-            fullName={get(record, 'student.fullName')}
-          />
-        ),
-      },
-      {
-        title: 'Bình nước',
-        key: 'type',
-        className: 'min-width-150',
-        render: (record) => record?.type + ` ml`,
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="success" onClick={() => this.showWater(record)}>
-              Cấu hình
-            </Button>
-          </div>
-        ),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'Cơ sở',
+      key: 'branch',
+      className: 'min-width-150',
+      render: (record) => record?.student?.class?.branch?.name,
+    },
+    {
+      title: 'Lớp',
+      key: 'class',
+      className: 'min-width-150',
+      render: (record) => record?.student?.class?.name,
+    },
+    {
+      title: 'Trẻ',
+      key: 'name',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
+          fullName={get(record, 'student.fullName')}
+        />
+      ),
+    },
+    {
+      title: 'Bình nước',
+      key: 'type',
+      className: 'min-width-150',
+      render: (record) => `${record?.type} ml`,
+    },
+    {
+      key: 'action',
+      className: 'min-width-80',
+      width: 80,
+      render: (record) => (
+        <div className={styles['list-button']}>
+          <Button color="success" onClick={() => this.showWater(record)}>
+            Cấu hình
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   showWater = (record) => {
     const { dispatch } = this.props;
@@ -251,7 +245,7 @@ class Index extends PureComponent {
       payload: {
         studentId: record?.student?.id,
       },
-      callback: (response, error) => {
+      callback: (response) => {
         if (response) {
           this.setStateData(
             {
@@ -348,7 +342,7 @@ class Index extends PureComponent {
             </div>,
           ]}
           onCancel={this.handleCancel}
-          title={'CẤU HÌNH BÌNH NƯỚC'}
+          title="CẤU HÌNH BÌNH NƯỚC"
           visible={visible}
         >
           <Form
@@ -478,7 +472,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

@@ -1,11 +1,11 @@
-import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Checkbox } from 'antd';
+import { memo, useRef, useEffect } from 'react';
+import { Form } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import csx from 'classnames';
 import { connect, history, withRouter } from 'umi';
-import { head, isEmpty, get, omit } from 'lodash';
+import { head, isEmpty, omit } from 'lodash';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -13,8 +13,8 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import variables from '@/utils/variables';
-import variablesModules from '../../utils/variables';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import variablesModules from '../../utils/variables';
 
 const { List: FormList } = Form;
 
@@ -28,8 +28,6 @@ const mapStateToProps = ({ timeTablesAdd, loading, menu }) => ({
 const Index = memo(
   ({ dispatch, loading: { effects }, match: { params }, branches, error, menuLeft, classes }) => {
     const mounted = useRef(false);
-    const mountedSet = (setFunction, value) =>
-      !!mounted?.current && setFunction && setFunction(value);
 
     const loadingSubmit = effects[`timeTablesAdd/ADD`] || effects[`timeTablesAdd/UPDATE`];
     const loading = effects[`timeTablesAdd/GET_DETAILS`] || effects[`timeTablesAdd/GET_BRANCHES`];
@@ -51,14 +49,14 @@ const Index = memo(
       dispatch({
         type: 'timeTablesAdd/ADD',
         payload,
-        callback: (response, error) => {
+        callback: (response, err) => {
           if (response) {
             history.goBack();
           }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
+          if (err) {
+            if (err?.validationErrors && !isEmpty(err?.validationErrors)) {
+              err?.validationErrors.forEach((item) => {
+                formRef.current.setFields([
                   {
                     name: head(item.members),
                     errors: [item.message],
@@ -89,12 +87,12 @@ const Index = memo(
 
     useEffect(() => {
       mounted.current = true;
-      return () => (mounted.current = false);
+      return mounted.current;
     }, []);
 
     return (
       <>
-        <Breadcrumbs last={'Tạo thời khóa biểu '} menu={menuLeft} />
+        <Breadcrumbs last="Tạo thời khóa biểu " menu={menuLeft} />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <Form
@@ -152,7 +150,7 @@ const Index = memo(
                             label="Chọn lớp"
                             name="classTimetables"
                             type={variables.CHECKBOX}
-                            className="checkbox-group"
+                            className="checkbox-group group-column"
                             data={classes.map((item) => ({
                               value: item.id,
                               label: item.name,
@@ -262,5 +260,25 @@ const Index = memo(
     );
   },
 );
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  menuLeft: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  classes: [],
+  branches: [],
+  menuLeft: [],
+  error: {},
+};
 
 export default withRouter(connect(mapStateToProps)(Index));

@@ -3,10 +3,10 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
@@ -32,7 +32,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ workHoursAdd, loading, menu }) => ({
   dataStores: workHoursAdd.dataStores,
-  loading: loading,
+  loading,
   error: workHoursAdd.error,
   details: workHoursAdd.details,
   categories: workHoursAdd.categories,
@@ -244,7 +244,7 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <Form.List name="hours">
-                  {(fields, { add, remove }) => (
+                  {(fields) => (
                     <div>
                       {fields.map((field, index) => (
                         <div
@@ -320,6 +320,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  absentTypes: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  categories: {},
+  error: {},
+  menuData: [],
+  absentTypes: [],
+};
 
 export default Index;

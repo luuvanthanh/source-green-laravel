@@ -1,464 +1,236 @@
-import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
-import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import styles from '@/assets/styles/Common/common.scss';
-import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
-import allLocales from '@fullcalendar/core/locales-all';
-import FormItem from '@/components/CommonComponent/FormItem';
+import { Form, List, Timeline, Image } from 'antd';
+import { useHistory, useLocation, useDispatch, useSelector } from 'dva';
+import { EyeOutlined } from '@ant-design/icons';
+import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
+import 'moment/locale/vi';
+import { debounce } from 'lodash';
+
+import Pane from '@/components/CommonComponent/Pane';
+import Heading from '@/components/CommonComponent/Heading';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
+import Text from '@/components/CommonComponent/Text';
+
 import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
-import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import { sliceEvents, createPlugin } from '@fullcalendar/core';
 
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
-const { confirm } = Modal;
-const mapStateToProps = ({ menuKid, loading }) => ({
-  data: menuKid.data,
-  pagination: menuKid.pagination,
-  loading,
-});
-@connect(mapStateToProps)
-class Index extends PureComponent {
-  formRef = React.createRef();
+const { Item: ListItem } = List;
+const { Item: TimelineItem } = Timeline;
 
-  constructor(props) {
-    super(props);
-    const {
-      location: { query },
-    } = props;
-    this.state = {
-      visible: false,
-      search: {
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
-      objects: {},
-    };
-    setIsMounted(true);
-  }
+const Index = memo(() => {
+  const [loadingReducer, { data, branches, classes }] = useSelector(({ loading, menuKid }) => [
+    loading,
+    menuKid,
+  ]);
+  const loading = loadingReducer?.effects['menuKid/GET_DATA'];
+  const dispatch = useDispatch();
+  const mounted = useRef(false);
+  // const mountedSet = (action, value) => mounted?.current && action(value);
 
-  componentDidMount() {
-    // this.onLoad();
-  }
+  const history = useHistory();
+  const { query, pathname } = useLocation();
 
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
+  const filterRef = useRef();
 
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
+  const [search, setSearch] = useState({
+    branchId: query?.branchId,
+    classId: query?.classId,
+    rangeTime:
+      query.fromDate && query.toDate
+        ? [moment(query.fromDate), moment(query.toDate)]
+        : [moment().startOf('weeks'), moment().endOf('weeks')],
+  });
 
-  /**
-   * Function load data
-   */
-  onLoad = () => {
-    const { search, status } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
+  useEffect(() => {
+    dispatch({
       type: 'menuKid/GET_DATA',
       payload: {
-        ...search,
-        status,
+        branchId: search?.branchId,
+        classId: search?.classId,
+        fromDate: search.rangeTime[0],
+        toDate: search.rangeTime[1],
       },
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
-    });
-  };
-
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-        },
+      query: Helper.convertParamSearch({
+        branchId: search?.branchId,
+        classId: search?.classId,
+        fromDate: Helper.getDate(search.rangeTime[0], variables.DATE_FORMAT.DATE_AFTER),
+        toDate: Helper.getDate(search.rangeTime[1], variables.DATE_FORMAT.DATE_AFTER),
       }),
-      () => this.onLoad(),
-    );
+    });
+  }, [search]);
+
+  const changeFilterDebouce = debounce((value, name) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
   }, 300);
 
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
+  const changeFilterDateDebouce = debounce((value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      rangeTime: value,
+    }));
+  }, 300);
+
+  const changeFilter = (value, name) => {
+    changeFilterDebouce(value, name);
   };
 
-  /**
-   * Function set pagination
-   * @param {integer} page page of pagination
-   * @param {integer} size size of pagination
-   */
-  changePagination = (page, limit) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          page,
-          limit,
-        },
-      }),
-      () => {
-        this.onLoad();
+  const fetchClasses = (branchId) => {
+    dispatch({
+      type: 'menuKid/GET_CLASSES',
+      payload: {
+        branch: branchId,
       },
-    );
+    });
   };
 
-  /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-  });
+  const changeFilterBranch = (value, name) => {
+    changeFilterDebouce(value, name);
+    fetchClasses(value);
+  };
 
-  /**
-   * Function reset form
-   */
-  onResetForm = () => {
-    if (this.formRef) {
-      this.formRef.current.resetFields();
-      this.setStateData({
-        objects: {},
+  const changeFilterDate = (value) => {
+    changeFilterDateDebouce(value);
+  };
+
+  useEffect(() => {
+    if (search.branchId) {
+      dispatch({
+        type: 'menuKid/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
       });
     }
-  };
-
-  /**
-   * Function close modal
-   */
-  handleCancel = () => {
-    this.setStateData({ visible: false });
-    this.onResetForm();
-  };
-
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  onFinish = () => {
-    const { objects } = this.state;
-    this.formRef.current.validateFields().then((values) => {
-      this.props.dispatch({
-        type: !isEmpty(objects) ? 'menuKid/UPDATE' : 'menuKid/ADD',
-        payload: {
-          ...values,
-          id: objects.id,
-        },
-        callback: (response, error) => {
-          if (response) {
-            this.handleCancel();
-            this.onLoad();
-          }
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
+    dispatch({
+      type: 'menuKid/GET_BRANCHES',
+      payload: {},
     });
-  };
+  }, []);
 
-  /**
-   * Function remove items
-   * @param {objects} record value of items
-   */
-  onEdit = (objects) => {
-    this.setStateData(
-      {
-        objects,
-        visible: true,
-      },
-      () => {
-        this.formRef.current.setFieldsValue({
-          ...objects,
-        });
-      },
-    );
-  };
+  useEffect(() => {
+    mounted.current = true;
+    return mounted.current;
+  }, []);
 
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'menuKid/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
+  return (
+    <>
+      <Helmet title="Danh sách thông báo" />
+      <Pane className="p20">
+        <Pane className="d-flex mb20">
+          <Heading type="page-title">Thực đơn</Heading>
+          <Button
+            className="ml-auto"
+            color="success"
+            icon="plus"
+            onClick={() => history.push(`/thuc-don/tao-moi`)}
+            permission="BEP_THEM"
+          >
+            Tạo thực đơn
+          </Button>
+        </Pane>
 
-  /**
-   * Function header table
-   */
-  header = () => {
-    const columns = [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
-      },
-      {
-        title: 'TÊN TIÊU CHÍ - ĐÁNH GIÁ',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Học thuật</Text>,
-      },
-      {
-        title: 'CẤU HÌNH LOẠI ÁP DỤNG',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">Mẫu giáo</Text>,
-      },
-      {
-        title: 'THỜI HẠN NHẬP',
-        key: 'name',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">Hằng ngày</Text>,
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="primary" icon="edit" onClick={() => this.onEdit(record)} />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
-      },
-    ];
-    return columns;
-  };
-
-  render() {
-    const {
-      match: { params },
-      data,
-      pagination,
-      loading: { effects },
-      location: { pathname },
-    } = this.props;
-    const { visible, objects, search } = this.state;
-    const loading = effects['menuKid/GET_DATA'];
-    const loadingSubmit = effects['menuKid/ADD'] || effects['menuKid/UPDATE'];
-    const CustomViewConfig = {
-      classNames: ['custom-view'],
-
-      content: function (props) {
-        let segs = sliceEvents(props, true); // allDay=true
-        let html =
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-events">' +
-          segs.length +
-          ' events' +
-          '</div>';
-
-        return { html: html };
-      },
-    };
-    return (
-      <>
-        <Helmet title="Lịch thực đơn" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className={styles.search}>
-            <Form
-              initialValues={{
-                ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
-              }}
-              layout="vertical"
-              ref={this.formRef}
-            >
-              <div className="row">
-                <div className="col-lg-4">
+        <Pane className="card mb20">
+          <Pane className="pb-0" style={{ padding: 20 }}>
+            <Form layout="vertical" ref={filterRef} initialValues={search}>
+              <Pane className="row">
+                <Pane className="col-lg-4">
                   <FormItem
-                    data={[]}
-                    label="CƠ SỞ"
-                    name="department"
-                    onChange={(event) => this.onChange(event, 'department')}
+                    name="branchId"
                     type={variables.SELECT}
+                    data={branches}
+                    onChange={(event) => changeFilterBranch(event, 'branchId')}
                   />
-                </div>
-                <div className="col-lg-4">
+                </Pane>
+                <Pane className="col-lg-4">
                   <FormItem
-                    data={[]}
-                    label="LỚP"
-                    name="level"
-                    onChange={(event) => this.onChange(event, 'level')}
+                    name="classId"
                     type={variables.SELECT}
+                    data={classes}
+                    onChange={(event) => changeFilter(event, 'classId')}
                   />
-                </div>
-              </div>
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name="rangeTime"
+                    type={variables.RANGE_PICKER}
+                    onChange={changeFilterDate}
+                  />
+                </Pane>
+              </Pane>
             </Form>
-          </div>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">LỊCH THỰC ĐƠN</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
-          </div>
-          <div className={classnames(styles['block-table'], 'schedules-custom')}>
-            <FullCalendar
-              schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-              plugins={[resourceTimeGridPlugin, dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay',
-              }}
-              views={{
-                dayGrid: {
-                  dayMaxEventRows: 3,
-                },
-                month: {
-                  dayMaxEventRows: 3,
-                },
-                agendaFourDay: {
-                  type: 'agenda',
-                  duration: { days: 4 },
-                  buttonText: '4 day',
-                },
-              }}
-              locale="vi"
-              editable={true}
-              fixedWeekCount={false}
-              showNonCurrentDates={true}
-              locales={allLocales}
-              allDaySlot={false}
-              height={650}
-              eventClick={() => {}}
-              events={[
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 23:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 21:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 22:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 20:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 01:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 05:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 06:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 07:00:00' },
-                { title: '7:00 - 7:30: Hũ tiếu', date: '2021-03-22 08:00:00' },
-              ]}
-            />
-          </div>
-        </div>
-      </>
-    );
-  }
-}
+          </Pane>
+        </Pane>
 
-Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-};
+        <Pane className="row justify-content-center">
+          <Pane className="col-lg-6 card">
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
+              <List
+                loading={loading}
+                dataSource={data}
+                renderItem={({ date, menuDetails = [] }, index) => (
+                  <ListItem key={index}>
+                    <Pane className="w-100">
+                      <Pane className="mb10">
+                        <Heading type="form-block-title">
+                          {Helper.getDate(date, 'dddd - DD/MM/YYYY')}
+                        </Heading>
+                      </Pane>
+                      <Timeline>
+                        {menuDetails?.map(({ fromTime, toTime, foods }, index) => (
+                          <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
+                            <Pane>
+                              <b>
+                                {Helper.getDate(fromTime, variables.DATE_FORMAT.TIME_FULL)} -{' '}
+                                {Helper.getDate(toTime, variables.DATE_FORMAT.TIME_FULL)}
+                              </b>
+                            </Pane>
+                            {foods?.map(({ name, imageUrl }, index) => (
+                              <Pane key={index} className="mb5">
+                                <Text size="normal">{name}</Text>
+                                {Helper.isJSON(imageUrl) && (
+                                  <Image.PreviewGroup>
+                                    {Helper.isJSON(imageUrl) &&
+                                      JSON.parse(imageUrl).map((item, index) => (
+                                        <Image
+                                          width={80}
+                                          height={80}
+                                          src={`${API_UPLOAD}${item}`}
+                                          key={index}
+                                          preview={{
+                                            maskClassName: 'customize-mask',
+                                            mask: <EyeOutlined className="mr5" />,
+                                          }}
+                                        />
+                                      ))}
+                                  </Image.PreviewGroup>
+                                )}
+                              </Pane>
+                            ))}
+                          </TimelineItem>
+                        ))}
+                      </Timeline>
+                    </Pane>
+                  </ListItem>
+                )}
+              />
+            </Scrollbars>
+          </Pane>
+        </Pane>
+      </Pane>
+    </>
+  );
+});
 
-Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
-  loading: {},
-  dispatch: {},
-  location: {},
-};
+Index.propTypes = {};
+
+Index.defaultProps = {};
 
 export default Index;

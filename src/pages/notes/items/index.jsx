@@ -12,10 +12,10 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
+import variablesModules from '../utils/variables';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -51,13 +51,16 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         keyWord: query?.keyWord,
         branchId: query?.branchId,
         classId: query?.classId,
-        from: query?.from && moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER),
-        to: query?.to && moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER),
+        from: query?.from
+          ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().startOf('months'),
+        to: query?.to
+          ? moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment().endOf('months'),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         status: query?.status || variablesModules.STATUS.CONFIRMING,
@@ -121,7 +124,11 @@ class Index extends PureComponent {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        from: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+        to: Helper.getDate(search.to, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   };
 
@@ -233,7 +240,7 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChangeDateRank = (e, type) => {
+  onChangeDateRank = (e) => {
     this.debouncedSearchDateRank(
       moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
       moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -379,8 +386,8 @@ class Index extends PureComponent {
       {
         title: 'Thời gian tạo',
         key: 'creationTime',
-        className: 'min-width-140',
-        width: 140,
+        className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">
             {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
@@ -390,30 +397,37 @@ class Index extends PureComponent {
       {
         title: 'Cơ sở',
         key: 'life',
-        className: 'min-width-150',
+        className: 'min-width-180',
         render: (record) => <Text size="normal">{record?.student?.class?.branch?.name}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
-        className: 'min-width-150',
+        className: 'min-width-180',
         render: (record) => <Text size="normal">{record?.student?.class?.name}</Text>,
       },
       {
         title: 'Tiêu đề',
         key: 'title',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         title: 'Phụ huynh',
         key: 'parents',
-        className: 'min-width-150',
+        className: 'min-width-200',
+        width: 200,
         render: (record) => (
-          <Text size="normal">
-            {get(record, 'student.studentParents[0].parent.fullName') ||
-              get(record, 'student.studentParents[0].farther.fullName')}
-          </Text>
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(
+              get(record, 'student.studentParents[0].parent.fileImage') ||
+                get(record, 'student.studentParents[0].farther.fileImage'),
+            )}
+            fullName={
+              get(record, 'student.studentParents[0].parent.fullName') ||
+              get(record, 'student.studentParents[0].farther.fullName')
+            }
+          />
         ),
       },
       {
@@ -459,7 +473,6 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['noteItems/GET_DATA'];
@@ -473,11 +486,11 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              accessKey={search?.status || variablesModules.STATUS.NEW}
+              defaultActiveKey={search?.status || variablesModules.STATUS.NEW}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
-                <TabPane tab={item.name} key={item.id}></TabPane>
+                <TabPane tab={item.name} key={item.id} />
               ))}
             </Tabs>
             <Form
@@ -549,6 +562,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -558,6 +573,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  classes: [],
+  branches: [],
 };
 
 export default Index;

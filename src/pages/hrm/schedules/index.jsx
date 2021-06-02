@@ -1,10 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Checkbox, Tooltip, Avatar } from 'antd';
+import { Modal, Form, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get } from 'lodash';
+import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
-import { CloseOutlined, UserOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -13,12 +12,12 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
-import PropTypes from 'prop-types';
 import stylesChildren from './styles.modules.scss';
 import { REPEAT, CHOOSE } from './data.json';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -45,6 +44,7 @@ const mapStateToProps = ({ schedulesChildren, loading }) => ({
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
+
   formRefShift = React.createRef();
 
   constructor(props) {
@@ -158,13 +158,13 @@ class Index extends PureComponent {
           search: {
             ...prevState.search,
             type: value,
-            startDate: moment(prevState.search.startDate).startOf('month'),
+            startDate: moment(prevState.search.endDate).startOf('month'),
             endDate: moment(prevState.search.endDate).endOf('month'),
           },
         }),
         () => {
           this.formRef.current.setFieldsValue({
-            startDate: moment(this.state.search.startDate).startOf('month'),
+            startDate: moment(this.state.search.endDate).startOf('month'),
             endDate: moment(this.state.search.endDate).endOf('month'),
           });
           this.onLoad();
@@ -274,7 +274,6 @@ class Index extends PureComponent {
    * Function reset form
    */
   onReset = () => {
-    const { category } = this.props;
     this.setState(
       {
         visible: false,
@@ -351,7 +350,7 @@ class Index extends PureComponent {
             [stylesChildren[`cell-heading-weekend`]]: moment(item).isoWeekday() >= 6,
           })}
         >
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
+          {HelperModules.getDayOfWeek(moment(item).format('d'))} {moment(item).format('DD-MM')}
         </div>
       );
     }
@@ -394,19 +393,17 @@ class Index extends PureComponent {
     let isHolidays = false;
     let holiday = {};
 
-    holidays?.forEach((item) => {
-      const itemAbsentDetail = item.holidayDetails?.find(
-        (itemHoliday) =>
-          Helper.getDate(itemHoliday.date, variables.DATE_FORMAT.DATE_AFTER) ===
-          Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
-      );
-      if (itemAbsentDetail) {
-        isHolidays = true;
-        holiday = itemAbsentDetail;
-      } else {
-        isHolidays = false;
-      }
-    });
+    const itemAbsentDetail = holidays?.find(
+      (itemHoliday) =>
+        Helper.getDate(itemHoliday.date, variables.DATE_FORMAT.DATE_AFTER) ===
+        Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+    );
+    if (itemAbsentDetail) {
+      isHolidays = true;
+      holiday = itemAbsentDetail;
+    } else {
+      isHolidays = false;
+    }
 
     if (isHolidays) {
       return (
@@ -558,7 +555,7 @@ class Index extends PureComponent {
           icon="plusMain"
           type="dashed"
           onClick={() => this.onShowModal(dayOfWeek, record, user)}
-        ></Button>
+        />
       </div>
     );
   };
@@ -672,11 +669,11 @@ class Index extends PureComponent {
     });
   };
 
-  convertTreeSelect = (items = [], keyValue = 'id', keyLabel = 'name') => {
-    return items.map((item) => {
+  convertTreeSelect = (items = [], keyValue = 'id', keyLabel = 'name') =>
+    items.map((item) => {
       let details = [];
       if (!isEmpty(item.shiftDetail)) {
-        details = item.shiftDetail.map((item, index) => {
+        details = item.shiftDetail.map((item) => {
           const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL).format(
             variables.DATE_FORMAT.HOUR,
           );
@@ -691,7 +688,6 @@ class Index extends PureComponent {
         [`${keyLabel}`]: `${item.shiftCode} (${details.join(', ')})`,
       };
     });
-  };
 
   render() {
     const {
@@ -821,20 +817,20 @@ class Index extends PureComponent {
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
-
                 <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -862,6 +858,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  category: PropTypes.objectOf(PropTypes.any),
+  holidays: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -871,6 +869,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  category: {},
+  holidays: [],
 };
 
 export default Index;

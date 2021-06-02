@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'timeTablesAdd',
@@ -41,7 +41,12 @@ export default {
           type: 'SET_CLASSES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_BRANCHES({ payload }, saga) {
       try {

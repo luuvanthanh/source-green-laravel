@@ -1,21 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, get, size } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Paragraph from '@/components/CommonComponent/Paragraph';
+import HelperModules from '../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ timekeeping, loading }) => ({
   data: timekeeping.data,
   pagination: timekeeping.pagination,
@@ -47,7 +45,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -55,7 +52,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -205,7 +201,7 @@ class Index extends PureComponent {
         return '';
       });
       return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
+        <Paragraph>
           {timekeeping.map((item, index) => (
             <div key={index}>
               {item}
@@ -221,47 +217,41 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={record.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Số lần chấm',
-        key: 'count',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => size(record.timekeeping),
-      },
-      {
-        title: 'Chi tiết',
-        key: 'description',
-        className: 'min-width-200',
-        render: (record) => this.renderDescription(record.timekeeping),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 50,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Họ và Tên',
+      key: 'fullName',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record.fileImage)}
+          fullName={record.fullName}
+        />
+      ),
+    },
+    {
+      title: 'Số lần chấm',
+      key: 'count',
+      align: 'center',
+      className: 'min-width-100',
+      width: 100,
+      render: (record) => size(record.timekeeping),
+    },
+    {
+      title: 'Chi tiết',
+      key: 'description',
+      className: 'min-width-200',
+      render: (record) => this.renderDescription(record.timekeeping),
+    },
+  ];
 
   render() {
     const {
@@ -305,6 +295,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -313,6 +304,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>

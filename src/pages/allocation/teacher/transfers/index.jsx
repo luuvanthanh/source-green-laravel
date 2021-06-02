@@ -1,16 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, NavLink } from 'umi';
-import { Modal, Form, List, Checkbox, Spin } from 'antd';
+import { Form, List, Checkbox, Spin } from 'antd';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
+import * as _ from 'lodash';
 
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
-import AvatarTable from '@/components/CommonComponent/AvatarTable'
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 
 let isMounted = true;
@@ -28,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ allocationTeacherTransfers, loading }) => ({
   loading,
   data: allocationTeacherTransfers.data,
@@ -46,13 +47,13 @@ class Index extends PureComponent {
       loadingTeacher: false,
       classes: [],
       submitLoading: false,
-      classId: ''
+      classId: '',
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    this.fetchBranches()
+    this.fetchBranches();
   }
 
   componentWillUnmount() {
@@ -80,7 +81,7 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: res?. parsePayload || [],
+            branches: res?.parsePayload || [],
           });
         }
       },
@@ -94,7 +95,7 @@ class Index extends PureComponent {
       teachers: [],
       classId: '',
       selectedTeachers: [],
-    })
+    });
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
@@ -129,27 +130,27 @@ class Index extends PureComponent {
         if (res) {
           this.setStateData({
             teachers: res?.items || [],
-            loadingTeacher: false
+            loadingTeacher: false,
           });
         }
         if (error) {
           this.setStateData({
             teachers: [],
-            loadingTeacher: false
+            loadingTeacher: false,
           });
         }
       },
     });
-  }
+  };
 
   finishForm = ({ classChangeId }) => {
     this.setStateData({ submitLoading: true });
-    const { selectedTeachers, classId } = this.state
-    const { dispatch } = this.props
+    const { selectedTeachers, classId } = this.state;
+    const { dispatch } = this.props;
     const requestData = {
       id: classChangeId,
-      data: selectedTeachers
-    }
+      data: selectedTeachers,
+    };
     dispatch({
       type: 'allocationTeacherTransfers/UPDATE',
       payload: requestData,
@@ -157,27 +158,31 @@ class Index extends PureComponent {
         this.fetchTeachers(classId);
         this.setStateData({ submitLoading: false, selectedTeachers: [] });
         this.formRef?.current?.resetFields(['classChangeId']);
-      }
-    })
-  }
+      },
+    });
+  };
 
-  toggleCheckbox = (id) => e => {
-    const { checked } = e.target
+  toggleCheckbox = (id) => (e) => {
+    const { checked } = e.target;
     this.setStateData(({ selectedTeachers }) => ({
       selectedTeachers: checked
-        ? [
-          ...selectedTeachers,
-          id
-        ]
-        : selectedTeachers.filter(
-          selected => selected !== id
-        )
-    }))
-  }
+        ? [...selectedTeachers, id]
+        : selectedTeachers.filter((selected) => selected !== id),
+    }));
+  };
 
   render() {
-    const { classes, branches, teachers, selectedTeachers, classId, loadingTeacher, submitLoading } = this.state;
-    const classChange = !_.isEmpty(classes) && classId ? classes.filter(item => item.id !== classId) : [];
+    const {
+      classes,
+      branches,
+      teachers,
+      selectedTeachers,
+      classId,
+      loadingTeacher,
+      submitLoading,
+    } = this.state;
+    const classChange =
+      !_.isEmpty(classes) && classId ? classes.filter((item) => item.id !== classId) : [];
 
     return (
       <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
@@ -196,22 +201,22 @@ class Index extends PureComponent {
             <div className={stylesAllocation['tabs-link']}>
               <NavLink
                 to="/phan-bo/giao-vien/chua-xep-lop"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Giáo viên chưa xếp lớp
               </NavLink>
               <NavLink
                 to="/phan-bo/giao-vien/danh-sach"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Danh sách giáo viên và trẻ
               </NavLink>
               <NavLink
                 to="/phan-bo/giao-vien/dieu-chuyen"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Điều chuyển giáo viên
               </NavLink>
@@ -221,8 +226,8 @@ class Index extends PureComponent {
           {/* MAIN CONTAINER */}
           <div className={stylesAllocation['main-container']}>
             <div className={stylesAllocation['left-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Danh sách giáo viên
                   </Text>
@@ -235,7 +240,6 @@ class Index extends PureComponent {
                         name="branch"
                         type={variables.SELECT}
                         placeholder="Chọn cơ sở"
-                        allowClear={false}
                         onChange={this.fetchClasses}
                         data={branches}
                       />
@@ -263,18 +267,26 @@ class Index extends PureComponent {
                     <List
                       className={stylesAllocation.list}
                       dataSource={teachers}
-                      renderItem={({ id, employee }, index) => (
+                      renderItem={({ employee }, index) => (
                         <List.Item key={index}>
                           <Checkbox
                             className={stylesAllocation.checkbox}
                             onChange={this.toggleCheckbox(employee?.id)}
-                            checked={!_.isEmpty(selectedTeachers) ? selectedTeachers.includes(employee?.id) : false}
+                            checked={
+                              !_.isEmpty(selectedTeachers)
+                                ? selectedTeachers.includes(employee?.id)
+                                : false
+                            }
                           />
                           <div className={stylesAllocation['group-info']}>
-                            <AvatarTable fileImage={Helper.getPathAvatarJson(employee?.fileImage)} />
-                            <div className={stylesAllocation['info']}>
-                              <h3 className={stylesAllocation['title']}>{employee?.fullName || ''}</h3>
-                              <p className={stylesAllocation['norm']}>{employee?.position?.name || ''}</p>
+                            <AvatarTable
+                              fileImage={Helper.getPathAvatarJson(employee?.fileImage)}
+                            />
+                            <div className={stylesAllocation.info}>
+                              <h3 className={stylesAllocation.title}>{employee?.fullName || ''}</h3>
+                              <p className={stylesAllocation.norm}>
+                                {employee?.position?.name || ''}
+                              </p>
                             </div>
                           </div>
                         </List.Item>
@@ -292,8 +304,8 @@ class Index extends PureComponent {
               </div>
             </div>
             <div className={stylesAllocation['right-container']}>
-              <div className={stylesAllocation['content']}>
-                <div className={stylesAllocation['heading']}>
+              <div className={stylesAllocation.content}>
+                <div className={stylesAllocation.heading}>
                   <Text color="dark" size="large-medium">
                     Thông tin điều chuyển
                   </Text>
@@ -307,7 +319,11 @@ class Index extends PureComponent {
                         name="classChangeId"
                         type={variables.RADIO}
                         rules={[variables.RULES.EMPTY]}
-                        data={!_.isEmpty(classChange) ? classChange.map(({ id, name }) => ({ value: id, label: name })) : []}
+                        data={
+                          !_.isEmpty(classChange)
+                            ? classChange.map(({ id, name }) => ({ value: id, label: name }))
+                            : []
+                        }
                       />
                     </div>
                   </div>
@@ -335,5 +351,13 @@ class Index extends PureComponent {
     );
   }
 }
+
+Index.propTypes = {
+  dispatch: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  dispatch: {},
+};
 
 export default Index;

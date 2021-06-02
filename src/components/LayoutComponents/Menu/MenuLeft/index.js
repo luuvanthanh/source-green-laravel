@@ -6,23 +6,22 @@ import PropTypes from 'prop-types';
 import { connect, Link, withRouter } from 'umi';
 import { Menu, Layout, Badge, Popover } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
-import styles from './style.module.scss';
 import { isValidCondition } from '@/utils/authority';
 import validator from 'validator';
-import { variables } from '@/utils';
 import feature from '@/services/feature';
+import styles from './style.module.scss';
 
 const { Sider } = Layout;
 const { SubMenu, Divider } = Menu;
 
-const mapStateToProps = ({ menu, settings, badges, user }) => ({
+const mapStateToProps = ({ menu, settings, user }) => ({
   menuData: menu.menuLeftSchedules,
   isMobileView: settings.isMobileView,
   isLightTheme: settings.isLightTheme,
   isSettingsOpen: settings.isSettingsOpen,
   isMenuCollapsed: settings.isMenuCollapsed,
   isMobileMenuOpen: settings.isMobileMenuOpen,
-  user: user,
+  user,
 });
 
 @withRouter
@@ -36,28 +35,29 @@ class MenuLeft extends React.Component {
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
       data: feature.FEATURES.filter((menuItem) => {
+        if (_.isEmpty(menuItem.permission)) {
+          return true;
+        }
         const showMenu = isValidCondition({
           conditions: [
             {
-              permission: menuItem.permission || [''],
-              isOrPermission: true,
+              permission: !_.isEmpty(menuItem.permission) ? menuItem.permission : [],
+              isOrPermission: menuItem.multiple || false,
             },
           ],
-          userPermission: [
-            variables.ROLES_PERMISSIONS.includes(user?.user?.role?.toUpperCase())
-              ? user?.user?.role?.toUpperCase()
-              : variables.ROLES.ALL,
-          ],
+          userPermission: user.permissions,
         });
         return showMenu;
       }),
     };
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillMount() {
     this.setSelectedKeys(this.props);
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
     if (newProps.isMenuCollapsed && !newProps.isMobileView) {
       this.setState({
@@ -85,9 +85,7 @@ class MenuLeft extends React.Component {
     if (pathname) {
       const listItemPath = pathname.split('/');
       return listItemPath
-        .map((item) => {
-          return validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item;
-        })
+        .map((item) => (validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item))
         .join('/');
     }
     return '';
@@ -209,8 +207,8 @@ class MenuLeft extends React.Component {
       );
     };
 
-    const generateSubmenu = (items) => {
-      return items.map((menuItem) => {
+    const generateSubmenu = (items) =>
+      items.map((menuItem) => {
         const showMenu = isValidCondition({
           conditions: [
             {
@@ -241,14 +239,13 @@ class MenuLeft extends React.Component {
         }
         return null;
       });
-    };
 
     return menuData.map((menuItem) => {
       const showMenu = isValidCondition({
         conditions: [
           {
             permission: menuItem.permission || [''],
-            isOrPermission: menuItem.multiple || false,
+            isOrPermission: _.size(menuItem.permission) > 1,
           },
         ],
         userPermission: user.permissions,
@@ -296,17 +293,23 @@ class MenuLeft extends React.Component {
 
     const menu = this.generateMenuItems();
     const content = (
-      <Scrollbars autoHeight autoHeightMax={'50vh'}>
+      <Scrollbars autoHeight autoHeightMax="50vh">
         <div className={styles['popover-container']}>
           {data.map((item, index) => {
             if (item.target) {
               return (
-                <a href={item.url} target="_blank" className={styles.item} key={index}>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  className={styles.item}
+                  key={index}
+                  rel="noreferrer"
+                >
                   <div className={styles['item-image']}>
                     <img src={item.src} alt="notification" className={styles.icon} />
                   </div>
                   <div className={styles['item-content']}>
-                    <p className={styles['norm']}>{item.title}</p>
+                    <p className={styles.norm}>{item.title}</p>
                   </div>
                 </a>
               );
@@ -317,7 +320,7 @@ class MenuLeft extends React.Component {
                   <img src={item.src} alt="notification" className={styles.icon} />
                 </div>
                 <div className={styles['item-content']}>
-                  <p className={styles['norm']}>{item.title}</p>
+                  <p className={styles.norm}>{item.title}</p>
                 </div>
               </Link>
             );
@@ -347,14 +350,14 @@ class MenuLeft extends React.Component {
                 content={content}
                 trigger="click"
               >
-                <span className="icon-toggle"></span>
+                <span className="icon-toggle" />
               </Popover>
             )}
           </Link>
         </div>
         <Scrollbars
           autoHeight
-          autoHeightMax={'calc(100vh - 100px)'}
+          autoHeightMax="calc(100vh - 100px)"
           className={isMobileView ? styles.scrollbarMobile : styles.scrollbarDesktop}
           renderThumbVertical={({ style, ...props }) => (
             <div
@@ -397,6 +400,8 @@ MenuLeft.propTypes = {
   user: PropTypes.objectOf(PropTypes.any),
   isSettingsOpen: PropTypes.bool,
   isLightTheme: PropTypes.bool,
+  info: PropTypes.objectOf(PropTypes.any),
+  menu: PropTypes.arrayOf(PropTypes.any),
 };
 MenuLeft.defaultProps = {
   isMobileView: false,
@@ -408,5 +413,7 @@ MenuLeft.defaultProps = {
   isSettingsOpen: false,
   isLightTheme: false,
   permissions: [],
+  info: {},
+  menu: [],
 };
 export default MenuLeft;

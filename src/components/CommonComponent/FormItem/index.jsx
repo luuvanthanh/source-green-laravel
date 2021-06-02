@@ -53,7 +53,7 @@ const renderChildren = (
     <InputNumber
       className={classnames('input-number', styles['input-number-container'])}
       disabled={disabled}
-      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+      formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
       placeholder="Nhập"
     />
   ),
@@ -136,6 +136,7 @@ const renderChildren = (
         if (Helper.slugify(option?.children)) {
           return Helper.slugify(option?.children)?.indexOf(Helper.slugify(input)) >= 0;
         }
+        return null;
       }}
       maxTagCount={maxTagCount}
       mode="tags"
@@ -182,20 +183,22 @@ const renderChildren = (
     <DatePicker
       disabled={disabled}
       disabledDate={disabledDate}
-      format={'[Tháng] MM/YYYY'}
+      format="[Tháng] MM/YYYY"
       onChange={onChange}
       placeholder="Chọn"
-      picker={'month'}
+      picker="month"
+      allowClear={allowClear}
     />
   ),
   yearPicker: (
     <DatePicker
       disabled={disabled}
       disabledDate={disabledDate}
-      format={'[Năm] YYYY'}
+      format="[Năm] YYYY"
       onChange={onChange}
       placeholder="Chọn"
-      picker={'year'}
+      picker="year"
+      allowClear={allowClear}
     />
   ),
   dateTimePicker: (
@@ -223,6 +226,7 @@ const renderChildren = (
       disabledMinutes={disabledMinutes}
       placeholder="Chọn"
       disabled={disabled}
+      minuteStep={30}
     />
   ),
   treeSelect: (
@@ -268,7 +272,7 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
-  checkboxSingle: <Checkbox onChange={onChange} className={styles['checkbox--large']}></Checkbox>,
+  checkboxSingle: <Checkbox onChange={onChange} className={styles['checkbox--large']} />,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (
@@ -355,7 +359,7 @@ FormItem.propTypes = {
   data: PropTypes.arrayOf(PropTypes.any),
   handleScroll: PropTypes.func,
   onChange: PropTypes.func,
-  disabled: PropTypes.bool,
+  disabled: PropTypes.any,
   disabledDate: PropTypes.func,
   fieldNames: PropTypes.objectOf(PropTypes.any),
   maxTagCount: PropTypes.number,
@@ -365,6 +369,11 @@ FormItem.propTypes = {
   onSelect: PropTypes.func,
   allowClear: PropTypes.bool,
   picker: PropTypes.string,
+  disabledHours: PropTypes.any,
+  disabledMinutes: PropTypes.any,
+  radioInline: PropTypes.bool,
+  disabledKeys: PropTypes.any,
+  options: PropTypes.arrayOf(PropTypes.any),
 };
 
 FormItem.defaultProps = {
@@ -378,16 +387,19 @@ FormItem.defaultProps = {
   onChange: () => {},
   onSearch: () => {},
   onBlur: () => {},
-  disabled: false,
-  disabledDate: () => {
-    return false;
-  },
+  disabled: null,
+  disabledDate: () => false,
   fieldNames: { label: 'name', value: 'id', children: 'children' },
   maxTagCount: 20,
   dropdownRender: null,
   onSelect: () => {},
   allowClear: true,
   picker: null,
+  disabledHours: null,
+  disabledMinutes: null,
+  radioInline: false,
+  disabledKeys: null,
+  options: ['id', 'name'],
 };
 
 FormItem.displayName = 'Form';

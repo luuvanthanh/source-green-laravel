@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Avatar, Switch } from 'antd';
+import { Modal, Form, Switch } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,11 +12,9 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import variablesModules from '../utils/variables';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -48,7 +46,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -415,7 +412,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

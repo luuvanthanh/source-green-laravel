@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
+import React from 'react';
 import { connect, withRouter } from 'umi';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Menu from '@/components/LayoutComponents/Menu';
@@ -27,11 +28,11 @@ class MainLayout extends React.PureComponent {
       isFixedWidth,
       isMenuShadow,
       isMenuTop,
-      menuData
+      menuData,
     } = this.props;
     return (
       <Layout
-        className={classNames({
+        className={classnames({
           settings__borderLess: isBorderless,
           settings__squaredBorders: isSquaredBorders,
           settings__fixedWidth: isFixedWidth,
@@ -59,23 +60,23 @@ class MainLayout extends React.PureComponent {
 }
 
 MainLayout.propTypes = {
-  dispatch: PropTypes.any.isRequired,
   children: PropTypes.any,
   isBorderless: PropTypes.bool,
   isSquaredBorders: PropTypes.bool,
   isFixedWidth: PropTypes.bool,
   isMenuShadow: PropTypes.bool,
   isMenuTop: PropTypes.bool,
+  menuData: PropTypes.arrayOf(PropTypes.any),
 };
 
 MainLayout.defaultProps = {
-  dispatch: {},
   children: '',
   isBorderless: false,
   isSquaredBorders: false,
   isFixedWidth: false,
   isMenuShadow: false,
   isMenuTop: false,
+  menuData: [],
 };
 
 export default MainLayout;

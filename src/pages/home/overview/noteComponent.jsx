@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Avatar, Image, Skeleton } from 'antd';
+import { Tabs, Modal, Image, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -74,19 +74,21 @@ const Index = memo(() => {
           <div className="row">
             <div className="col-12 mt20">
               <p className="mb0">{Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}</p>
-              <h5 className="font-size-24 my5">{detailsNote?.name}</h5>
+              <h5 className="font-size-24 my5 font-weight-bold">{detailsNote?.name}</h5>
               <p className="font-size-16">{detailsNote?.description}</p>
               {
                 !_.isEmpty(detailsNote.fileImage) && (
                   <Image.PreviewGroup>
                     {JSON.parse(detailsNote.fileImage).map((item, index) => (
-                      <Image
-                        key={index}
-                        width={110}
-                        height={100}
-                        className="mb10"
-                        src={`${API_UPLOAD}${item}`}
-                      />
+                      <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
+                        <Image
+                          key={index}
+                          width={129}
+                          height={100}
+                          className="mb10"
+                          src={`${API_UPLOAD}${item}`}
+                        />
+                      </div>
                     ))}
                   </Image.PreviewGroup>
                 )
@@ -121,9 +123,11 @@ const Index = memo(() => {
             </div>
             <div className="col-md-6 py20 border-top">
               <div className="d-flex">
-                <Avatar
+                <AvatarTable
                   src={`${API_UPLOAD}${Helper.getPathAvatarJson(detailsNote?.employee?.fileImage)}`}
+                  fileImage={Helper.getPathAvatarJson(detailsNote?.employee?.fileImage)}
                   size={50}
+                  shape="circle"
                 />
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>
@@ -143,7 +147,7 @@ const Index = memo(() => {
             <div className="col-md-6 py20 border-top">
               <p className="mb5">Giáo viên đã nhận</p>
               <p className="font-weight-bold">
-                {`${detailsNote?.employee?.fullName} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
+                {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
               </p>
             </div>
           </div>
@@ -164,37 +168,39 @@ const Index = memo(() => {
               <TabPane tab={name} key={id} />
             ))}
           </Tabs>
-          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 335}>
-            {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(notes) && (
-              <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
-            )}
-            {loading['overView/GET_DATA_NOTE'] ? (
-              <>
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-              </>
-            ) : (
-              notes.map((item, index) => (
-                <div
-                  className={styles['content-tab']}
-                  key={index}
-                  onClick={() => getDetails(item.id)}
-                  aria-hidden="true"
-                >
-                  <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                    <AvatarTable
-                      className="full-name-bold"
-                      fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
-                      fullName={item?.student?.fullName}
-                      size={36}
-                    />
-                    <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+            <div className="px20">
+              {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(notes) && (
+                <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+              )}
+              {loading['overView/GET_DATA_NOTE'] ? (
+                <>
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  <Skeleton avatar paragraph={{ rows: 4 }} active />
+                </>
+              ) : (
+                notes.map((item, index) => (
+                  <div
+                    className={styles['content-tab']}
+                    key={index}
+                    onClick={() => getDetails(item.id)}
+                    aria-hidden="true"
+                  >
+                    <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <AvatarTable
+                        className="full-name-bold"
+                        fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                        fullName={item?.student?.fullName}
+                        size={36}
+                      />
+                      <p className={classnames('mb0', styles.date)}>{Helper.getDate(item?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
+                    </div>
+                    <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.name || ''}</p>
                   </div>
-                  <p className={classnames('mt10', 'mb0', 'font-size-14')}>{item?.name || ''}</p>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </Scrollbars>
         </div>
       </div>

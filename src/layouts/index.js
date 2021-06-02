@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { connect, Redirect } from 'umi';
-import NProgress from 'nprogress';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
@@ -29,7 +28,7 @@ const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
-  exchange: ExchangeLayout,
+  communications: ExchangeLayout,
   objectProfiles: ObjectProfiles,
   timetable: SchedulesLayout,
   configuration: ConfigurationLayout,
@@ -39,7 +38,7 @@ const Layouts = {
   allocation: AllocationLayout,
   medical: MedicalLayout,
   attendance: AttendanceLayout,
-  timetable: TimetableLayout,
+  timetableSchedule: TimetableLayout,
   notification: NotificationLayout,
   media: MediaLayout,
   health: HealthLayout,
@@ -72,7 +71,7 @@ class IndexLayout extends React.PureComponent {
         return 'hrm';
       }
       if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
-        return 'exchange';
+        return 'communications';
       }
       if (/^\/ho-so-doi-tuong(?=\/|$)/i.test(pathname)) {
         return 'objectProfiles';
@@ -99,7 +98,7 @@ class IndexLayout extends React.PureComponent {
         return 'medical';
       }
       if (/^\/thoi-khoa-bieu(?=\/|$)/i.test(pathname)) {
-        return 'timetable';
+        return 'timetableSchedule';
       }
       if (/^\/thong-bao(?=\/|$)/i.test(pathname)) {
         return 'notification';
@@ -150,10 +149,10 @@ class IndexLayout extends React.PureComponent {
     };
 
     return (
-      <Fragment>
+      <>
         <Helmet title="Clover" titleTemplate="Clover | %s" />
         {BootstrappedLayout()}
-      </Fragment>
+      </>
     );
   }
 }
@@ -163,7 +162,6 @@ IndexLayout.propTypes = {
   children: PropTypes.any,
   loading: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
-  prevLocation: PropTypes.objectOf(PropTypes.any),
 };
 
 IndexLayout.defaultProps = {
@@ -171,7 +169,6 @@ IndexLayout.defaultProps = {
   children: {},
   loading: {},
   user: {},
-  prevLocation: {},
 };
 
 export default IndexLayout;

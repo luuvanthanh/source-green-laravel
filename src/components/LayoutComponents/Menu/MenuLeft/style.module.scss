@@ -9,7 +9,7 @@
 
   .title {
     color: $text-dark;
-    font-family: "Roboto", sans-serif;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -119,7 +119,7 @@
   }
 
   .title {
-    font-family: "Roboto", sans-serif;
+    font-family: $bold__font-family;
     font-style: normal;
     font-weight: bold;
     font-size: 16px;

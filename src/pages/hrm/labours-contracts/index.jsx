@@ -319,7 +319,7 @@ class Index extends PureComponent {
         render: (value) => value?.name,
       },
       {
-        title: 'Chức danh',
+        title: 'Chức vụ',
         key: 'position',
         dataIndex: 'position',
         className: 'min-width-150',

@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Form, Modal, Tabs, InputNumber } from 'antd';
-import { find, size, last, toNumber, isEmpty } from 'lodash';
+import { find, last, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'dva';
 import { useRouteMatch } from 'umi';
@@ -38,7 +38,7 @@ const Index = memo(() => {
   } = useRouteMatch();
 
   const [visible, setVisible] = useState(false);
-  const [contractDetails, setContractDetails] = useState({});
+  const [, setContractDetails] = useState({});
   const [details, setDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
 
@@ -81,7 +81,6 @@ const Index = memo(() => {
         id: item.pivot.parameterValueId,
       })),
     );
-    setParameterValuesDetails;
     if (formRefModal.current) {
       formRefModal.current.setFieldsValue({
         ...record,
@@ -155,7 +154,7 @@ const Index = memo(() => {
         render: (value) =>
           Helper.getPrice(
             (value || []).reduce(
-              (result, item, index) => (!!index ? result + item?.pivot?.value : result),
+              (result, item, index) => (index ? result + item?.pivot?.value : result),
               0,
             ),
           ),
@@ -168,7 +167,7 @@ const Index = memo(() => {
         render: (value) => value?.name,
       },
       {
-        title: 'Chức danh',
+        title: 'Chức vụ',
         key: 'position',
         dataIndex: 'position',
         className: 'min-width-150',
@@ -263,7 +262,7 @@ const Index = memo(() => {
         <InputNumber
           value={value}
           className={csx('input-number')}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
           onChange={changeValue(record)}
           placeholder="Nhập"
         />
@@ -290,6 +289,15 @@ const Index = memo(() => {
       ),
     },
   ];
+
+  const fetchContracts = () => {
+    dispatch({
+      type: 'HRMusersAdd/GET_CONTRACTS',
+      payload: {
+        employeeId,
+      },
+    });
+  };
 
   const finishForm = () => {
     const formValues = formRefModal?.current?.getFieldsValue();
@@ -321,27 +329,17 @@ const Index = memo(() => {
           formRefModal.current.resetFields();
         }
         if (err) {
-          const { data } = err;
-          if (data?.status === 400 && !!size(data?.errors)) {
-            for (const item of data?.errors) {
-              formRefModal?.current?.setFields([
+          if (get(err, 'data.status') === 400 && !isEmpty(err?.data?.errors)) {
+            err.data.errors.forEach((item) => {
+              formRefModal.current.setFields([
                 {
-                  name: item?.source?.pointer,
-                  errors: [item?.details],
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
                 },
               ]);
-            }
+            });
           }
         }
-      },
-    });
-  };
-
-  const fetchContracts = () => {
-    dispatch({
-      type: 'HRMusersAdd/GET_CONTRACTS',
-      payload: {
-        employeeId,
       },
     });
   };
@@ -510,7 +508,7 @@ const Index = memo(() => {
             <Pane className="col-lg-4">
               <FormItem
                 data={positions}
-                label="Chức danh"
+                label="Chức vụ"
                 name="positionId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
@@ -583,7 +581,6 @@ const Index = memo(() => {
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table
-            bordered
             columns={columns}
             dataSource={contracts}
             pagination={false}

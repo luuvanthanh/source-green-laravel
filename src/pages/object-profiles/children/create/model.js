@@ -1,8 +1,7 @@
 import { notification } from 'antd';
-import { get } from 'lodash';
 import { variables } from '@/utils';
+import * as categories from '@/services/categories';
 import * as services from './services';
-import * as categories from '@/services/categories'
 
 export default {
   namespace: 'OPchildrenAdd',
@@ -40,7 +39,7 @@ export default {
     }),
     SET_EMPLOYEES: (state, { payload }) => ({
       ...state,
-      employees: payload.items,
+      employees: payload.parsePayload,
     }),
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
@@ -147,7 +146,7 @@ export default {
     },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getEmployees, payload);
+        const response = yield saga.call(categories.getEmployees, payload);
         yield saga.put({
           type: 'SET_EMPLOYEES',
           payload: response,
@@ -175,7 +174,7 @@ export default {
     },
     *GET_CLASSES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getClasses, payload);
+        const response = yield saga.call(categories.getClasses, payload);
         yield saga.put({
           type: 'SET_CLASSES',
           payload: response,
