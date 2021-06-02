@@ -56,3 +56,37 @@ export function add(data = {}) {
     },
   });
 }
+
+export function update(data = {}) {
+  return requestLavarel(`/v1/absent-students/${data.id}`, {
+    method: 'PUT',
+    data: {
+      ...data,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.startDate,
+          targetValue: '00:00:00',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.endDate,
+          targetValue: '23:59:59',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
+  });
+}
+
+export function get(params = {}) {
+  return requestLavarel(`/v1/absent-students/${params.id}`, {
+    method: 'GET',
+    params: {},
+  });
+}

@@ -3,6 +3,7 @@ import { connect, history } from 'umi';
 import { Form, message } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
+import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -31,6 +32,7 @@ const mapStateToProps = ({ menu, absentStudentsAdd, loading, user }) => ({
   loading,
   user: user.user,
   error: absentStudentsAdd.error,
+  details: absentStudentsAdd.details,
   students: absentStudentsAdd.students,
   categories: absentStudentsAdd.categories,
   menuLeftSchedules: menu.menuLeftSchedules,
@@ -46,12 +48,26 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
-
   componentDidMount() {
     this.loadCategories();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      details,
+      match: { params },
+    } = this.props;
+    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+      this.formRef.current.setFieldsValue({
+        ...details,
+        startDate: moment(details?.startDate),
+        endDate: moment(details?.endDate),
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    setIsMounted(false);
   }
 
   /**
@@ -69,7 +85,19 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
-    const { dispatch, user } = this.props;
+    const {
+      dispatch,
+      user,
+      match: { params },
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'absentStudentsAdd/GET_DETAILS',
+        payload: {
+          ...params,
+        },
+      });
+    }
     dispatch({
       type: 'absentStudentsAdd/GET_CATEGORIES',
       payload: {},
@@ -133,7 +161,8 @@ class Index extends PureComponent {
     const loading =
       effects['absentStudentsAdd/GET_DETAILS'] ||
       effects['absentStudentsAdd/GET_CATEGORIES'] ||
-      effects['absentStudentsAdd/GET_STUDENTS'];
+      effects['absentStudentsAdd/GET_STUDENTS'] ||
+      effects['absentStudentsAdd/GET_DETAILS'];
     const loadingSubmit = effects['absentStudentsAdd/ADD'];
     return (
       <>
@@ -243,6 +272,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
   categories: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -254,6 +284,7 @@ Index.defaultProps = {
   error: {},
   menuLeftSchedules: [],
   categories: {},
+  details: {},
 };
 
 export default Index;
