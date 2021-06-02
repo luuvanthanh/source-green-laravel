@@ -1,21 +1,17 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, get } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import HelperModules from '../../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,10 +27,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ absentStudents, loading }) => ({
-  data: absentStudents.data,
-  pagination: absentStudents.pagination,
+const mapStateToProps = ({ attendanceLogs, loading }) => ({
   loading,
+  data: attendanceLogs.data,
+  employees: attendanceLogs.employees,
+  branches: attendanceLogs.branches,
+  pagination: attendanceLogs.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,11 +45,10 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment().startOf('months'),
       },
     };
     setIsMounted(true);
@@ -59,6 +56,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -79,27 +77,37 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'attendanceLogs/GET_EMPLOYEES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'attendanceLogs/GET_BRANCHES',
+      payload: {},
+    });
+  };
+
   /**
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'absentStudents/GET_DATA',
+      type: 'attendanceLogs/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push(
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
           startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -170,33 +178,6 @@ class Index extends PureComponent {
     );
   };
 
-  changePagination;
-
-  renderDescription = (record) => {
-    if (!isEmpty(record)) {
-      const absentStudents = record.map((item) => {
-        if (!isEmpty(get(item, 'fingerprintTimekeeper'))) {
-          return `${get(item, 'fingerprintTimekeeper.name')} - ${Helper.getDateLocal(
-            item.attendedAt,
-            variables.DATE_FORMAT.DATE_TIME,
-          )}`;
-        }
-        return '';
-      });
-      return (
-        <Paragraph ellipsis={{ rows: 6, expandable: true, symbol: 'Xem thêm' }}>
-          {absentStudents.map((item, index) => (
-            <div key={index}>
-              {item}
-              <br />
-            </div>
-          ))}
-        </Paragraph>
-      );
-    }
-    return null;
-  };
-
   /**
    * Function pagination of table
    * @param {object} pagination value of pagination items
@@ -215,7 +196,6 @@ class Index extends PureComponent {
     onShowSizeChange: (current, size) => {
       this.changePagination(current, size);
     },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
   /**
@@ -223,105 +203,104 @@ class Index extends PureComponent {
    */
   header = () => [
     {
-      title: 'STT',
-      key: 'text',
-      width: 50,
-      align: 'center',
-      render: (text, record, index) =>
-        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+      title: 'Thời gian',
+      key: 'date',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => Helper.getDate(record.creationTime),
     },
     {
-      title: 'Bé',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
-          fullName={get(record, 'student.fullName')}
-        />
-      ),
+      title: 'Cơ sở',
+      key: 'branch',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.employee?.positionLevelNow?.branch?.name,
+    },
+    {
+      title: 'Lớp',
+      key: 'class',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.employee?.classTeacher?.class?.name,
     },
     {
       title: 'Nhân viên',
       key: 'employee',
-      className: 'min-width-200',
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-          fullName={get(record, 'employee.fullName')}
-        />
-      ),
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.employee?.fullName,
     },
     {
-      title: 'Ngày',
-      key: 'count',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
-    },
-    {
-      title: 'Loại',
-      key: 'absentType',
-      className: 'min-width-150',
-      width: 150,
-      render: (record) => record?.absentType?.name,
+      title: 'Hành động',
+      key: 'action',
+      className: 'min-width-180',
+      width: 180,
+      render: (record) => record?.action,
     },
     {
       title: 'Lý do',
-      key: 'absentReason',
+      key: 'description',
       className: 'min-width-200',
-      render: (record) => record?.absentReason?.name,
-    },
-    {
-      title: 'Trạng thái',
-      key: 'status',
-      className: 'min-width-150',
-      width: 150,
-      render: (record) => HelperModules.tagStatus(record.status),
+      render: (record) => record.reason,
     },
   ];
 
   render() {
     const {
       data,
+      employees,
+      branches,
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['absentStudents/GET_DATA'];
+    const loading = effects['attendanceLogs/GET_DATA'];
     return (
       <>
-        <Helmet title="Đơn xin phép cho bé" />
-        <div className={classnames(styles['content-form'], styles['content-form-absentStudents'])}>
+        <Helmet title="Lịch sử điểm danh" />
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Đơn xin phép cho bé</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo xin phép
-            </Button>
+            <Text color="dark">Lịch sử điểm danh</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                startDate: search.startDate && moment(search.startDate),
+                endDate: search.endDate && moment(search.endDate),
+                employeeId: search.employeeId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
+                    name="employeeId"
+                    data={[
+                      { id: null, name: 'Tất cả nhân viên' },
+                      ...Helper.convertSelectUsers(employees),
+                    ]}
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    placeholder="Chọn nhân viên"
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="branchId"
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
@@ -330,7 +309,7 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
@@ -342,7 +321,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -351,6 +329,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              bordered={false}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
@@ -368,6 +347,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -377,6 +358,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
+  branches: [],
 };
 
 export default Index;

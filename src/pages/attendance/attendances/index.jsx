@@ -31,8 +31,8 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ attendances, loading, user }) => ({
-  user,
   loading,
+  user: user.user,
   data: attendances.data,
   pagination: attendances.pagination,
   attendancesReasons: attendances.attendancesReasons,
@@ -205,13 +205,18 @@ class Index extends PureComponent {
 
   add = (record, status) => {
     const { search } = this.state;
+    const { user } = this.props;
+    if (!user?.objectInfo?.id) {
+      message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
+      return;
+    }
     this.setStateData({
       visible: true,
       object: {
         studentId: record.id,
         date: moment(search.date).format(variables.DATE_FORMAT.DATE_AFTER),
         status,
-        employeeId: '031e5763-c2c2-4855-803f-074d17745ae5',
+        employeeId: user?.objectInfo?.id,
         reason: null,
         reasonId: null,
       },
@@ -238,7 +243,7 @@ class Index extends PureComponent {
   onSave = () => {
     const { user } = this.props;
     const { object } = this.state;
-    if (user?.objectInfo?.id) {
+    if (!user?.objectInfo?.id) {
       message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
       return;
     }
