@@ -1,3 +1,4 @@
+import { toNumber } from 'lodash';
 import Tag from '@/components/CommonComponent/Tag';
 import moment from 'moment';
 import { variables } from './variables';
@@ -36,20 +37,19 @@ export default class Helpers {
     return moment().endOf(choose || 'isoWeek');
   };
 
-  static getDayOfWeek = (date = 'Mon') => {
-    const currentDate = date.toUpperCase();
-    switch (currentDate) {
-      case 'MON':
+  static getDayOfWeek = (date = 0) => {
+    switch (toNumber(date)) {
+      case 1:
         return 'T2';
-      case 'TUE':
+      case 2:
         return 'T3';
-      case 'WED':
+      case 3:
         return 'T4';
-      case 'THU':
+      case 4:
         return 'T5';
-      case 'FRI':
+      case 5:
         return 'T6';
-      case 'SAT':
+      case 6:
         return 'T7';
       default:
         return 'CN';

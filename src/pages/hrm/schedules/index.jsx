@@ -820,7 +820,6 @@ class Index extends PureComponent {
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                   />
                 </div>
-
                 <div className="col-lg-3">
                   <FormItem
                     name="endDate"

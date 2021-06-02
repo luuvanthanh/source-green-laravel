@@ -261,8 +261,8 @@ class Index extends PureComponent {
     if (index !== null && item) {
       return (
         <div>
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))}
-          <br /> {moment(item).format('DD-MM')}
+          {HelperModules.getDayOfWeek(moment(item).format('d'))} <br />{' '}
+          {moment(item).format('DD-MM')}
         </div>
       );
     }
@@ -327,18 +327,16 @@ class Index extends PureComponent {
       {
         title: 'Cơ sở',
         key: 'branch',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record?.class?.branch?.name,
+        className: 'min-width-180',
+        width: 180,
+        render: (record) => record?.classStudent?.class?.branch?.name,
       },
       {
         title: 'Lớp',
         key: 'class',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        render: (record) => record?.class?.name,
+        className: 'min-width-180',
+        width: 180,
+        render: (record) => record?.classStudent?.class?.name,
       },
       {
         title: 'Định mức học',

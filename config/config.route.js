@@ -505,6 +505,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/diem-danh/ly-do-diem-danh',
+            component: './attendance/attendances-reasons',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/ly-do-diem-danh/tao-moi',
+            component: './attendance/attendances-reasons/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/diem-danh/ly-do-diem-danh/:id/chi-tiet',
+            component: './attendance/attendances-reasons/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       // Attendance

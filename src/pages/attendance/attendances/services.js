@@ -18,7 +18,13 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['timekeeping', 'class', 'attendance', 'absent']),
+      include: Helper.convertIncludes([
+        'timekeeping',
+        'class',
+        'attendance',
+        'absent',
+        'classStudent.class',
+      ]),
       search: Helper.convertParamSearchConvert({
         FullName: data.fullName,
       }),
