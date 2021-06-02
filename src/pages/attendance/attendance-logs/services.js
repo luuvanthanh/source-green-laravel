@@ -2,14 +2,10 @@ import request from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/absent-students', {
+  return request('/v1/attendance-logs', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
+      ...data,
       startDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
@@ -26,14 +22,12 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      fullName: data.fullName,
-      include: Helper.convertIncludes([
-        'student',
-        'parent',
-        'absentType',
-        'absentReason',
-        'employee',
-      ]),
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['employee.positionLevelNow', 'employee.classTeacher.class']),
       search: Helper.convertParamSearchConvert({}),
     },
   });

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, message } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty } from 'lodash';
@@ -86,23 +86,20 @@ class Index extends PureComponent {
   onFinish = (values) => {
     const {
       user,
-      students,
       dispatch,
       match: { params },
     } = this.props;
-    let parentId = null;
-    if (!isEmpty(students)) {
-      const student = students.find((item) => item.id === values.studentId);
-      parentId = student?.fartherId || student?.motherId || user?.objectInfo?.id;
-    } else {
-      parentId = user?.objectInfo?.id;
+    if (!user?.objectInfo?.id) {
+      message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
+      return;
     }
     dispatch({
       type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
         ...values,
-        parentId,
         id: params.id,
+        status: 'PENDING',
+        employeeId: user?.objectInfo?.id,
       },
       callback: (response, error) => {
         if (response) {
@@ -183,6 +180,7 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -191,6 +189,7 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     />
                   </div>
                 </div>

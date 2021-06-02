@@ -2,7 +2,7 @@ import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
-  namespace: 'AllocationHistories',
+  namespace: 'attendanceLogs',
   state: {
     data: [],
     pagination: {},
@@ -16,6 +16,14 @@ export default {
       data: payload.parsePayload,
       pagination: payload.pagination,
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -25,12 +33,28 @@ export default {
         },
       },
     }),
-    SET_EMPLOYEES: (state, { payload }) => ({
+    UPDATE_DATA: (state, { payload }) => ({
       ...state,
-      employees: payload.parsePayload,
+      data: state.data.map((item) =>
+        item.id === payload.id ? { ...item, status: payload.status } : item,
+      ),
     }),
   },
   effects: {
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getEmployees, payload);
@@ -48,15 +72,12 @@ export default {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
-          },
-        });
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
