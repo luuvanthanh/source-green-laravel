@@ -494,6 +494,12 @@ export default [
             authority: [],
           },
           {
+            path: '/diem-danh/don-xin-phep-cho-be/:id/chi-tiet',
+            component: './attendance/absents/absent-students/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/diem-danh/nhap-diem-danh',
             component: './attendance/attendances',
             wrappers: ['@/wrappers/auth'],

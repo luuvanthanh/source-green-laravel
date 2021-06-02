@@ -18,6 +18,7 @@ export default {
       isError: false,
       data: {},
     },
+    details: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -46,6 +47,10 @@ export default {
         absentReasons: payload.absentReasons.parsePayload,
         users: [],
       },
+    }),
+    SET_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload,
     }),
   },
   effects: {
@@ -94,6 +99,38 @@ export default {
           description: 'Vui lòng kiểm tra lại hệ thống',
         });
         callback(null, error);
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+        notification.success({
+          message: 'Cập nhật thành công',
+          description: 'Bạn đã cập nhật thành công dữ liệu',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'Thông báo',
+          description: 'Vui lòng kiểm tra lại hệ thống',
+        });
+        callback(null, error);
+      }
+    },
+    *GET_DETAILS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

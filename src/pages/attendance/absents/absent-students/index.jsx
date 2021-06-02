@@ -14,6 +14,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import HelperModules from '../../utils/Helper';
+import variablesModules from '../../utils/variables';
 
 const { Paragraph } = Typography;
 let isMounted = true;
@@ -221,65 +222,92 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => [
-    {
-      title: 'STT',
-      key: 'text',
-      width: 50,
-      align: 'center',
-      render: (text, record, index) =>
-        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
-    },
-    {
-      title: 'Bé',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
-          fullName={get(record, 'student.fullName')}
-        />
-      ),
-    },
-    {
-      title: 'Nhân viên',
-      key: 'employee',
-      className: 'min-width-200',
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-          fullName={get(record, 'employee.fullName')}
-        />
-      ),
-    },
-    {
-      title: 'Ngày',
-      key: 'count',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
-    },
-    {
-      title: 'Loại',
-      key: 'absentType',
-      className: 'min-width-150',
-      width: 150,
-      render: (record) => record?.absentType?.name,
-    },
-    {
-      title: 'Lý do',
-      key: 'absentReason',
-      className: 'min-width-200',
-      render: (record) => record?.absentReason?.name,
-    },
-    {
-      title: 'Trạng thái',
-      key: 'status',
-      className: 'min-width-150',
-      width: 150,
-      render: (record) => HelperModules.tagStatus(record.status),
-    },
-  ];
+  header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    return [
+      {
+        title: 'STT',
+        key: 'text',
+        width: 50,
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.sttList(
+            this.props.pagination?.current_page,
+            index,
+            this.props.pagination?.per_page,
+          ),
+      },
+      {
+        title: 'Bé',
+        key: 'name',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
+            fullName={get(record, 'student.fullName')}
+          />
+        ),
+      },
+      {
+        title: 'Nhân viên',
+        key: 'employee',
+        className: 'min-width-200',
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
+        ),
+      },
+      {
+        title: 'Ngày',
+        key: 'count',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
+      },
+      {
+        title: 'Loại',
+        key: 'absentType',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => record?.absentType?.name,
+      },
+      {
+        title: 'Lý do',
+        key: 'absentReason',
+        className: 'min-width-200',
+        render: (record) => record?.absentReason?.name,
+      },
+      {
+        title: 'Trạng thái',
+        key: 'status',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => HelperModules.tagStatus(record.status),
+      },
+      {
+        key: 'actions',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            {record.status === variablesModules.STATUS.PENDING && (
+              <Button
+                color="primary"
+                icon="edit"
+                onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
+              />
+            )}
+          </div>
+        ),
+      },
+    ];
+  };
 
   render() {
     const {

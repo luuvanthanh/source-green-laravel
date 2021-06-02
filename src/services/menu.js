@@ -322,7 +322,11 @@ export async function getLeftMenuSchedules() {
         {
           title: 'Đơn xin phép cho bé',
           key: 'absents',
-          url: ['/diem-danh/don-xin-phep-cho-be', '/diem-danh/don-xin-phep-cho-be/tao-moi'],
+          url: [
+            '/diem-danh/don-xin-phep-cho-be',
+            '/diem-danh/don-xin-phep-cho-be/tao-moi',
+            '/diem-danh/don-xin-phep-cho-be/:id/chi-tiet',
+          ],
           permission: [],
           pro: true,
         },
