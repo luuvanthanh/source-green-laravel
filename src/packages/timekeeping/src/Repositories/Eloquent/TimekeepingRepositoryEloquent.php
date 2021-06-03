@@ -4,6 +4,7 @@ namespace GGPHP\Timekeeping\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\Timekeeping\Presenters\TimekeepingPresenter;
@@ -24,10 +25,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
+        ExcelExporterServices $excelExporterServices,
         Application $app
     ) {
         parent::__construct($app);
         $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -117,7 +120,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      * @param null $rank
      * @return mixed
      */
-    public function timekeepingReport(array $attributes)
+    public function timekeepingReport(array $attributes, $parser = false)
     {
 
         $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
@@ -159,6 +162,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $employee = $this->calculatorTimekeepingReport($employee, $attributes);
         }
 
+        if ($parser) {
+            return $result;
+        }
+
         return $this->employeeRepositoryEloquent->parserResult($result);
     }
 
@@ -183,7 +190,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $timeKeepingByDate = [];
         $workDeclarationByDate = [];
         $dateOff = $employee->DateOff ? $employee->DateOff->format('Y-m-d') : null;
-        // dd($dateOff);
+
         // thoi gian cham cong
         $employeeHasTimekeeping = $employee->timekeeping;
 
@@ -732,4 +739,46 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         return true;
     }
 
+    public function exportTimekeeping(array $attributes)
+    {
+        $results = $this->timekeepingReport($attributes, true);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($attributes['endDate'])->format('m');
+
+        $params['{branch}'] = !empty($attributes['branch']) ? $attributes['branch'] : '.............';
+        $params['{division}'] = !empty($attributes['division']) ? $attributes['division'] : '.............';
+        $params['[number]'] = [];
+        $params['[fullName]'] = [];
+        $params['[position]'] = [];
+        $params['[totalWork]'] = [];
+        $init_value = [];
+
+        $period = Carbon::create($attributes['startDate'])->daysUntil($attributes['endDate']);
+        $period->setLocale('vi_VN');
+        $params['[[date]]'][] = iterator_to_array($period->map(function (Carbon $date) use (&$init_value) {
+            $init_value[$date->format('Y-m-d')] = '';
+            // return ucfirst($date->translatedFormat('l d-m-Y'));
+            return $date->format('d-m-Y');
+        }));
+
+        foreach ($results as $key => $user) {
+            $params['[number]'][] = ++$key;
+            $params['[fullName]'][] = $user->FullName;
+            $params['[position]'][] = $user->positionLevelNow->position->Name ?? '';
+            $values = $init_value;
+
+            if (!empty($user->timeKeepingReport)) {
+                foreach ($user->timeKeepingReport as $item) {
+                    $values[$item['date']] = $item['timekeepingReport'];
+                }
+            }
+
+            $params['[[values]]'][] = array_values($values);
+
+            $params['[totalWork]'][] = $user->totalWorks;
+        }
+
+        return $this->excelExporterServices->export('test2', $params);
+    }
 }
