@@ -26,6 +26,7 @@ import DismissedsForm from './forms/dismisseds';
 import AppointsForm from './forms/appoints';
 import DecisionRewardsForm from './forms/decision-rewards';
 import PositionLevels from './forms/position-levels';
+import MaternityLeaves from './forms/maternity-leaves';
 
 import { menu, defaultKey } from './menu';
 
@@ -51,6 +52,7 @@ const forms = {
   appoints: <AppointsForm />,
   'position-levels': <PositionLevels />,
   'decision-rewards': <DecisionRewardsForm />,
+  'maternity-leaves': <MaternityLeaves />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

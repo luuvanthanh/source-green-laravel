@@ -397,3 +397,34 @@ export function changePassword(data = {}) {
     data,
   });
 }
+
+// maternity-leaves
+export function addMaternityLeaves(data = {}) {
+  return requestLavarel('/v1/maternity-leaves', {
+    method: 'POST',
+    data,
+  });
+}
+export function updateMaternityLeaves(data = {}) {
+  return requestLavarel(`/v1/maternity-leaves/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+export function removeMaternityLeaves(data = {}) {
+  return requestLavarel(`/v1/maternity-leaves/${data.id}`, {
+    method: 'DELETE',
+    data,
+  });
+}
+export function getMaternityLeaves(params = {}) {
+  return requestLavarel('/v1/maternity-leaves', {
+    method: 'GET',
+    params: {
+      employeeId: params.id,
+      limit: variables.PAGINATION.SIZEMAX,
+      page: variables.PAGINATION.PAGE,
+    },
+  });
+}
+// maternity-leaves

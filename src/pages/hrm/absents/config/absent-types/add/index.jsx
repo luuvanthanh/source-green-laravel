@@ -2,16 +2,14 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import variablesModules from '../../../../utils/variables';
 
@@ -31,7 +29,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ absentTypesAdd, loading, menu }) => ({
-  loading: loading,
+  loading,
   error: absentTypesAdd.error,
   details: absentTypesAdd.details,
   categories: absentTypesAdd.categories,
@@ -135,7 +133,6 @@ class Index extends PureComponent {
     const {
       error,
       menuData,
-      categories,
       loading: { effects },
       match: { params },
     } = this.props;
@@ -202,6 +199,20 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={[
+                        { id: true, name: 'Được tính công' },
+                        { id: false, name: 'Không được tính công' },
+                      ]}
+                      label="Trạng thái tính công"
+                      name="isTimeKeeping"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -232,6 +243,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  menuData: [],
+  loading: {},
+  dispatch: {},
+  details: {},
+  error: {},
+};
 
 export default Index;
