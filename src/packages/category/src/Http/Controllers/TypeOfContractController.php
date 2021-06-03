@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\TypeOfContractCreateRequest;
+use GGPHP\Category\Http\Requests\TypeOfContractDeleteRequest;
 use GGPHP\Category\Http\Requests\TypeOfContractUpdateRequest;
 use GGPHP\Category\Repositories\Contracts\TypeOfContractRepository;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -92,7 +93,7 @@ class TypeOfContractController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TypeOfContractDeleteRequest $request, $id)
     {
         $this->typeOfContractRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

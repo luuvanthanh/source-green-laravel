@@ -182,7 +182,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = [];
         $timeKeepingByDate = [];
         $workDeclarationByDate = [];
-
+        $dateOff = $employee->DateOff ? $employee->DateOff->format('Y-m-d') : null;
+        // dd($dateOff);
         // thoi gian cham cong
         $employeeHasTimekeeping = $employee->timekeeping;
 
@@ -201,6 +202,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $intervalDate = \DateInterval::createFromDateString('1 day');
         $periodDate = new \DatePeriod($begin, $intervalDate, $end);
         foreach ($periodDate as $date) {
+            if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
+                break;
+            }
+
             if (!array_key_exists($date->format('Y-m-d'), $employeeTimeWorkShift)) {
                 $responseTimeKeepingUser[] = [
                     "date" => $date->format('Y-m-d'),
@@ -208,12 +213,23 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     "type" => "KC",
                 ];
             }
+
             if ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
-                $responseTimeKeepingUser[] = [
-                    "date" => $date->format('Y-m-d'),
-                    "timekeepingReport" => 0,
-                    "type" => "KXD",
-                ];
+                $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
+
+                if ($checkValue !== false) {
+                    $responseTimeKeepingUser[$checkValue] = [
+                        "date" => $date->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "KXD",
+                    ];
+                } else {
+                    $responseTimeKeepingUser[] = [
+                        "date" => $date->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "KXD",
+                    ];
+                }
             }
         }
 
@@ -221,6 +237,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $count = count($employeeTimeWorkShift);
             $i = 1;
             foreach ($employeeTimeWorkShift as $key => $value) {
+
+                if (!is_null($dateOff) && $key >= $dateOff) {
+                    break;
+                }
 
                 if (!empty($timeKeepingByDate[$key])) {
                     $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
@@ -249,9 +269,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         }
 
-        $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate);
-        $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate);
-
+        $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
+        $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
+        $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff);
         $totalWorks = 0;
 
         foreach ($responseTimeKeepingUser as &$item) {
@@ -271,7 +291,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      * @param string $startDate
      * @param string $endDate
      */
-    public function calculatorAbsents(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate)
+    public function calculatorAbsents(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff)
     {
 
         $absents = $employee->absent()->whereHas('absentDetail', function ($query) use ($startDate, $endDate) {
@@ -280,17 +300,29 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         foreach ($absents as $absent) {
             $code = $absent->absentType->Code;
+            $isTimeKeeping = $absent->absentType->IsTimeKeeping;
+
             foreach ($absent->absentDetail as $value) {
+
+                if (!is_null($dateOff) && $value->Date->format('Y-m-d') >= $dateOff) {
+                    break;
+                }
+
                 $checkValue = array_search($value->Date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 $type = $value->IsFullDate ? $code : $code . "/2";
-                $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
+
+                if ($isTimeKeeping) {
+                    $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
+                } else {
+                    $timekeepingReport = 0;
+                }
 
                 if (!$value->IsFullDate) {
 
                     if (!isset($timeKeepingByDate[$value->Date->format('Y-m-d')])) {
                         $type = $type . ' - KXD';
-                        $timekeepingReport = 0.5;
+                        $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
                         $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
@@ -305,10 +337,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
 
                         if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                            $timekeepingReport = 1;
+                            $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                         } else {
                             $type = $type . ' - KXD';
-                            $timekeepingReport = 0.5;
+                            $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
@@ -324,7 +356,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                             if ($checkIn <= $startTime && $checkOut >= $endTime) {
                                 $type = $code . '/2' . ' - BS';
-                                $timekeepingReport = 1;
+                                $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                             }
                         }
 
@@ -357,7 +389,51 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      * @param string $startDate
      * @param string $endDate
      */
-    public function calculatorBusinessTravel(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate)
+    public function calculatorMaternityLeave(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff)
+    {
+        $maternityLeaves = $employee->maternityLeave()->where(function ($q2) use ($startDate, $endDate) {
+            $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
+                ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
+        })->get();
+
+        foreach ($maternityLeaves as $maternityLeave) {
+
+            foreach ($periodDate as $date) {
+                if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
+                    break;
+                }
+
+                if ($maternityLeave->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $maternityLeave->EndDate->format('Y-m-d')) {
+                    $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
+
+                    if ($checkValue !== false) {
+                        $responseTimeKeepingUser[$checkValue] = [
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => 0,
+                            "type" => "TS",
+                        ];
+                    } else {
+                        $responseTimeKeepingUser[] = [
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => 0,
+                            "type" => "TS",
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $responseTimeKeepingUser;
+    }
+
+    /**
+     * Calculator Absents
+     * @param object $employee
+     * @param string $startDate
+     * @param string $endDate
+     */
+    public function calculatorBusinessTravel(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff)
     {
         $businessCards = $employee->businessCard()->whereHas('businessCardDetail', function ($query) use ($startDate, $endDate) {
             $query->where('Date', '>=', $startDate)->where('Date', '<=', $endDate);
@@ -367,16 +443,26 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         foreach ($businessCards as $businessCard) {
             $code = $businessCard->absentType->Code;
+            $isTimeKeeping = $businessCard->absentType->IsTimeKeeping;
+
             foreach ($businessCard->businessCardDetail as $value) {
+                if (!is_null($dateOff) && $value->Date->format('Y-m-d') >= $dateOff) {
+                    break;
+                }
+
                 $checkValue = array_search($value->Date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 $type = $value->IsFullDate ? $code : $code . "/2";
-                $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
+                if ($isTimeKeeping) {
+                    $timekeepingReport = $value->IsFullDate ? 1 : 0.5;
+                } else {
+                    $timekeepingReport = 0;
+                }
 
                 if (!$value->IsFullDate) {
                     if (!isset($timeKeepingByDate[$value->Date->format('Y-m-d')])) {
                         $type = $type . ' - KXD';
-                        $timekeepingReport = 0.5;
+                        $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
                         $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
@@ -391,10 +477,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
 
                         if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                            $timekeepingReport = 1;
+                            $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                         } else {
                             $type = $type . ' - KXD';
-                            $timekeepingReport = 0.5;
+                            $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
@@ -410,7 +496,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                             if ($checkIn <= $startTime && $checkOut >= $endTime) {
                                 $type = $code . '/2' . ' - BS';
-                                $timekeepingReport = 1;
+                                $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
                             }
                         }
                     }

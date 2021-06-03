@@ -234,10 +234,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         }
 
         if (!empty($attributes['status'])) {
-            $status = explode(',', $attributes['status']);
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendance', function ($query) use ($status) {
-                $query->where('Status', $status);
-            });
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendance', function ($query) use ($attributes) {
+                $query->whereIn('Status', $attributes['status']);
+            })->with(['attendance' => function ($query) use ($attributes) {
+                $query->whereIn('Status', $attributes['status']);
+            }]);
         }
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
@@ -466,18 +467,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $student->whereIn('BranchId', $branchId);
         }
 
-        $attendance = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray());
+        $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+            $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
+        })->count();
+
+        $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
+        $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
 
         return [
             'data' => [
                 'student' => $student->count(),
-                'haveIn' => $attendance->where(function ($query) {
-                    $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
-                })->count(),
-                'annualLeave' => $attendance->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count(),
-                'unpaidLeave' => $attendance->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count(),
-
+                'haveIn' => $attendanceHaveIn,
+                'annualLeave' => $attendanceAnnualLeave,
+                'unpaidLeave' => $attendanceUnpaidLeave,
             ],
         ];
+
     }
 }

@@ -102,6 +102,15 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
         return parent::find($resignationDecision->Id);
     }
 
+    public function delete($id)
+    {
+        $resignationDecision = ResignationDecision::findOrFail($id);
+
+        $employee = User::where('Id', $resignationDecision->EmployeeId)->update(['DateOff' => null]);
+
+        return $resignationDecision->delete();
+    }
+
     public function exportWord($id)
     {
         $resignationDecision = ResignationDecision::findOrFail($id);
