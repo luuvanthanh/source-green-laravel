@@ -58,6 +58,12 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $businessCard = $this->paginate($attributes['limit']);
         } else {

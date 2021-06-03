@@ -77,6 +77,12 @@ class DecisionSuspendRepositoryEloquent extends CoreRepositoryEloquent implement
             $this->model = $this->model->where('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $decisionSuspend = $this->paginate($attributes['limit']);
         } else {

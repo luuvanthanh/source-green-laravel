@@ -17,42 +17,28 @@ class AbsentCreateRequest extends FormRequest
     public function rules()
     {
 
-        $type = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
-        $quitWorkType = AbsentType::where('Type', AbsentType::QUIT_WORK)->first();
-
         return [
             'absentTypeId' => [
                 'required',
-                'exists:AbsentTypes,Id',
+                'exists:AbsentTypeStudents,Id',
             ],
-            'absentReasonId' => 'required|exists:AbsentReasons,Id',
-            'parentId' => 'required',
+            'absentReasonId' => 'required|exists:AbsentReasonStudents,Id',
             'studentId' => 'required',
             'startDate' => [
                 'date',
                 'date_format:Y-m-d',
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('absentTypeId') == $quitWorkType->Id) {
-                        return true;
-                    }
-                    if (request('absentTypeId') == $type->Id) {
-                        $accessWeekend = $this->checkWeekend($value);
-                        if ($accessWeekend === true) {
-                            return true;
-                        }
-                        return $fail('Không được nghỉ vào thứ 6, thứ 7, chủ nhật');
-                    }
-                    return true;
-                },
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-                    if (request('absentTypeId') == $quitWorkType->Id) {
-                        return true;
+                function ($attribute, $value, $fail) {
+
+                    $now = Carbon::now();
+
+                    if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
+                        return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
 
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
                     if (!is_null($accessAbsent)) {
-                        return $fail("Bạn đã " . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
+                        return $fail("Học sinh đã đăng ký" . strtolower($accessAbsent['type']) . " vào ngày " . $accessAbsent['date']);
                     }
 
                     return true;
@@ -62,33 +48,8 @@ class AbsentCreateRequest extends FormRequest
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:startDate',
-                function ($attribute, $value, $fail) use ($type, $quitWorkType) {
-
-                    if (request('absentTypeId') == $type->Id) {
-                        $accessWeekend = $this->checkWeekend($value);
-                        if ($accessWeekend === true) {
-                            return true;
-                        }
-                        return $fail('Không được nghỉ vào thứ 6, thứ 7, chủ nhật');
-                    }
-                    return;
-                },
             ],
         ];
-    }
-
-    /**
-     * @param $value
-     * @return bool
-     */
-    private function checkWeekend($value)
-    {
-        $check = Carbon::parse($value)->format('l');
-        if ($check === 'Friday' || $check === 'Saturday' || $check === 'Sunday') {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -97,9 +58,8 @@ class AbsentCreateRequest extends FormRequest
      */
     private function checkDuplicateAbsent($value)
     {
-        $parentId = request()->ParentId;
+        $studentId = request()->studentId;
         $annualLeaveType = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
-        $unpaidLeaveType = AbsentType::where('Type', AbsentType::UNPAID_LEAVE)->first();
 
         $startDate = request()->startDate;
         $endDate = request()->endDate;
@@ -113,11 +73,11 @@ class AbsentCreateRequest extends FormRequest
             $listDateRequestAbsent[] = $date->format('Y-m-d');
         }
 
-        $absent = Absent::whereIn('AbsentTypeId', [$annualLeaveType->Id, $unpaidLeaveType->Id])->where(function ($q2) use ($startDate, $endDate) {
+        $absent = Absent::whereIn('AbsentTypeId', [$annualLeaveType->Id])->where(function ($q2) use ($startDate, $endDate) {
             $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
                 ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
                 ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
-        })->where('ParentId', $parentId)->get();
+        })->where('StudentId', $studentId)->get();
 
         $result = $absent;
         foreach ($result as $value) {
@@ -132,26 +92,5 @@ class AbsentCreateRequest extends FormRequest
         }
 
         return null;
-    }
-
-    public function checkMaxAbsentEarlyLateInMonth($value)
-    {
-        $parentId = request()->ParentId;
-        $startDate = Carbon::parse(request()->startDate);
-        $endDate = Carbon::parse(request()->endDate);
-        $early = AbsentType::where('Type', AbsentType::ABSENT_EARLY)->first();
-        $late = AbsentType::where('Type', AbsentType::ABSENT_LATE)->first();
-
-        $check = Absent::whereIn('absentTypeId', [$early->Id, $late->Id])->where(function ($q) use ($parentId, $startDate, $endDate, $early, $late) {
-            $q->where([['StartDate', '<=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '>=', $startDate->endOfMonth()->format('Y-m-d')]])
-                ->orWhere([['StartDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['StartDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]])
-                ->orWhere([['EndDate', '>=', $startDate->firstOfMonth()->format('Y-m-d')], ['EndDate', '<=', $startDate->endOfMonth()->format('Y-m-d')]]);
-        })->where('ParentId', $parentId)->get();
-
-        if (count($check) > 3) {
-            return false;
-        }
-
-        return true;
     }
 }

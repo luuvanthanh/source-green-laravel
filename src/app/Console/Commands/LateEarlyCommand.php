@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
-use GGPHP\LateEarly\Repositories\Eloquent\LateEarlyRepositoryEloquent;
-// use GGPHP\Users\Models\User;
+use GGPHP\Attendance\Repositories\Eloquents\AttendanceRepositoryEloquent;
 use Illuminate\Console\Command;
 
 class LateEarlyCommand extends Command
@@ -14,24 +13,24 @@ class LateEarlyCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'late_early';
+    protected $signature = 'attendance';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Auto insert late early user daily';
+    protected $description = 'Auto insert attendance student daily';
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(LateEarlyRepositoryEloquent $lateEarlyRepositoryEloquent)
+    public function __construct(AttendanceRepositoryEloquent $attendanceRepositoryEloquent)
     {
         parent::__construct();
-        $this->lateEarlyRepositoryEloquent = $lateEarlyRepositoryEloquent;
+        $this->attendanceRepositoryEloquent = $attendanceRepositoryEloquent;
 
     }
 
@@ -45,26 +44,13 @@ class LateEarlyCommand extends Command
 
         $now = Carbon::now();
 
-        $date = Carbon::now()->format('Y-m-d');
-
-        // $date = $now->subDay()->format('Y-m-d');
-        // $users = User::whereHas('timekeeping', function ($query) use ($date) {
-        //     $query->whereDate('attended_at', date($date))
-        //         ->orderBy('attended_at');
-        // })->with(['timekeeping' => function ($query) use ($date) {
-        //     $query->whereDate('attended_at', date($date))
-        //         ->orderBy('attended_at');
-        // }])->get();
-
-        // foreach ($users as $user) {
-        //     $this->lateEarlyRepositoryEloquent->getLateEarly($user, $date);
-        // }
+        $date = Carbon::now('GMT+7')->format('Y-m-d');
 
         $attributes = [
             "date" => $date,
         ];
 
-        $this->lateEarlyRepositoryEloquent->lateEarlyReportNew($attributes);
+        $this->attendanceRepositoryEloquent->attendanceCrontab($attributes);
 
         return 0;
     }

@@ -76,6 +76,12 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $workDeclaration = $this->paginate($attributes['limit']);
         } else {

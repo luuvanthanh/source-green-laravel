@@ -78,6 +78,12 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             $this->model = $this->model->where('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->model = $this->model->where(function ($q2) use ($attributes) {
                 $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])

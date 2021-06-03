@@ -108,6 +108,14 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
             });
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('decisionRewardDetails', function ($query) use ($attributes) {
+                $query->whereHas('employee', function ($q2) use ($attributes) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $decisionReward = $this->paginate($attributes['limit']);
         } else {

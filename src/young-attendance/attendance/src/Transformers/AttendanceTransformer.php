@@ -17,7 +17,7 @@ class AttendanceTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = [];
+    protected $defaultIncludes = ['attendanceReason', 'attendanceLog'];
     protected $availableIncludes = [];
 
     /**
@@ -38,6 +38,31 @@ class AttendanceTransformer extends BaseTransformer
         return [
             'Status' => $status,
         ];
+    }
+
+    /**
+     * Include attendanceReason
+     * @param Attendance $attendance
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeAttendanceReason(Attendance $attendance)
+    {
+        if (empty($attendance->attendanceReason)) {
+            return;
+        }
+
+        return $this->item($attendance->attendanceReason, new AttendanceReasonTransformer, 'AttendanceReason');
+    }
+
+    /**
+     * Include attendanceLog
+     * @param Attendance $attendance
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeAttendanceLog(Attendance $attendance)
+    {
+
+        return $this->collection($attendance->attendanceLog, new AttendanceLogTransformer, 'AttendanceLog');
     }
 
 }

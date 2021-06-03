@@ -220,7 +220,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
                 if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                     $q->where(function ($q2) use ($attributes) {
                         $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
-                            ->orWhere([['StartDate', '>', $attributes['startDate']], ['startDate', '<=', $attributes['endDate']]])
+                            ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                             ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]])
                             ->orWhere([['StartDate', '<=', $attributes['startDate']], ['EndDate', null]]);
                     });
@@ -251,6 +251,11 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function magneticCards()
     {
         return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class)->withTrashed();
+    }
+
+    public function account()
+    {
+        return $this->hasOne(\GGPHP\Clover\Models\EmployeeAccount::class, 'EmployeeId');
     }
 
 }

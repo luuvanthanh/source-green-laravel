@@ -88,6 +88,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             };
         }]);
 
+        if (!empty($attributes['fullName'])) {
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
+        }
+
         if (!empty($attribute['employeeId'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
                 $query->whereIn('EmployeeId', explode(',', $attribute['employeeId']));
@@ -115,6 +119,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function timekeepingReport(array $attributes)
     {
+
         $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
             $query->whereDate('AttendedAt', '>=', Carbon::parse($attributes['startDate'])->format('Y-m-d'))
                 ->whereDate('AttendedAt', '<=', Carbon::parse($attributes['endDate'])->format('Y-m-d'))
@@ -127,20 +132,22 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         if (!empty($attributes['isShift'])) {
             $employeesByStore->whereHas('schedules', function ($query) use ($attributes) {
-                $query->where([['StartDate', '<=', $attributes['StartDate']], ['EndDate', '>=', $attributes['endDate']]])
-                    ->orWhere([['StartDate', '>', $attributes['StartDate']], ['StartDate', '<=', $attributes['endDate']]])
-                    ->orWhere([['EndDate', '>=', $attributes['StartDate']], ['EndDate', '<', $attributes['endDate']]]);
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             });
         }
 
         if (!empty($attributes['fullName'])) {
-            $employeesByStore->where('FullName', 'like', '%' . $attributes['fullName'] . '%');
+            $employeesByStore->whereLike('FullName', $attributes['fullName']);
         }
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $employeesByStore->whereIn('Id', $employeeId);
         }
+
+        $employeesByStore->tranferHistory($attributes);
 
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
@@ -169,8 +176,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $endDate = $attributes['endDate'];
         $now = Carbon::now();
 
-        $type = !empty($attributes['type']) ? $attributes['type'] : null;
-
         $this->employee = $employee;
         $employeeTimekeeping = [];
         $result = [];
@@ -191,7 +196,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $startDate, $endDate);
-
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
         $intervalDate = \DateInterval::createFromDateString('1 day');
@@ -219,8 +223,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             foreach ($employeeTimeWorkShift as $key => $value) {
 
                 if (!empty($timeKeepingByDate[$key])) {
-                    $startTime = $value[0]['AfterStart'];
-                    $endTime = end($value)['BeforeEnd'];
+                    $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
+                    $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
                     $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                     $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
 
@@ -237,7 +241,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'timekeepingReport' => $timekeepingReport,
                         'type' => $type,
                     ];
-
                     $responseTimeKeepingUser[] = $result;
                     $i++;
                 }
@@ -470,8 +473,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }]);
 
         if (!empty($attributes['fullName'])) {
-            $employeesByStore->where('FullName', 'like', '%' . $attributes['fullName'] . '%');
+            $employeesByStore->whereLike('FullName', $attributes['fullName']);
         }
+
+        $employeesByStore->tranferHistory($attributes);
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
@@ -541,8 +546,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 $isInvalid = false;
 
-                $startTime = $value[0]['AfterStart'];
-                $endTime = end($value)['BeforeEnd'];
+                $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
+                $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
 
                 $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                 $checkOut = count($timeKeepingByDate[$key]) > 1 ? end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s') : null;

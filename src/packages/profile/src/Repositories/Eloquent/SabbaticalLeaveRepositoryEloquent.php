@@ -47,4 +47,26 @@ class SabbaticalLeaveRepositoryEloquent extends CoreRepositoryEloquent implement
     {
         return SabbaticalLeavePresenter::class;
     }
+
+    public function getSabbaticalLeave(array $attributes)
+    {
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $sabbaticalLeave = $this->paginate($attributes['limit']);
+        } else {
+            $sabbaticalLeave = $this->get();
+        }
+
+        return $sabbaticalLeave;
+    }
 }

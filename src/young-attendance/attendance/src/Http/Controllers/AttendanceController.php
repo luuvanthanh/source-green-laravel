@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Http\Controllers;
 
 use GGPHP\Attendance\Http\Requests\AttendanceCreateRequest;
+use GGPHP\Attendance\Http\Requests\AttendanceSummaryRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceUpdateRequest;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
@@ -62,7 +63,13 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $attendance = $this->attendanceRepository->getAttendance($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Attendance::STATUS[$attributes['status']];
+        }
+
+        $attendance = $this->attendanceRepository->getAttendance($attributes);
 
         return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
@@ -97,19 +104,26 @@ class AttendanceController extends Controller
     }
 
     /**
-     * @param Request $request
+     * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function export(Request $request)
+    public function attendanceCrontab(Request $request)
     {
-        \DB::enableQueryLog();
-        $result = $this->attendanceRepository->export($request);
+        $attendance = $this->attendanceRepository->attendanceCrontab($request->all());
 
-        if (is_string($result)) {
-            return $this->error('Export failed', trans('lang-program::messages.attendance.export.template-not-found'), 400);
-        }
+        return $this->success([], trans('lang-program::messages.attendance.getListSuccess'));
+    }
 
-        return $result;
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function attendanceSummary(AttendanceSummaryRequest $request)
+    {
+        $attendance = $this->attendanceRepository->attendanceSummary($request->all());
+
+        return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
 }

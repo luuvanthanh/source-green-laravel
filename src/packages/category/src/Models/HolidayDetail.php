@@ -19,11 +19,7 @@ class HolidayDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Name', 'Date', 'HolidayId',
-    ];
-
-    protected $dateTimeFields = [
-        'Date',
+        'Name', 'StartDate', 'HolidayId', 'EndDate',
     ];
 
     /**
@@ -32,6 +28,7 @@ class HolidayDetail extends UuidModel
      * @var array
      */
     protected $casts = [
-        'Date' => 'datetime',
+        'StartDate' => 'date:Y-m-d',
+        'EndDate' => 'date:Y-m-d',
     ];
 }

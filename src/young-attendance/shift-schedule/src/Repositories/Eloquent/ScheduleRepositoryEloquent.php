@@ -3,9 +3,9 @@
 namespace GGPHP\YoungAttendance\ShiftSchedule\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
-use GGPHP\Users\Models\User;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Schedule;
 use GGPHP\YoungAttendance\ShiftSchedule\Presenters\SchedulePresenter;
 use GGPHP\YoungAttendance\ShiftSchedule\Repositories\Contracts\ScheduleRepository;
@@ -199,6 +199,8 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
 
         if (!empty($attributes['limit'])) {
             $scheduleUser = $this->studentRepositoryEloquent->paginate($attributes['limit']);
@@ -485,7 +487,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             $listDayRequest[] = Carbon::parse($startDate)->addDays($i)->toDateString();
         }
 
-        $employee = User::where('Id', $studentId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
+        $employee = Student::where('Id', $studentId)->with(['schedules' => function ($query) use ($startDate, $endDate) {
             $query->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
                 ->orwhere([['StartDate', '>', $startDate], ['StartDate', '<=', $endDate]])
                 ->orwhere([['EndDate', '>=', $startDate], ['EndDate', '<', $endDate]]);

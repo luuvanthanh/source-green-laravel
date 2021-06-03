@@ -61,10 +61,19 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function filterBusRegistration(array $attributes)
     {
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+        }
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
         }
 
         if (!empty($attributes['limit'])) {
@@ -88,6 +97,8 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             $employeeId = explode(',', $attributes['employeeId']);
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereIn('Id', $employeeId);
         }
+
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->tranferHistory($attributes);
 
         if (empty($attributes['limit'])) {
             $result = $this->employeeRepositoryEloquent->get();

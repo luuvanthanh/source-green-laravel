@@ -96,6 +96,14 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
             });
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('dismissedDetails', function ($query) use ($attributes) {
+                $query->whereHas('employee', function ($q2) use ($attributes) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $dismissed = $this->paginate($attributes['limit']);
         } else {

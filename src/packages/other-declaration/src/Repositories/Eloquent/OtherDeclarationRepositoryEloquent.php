@@ -60,6 +60,14 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
             });
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('otherDeclarationDetail', function ($query) use ($attributes) {
+                $query->whereHas('employee', function ($q2) use ($attributes) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                });
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $otherDeclaration = $this->paginate($attributes['limit']);
         } else {
@@ -90,8 +98,19 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
     {
         $otherDeclaration = OtherDeclaration::findOrFail($id);
 
-        $attributes['hours'] = json_encode($attributes['hours']);
-        $otherDeclaration->update($attributes);
+        \DB::beginTransaction();
+        try {
+            $otherDeclaration->update($attributes);
+
+            $otherDeclaration->otherDeclarationDetail()->delete();
+
+            OtherDeclarationDetailServices::add($otherDeclaration->Id, $attributes['detail']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+        }
 
         return parent::find($otherDeclaration->Id);
     }

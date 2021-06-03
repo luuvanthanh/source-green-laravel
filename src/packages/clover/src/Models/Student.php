@@ -13,6 +13,11 @@ class Student extends UuidModel
      */
     protected $table = 'object.Students';
 
+    const REGIST = 0;
+    const JOIN_CLASS = 1;
+    const LEAVE_SCHOOL = 2;
+    const STORE = 3;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -59,5 +64,13 @@ class Student extends UuidModel
     public function absent()
     {
         return $this->hasMany(\GGPHP\YoungAttendance\Absent\Models\Absent::class, 'StudentId');
+    }
+
+    /**
+     * Define relations Schedule
+     */
+    public function parent()
+    {
+        return $this->belongsToMany(\GGPHP\Clover\Models\Parents::class, 'object.StudentParents', 'StudentId', 'ParentId');
     }
 }

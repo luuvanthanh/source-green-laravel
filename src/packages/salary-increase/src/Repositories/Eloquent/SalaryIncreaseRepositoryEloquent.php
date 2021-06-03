@@ -78,7 +78,6 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
@@ -102,7 +101,6 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
@@ -118,6 +116,12 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        if (!empty($attributes['fullName'])) {
+            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+                $query->whereLike('FullName', $attributes['fullName']);
+            });
         }
 
         if (!empty($attributes['limit'])) {

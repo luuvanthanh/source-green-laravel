@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\OtherDeclaration\Http\Requests;
+namespace GGPHP\MaternityLeave\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OtherDeclarationUpdateRequest extends FormRequest
+class CreatMaternityLeaveRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,7 +23,11 @@ class OtherDeclarationUpdateRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
+            'employeeId' => 'required|exists:Employees,Id',
+            'startDate' => 'required',
+            'endDate' => 'required',
         ];
     }
 }
