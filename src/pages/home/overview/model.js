@@ -64,7 +64,7 @@ export default {
     SET_DATA_ATTENDANCE_BY_STATUS: (state, { payload }) => ({
       ...state,
       listAttendancesByStatus: {
-        data: [{ id: 1 }] || payload.parsePayload,
+        data: payload.parsePayload,
         pagination: payload.pagination,
       },
     }),
@@ -172,12 +172,7 @@ export default {
         const response = yield saga.call(services.getAttendanceByStatus, payload);
         yield saga.put({
           type: 'SET_DATA_ATTENDANCE_BY_STATUS',
-          payload: {
-            parsePayload: response?.items,
-            pagination: {
-              total: response?.totalCount || 0,
-            },
-          },
+          payload: response,
         });
       } catch (error) {
         // continue regardless of error

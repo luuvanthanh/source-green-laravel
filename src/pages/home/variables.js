@@ -74,21 +74,24 @@ export const variables = {
       name: 'Điểm danh vào lớp',
       number: '0',
       image: '/images/icon/books.svg',
-      title: 'Danh sách điểm danh vào lớp'
+      title: 'Danh sách điểm danh vào lớp',
+      status: 'HAVE_IN,HAVE_OUT'
     },
     {
       id: 'unpaidLeave',
       name: 'Vắng không phép',
       number: '0',
       image: '/images/icon/sad.svg',
-      title: 'Danh sách trẻ vắng không phép'
+      title: 'Danh sách trẻ vắng không phép',
+      status: 'ANNUAL_LEAVE'
     },
     {
       id: 'annualLeave',
       name: 'Vắng có phép',
       number: '0',
       image: '/images/icon/happy.svg',
-      title: 'Danh sách trẻ vắng có phép'
+      title: 'Danh sách trẻ vắng có phép',
+      status: 'ANNUAL_LEAVE'
     }
   ],
   MENU: [

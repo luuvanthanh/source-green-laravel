@@ -9,7 +9,7 @@ import moment from 'moment';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 
 import styles from '../index.scss';
 
@@ -28,14 +28,16 @@ const Index = memo(() => {
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
     classId: '',
-    keyWord: '',
+    nameStudent: '',
+    date: moment(),
+    status: null,
   });
 
   const fetchDataNotes = () => {
     dispatch({
       type: 'overView/GET_DATA_ATTENDANCE',
       payload: {
-        date: moment(),
+        date: search.date,
       },
     });
   };
@@ -67,10 +69,6 @@ const Index = memo(() => {
     fetchDataNotes();
   }, []);
 
-  useEffect(() => {
-    getListAttendanceByStatus();
-  }, [search]);
-
   /**
    * Function header table
    */
@@ -80,11 +78,11 @@ const Index = memo(() => {
       key: 'children',
       className: 'min-width-250',
       width: 250,
-      render: () => (
-        <div className="d-flex align-items-center">
-          <AvatarTable fileImage="/images/slice/avatar_02.png" srcLocal shape="square" size={40} />
-          <p className="mb0 ml10">Vân Khánh</p>
-        </div>
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record.fileImage)}
+          fullName={record.fullName}
+        />
       ),
     },
     {
@@ -92,33 +90,26 @@ const Index = memo(() => {
       key: 'age',
       className: 'min-width-150',
       width: 150,
-      render: () => '32 tháng',
+      render: (record) => `${record.age} tháng`,
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-150',
       width: 150,
-      render: () => 'Preschool 1',
+      render: (record) => record?.classStudent?.class?.name,
     },
     {
       title: 'Phụ huynh',
       key: 'parents',
       className: 'min-width-250',
       width: 250,
-      render: () => (
-        <div className="d-flex align-items-center">
-          <AvatarTable fileImage="/images/slice/avatar.png" srcLocal shape="square" size={40} />
-          <p className="mb0 ml10">Lê Tường Vy</p>
-        </div>
-      ),
     },
     {
       title: 'Giáo viên',
       key: 'teacher',
       className: 'min-width-300',
       width: 300,
-      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh',
     },
   ];
 
@@ -126,12 +117,23 @@ const Index = memo(() => {
     setVisible(true);
     setTitle(record?.title);
     setDetails(record);
-    getListAttendanceByStatus();
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      status: record.status,
+    }));
     getClasses();
   };
 
   const cancelModal = () => {
     setVisible(false);
+    setSearch({
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+      classId: '',
+      nameStudent: '',
+      date: moment(),
+      status: null,
+    });
   };
 
   const handleSearch = _.debounce((value, name) => {
@@ -187,6 +189,12 @@ const Index = memo(() => {
     return record?.name;
   };
 
+  useEffect(() => {
+    if (visible) {
+      getListAttendanceByStatus();
+    }
+  }, [search]);
+
   return (
     <>
       <Modal
@@ -198,13 +206,17 @@ const Index = memo(() => {
         footer={null}
       >
         <div className="p20">
-          <Form>
+          <Form
+            initialValues={{
+              classId: search.classId || null,
+            }}
+          >
             <div className="row">
               <div className="col-md-4 col-xl-3">
                 <FormItem
                   className="mb-10"
-                  name="keyWord"
-                  onChange={(event) => handleSearch(event.target.value, 'keyWord')}
+                  name="nameStudent"
+                  onChange={(event) => handleSearch(event.target.value, 'nameStudent')}
                   placeholder="Nhập từ khóa tìm kiếm"
                   type={variables.INPUT_SEARCH}
                 />
@@ -212,9 +224,9 @@ const Index = memo(() => {
               <div className="col-md-4 col-xl-3">
                 <FormItem
                   className="mb-10"
-                  name="class"
+                  name="classId"
                   type={variables.SELECT}
-                  data={[{ id: '', name: 'Tất cả các lớp' }, ...classes]}
+                  data={[{ id: null, name: 'Tất cả các lớp' }, ...classes]}
                   onChange={(event) => handleSearch(event, 'classId')}
                   allowClear={false}
                 />
@@ -246,7 +258,7 @@ const Index = memo(() => {
               type: 'table',
             }}
             rowKey={(record) => record.id}
-            scroll={{ x: '100%' }}
+            scroll={{ x: '100%', y: '50vh' }}
           />
         </div>
       </Modal>
