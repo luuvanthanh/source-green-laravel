@@ -66,7 +66,13 @@ class AttendanceController extends Controller
         $attributes = $request->all();
 
         if (!empty($attributes['status'])) {
-            $attributes['status'] = Attendance::STATUS[$attributes['status']];
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Attendance::STATUS[$value];
+            }
+
+            $attributes['status'] = $newStatus;
         }
 
         $attendance = $this->attendanceRepository->getAttendance($attributes);
