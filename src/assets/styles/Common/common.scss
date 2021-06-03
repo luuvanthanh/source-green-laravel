@@ -745,6 +745,24 @@
       color: $text !important;
     }
   }
+  &.cell-heading-dateoff {
+    background-color: #c0504d !important;
+    color: #c0504d !important;
+    &:focus,
+    &:hover {
+      background-color: #c0504d !important;
+      color: #c0504d !important;
+    }
+  }
+  &.cell-heading-ts {
+    background-color: #f79646 !important;
+    color: $text-white;
+    &:focus,
+    &:hover {
+      background-color: #f79646 !important;
+      color: $text-white;
+    }
+  }
   &.cell-heading-weekend {
     background-color: #5b9bd5 !important;
     color: #5b9bd5 !important;

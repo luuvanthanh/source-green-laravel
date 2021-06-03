@@ -620,6 +620,18 @@ export default class Helpers {
     return days.map((item) => moment(item));
   };
 
+  static convertArrayDaysNotWeekends = (start_date = moment(), end_date = moment()) => {
+    const days = [];
+    let day = moment(start_date);
+    while (day <= moment(end_date).endOf('days')) {
+      if (moment(day).day() !== 0 && moment(day).day() !== 6) {
+        days.push(day.toDate());
+      }
+      day = day.clone().add(1, 'd');
+    }
+    return days.map((item) => moment(item));
+  };
+
   static toFixed = (num) => {
     if (!num) return;
     // eslint-disable-next-line consistent-return
@@ -677,6 +689,9 @@ export default class Helpers {
     if (last(arrayLink) === 'mp4') return true;
     return false;
   };
+
+  static disabledDateWeekeend = (current) =>
+    moment(current).day() === 0 || moment(current).day() === 6;
 
   static disabledDateTo = (current, formRef, key = 'startDate') => {
     if (formRef.current) {

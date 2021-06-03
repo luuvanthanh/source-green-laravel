@@ -25,13 +25,12 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      fullName: data.fullName,
       order_by_position: true,
       include: Helper.convertIncludes([
         'absent',
         'schedules.shift',
+        'positionLevelNow',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
       ]),

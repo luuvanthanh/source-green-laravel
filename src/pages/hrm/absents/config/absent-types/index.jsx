@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs, Tag } from 'antd';
+import { Modal, Form, Tag } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -15,7 +15,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import variablesModules from '../../../utils/variables';
 
-const { TabPane } = Tabs;
 let isMounted = true;
 /**
  * Set isMounted
@@ -47,13 +46,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         name: query?.name,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -252,8 +249,22 @@ class Index extends PureComponent {
         key: 'status',
         width: 150,
         className: 'min-width-150',
+        align: 'center',
         render: (record) =>
           record.status === 'ON' ? <Tag color="success">Mở</Tag> : <Tag color="red">Đóng</Tag>,
+      },
+      {
+        title: 'Trạng thái tính công',
+        key: 'isTimeKeeping',
+        width: 150,
+        className: 'min-width-150',
+        align: 'center',
+        render: (record) =>
+          record.isTimeKeeping ? (
+            <Tag color="success">Được tính công</Tag>
+          ) : (
+            <Tag color="red">Không được tính công</Tag>
+          ),
       },
       {
         key: 'action',
@@ -314,7 +325,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

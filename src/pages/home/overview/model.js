@@ -12,12 +12,12 @@ export default {
     bus: [],
     listBusByStatus: {
       data: [],
-      pagination: {}
+      pagination: {},
     },
     attendances: [],
     listAttendancesByStatus: {
       data: [],
-      pagination: {}
+      pagination: {},
     },
   },
   reducers: {
@@ -55,12 +55,16 @@ export default {
     }),
     SET_DATA_ATTENDANCE: (state, { payload }) => ({
       ...state,
-      attendances: variablesModules.DATA_ATTENDANCE || payload,
+      attendances:
+        variablesModules.DATA_ATTENDANCE.map((item) => ({
+          ...item,
+          number: payload[item.id] || 0,
+        })) || payload,
     }),
     SET_DATA_ATTENDANCE_BY_STATUS: (state, { payload }) => ({
       ...state,
       listAttendancesByStatus: {
-        data: [{ id: 1 }] || payload.parsePayload,
+        data: payload.parsePayload,
         pagination: payload.pagination,
       },
     }),
@@ -157,7 +161,7 @@ export default {
         const response = yield saga.call(services.getAttendance, payload);
         yield saga.put({
           type: 'SET_DATA_ATTENDANCE',
-          payload: response,
+          payload: response.payload,
         });
       } catch (error) {
         // continue regardless of error
@@ -168,12 +172,7 @@ export default {
         const response = yield saga.call(services.getAttendanceByStatus, payload);
         yield saga.put({
           type: 'SET_DATA_ATTENDANCE_BY_STATUS',
-          payload: {
-            parsePayload: response?.items,
-            pagination: {
-              total: response?.totalCount || 0,
-            },
-          },
+          payload: response,
         });
       } catch (error) {
         // continue regardless of error

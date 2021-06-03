@@ -27,9 +27,7 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['class', 'attendance', 'classStudent.class']),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      fullName: data.fullName,
     },
   });
 }

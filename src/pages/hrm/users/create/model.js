@@ -32,6 +32,7 @@ export default {
     insurrances: [],
     children: [],
     positionLevels: [],
+    maternityLeaves: []
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -164,6 +165,14 @@ export default {
       ...state,
       children: state.children.filter((item) => item.id !== payload.id),
     }),
+    SET_MATERNITY_LEAVES: (state, { payload }) => ({
+      ...state,
+      maternityLeaves: payload.parsePayload,
+    }),
+    SET_REMOVE_MATERNITY_LEAVES: (state, { payload }) => ({
+      ...state,
+      maternityLeaves: state.maternityLeaves.filter((item) => item.id !== payload.id),
+    }),
     SET_POSITION_LEVELS: (state, { payload }) => ({
       ...state,
       positionLevels: payload.parsePayload,
@@ -245,9 +254,6 @@ export default {
     },
     *GET_DETAILS_ACCOUNT({ payload }, saga) {
       try {
-        yield saga.put({
-          type: 'INIT_STATE',
-        });
         const response = yield saga.call(services.detailsAccount, payload);
         if (response.status !== 204) {
           yield saga.put({
@@ -945,6 +951,72 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    // maternity-leaves
+    *ADD_MATERNITY_LEAVES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addMaternityLeaves, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *UPDATE_MATERNITY_LEAVES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateMaternityLeaves, payload);
+        callback(payload);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+        callback(null, error);
+      }
+    },
+    *REMOVE_MATERNITY_LEAVES({ payload }, saga) {
+      try {
+        yield saga.call(services.removeMaternityLeaves, payload);
+        yield saga.put({
+          type: 'SET_REMOVE_MATERNITY_LEAVES',
+          payload,
+        });
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+      } catch (error) {
+        notification.error({
+          message: 'THÔNG BÁO',
+          description: get(error.data, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
+    },
+    *GET_MATERNITY_LEAVES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getMaternityLeaves, payload);
+        yield saga.put({
+          type: 'SET_MATERNITY_LEAVES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    // maternity-leaves
   },
   subscriptions: {},
 };

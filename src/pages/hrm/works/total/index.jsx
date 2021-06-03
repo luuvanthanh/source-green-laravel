@@ -275,6 +275,20 @@ class Index extends PureComponent {
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
+    if (user.dateOff && moment(user.dateOff).isBefore(moment(dayOfWeek))) {
+      return (
+        <div
+          to={this.redirectHistory(dayOfWeek, record, user)}
+          className={classnames(styles['item-schedules'], {
+            [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            [styles[`cell-heading-holidays`]]: !!holiday,
+            [styles[`cell-heading-dateoff`]]: true,
+          })}
+        >
+          NV
+        </div>
+      );
+    }
     if (holiday) {
       return (
         <Tooltip
@@ -301,6 +315,19 @@ class Index extends PureComponent {
     }
     if (!isEmpty(record)) {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
+      if (get(data, 'type') === 'TS') {
+        return (
+          <div
+            className={classnames(styles['item-schedules'], {
+              [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+              [styles[`cell-heading-kc`]]: data.type === 'KC',
+              [styles[`cell-heading-ts`]]: data.type === 'TS',
+            })}
+          >
+            {data.type}
+          </div>
+        );
+      }
       if (get(data, 'type')) {
         return (
           <Link
@@ -394,11 +421,12 @@ class Index extends PureComponent {
 
     const arrayMonth = Helper.treeDate(
       Helper.convertArrayDays(search.startDate, search.endDate),
-    ).map((itemMonth) => ({
+    ).map((itemMonth, index) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
-      className: 'min-width-200',
-      width: 200,
+      className:
+        index === 0 ? 'min-width-300 min-parent-width-300' : 'min-width-300 min-parent-width-700',
+      width: 300,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],

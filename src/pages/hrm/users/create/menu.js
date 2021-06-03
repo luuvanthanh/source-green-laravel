@@ -42,6 +42,10 @@ export const menu = [
     label: 'Thông tin quan hệ gia đình',
   },
   {
+    key: 'maternity-leaves',
+    label: 'Nghỉ thai sản',
+  },
+  {
     key: 'magneticCards',
     label: 'Thẻ từ',
   },

@@ -27,9 +27,7 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['timekeeping', 'classStudent.class', 'inOutHistory']),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.full_name,
-      }),
+      fullName: data.fullName,
     },
   });
 }

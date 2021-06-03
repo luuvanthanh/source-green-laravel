@@ -1,5 +1,6 @@
 import { isEmpty, get } from 'lodash';
 import { notification } from 'antd';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -53,7 +54,7 @@ export default {
     }),
   },
   effects: {
-    *GET_ABSENT_TYPES({ payload }, saga) {
+    *GET_ABSENT_TYPES({ _ }, saga) {
       try {
         const response = yield saga.call(services.getAbsentTypes);
         yield saga.put({
@@ -67,10 +68,10 @@ export default {
         });
       }
     },
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

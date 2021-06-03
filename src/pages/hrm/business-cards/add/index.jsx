@@ -354,6 +354,7 @@ class Index extends PureComponent {
                   }),
                 ) || []
               }
+              disabled={record.isFullDate === 1}
               value={record.shiftId}
               style={{ width: '100%' }}
               placeholder="Chọn"
@@ -386,23 +387,6 @@ class Index extends PureComponent {
               disabled
               value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
               onSelect={(value) => this.onChangeTimeEnd(value, record)}
-            />
-          ),
-        },
-        {
-          title: 'Số giờ',
-          key: 'number',
-          className: 'min-width-150',
-          width: 150,
-          render: (record) => (
-            <InputNumber
-              value={record.number}
-              min="0"
-              max="10"
-              step="0.5"
-              placeholder="Nhập"
-              style={{ width: '100%' }}
-              onChange={(event) => this.onChangeNumber(event, record)}
             />
           ),
         },
@@ -495,7 +479,7 @@ class Index extends PureComponent {
       values.absentTypeId &&
       values.type
     ) {
-      const dates = Helper.convertArrayDays(values.startDate, values.endDate);
+      const dates = Helper.convertArrayDaysNotWeekends(values.startDate, values.endDate);
       this.setStateData({
         detail: dates.map((item, index) => ({ date: item, index })),
       });
@@ -507,7 +491,13 @@ class Index extends PureComponent {
   };
 
   enableButton = (items) => {
-    const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
+    const { type } = this.state;
+    let enable = false;
+    if (type === variablesModules.TYPE_ABSENTS.GO_OUT) {
+      enable = items.find((item) => !item.startTime || !item.endTime || !item.number);
+    } else {
+      enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
+    }
     return !!enable;
   };
 
@@ -553,7 +543,10 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      disabledDate={(current) =>
+                        Helper.disabledDateFrom(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
                     />
                   </div>
                   <div className="col-lg-6">
@@ -562,7 +555,10 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabledDate={(current) =>
+                        Helper.disabledDateTo(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
                     />
                   </div>
                 </div>

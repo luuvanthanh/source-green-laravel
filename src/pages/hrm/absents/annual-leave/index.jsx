@@ -35,6 +35,7 @@ const getIsMounted = () => isMounted;
 const { confirm } = Modal;
 const mapStateToProps = ({ absents, loading }) => ({
   data: absents.data,
+  absentTypes: absents.absentTypes,
   pagination: absents.pagination,
   loading,
 });
@@ -50,6 +51,7 @@ class Index extends PureComponent {
     this.state = {
       search: {
         fullName: query?.fullName,
+        absentTypeId: query?.absentTypeId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -61,6 +63,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -79,6 +82,15 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'absents/GET_ABSENT_TYPES',
+      payload: {
+        type: 'ABSENT',
+      },
+    });
   };
 
   /**
@@ -184,11 +196,12 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
-      this.onSearch(page, size);
+      this.changePagination(page, size);
     },
     onShowSizeChange: (current, size) => {
-      this.onSearch(current, size);
+      this.changePagination(current, size);
     },
   });
 
@@ -327,6 +340,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       location: { pathname },
+      absentTypes,
     } = this.props;
     const { search } = this.state;
     const loading = effects['absents/GET_DATA'];
@@ -347,12 +361,13 @@ class Index extends PureComponent {
                 ...search,
                 startDate: search.startDate ? moment(search.startDate) : null,
                 endDate: search.endDate ? moment(search.endDate) : null,
+                absentTypeId: search.absentTypeId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -360,7 +375,16 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả loại nghỉ phép' }, ...absentTypes]}
+                    name="absentTypeId"
+                    onChange={(event) => this.onChangeSelect(event, 'absentTypeId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
@@ -369,7 +393,7 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
@@ -407,6 +431,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  absentTypes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -416,6 +441,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  absentTypes: [],
 };
 
 export default Index;
