@@ -4,6 +4,7 @@ import { Modal, Form, Skeleton } from 'antd';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
+import moment from 'moment';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -14,10 +15,10 @@ import styles from '../index.scss';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [ { attendances, listAttendancesByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
-    overView,
-    effects,
-  ]);
+  const [
+    { attendances, listAttendancesByStatus },
+    loading,
+  ] = useSelector(({ loading: { effects }, overView }) => [overView, effects]);
 
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState('');
@@ -27,12 +28,15 @@ const Index = memo(() => {
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
     classId: '',
-    keyWord: ''
+    keyWord: '',
   });
 
   const fetchDataNotes = () => {
     dispatch({
       type: 'overView/GET_DATA_ATTENDANCE',
+      payload: {
+        date: moment(),
+      },
     });
   };
 
@@ -40,8 +44,8 @@ const Index = memo(() => {
     dispatch({
       type: 'overView/GET_DATA_ATTENDANCE_BY_STATUS',
       payload: {
-        ...search
-      }
+        ...search,
+      },
     });
   };
 
@@ -78,29 +82,24 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <AvatarTable
-            fileImage="/images/slice/avatar_02.png"
-            srcLocal
-            shape="square"
-            size={40}
-          />
+          <AvatarTable fileImage="/images/slice/avatar_02.png" srcLocal shape="square" size={40} />
           <p className="mb0 ml10">Vân Khánh</p>
         </div>
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-150',
       width: 150,
-      render: () => '32 tháng'
+      render: () => '32 tháng',
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-150',
       width: 150,
-      render: () => 'Preschool 1'
+      render: () => 'Preschool 1',
     },
     {
       title: 'Phụ huynh',
@@ -109,22 +108,17 @@ const Index = memo(() => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <AvatarTable
-            fileImage="/images/slice/avatar.png"
-            srcLocal
-            shape="square"
-            size={40}
-          />
+          <AvatarTable fileImage="/images/slice/avatar.png" srcLocal shape="square" size={40} />
           <p className="mb0 ml10">Lê Tường Vy</p>
         </div>
-      )
+      ),
     },
     {
       title: 'Giáo viên',
       key: 'teacher',
       className: 'min-width-300',
       width: 300,
-      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
+      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh',
     },
   ];
 
@@ -143,7 +137,7 @@ const Index = memo(() => {
   const handleSearch = _.debounce((value, name) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      [name]: value
+      [name]: value,
     }));
   }, 300);
 
@@ -152,7 +146,7 @@ const Index = memo(() => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-   const changePagination = (page, limit) => {
+  const changePagination = (page, limit) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -184,7 +178,10 @@ const Index = memo(() => {
   });
 
   const getTitleAmount = (record) => {
-    if (record?.id === variables.STATUS_ABSENT.ANNUAL_LEAVE || record?.id === variables.STATUS_ABSENT.UNPAID_LEAVE) {
+    if (
+      record?.id === variables.STATUS_ABSENT.ANNUAL_LEAVE ||
+      record?.id === variables.STATUS_ABSENT.UNPAID_LEAVE
+    ) {
       return `số trẻ ${record?.name?.toLowerCase()}`;
     }
     return record?.name;
@@ -226,7 +223,11 @@ const Index = memo(() => {
                 <p className="d-flex align-items-center justify-content-end mb0">
                   {getTitleAmount(details)}
                   <span
-                    className={`${details?.id === variables.STATUS_ABSENT.UNPAID_LEAVE ? 'text-warning' : 'text-success'} font-size-30 font-weight-bold ml10`}
+                    className={`${
+                      details?.id === variables.STATUS_ABSENT.UNPAID_LEAVE
+                        ? 'text-warning'
+                        : 'text-success'
+                    } font-size-30 font-weight-bold ml10`}
                   >
                     {details?.number}
                   </span>
@@ -254,7 +255,11 @@ const Index = memo(() => {
           <div className={styles['header-tab']}>
             <div>
               <img src="/images/home/note.svg" alt="notification" className={styles.icon} />
-              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Điểm danh vào lớp</span>
+              <span
+                className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}
+              >
+                Điểm danh vào lớp
+              </span>
             </div>
           </div>
           <div className="mt50">
@@ -270,17 +275,26 @@ const Index = memo(() => {
                   attendances.map((item, index) => (
                     <div
                       key={index}
-                      className={ classnames('pointer', styles['half-width']) }
+                      className={classnames('pointer', styles['half-width'])}
                       onClick={() => getDetails(item)}
                       aria-hidden="true"
                     >
-                      <AvatarTable
-                        fileImage={item.image}
-                        srcLocal
-                        size={30}
-                      />
-                      <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
-                      <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
+                      <AvatarTable fileImage={item.image} srcLocal size={30} />
+                      <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                        {item.name}
+                      </p>
+                      <p
+                        className={classnames(
+                          'mb0',
+                          'font-size-30',
+                          'font-weight-bold',
+                          'text-black',
+                          'mt-auto',
+                          styles.number,
+                        )}
+                      >
+                        {item.number}
+                      </p>
                     </div>
                   ))
                 )}

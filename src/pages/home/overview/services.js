@@ -1,6 +1,7 @@
 import request from '@/utils/request';
+import requestLavarel from '@/utils/requestLavarel';
 import { omit } from 'lodash';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function getNote(params = {}) {
   return request('/notes', {
@@ -64,10 +65,18 @@ export function getBusByStatus(params = {}) {
 }
 
 export function getAttendance(params = {}) {
-  return request('/medicals', {
+  return requestLavarel('/v1/attendance-summary', {
     method: 'GET',
     params: {
       ...params,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     },
   });
 }
