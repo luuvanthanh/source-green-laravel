@@ -25,9 +25,7 @@ export function get(data = {}) {
         'absent',
         'classStudent.class',
       ]),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      fullName: data.fullName,
     },
   });
 }

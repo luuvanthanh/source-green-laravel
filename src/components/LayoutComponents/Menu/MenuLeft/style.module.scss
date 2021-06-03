@@ -1,5 +1,9 @@
 @import "@/assets/styles/mixins.scss";
 
+:global(.ant-menu-submenu-popup .ant-menu-item-selected) {
+  background-color: $background-white !important;
+}
+
 .menu {
   box-sizing: content-box;
   position: relative;
@@ -190,10 +194,10 @@
         padding: 0 8px;
       }
       :global(.ant-menu-submenu-title) {
-        padding-left: 23px;
+        padding-left: 20px;
       }
       :global(.ant-menu-item) {
-        padding-left: 23px !important;
+        padding-left: 20px !important;
         > a {
           padding: 10px 15px;
         }
@@ -270,6 +274,7 @@
         padding-left: 23px !important;
       }
     }
+
     background-color: $background-dark;
     color: $gray-darken;
     height: 100%;
@@ -299,8 +304,8 @@
     }
 
     :global(.ant-menu-item-selected) {
-      background-color: transparent !important;
       opacity: 1;
+      background-color: $background-white !important;
       > a {
         color: $white;
         background-color: $background-success;

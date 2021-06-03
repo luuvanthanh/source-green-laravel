@@ -196,11 +196,10 @@ class Index extends PureComponent {
    */
   pagination = (pagination) => ({
     size: 'default',
-    total: pagination.total,
-    defaultPageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
     locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
@@ -263,6 +262,7 @@ class Index extends PureComponent {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
@@ -274,6 +274,7 @@ class Index extends PureComponent {
         title: 'Số điện thoại',
         key: 'phoneNumber',
         className: 'min-width-150',
+        width: 150,
         render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
       },
       {
@@ -288,6 +289,7 @@ class Index extends PureComponent {
         title: 'Bộ phận',
         key: 'division',
         className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">{get(record, 'positionLevel[0].division.name')}</Text>
         ),
@@ -296,14 +298,15 @@ class Index extends PureComponent {
         title: 'Chức vụ',
         key: 'position',
         className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">{get(record, 'positionLevel[0].position.name')}</Text>
         ),
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -403,7 +406,7 @@ class Index extends PureComponent {
               }}
               bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '70vh' }}
             />
           </div>
         </div>

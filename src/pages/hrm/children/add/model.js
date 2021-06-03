@@ -1,5 +1,4 @@
-import { notification } from 'antd';
-import { get } from 'lodash';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -46,10 +45,10 @@ export default {
     }),
   },
   effects: {
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
