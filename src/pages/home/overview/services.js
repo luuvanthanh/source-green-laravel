@@ -82,11 +82,25 @@ export function getAttendance(params = {}) {
 }
 
 export function getAttendanceByStatus(params = {}) {
-  return request('/medicals', {
+  return requestLavarel('/v1/attendances', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      ...params,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      include: Helper.convertIncludes([
+        'timekeeping',
+        'class',
+        'attendance',
+        'absent',
+        'classStudent.class',
+      ]),
     },
   });
 }
