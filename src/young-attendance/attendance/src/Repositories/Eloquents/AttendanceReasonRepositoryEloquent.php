@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Attendance\Repositories\Eloquent;
+namespace GGPHP\Attendance\Repositories\Eloquents;
 
 use GGPHP\Attendance\Models\AttendanceReason;
 use GGPHP\Attendance\Presenters\AttendanceReasonPresenter;

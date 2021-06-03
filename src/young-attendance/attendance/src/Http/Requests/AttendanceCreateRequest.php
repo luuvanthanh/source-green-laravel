@@ -29,6 +29,7 @@ class AttendanceCreateRequest extends FormRequest
     {
         return [
             'studentId' => 'required',
+            'employeeId' => 'required',
             'date' => [
                 'required',
                 function ($attribute, $value, $fail) {

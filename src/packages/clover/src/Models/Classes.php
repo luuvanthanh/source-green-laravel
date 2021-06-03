@@ -27,4 +27,9 @@ class Classes extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Category\Models\Branch::class, 'BranchId');
     }
+
+    public function teacher()
+    {
+        return $this->belongsToMany(\GGPHP\Users\Models\User::class, 'distribution.ClassTeachers', 'ClassId', 'EmployeeId');
+    }
 }

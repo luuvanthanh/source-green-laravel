@@ -3,6 +3,7 @@
 namespace GGPHP\YoungAttendance\Absent\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentConfirmRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentCreateRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentUpdateRequest;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
@@ -76,6 +77,21 @@ class AbsentController extends Controller
     {
         $credentials = $request->all();
         $absent = $this->absentRepository->update($credentials, $id);
+
+        return $this->success($absent, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param AbsentUpdateRequest $request
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+    public function confirm(AbsentConfirmRequest $request, $id)
+    {
+        $credentials = $request->all();
+        $absent = $this->absentRepository->confirm($credentials, $id);
 
         return $this->success($absent, trans('lang::messages.common.modifySuccess'));
     }

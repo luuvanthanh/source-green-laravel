@@ -7,6 +7,7 @@ use GGPHP\Absent\Models\Absent;
 use GGPHP\Children\Models\Children;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\LateEarly\Models\LateEarly;
+use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use Illuminate\Auth\Authenticatable;
@@ -60,11 +61,13 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     protected $dateTimeFields = [
         'DateOfBirth',
         'DateOfIssueIdCard',
+        'DateOff',
     ];
 
     protected $casts = [
         'DateOfBirth' => 'datetime',
         'DateOfIssueIdCard' => 'datetime',
+        'DateOff' => 'datetime',
     ];
 
     /**
@@ -246,11 +249,24 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     }
 
     /**
+     * Define relations children
+     */
+    public function maternityLeave()
+    {
+        return $this->hasMany(MaternityLeave::class, 'EmployeeId');
+    }
+
+    /**
      * Define relations magneticCards
      */
     public function magneticCards()
     {
         return $this->hasMany(\GGPHP\MagneticCard\Models\MagneticCard::class)->withTrashed();
+    }
+
+    public function account()
+    {
+        return $this->hasOne(\GGPHP\Clover\Models\EmployeeAccount::class, 'EmployeeId');
     }
 
 }

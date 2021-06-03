@@ -5,9 +5,6 @@ namespace GGPHP\YoungAttendance\Absent\Transformers;
 use GGPHP\Clover\Transformers\ParentsTransformer;
 use GGPHP\Clover\Transformers\StudentTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\LateEarly\Models\LateEarly;
-use GGPHP\LateEarly\Models\LateEarlyTimeConfig;
-use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
 use GGPHP\ShiftSchedule\Models\Shift;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\ShiftSchedule\Transformers\ShiftTransformer;
@@ -25,7 +22,7 @@ class AbsentTransformer extends BaseTransformer
 {
 
     protected $defaultIncludes = ['absentType'];
-    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'early', 'timekeeping'];
+    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'timekeeping', 'employee'];
 
     /**
      * Include parent
@@ -48,11 +45,27 @@ class AbsentTransformer extends BaseTransformer
      */
     public function includeStudent(Absent $absent)
     {
+
         if (empty($absent->student)) {
             return;
         }
 
         return $this->item($absent->student, new StudentTransformer, 'Student');
+    }
+
+    /**
+     * Include student
+     * @param Absent $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeEmployee(Absent $absent)
+    {
+
+        if (empty($absent->employee)) {
+            return;
+        }
+
+        return $this->item($absent->employee, new UserTransformer, 'Employee');
     }
 
     /**
@@ -99,22 +112,6 @@ class AbsentTransformer extends BaseTransformer
         $shift = Shift::find($parentHasWorkShift[$absent->StartDate->format('Y-m-d')][0]['ShiftId']);
 
         return $this->item($shift, new ShiftTransformer, 'Shift');
-    }
-
-    /**
-     * Include Owner
-     * @param Absent $absent
-     * @return \League\Fractal\Resource\Item
-     */
-    public function includeEarly(Absent $absent)
-    {
-        $startDate = $absent->StartDate->format('Y-m-d');
-
-        $early = $absent->parent->lateEarly()->whereDate('Date', $startDate)->whereHas('lateEarlyConfig', function ($query) {
-            $query->where('Type', LateEarlyTimeConfig::EARLY);
-        })->get();
-
-        return $this->collection($early, new LateEarlyTransformer, 'Early');
     }
 
     /**

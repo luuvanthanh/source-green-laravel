@@ -23,7 +23,6 @@ class AbsentCreateRequest extends FormRequest
                 'exists:AbsentTypeStudents,Id',
             ],
             'absentReasonId' => 'required|exists:AbsentReasonStudents,Id',
-            'parentId' => 'required',
             'studentId' => 'required',
             'startDate' => [
                 'date',
@@ -32,7 +31,7 @@ class AbsentCreateRequest extends FormRequest
 
                     $now = Carbon::now();
 
-                    if (Carbon::parser($value)->format('Y-m-d') < $now->format('Y-m-d')) {
+                    if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
 
@@ -59,7 +58,7 @@ class AbsentCreateRequest extends FormRequest
      */
     private function checkDuplicateAbsent($value)
     {
-        $studentId = request()->StudentId;
+        $studentId = request()->studentId;
         $annualLeaveType = AbsentType::where('Type', AbsentType::ANNUAL_LEAVE)->first();
 
         $startDate = request()->startDate;

@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Http\Controllers;
 
 use GGPHP\Attendance\Http\Requests\AttendanceCreateRequest;
+use GGPHP\Attendance\Http\Requests\AttendanceSummaryRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceUpdateRequest;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
@@ -62,7 +63,19 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $attendance = $this->attendanceRepository->getAttendance($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Attendance::STATUS[$value];
+            }
+
+            $attributes['status'] = $newStatus;
+        }
+
+        $attendance = $this->attendanceRepository->getAttendance($attributes);
 
         return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
@@ -101,10 +114,22 @@ class AttendanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function attendancesSummary(Request $request)
+    public function attendanceCrontab(Request $request)
     {
         $attendance = $this->attendanceRepository->attendanceCrontab($request->all());
 
         return $this->success([], trans('lang-program::messages.attendance.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function attendanceSummary(AttendanceSummaryRequest $request)
+    {
+        $attendance = $this->attendanceRepository->attendanceSummary($request->all());
+
+        return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
 }

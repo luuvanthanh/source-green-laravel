@@ -35,6 +35,14 @@ class Absent extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function employee()
+    {
+        return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function student()
     {
         return $this->belongsTo(\GGPHP\Clover\Models\Student::class, 'StudentId');

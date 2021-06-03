@@ -78,11 +78,14 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         if (is_null($attendance)) {
             $attendance = Attendance::create($attributes);
 
+            $reason = $attendance->reason;
+            $attendanceReason = $attendance->attendanceReason ? $attendance->attendanceReason->Content : null;
+
             AttendanceLog::create([
                 'EmployeeId' => $attributes['employeeId'],
                 'AttendanceId' => $attendance->Id,
                 'Action' => 'Tạo mới điểm danh',
-                'Reason' => $attendance->reason ? $attendance->reason : null,
+                'Reason' => $reason ? $reason : $attendanceReason,
             ]);
 
             $parentId = $attendance->student->parent->pluck('Id')->toArray();
@@ -117,14 +120,27 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         } else {
             $attendance->update($attributes);
 
+            $reason = $attendance->reason;
+            $attendanceReason = $attendance->attendanceReason ? $attendance->attendanceReason->Content : null;
+
             AttendanceLog::create([
                 'EmployeeId' => $attributes['employeeId'],
                 'AttendanceId' => $attendance->Id,
                 'Action' => 'Cập nhật điểm danh',
-                'Reason' => $attendance->reason ? $attendance->reason : null,
+                'Reason' => $reason ? $reason : $attendanceReason,
             ]);
 
-            $parentId = $attendance->student->parent->pluck('Id')->toArray();
+            $parents = $attendance->student->parent;
+            $userId = [];
+
+            if (!empty($parents)) {
+                foreach ($parents as $parent) {
+                    if (!is_null($parent->account)) {
+                        $userId[] = $parent->account->AppUserId;
+                    }
+                }
+            }
+
             $nameStudent = $attendance->student->FullName;
             $message = '';
             switch ($attendance->status) {
@@ -145,9 +161,9 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
 
             $urlNoti = env('NOTI_URL') . '/api/notification';
-            if (!empty($parentId)) {
+            if (!empty($userId)) {
                 Http::post("$urlNoti", [
-                    'users' => $parentId,
+                    'users' => $userId,
                     'title' => 'Clover',
                     'imageURL' => 'string',
                     'message' => $message,
@@ -165,36 +181,60 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function getAttendance($attributes)
     {
-        if (!empty($attributes['date'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendance' => function ($query) use ($attributes) {
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendance' => function ($query) use ($attributes) {
+            if (!empty($attributes['date'])) {
                 $query->where('Date', $attributes['date']);
-            }]);
+            }
 
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
-                $query->where([['StartDate', '>=', $attributes['date']], ['EndDate', '<=', $attributes['date']]]);
-            }]);
-        }
-
-        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['attendance' => function ($query) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
-            }]);
 
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+            }
+
+            if (!empty($attributes['status'])) {
+                $query->whereIn('Status', $attributes['status']);
+            }
+        }])->whereHas('attendance', function ($query) use ($attributes) {
+            if (!empty($attributes['date'])) {
+                $query->where('Date', $attributes['date']);
+            }
+
+            // if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            //     $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+
+            // }
+
+            if (!empty($attributes['status'])) {
+                $query->whereIn('Status', $attributes['status']);
+            }
+        });
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+            if (!empty($attributes['date'])) {
+                $query->where([['StartDate', '>=', $attributes['date']], ['EndDate', '<=', $attributes['date']]]);
+
+            }
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+
                 $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
                     ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
-            }]);
+            }
+        }]);
 
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['inOutHistory' => function ($query) use ($attributes) {
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['inOutHistory' => function ($query) use ($attributes) {
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->where([['AttendedAt', '>=', $attributes['startDate']], ['AttendedAt', '<=', $attributes['endDate']]]);
-            }]);
-
-        }
+            }
+        }]);
 
         if (!empty($attributes['studentId'])) {
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
+        }
+
+        if (!empty($attributes['nameStudent'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['nameStudent']);
         }
 
         if (!empty($attributes['classId'])) {
@@ -212,6 +252,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 });
             });
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
 
         if (!empty($attributes['limit'])) {
             $inOutHistories = $this->studentRepositoryEloquent->paginate($attributes['limit']);
@@ -279,12 +321,22 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 $this->model->create($dataCheckIn);
 
                                 $urlNoti = env('NOTI_URL') . '/api/notification';
-                                $parentId = $student->parent->pluck('Id')->toArray();
+                                $parents = $student->parent;
+                                $userId = [];
+
+                                if (!empty($parents)) {
+                                    foreach ($parents as $parent) {
+                                        if (!is_null($parent->account)) {
+                                            $userId[] = $parent->account->AppUserId;
+                                        }
+                                    }
+                                }
+
                                 $nameStudent = $student->FullName;
                                 $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
-                                if (!empty($parentId)) {
+                                if (!empty($userId)) {
                                     Http::post("$urlNoti", [
-                                        'users' => $parentId,
+                                        'users' => $userId,
                                         'title' => 'Clover',
                                         'imageURL' => 'string',
                                         'message' => "Bé $nameStudent đã vào lớp lúc $timeCheckIn",
@@ -322,12 +374,22 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 $this->model->create($dataCheckOut);
 
                                 $urlNoti = env('NOTI_URL') . '/api/notification';
-                                $parentId = $student->parent->pluck('Id')->toArray();
+                                $parents = $student->parent;
+                                $userId = [];
+
+                                if (!empty($parents)) {
+                                    foreach ($parents as $parent) {
+                                        if (!is_null($parent->account)) {
+                                            $userId[] = $parent->account->AppUserId;
+                                        }
+                                    }
+                                }
+
                                 $nameStudent = $student->FullName;
                                 $timeCheckOut = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
-                                if (!empty($parentId)) {
+                                if (!empty($userId)) {
                                     Http::post("$urlNoti", [
-                                        'users' => $parentId,
+                                        'users' => $userId,
                                         'title' => 'Clover',
                                         'imageURL' => 'string',
                                         'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
@@ -356,11 +418,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             $this->model->create($dataCheckOut);
 
                             $urlNoti = env('NOTI_URL') . '/api/notification';
-                            $parentId = $student->parent->pluck('Id')->toArray();
+                            $parents = $student->parent;
+                            $userId = [];
+
+                            if (!empty($parents)) {
+                                foreach ($parents as $parent) {
+                                    if (!is_null($parent->account)) {
+                                        $userId[] = $parent->account->AppUserId;
+                                    }
+                                }
+                            }
+
                             $nameStudent = $student->FullName;
-                            if (!empty($parentId)) {
+                            if (!empty($userId)) {
                                 Http::post("$urlNoti", [
-                                    'users' => $parentId,
+                                    'users' => $userId,
                                     'title' => 'Clover',
                                     'imageURL' => 'string',
                                     'message' => "Bé $nameStudent vắng không phép ngày $date",
@@ -389,5 +461,39 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         $durationAllow['validAfterEndTime'] = Carbon::parse($dateAttend . '' . $item['EndTime'])->addMinutes(30)->toDateTimeString();
 
         return $durationAllow;
+    }
+
+    public function attendanceSummary(array $attributes)
+    {
+        $student = Student::query();
+
+        $student->where('Status', '!=', Student::STORE);
+
+        if (!empty($attributes['classId'])) {
+            $classId = explode(',', $attributes['classId']);
+            $student->whereIn('ClassId', $classId);
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $student->whereIn('BranchId', $branchId);
+        }
+
+        $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+            $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
+        })->count();
+
+        $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
+        $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
+
+        return [
+            'data' => [
+                'student' => $student->count(),
+                'haveIn' => $attendanceHaveIn,
+                'annualLeave' => $attendanceAnnualLeave,
+                'unpaidLeave' => $attendanceUnpaidLeave,
+            ],
+        ];
+
     }
 }

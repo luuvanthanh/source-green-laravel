@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Attendance\Repositories\Eloquent;
+namespace GGPHP\Attendance\Repositories\Eloquents;
 
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Attendance\Presenters\AttendanceLogPresenter;
@@ -41,5 +41,35 @@ class AttendanceLogRepositoryEloquent extends CoreRepositoryEloquent implements 
     public function presenter()
     {
         return AttendanceLogPresenter::class;
+    }
+
+    public function filterAttendanceLog(array $attributes)
+    {
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('CreationTime', '>=', $attributes['startDate'])->where('CreationTime', '<=', $attributes['endDate']);
+        }
+
+        if (!empty($attributes['employeeId'])) {
+            $employeeId = explode(',', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
+        }
+
+        $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+            $query->tranferHistory($attributes);
+
+            if (!empty($attributes['classId'])) {
+                $query->whereHas('classTeacher', function ($q) use ($attributes) {
+                    $q->where('ClassId', $attributes['classId']);
+                });
+            }
+        });
+
+        if (!empty($attributes['limit'])) {
+            $attendanceLog = $this->paginate($attributes['limit']);
+        } else {
+            $attendanceLog = $this->get();
+        }
+
+        return $attendanceLog;
     }
 }

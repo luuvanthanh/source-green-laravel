@@ -73,6 +73,13 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Nghỉ phép',
             ]);
 
+            \Route::put('absent-student-confirm/{id}', [
+                'comment' => 'Chỉnh sửa nghỉ phép',
+                'uses' => 'AbsentController@confirm',
+                'as' => 'absents.update',
+                'group' => 'Nghỉ phép',
+            ]);
+
             //absents types
             \Route::get('absent-type-students', [
                 'comment' => 'Danh sách loại nghỉ phép',

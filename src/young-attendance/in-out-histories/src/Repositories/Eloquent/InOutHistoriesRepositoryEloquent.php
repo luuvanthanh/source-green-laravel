@@ -2,6 +2,7 @@
 
 namespace GGPHP\InOutHistories\Repositories\Eloquent;
 
+use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\InOutHistories\Models\InOutHistories;
@@ -72,6 +73,8 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
             $studentId = explode(',', $attributes['studentId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
+
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
 
         if (!empty($attributes['limit'])) {
             $inOutHistories = $this->studentRepositoryEloquent->paginate($attributes['limit']);

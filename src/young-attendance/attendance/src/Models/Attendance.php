@@ -46,7 +46,7 @@ class Attendance extends UuidModel
      */
     public function attendanceReason()
     {
-        return $this->hasOne(\GGPHP\Attendance\Models\AttendanceReason::class, 'ReasonId');
+        return $this->hasOne(\GGPHP\Attendance\Models\AttendanceReason::class, 'Id', 'ReasonId');
     }
 
     /**

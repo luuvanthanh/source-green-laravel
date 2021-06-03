@@ -200,6 +200,8 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
 
+        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
+
         if (!empty($attributes['limit'])) {
             $scheduleUser = $this->studentRepositoryEloquent->paginate($attributes['limit']);
         } else {
