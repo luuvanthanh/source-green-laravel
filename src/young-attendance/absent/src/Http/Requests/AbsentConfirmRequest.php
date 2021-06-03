@@ -4,7 +4,7 @@ namespace GGPHP\YoungAttendance\Absent\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AbsentReasonCreateRequest extends FormRequest
+class AbsentConfirmRequest extends FormRequest
 {
     public function authorize()
     {

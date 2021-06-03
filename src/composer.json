@@ -89,6 +89,7 @@
             "GGPHP\\BusRegistration\\": "packages/bus-registration/src",
             "GGPHP\\MagneticCard\\": "packages/magnetic-card/src",
             "GGPHP\\WordExporter\\": "packages/word-exporter/src",
+            "GGPHP\\MaternityLeave\\": "packages/maternity_leave/src",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

@@ -214,6 +214,7 @@ return [
         GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
         GGPHP\MagneticCard\Providers\MagneticCardServiceProvider::class,
         GGPHP\WordExporter\Providers\WordExporterServiceProvider::class,
+        GGPHP\MaternityLeave\Providers\MaternityLeaveServiceProvider::class,
     ],
 
     /*
