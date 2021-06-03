@@ -1,7 +1,7 @@
 import { notification } from 'antd';
 import { get } from 'lodash';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'transfersAdd',
@@ -70,30 +70,45 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_DIVISIONS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getDivisions, payload);
+        const response = yield saga.call(categories.getDivisions, payload);
         yield saga.put({
           type: 'SET_DIVISIONS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_POSITIONS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getPositions, payload);
+        const response = yield saga.call(categories.getPositions, payload);
         yield saga.put({
           type: 'SET_POSITIONS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(services.getUsers),
+          users: saga.call(categories.getUsers),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

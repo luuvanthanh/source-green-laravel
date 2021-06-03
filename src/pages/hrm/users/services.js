@@ -10,9 +10,7 @@ export function get(params = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['positionLevel']),
-      search: Helper.convertParamSearchConvert({
-        FullName: params.fullName,
-      }),
+      fullName: params.fullName,
     },
   });
 }

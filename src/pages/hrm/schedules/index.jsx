@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Modal, Form, Tooltip } from 'antd';
 import classnames from 'classnames';
+import { CloseOutlined } from '@ant-design/icons';
 import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -527,7 +528,7 @@ class Index extends PureComponent {
                 )}
               >
                 {get(data, 'shift.shiftCode')}
-                {/* <div className={stylesChildren['fade-cell']}>
+                <div className={stylesChildren['fade-cell']}>
                   <button
                     type="button"
                     className={stylesChildren['fade-cell-item']}
@@ -537,7 +538,7 @@ class Index extends PureComponent {
                   >
                     <CloseOutlined />
                   </button>
-                </div> */}
+                </div>
               </div>
             </Tooltip>
           );
@@ -573,7 +574,11 @@ class Index extends PureComponent {
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={record.fullName}
+            fullName={
+              record?.positionLevelNow
+                ? `${record.fullName} (${record?.positionLevelNow?.division?.name})`
+                : record.fullName
+            }
           />
         ),
       },

@@ -20,7 +20,7 @@
     width: #{$value}#{$unit};
   }
 }
-@for $i from 0 through 100 {
+@for $i from 0 through 300 {
   $value: $i * 5;
   $unit: "";
   @if $i != 0 {
@@ -28,6 +28,9 @@
   }
   .min-width-#{$i*5} {
     min-width: #{$value}#{$unit};
+  }
+  .min-parent-width-#{$i*5} {
+    width: #{$value}#{$unit};
   }
 }
 

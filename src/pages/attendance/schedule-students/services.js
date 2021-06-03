@@ -25,9 +25,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      search: Helper.convertParamSearchConvert({
-        FullName: data.fullName,
-      }),
+      fullName: data.fullName,
       include: Helper.convertIncludes([
         'schedules.shift',
         'schedules.scheduleRepeat',

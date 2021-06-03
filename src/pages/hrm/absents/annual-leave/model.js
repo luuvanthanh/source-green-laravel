@@ -1,4 +1,5 @@
 import { notification } from 'antd';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -6,6 +7,7 @@ export default {
   state: {
     data: [],
     pagination: {},
+    absentTypes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -13,6 +15,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_ABSENT_TYPES: (state, { payload }) => ({
+      ...state,
+      absentTypes: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -25,6 +31,20 @@ export default {
     }),
   },
   effects: {
+    *GET_ABSENT_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getAbsentTypes, payload);
+        yield saga.put({
+          type: 'SET_ABSENT_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

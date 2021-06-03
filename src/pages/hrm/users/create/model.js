@@ -254,9 +254,6 @@ export default {
     },
     *GET_DETAILS_ACCOUNT({ payload }, saga) {
       try {
-        yield saga.put({
-          type: 'INIT_STATE',
-        });
         const response = yield saga.call(services.detailsAccount, payload);
         if (response.status !== 204) {
           yield saga.put({
