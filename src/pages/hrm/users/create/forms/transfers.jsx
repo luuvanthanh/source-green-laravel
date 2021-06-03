@@ -85,6 +85,7 @@ const Index = memo(() => {
           decisionNumber: values.decisionNumber,
           decisionDate: values.decisionDate,
           reason: values.reason,
+          timeApply: values.timeApply,
           data: [
             {
               employeeId: params.id,

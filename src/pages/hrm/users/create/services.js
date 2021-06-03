@@ -402,13 +402,51 @@ export function changePassword(data = {}) {
 export function addMaternityLeaves(data = {}) {
   return requestLavarel('/v1/maternity-leaves', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.startDate,
+          targetValue: '00:00:00',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.endDate,
+          targetValue: '00:00:00',
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 export function updateMaternityLeaves(data = {}) {
   return requestLavarel(`/v1/maternity-leaves/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+      startDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.startDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      endDate: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.endDate,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 export function removeMaternityLeaves(data = {}) {
