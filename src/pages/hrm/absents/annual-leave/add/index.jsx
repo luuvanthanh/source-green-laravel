@@ -124,7 +124,18 @@ class Index extends PureComponent {
       type: params.id ? 'absentsAdd/UPDATE' : 'absentsAdd/ADD',
       payload: {
         ...values,
-        detail: detail.map((item) => ({ ...item, isFullDate: item.isFullDate === 1 })),
+        detail: detail.map((item) => ({
+          ...item,
+          date: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.date,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          }),
+          isFullDate: item.isFullDate === 1,
+        })),
         id: params.id,
       },
       callback: (response, error) => {
@@ -326,10 +337,7 @@ class Index extends PureComponent {
       values.absentTypeId &&
       values.type
     ) {
-      const dates = Helper.convertArrayDays(
-        moment(values.startDate).startOf('days'),
-        moment(values.endDate).endOf('days'),
-      );
+      const dates = Helper.convertArrayDaysNotWeekends(values.startDate, values.endDate);
       this.setStateData({
         detail: dates.map((item, index) => ({ date: item, index })),
       });
@@ -382,7 +390,10 @@ class Index extends PureComponent {
                       name="startDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                      disabledDate={(current) =>
+                        Helper.disabledDateFrom(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
                     />
                   </div>
                   <div className="col-lg-6">
@@ -391,7 +402,10 @@ class Index extends PureComponent {
                       name="endDate"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
-                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                      disabledDate={(current) =>
+                        Helper.disabledDateTo(current, this.formRef) ||
+                        Helper.disabledDateWeekeend(current)
+                      }
                     />
                   </div>
                 </div>

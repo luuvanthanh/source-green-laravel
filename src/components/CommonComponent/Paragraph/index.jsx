@@ -23,10 +23,10 @@ export default function View({ children }) {
 
   return (
     <div className={styles.paragraph}>
-      <Paragraph ellipsis={ellipsis ? { rows: 4, expandable: true, symbol: '' } : false}>
+      <Paragraph ellipsis={ellipsis ? { rows: 5, expandable: true, symbol: '' } : false}>
         {children}
       </Paragraph>
-      {isArray(children) && size(children) > 4 && (
+      {isArray(children) && size(children) >= 5 && (
         <p className={styles.toggle} onClick={toggle} role="presentation">
           {!ellipsis ? 'Thu gọn' : 'Xem thêm'}
         </p>
