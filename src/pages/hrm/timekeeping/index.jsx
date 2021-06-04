@@ -238,6 +238,27 @@ class Index extends PureComponent {
       ),
     },
     {
+      title: 'Cơ sở',
+      key: 'branch',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => record?.positionLevelNow?.branch?.name,
+    },
+    {
+      title: 'Bộ phận',
+      key: 'division',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => record?.positionLevelNow?.division?.name,
+    },
+    {
+      title: 'Chức vụ',
+      key: 'position',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => record?.positionLevelNow?.position?.name,
+    },
+    {
       title: 'Số lần chấm',
       key: 'count',
       align: 'center',
