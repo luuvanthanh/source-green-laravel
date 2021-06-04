@@ -551,12 +551,15 @@ class Index extends PureComponent {
           [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
         })}
       >
-        <Button
-          color="primary"
-          icon="plusMain"
-          type="dashed"
-          onClick={() => this.onShowModal(dayOfWeek, record, user)}
-        />
+        {moment(dayOfWeek).diff(moment(), 'days', true) >= 0 &&
+          moment(dayOfWeek).isoWeekday() < 6 && (
+            <Button
+              color="primary"
+              icon="plusMain"
+              type="dashed"
+              onClick={() => this.onShowModal(dayOfWeek, record, user)}
+            />
+          )}
       </div>
     );
   };
