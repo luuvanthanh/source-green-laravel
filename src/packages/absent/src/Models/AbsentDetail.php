@@ -14,12 +14,8 @@ class AbsentDetail extends UuidModel
         'AbsentId', 'Date', 'IsFullDate', 'ShiftCode', 'StartTime', 'EndTime', 'ShiftId',
     ];
 
-    protected $dateTimeFields = [
-        'Date',
-    ];
-
     protected $casts = [
-        'Date' => 'datetime',
+        'Date' => 'date:Y-m-d',
     ];
 
     /**
