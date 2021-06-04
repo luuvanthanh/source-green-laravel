@@ -120,6 +120,7 @@ const Index = memo(() => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       status: record.status,
+      isAttendance: record.isAttendance,
     }));
     getClasses();
   };
