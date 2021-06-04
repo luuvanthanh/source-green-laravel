@@ -2,6 +2,7 @@
 
 namespace GGPHP\Absent\Http\Requests;
 
+use Carbon\Carbon;
 use GGPHP\Absent\Models\AbsentDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -36,7 +37,8 @@ class AbsentCreateRequest extends FormRequest
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
                     if (!is_null($accessAbsent)) {
-                        return $fail("Bạn đã nghỉ vào ngày " . $accessAbsent);
+                        $date = Carbon::parse($accessAbsent)->setTimezone('GMT+7')->format('d-m-Y');
+                        return $fail("Bạn đã nghỉ vào ngày " . $date);
                     }
 
                     return true;
