@@ -677,8 +677,11 @@ export default class Helpers {
     return [];
   };
 
-  static onSortDates = (data = [], key = 'created_at') => {
+  static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {
+      if (sort === 'asc') {
+        return data.sort((a, b) => new Date(a[`${key}`]) - new Date(b[`${key}`]));
+      }
       return data.sort((a, b) => new Date(b[`${key}`]) - new Date(a[`${key}`]));
     }
     return [];
@@ -729,7 +732,11 @@ export default class Helpers {
       return r;
     }, {});
 
-    const result = Object.keys(groups).map((k) => groups[k]);
+    const result = this.onSortDates(
+      Object.keys(groups).map((k) => groups[k]),
+      'month',
+      'asc',
+    );
     return result;
   };
 
