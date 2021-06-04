@@ -221,3 +221,17 @@
     }
   }
 }
+
+
+.ant-table-selection {
+  .ant-checkbox-wrapper {
+    :not(.ant-checkbox-checked){
+      .ant-checkbox-inner {
+        &:after {
+          
+        }
+      }
+    }
+  
+  }
+}

@@ -268,7 +268,7 @@
     :global(.ant-menu-submenu) {
       padding: 0 15px;
       :global(.ant-menu-submenu-title) {
-        padding-left: 23px;
+        padding-left: 20px;
       }
       :global(.ant-menu-item) {
         padding-left: 23px !important;
@@ -305,7 +305,7 @@
 
     :global(.ant-menu-item-selected) {
       opacity: 1;
-      background-color: $background-white !important;
+      background-color: #000c17 !important;
       > a {
         color: $white;
         background-color: $background-success;

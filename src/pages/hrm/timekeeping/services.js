@@ -27,7 +27,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
-      include: Helper.convertIncludes(['timekeeping']),
+      include: Helper.convertIncludes(['timekeeping', 'positionLevelNow']),
     },
   });
 }

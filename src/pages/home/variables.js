@@ -13,7 +13,7 @@ export const variables = {
   STATUS_NOTE: [
     {
       id: '',
-      name: 'Tất cả trạng thái'
+      name: 'Tất cả trạng thái',
     },
     {
       id: 'CONFIRMING',
@@ -34,32 +34,32 @@ export const variables = {
       id: '1',
       name: 'Số trẻ đăng ký xe bus',
       number: '56',
-      image: '/images/icon/letter.svg'
+      image: '/images/icon/letter.svg',
     },
     {
       id: '2',
       name: 'Đón trẻ lên xe',
       number: '56',
-      image: '/images/icon/up-arrow.svg'
+      image: '/images/icon/up-arrow.svg',
     },
     {
       id: '3',
       name: 'Đón trẻ xuống xe',
       number: '56',
-      image: '/images/icon/down-arrow.svg'
+      image: '/images/icon/down-arrow.svg',
     },
     {
       id: '4',
       name: 'Trả trẻ lên xe',
       number: '56',
-      image: '/images/icon/up-arrow.svg'
+      image: '/images/icon/up-arrow.svg',
     },
     {
       id: '5',
       name: 'Trả trẻ xuống xe',
       number: '56',
-      image: '/images/icon/down-arrow.svg'
-    }
+      image: '/images/icon/down-arrow.svg',
+    },
   ],
   DATA_ATTENDANCE: [
     {
@@ -67,7 +67,7 @@ export const variables = {
       name: 'Sỉ số trẻ',
       number: '0',
       image: '/images/icon/contacts.svg',
-      title: 'Danh sách sỉ số trẻ'
+      title: 'Danh sách sỉ số trẻ',
     },
     {
       id: 'haveIn',
@@ -75,7 +75,8 @@ export const variables = {
       number: '0',
       image: '/images/icon/books.svg',
       title: 'Danh sách điểm danh vào lớp',
-      status: 'HAVE_IN,HAVE_OUT'
+      status: 'HAVE_IN,HAVE_OUT',
+      isAttendance: true,
     },
     {
       id: 'unpaidLeave',
@@ -83,7 +84,8 @@ export const variables = {
       number: '0',
       image: '/images/icon/sad.svg',
       title: 'Danh sách trẻ vắng không phép',
-      status: 'ANNUAL_LEAVE'
+      status: 'ANNUAL_LEAVE',
+      isAttendance: true,
     },
     {
       id: 'annualLeave',
@@ -91,14 +93,15 @@ export const variables = {
       number: '0',
       image: '/images/icon/happy.svg',
       title: 'Danh sách trẻ vắng có phép',
-      status: 'ANNUAL_LEAVE'
-    }
+      status: 'ANNUAL_LEAVE',
+      isAttendance: true,
+    },
   ],
   MENU: [
     {
       id: 'bus',
       name: 'Bus',
-      image: '/images/home/road.svg'
+      image: '/images/home/road.svg',
     },
     {
       id: 'childrenInClass',
@@ -138,7 +141,7 @@ export const variables = {
   STATUS_TIME_CODE: [
     {
       id: '',
-      name: 'Tất cả thời gian'
+      name: 'Tất cả thời gian',
     },
     {
       id: 'BEFORE_BREAKFAST',
@@ -150,11 +153,11 @@ export const variables = {
     },
     {
       id: 'BEFORE_SECOND_BREAKFAST',
-      name: 'Trước xế sáng'
+      name: 'Trước xế sáng',
     },
     {
       id: 'AFTER_SECOND_BREAKFAST',
-      name: 'Sau xế sáng'
+      name: 'Sau xế sáng',
     },
     {
       id: 'BEFORE_LUNCH',
@@ -191,7 +194,7 @@ export const variables = {
     BEFORE_SECOND_LUNCH: 'Trước xế trưa',
     AFTER_SECOND_LUNCH: 'Sau xế trưa',
     BEFORE_TEA_TIME: 'Trước xế chiều',
-    AFTER_TEA_TIME: 'Sau xế chiều'
+    AFTER_TEA_TIME: 'Sau xế chiều',
   },
 };
 

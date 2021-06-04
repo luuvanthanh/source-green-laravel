@@ -131,7 +131,18 @@ class Index extends PureComponent {
       type: params.id ? 'businessCardsAdd/UPDATE' : 'businessCardsAdd/ADD',
       payload: {
         ...values,
-        detail: detail.map((item) => ({ ...item, isFullDate: item.isFullDate === 1 })),
+        detail: detail.map((item) => ({
+          ...item,
+          isFullDate: item.isFullDate === 1,
+          date: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.date,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          }),
+        })),
         id: params.id,
       },
       callback: (response, error) => {
