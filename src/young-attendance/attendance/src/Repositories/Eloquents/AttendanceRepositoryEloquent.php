@@ -194,7 +194,20 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if (!empty($attributes['status'])) {
                 $query->whereIn('Status', $attributes['status']);
             }
-        }]);
+        }])->whereHas('attendance', function ($query) use ($attributes) {
+            if (!empty($attributes['date'])) {
+                $query->where('Date', $attributes['date']);
+            }
+
+            // if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            //     $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+
+            // }
+
+            if (!empty($attributes['status'])) {
+                $query->whereIn('Status', $attributes['status']);
+            }
+        });
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['date'])) {
@@ -237,12 +250,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 $query->whereHas('branch', function ($query2) use ($branchId) {
                     $query2->whereIn('BranchId', $branchId);
                 });
-            });
-        }
-
-        if (!empty($attributes['status'])) {
-            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('attendance', function ($query) use ($attributes) {
-                $query->whereIn('Status', $attributes['status']);
             });
         }
 

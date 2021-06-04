@@ -183,7 +183,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $timeKeepingByDate = [];
         $workDeclarationByDate = [];
         $dateOff = $employee->DateOff ? $employee->DateOff->format('Y-m-d') : null;
-        // dd($dateOff);
+
         // thoi gian cham cong
         $employeeHasTimekeeping = $employee->timekeeping;
 
@@ -274,8 +274,15 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff);
         $totalWorks = 0;
 
-        foreach ($responseTimeKeepingUser as &$item) {
-            $totalWorks += $item['timekeepingReport'];
+        foreach ($responseTimeKeepingUser as $key => &$item) {
+            $check = Carbon::parse($item['date'])->setTimezone('GMT+7')->format('l');
+
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $responseTimeKeepingUser[$key]['timekeepingReport'] = 0;
+            } else {
+                $totalWorks += $item['timekeepingReport'];
+            }
+
         }
 
         $employee->totalWorks = $totalWorks;
