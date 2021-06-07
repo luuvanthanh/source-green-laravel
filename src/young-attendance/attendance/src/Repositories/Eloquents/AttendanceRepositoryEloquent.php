@@ -271,7 +271,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
     public function attendanceCrontab($attributes)
     {
-        $students = Student::with(['inOutHistory'])->get();
+        $students = Student::with(['inOutHistory'])->where('Status', '!=', Student::STORE)->get();
         $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now()->format('Y-m-d');
 
         foreach ($students as $student) {
@@ -309,10 +309,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             //kiểm tra tồn tại vào lớp chưa
                             $existCheckIn = Attendance::where('StudentId', $student->Id)
                                 ->whereDate('Date', $date)
-                                ->where('Status', Attendance::STATUS['HAVE_IN'])
-                                ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                                ->where('Status', Attendance::STATUS['UNPAID_LEAVE'])
-                                ->get();
+                                ->where(function ($query) {
+                                    $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
+                                        ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                })->get();
 
                             if (count($existCheckIn) == 0) {
 
@@ -363,10 +364,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             //kiểm tra tồn tại ra về chưa
                             $existCheckOut = Attendance::where('StudentId', $student->Id)
                                 ->whereDate('Date', $date)
-                                ->where('Status', Attendance::STATUS['HAVE_OUT'])
-                                ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                                ->where('Status', Attendance::STATUS['UNPAID_LEAVE'])
-                                ->get();
+                                ->where(function ($query) {
+                                    $query->where('Status', Attendance::STATUS['HAVE_OUT'])
+                                        ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
+                                        ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                })->get();
 
                             if (count($existCheckOut) == 0) {
                                 $dataCheckOut = [
@@ -408,10 +410,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     if ($nowHours > Carbon::parse($timeAllow['validAfterStartTime'])->format('H:i:s')) {
                         $existCheckIn = Attendance::where('StudentId', $student->Id)
                             ->whereDate('Date', $date)
-                            ->where('Status', Attendance::STATUS['HAVE_IN'])
-                            ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                            ->where('Status', Attendance::STATUS['UNPAID_LEAVE'])
-                            ->get();
+                            ->where(function ($query) {
+                                $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                    ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
+                                    ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                            })->get();
 
                         if (count($existCheckIn) == 0) {
                             $dataCheckOut = [
@@ -488,8 +491,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
         })->count();
 
-        $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
-        $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
+        $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
+        $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
 
         return [
             'data' => [

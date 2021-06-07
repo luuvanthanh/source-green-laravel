@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Storage;
 class ExcelExporterServices
 {
     public $configs = [
-        'timekeeping_report' => [
-            'template' => 'timekeeping_report.xlsx',
-            'result' => 'timekeeping_report.xlsx',
+        'test2' => [
+            'template' => 'test2.xlsx',
+            'result' => 'test2.xlsx',
         ],
     ];
 
@@ -75,28 +75,5 @@ class ExcelExporterServices
         }
 
         return $path;
-    }
-
-    public function getPlaceText($place)
-    {
-        switch ($place->name) {
-            case 'PENDING':
-                $text = 'Chờ xử lý';
-                break;
-
-            case 'DECLINE':
-                $text = 'Từ chối';
-                break;
-
-            case 'APPROVED':
-                $text = $place->meta_data['is_end_place'] ? 'Đã duyệt' : 'Chờ xử lý';
-                break;
-
-            default:
-                $text = '';
-                break;
-        }
-
-        return $text;
     }
 }
