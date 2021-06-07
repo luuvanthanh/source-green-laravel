@@ -52,6 +52,13 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Công',
             ]);
 
+            \Route::get('timekeeping-report-export', [
+                'comment' => 'Tổng hợp công',
+                'uses' => 'TimekeepingController@exportTimekeeping',
+                'as' => 'timekeeping.summary',
+                'group' => 'Công',
+            ]);
+
             \Route::get('timekeeping-invalid', [
                 'comment' => 'Tổng hợp công không xác định',
                 'uses' => 'TimekeepingController@invalidTimekeeping',

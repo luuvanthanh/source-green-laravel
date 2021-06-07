@@ -124,4 +124,21 @@ class TimekeepingController extends Controller
         return $this->success($employeesByStore, trans('lang::messages.common.getInfoSuccess'));
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportTimekeeping(Request $request)
+    {
+        $result = $this->timekeepingRepository->exportTimekeeping($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
+
 }

@@ -16,9 +16,6 @@ class ExcelExporterServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../../config/excel-exporter.php', 'excel-exporter');
 
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'excel-exporter');
-        if ($this->app->runningInConsole()) {
-            $this->loadMigrationsFrom(__DIR__ . '/../../databases/migrations');
-        }
     }
 
     /**

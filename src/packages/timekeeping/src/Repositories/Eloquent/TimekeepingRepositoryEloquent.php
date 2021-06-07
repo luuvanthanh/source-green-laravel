@@ -2,8 +2,11 @@
 
 namespace GGPHP\Timekeeping\Repositories\Eloquent;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use Carbon\Carbon;
+use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Timekeeping\Models\Timekeeping;
 use GGPHP\Timekeeping\Presenters\TimekeepingPresenter;
@@ -24,10 +27,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
     public function __construct(
         UserRepositoryEloquent $employeeRepositoryEloquent,
+        ExcelExporterServices $excelExporterServices,
         Application $app
     ) {
         parent::__construct($app);
         $this->employeeRepositoryEloquent = $employeeRepositoryEloquent;
+        $this->excelExporterServices = $excelExporterServices;
     }
 
     /**
@@ -117,7 +122,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      * @param null $rank
      * @return mixed
      */
-    public function timekeepingReport(array $attributes)
+    public function timekeepingReport(array $attributes, $parser = false)
     {
 
         $employeesByStore = $this->employeeRepositoryEloquent->model()::with(['timekeeping' => function ($query) use ($attributes) {
@@ -157,6 +162,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         foreach ($result as &$employee) {
             $employee = $this->calculatorTimekeepingReport($employee, $attributes);
+        }
+
+        if ($parser) {
+            return $result;
         }
 
         return $this->employeeRepositoryEloquent->parserResult($result);
@@ -272,13 +281,14 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff);
-        $totalWorks = 0;
 
+        $totalWorks = 0;
         foreach ($responseTimeKeepingUser as $key => &$item) {
             $check = Carbon::parse($item['date'])->setTimezone('GMT+7')->format('l');
 
             if ($check === 'Saturday' || $check === 'Sunday') {
                 $responseTimeKeepingUser[$key]['timekeepingReport'] = 0;
+                $responseTimeKeepingUser[$key]['type'] = 'WK';
             } else {
                 $totalWorks += $item['timekeepingReport'];
             }
@@ -404,12 +414,18 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
         })->get();
 
-        foreach ($maternityLeaves as $maternityLeave) {
+        $holidayDetails = HolidayDetail::where(function ($q2) use ($startDate, $endDate) {
+            $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
+                ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
+        })->get();
 
-            foreach ($periodDate as $date) {
-                if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
-                    break;
-                }
+        foreach ($periodDate as $date) {
+            if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
+                break;
+            }
+
+            foreach ($maternityLeaves as $maternityLeave) {
 
                 if ($maternityLeave->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $maternityLeave->EndDate->format('Y-m-d')) {
                     $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
@@ -425,6 +441,34 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                             "date" => $date->format('Y-m-d'),
                             "timekeepingReport" => 0,
                             "type" => "TS",
+                        ];
+                    }
+                }
+            }
+
+            foreach ($holidayDetails as $holidayDetail) {
+                if ($holidayDetail->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $holidayDetail->EndDate->format('Y-m-d')) {
+                    $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
+
+                    $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
+                    if ($check === 'Saturday' || $check === 'Sunday') {
+                        $timekeepingReport = 0;
+                    } else {
+                        $timekeepingReport = 1;
+                    }
+
+                    if ($checkValue !== false) {
+                        $responseTimeKeepingUser[$checkValue] = [
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => $timekeepingReport,
+                            "type" => "L",
+                        ];
+                    } else {
+                        $responseTimeKeepingUser[] = [
+                            "date" => $date->format('Y-m-d'),
+                            "timekeepingReport" => $timekeepingReport,
+                            "type" => "L",
                         ];
                     }
                 }
@@ -739,4 +783,143 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         return true;
     }
 
+    public function exportTimekeeping(array $attributes)
+    {
+
+        $results = $this->timekeepingReport($attributes, true);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($attributes['endDate'])->format('m');
+        $params['{branch}'] = !empty($attributes['branch']) ? $attributes['branch'] : '.............';
+        $params['{division}'] = !empty($attributes['division']) ? $attributes['division'] : '.............';
+        $params['[number]'] = [];
+        $params['[fullName]'] = [];
+        $params['[position]'] = [];
+        $params['[totalWork]'] = [];
+        $init_value = [];
+        $month = [];
+
+        $period = Carbon::create($attributes['startDate'])->daysUntil($attributes['endDate']);
+        $period->setLocale('vi_VN');
+        $params['[[date]]'][] = iterator_to_array($period->map(function (Carbon $date) use (&$init_value, &$month) {
+            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
+            $month[] = 'Tháng ' . $date->format('m');
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $init_value[$date->format('Y-m-d')] = ''; // cuối tuần
+            } else {
+                $init_value[$date->format('Y-m-d')] = '-';
+            }
+
+            return $date->format('d');
+        }));
+
+        foreach ($results as $key => $user) {
+            $params['[number]'][] = ++$key;
+            $params['[fullName]'][] = $user->FullName;
+            $params['[position]'][] = $user->positionLevelNow->position->Name ?? '';
+            $values = $init_value;
+
+            if (!empty($user->timeKeepingReport)) {
+                foreach ($user->timeKeepingReport as $item) {
+                    if ($item['type'] == 'WK') {
+                        $values[$item['date']] = '';
+                    } else {
+                        $values[$item['date']] = $item['type'] ? $item['type'] : '_';
+                    }
+
+                }
+            }
+
+            $params['[[values]]'][] = array_values($values);
+
+            $params['[totalWork]'][] = $user->totalWorks;
+        }
+
+        $params['[[month]]'][] = array_values($month);
+
+        $listMerge = [];
+        $callbacks = [
+            '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $value = $param->param[$row_index][$col_index];
+                $currentColumn = 'D';
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($cell_coordinate == 'D3') {
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . 3;
+                            $mergeCoordinate[] = $adjustedColumn . 3;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . 3;
+
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+
+            },
+            '[[values]]' => function (CallbackParam $param) use (&$listMerge) {
+
+                $sheet = $param->sheet;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $value = $param->param[$row_index][$col_index];
+
+                if ($value == '') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('5b9db5');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                if ($value == 'L') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('fbe4d5');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                if ($value == 'TS') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('yellow');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+
+                $sheet->mergeCells('C1:AJ1');
+                $sheet->mergeCells('C2:AJ2');
+                $sheet->mergeCells('A1:B1');
+
+                $sheet->getDefaultColumnDimension()->setWidth(3);
+
+            },
+
+        ];
+
+        return $this->excelExporterServices->export('test', $params, $callbacks);
+    }
 }
