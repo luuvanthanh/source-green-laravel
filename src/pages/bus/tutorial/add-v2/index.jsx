@@ -12,6 +12,7 @@ import GeneralForm from './forms/general';
 import BusTransportationsForm from './forms/busTransportations';
 import NanniesForm from './forms/nannies';
 import BusRouteDriversForm from './forms/busRouteDrivers';
+import BusPlacesForm from './forms/busPlaces';
 
 import { menu, defaultKey } from './menu';
 
@@ -22,6 +23,7 @@ const forms = {
   busTransportations: <BusTransportationsForm />,
   nannies: <NanniesForm />,
   busRouteDrivers: <BusRouteDriversForm />,
+  busPlaces: <BusPlacesForm />,
 };
 
 const Index = memo(() => {
