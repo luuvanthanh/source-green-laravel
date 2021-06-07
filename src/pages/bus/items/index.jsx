@@ -251,6 +251,12 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.transmission}</Text>,
       },
       {
+        title: 'GPSID',
+        key: 'gpsId',
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.gpsId}</Text>,
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,

@@ -21,9 +21,9 @@ export default {
         callback(null, err);
 
         if (showNotification) {
-          notification.success({
-            message: 'Upload dữ liệu thành công',
-            description: 'Bạn đã cập nhật thành công dữ liệu',
+          notification.error({
+            message: 'Thông báo',
+            description: 'Lỗi hệ thống vui lòng kiểm tra lại',
           });
         }
       }

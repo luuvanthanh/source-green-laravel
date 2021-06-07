@@ -905,3 +905,37 @@
     color: $text-white;
   }
 }
+
+// BUTTON PLUS
+
+.button-plus {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: $text-success;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  span[class*="icon"] {
+    padding-right: 10px;
+  }
+}
+
+.button-remove {
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  border: 1px solid #c4cdd4;
+  color: #7a7e84;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  span[class*="icon"] {
+    font-size: 10px;
+  }
+  &:hover {
+    border: 1px solid $border-danger;
+    color: $text-danger;
+  }
+}
