@@ -374,7 +374,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 $dataCheckOut = [
                                     'Date' => $date,
                                     'StudentId' => $student->Id,
-                                    'Status' => Attendance::STATUS['HAVE_IN'],
+                                    'Status' => Attendance::STATUS['HAVE_OUT'],
                                     'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
                                 ];
 
