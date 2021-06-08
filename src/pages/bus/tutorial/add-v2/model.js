@@ -150,12 +150,13 @@ export default {
     },
     *UPDATE({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.update, payload);
+        yield saga.call(services.update, payload);
         callback(payload);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
+        const response = yield saga.call(services.details, payload);
         yield saga.put({
           type: 'SET_DETAILS',
           payload: response,
