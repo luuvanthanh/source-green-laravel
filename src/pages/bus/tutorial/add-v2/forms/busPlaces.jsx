@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Maps from './maps';
 
 let isMounted = true;
 /**
@@ -49,14 +50,25 @@ class Index extends PureComponent {
     super(props, context);
     const { details } = props;
     this.state = {
-      busTransportations:
-        details?.busTransportations?.map((item) => ({
-          ...item,
-          ...item.busInfor,
+      visibleMap: false,
+      busPlaces: [
+        {
           id: uuidv4(),
-        })) || [],
+          studentBusPlaces: [],
+        },
+      ],
+      listId: null,
+      position: [],
+      students: [],
     };
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.onSetLatLngDefault(position);
+    });
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -77,16 +89,105 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  componentDidMount() {
-    this.loadCategories();
-  }
+  onSetLatLngDefault = (position) => {
+    if (isEmpty(this.state.position)) {
+      this.setStateData({
+        position: [position.coords.latitude, position.coords.longitude],
+      });
+    }
+  };
 
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tutorialAddV2/GET_BUS_INFORMATIONS',
-      payload: {},
+      type: 'tutorialAddV2/GET_STUDENTS',
+      payload: {
+        classStatus: 'HAS_CLASS',
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            students: response.items,
+          });
+        }
+      },
     });
+  };
+
+  showMap = (record) => {
+    this.setStateData({
+      visibleMap: true,
+      listId: record.id,
+    });
+  };
+
+  handleCancelMap = () => {
+    this.setStateData({
+      visibleMap: false,
+    });
+  };
+
+  onSubmitMaps = (values) => {
+    const { listId } = this.state;
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === listId) {
+          return {
+            ...item,
+            ...values,
+          };
+        }
+        return item;
+      }),
+      visibleMap: false,
+    }));
+  };
+
+  onChangeAddress = (event, record) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === record.id) {
+          return {
+            ...item,
+            address: event.target.value,
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  /**
+   * Function save table cancel
+   */
+  addList = () => {
+    this.setStateData((prevState) => ({
+      busPlaces: [...prevState.busPlaces, { id: uuidv4(), studentBusPlaces: [] }],
+    }));
+  };
+
+  onRemove = (id) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.filter((item) => item.id !== id),
+    }));
+  };
+
+  /**
+   * Function save table cancel
+   * @param {object} record values of item table
+   */
+  collapsed = (record) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === record.id) {
+          return {
+            ...item,
+            collapsed: !item.collapsed,
+          };
+        }
+        return item;
+      }),
+    }));
   };
 
   /**
@@ -175,7 +276,7 @@ class Index extends PureComponent {
       busInformations,
       loading: { effects },
     } = this.props;
-    const { busTransportations } = this.state;
+    const { visibleMap, busPlaces, position } = this.state;
     const loading =
       effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_BUS_INFORMATIONS'];
     const loadingSubmit = effects['tutorialAddV2/ADD'] || effects['tutorialAddV2/UPDATE'];
@@ -189,71 +290,91 @@ class Index extends PureComponent {
         }}
         onFinish={this.onFinish}
       >
+        {visibleMap && (
+          <Maps
+            visible={visibleMap}
+            handleCancel={this.handleCancelMap}
+            onSubmit={this.onSubmitMaps}
+            position={position}
+          />
+        )}
         <div className="card">
           <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title">Danh sách điểm đón</Heading>
               <div className={classnames(styles['list-info'])}>
-                <div className={classnames(styles.item)}>
+                {busPlaces.map((item, index) => (
                   <div
-                    className={classnames(
-                      styles.heading,
-                      'd-flex',
-                      'justify-content-between',
-                      'align-items-center',
-                    )}
+                    className={classnames(styles.item, { [`${styles.collapsed}`]: item.collapsed })}
+                    key={index}
                   >
-                    <div className="d-flex align-items-center">
-                      <h3 className={styles.title}>ĐIỂM ĐÓN SỐ</h3>
-                      <Input
-                        className="ml-3"
-                        size="large"
-                        style={{ width: '400px' }}
-                        // onChange={(event) => this.onChangeAddress(event, item)}
-                        suffix={
-                          <span
-                            className={classnames('icon-map', styles['icon-map'])}
-                            role="presentation"
-                            onClick={() => this.showMap()}
+                    <div
+                      className={classnames(
+                        styles.heading,
+                        'd-flex',
+                        'justify-content-between',
+                        'align-items-center',
+                      )}
+                    >
+                      <div className="d-flex align-items-center">
+                        <h3 className={styles.title}>ĐIỂM ĐÓN SỐ {index + 1}</h3>
+                        <Input
+                          className="ml-3"
+                          size="large"
+                          value={item.address}
+                          style={{ width: '400px' }}
+                          onChange={(event) => this.onChangeAddress(event, item)}
+                          suffix={
+                            !isEmpty(position) && (
+                              <span
+                                className={classnames('icon-map', styles['icon-map'])}
+                                role="presentation"
+                                onClick={() => this.showMap(item)}
+                              />
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="d-flex justify-content-end">
+                        <div className={styles['list-button']}>
+                          <Button
+                            color="grey"
+                            icon="remove"
+                            onClick={() => this.onRemove(item.id)}
                           />
-                        }
-                      />
-                    </div>
-                    <div className="d-flex justify-content-end">
-                      <div className={styles['list-button']}>
-                        <Button color="grey" icon="remove" />
-                        <Button color="grey" icon="up" />
+                          <Button color="grey" icon="up" onClick={() => this.collapsed(item)} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className={styles['content-block']}>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <Text color="dark" size="large-medium">
-                        DS TRẺ TẠI ĐIỂM ĐÓN
-                      </Text>
-                      <Button color="success" icon="edit">
-                        Cập nhật danh sách
-                      </Button>
+                    <div className={styles['content-block']}>
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <Text color="dark" size="large-medium">
+                          DS TRẺ TẠI ĐIỂM ĐÓN
+                        </Text>
+                        <Button color="success" icon="edit">
+                          Cập nhật danh sách
+                        </Button>
+                      </div>
+                      <Table
+                        bordered
+                        columns={this.header()}
+                        dataSource={[]}
+                        className="table-edit"
+                        pagination={false}
+                        isEmpty
+                        params={{
+                          header: this.header(),
+                          type: 'table',
+                        }}
+                        rowKey={(record) => record.id || record.key}
+                        scroll={{ x: '100%' }}
+                      />
                     </div>
-                    <Table
-                      bordered
-                      columns={this.header('CHILDREN')}
-                      dataSource={[]}
-                      className="table-edit"
-                      pagination={false}
-                      isEmpty
-                      params={{
-                        header: this.header('CHILDREN'),
-                        type: 'table',
-                      }}
-                      rowKey={(record) => record.id || record.key}
-                      scroll={{ x: '100%' }}
-                    />
                   </div>
-                </div>
+                ))}
               </div>
               <hr />
-              <p className={styles['button-plus']} role="presentation">
+              <p className={styles['button-plus']} role="presentation" onClick={this.addList}>
                 <span className="icon-plus-circle" /> THÊM ĐIỂM ĐÓN
               </p>
             </div>

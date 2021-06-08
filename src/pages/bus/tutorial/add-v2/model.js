@@ -56,6 +56,14 @@ export default {
     }),
   },
   effects: {
+    *GET_STUDENTS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(categories.getStudents, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getEmployees, payload);
