@@ -163,9 +163,9 @@ class Index extends PureComponent {
                                 <FormItem
                                   data={variablesModules.DAYS}
                                   label="Thời gian"
-                                  fieldKey={[field.fieldKey, 'dayOfWeek']}
-                                  name={[field.name, 'dayOfWeek']}
-                                  type={variables.SELECT}
+                                  fieldKey={[field.fieldKey, 'dayOfWeeks']}
+                                  name={[field.name, 'dayOfWeeks']}
+                                  type={variables.SELECT_MUTILPLE}
                                   rules={[variables.RULES.EMPTY]}
                                 />
                               </div>

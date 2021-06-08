@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { head, last, isEmpty } from 'lodash';
+import { head, last } from 'lodash';
 import { Modal } from 'antd';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
@@ -139,7 +139,7 @@ class Index extends PureComponent {
           </div>,
         ]}
         onCancel={this.handleCancel}
-        title="Maps"
+        title="Chọn tọa độ"
         visible={visible}
       >
         <div className={styles.leafletContainer}>

@@ -1,23 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { Form, Avatar, Input } from 'antd';
+import { Form, Input, Checkbox } from 'antd';
 import PropTypes from 'prop-types';
 import { isEmpty, head } from 'lodash';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
-import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
+import { Helper } from '@/utils';
 import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
-import Select from '@/components/CommonComponent/Select';
 import styles from '@/assets/styles/Common/common.scss';
 import { v4 as uuidv4 } from 'uuid';
-import moment from 'moment';
-import { Scrollbars } from 'react-custom-scrollbars';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Maps from './maps';
+import Children from './children';
 
 let isMounted = true;
 /**
@@ -38,7 +35,6 @@ const mapStateToProps = ({ tutorialAddV2, loading, menu }) => ({
   loading,
   error: tutorialAddV2.error,
   details: tutorialAddV2.details,
-  busInformations: tutorialAddV2.busInformations,
   menuData: menu.menuLeftSchedules,
 });
 
@@ -51,15 +47,28 @@ class Index extends PureComponent {
     const { details } = props;
     this.state = {
       visibleMap: false,
-      busPlaces: [
-        {
-          id: uuidv4(),
-          studentBusPlaces: [],
-        },
-      ],
+      busPlaces: !isEmpty(details?.busPlaces)
+        ? details?.busPlaces.map((item) => ({
+            address: item.address,
+            lat: item.lat,
+            lng: item.long,
+            orderNo: item.orderNo,
+            studentBusPlaces: item.studentBusPlaces.map((itemStudent) => ({
+              ...itemStudent,
+              ...itemStudent.student,
+              transporterId: head(itemStudent?.student?.studentTransporter)?.id,
+            })),
+          }))
+        : [
+            {
+              id: uuidv4(),
+              studentBusPlaces: [],
+            },
+          ],
       listId: null,
       position: [],
       students: [],
+      visible: false,
     };
     setIsMounted(true);
   }
@@ -115,10 +124,11 @@ class Index extends PureComponent {
   };
 
   showMap = (record) => {
-    this.setStateData({
+    this.setStateData((prevState) => ({
       visibleMap: true,
       listId: record.id,
-    });
+      position: record.lat && record.lng ? [record.lat, record.lng] : prevState.position,
+    }));
   };
 
   handleCancelMap = () => {
@@ -190,10 +200,100 @@ class Index extends PureComponent {
     }));
   };
 
+  enableStudents = (items) => {
+    const { busPlaces } = this.state;
+    let studentBusPlaces = [];
+    busPlaces.forEach((item) => {
+      studentBusPlaces = [...studentBusPlaces, ...item.studentBusPlaces];
+    });
+    return items.filter(
+      (item) => !studentBusPlaces.find((itemStudent) => itemStudent.id === item.id),
+    );
+  };
+
+  /**
+   * Function edit list
+   * @param {uid} id id of items
+   */
+  onEditList = (record) => {
+    this.setStateData((prevState) => ({
+      visible: true,
+      listId: record.id,
+      studentBusPlaces: record.studentBusPlaces.map((item) => item.id),
+      students: [...this.enableStudents(prevState.students), ...record.studentBusPlaces],
+    }));
+  };
+
+  handleCancel = () => {
+    this.setStateData({
+      visible: false,
+      listId: null,
+      studentBusPlaces: [],
+      students: [],
+    });
+  };
+
+  onRemoveChildren = (record, object) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.parentId === object.parentId) {
+          return {
+            ...item,
+            studentBusPlaces: item.studentBusPlaces.filter(
+              (itemChildren) => itemChildren.key !== record.key,
+            ),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  onChangeCheckbox = (record, object, key = 'isSchoolWard') => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.parentId === object.parentId) {
+          return {
+            ...item,
+            studentBusPlaces: item.studentBusPlaces.map((itemStudent) =>
+              itemStudent.id === record.id
+                ? { ...itemStudent, [key]: !itemStudent[key] }
+                : itemStudent,
+            ),
+          };
+        }
+        return item;
+      }),
+    }));
+  };
+
+  /**
+   * Function save table cancel
+   * @param {array} cancelPolicies values of table cancel
+   */
+  onSave = (items, listId) => {
+    this.setStateData((prevState) => ({
+      busPlaces: prevState.busPlaces.map((item) => {
+        if (item.id === listId) {
+          return {
+            ...item,
+            studentBusPlaces: items.map((itemStudent) => ({
+              ...itemStudent,
+              transporterId: head(itemStudent.studentTransporter)?.id,
+            })),
+            parentId: listId,
+          };
+        }
+        return item;
+      }),
+      visible: false,
+    }));
+  };
+
   /**
    * Function header table
    */
-  header = () => {
+  header = (object) => {
     let columns = [];
     columns = [
       {
@@ -216,10 +316,51 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'ĐỊA CHỈ',
-        key: 'address',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.address}</Text>,
+        title: 'NGƯỜI ĐƯA ĐÓN',
+        key: 'studentTransporte',
+        className: 'min-width-200',
+        render: (record) => {
+          const itemTransport = head(record.studentTransporter);
+          if (itemTransport) {
+            return (
+              <AvatarTable
+                fileImage={Helper.getPathAvatarJson(itemTransport.fileImage)}
+                fullName={itemTransport.fullName}
+              />
+            );
+          }
+          return null;
+        },
+      },
+      {
+        title: 'CHIỀU ĐƯA ĐÓN',
+        key: 'route',
+        children: [
+          {
+            title: 'ĐI',
+            key: 'isSchoolWard',
+            className: 'min-width-80',
+            align: 'center',
+            render: (record) => (
+              <Checkbox
+                checked={record.isSchoolWard}
+                onClick={() => this.onChangeCheckbox(record, object, 'isSchoolWard')}
+              />
+            ),
+          },
+          {
+            title: 'VỀ',
+            key: 'isHomeWard',
+            className: 'min-width-80',
+            align: 'center',
+            render: (record) => (
+              <Checkbox
+                checked={record.isHomeWard}
+                onClick={() => this.onChangeCheckbox(record, object, 'isHomeWard')}
+              />
+            ),
+          },
+        ],
       },
       {
         key: 'action',
@@ -246,11 +387,28 @@ class Index extends PureComponent {
       match: { params },
       details,
     } = this.props;
+    const { busPlaces } = this.state;
     dispatch({
       type: 'tutorialAddV2/UPDATE',
       payload: {
         ...details,
         id: params?.id,
+        busPlaces: busPlaces.map((item, index) => ({
+          address: item.address,
+          lat: item.lat,
+          long: item.lng,
+          orderNo: index + 1,
+          studentBusPlaces: item.studentBusPlaces.map((itemBus, indexStudent) => ({
+            orderNo: indexStudent + 1,
+            studentId: itemBus.id,
+            classId: itemBus.classId,
+            address: itemBus.address,
+            isHomeWard: itemBus.isHomeWard,
+            description: itemBus.description,
+            isSchoolWard: itemBus.isSchoolWard,
+            transporterId: itemBus.transporterId,
+          })),
+        })),
       },
       callback: (response, error) => {
         if (error) {
@@ -269,17 +427,33 @@ class Index extends PureComponent {
     });
   };
 
+  enabledSubmit = () => {
+    const { busPlaces } = this.state;
+    const itemBusValidate = busPlaces.find(
+      (item) => !item.address || isEmpty(item.studentBusPlaces),
+    );
+    return !!itemBusValidate;
+  };
+
   render() {
     const {
       error,
       details,
-      busInformations,
       loading: { effects },
     } = this.props;
-    const { visibleMap, busPlaces, position } = this.state;
+    const {
+      visibleMap,
+      busPlaces,
+      position,
+      visible,
+      listId,
+      students,
+      studentBusPlaces,
+    } = this.state;
     const loading =
       effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_BUS_INFORMATIONS'];
     const loadingSubmit = effects['tutorialAddV2/ADD'] || effects['tutorialAddV2/UPDATE'];
+
     return (
       <Form
         layout="vertical"
@@ -296,6 +470,16 @@ class Index extends PureComponent {
             handleCancel={this.handleCancelMap}
             onSubmit={this.onSubmitMaps}
             position={position}
+          />
+        )}
+        {visible && (
+          <Children
+            visible={visible}
+            listId={listId}
+            students={students}
+            onSave={this.onSave}
+            handleCancel={this.handleCancel}
+            studentBusPlaces={studentBusPlaces}
           />
         )}
         <div className="card">
@@ -351,19 +535,19 @@ class Index extends PureComponent {
                         <Text color="dark" size="large-medium">
                           DS TRẺ TẠI ĐIỂM ĐÓN
                         </Text>
-                        <Button color="success" icon="edit">
+                        <Button color="success" icon="edit" onClick={() => this.onEditList(item)}>
                           Cập nhật danh sách
                         </Button>
                       </div>
                       <Table
                         bordered
-                        columns={this.header()}
-                        dataSource={[]}
+                        columns={this.header(item)}
+                        dataSource={item.studentBusPlaces || []}
                         className="table-edit"
                         pagination={false}
                         isEmpty
                         params={{
-                          header: this.header(),
+                          header: this.header(item),
                           type: 'table',
                         }}
                         rowKey={(record) => record.id || record.key}
@@ -380,7 +564,16 @@ class Index extends PureComponent {
             </div>
 
             <div className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+              <Button
+                color="success"
+                size="large"
+                htmlType="submit"
+                loading={loadingSubmit}
+                disabled={
+                  !details?.busTransportations?.find((item) => item.isMain)?.busId &&
+                  this.enabledSubmit()
+                }
+              >
                 Lưu
               </Button>
             </div>
@@ -397,7 +590,6 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
-  busInformations: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -406,7 +598,6 @@ Index.defaultProps = {
   dispatch: {},
   error: {},
   details: {},
-  busInformations: [],
 };
 
 export default withRouter(Index);
