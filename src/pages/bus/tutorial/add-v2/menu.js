@@ -18,7 +18,7 @@ export const menu = [
     label: 'Thông tin lái xe',
   },
   {
-    key: 'tutorial',
+    key: 'busPlaces',
     label: 'Danh sách điểm đón',
   },
 ];

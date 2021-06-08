@@ -399,14 +399,14 @@ class Index extends PureComponent {
     const payload = {
       ...values,
       id: params.id,
-      busPlaces: busPlaces.map((item) => ({
+      busPlaces: busPlaces.map((item, index) => ({
         ...item,
-        long: item.lng,
-        studentBusPlaces: item.studentBusPlaces.map((itemBus, index) => ({
+        orderNo: index + 1,
+        studentBusPlaces: item.studentBusPlaces.map((itemBus, indexStudent) => ({
           studentId: itemBus.id,
           address: itemBus.address,
           description: itemBus.description,
-          orderNo: index,
+          orderNo: indexStudent + 1,
         })),
       })),
       busRouteShedules: values.busRouteShedules.map((item) => ({
