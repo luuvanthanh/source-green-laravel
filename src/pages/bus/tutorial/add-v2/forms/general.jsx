@@ -148,12 +148,14 @@ class Index extends PureComponent {
 
   onFinish = (values) => {
     const {
+      details,
       dispatch,
       match: { params },
     } = this.props;
     dispatch({
       type: params?.id ? 'tutorialAddV2/UPDATE' : 'tutorialAddV2/ADD',
       payload: {
+        ...details,
         ...omit(values, 'startedPlaceLatLng', 'endedPlaceLatLng'),
         busRouteShedules: values.busRouteShedules.map((item) => ({
           dayOfWeek: item,
