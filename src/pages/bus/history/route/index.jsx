@@ -20,10 +20,10 @@ const iconStudent = new L.Icon({
   iconUrl: '/images/marker-student.svg',
   iconAnchor: [17, 46],
 });
-// const iconSchool = new L.Icon({
-//   iconUrl: '/images/marker-location.svg',
-//   iconAnchor: [17, 46],
-// });
+const iconSchool = new L.Icon({
+  iconUrl: '/images/marker-location.svg',
+  iconAnchor: [17, 46],
+});
 // const iconCar = new L.Icon({
 //   iconUrl: '/images/marker-car.svg',
 //   iconAnchor: [17, 46],
@@ -60,6 +60,7 @@ class Index extends PureComponent {
           long: item?.busPlace?.long,
         })),
       ),
+      isMapInit: false,
     };
     setIsMounted(true);
   }
@@ -98,11 +99,14 @@ class Index extends PureComponent {
 
   saveMap = (map) => {
     this.map = map;
+    this.setState({
+      isMapInit: true,
+    });
   };
 
   render() {
     const { visible, route, routes, date, status } = this.props;
-    const { position } = this.state;
+    const { position, isMapInit } = this.state;
     return (
       <Modal
         centered
@@ -219,7 +223,7 @@ class Index extends PureComponent {
                   url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                   attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
                 />
-                <Routing map={this.map} routes={routes} />
+                {isMapInit && <Routing map={this.map} route={route} />}
                 {route?.busPlace?.lat && route?.busPlace?.long && (
                   <Marker
                     position={[route?.busPlace?.lat, route?.busPlace?.long]}
@@ -227,7 +231,29 @@ class Index extends PureComponent {
                   />
                 )}
                 {/* MARKER HOME */}
-                {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
+                {route?.busPlace?.busRoute?.startedPlaceLat &&
+                  route?.busPlace?.busRoute?.startedPlaceLong && (
+                    <Marker
+                      position={[
+                        route?.busPlace?.busRoute?.startedPlaceLat,
+                        route?.busPlace?.busRoute?.startedPlaceLong,
+                      ]}
+                      icon={iconSchool}
+                    />
+                  )}
+                {/* MARKER HOME */}
+
+                {/* MARKER HOME */}
+                {route?.busPlace?.busRoute?.endedPlaceLat &&
+                  route?.busPlace?.busRoute?.endedPlaceLong && (
+                    <Marker
+                      position={[
+                        route?.busPlace?.busRoute?.endedPlaceLat,
+                        route?.busPlace?.busRoute?.endedPlaceLong,
+                      ]}
+                      icon={iconSchool}
+                    />
+                  )}
                 {/* MARKER HOME */}
                 {/* MARKER CAR */}
                 {/* <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker> */}
@@ -248,7 +274,7 @@ Index.propTypes = {
   route: PropTypes.objectOf(PropTypes.any),
   status: PropTypes.string,
   onCancel: PropTypes.func,
-  date: PropTypes.string,
+  date: PropTypes.any,
 };
 
 Index.defaultProps = {

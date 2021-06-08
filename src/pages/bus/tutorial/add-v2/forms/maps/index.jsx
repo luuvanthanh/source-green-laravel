@@ -70,7 +70,7 @@ class Index extends PureComponent {
 
   onClickMap = (e) => {
     this.setStateData({
-      position: [e.latlng.lat, e.latlng.lng],
+      position: [e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)],
     });
   };
 
