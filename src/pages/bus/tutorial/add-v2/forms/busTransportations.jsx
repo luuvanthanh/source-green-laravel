@@ -147,13 +147,9 @@ class Index extends PureComponent {
   onChangeBus = (value) => {
     const { busInformations } = this.props;
     const itemBus = busInformations.find((item) => item.id === value);
-    this.setStateData((prevState) => ({
-      busTransportations: prevState.busTransportations?.find((item) => item.isMain)
-        ? prevState?.busTransportations?.map((item) =>
-            item.isMain ? { ...itemBus, busId: itemBus.id, isMain: true } : item,
-          )
-        : [...prevState.busTransportations, itemBus],
-    }));
+    this.setStateData({
+      busTransportations: [{ ...itemBus, busId: itemBus.id, isMain: true }],
+    });
   };
 
   onChangeBusChildren = (value, record) => {
