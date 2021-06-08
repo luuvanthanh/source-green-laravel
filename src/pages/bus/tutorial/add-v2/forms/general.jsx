@@ -1,15 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history, withRouter } from 'umi';
-import { Form } from 'antd';
+import { Form, Input } from 'antd';
 import PropTypes from 'prop-types';
-import { isEmpty, head } from 'lodash';
+import { isEmpty, head, last, toNumber, omit } from 'lodash';
+import classnames from 'classnames';
 import moment from 'moment';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import styles from '@/assets/styles/Common/common.scss';
 import variablesModules from '../../../utils/variables';
+import Maps from './maps';
 
 let isMounted = true;
 /**
@@ -40,8 +43,19 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      position: [],
+      visibleMap: false,
+      keyMap: null,
+    };
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.onSetLatLngDefault(position);
+    });
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -62,10 +76,6 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  componentDidMount() {
-    this.loadCategories();
-  }
-
   componentDidUpdate(prevProps) {
     const {
       details,
@@ -77,6 +87,56 @@ class Index extends PureComponent {
       });
     }
   }
+
+  onSetLatLngDefault = (position) => {
+    if (isEmpty(this.state.position)) {
+      this.setStateData({
+        position: [position.coords.latitude, position.coords.longitude],
+      });
+    }
+  };
+
+  showMap = (key = 'startedPlaceLatLng') => {
+    const { startedPlaceLatLng, endedPlaceLatLng } = this.formRef.current.getFieldsValue();
+    if (key === 'startedPlaceLatLng') {
+      this.setStateData((prevState) => ({
+        visibleMap: true,
+        keyMap: key,
+        position: startedPlaceLatLng
+          ? [head(startedPlaceLatLng.split(',')), last(startedPlaceLatLng.split(','))]
+          : prevState.position,
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        visibleMap: true,
+        keyMap: key,
+        position: endedPlaceLatLng
+          ? [head(endedPlaceLatLng.split(',')), last(endedPlaceLatLng.split(','))]
+          : prevState.position,
+      }));
+    }
+  };
+
+  handleCancelMap = () => {
+    this.setStateData({
+      visibleMap: false,
+      keyMap: null,
+    });
+  };
+
+  onSubmitMaps = (values) => {
+    const { keyMap } = this.state;
+    if (keyMap === 'startedPlaceLatLng') {
+      this.formRef.current.setFieldsValue({
+        startedPlaceLatLng: `${values.lat},${values.lng}`,
+      });
+    } else {
+      this.formRef.current.setFieldsValue({
+        endedPlaceLatLng: `${values.lat},${values.lng}`,
+      });
+    }
+    this.handleCancelMap();
+  };
 
   loadCategories = () => {
     const { dispatch } = this.props;
@@ -94,10 +154,14 @@ class Index extends PureComponent {
     dispatch({
       type: params?.id ? 'tutorialAddV2/UPDATE' : 'tutorialAddV2/ADD',
       payload: {
-        ...values,
+        ...omit(values, 'startedPlaceLatLng', 'endedPlaceLatLng'),
         busRouteShedules: values.busRouteShedules.map((item) => ({
           dayOfWeek: item,
         })),
+        startedPlaceLat: toNumber(head(values.startedPlaceLatLng.split(','))),
+        startedPlaceLong: toNumber(last(values.startedPlaceLatLng.split(','))),
+        endedPlaceLat: toNumber(head(values.endedPlaceLatLng.split(','))),
+        endedPlaceLong: toNumber(last(values.endedPlaceLatLng.split(','))),
         id: params?.id,
       },
       callback: (response, error) => {
@@ -127,6 +191,7 @@ class Index extends PureComponent {
       branches,
       loading: { effects },
     } = this.props;
+    const { position, visibleMap } = this.state;
     const loading = effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_BRANCHES'];
     const loadingSubmit = effects['tutorialAddV2/ADD'] || effects['tutorialAddV2/UPDATE'];
     return (
@@ -138,9 +203,25 @@ class Index extends PureComponent {
           busRouteShedules: details?.busRouteShedules?.map((item) => item.dayOfWeek),
           startDate: details?.startDate && moment(details?.startDate),
           endDate: details?.startDate && moment(details?.endDate),
+          endedPlaceLatLng:
+            details?.endedPlaceLat &&
+            details?.endedPlaceLong &&
+            `${details?.endedPlaceLat},${details?.endedPlaceLong}`,
+          startedPlaceLatLng:
+            details?.startedPlaceLat &&
+            details?.startedPlaceLong &&
+            `${details?.startedPlaceLat},${details?.startedPlaceLong}`,
         }}
         onFinish={this.onFinish}
       >
+        {visibleMap && (
+          <Maps
+            visible={visibleMap}
+            handleCancel={this.handleCancelMap}
+            onSubmit={this.onSubmitMaps}
+            position={position}
+          />
+        )}
         <div className="card">
           <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
             <div style={{ padding: 20 }} className="pb-0 border-bottom">
@@ -148,7 +229,7 @@ class Index extends PureComponent {
                 Thông tin chung
               </Heading>
               <div className="row">
-                <div className="col-lg-8">
+                <div className="col-lg-12">
                   <FormItem
                     name="name"
                     label="Tên lộ trình"
@@ -156,7 +237,9 @@ class Index extends PureComponent {
                     rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </div>
-                <div className="col-lg-4">
+              </div>
+              <div className="row">
+                <div className="col-lg-3">
                   <FormItem
                     data={branches}
                     name="startedPlace"
@@ -165,7 +248,59 @@ class Index extends PureComponent {
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <Form.Item
+                    name="startedPlaceLatLng"
+                    label={<span>Tọa độ xuất phát</span>}
+                    rules={[variables.RULES.EMPTY]}
+                  >
+                    <Input
+                      disabled
+                      placeholder="Chọn"
+                      suffix={
+                        !isEmpty(position) && (
+                          <span
+                            className={classnames('icon-map', styles['icon-map'])}
+                            role="presentation"
+                            onClick={() => this.showMap('startedPlaceLatLng')}
+                          />
+                        )
+                      }
+                    />
+                  </Form.Item>
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={branches}
+                    name="endedPlace"
+                    label="Điểm kết thúc"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <Form.Item
+                    name="endedPlaceLatLng"
+                    label={<span>Tọa độ kết thúc</span>}
+                    rules={[variables.RULES.EMPTY]}
+                  >
+                    <Input
+                      disabled
+                      placeholder="Chọn"
+                      suffix={
+                        !isEmpty(position) && (
+                          <span
+                            className={classnames('icon-map', styles['icon-map'])}
+                            role="presentation"
+                            onClick={() => this.showMap('endedPlace')}
+                          />
+                        )
+                      }
+                    />
+                  </Form.Item>
+                </div>
               </div>
+
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
