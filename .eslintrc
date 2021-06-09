@@ -21,7 +21,8 @@
     "API_URL_LAVAREL": true,
     "URL_AI": true,
     "API_MAP_BOX": true,
-    "ACCESS_TOKEN_MAPBOX": true
+    "ACCESS_TOKEN_MAPBOX": true,
+    "API_GEOLOCATION": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,
