@@ -4,27 +4,9 @@ import 'leaflet-routing-machine';
 
 class Routing extends MapLayer {
   createLeafletElement() {
-    const { map, route } = this.props;
-    let waypoints = [];
-    if (
-      route?.busPlace?.busRoute?.startedPlaceLat &&
-      route?.busPlace?.busRoute?.startedPlaceLong &&
-      route?.busPlace?.busRoute?.endedPlaceLat &&
-      route?.busPlace?.busRoute?.endedPlaceLong
-    ) {
-      waypoints = [
-        L.latLng(
-          route?.busPlace?.busRoute?.startedPlaceLat,
-          route?.busPlace?.busRoute?.startedPlaceLong,
-        ),
-        L.latLng(
-          route?.busPlace?.busRoute?.endedPlaceLat,
-          route?.busPlace?.busRoute?.endedPlaceLong,
-        ),
-      ];
-    }
+    const { map } = this.props;
     const leafletElement = L.Routing.control({
-      waypoints,
+      waypoints: [L.latLng(16.050051, 108.155123), L.latLng(16.06471, 108.15115)],
       lineOptions: {
         styles: [
           {

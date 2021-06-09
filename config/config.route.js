@@ -224,6 +224,18 @@ export default [
             authority: [permissions.BUS_LOTRINH_THEM],
           },
           {
+            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi-v2',
+            component: './bus/tutorial/add-v2',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BUS_LOTRINH_THEM],
+          },
+          {
+            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet-v2',
+            component: './bus/tutorial/add-v2',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BUS_LOTRINH_THEM],
+          },
+          {
             path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
             component: './bus/tutorial/add',
             wrappers: ['@/wrappers/auth'],

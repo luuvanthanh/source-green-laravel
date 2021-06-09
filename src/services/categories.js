@@ -183,3 +183,13 @@ export function getAbsentTypes(data = {}) {
     },
   });
 }
+
+export function getBusInformations(params = {}) {
+  return request('/bus-informations', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}

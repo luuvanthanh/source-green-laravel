@@ -254,8 +254,46 @@ class Index extends PureComponent {
     return null;
   };
 
-  redirectHistory = (item, record, user) =>
-    `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
+  redirectHistory = (item, record, user, type = null) => {
+    if (type === 'F' || type === 'F/2') {
+      return `/quan-ly-nhan-su/don-xin-phep?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'KC') {
+      return `/quan-ly-nhan-su/lich-lam-viec?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'KXD') {
+      return `/quan-ly-nhan-su/khong-xac-dinh-cong?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'NL') {
+      return `/quan-ly-nhan-su/ngay-nghi-le?${Helper.convertParamSearchConvert(
+        {
+          date: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    return `/quan-ly-nhan-su/lich-su-vao-ra?${Helper.convertParamSearchConvert(
       {
         startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
         endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
@@ -263,6 +301,10 @@ class Index extends PureComponent {
       },
       variables.QUERY_STRING,
     )}`;
+  };
+
+  redirectTS = (item, record, user) =>
+    `/quan-ly-nhan-su/nhan-vien/${user.id}/chi-tiet?type=maternity-leaves`;
 
   renderWorkShift = (
     record = [],
@@ -302,7 +344,7 @@ class Index extends PureComponent {
           color="#00B24D"
         >
           <Link
-            to={this.redirectHistory(dayOfWeek, record, user)}
+            to={this.redirectHistory(dayOfWeek, record, user, 'NL')}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
               [styles[`cell-heading-holidays`]]: !!holiday,
@@ -317,7 +359,8 @@ class Index extends PureComponent {
       const data = record.find((item) => Helper.getDate(item.date) === Helper.getDate(dayOfWeek));
       if (get(data, 'type') === 'TS') {
         return (
-          <div
+          <Link
+            to={this.redirectTS(dayOfWeek, record, user)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
               [styles[`cell-heading-kc`]]: data.type === 'KC',
@@ -325,13 +368,13 @@ class Index extends PureComponent {
             })}
           >
             {data.type}
-          </div>
+          </Link>
         );
       }
       if (get(data, 'type')) {
         return (
           <Link
-            to={this.redirectHistory(dayOfWeek, record, user)}
+            to={this.redirectHistory(dayOfWeek, record, user, data.type)}
             className={classnames(styles['item-schedules'], {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
               [styles[`cell-heading-kc`]]: data.type === 'KC',

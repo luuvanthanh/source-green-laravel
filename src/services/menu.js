@@ -466,6 +466,8 @@ export async function getLeftMenuVehicel() {
         '/quan-ly-phuong-tien/quan-ly-lo-trinh',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi-v2',
+        '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet-v2',
       ],
       icon: 'icon icon-notification',
       permission: [permissions.BUS_LOTRINH],

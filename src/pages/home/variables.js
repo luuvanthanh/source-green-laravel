@@ -84,7 +84,7 @@ export const variables = {
       number: '0',
       image: '/images/icon/sad.svg',
       title: 'Danh sách trẻ vắng không phép',
-      status: 'ANNUAL_LEAVE',
+      status: 'UNPAID_LEAVE',
       isAttendance: true,
     },
     {

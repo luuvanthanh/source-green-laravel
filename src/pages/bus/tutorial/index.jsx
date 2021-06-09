@@ -239,7 +239,7 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
+              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet-v2`)}
               permission="BUS_LOTRINH_SUA"
             />
           </div>
@@ -270,7 +270,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi`)}
+              onClick={() => history.push(`${pathname}/tao-moi-v2`)}
               permission="BUS_LOTRINH_THEM"
             >
               Thêm mới

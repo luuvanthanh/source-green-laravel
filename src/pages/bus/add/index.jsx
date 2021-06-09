@@ -268,6 +268,14 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
+                  <div className="col-lg-3">
+                    <FormItem
+                      label="GPSID"
+                      name="gpsId"
+                      type={variables.INPUT_COUNT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
                 </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
