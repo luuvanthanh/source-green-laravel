@@ -27,7 +27,7 @@ const Index = memo(({ studentId }) => {
     limit: variables.PAGINATION.SIZEMAX,
     status: '',
     TimeCode: '',
-    AppliedDate: null
+    AppliedDate: moment().format(variables.DATE_FORMAT.DATE_AFTER)
   });
 
   const onLoad = () => {
@@ -41,7 +41,8 @@ const Index = memo(({ studentId }) => {
             ...variables.setDateData,
             originValue: search.AppliedDate,
           }),
-          isUTC: true,
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
         }),
       },
     });

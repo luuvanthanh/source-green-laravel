@@ -20,7 +20,7 @@ const Index = memo(({ studentId, status }) => {
   ]);
 
   const [search, setSearch] = useState({
-    date: moment().format(variables.DATE_FORMAT.DATE_AFTER)
+    ReportDate: moment().format(variables.DATE_FORMAT.DATE_AFTER)
   });
 
   const fetchDataHealth = () => {
@@ -30,10 +30,10 @@ const Index = memo(({ studentId, status }) => {
         id: studentId,
         status,
         ...search,
-        ReportDate: !_.isEmpty(search.date) ? Helper.getDateTime({
+        ReportDate: (search?.ReportDate) ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: search.date,
+            originValue: search.ReportDate,
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
@@ -44,13 +44,13 @@ const Index = memo(({ studentId, status }) => {
 
   useEffect(() => {
     fetchDataHealth();
-  }, [search.date, studentId, status]);
+  }, [search.ReportDate, studentId, status]);
 
   const handleSearch = _.debounce((value) => {
     if (value) {
       setSearch((prevSearch) => ({
         ...prevSearch,
-        date: value
+        ReportDate: value
       }));
     }
   }, 300);
@@ -95,13 +95,13 @@ const Index = memo(({ studentId, status }) => {
     <div>
       <Form initialValues={{
         ...search,
-        date: search?.date ? moment(search?.date) : null,
+        ReportDate: search?.ReportDate ? moment(search?.ReportDate) : null,
       }}>
         <div className="row">
           <div className="col-md-4">
             <FormItem
               className="mb0"
-              name="date"
+              name="ReportDate"
               type={variables.DATE_PICKER}
               onChange={handleSearch}
             />
