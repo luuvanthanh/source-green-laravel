@@ -3,7 +3,10 @@
 namespace GGPHP\Timekeeping\Repositories\Eloquent;
 
 use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
+use GGPHP\Category\Models\Branch;
+use GGPHP\Category\Models\Division;
 use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
@@ -14,6 +17,8 @@ use GGPHP\Timekeeping\Repositories\Contracts\TimekeepingRepository;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -181,8 +186,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function calculatorTimekeepingReport($employee, $attributes)
     {
-        $startDate = $attributes['startDate'];
-        $endDate = $attributes['endDate'];
+        $startDate = Carbon::parse($attributes['startDate'])->format('Y-m-d');
+        $endDate = Carbon::parse($attributes['endDate'])->format('Y-m-d');
         $now = Carbon::now();
 
         $this->employee = $employee;
@@ -214,18 +219,18 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         foreach ($periodDate as $date) {
             if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
-                break;
-            }
-
-            if (!array_key_exists($date->format('Y-m-d'), $employeeTimeWorkShift)) {
+                $responseTimeKeepingUser[] = [
+                    "date" => $date->format('Y-m-d'),
+                    "timekeepingReport" => 0,
+                    "type" => "NV",
+                ];
+            } else if (!array_key_exists($date->format('Y-m-d'), $employeeTimeWorkShift)) {
                 $responseTimeKeepingUser[] = [
                     "date" => $date->format('Y-m-d'),
                     "timekeepingReport" => 0,
                     "type" => "KC",
                 ];
-            }
-
-            if ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
+            } else if ($date <= $now && !array_key_exists($date->format('Y-m-d'), $timeKeepingByDate)) {
                 $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 if ($checkValue !== false) {
@@ -477,7 +482,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     }
                 }
             }
-
         }
 
         return $responseTimeKeepingUser;
@@ -793,10 +797,23 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $results = $this->timekeepingReport($attributes, true);
 
+        $branch = '.............';
+        $division = '.............';
+        if (!empty($attributes['branchId'])) {
+            $branch = Branch::find($attributes['branchId'])->Name;
+        }
+
+        if (!empty($attributes['divisionId'])) {
+            $division = Division::find($attributes['divisionId'])->Name;
+        }
+
         $params = [];
         $params['{month}'] = Carbon::parse($attributes['endDate'])->format('m');
-        $params['{branch}'] = !empty($attributes['branch']) ? $attributes['branch'] : '.............';
-        $params['{division}'] = !empty($attributes['division']) ? $attributes['division'] : '.............';
+        $params['{branch}'] = $branch;
+        $params['{division}'] = $division;
+        $params['{note}'] = '';
+        $params['{work}'] = '';
+        $params['{sign}'] = '';
         $params['[number]'] = [];
         $params['[fullName]'] = [];
         $params['[position]'] = [];
@@ -833,12 +850,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     } else {
                         $values[$item['date']] = $item['type'] ? $item['type'] : '_';
                     }
-
                 }
             }
 
             $params['[[values]]'][] = array_values($values);
-
             $params['[totalWork]'][] = $user->totalWorks;
             $params['[sign]'][] = '';
         }
@@ -846,6 +861,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $params['[[month]]'][] = array_values($month);
 
         $listMerge = [];
+        $listIndexValue = [];
+        $listRowTs = [];
+
         $callbacks = [
             '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;
@@ -854,26 +872,27 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $cell_coordinate = $param->coordinate;
                 $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $mergeCoordinate[] = $cell_coordinate;
                 $firstValue = $param->param[$row_index][0];
 
-                if ($cell_coordinate == 'D4') {
+                if ($cell_coordinate == 'D3') {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
                     for ($i = 0; $i < count($param->param[$row_index]); $i++) {
-                        $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
                         $adjustedColumnIndex = $columnIndex + $i;
                         if ($param->param[$row_index][$i] != $firstValue) {
 
                             $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
                             $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
 
-                            $mergeCoordinate[] = $adjustedColumnBefor . 4;
-                            $mergeCoordinate[] = $adjustedColumn . 4;
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
                             $firstValue = $param->param[$row_index][$i];
                         }
 
                         if ($i == count($param->param[$row_index]) - 1) {
                             $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
-                            $mergeCoordinate[] = $adjustedColumn . 4;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
                         }
                     }
                 }
@@ -884,9 +903,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $listMerge[] = $merge;
                     }
                 }
-
             },
-            '[[values]]' => function (CallbackParam $param) use (&$listMerge) {
+            '[[values]]' => function (CallbackParam $param) use (&$listMerge, &$listRowTs) {
 
                 $sheet = $param->sheet;
                 $row_index = $param->row_index;
@@ -894,11 +912,20 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $cell_coordinate = $param->coordinate;
                 $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $listMergeValue = [];
 
                 if ($value == '') {
                     $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
-                        ->setARGB('5b9db5');
+                        ->setARGB('5b9bd5');
                     $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                }
+
+                if ($value == 'NV') {
+                    $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
+                        ->setARGB('c0504d');
+                    $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
+                    $sheet->getCell($cell_coordinate)->setValue(null);
                 }
 
                 if ($value == 'L') {
@@ -908,26 +935,101 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 }
 
                 if ($value == 'TS') {
+                    $mergeCoordinate[] = $cell_coordinate;
+
                     $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                         ->setARGB('ffff00');
                     $sheet->getStyle($cell_coordinate)->getFont()->setBold(false);
 
-                    $firstCol = $col_index;
-                }
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
 
+                    $firstValue = $param->param[$row_index][$col_index];
+
+                    if (!in_array($row_index, $listRowTs)) {
+                        $listRowTs[] = $row_index;
+                        for ($i = $col_index; $i < count($param->param[$row_index]); $i++) {
+                            $adjustedColumnIndex = $columnIndex++;
+                            if ($param->param[$row_index][$i] != $firstValue) {
+
+                                $valueBefor = $param->param[$row_index][$i - 1];
+
+                                if ($valueBefor == 'TS') {
+                                    $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+
+                                    $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                                } else if ($param->param[$row_index][$i] == 'TS' && $valueBefor != 'TS') {
+                                    $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                                    $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                                }
+
+                                $firstValue = $param->param[$row_index][$i];
+                            }
+
+                            if ($i == count($param->param[$row_index]) - 1 && $param->param[$row_index][$i] == 'TS') {
+                                $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                                $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            }
+                        }
+                    }
+
+                    foreach ($mergeCoordinate as $key => $coordinate) {
+                        if ($key % 2 != 0) {
+                            $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                            $listMerge[] = $merge;
+                        }
+                    }
+
+                }
+                $sheet->getColumnDimension($currentColumn)->setWidth(3);
+            },
+            '{note}' => function (CallbackParam $param) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $lastCol = 'AJ' . $currentRow;
+                $merge = $cell_coordinate . ":" . $lastCol;
+
+                $sheet->mergeCells($merge);
+
+                $sheet->getRowDimension($currentRow)->setRowHeight(60);
+            },
+            '{work}' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+
+                $listMerge[] = $merge;
+
+            },
+            '{sign}' => function (CallbackParam $param) use (&$listMerge) {
+                $sheet = $param->sheet;
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+
+                $listMerge[] = $merge;
+
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
                 foreach ($listMerge as $item) {
                     $sheet->mergeCells($item);
                 }
-
                 $sheet->mergeCells('A1:AJ2');
-                $sheet->mergeCells('A3:AJ3');
-
-                $sheet->getColumnDimension($currentColumn)->setWidth(3);
 
             },
 
         ];
 
-        return $this->excelExporterServices->export('test', $params, $callbacks);
+        return $this->excelExporterServices->export('test', $params, $callbacks, $events);
     }
 }

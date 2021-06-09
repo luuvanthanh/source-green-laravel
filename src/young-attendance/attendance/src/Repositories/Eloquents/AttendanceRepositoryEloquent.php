@@ -311,6 +311,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 ->whereDate('Date', $date)
                                 ->where(function ($query) {
                                     $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                        ->orWhere('Status', Attendance::STATUS['HAVE_OUT'])
                                         ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
                                         ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
                                 })->get();
@@ -359,7 +360,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             ->where([['AttendedAt', '<=', $timeAllow['validAfterEndTime']]])
                             ->orderBy('AttendedAt')
                             ->get();
-
                         if (count($inOutAfterTimeEnd) > 0) {
                             //kiểm tra tồn tại ra về chưa
                             $existCheckOut = Attendance::where('StudentId', $student->Id)
@@ -367,7 +367,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 ->where(function ($query) {
                                     $query->where('Status', Attendance::STATUS['HAVE_OUT'])
                                         ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
-                                        ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
+                                        ->orWhere('Status', Attendance::STATUS['HAVE_IN']);
                                 })->get();
 
                             if (count($existCheckOut) == 0) {
@@ -393,7 +393,36 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
-                                $timeCheckOut = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
+                                $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+                                if (!empty($userId)) {
+                                    Http::post("$urlNoti", [
+                                        'users' => $userId,
+                                        'title' => 'Clover',
+                                        'imageURL' => 'string',
+                                        'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
+                                    ]);
+                                }
+                            } else if ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
+
+                                $existCheckOut[0]->update([
+                                    'Status' => Attendance::STATUS['HAVE_OUT'],
+                                    'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
+                                ]);
+
+                                $urlNoti = env('NOTI_URL') . '/api/notification';
+                                $parents = $student->parent;
+                                $userId = [];
+
+                                if (!empty($parents)) {
+                                    foreach ($parents as $parent) {
+                                        if (!is_null($parent->account)) {
+                                            $userId[] = $parent->account->AppUserId;
+                                        }
+                                    }
+                                }
+
+                                $nameStudent = $student->FullName;
+                                $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
                                 if (!empty($userId)) {
                                     Http::post("$urlNoti", [
                                         'users' => $userId,
@@ -412,6 +441,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             ->whereDate('Date', $date)
                             ->where(function ($query) {
                                 $query->where('Status', Attendance::STATUS['HAVE_IN'])
+                                    ->orWhere('Status', Attendance::STATUS['HAVE_OUT'])
                                     ->orWhere('Status', Attendance::STATUS['ANNUAL_LEAVE'])
                                     ->orWhere('Status', Attendance::STATUS['UNPAID_LEAVE']);
                             })->get();

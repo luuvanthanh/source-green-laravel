@@ -92,6 +92,14 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             });
         }
 
+        if (!empty($attributes['isEmployee'])) {
+            $this->model = $this->model->whereNull('ParentId');
+        }
+
+        if (!empty($attributes['isParent'])) {
+            $this->model = $this->model->whereNull('EmployeeId');
+        }
+
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
             $this->model = $this->model->where(function ($q2) use ($attributes) {
                 $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
@@ -107,42 +115,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         return $absents;
-    }
-
-    /**
-     * Get Absent
-     * @param $attributes
-     * @return mixed
-     */
-    public function getAbsent($attributes)
-    {
-        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->query();
-
-        $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
-            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-                $query->whereDate('StartDate', '>=', $attributes['startDate'])->whereDate('StartDate', '<=', $attributes['endDate']);
-            }
-
-            if (!empty($attributes['absentTypeId'])) {
-                $query->where('AbsentTypeId', $attributes['absentTypeId']);
-            }
-
-            if (!empty($attributes['status'])) {
-                $query->where('Status', $attributes['status']);
-            }
-        }]);
-
-        if (!empty($attributes['parentId'])) {
-            $this->studentRepositoryEloquent->model->whereIn('Id', explode(',', $attributes['parentId']));
-        }
-
-        if (!empty($attributes['limit'])) {
-            $parents = $this->studentRepositoryEloquent->paginate($attributes['limit']);
-        } else {
-            $parents = $this->studentRepositoryEloquent->get();
-        }
-
-        return $parents;
     }
 
     public function create(array $attributes)

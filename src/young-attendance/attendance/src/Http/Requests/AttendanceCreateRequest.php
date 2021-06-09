@@ -48,6 +48,10 @@ class AttendanceCreateRequest extends FormRequest
                     $studentId = request()->studentId;
                     $date = request()->date;
 
+                    if ($value == 'ANNUAL_LEAVE') {
+                        return $fail('Không được xin nghỉ có phép!');
+                    }
+
                     $attendance = Attendance::where('StudentId', $studentId)->where('Date', $date)->first();
 
                     if (!is_null($attendance)) {

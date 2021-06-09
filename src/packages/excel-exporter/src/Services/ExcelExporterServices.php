@@ -33,7 +33,7 @@ class ExcelExporterServices
      *
      * @return path
      */
-    public function export($type, $params, $callbacks = [])
+    public function export($type, $params, $callbacks = [], $events = [])
     {
         $templateFile = $this->configs[$type]['template'];
         $resultFile = $this->configs[$type]['result'] ?? $templateFile;
@@ -48,7 +48,7 @@ class ExcelExporterServices
             $this->makedir($this->endPoint . '/' . $this->resultFolder);
         }
 
-        PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params, $callbacks);
+        PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params, $callbacks, $events);
 
         return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
     }
