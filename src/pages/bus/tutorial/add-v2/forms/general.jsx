@@ -29,10 +29,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ tutorialAddV2, loading, menu }) => ({
+const mapStateToProps = ({ tutorialAddV2, loading, menu, locationCurrent }) => ({
   loading,
   error: tutorialAddV2.error,
   details: tutorialAddV2.details,
+  locationCurrent,
   branches: tutorialAddV2.branches,
   menuData: menu.menuLeftSchedules,
 });
@@ -43,8 +44,12 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
+    const { locationCurrent } = props;
     this.state = {
-      position: [],
+      position:
+        locationCurrent.lat && locationCurrent?.lng
+          ? [locationCurrent.lat, locationCurrent?.lng]
+          : [],
       visibleMap: false,
       keyMap: null,
     };
@@ -52,9 +57,6 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition((position) => {
-      this.onSetLatLngDefault(position);
-    });
     this.loadCategories();
   }
 
@@ -206,13 +208,13 @@ class Index extends PureComponent {
           startDate: details?.startDate && moment(details?.startDate),
           endDate: details?.startDate && moment(details?.endDate),
           endedPlaceLatLng:
-            details?.endedPlaceLat &&
-            details?.endedPlaceLong &&
-            `${details?.endedPlaceLat},${details?.endedPlaceLong}`,
+            details?.endedPlaceLat && details?.endedPlaceLong
+              ? `${details?.endedPlaceLat},${details?.endedPlaceLong}`
+              : null,
           startedPlaceLatLng:
-            details?.startedPlaceLat &&
-            details?.startedPlaceLong &&
-            `${details?.startedPlaceLat},${details?.startedPlaceLong}`,
+            details?.startedPlaceLat && details?.startedPlaceLong
+              ? `${details?.startedPlaceLat},${details?.startedPlaceLong}`
+              : null,
         }}
         onFinish={this.onFinish}
       >
@@ -259,6 +261,7 @@ class Index extends PureComponent {
                     <Input
                       disabled
                       placeholder="Chọn"
+                      className="input-disabled"
                       suffix={
                         !isEmpty(position) && (
                           <span
@@ -289,6 +292,7 @@ class Index extends PureComponent {
                     <Input
                       disabled
                       placeholder="Chọn"
+                      className="input-disabled"
                       suffix={
                         !isEmpty(position) && (
                           <span
@@ -356,6 +360,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  locationCurrent: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -365,6 +370,7 @@ Index.defaultProps = {
   error: {},
   details: {},
   branches: [],
+  locationCurrent: {},
 };
 
 export default withRouter(Index);

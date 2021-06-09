@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
 import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, debounce, get, isInteger } from 'lodash';
+import { isEmpty, debounce, get, isInteger, omit } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -10,6 +10,7 @@ import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import Button from '@/components/CommonComponent/Button';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -60,6 +61,7 @@ class Index extends PureComponent {
           ? moment(query?.startDate)
           : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
       },
+      downloading: false,
     };
     setIsMounted(true);
   }
@@ -252,6 +254,35 @@ class Index extends PureComponent {
       return <div>{moment(item).format('DD')}</div>;
     }
     return null;
+  };
+
+  exportExcel = async () => {
+    const { search } = this.state;
+    this.setStateData({ downloading: true });
+    await Helper.exportExcel(
+      `/v1/timekeeping-report-export`,
+      {
+        ...omit(search, 'page', 'limit'),
+        startDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: search.startDate,
+            targetValue: '00:00:00',
+          }),
+          isUTC: false,
+        }),
+        endDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: search.endDate,
+            targetValue: '23:59:59',
+          }),
+          isUTC: false,
+        }),
+      },
+      'BangCongThang.docx',
+    );
+    this.setStateData({ downloading: false });
   };
 
   redirectHistory = (item, record, user, type = null) => {
@@ -492,15 +523,24 @@ class Index extends PureComponent {
       divisions,
       branches,
     } = this.props;
-    const { search } = this.state;
+    const { search, downloading } = this.state;
     const loading = effects['works/GET_DATA'];
     return (
       <>
         <Helmet title="Tổng hợp công" />
         <div className={classnames(styles['content-form'], styles['content-form-works'])}>
           {/* FORM SEARCH */}
-          <div className="d-flex justify-content-center align-items-center mt-3 mb-3">
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">CHẤM CÔNG THÁNG</Text>
+            <Button
+              color="success"
+              icon="export"
+              size="large"
+              onClick={this.exportExcel}
+              loading={downloading}
+            >
+              Tải bảng công tháng
+            </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

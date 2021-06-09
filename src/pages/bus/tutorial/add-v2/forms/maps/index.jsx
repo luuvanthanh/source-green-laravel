@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
-import { head, last } from 'lodash';
-import { Modal } from 'antd';
+import { head, last, debounce } from 'lodash';
+import { Modal, AutoComplete } from 'antd';
 import classnames from 'classnames';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
@@ -29,8 +29,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ loading }) => ({
+const mapStateToProps = ({ loading, locationCurrent }) => ({
   loading,
+  locationCurrent,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -42,6 +43,7 @@ class Index extends PureComponent {
       position: props.position || [],
       zoom: 15,
       loading: false,
+      options: [],
     };
     setIsMounted(true);
   }
@@ -105,12 +107,56 @@ class Index extends PureComponent {
     this.map = map;
   };
 
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearch = debounce((value) => {
+    const { dispatch } = this.props;
+    if (value) {
+      dispatch({
+        type: 'locationCurrent/SEARCH_LOCATION',
+        payload: {
+          access_token: ACCESS_TOKEN_MAPBOX,
+          language: 'vi',
+          address: value,
+          bbox: '102.33721857359086,8.473974415030881,109.87566946146615,23.178712201801275',
+          limit: 10,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              options: response.features.map((item) => ({
+                value: item.place_name_vi,
+                label: item.place_name_vi,
+                center: item.center,
+              })),
+            });
+          }
+        },
+      });
+    }
+  }, 300);
+
+  onSearch = (e) => {
+    this.debouncedSearch(e);
+  };
+
+  onSelect = (e) => {
+    const { options } = this.state;
+    const itemLocation = options.find((item) => item.value === e);
+    this.setStateData({
+      position: itemLocation.center.reverse(),
+    });
+  };
+
   render() {
     const {
       loading: { effects },
       visible,
     } = this.props;
-    const { position, zoom, loading } = this.state;
+    const { position, zoom, loading, options } = this.state;
     const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
@@ -143,6 +189,15 @@ class Index extends PureComponent {
         visible={visible}
       >
         <div className={styles.leafletContainer}>
+          <AutoComplete
+            className={styles['auto-complete']}
+            options={options}
+            onSearch={this.onSearch}
+            size="large"
+            style={{ width: 300 }}
+            placeholder="Nhập địa chỉ"
+            onSelect={this.onSelect}
+          />
           <Map
             center={position}
             zoom={zoom}
@@ -171,6 +226,7 @@ Index.propTypes = {
   handleCancel: PropTypes.func,
   loading: PropTypes.objectOf(PropTypes.any),
   position: PropTypes.arrayOf(PropTypes.any),
+  dispatch: PropTypes.func,
 };
 
 Index.defaultProps = {
@@ -178,6 +234,7 @@ Index.defaultProps = {
   handleCancel: () => {},
   loading: {},
   position: [],
+  dispatch: () => {},
 };
 
 export default withRouter(Index);
