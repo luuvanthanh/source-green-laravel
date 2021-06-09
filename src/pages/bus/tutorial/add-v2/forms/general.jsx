@@ -159,7 +159,7 @@ class Index extends PureComponent {
       payload: {
         ...details,
         ...omit(values, 'startedPlaceLatLng', 'endedPlaceLatLng'),
-        busRouteShedules: values.busRouteShedules.map((item) => ({
+        busRouteSchedules: values.busRouteSchedules.map((item) => ({
           dayOfWeek: item,
         })),
         startedPlaceLat: toNumber(head(values.startedPlaceLatLng.split(','))),
@@ -204,7 +204,7 @@ class Index extends PureComponent {
         ref={this.formRef}
         initialValues={{
           ...details,
-          busRouteShedules: details?.busRouteShedules?.map((item) => item.dayOfWeek),
+          busRouteSchedules: details?.busRouteSchedules?.map((item) => item.dayOfWeek),
           startDate: details?.startDate && moment(details?.startDate),
           endDate: details?.startDate && moment(details?.endDate),
           endedPlaceLatLng:
@@ -312,7 +312,7 @@ class Index extends PureComponent {
                   <FormItem
                     data={variablesModules.DAYS}
                     label="Thời gian lặp lại của lộ trình"
-                    name="busRouteShedules"
+                    name="busRouteSchedules"
                     type={variables.SELECT_MUTILPLE}
                     rules={[variables.RULES.EMPTY]}
                   />

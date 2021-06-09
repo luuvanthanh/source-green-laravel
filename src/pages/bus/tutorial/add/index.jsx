@@ -83,7 +83,7 @@ class Index extends PureComponent {
         startDate: details.startDate && moment(details.startDate),
         endDate: details.endDate && moment(details.endDate),
         busRouteNannies: details.busRouteNannies.map((item) => item.nannyId),
-        busRouteShedules: details.busRouteShedules.map((item) => item.dayOfWeek),
+        busRouteSchedules: details.busRouteSchedules.map((item) => item.dayOfWeek),
       });
       this.onSetBus(details);
       this.onSetBusPlaces(details);
@@ -409,7 +409,7 @@ class Index extends PureComponent {
           orderNo: indexStudent + 1,
         })),
       })),
-      busRouteShedules: values.busRouteShedules.map((item) => ({
+      busRouteSchedules: values.busRouteSchedules.map((item) => ({
         dayOfWeek: item,
       })),
       busRouteNannies: values.busRouteNannies.map((item) => ({
@@ -467,8 +467,8 @@ class Index extends PureComponent {
   disabledDatOffWeek = (current, formRef) => {
     if (formRef.current) {
       const data = this.formRef.current.getFieldsValue();
-      if (data.busRouteShedules) {
-        return !data.busRouteShedules.includes(
+      if (data.busRouteSchedules) {
+        return !data.busRouteSchedules.includes(
           variablesModules.DAY_OF_WEEK_NUMBER[moment(current).format('d')],
         );
       }
@@ -582,7 +582,7 @@ class Index extends PureComponent {
                   <FormItem
                     data={variablesModules.DAYS}
                     label="Thời gian lặp lại của lộ trình"
-                    name="busRouteShedules"
+                    name="busRouteSchedules"
                     type={variables.SELECT_MUTILPLE}
                     rules={[variables.RULES.EMPTY]}
                   />
