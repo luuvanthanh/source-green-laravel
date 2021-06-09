@@ -13,6 +13,7 @@ import {
 import { notification } from 'antd';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
+import L from 'leaflet';
 import { variables } from './variables';
 
 export default class Helpers {
@@ -752,4 +753,19 @@ export default class Helpers {
     });
     return dataSource;
   }
+
+  static ICON_STUDENT = new L.Icon({
+    iconUrl: '/images/marker-student.svg',
+    iconAnchor: [17, 46],
+  });
+
+  static ICON_SCHOOL = new L.Icon({
+    iconUrl: '/images/marker-location.svg',
+    iconAnchor: [17, 46],
+  });
+
+  static ICON_BUS = new L.Icon({
+    iconUrl: '/images/marker-car.svg',
+    iconAnchor: [17, 46],
+  });
 }

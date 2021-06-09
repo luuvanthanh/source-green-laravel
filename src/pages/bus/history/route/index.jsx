@@ -2,10 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
 import { Modal } from 'antd';
 import PropTypes from 'prop-types';
+import { head, isEmpty } from 'lodash';
 import { Map, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { head } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -15,19 +14,6 @@ import { Helper, variables } from '@/utils';
 import { Scrollbars } from 'react-custom-scrollbars';
 import variablesModules from '../../utils/variables';
 import Routing from './components/route';
-
-const iconStudent = new L.Icon({
-  iconUrl: '/images/marker-student.svg',
-  iconAnchor: [17, 46],
-});
-const iconSchool = new L.Icon({
-  iconUrl: '/images/marker-location.svg',
-  iconAnchor: [17, 46],
-});
-// const iconCar = new L.Icon({
-//   iconUrl: '/images/marker-car.svg',
-//   iconAnchor: [17, 46],
-// });
 
 let isMounted = true;
 /**
@@ -60,9 +46,14 @@ class Index extends PureComponent {
           long: item?.busPlace?.long,
         })),
       ),
+      current: [],
       isMapInit: false,
     };
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    this.loadCurrentBus();
   }
 
   componentWillUnmount() {
@@ -81,6 +72,25 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCurrentBus = () => {
+    const { route } = this.props;
+    if (head(route?.busPlace?.busRoute?.busTransportations)?.busId) {
+      this.props.dispatch({
+        type: 'busHistory/GET_TRACKING_CURRENT',
+        payload: {
+          id: head(route?.busPlace?.busRoute?.busTransportations)?.busId,
+        },
+        callback: (response) => {
+          if (response) {
+            this.setStateData({
+              current: [response.lat, response.long],
+            });
+          }
+        },
+      });
+    }
   };
 
   handleCancel = () => {
@@ -105,8 +115,8 @@ class Index extends PureComponent {
   };
 
   render() {
-    const { visible, route, routes, date, status } = this.props;
-    const { position, isMapInit } = this.state;
+    const { visible, route, date, status } = this.props;
+    const { position, isMapInit, current } = this.state;
     return (
       <Modal
         centered
@@ -204,7 +214,7 @@ class Index extends PureComponent {
             <div className="p20">
               <label className={styles.infoLabel}>Nhân viên</label>
               <Scrollbars autoHeight autoHeightMax={340}>
-                {head(routes)?.busRoute?.busRouteNannies?.map((itemBus) => (
+                {route?.busPlace?.busRoute?.busRouteNannies?.map((itemBus) => (
                   <div key={itemBus?.nanny?.id} className="mt10 mb10 ">
                     <AvatarTable
                       fullName={itemBus?.nanny?.fullName}
@@ -227,7 +237,7 @@ class Index extends PureComponent {
                 {route?.busPlace?.lat && route?.busPlace?.long && (
                   <Marker
                     position={[route?.busPlace?.lat, route?.busPlace?.long]}
-                    icon={iconStudent}
+                    icon={Helper.ICON_STUDENT}
                   />
                 )}
                 {/* MARKER HOME */}
@@ -238,7 +248,7 @@ class Index extends PureComponent {
                         route?.busPlace?.busRoute?.startedPlaceLat,
                         route?.busPlace?.busRoute?.startedPlaceLong,
                       ]}
-                      icon={iconSchool}
+                      icon={Helper.ICON_SCHOOL}
                     />
                   )}
                 {/* MARKER HOME */}
@@ -251,12 +261,12 @@ class Index extends PureComponent {
                         route?.busPlace?.busRoute?.endedPlaceLat,
                         route?.busPlace?.busRoute?.endedPlaceLong,
                       ]}
-                      icon={iconSchool}
+                      icon={Helper.ICON_SCHOOL}
                     />
                   )}
                 {/* MARKER HOME */}
                 {/* MARKER CAR */}
-                {/* <Marker position={[16.062512, 108.157325]} icon={iconCar}></Marker> */}
+                {!isEmpty(current) && <Marker position={current} icon={Helper.ICON_BUS} />}
                 {/* MARKER CAR */}
               </Map>
             </div>
@@ -275,6 +285,7 @@ Index.propTypes = {
   status: PropTypes.string,
   onCancel: PropTypes.func,
   date: PropTypes.any,
+  dispatch: PropTypes.func,
 };
 
 Index.defaultProps = {
@@ -285,6 +296,7 @@ Index.defaultProps = {
   route: {},
   status: '',
   date: null,
+  dispatch: () => {},
 };
 
 export default withRouter(Index);

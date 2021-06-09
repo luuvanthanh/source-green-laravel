@@ -38,16 +38,18 @@ export default {
         yield saga.put({
           type: 'INIT_STATE',
         });
-        const response = yield saga.call(services.get, payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
+        if (payload.id && payload.date) {
+          const response = yield saga.call(services.get, payload);
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: {
+              parsePayload: response.items,
+              pagination: {
+                total: response.totalCount,
+              },
             },
-          },
-        });
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -63,6 +65,18 @@ export default {
           payload: response,
         });
       } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TRACKING_CURRENT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getTrackingCurrent, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

@@ -27,3 +27,12 @@ export function get(params = {}) {
     },
   );
 }
+
+export function getTrackingCurrent(params = {}) {
+  return request(`/bus-trackings/${params.id}/current-location`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
