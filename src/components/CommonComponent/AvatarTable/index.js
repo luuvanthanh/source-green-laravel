@@ -12,7 +12,10 @@ class AvatarTable extends Component {
       return (
         <div className={classnames(styles['avatar-container'], styles[className])}>
           <div className="container-image">
-            <div className="background-avatar" style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})` }} />
+            <div
+              className="background-avatar"
+              style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`, borderRadius: shape === 'circle' ? '50%' : '4px' }}
+            />
             <Avatar shape={shape} size={size || 40} src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`} />
           </div>
           {fullName && description && (
@@ -50,7 +53,10 @@ class AvatarTable extends Component {
     if (fileImage && !fullName) {
       return (
         <div className="container-image">
-          <div className="background-avatar" style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`}} />
+          <div
+            className="background-avatar"
+            style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`, borderRadius: shape === 'circle' ? '50%' : '4px' }}
+          />
           <Avatar shape={shape} size={size || 40} src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`} />
         </div>
       );
