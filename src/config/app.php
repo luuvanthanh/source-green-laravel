@@ -215,6 +215,7 @@ return [
         GGPHP\MagneticCard\Providers\MagneticCardServiceProvider::class,
         GGPHP\WordExporter\Providers\WordExporterServiceProvider::class,
         GGPHP\MaternityLeave\Providers\MaternityLeaveServiceProvider::class,
+        GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
     ],
 
     /*

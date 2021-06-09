@@ -11,9 +11,8 @@ use Illuminate\Support\Facades\Storage;
 class ExcelExporterServices
 {
     public $configs = [
-        'timekeeping_report' => [
-            'template' => 'timekeeping_report.xlsx',
-            'result' => 'timekeeping_report.xlsx',
+        'test' => [
+            'template' => 'test.xlsx',
         ],
     ];
 
@@ -34,7 +33,7 @@ class ExcelExporterServices
      *
      * @return path
      */
-    public function export($type, $params)
+    public function export($type, $params, $callbacks = [])
     {
         $templateFile = $this->configs[$type]['template'];
         $resultFile = $this->configs[$type]['result'] ?? $templateFile;
@@ -49,7 +48,7 @@ class ExcelExporterServices
             $this->makedir($this->endPoint . '/' . $this->resultFolder);
         }
 
-        PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params);
+        PhpExcelTemplator::saveToFile($templateFileUrl, $resultFileUrl, $params, $callbacks);
 
         return Storage::disk($this->disk)->download($this->resultFolder . '/' . $resultFile);
     }
@@ -75,28 +74,5 @@ class ExcelExporterServices
         }
 
         return $path;
-    }
-
-    public function getPlaceText($place)
-    {
-        switch ($place->name) {
-            case 'PENDING':
-                $text = 'Chờ xử lý';
-                break;
-
-            case 'DECLINE':
-                $text = 'Từ chối';
-                break;
-
-            case 'APPROVED':
-                $text = $place->meta_data['is_end_place'] ? 'Đã duyệt' : 'Chờ xử lý';
-                break;
-
-            default:
-                $text = '';
-                break;
-        }
-
-        return $text;
     }
 }
