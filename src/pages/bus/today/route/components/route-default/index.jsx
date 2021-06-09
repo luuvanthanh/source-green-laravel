@@ -1,14 +1,21 @@
 import { MapLayer, withLeaflet } from 'react-leaflet';
-import { isEmpty } from 'lodash';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 
 class Routing extends MapLayer {
   createLeafletElement() {
-    const { map, routes } = this.props;
+    const { map, route } = this.props;
     let waypoints = [];
-    if (!isEmpty(routes)) {
-      waypoints = routes.map((item) => L.latLng(item?.lat, item?.long));
+    if (
+      route.busRoute.startedPlaceLat &&
+      route.busRoute.startedPlaceLong &&
+      route.busRoute.endedPlaceLat &&
+      route.busRoute.endedPlaceLong
+    ) {
+      waypoints = [
+        L.latLng(route.busRoute.startedPlaceLat, route.busRoute.startedPlaceLong),
+        L.latLng(route.busRoute.endedPlaceLat, route.busRoute.endedPlaceLong),
+      ];
     }
     const leafletElement = L.Routing.control({
       waypoints,

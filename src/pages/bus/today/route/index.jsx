@@ -3,8 +3,7 @@ import { connect, withRouter } from 'umi';
 import { Modal, Timeline } from 'antd';
 import PropTypes from 'prop-types';
 import { Map, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
-import { head, isEmpty, last, size } from 'lodash';
+import { head, isEmpty, last, size, get } from 'lodash';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
@@ -18,19 +17,6 @@ import RoutingDefault from './components/route-default';
 import Routing from './components/route';
 
 const { Item: TimelineItem } = Timeline;
-
-const iconStudent = new L.Icon({
-  iconUrl: '/images/marker-student.svg',
-  iconAnchor: [17, 46],
-});
-// const iconSchool = new L.Icon({
-//   iconUrl: '/images/marker-location.svg',
-//   iconAnchor: [17, 46],
-// });
-const iconCar = new L.Icon({
-  iconUrl: '/images/marker-car.svg',
-  iconAnchor: [17, 46],
-});
 
 let isMounted = true;
 /**
@@ -91,9 +77,9 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'busToday/GET_TRACKINGS',
       payload: {
-        id: head(routes)?.busRoute?.busId,
-        startDate: moment().startOf('days'),
-        endDate: moment().endOf('days'),
+        id: get(head(routes), 'busRoute.busTransportations[0].busId'),
+        fromDate: moment().startOf('days'),
+        toDate: moment().endOf('days'),
       },
       callback: (response) => {
         if (response) {
@@ -269,16 +255,46 @@ class Index extends PureComponent {
                   url="http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                   attribution='&copy; <a href="//osm.org/copyright">OpenStreetMap</a>'
                 />
-                {!isEmpty(routes) && <RoutingDefault map={this.map} routes={routes} />}
+                {!isEmpty(routes) && (
+                  <RoutingDefault map={this.map} routes={routes} route={head(routes)} />
+                )}
                 {!isEmpty(this.covertGetLocation(trackings)) && (
                   <Routing map={this.map} routes={this.covertGetLocation(trackings)} />
                 )}
                 {routes.map((item) => (
-                  <Marker key={item.id} position={[item.lat, item.long]} icon={iconStudent} />
+                  <Marker
+                    key={item.id}
+                    position={[item.lat, item.long]}
+                    icon={Helper.ICON_STUDENT}
+                  />
                 ))}
-                {/* <Marker position={[16.06471, 108.15115]} icon={iconSchool}></Marker> */}
+                {!isEmpty(routes) &&
+                  get(head(routes), 'busRoute.startedPlaceLat') &&
+                  get(head(routes), 'busRoute.startedPlaceLong') && (
+                    <Marker
+                      position={[
+                        get(head(routes), 'busRoute.startedPlaceLat'),
+                        get(head(routes), 'busRoute.startedPlaceLong'),
+                      ]}
+                      icon={Helper.ICON_SCHOOL}
+                    />
+                  )}
+                {!isEmpty(routes) &&
+                  get(head(routes), 'busRoute.endedPlaceLat') &&
+                  get(head(routes), 'busRoute.endedPlaceLong') && (
+                    <Marker
+                      position={[
+                        get(head(routes), 'busRoute.endedPlaceLat'),
+                        get(head(routes), 'busRoute.endedPlaceLong'),
+                      ]}
+                      icon={Helper.ICON_SCHOOL}
+                    />
+                  )}
                 {!isEmpty(trackings) && (
-                  <Marker position={[last(trackings)?.lat, last(trackings)?.long]} icon={iconCar} />
+                  <Marker
+                    position={[last(trackings)?.lat, last(trackings)?.long]}
+                    icon={Helper.ICON_BUS}
+                  />
                 )}
               </Map>
             </div>
