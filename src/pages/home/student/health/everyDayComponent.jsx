@@ -20,7 +20,7 @@ const Index = memo(({ studentId, status }) => {
   ]);
 
   const [search, setSearch] = useState({
-    date: moment().clone().startOf('week').format(variables.DATE_FORMAT.DATE_AFTER)
+    date: moment().format(variables.DATE_FORMAT.DATE_AFTER)
   });
 
   const fetchDataHealth = () => {
