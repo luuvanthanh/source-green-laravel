@@ -280,7 +280,7 @@ class Index extends PureComponent {
           isUTC: false,
         }),
       },
-      'BangCongThang.docx',
+      `BangCongThang_${Helper.getDate(search.endDate, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
     );
     this.setStateData({ downloading: false });
   };
