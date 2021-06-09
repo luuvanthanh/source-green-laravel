@@ -9,13 +9,12 @@ import ReactApexChart from 'react-apexcharts';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
-
 const Index = memo(({ studentId }) => {
   const dispatch = useDispatch();
-  const [ { criteriaGroupProperties }, loading ] = useSelector(({ loading: { effects }, studentHomePage }) => [
-    studentHomePage,
-    effects,
-  ]);
+  const [
+    { criteriaGroupProperties },
+    loading,
+  ] = useSelector(({ loading: { effects }, studentHomePage }) => [studentHomePage, effects]);
 
   const [options] = useState({
     chart: {
@@ -73,8 +72,8 @@ const Index = memo(({ studentId }) => {
     PropertyId: undefined,
     rangeTime: [
       moment().clone().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
-      moment().clone().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER)
-    ]
+      moment().clone().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+    ],
   });
 
   const getMiliseconds = (date) => {
@@ -90,22 +89,26 @@ const Index = memo(({ studentId }) => {
       payload: {
         studentId,
         PropertyId: search.PropertyId,
-        FromDate: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: search.rangeTime[0],
-            targetValue: '00:00:00',
-          }),
-          isUTC: false,
-        }) : null,
-        ToDate: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: search.rangeTime[1],
-            targetValue: '23:59:59',
-          }),
-          isUTC: false,
-        }) : null,
+        FromDate: !_.isEmpty(search.rangeTime)
+          ? Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: search.rangeTime[0],
+                targetValue: '00:00:00',
+              }),
+              isUTC: false,
+            })
+          : null,
+        ToDate: !_.isEmpty(search.rangeTime)
+          ? Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: search.rangeTime[1],
+                targetValue: '23:59:59',
+              }),
+              isUTC: false,
+            })
+          : null,
       },
       callback: (response) => {
         if (!_.isEmpty(response)) {
@@ -118,7 +121,7 @@ const Index = memo(({ studentId }) => {
                   new Date(item.reportDate).getTime(),
                   getMiliseconds(
                     Helper.getDate(
-                      _.get(itemHistory, 'studentCritetiaEntityChanges[0].changeTime'),
+                      _.get(itemHistory, 'changeTime'),
                       variables.DATE_FORMAT.TIME_FULL,
                     ),
                   ),
@@ -126,13 +129,13 @@ const Index = memo(({ studentId }) => {
               ];
             });
           });
-          setSeries((prev) => ([
+          setSeries((prev) => [
             {
               ...prev,
               name: 'Thống kê sức khỏe',
-              data: items
-            }
-          ]));
+              data: items,
+            },
+          ]);
         }
       },
     });
@@ -153,20 +156,22 @@ const Index = memo(({ studentId }) => {
     if (value) {
       setSearch((prevSearch) => ({
         ...prevSearch,
-        [name]: value
+        [name]: value,
       }));
     }
   }, 300);
 
   return (
     <div>
-      <Form initialValues={{
-        ...search,
-        rangeTime: [
-          search?.rangeTime[0] ? moment(search?.rangeTime[0]) : null,
-          search?.rangeTime[1] ? moment(search?.rangeTime[1]) : null,
-        ],
-      }}>
+      <Form
+        initialValues={{
+          ...search,
+          rangeTime: [
+            search?.rangeTime[0] ? moment(search?.rangeTime[0]) : null,
+            search?.rangeTime[1] ? moment(search?.rangeTime[1]) : null,
+          ],
+        }}
+      >
         <div className="row">
           <div className="col-md-4">
             <FormItem
@@ -193,18 +198,13 @@ const Index = memo(({ studentId }) => {
       <div className="py10">
         {loading['studentHomePage/GET_DATA_HEALTH_CHART'] ? (
           <>
-           <Skeleton avatar paragraph={{ rows: 4 }} active />
-           <Skeleton avatar paragraph={{ rows: 4 }} active />
-           <Skeleton avatar paragraph={{ rows: 4 }} active />
-         </>
+            <Skeleton avatar paragraph={{ rows: 4 }} active />
+            <Skeleton avatar paragraph={{ rows: 4 }} active />
+            <Skeleton avatar paragraph={{ rows: 4 }} active />
+          </>
         ) : (
           <div id="chart">
-            <ReactApexChart
-              options={options}
-              series={series}
-              type="scatter"
-              height={600}
-            />
+            <ReactApexChart options={options} series={series} type="scatter" height={600} />
           </div>
         )}
       </div>
