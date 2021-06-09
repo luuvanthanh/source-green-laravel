@@ -52,7 +52,7 @@ const Index = memo(() => {
   const [route, setRoute] = useState({});
   const [search, setSearch] = useState({
     id: query?.id,
-    date: query?.date,
+    date: query?.date || moment(),
     status: query?.status || variablesModules.STATUS_TABS.SCHOOLWARD,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -93,7 +93,8 @@ const Index = memo(() => {
       {
         title: 'Địa điểm',
         key: 'location',
-        className: 'min-width-150',
+        width: 200,
+        className: 'min-width-200',
         render: (record) => <Text size="normal">{record?.busPlace?.address}</Text>,
       },
       {
@@ -157,8 +158,9 @@ const Index = memo(() => {
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-130',
+        width: 130,
+        align: 'center',
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
@@ -195,21 +197,19 @@ const Index = memo(() => {
   );
 
   const loadData = useCallback(() => {
-    if (search.id && search.date) {
-      dispatch({
-        type: 'busHistory/GET_DATA',
-        payload: {
-          ...search,
-        },
-      });
-      history.push({
-        pathname,
-        query: Helper.convertParamSearch({
-          ...search,
-          date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
-        }),
-      });
-    }
+    dispatch({
+      type: 'busHistory/GET_DATA',
+      payload: {
+        ...search,
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        ...search,
+        date: search.date && Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
+      }),
+    });
   }, [search]);
 
   const formUpdate = (value, values) => {
@@ -297,6 +297,8 @@ const Index = memo(() => {
               pagination={pagination}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
+              className="table-edit"
+              isEmpty
             />
           </Pane>
         </Pane>

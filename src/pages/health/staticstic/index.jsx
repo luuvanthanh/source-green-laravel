@@ -166,15 +166,13 @@ class Index extends PureComponent {
                 [
                   new Date(item.reportDate).getTime(),
                   this.getMiliseconds(
-                    Helper.getDate(
-                      get(itemHistory, 'studentCritetiaEntityChanges[0].changeTime'),
-                      variables.DATE_FORMAT.TIME_FULL,
-                    ),
+                    Helper.getDate(get(itemHistory, 'changeTime'), variables.DATE_FORMAT.TIME_FULL),
                   ),
                 ],
               ];
             });
           });
+
           this.setStateData({
             series: [
               {

@@ -159,7 +159,7 @@ const Index = memo(() => {
                 size={50}
               />
             </div>
-            <div className="col-lg-3 mt10">
+            <div className="col-lg-2 mt10">
               <AvatarTable
                 fileImage={Helper.getPathAvatarJson(detailsStudent?.farther?.fullName ? detailsStudent?.farther?.fileImage : detailsStudent?.mother?.fileImage)}
                 fullName={detailsStudent?.farther?.fullName || detailsStudent?.mother?.fullName}
@@ -178,16 +178,20 @@ const Index = memo(() => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-3 mt10">
+            <div className="col-lg-4 mt10">
               <div className="d-flex">
-                <AvatarTable
-                  fileImage={Helper.getPathAvatarJson(detailsStudent?.student?.employee?.fileImage)}
-                  size={50}
-                  shape="circle"
-                />
+                <span className={styles.circleIcon}>
+                  <span className="icon-open-book" />
+                </span>
                 <div className="ml10">
                   <p className={classnames('mb0', styles.class)}>Giáo viên</p>
-                  <p className="font-weight-bold font-size-14 mb0">{detailsStudent?.student?.employee?.fullName}</p>
+                  <p className="font-weight-bold font-size-14 mb0">
+                    {
+                      !_.isEmpty(detailsStudent?.student?.class?.classTeachers)
+                        ? _.map(detailsStudent?.student?.class?.classTeachers, 'employee.name').join(', ')
+                        : ''
+                    }
+                  </p>
                 </div>
               </div>
             </div>
