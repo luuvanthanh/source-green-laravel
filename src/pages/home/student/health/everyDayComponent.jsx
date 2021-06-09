@@ -30,7 +30,7 @@ const Index = memo(({ studentId, status }) => {
         id: studentId,
         status,
         ...search,
-        date: !_.isEmpty(search.date) ? Helper.getDateTime({
+        ReportDate: !_.isEmpty(search.date) ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: search.date,
