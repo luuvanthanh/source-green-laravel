@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
+import Empty from '@/components/CommonComponent/Table/Empty';
 import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
@@ -355,7 +356,9 @@ const Index = memo(({ classId }) => {
           <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
             <div className="px20">
               {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(medicals) && (
-                <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+                <div className="p20">
+                  <Empty />
+                </div>
               )}
               {loading['overView/GET_DATA_MEDICAL'] ? (
                 <>
