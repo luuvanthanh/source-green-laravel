@@ -4,6 +4,7 @@ import { Form, Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -15,12 +16,6 @@ import Application from './application';
 import Student from './student';
 
 const { TabPane } = Tabs;
-const tables = {
-  overview: <Overview />,
-  application: <Application />,
-  student: <Student />,
-};
-
 
 let isMounted = true;
 /**
@@ -46,29 +41,29 @@ class HomePage extends PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      branches: [],
-      branch: '',
+      classes: [],
+      classId: '',
       tab: 'overview'
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
-    this.fetchBranches();
+    this.fetchClasses();
   }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
 
-  fetchBranches = () => {
+  fetchClasses = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'categories/GET_BRANCHES',
+      type: 'categories/GET_CLASSES',
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: !_.isEmpty(res?.parsePayload) ? _.concat([{ id: '', name: 'Tất cả lớp'}], res?.parsePayload) : []
+            classes: !_.isEmpty(res?.items) ? _.concat([{ id: '', name: 'Tất cả lớp'}], res?.items) : []
           });
         }
       },
@@ -89,29 +84,43 @@ class HomePage extends PureComponent {
     this.setState(state, callback);
   };
 
-  fetchClasses = () => {
+  handleChangeClass = (classId) => {
+    this.setState({ classId });
   }
 
   changeTab = (tab) => {
     this.setStateData({ tab });
   }
 
+  renderComponent = (tab, classId) => {
+    switch(tab) {
+      case 'overview':
+        return <Overview classId={classId} />;
+      case 'application':
+        return <Application classId={classId} />;
+      case 'student':
+        return  <Student classId={classId} />;
+      default:
+        return <Overview classId={classId} />;
+    }
+  }
+
   render() {
-    const { branches, branch, tab } = this.state;
+    const { classes, classId, tab } = this.state;
     return (
       <div className={styles.container}>
         <div className={styles.title}>Lake View</div>
         <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
-            <div className={styles['date-header']}>16/05</div>
-            <Form layout="vertical" ref={this.formRef} initialValues={{ branch }} >
+            <div className={styles['date-header']}>{moment().format(variables.DATE_FORMAT.DATE_MONTH)}</div>
+            <Form layout="vertical" ref={this.formRef} initialValues={{ classId }} >
               <FormItem
                 className={classnames('mb0', styles.select)}
-                name="branch"
+                name="classId"
                 type={variables.SELECT}
                 placeholder="Chọn cơ sở"
-                onChange={this.fetchClasses}
-                data={!_.isEmpty(branches) ? branches : []}
+                onChange={this.handleChangeClass}
+                data={!_.isEmpty(classes) ? classes : []}
               />
             </Form>
           </div>
@@ -125,7 +134,7 @@ class HomePage extends PureComponent {
               ))}
             </Tabs>
           </div>
-          {tables[`${tab}`]}
+          { this.renderComponent(tab, classId) }
         </div>
       </div>
     );

@@ -7,21 +7,14 @@ import BusComponent from './busComponent';
 import AttendanceComponent from './attendanceComponent';
 
 class Overview extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-
-    };
-  }
-
   render() {
     return (
-      <Scrollbars autoHeight autoHeightMax="100%">
+      <Scrollbars autoHeight autoHeightMax="100%" autoHeightMin={window.innerHeight - 230}>
         <div className="d-flex my30">
-          <NoteComponent />
-          <MecicalComponent />
-          <BusComponent />
-          <AttendanceComponent />
+          <NoteComponent {...this.props} />
+          <MecicalComponent {...this.props} />
+          <BusComponent {...this.props} />
+          <AttendanceComponent {...this.props} />
         </div>
       </Scrollbars>
     );
