@@ -104,4 +104,21 @@ class WorkHourController extends Controller
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportWorkHourReport(Request $request)
+    {
+        $result = $this->workHourRepository->exportWorkHourReport($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }
