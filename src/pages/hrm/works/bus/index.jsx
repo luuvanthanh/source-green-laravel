@@ -253,7 +253,7 @@ class Index extends PureComponent {
     const { search } = this.state;
     this.setStateData({ downloading: true });
     await Helper.exportExcel(
-      `/v1/work-hours-summary-export`,
+      `/v1/bus-registrations-summary-export`,
       {
         ...omit(search, 'page', 'limit'),
         startDate: Helper.getDateTime({
