@@ -348,6 +348,16 @@ class Index extends PureComponent {
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
         Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
     );
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
+      return (
+        <Link
+          to={this.redirectHistory(dayOfWeek, record, user)}
+          className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}
+        >
+          -
+        </Link>
+      );
+    }
     if (user.dateOff && moment(user.dateOff).isBefore(moment(dayOfWeek))) {
       return (
         <div
