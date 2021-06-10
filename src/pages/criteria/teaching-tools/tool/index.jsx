@@ -1,8 +1,8 @@
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useMemo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useLocation, useHistory } from 'umi';
-import { useSelector } from 'dva';
+import { useSelector, useDispatch } from 'dva';
 import { debounce } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -12,26 +12,26 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
-
 const Index = memo(() => {
-  // const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, feePolicyClass }) => [
-    feePolicyClass,
-    effects,
-  ]);
+  const dispatch = useDispatch();
+  const [
+    { pagination, error, data },
+    loading,
+  ] = useSelector(({ loading: { effects }, criteriaTool }) => [criteriaTool, effects]);
 
   const history = useHistory();
-  const { query } = useLocation();
+  const { query, pathname } = useLocation();
 
   const filterRef = useRef();
+  const mounted = useRef(false);
 
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    search: query?.search,
+    keyWord: query?.keyWord,
   });
 
   const columns = [
@@ -39,13 +39,13 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) => <Text size="normal">GC01</Text>,
+      render: (text, record, index) => `GC${Helper.serialOrder(search?.page, index)}`,
     },
     {
       title: 'Giáo cụ',
       key: 'name',
       className: 'min-width-200',
-      render: (text, record, index) => <Text size="normal">Trò chơi thả khối lăng trụ chữ nhật vào hộp có lỗ </Text>,
+      render: (record) => <Text size="normal">{record.name} </Text>,
     },
     {
       key: 'action',
@@ -56,7 +56,7 @@ const Index = memo(() => {
           <Button
             color="success"
             ghost
-            onClick={() => history.push(`/chuong-trinh-hoc/cau-hinh/giao-cu/${record?.id}/chi-tiet`)}
+            onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
           >
             Chi tiết
           </Button>
@@ -86,15 +86,28 @@ const Index = memo(() => {
     [pagination],
   );
 
-  const changeFilter = debounce(
-    (name) => (value) => {
-      setSearch((prevSearch) => ({
-        ...prevSearch,
-        [name]: value,
-      }));
-    },
-    300,
-  );
+  const changeFilterDebouce = debounce((name, value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+    }));
+  }, 300);
+
+  const changeFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
+  };
+
+  useEffect(() => {
+    dispatch({
+      type: 'criteriaTool/GET_DATA',
+      payload: { ...search },
+    });
+  }, [search]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return mounted.current;
+  }, []);
 
   return (
     <>
@@ -106,7 +119,7 @@ const Index = memo(() => {
             className="ml-auto"
             color="success"
             icon="plus"
-            onClick={() => history.push('/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi')}
+            onClick={() => history.push(`${pathname}/them-moi`)}
           >
             Tạo mới
           </Button>
@@ -124,9 +137,9 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    type={variables.INPUT_SEARCH}
-                    name="search"
-                    onChange={({ target: { value } }) => changeFilter('search')(value)}
+                    type={variables.INPUT}
+                    name="keyWord"
+                    onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
                     placeholder="Nhập từ khóa tìm kiếm"
                   />
                 </Pane>
@@ -136,7 +149,7 @@ const Index = memo(() => {
             <Table
               columns={columns}
               dataSource={data}
-              loading={loading['media/GET_DATA']}
+              loading={loading['criteriaTool/GET_DATA']}
               isError={error.isError}
               pagination={paginationProps}
               rowKey={(record) => record.id}

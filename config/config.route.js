@@ -140,6 +140,12 @@ export default [
             authority: [],
           },
           {
+            path: '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
+            component: './criteria/teaching-tools/tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
             wrappers: ['@/wrappers/auth'],

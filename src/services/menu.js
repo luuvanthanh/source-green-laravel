@@ -559,6 +559,7 @@ export async function getLeftMenuCriteria() {
               url: [
                 '/chuong-trinh-hoc/cau-hinh/goc-giao-cu',
                 '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/them-moi',
+                '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/:id/chi-tiet',
               ],
               permission: [],
               pro: true,
@@ -569,6 +570,7 @@ export async function getLeftMenuCriteria() {
               url: [
                 '/chuong-trinh-hoc/cau-hinh/giao-cu',
                 '/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi',
+                '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
               ],
               permission: [],
               pro: true,
