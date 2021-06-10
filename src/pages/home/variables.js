@@ -29,38 +29,6 @@ export const variables = {
     { id: 'RECEIVED', name: 'Đã nhận' },
     { id: 'PROCESSED', name: 'Hoàn thành' },
   ],
-  DATA_BUS: [
-    {
-      id: '1',
-      name: 'Số trẻ đăng ký xe bus',
-      number: '56',
-      image: '/images/icon/letter.svg',
-    },
-    {
-      id: '2',
-      name: 'Đón trẻ lên xe',
-      number: '56',
-      image: '/images/icon/up-arrow.svg',
-    },
-    {
-      id: '3',
-      name: 'Đón trẻ xuống xe',
-      number: '56',
-      image: '/images/icon/down-arrow.svg',
-    },
-    {
-      id: '4',
-      name: 'Trả trẻ lên xe',
-      number: '56',
-      image: '/images/icon/up-arrow.svg',
-    },
-    {
-      id: '5',
-      name: 'Trả trẻ xuống xe',
-      number: '56',
-      image: '/images/icon/down-arrow.svg',
-    },
-  ],
   DATA_ATTENDANCE: [
     {
       id: 'student',

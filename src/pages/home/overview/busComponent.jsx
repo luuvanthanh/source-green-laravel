@@ -1,18 +1,20 @@
 import { memo, useState, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
-import { Form, Modal, Skeleton } from 'antd';
+import { Form, Modal, Skeleton, Avatar } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from '../index.scss';
 
-const Index = memo(() => {
+const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
   const [ { bus, listBusByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
@@ -26,13 +28,23 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
-    classId: '',
     keyWord: ''
   });
 
-  const fetchDataNotes = () => {
+  const fetchDataBus = () => {
     dispatch({
       type: 'overView/GET_DATA_BUS',
+      payload: {
+        ClassId: classId || undefined,
+        date: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      }
     });
   };
 
@@ -60,8 +72,8 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    fetchDataNotes();
-  }, []);
+    fetchDataBus();
+  }, [classId]);
 
   useEffect(() => {
     getListBusByStatus();
@@ -137,7 +149,7 @@ const Index = memo(() => {
 
   const getDetail = (record) => {
     setVisible(true);
-    setTitle(`Danh sách ${record?.name?.toLowerCase()}`);
+    setTitle(`Danh sách ${record?.name}`);
     setDetails(record);
     getListBusByStatus();
     getClasses();
@@ -224,7 +236,7 @@ const Index = memo(() => {
               </div>
               <div className="col-md-4 col-xl-6">
                 <p className="d-flex align-items-center justify-content-end mb0">
-                  {details?.name} <span className="text-success font-size-30 font-weight-bold ml10">56</span>
+                  {String(details?.name).charAt(0).toUpperCase() + String(details?.name).slice(1)} <span className="text-success font-size-30 font-weight-bold ml10">{details?.number}</span>
                 </p>
               </div>
             </div>
@@ -253,55 +265,116 @@ const Index = memo(() => {
             </div>
           </div>
           <div className="mt50">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355} >
               <div className={classnames(styles['content-bus'], 'px20')}>
                 {loading['overView/GET_DATA_BUS'] ? (
                   <>
                     <Skeleton avatar paragraph={{ rows: 4 }} active />
                     <Skeleton avatar paragraph={{ rows: 4 }} active />
-                    <Skeleton avatar paragraph={{ rows: 4 }} active />
                   </>
                 ) : (
-                  bus.map((item, index) => {
-                    if (index === 0) {
-                      return (
-                        <div
-                          key={index}
-                          className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
-                          onClick={() => getDetail(item)}
-                          aria-hidden="true"
-                        >
-                          <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
-                            <div className="d-flex align-items-center">
-                              <AvatarTable
-                                fileImage={item.image}
-                                srcLocal
-                                size={24}
-                              />
-                              <p className="mb0 ml10">{item?.name}</p>
-                            </div>
-                            <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{item.number}</p>
-                          </div>
+                  <>
+                    <div
+                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
+                      onClick={() => getDetail({ number: bus.studentTotal, name: 'trẻ đăng ký xe bus' })}
+                      aria-hidden="true"
+                    >
+                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                        <div className="d-flex align-items-center">
+                          <AvatarTable
+                            fileImage="/images/icon/letter.svg"
+                            srcLocal
+                            size={27}
+                          />
+                          <p className="mb0 ml10">Số trẻ đăng ký xe bus</p>
                         </div>
-                      );
-                    }
-                    return (
-                      <div
-                        key={index}
-                        className={classnames(styles['half-width'], 'pointer')}
-                        onClick={() => getDetail(item)}
-                        aria-hidden="true"
-                      >
-                        <AvatarTable
-                          fileImage={item.image}
-                          srcLocal
-                          size={30}
-                        />
-                        <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>{item.name}</p>
-                        <p className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'mt-auto', styles.number)}>{item.number}</p>
+                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.studentTotal || 0}</p>
                       </div>
-                    );
-                  })
+                    </div>
+                    <div
+                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
+                      onClick={() => getDetail({ number: bus.absentTotal || 0, name: 'trẻ đăng ký nhưng vắng'})}
+                      aria-hidden="true"
+                    >
+                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                        <div className="d-flex align-items-center">
+                          <AvatarTable
+                            fileImage="/images/icon/absent.svg"
+                            srcLocal
+                            size={27}
+                          />
+                          <p className="mb0 ml10">Số trẻ đăng ký nhưng vắng</p>
+                        </div>
+                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.absentTotal || 0}</p>
+                      </div>
+                    </div>
+                    <div
+                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                    >
+                      <div className="d-flex align-items-center">
+                        <Avatar
+                          src="/images/icon/right-arrow-green.svg"
+                          size={27}
+                        />
+                        <p className="mb0 ml10">Đi đến trường</p>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p
+                            onClick={() => getDetail({ number: bus.schoolGetInStatusTotal, name: 'trẻ lên xe - Đi đến trường'})}
+                            aria-hidden="true"
+                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                          >
+                            {bus?.schoolGetInStatusTotal}
+                          </p>
+                        </div>
+                        <div>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p
+                            onClick={() => getDetail({ number: bus.schoolGetOffStatusTotal, name: 'trẻ xuống xe - Đi đến trường'})}
+                            aria-hidden="true"
+                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                          >
+                            {bus?.schoolGetOffStatusTotal}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb20')}
+                    >
+                      <div className="d-flex align-items-center">
+                        <Avatar
+                          src="/images/icon/left-arrow-orange.svg"
+                          size={27}
+                        />
+                        <p className="mb0 ml10">Đi về nhà</p>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p
+                            onClick={() => getDetail({ number: bus.homeGetInStatusTotal, name: 'trẻ lên xe - Đi về nhà'})}
+                            aria-hidden="true"
+                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                          >
+                            {bus?.homeGetInStatusTotal}
+                          </p>
+                        </div>
+                        <div>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p
+                            onClick={() => getDetail({ number: bus.homeGetOffStatusTotal, name: 'trẻ xuống xe - Đi về nhà'})}
+                            aria-hidden="true"
+                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                          >
+                            {bus?.homeGetOffStatusTotal}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </Scrollbars>
@@ -311,5 +384,13 @@ const Index = memo(() => {
     </>
   );
 });
+
+Index.propTypes = {
+  classId: PropTypes.string,
+};
+
+Index.defaultProps = {
+  classId: '',
+};
 
 export default Index;

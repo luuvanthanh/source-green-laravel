@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -13,7 +14,7 @@ import { variables, Helper } from '@/utils';
 
 import styles from '../index.scss';
 
-const Index = memo(() => {
+const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
   const [
     { attendances, listAttendancesByStatus },
@@ -27,7 +28,6 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
-    classId: '',
     nameStudent: '',
     date: moment(),
     status: null,
@@ -37,6 +37,7 @@ const Index = memo(() => {
     dispatch({
       type: 'overView/GET_DATA_ATTENDANCE',
       payload: {
+        ClassId: classId || undefined,
         date: search.date,
       },
     });
@@ -67,7 +68,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     fetchDataNotes();
-  }, []);
+  }, [classId]);
 
   /**
    * Function header table
@@ -282,7 +283,6 @@ const Index = memo(() => {
                   <>
                     <Skeleton avatar paragraph={{ rows: 4 }} active />
                     <Skeleton avatar paragraph={{ rows: 4 }} active />
-                    <Skeleton avatar paragraph={{ rows: 4 }} active />
                   </>
                 ) : (
                   attendances.map((item, index) => (
@@ -319,5 +319,13 @@ const Index = memo(() => {
     </>
   );
 });
+
+Index.propTypes = {
+  classId: PropTypes.string,
+};
+
+Index.defaultProps = {
+  classId: '',
+};
 
 export default Index;
