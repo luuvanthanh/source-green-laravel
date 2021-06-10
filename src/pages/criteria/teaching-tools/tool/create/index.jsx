@@ -60,23 +60,25 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    dispatch({
-      type: 'criteriaToolCreate/GET_DATA',
-      payload: {
-        ...params,
-      },
-      callback: (response) => {
-        if (response) {
-          formRef.current.setFieldsValue({
-            ...response,
-            toolLevels: response.toolLevels.map((item) => ({
-              ...item,
-              evaluates: item.evaluate.map((item) => ({ name: item })),
-            })),
-          });
-        }
-      },
-    });
+    if (params.id) {
+      dispatch({
+        type: 'criteriaToolCreate/GET_DATA',
+        payload: {
+          ...params,
+        },
+        callback: (response) => {
+          if (response) {
+            formRef.current.setFieldsValue({
+              ...response,
+              toolLevels: response.toolLevels.map((item) => ({
+                ...item,
+                evaluates: item.evaluate.map((item) => ({ name: item })),
+              })),
+            });
+          }
+        },
+      });
+    }
   }, [params.id]);
 
   useEffect(() => {
