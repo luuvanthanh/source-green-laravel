@@ -188,7 +188,7 @@ const Index = memo(() => {
                   <p className="font-weight-bold font-size-14 mb0">
                     {
                       !_.isEmpty(detailsStudent?.student?.class?.classTeachers)
-                        ? _.map(detailsStudent?.student?.class?.classTeachers, 'employee.name').join(', ')
+                        ? _.map(detailsStudent?.student?.class?.classTeachers, 'employee.fullName').join(', ')
                         : ''
                     }
                   </p>
