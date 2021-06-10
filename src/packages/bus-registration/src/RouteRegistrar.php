@@ -60,6 +60,12 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'BusRegistrationController@busRegistrationSummary',
                 'as' => 'bus-registrations.invalid.summary',
             ]);
+
+            \Route::get('bus-registrations-summary-export', [
+                'comment' => 'Tổng hợp công xe bus',
+                'uses' => 'BusRegistrationController@exportBusRegistrationReport',
+                'as' => 'bus-registrations.invalid.summary',
+            ]);
         });
     }
 }
