@@ -11,8 +11,14 @@ use Illuminate\Support\Facades\Storage;
 class ExcelExporterServices
 {
     public $configs = [
-        'test' => [
-            'template' => 'test.xlsx',
+        'timekeeping_report' => [
+            'template' => 'timekeeping_report.xlsx',
+        ],
+        'work_hour_report' => [
+            'template' => 'work_hour_report.xlsx',
+        ],
+        'bus_registrations' => [
+            'template' => 'bus_registrations.xlsx',
         ],
     ];
 

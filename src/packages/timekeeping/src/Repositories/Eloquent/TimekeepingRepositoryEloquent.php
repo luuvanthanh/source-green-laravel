@@ -1030,6 +1030,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         ];
 
-        return $this->excelExporterServices->export('test', $params, $callbacks, $events);
+        return $this->excelExporterServices->export('timekeeping_report', $params, $callbacks, $events);
     }
 }

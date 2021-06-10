@@ -32,7 +32,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $employees = $this->employeeRepository->getUser($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Attendance::STATUS[$value];
+            }
+
+            $attributes['status'] = $newStatus;
+        }
+
+        $employees = $this->employeeRepository->getUser($attributes);
 
         return $this->success($employees, trans('lang::messages.common.getListSuccess'));
     }
@@ -84,6 +96,26 @@ class UserController extends Controller
         }
 
         $employee = $this->employeeRepository->update($attributes, $id);
+
+        return $this->success($employee, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     *
+     * @param UserUpdateRequest $request
+     * @param  string $id
+     *
+     * @return Response
+     */
+    public function storage(UserUpdateRequest $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $employee = $this->employeeRepository->update(['Status' => $attributes['status']], $id);
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
