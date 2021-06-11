@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -84,10 +83,6 @@ export default {
         if (response) {
           const response = yield saga.call(services.get, payload);
           if (response) {
-            notification.success({
-              message: 'Cập nhật thành công',
-              description: 'Bạn đã cập nhật thành công dữ liệu',
-            });
             yield saga.put({
               type: 'SET_DATA',
               payload: response,
@@ -107,10 +102,6 @@ export default {
         yield saga.call(services.removeSchedulesDetail, payload);
         const response = yield saga.call(services.get, payload);
         if (response) {
-          notification.success({
-            message: 'Cập nhật thành công',
-            description: 'Bạn đã cập nhật thành công dữ liệu',
-          });
           yield saga.put({
             type: 'SET_DATA',
             payload: response,
@@ -127,10 +118,6 @@ export default {
         yield saga.call(services.removeSchedulesDetail, payload);
         const response = yield saga.call(services.get, payload);
         if (response) {
-          notification.success({
-            message: 'Cập nhật thành công',
-            description: 'Bạn đã cập nhật thành công dữ liệu',
-          });
           yield saga.put({
             type: 'SET_DATA',
             payload: response,

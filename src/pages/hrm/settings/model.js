@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -52,19 +50,8 @@ export default {
       try {
         yield saga.call(services.remove, payload.id);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
         callback(null, error);
-        if (!isEmpty(error?.data?.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, xóa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -81,13 +68,10 @@ export default {
           });
         }
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          notification.error({
-            message: 'Thông báo',
-            description:
-              'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-          });
-        }
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

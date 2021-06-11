@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -67,15 +66,7 @@ export default {
           },
         });
         callback(payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
         callback(null, error);
       }
     },

@@ -14,13 +14,13 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         const res = yield saga.call(services.createClassTeacher, payload);
-        callback && callback(res)
+        callback(res);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Tạo thành công',
         });
       } catch (error) {
-        callback && callback(null, error)
+        callback(null, error);
         notification.error({
           message: 'THÔNG BÁO',
           description: 'Tạo thất bại',
