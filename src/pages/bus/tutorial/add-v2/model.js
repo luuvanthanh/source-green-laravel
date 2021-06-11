@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import { variables } from '@/utils';
 import * as services from './services';
@@ -136,15 +135,7 @@ export default {
       try {
         const response = yield saga.call(services.add, payload);
         callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -152,20 +143,12 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
         const response = yield saga.call(services.details, payload);
         yield saga.put({
           type: 'SET_DETAILS',
           payload: response,
         });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },

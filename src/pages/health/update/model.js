@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -93,15 +92,7 @@ export default {
       try {
         yield saga.call(services.waterBottles, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: error?.data?.error?.message || 'Cập nhật thất bại',
-        });
         callback(null, error?.data?.error);
       }
     },

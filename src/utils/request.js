@@ -1,7 +1,8 @@
-import { pickBy, omit } from 'lodash';
+import { pickBy, omit, get } from 'lodash';
 import { extend } from 'umi-request';
+import { notification } from 'antd';
 import Cookies from 'universal-cookie';
-import variables from './variables';
+import { variables } from './variables';
 
 const cookies = new Cookies();
 
@@ -10,9 +11,8 @@ const request = extend({
   maxCache: 10,
 });
 
-const removeParams = (params) => {
-  return omit(pickBy(params, (value) => value !== null && value !== undefined));
-};
+const removeParams = (params) =>
+  omit(pickBy(params, (value) => value !== null && value !== undefined));
 let optionsRoot;
 
 // request options
@@ -42,7 +42,26 @@ request.interceptors.request.use(async (url, options) => {
 
 // response interceptor, handling response
 request.interceptors.response.use(
-  (response) => {
+  async (response) => {
+    const dataRoot = await response.clone().json();
+    if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
+      if (response.status >= 400 && response.status <= 500) {
+        notification.error({
+          message: 'Thông báo',
+          description:
+            get(dataRoot, 'error.validationErrors[0].message') ||
+            get(dataRoot, 'error.message') ||
+            get(dataRoot, 'data') ||
+            'Lỗi hệ thống vui lòng kiểm tra lại',
+        });
+      }
+      if (response.status >= 200 && response.status <= 300) {
+        notification.success({
+          message: 'Cập nhật thành công',
+          description: 'Bạn đã cập nhật thành công dữ liệu',
+        });
+      }
+    }
     if (optionsRoot?.parse && response.status < 300) {
       return {
         status: 201,

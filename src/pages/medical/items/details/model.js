@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -53,10 +52,6 @@ export default {
       try {
         yield saga.call(services.updateStatus, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
         callback(null, error?.data?.error);
       }
