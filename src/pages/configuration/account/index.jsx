@@ -11,9 +11,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -46,12 +45,10 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -187,46 +184,42 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
-      },
-      {
-        title: 'Tên tài khoản',
-        key: 'name',
-        className: 'min-width-130',
-        render: (record) => record.userName,
-      },
-      {
-        title: 'Email',
-        key: 'email',
-        className: 'min-width-130',
-        render: (record) => record.email,
-      },
-      {
-        title: 'Vai trò',
-        key: 'roles',
-        className: 'min-width-130',
-        render: (record) => 'Giáo viên',
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => HelperModules.tagStatus(record.status),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'index',
+      className: 'min-width-60',
+      width: 60,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+    },
+    {
+      title: 'Tên tài khoản',
+      key: 'name',
+      className: 'min-width-130',
+      render: (record) => record.userName,
+    },
+    {
+      title: 'Email',
+      key: 'email',
+      className: 'min-width-130',
+      render: (record) => record.email,
+    },
+    {
+      title: 'Vai trò',
+      key: 'roles',
+      className: 'min-width-130',
+      render: () => 'Giáo viên',
+    },
+    {
+      title: 'Trạng thái',
+      key: 'status',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => HelperModules.tagStatus(record.status),
+    },
+  ];
 
   render() {
     const {
@@ -296,7 +289,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -325,6 +317,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -334,6 +327,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

@@ -39,7 +39,8 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) => `GGC${Helper.serialOrder(search?.page, index)}`,
+      render: (text, record, index) =>
+        `GGC${Helper.serialOrder(search?.page, index, search?.limit)}`,
     },
     {
       title: 'Tên góc giáo cụ',
