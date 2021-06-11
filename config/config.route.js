@@ -274,18 +274,6 @@ export default [
         ],
       },
       // VEHICEL
-      {
-        path: '/dan-thuoc',
-        component: './recommend/layout',
-        routes: [
-          {
-            path: '/dan-thuoc',
-            component: './recommend',
-            wrappers: ['@/wrappers/auth'],
-            authority: [],
-          },
-        ],
-      },
       // EXCHANGE
       {
         path: '/trao-doi',

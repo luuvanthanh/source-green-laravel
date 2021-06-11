@@ -2,7 +2,6 @@ import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
 import { get, isEmpty } from 'lodash';
 
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -13,7 +12,6 @@ import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
 
-const { confirm } = Modal;
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [objects, setObjects] = useState({});
@@ -108,14 +106,8 @@ const Index = memo(() => {
    * @param {uid} id id of items
    */
   const onRemove = (id) => {
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'HRMusersAdd/REMOVE_MATERNITY_LEAVES',
           payload: {
@@ -123,7 +115,6 @@ const Index = memo(() => {
           },
         });
       },
-      onCancel() {},
     });
   };
 

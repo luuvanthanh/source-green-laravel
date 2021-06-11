@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -29,7 +28,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ tutorial, loading }) => ({
   data: tutorial.data,
   pagination: tutorial.pagination,
@@ -164,36 +162,6 @@ class Index extends PureComponent {
     },
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'tutorial/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
-    });
-  };
 
   /**
    * Function header table

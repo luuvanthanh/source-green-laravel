@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -30,7 +29,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ fingerprints, loading }) => ({
   data: fingerprints.data,
   pagination: fingerprints.pagination,
@@ -46,13 +44,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         full_name: query?.full_name,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -146,7 +142,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -165,110 +161,85 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-  });
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
 
   /**
    * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'fingerprints/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
           },
         });
       },
-      onCancel() {},
     });
   };
 
   /**
    * Function header table
    */
-  header = () => {
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Ngày cấp',
-        key: 'creationTime',
-        width: 120,
-        className: 'min-width-120',
-        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Mã vân tay',
-        key: 'finger',
-        className: classnames('min-width-120', 'max-width-120'),
-        render: (record) => (
-          <Text size="normal">{record?.finger && `${record?.finger?.substring(0, 10)}****`}</Text>
-        ),
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 50,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Ngày cấp',
+      key: 'creationTime',
+      width: 120,
+      className: 'min-width-120',
+      render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Họ và Tên',
+      key: 'fullName',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+          fullName={record?.employee?.fullName}
+        />
+      ),
+    },
+    {
+      title: 'Mã vân tay',
+      key: 'finger',
+      className: classnames('min-width-120', 'max-width-120'),
+      render: (record) => (
+        <Text size="normal">{record?.finger && `${record?.finger?.substring(0, 10)}****`}</Text>
+      ),
+    },
+    {
+      key: 'action',
+      className: 'min-width-80',
+      width: 80,
+      render: (record) => (
+        <div className={styles['list-button']}>
+          <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+        </div>
+      ),
+    },
+  ];
 
   render() {
     const {

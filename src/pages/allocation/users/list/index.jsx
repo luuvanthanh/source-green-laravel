@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history, NavLink } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -12,8 +11,6 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../../utils/Helper';
-import variablesModules from '../../utils/variables';
 import PropTypes from 'prop-types';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
 
@@ -32,7 +29,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ allocationUsersList, loading }) => ({
   data: allocationUsersList.data,
   pagination: allocationUsersList.pagination,
@@ -48,12 +44,10 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -215,30 +209,16 @@ class Index extends PureComponent {
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const { dispatch } = this.props;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'allocationUsersList/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -255,43 +235,43 @@ class Index extends PureComponent {
         key: 'code',
         width: 80,
         className: 'min-width-80',
-        render: (record) => 'NV01',
+        render: () => 'NV01',
       },
       {
         title: 'Tên nhân viên',
         key: 'name',
         className: 'min-width-130',
-        render: (record) => 'Nguyễn Văn Tuấn',
+        render: () => 'Nguyễn Văn Tuấn',
       },
       {
         title: 'Cơ sở',
         key: 'location',
         className: 'min-width-130',
-        render: (record) => 'Cơ sở 1',
+        render: () => 'Cơ sở 1',
       },
       {
         title: 'Bộ phận',
         key: 'division',
         className: 'min-width-120',
-        render: (record) => 'Hành chính nhân sự',
+        render: () => 'Hành chính nhân sự',
       },
       {
         title: 'Chức vụ',
         key: 'positon',
         className: 'min-width-120',
-        render: (record) => 'Ghi danh',
+        render: () => 'Ghi danh',
       },
       {
         title: 'Số điện thoại',
         key: 'phone',
         className: 'min-width-120',
-        render: (record) => '0905145754',
+        render: () => '0905145754',
       },
       {
         title: 'Hình thức làm việc',
         key: 'workForm',
         className: 'min-width-120',
-        render: (record) => 'Chính thức',
+        render: () => 'Chính thức',
       },
       {
         key: 'action',
@@ -332,22 +312,22 @@ class Index extends PureComponent {
             <div className={stylesAllocation['tabs-link']}>
               <NavLink
                 to="/phan-bo/nhan-vien/danh-sach"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Danh sách
               </NavLink>
               <NavLink
                 to="/phan-bo/nhan-vien/dieu-chuyen"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Điều chuyển
               </NavLink>
               <NavLink
                 to="/phan-bo/nhan-vien/chua-xep-lop"
-                activeClassName={stylesAllocation['active']}
-                className={classnames(stylesAllocation['link'])}
+                activeClassName={stylesAllocation.active}
+                className={stylesAllocation.link}
               >
                 Nhân viên chưa sắp xếp
               </NavLink>
@@ -392,7 +372,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}

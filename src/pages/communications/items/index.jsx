@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tabs } from 'antd';
+import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -35,7 +34,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ communicationsItems, loading }) => ({
   data: communicationsItems.data,
   pagination: communicationsItems.pagination,
@@ -339,36 +337,6 @@ class Index extends PureComponent {
           }
         },
       });
-    });
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'communicationsItems/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
     });
   };
 

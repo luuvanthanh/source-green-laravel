@@ -33,14 +33,16 @@ export default {
     }),
   },
   effects: {
-    *GET_TOOL_DETAILS({ payload }, saga) {
+    *GET_TOOL_DETAILS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.getToolDetails, payload);
         yield saga.put({
           type: 'SET_TOOL_DETAILS',
           payload: response,
         });
+        callback(response);
       } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
@@ -93,6 +95,24 @@ export default {
           });
         }
         callback(null, error?.data?.error);
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+        if (get(error.data, 'error.validationErrors[0]')) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
+          });
+        }
       }
     },
   },
