@@ -4,6 +4,7 @@ namespace GGPHP\Absent\Http\Requests;
 
 use Carbon\Carbon;
 use GGPHP\Absent\Models\AbsentDetail;
+use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AbsentCreateRequest extends FormRequest
@@ -39,6 +40,12 @@ class AbsentCreateRequest extends FormRequest
                     if (!is_null($accessAbsent)) {
                         $date = Carbon::parse($accessAbsent)->setTimezone('GMT+7')->format('d-m-Y');
                         return $fail("Bạn đã nghỉ vào ngày " . $date);
+                    }
+
+                    $checkShift = $this->checkShift($value);
+                    if (!is_null($checkShift)) {
+                        $date = Carbon::parse($checkShift)->setTimezone('GMT+7')->format('d-m-Y');
+                        return $fail("Ngày $date không có ca làm việc");
                     }
 
                     return true;
@@ -77,6 +84,21 @@ class AbsentCreateRequest extends FormRequest
                 case 2:
                     return $item['date'];
                     break;
+            }
+        }
+
+        return null;
+    }
+
+    private function checkShift($value)
+    {
+        $employeeId = request()->employeeId;
+
+        foreach ($value as $item) {
+            $shifts = ScheduleRepositoryEloquent::getUserTimeWorkShift($employeeId, $item['date'], $item['date']);
+
+            if (empty($shifts)) {
+                return $item['date'];
             }
         }
 

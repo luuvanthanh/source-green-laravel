@@ -8,6 +8,7 @@ use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Profile\Presenters\ProbationaryContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
+use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -36,11 +37,13 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
     public function __construct(
         WordExporterServices $wordExporterServices,
         PositionLevelRepositoryEloquent $positionLevelRepository,
+        ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
+        $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
     }
 
     /**
@@ -150,6 +153,21 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             $probationaryContract->employee->update(['DateOff' => null]);
 
             $this->positionLevelRepository->create($dataPosition);
+
+            $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $attributes['divisionId'])->where([['StartDate', '<=', $probationaryContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $probationaryContract->ContractFrom->format('Y-m-d')]])->first();
+
+            if (!is_null($divisionShift)) {
+                $dataSchedule = [
+                    'employeeId' => $value['employeeId'],
+                    'shiftId' => $divisionShift->ShiftId,
+                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'endDate' => $probationaryContract->ContractFrom->addYear()->format('Y-m-d'),
+                    'interval' => 1,
+                    'repeatBy' => 'daily',
+                ];
+
+                $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
+            }
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

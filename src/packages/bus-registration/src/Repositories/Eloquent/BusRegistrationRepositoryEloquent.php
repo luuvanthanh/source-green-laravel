@@ -108,6 +108,11 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
         $employees->tranferHistory($attributes);
 
+        $employees->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
+
         if (empty($attributes['limit'])) {
             $result = $employees->get();
         } else {

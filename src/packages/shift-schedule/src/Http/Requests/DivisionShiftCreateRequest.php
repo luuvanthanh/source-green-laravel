@@ -29,7 +29,7 @@ class DivisionShiftCreateRequest extends FormRequest
             'divisionId' => 'required|exists:Divisions,Id',
             'shiftId' => 'required|exists:Shifts,Id',
             'startDate' => [
-                'required', 'after:today',
+                'required', 'after_or_equal:today',
                 function ($attribute, $value, $fail) {
                     $divisionId = request()->divisionId;
                     $shift = DivisionShift::where('DivisionId', $divisionId)->orderBy('CreationTime', 'DESC')->first();
@@ -53,7 +53,7 @@ class DivisionShiftCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'startDate.after' => "Trường phải là một ngày sau ngày hiện tại.",
+            'startDate.after_or_equal' => "Trường phải là một ngày sau ngày hiện tại.",
         ];
     }
 }

@@ -159,6 +159,11 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $employeesByStore->tranferHistory($attributes);
 
+        $employeesByStore->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
+
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
         } else {
@@ -623,6 +628,11 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeesByStore->tranferHistory($attributes);
+
+        $employeesByStore->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);

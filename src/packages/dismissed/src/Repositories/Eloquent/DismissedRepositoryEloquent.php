@@ -8,6 +8,7 @@ use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Presenters\DismissedPresenter;
 use GGPHP\Dismissed\Repositories\Contracts\DismissedRepository;
 use GGPHP\Dismissed\Services\DismissedDetailServices;
+use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -34,10 +35,14 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
      */
     public function __construct(
         WordExporterServices $wordExporterServices,
+        PositionLevelRepositoryEloquent $positionLevelRepository,
+        ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->wordExporterServices = $wordExporterServices;
+        $this->positionLevelRepository = $positionLevelRepository;
+        $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
     }
 
     /**
@@ -75,6 +80,33 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
             $dismissed = Dismissed::create($attributes);
             DismissedDetailServices::add($dismissed->Id, $attributes['data']);
 
+            foreach ($attributes['data'] as $value) {
+                $dataPosition = [
+                    'employeeId' => $value['employeeId'],
+                    'branchId' => $value['branchId'],
+                    'positionId' => $value['positionId'],
+                    'divisionId' => $value['divisionId'],
+                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'type' => 'DISMISSED',
+                ];
+
+                $this->positionLevelRepository->create($dataPosition);
+
+                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $tranfer->TimeApply->format('Y-m-d')], ['EndDate', '>=', $tranfer->TimeApply->format('Y-m-d')]])->first();
+
+                if (!is_null($divisionShift)) {
+                    $dataSchedule = [
+                        'employeeId' => $value['employeeId'],
+                        'shiftId' => $divisionShift->ShiftId,
+                        'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                        'endDate' => $tranfer->TimeApply->addYear()->format('Y-m-d'),
+                        'interval' => 1,
+                        'repeatBy' => 'daily',
+                    ];
+
+                    $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
+                }
+            }
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
