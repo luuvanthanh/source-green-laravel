@@ -22,13 +22,13 @@ export default {
     *UPDATE({ payload, callback }, saga) {
       try {
         const res = yield saga.call(services.changeClassStudent, payload);
-        callback && callback(res)
+        callback(res);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Cập nhật thành công',
         });
       } catch (error) {
-        callback && callback(null, error)
+        callback(null, error);
         notification.error({
           message: 'THÔNG BÁO',
           description: 'Cập nhật thất bại',

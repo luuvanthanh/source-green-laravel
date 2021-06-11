@@ -1,7 +1,5 @@
-import { isEmpty, get } from 'lodash';
-import { notification } from 'antd';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'shiftStudentsAdd',
@@ -52,7 +50,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *ADD({ payload, callback }, saga) {
       try {
@@ -60,42 +63,16 @@ export default {
           type: 'INIT_STATE',
         });
         yield saga.call(services.add, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
         callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        if (!isEmpty(error.data.errors)) {
-          if (get(error.data, 'errors[0].source.pointer') === 'shift_id') {
-            notification.error({
-              message: 'Thông báo',
-              description:
-                'Ca đang được sử dụng, sửa ca sẽ thay đổi các ca xếp sẵn từ hiện tại. Giữ liệu cũ vẫn được giữ nguyên',
-            });
-          }
-        }
         callback(null, error);
       }
     },

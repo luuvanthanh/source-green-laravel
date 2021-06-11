@@ -1,8 +1,10 @@
 import { get, pickBy, omit } from 'lodash';
+import { notification } from 'antd';
 import build from 'redux-object';
 import { extend } from 'umi-request';
 import Cookies from 'universal-cookie';
 import normalize from 'json-api-normalizer';
+import { variables } from './variables';
 
 const cookies = new Cookies();
 let optionsRoot;
@@ -11,9 +13,8 @@ const request = extend({
   maxCache: 10,
 });
 
-const removeParams = (params) => {
-  return omit(pickBy(params, (value) => value !== null && value !== undefined));
-};
+const removeParams = (params) =>
+  omit(pickBy(params, (value) => value !== null && value !== undefined));
 
 // request options
 request.interceptors.request.use(async (url, options) => {
@@ -36,11 +37,26 @@ request.interceptors.request.use(async (url, options) => {
 });
 
 async function covertData(response) {
+  const dataRoot = await response.clone().json();
+  if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
+    if (response.status >= 400 && response.status <= 500) {
+      notification.error({
+        message: 'Thông báo',
+        description: get(dataRoot, 'errors[0].detail') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+      });
+    }
+    if (response.status >= 200 && response.status <= 300) {
+      notification.success({
+        message: 'Cập nhật thành công',
+        description: 'Bạn đã cập nhật thành công dữ liệu',
+      });
+    }
+  }
   if (response.status >= 200 && response.status < 300) {
     if (response.status === 204) {
       return response;
     }
-    const dataRoot = await response.clone().json();
+
     const schema = normalize(dataRoot, {
       camelizeTypeValues: false,
       camelizeKeys: false,

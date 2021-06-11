@@ -1,5 +1,3 @@
-import { isEmpty, get } from 'lodash';
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -48,7 +46,7 @@ export default {
     }),
   },
   effects: {
-    *GET_CATEGORIES({ payload }, saga) {
+    *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
           absentTypes: saga.call(services.getAbsentTypes),
@@ -70,32 +68,16 @@ export default {
           type: 'INIT_STATE',
         });
         yield saga.call(services.add, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
         callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
         callback(null, error);
       }
     },

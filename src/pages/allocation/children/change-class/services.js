@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
-import { variables, Helper } from '@/utils';
+import { Helper } from '@/utils';
 
 export function changeClassStudent({ id, data }) {
   return request(`/class-students/change-to-class/${id}`, {

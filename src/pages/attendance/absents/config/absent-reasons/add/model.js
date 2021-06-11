@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -69,32 +68,16 @@ export default {
           type: 'INIT_STATE',
         });
         yield saga.call(services.add, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error);
       }
     },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
-        notification.success({
-          message: 'Cập nhật thành công',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'Thông báo',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error);
       }
     },

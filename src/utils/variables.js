@@ -83,7 +83,7 @@ export const variables = {
     DATE_MONTH: 'DD/MM',
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
     MONTH_FULL: '[Tháng] MM/YYYY',
-    MONTH_NAME: '[Tháng] MM'
+    MONTH_NAME: '[Tháng] MM',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -141,7 +141,7 @@ export const variables = {
     PENDING: 'Làm thủ tục',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
-    CONFIRMING: 'Chờ xác nhận'
+    CONFIRMING: 'Chờ xác nhận',
   },
   STATUS_ABSENT: {
     ANNUAL_LEAVE: 'ANNUAL_LEAVE',
@@ -158,6 +158,7 @@ export const variables = {
   NO_DATA: 'Không có dữ liệu',
   // eslint-disable-next-line security/detect-unsafe-regex
   REGEX_NUMBER: /\B(?=(\d{3})+(?!\d))/g,
+  method: ['put', 'post', 'delete', 'patch'],
 };
 
 export default variables;
