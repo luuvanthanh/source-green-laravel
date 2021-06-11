@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'umi';
-import { Modal, Input, Typography, Form, message, Image } from 'antd';
-import { ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { Input, Typography, Form, message, Image } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 
 import { isEmpty, get, head } from 'lodash';
@@ -35,7 +35,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ communicationsDetails, loading, menu, user }) => ({
   loading,
   details: communicationsDetails.details,
@@ -256,21 +255,14 @@ class Index extends PureComponent {
    */
   onRemove = (record) => {
     const { dispatch } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Bạn có chắc muốn xóa trao đổi của Nguyễn Thị Mai không?',
-      onOk() {
+    return Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'communicationsDetails/REMOVE',
           payload: record,
           callback: () => {},
         });
       },
-      onCancel() {},
     });
   };
 

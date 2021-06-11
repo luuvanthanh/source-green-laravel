@@ -51,18 +51,16 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *REMOVE({ payload, callback }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
+        callback(payload);
         notification.success({
           message: 'THÔNG BÁO',
           description: 'Dữ liệu cập nhật thành công',
         });
       } catch (error) {
+        callback(null, error);
         if (get(error.data, 'error.validationErrors[0]')) {
           notification.error({
             message: 'THÔNG BÁO',

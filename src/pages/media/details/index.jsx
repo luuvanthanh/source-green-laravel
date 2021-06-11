@@ -2,8 +2,6 @@ import { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useRouteMatch, history } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { Modal } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -14,7 +12,6 @@ import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/information.module.scss';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
-const { confirm } = Modal;
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [
@@ -37,14 +34,8 @@ const Index = memo(() => {
   };
 
   const remove = () => {
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'mediaDetails/REMOVE',
           payload: params,
@@ -55,7 +46,6 @@ const Index = memo(() => {
           },
         });
       },
-      onCancel() {},
     });
   };
 

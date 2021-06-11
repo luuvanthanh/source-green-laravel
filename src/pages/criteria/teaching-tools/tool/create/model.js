@@ -76,5 +76,23 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        notification.success({
+          message: 'THÔNG BÁO',
+          description: 'Dữ liệu cập nhật thành công',
+        });
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+        if (get(error.data, 'error.validationErrors[0]')) {
+          notification.error({
+            message: 'THÔNG BÁO',
+            description: get(error.data, 'error.validationErrors[0].message'),
+          });
+        }
+      }
+    },
   },
 };

@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -12,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -28,7 +28,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ subjects, loading }) => ({
   data: subjects.data,
   pagination: subjects.pagination,
@@ -44,7 +43,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -240,27 +238,19 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'subjects/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -281,19 +271,19 @@ class Index extends PureComponent {
         title: 'MÃ MÔN HỌC',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">CLV-MH01</Text>,
+        render: () => <Text size="normal">CLV-MH01</Text>,
       },
       {
         title: 'TÊN MÔN HỌC',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Môn học 01</Text>,
+        render: () => <Text size="normal">Môn học 01</Text>,
       },
       {
         title: 'ĐỊA CHỈ',
         key: 'address',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Môn học nhằm nâng cao tư duy</Text>,
+        render: () => <Text size="normal">Môn học nhằm nâng cao tư duy</Text>,
       },
       {
         key: 'action',
@@ -313,14 +303,12 @@ class Index extends PureComponent {
   render() {
     const {
       match: { params },
-      data,
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
+    const { search } = this.state;
     const loading = effects['subjects/GET_DATA'];
-    const loadingSubmit = effects['subjects/ADD'] || effects['subjects/UPDATE'];
     return (
       <>
         <Helmet title="Danh sách môn học" />
@@ -374,7 +362,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -383,7 +370,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},

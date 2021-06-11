@@ -1,7 +1,5 @@
-import { notification } from 'antd';
-import { get } from 'lodash';
+import * as categories from '@/services/categories';
 import * as services from './services';
-import * as categories from '@/services/categories'
 
 export default {
   namespace: 'medicalItems',
@@ -69,16 +67,26 @@ export default {
           type: 'SET_BRACHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_CLASSES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getClasses, payload);
+        const response = yield saga.call(categories.getClasses, payload);
         yield saga.put({
           type: 'SET_CLASSES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
   },
   subscriptions: {},

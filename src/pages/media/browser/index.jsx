@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useCallback, useEffect } from 'react';
-import { Form, Image, Tag, Modal, Progress } from 'antd';
+import { Form, Image, Tag, Progress } from 'antd';
 import { Helmet } from 'react-helmet';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useHistory, useLocation } from 'umi';
@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'dva';
 import { size, isEmpty } from 'lodash';
 import moment from 'moment';
 import csx from 'classnames';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -21,7 +20,6 @@ import UploadModal from './upload';
 import localVariables from '../utils/variables';
 import styles from './style.module.scss';
 
-const { confirm } = Modal;
 const Index = memo(() => {
   const filterRef = useRef();
 
@@ -44,14 +42,8 @@ const Index = memo(() => {
   const [images, setImages] = useState([]);
 
   const removeImage = (removeId) => {
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'mediaBrowser/REMOVE',
           payload: {
@@ -62,7 +54,6 @@ const Index = memo(() => {
           },
         });
       },
-      onCancel() {},
     });
   };
 

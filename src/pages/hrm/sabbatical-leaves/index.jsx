@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,8 +12,8 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -31,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ sabbaticalLeaves, loading }) => ({
   data: sabbaticalLeaves.data,
   pagination: sabbaticalLeaves.pagination,
@@ -47,7 +45,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         type: query?.type,
         fullName: query?.fullName,
@@ -56,7 +53,6 @@ class Index extends PureComponent {
         timeStart: HelperModules.getStartDate(query?.timeStart, query?.choose),
         timeJoin: HelperModules.getStartDate(query?.timeJoin, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -87,7 +83,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -95,7 +91,6 @@ class Index extends PureComponent {
       type: 'sabbaticalLeaves/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push(
@@ -159,7 +154,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -178,51 +173,33 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-  });
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
 
   /**
    * Function remove items
    * @param {uid} id id of items
    */
   onRemove = (id) => {
-    const { dispatch, pagination } = this.props;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'sabbaticalLeaves/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: 10,
-              page:
-                pagination.total % pagination.per_page === 1
-                  ? pagination.current_page - 1
-                  : pagination.current_page,
-            },
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -252,9 +229,7 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'employee.fileImage'),
-            )}
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
             fullName={get(record, 'employee.fullName')}
           />
         ),
@@ -304,7 +279,9 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Danh sách ngày nghỉ phép của nhân viên" />
-        <div className={classnames(styles['content-form'], styles['content-form-sabbaticalLeaves'])}>
+        <div
+          className={classnames(styles['content-form'], styles['content-form-sabbaticalLeaves'])}
+        >
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Danh sách ngày nghỉ phép của nhân viên</Text>

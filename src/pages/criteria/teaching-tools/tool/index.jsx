@@ -137,7 +137,7 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    type={variables.INPUT}
+                    type={variables.INPUT_SEARCH}
                     name="keyWord"
                     onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
                     placeholder="Nhập từ khóa tìm kiếm"
