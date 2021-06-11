@@ -53,6 +53,7 @@ class Index extends PureComponent {
             lat: item.lat,
             lng: item.long,
             orderNo: item.orderNo,
+            id: uuidv4(),
             studentBusPlaces: item.studentBusPlaces.map((itemStudent) => ({
               ...itemStudent,
               ...itemStudent.student,

@@ -46,7 +46,7 @@ export function detailsMedical(data) {
 }
 
 export function getBus(params = {}) {
-  return request('/medicals', {
+  return request(`/bus-place-log/${params.date}/current-user/group-bus-place`, {
     method: 'GET',
     params: {
       ...params,

@@ -1,9 +1,10 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory } from 'umi';
+import { useHistory, useParams } from 'umi';
 import csx from 'classnames';
+import { head, isEmpty } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -12,44 +13,80 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
-const STATUS_TIME_CODE = [
-  {
-    value: 'BEFORE_BREAKFAST',
-    label: 'Trước ăn sáng',
-  },
-  {
-    value: 'AFTER_BREAKFAST',
-    label: 'Sau ăn sáng',
-  },
-  {
-    value: 'BEFORE_LUNCH',
-    label: 'Trước ăn trưa',
-  },
-  {
-    value: 'AFTER_LUNCH',
-    label: 'Sau ăn trưa',
-  },
-];
-
-const Index = memo(({ }) => {
-  const [selectTools, setSelectTool] = useState([]);
-
-  const { loading } = useSelector(({ loading }) => ({ loading }));
-  const [{ menuLeftCriteria }] = useSelector(({ menu }) => [menu]);
+const Index = memo(() => {
+  const [
+    { menuLeftCriteria },
+    loading,
+    { toolDetails },
+  ] = useSelector(({ menu, loading: { effects }, criteriaAngleToolCreate }) => [
+    menu,
+    effects,
+    criteriaAngleToolCreate,
+  ]);
   const dispatch = useDispatch();
+  const params = useParams();
 
   const history = useHistory();
   const formRef = useRef();
   const mounted = useRef(false);
-  const mountedSet = (action, value) => mounted?.current && action(value);
+  // const mountedSet = (action, value) => mounted?.current && action(value);
 
   const onFinish = (values) => {
-    history.goBack()
+    dispatch({
+      type: params.id ? 'criteriaAngleToolCreate/UPDATE' : 'criteriaAngleToolCreate/ADD',
+      payload: {
+        ...values,
+        ...params,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
   };
 
   useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'criteriaAngleToolCreate/GET_DATA',
+        payload: {
+          ...params,
+        },
+        callback: (response) => {
+          if (response) {
+            formRef.current.setFieldsValue({
+              ...response,
+              toolDetails: response.toolDetails.map((item) => item.id),
+            });
+          }
+        },
+      });
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'criteriaAngleToolCreate/GET_TOOL_DETAILS',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   return (
@@ -58,12 +95,7 @@ const Index = memo(({ }) => {
       <Breadcrumbs className="pb30 pt0" last="Tạo góc giáo cụ" menu={menuLeftCriteria} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-6">
-          <Form
-            layout="vertical"
-            ref={formRef}
-            onFinish={onFinish}
-            initialValues={{}}
-          >
+          <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
             <Pane className="p20 pt20 card">
               <Heading type="form-title" className="mb20">
                 Thông tin chung
@@ -71,16 +103,16 @@ const Index = memo(({ }) => {
               <FormItem
                 className="mb0"
                 label="Tên góc giáo cụ"
-                name="tenGocGiaoCu"
+                name="name"
                 type={variables.INPUT}
-                // rules={[variables.RULES.EMPTY]}
+                rules={[variables.RULES.EMPTY]}
               />
             </Pane>
 
             <Pane className="mt20 mb0 card">
-              <Heading type="form-title" className="p20">
+              {/* <Heading type="form-title" className="p20">
                 Danh sách giáo cụ ({selectTools.length}/{STATUS_TIME_CODE.length})
-              </Heading>
+              </Heading> */}
 
               <Pane className={csx('row')}>
                 <Pane className="col-12">
@@ -92,10 +124,13 @@ const Index = memo(({ }) => {
                   />
                   <FormItem
                     className="checkbox-column mb0"
-                    name={[name, 'pillTimes']}
+                    name="toolDetails"
                     type={variables.CHECKBOX}
-                    data={STATUS_TIME_CODE}
-                    onChange={(values) => setSelectTool(values)}
+                    data={toolDetails.map((item) => ({
+                      value: item.id,
+                      label: item.name,
+                    }))}
+                    // onChange={(values) => setSelectTool(values)}
                   />
                 </Pane>
               </Pane>
@@ -108,6 +143,12 @@ const Index = memo(({ }) => {
                 color="success"
                 htmlType="submit"
                 size="large"
+                loading={
+                  loading['criteriaAngleToolCreate/ADD'] ||
+                  loading['criteriaAngleToolCreate/UPDATE'] ||
+                  loading['criteriaAngleToolCreate/GET_TOOL_DETAILS'] ||
+                  loading['criteriaAngleToolCreate/GET_DATA']
+                }
               >
                 Lưu
               </Button>

@@ -4,7 +4,10 @@ import { Tabs, Modal, Image, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
 
+import Empty from '@/components/CommonComponent/Table/Empty';
 import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
@@ -13,7 +16,7 @@ import variablesModules from '../variables';
 
 const { TabPane } = Tabs;
 
-const Index = memo(() => {
+const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
   const [ { notes, detailsNote }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
@@ -22,7 +25,6 @@ const Index = memo(() => {
 
   const [visible, setVisible ] = useState(false);
   const [search, setSearch] = useState({
-    classId: undefined,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
     status: variables.STATUS.CONFIRMING
@@ -32,14 +34,31 @@ const Index = memo(() => {
     dispatch({
       type: 'overView/GET_DATA_NOTE',
       payload: {
-        ...search
+        ClassId: classId || undefined,
+        ...search,
+        From: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+            targetValue: '00:00:00',
+          }),
+          isUTC: false,
+        }),
+        To: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+            targetValue: '23:59:59',
+          }),
+          isUTC: false,
+        }),
       },
     });
   };
 
   useEffect(() => {
     fetchDataNotes();
-  }, [search.status]);
+  }, [search.status, classId]);
 
   const cancelModal = () => {
     setVisible(false);
@@ -161,7 +180,7 @@ const Index = memo(() => {
               <img src='/images/home/speech.svg' alt="notification" className={styles.icon} />
               <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Ghi chú</span>
             </div>
-            <p className={classnames('mb0', 'font-size-14')}>15</p>
+            <p className={classnames('mb0', 'font-size-14')}>{notes?.length || 0}</p>
           </div>
           <Tabs onChange={changeTab} activeKey={search?.tab}>
             {variablesModules.NOTE.map(({ id, name }) => (
@@ -170,12 +189,13 @@ const Index = memo(() => {
           </Tabs>
           <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
             <div className="px20">
-              {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(notes) && (
-                <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+              {!loading['overView/GET_DATA_NOTE'] && _.isEmpty(notes) && (
+                <div className="p20">
+                  <Empty />
+                </div>
               )}
               {loading['overView/GET_DATA_NOTE'] ? (
                 <>
-                  <Skeleton avatar paragraph={{ rows: 4 }} active />
                   <Skeleton avatar paragraph={{ rows: 4 }} active />
                   <Skeleton avatar paragraph={{ rows: 4 }} active />
                 </>
@@ -207,5 +227,13 @@ const Index = memo(() => {
     </>
   );
 });
+
+Index.propTypes = {
+  classId: PropTypes.string,
+};
+
+Index.defaultProps = {
+  classId: '',
+};
 
 export default Index;

@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react';
-import { Form, Image, Checkbox } from 'antd';
+import { Form, Image } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
@@ -142,7 +142,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       className: 'min-width-80',
       width: 120,
-      render: (record) => <Checkbox checked={record?.isReceived || false} />,
+      render: (record) => record?.isReceived ? <span className={classnames('color-success', 'icon-checkmark')} />: ''
     },
     {
       title: 'Cho thuốc',
@@ -150,7 +150,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       className: 'min-width-80',
       width: 120,
-      render: (record) => <Checkbox checked={record?.isDrunk || false} />,
+      render: (record) => record?.isDrunk ? <span className={classnames('color-success', 'icon-checkmark')} />: ''
     },
   ];
 

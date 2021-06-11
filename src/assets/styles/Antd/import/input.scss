@@ -117,3 +117,9 @@
     margin: 10px 0;
   }
 }
+
+.input-disabled {
+  .ant-input {
+    color: $text-dark;
+  }
+}

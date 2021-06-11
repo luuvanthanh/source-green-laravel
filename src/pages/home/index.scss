@@ -105,6 +105,7 @@
   flex: 1;
   padding: 20px;
   z-index: 1;
+  background: rgba($color: $black, $alpha: 0.2);
   .items-container {
     padding: 0 80px;
     z-index: 1;
@@ -455,4 +456,8 @@
   justify-content: center;
   border-radius: 50%;
   background: #f1f3f8;
+}
+
+.checkbox-table {
+  background: red;
 }

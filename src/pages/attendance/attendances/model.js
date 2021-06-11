@@ -1,4 +1,5 @@
 import { notification } from 'antd';
+import { get } from 'lodash';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -96,7 +97,7 @@ export default {
       } catch (error) {
         notification.error({
           message: 'Thông báo',
-          description: 'Vui lòng kiểm tra lại hệ thống',
+          description: get(error.data, 'errors[0].detail') || 'Vui lòng kiểm tra lại hệ thống',
         });
         callback(null, error);
       }

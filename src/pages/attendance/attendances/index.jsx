@@ -194,6 +194,7 @@ class Index extends PureComponent {
     hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
     onChange: (page, size) => {
       this.changePagination(page, size);
     },
@@ -206,6 +207,9 @@ class Index extends PureComponent {
   add = (record, status) => {
     const { search } = this.state;
     const { user } = this.props;
+    if (get(record, 'attendance[0].status') === variablesModules.STATUS_ABSENT.ANNUAL_LEAVE) {
+      return;
+    }
     if (!user?.objectInfo?.id) {
       message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
       return;

@@ -128,6 +128,12 @@ export default [
             authority: [],
           },
           {
+            path: '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/:id/chi-tiet',
+            component: './criteria/teaching-tools/angle-tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/chuong-trinh-hoc/cau-hinh/giao-cu',
             component: './criteria/teaching-tools/tool',
             wrappers: ['@/wrappers/auth'],
@@ -135,6 +141,12 @@ export default [
           },
           {
             path: '/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi',
+            component: './criteria/teaching-tools/tool/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
             component: './criteria/teaching-tools/tool/create',
             wrappers: ['@/wrappers/auth'],
             authority: [],

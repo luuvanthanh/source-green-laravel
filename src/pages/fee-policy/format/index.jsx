@@ -15,13 +15,12 @@ import Text from '@/components/CommonComponent/Text';
 import { variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
-
 const Index = memo(() => {
   // const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, feePolicyFormat }) => [
-    feePolicyFormat,
-    effects,
-  ]);
+  const [
+    { pagination, error, data },
+    loading,
+  ] = useSelector(({ loading: { effects }, feePolicyFormat }) => [feePolicyFormat, effects]);
 
   const history = useHistory();
   const { query } = useLocation();

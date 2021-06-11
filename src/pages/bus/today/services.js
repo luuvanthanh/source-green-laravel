@@ -47,18 +47,18 @@ export function getTrackings(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      startDate: Helper.getDateTime({
+      fromDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.startDate,
+          originValue: params.fromDate,
           targetValue: '00:00:00',
         }),
         isUTC: true,
       }),
-      endDate: Helper.getDateTime({
+      toDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.endDate,
+          originValue: params.toDate,
           targetValue: '23:59:59',
         }),
         isUTC: true,

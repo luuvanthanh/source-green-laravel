@@ -1,11 +1,14 @@
 import { memo, useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Tabs, Modal, Image, Checkbox, Skeleton } from 'antd';
+import { Tabs, Modal, Image, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
+import PropTypes from 'prop-types';
 
+import Empty from '@/components/CommonComponent/Table/Empty';
 import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
@@ -14,7 +17,7 @@ import styles from '../index.scss';
 import variablesModules from '../variables';
 
 const { TabPane } = Tabs;
-const Index = memo(() => {
+const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
   const [ { medicals, detailsMedical, medicalsStudent }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
@@ -23,24 +26,40 @@ const Index = memo(() => {
 
   const [visible, setVisible ] = useState(false);
   const [search, setSearch] = useState({
-    classId: undefined,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
     status: variables.STATUS.PENDING
   });
 
-  const fetchDataNotes = () => {
+  const fetchData = () => {
     dispatch({
       type: 'overView/GET_DATA_MEDICAL',
       payload: {
-        ...search
+        ClassId: classId || undefined,
+        ...search,
+        AppliedDateFrom: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+            targetValue: '00:00:00',
+          }),
+          isUTC: false,
+        }),
+        AppliedDateTo: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+            targetValue: '23:59:59',
+          }),
+          isUTC: false,
+        }),
       },
     });
   };
 
   useEffect(() => {
-    fetchDataNotes();
-  }, [search.status]);
+    fetchData();
+  }, [search.status, classId]);
 
   const cancelModal = () => {
     setVisible(false);
@@ -167,7 +186,7 @@ const Index = memo(() => {
       align: 'center',
       className: 'min-width-80',
       width: 120,
-      render: (record) => <Checkbox checked={record?.isReceived || false} />,
+      render: (record) => record?.isReceived ? <span className={classnames('color-success', 'icon-checkmark')} />: ''
     },
     {
       title: 'Cho thuốc',
@@ -175,7 +194,7 @@ const Index = memo(() => {
       align: 'center',
       className: 'min-width-80',
       width: 120,
-      render: (record) => <Checkbox checked={record?.isDrunk || false} />,
+      render: (record) => record?.isDrunk ? <span className={classnames('color-success', 'icon-checkmark')} />: ''
     },
   ];
 
@@ -327,7 +346,7 @@ const Index = memo(() => {
               <img src="/images/home/balloons.svg" alt="notification" className={styles.icon} />
               <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Y tế</span>
             </div>
-            <p className={classnames('mb0', 'font-size-14')}>15</p>
+            <p className={classnames('mb0', 'font-size-14')}>{medicals?.length || 0}</p>
           </div>
           <Tabs onChange={changeTab} activeKey={search?.tab}>
             {variablesModules.MEDICAL.map(({ id, name }) => (
@@ -337,11 +356,12 @@ const Index = memo(() => {
           <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
             <div className="px20">
               {!loading['overView/GET_DATA_MEDICAL'] && _.isEmpty(medicals) && (
-                <p className="mb0 p20 border text-center font-weight-bold">{variables.NO_DATA}</p>
+                <div className="p20">
+                  <Empty />
+                </div>
               )}
               {loading['overView/GET_DATA_MEDICAL'] ? (
                 <>
-                  <Skeleton avatar paragraph={{ rows: 4 }} active />
                   <Skeleton avatar paragraph={{ rows: 4 }} active />
                   <Skeleton avatar paragraph={{ rows: 4 }} active />
                 </>
@@ -373,5 +393,13 @@ const Index = memo(() => {
     </>
   );
 });
+
+Index.propTypes = {
+  classId: PropTypes.string,
+};
+
+Index.defaultProps = {
+  classId: '',
+};
 
 export default Index;

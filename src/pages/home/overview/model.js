@@ -44,7 +44,7 @@ export default {
     }),
     SET_DATA_BUS: (state, { payload }) => ({
       ...state,
-      bus: variablesModules.DATA_BUS || payload,
+      bus: payload,
     }),
     SET_DATA_BUS_BY_STATUS: (state, { payload }) => ({
       ...state,
@@ -134,7 +134,7 @@ export default {
         const response = yield saga.call(services.getBus, payload);
         yield saga.put({
           type: 'SET_DATA_BUS',
-          payload: response,
+          payload: response?.summary,
         });
       } catch (error) {
         // continue regardless of error
