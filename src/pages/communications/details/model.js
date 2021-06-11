@@ -1,5 +1,4 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import * as services from './services';
 import variablesModules from '../utils/variables';
 
@@ -83,10 +82,6 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: get(error.data, 'error.message') || 'Lỗi hệ thông vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -99,10 +94,6 @@ export default {
         });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: get(error.data, 'error.message') || 'Lỗi hệ thông vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -113,18 +104,8 @@ export default {
           type: 'SET_UPDATE_COMMUNICATION',
           payload: response,
         });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description:
-            get(error.data, 'error.validationErrors[0].message') ||
-            'Lỗi hệ thông vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -135,18 +116,8 @@ export default {
           type: 'SET_UPDATE_COMMUNICATION',
           payload: response,
         });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description:
-            get(error.data, 'error.validationErrors[0].message') ||
-            'Lỗi hệ thông vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -157,17 +128,7 @@ export default {
           type: 'SET_REMOVE',
           payload,
         });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description:
-            get(error.data, 'error.validationErrors[0].message') ||
-            'Lỗi hệ thông vui lòng kiểm tra lại',
-        });
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,
