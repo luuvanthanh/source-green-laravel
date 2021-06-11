@@ -272,7 +272,8 @@ class Index extends PureComponent {
         align: 'center',
         className: 'min-width-80',
         width: 80,
-        render: (text, record, index) => `TB${Helper.serialOrder(this.state.search?.page, index)}`,
+        render: (text, record, index) =>
+          `TB${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
         title: 'Thời gian gửi',

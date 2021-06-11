@@ -52,7 +52,7 @@ const Index = memo(() => {
       key: 'index',
       className: 'min-width-70',
       align: 'center',
-      render: (text, record, index) => Helper.serialOrder(search?.page, index),
+      render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
     },
     {
       title: 'Thời gian',

@@ -12,6 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -44,7 +45,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -275,13 +275,14 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'TÊN KHẢO SÁT',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Khảo sát phụ huynh</Text>,
+        render: () => <Text size="normal">Khảo sát phụ huynh</Text>,
       },
       {
         key: 'action',
@@ -301,14 +302,12 @@ class Index extends PureComponent {
   render() {
     const {
       match: { params },
-      data,
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
+    const { search } = this.state;
     const loading = effects['survey/GET_DATA'];
-    const loadingSubmit = effects['survey/ADD'] || effects['survey/UPDATE'];
     return (
       <>
         <Helmet title="Danh sách khảo sát" />
@@ -367,7 +366,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -376,7 +374,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
   dispatch: {},

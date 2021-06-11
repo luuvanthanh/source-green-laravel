@@ -202,7 +202,8 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => `HS${Helper.serialOrder(this.state.search?.page, index)}`,
+        render: (text, record, index) =>
+          `HS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
         title: 'Họ và Tên',
