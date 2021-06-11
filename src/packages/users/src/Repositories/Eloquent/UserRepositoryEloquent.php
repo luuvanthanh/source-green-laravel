@@ -78,6 +78,10 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
             $this->model = $this->model->whereLike('FullName', $attributes['fullName']);
         }
 
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->where('Status', $attributes['status']);
+        }
+
         $this->model = $this->model->tranferHistory($attributes);
 
         if (empty($attributes['limit'])) {

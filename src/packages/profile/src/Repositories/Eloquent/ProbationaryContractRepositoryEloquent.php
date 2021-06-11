@@ -143,9 +143,11 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'branchId' => $attributes['branchId'],
                 'positionId' => $attributes['positionId'],
                 'divisionId' => $attributes['divisionId'],
-                'startDate' => $now,
+                'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
                 'type' => 'PROBATION',
             ];
+
+            $probationaryContract->employee->update(['DateOff' => null]);
 
             $this->positionLevelRepository->create($dataPosition);
             \DB::commit();

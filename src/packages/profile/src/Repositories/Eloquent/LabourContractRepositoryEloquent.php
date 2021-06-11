@@ -4,6 +4,7 @@ namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Presenters\LabourContractPresenter;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
@@ -35,9 +36,11 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
      */
     public function __construct(
         WordExporterServices $wordExporterServices,
+        PositionLevelRepositoryEloquent $positionLevelRepository,
         Application $app
     ) {
         parent::__construct($app);
+        $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
     }
 
@@ -133,6 +136,19 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             foreach ($attributes['detail'] as $value) {
                 $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+            $now = Carbon::now();
+            $dataPosition = [
+                'employeeId' => $attributes['employeeId'],
+                'branchId' => $attributes['branchId'],
+                'positionId' => $attributes['positionId'],
+                'divisionId' => $attributes['divisionId'],
+                'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                'type' => 'LABOUR',
+            ];
+
+            $labourContract->employee->update(['DateOff' => null]);
+            $this->positionLevelRepository->create($dataPosition);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

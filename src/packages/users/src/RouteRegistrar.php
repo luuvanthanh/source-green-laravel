@@ -63,6 +63,11 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'employees.show',
             ]);
 
+            \Route::put('employee/storage/{id}', [
+                'uses' => 'UserController@storage',
+                'as' => 'employees.show',
+            ]);
+
         });
     }
 
