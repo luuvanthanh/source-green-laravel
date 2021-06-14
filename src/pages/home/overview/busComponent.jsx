@@ -161,7 +161,7 @@ const Index = memo(({ classId }) => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  const changePagination = ({ page, limit }) => {
+  const changePagination = (page, limit) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -173,14 +173,24 @@ const Index = memo(({ classId }) => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const pagination = (pagination) =>
-    Helper.paginationNet({
-      pagination,
-      search,
-      callback: (response) => {
-        changePagination(response);
-      },
-    });
+  const pagination = (pagination) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: search.limit,
+    defaultCurrent: Number(search.page),
+    current: Number(search.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+    onChange: (page, size) => {
+      changePagination(page, size);
+    },
+    onShowSizeChange: (current, size) => {
+      changePagination(current, size);
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
+  });
 
   return (
     <>
