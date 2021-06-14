@@ -47,7 +47,7 @@ async function covertData(response) {
     }
     if (response.status >= 200 && response.status <= 300) {
       notification.success({
-        message: 'Cập nhật thành công',
+        message: 'Thông báo',
         description: 'Bạn đã cập nhật thành công dữ liệu',
       });
     }

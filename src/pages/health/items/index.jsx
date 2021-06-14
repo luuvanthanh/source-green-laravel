@@ -189,7 +189,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -212,24 +212,13 @@ class Index extends PureComponent {
     const {
       location: { query },
     } = this.props;
-    return {
-      size: 'default',
-      total: pagination.total,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(this.state.search.page),
-      current: Number(this.state.search.page),
-      hideOnSinglePage: pagination.total <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, size) => {
-        this.changePagination(page, size);
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
       },
-      onShowSizeChange: (current, size) => {
-        this.changePagination(current, size);
-      },
-      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-    };
+    });
   };
 
   getStudentCriteria = (items, key) => {
