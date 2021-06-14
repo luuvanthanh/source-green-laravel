@@ -46,7 +46,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        name: query?.name,
+        key: query?.key,
         type: query?.type || variablesModules.PARAMATER_VALUES.CONTRACT,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -304,7 +304,7 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              activeKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
+              defaultActiveKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.TYPES_PARAMATER_VALUES.map((item) => (
@@ -321,8 +321,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
