@@ -54,20 +54,12 @@ class DivisionController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $division = $this->divisionRepository->all();
-        } else {
-            $division = $this->divisionRepository->paginate($limit);
-        }
+        $division = $this->divisionRepository->getDivision($request->all());
 
         return $this->success($division, trans('lang::messages.common.getListSuccess'));
     }

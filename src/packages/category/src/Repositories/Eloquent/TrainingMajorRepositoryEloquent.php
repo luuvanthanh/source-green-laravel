@@ -50,4 +50,21 @@ class TrainingMajorRepositoryEloquent extends CoreRepositoryEloquent implements 
         return TrainingMajorPresenter::class;
     }
 
+    public function getTrainingMajor(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $trainingMajor = $this->paginate($attributes['limit']);
+        } else {
+            $trainingMajor = $this->get();
+        }
+
+        return $trainingMajor;
+    }
 }

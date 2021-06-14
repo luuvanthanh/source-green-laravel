@@ -50,4 +50,21 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
         return ParamaterFormulaPresenter::class;
     }
 
+    public function getParamaterFormula(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $paramaterValue = $this->paginate($attributes['limit']);
+        } else {
+            $paramaterValue = $this->get();
+        }
+
+        return $paramaterValue;
+    }
 }

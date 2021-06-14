@@ -22,7 +22,6 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
      * @var array
      */
     protected $fieldSearchable = [
-        'ShiftCode' => 'like',
         'Status',
         'CreationTime',
     ];
@@ -119,5 +118,21 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
         ShiftDetail::where('ShiftId', $id)->delete();
 
         return parent::delete($id);
+    }
+
+    public function getShift(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->orWhereLike('Name', $attributes['key']);
+            $this->model = $this->model->orWhereLike('ShiftCode', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $result = $this->paginate($attributes['limit']);
+        } else {
+            $result = $this->get();
+        }
+
+        return $result;
     }
 }

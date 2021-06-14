@@ -201,9 +201,7 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         }
 
         if (!empty($attributes['fullName'])) {
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('employee', function ($query) use ($attributes) {
-                $query->whereLike('FullName', $attributes['fullName']);
-            });
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
         }
 
         if (!empty($attributes['limit'])) {

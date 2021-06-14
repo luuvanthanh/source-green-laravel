@@ -23,6 +23,14 @@ class CoreModel extends Model implements Presentable
         return $query->whereRaw("public.unaccent($key) ILIKE '%{$value}%' ");
     }
 
+    public function scopeOrWhereLike($query, $key, $value)
+    {
+        $value = mb_strtoupper($this->convert_vi_to_en($value));
+
+        $key = "\"$key\"";
+        return $query->orWhereRaw("public.unaccent($key) ILIKE '%{$value}%' ");
+    }
+
     public function convert_vi_to_en($str)
     {
         $str = preg_replace("/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/", "a", $str);

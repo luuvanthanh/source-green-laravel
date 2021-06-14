@@ -33,18 +33,9 @@ class TrainingSchoolController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
+        $trainingSchool = $this->trainingSchoolRepository->getTrainingSchool($request->all());
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $trainingSchools = $this->trainingSchoolRepository->all();
-        } else {
-            $trainingSchools = $this->trainingSchoolRepository->paginate($limit);
-        }
-
-        return $this->success($trainingSchools, trans('lang::messages.common.getListSuccess'));
+        return $this->success($trainingSchool, trans('lang::messages.common.getListSuccess'));
     }
 
     /**

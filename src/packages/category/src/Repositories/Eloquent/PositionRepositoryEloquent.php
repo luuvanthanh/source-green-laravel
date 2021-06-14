@@ -55,4 +55,22 @@ class PositionRepositoryEloquent extends CoreRepositoryEloquent implements Posit
 
         return parent::find($position->Id);
     }
+
+    public function getPosition(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $position = $this->paginate($attributes['limit']);
+        } else {
+            $position = $this->get();
+        }
+
+        return $position;
+    }
 }

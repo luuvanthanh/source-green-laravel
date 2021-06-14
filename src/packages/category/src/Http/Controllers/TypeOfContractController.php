@@ -34,16 +34,8 @@ class TypeOfContractController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $typeOfContracts = $this->typeOfContractRepository->all();
-        } else {
-            $typeOfContracts = $this->typeOfContractRepository->paginate($limit);
-        }
+        $typeOfContracts = $this->typeOfContractRepository->getTypeOfContract($request->all());
 
         return $this->success($typeOfContracts, trans('lang::messages.common.getListSuccess'));
     }

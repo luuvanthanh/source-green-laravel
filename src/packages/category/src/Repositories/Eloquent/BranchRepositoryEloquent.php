@@ -17,7 +17,6 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
 {
     protected $fieldSearchable = [
         'Id',
-        'Name' => 'like',
         'CreationTime',
     ];
 
@@ -47,5 +46,23 @@ class BranchRepositoryEloquent extends CoreRepositoryEloquent implements BranchR
     public function boot()
     {
         $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    public function getBranch(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $branch = $this->paginate($attributes['limit']);
+        } else {
+            $branch = $this->get();
+        }
+
+        return $branch;
     }
 }

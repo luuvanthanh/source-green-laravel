@@ -146,6 +146,11 @@ class DivisionShiftRepositoryEloquent extends CoreRepositoryEloquent implements 
         if (!empty($attributes['divisionId'])) {
             $this->model = $this->model->where('DivisionId', $attributes['divisionId']);
         }
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereHas('division', function ($query) use ($attributes) {
+                $query->whereLike('Name', $attributes['key']);
+            });
+        }
 
         if (!empty($attributes['StartDate']) && !empty($attributes['EndDate'])) {
             $this->model = $this->model->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])

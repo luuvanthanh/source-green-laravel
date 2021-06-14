@@ -57,6 +57,10 @@ class AbsentTypeRepositoryEloquent extends CoreRepositoryEloquent implements Abs
             $this->model = $this->model->whereIn('Type', $type);
         }
 
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('Name', $attributes['key']);
+        }
+
         if (!empty($attributes['limit'])) {
             $absentType = $this->paginate($attributes['limit']);
         } else {

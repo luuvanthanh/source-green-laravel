@@ -8,6 +8,7 @@ use GGPHP\Dismissed\Models\Dismissed;
 use GGPHP\Dismissed\Presenters\DismissedPresenter;
 use GGPHP\Dismissed\Repositories\Contracts\DismissedRepository;
 use GGPHP\Dismissed\Services\DismissedDetailServices;
+use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\WordExporter\Services\WordExporterServices;
 use Illuminate\Container\Container as Application;

@@ -58,16 +58,7 @@ class BranchController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $branch = $this->branchRepository->all();
-        } else {
-            $branch = $this->branchRepository->paginate($limit);
-        }
+        $branch = $this->branchRepository->getBranch($request->all());
 
         return $this->success($branch, trans('lang::messages.common.getListSuccess'));
     }

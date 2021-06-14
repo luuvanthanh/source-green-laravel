@@ -17,7 +17,6 @@ class DivisionRepositoryEloquent extends CoreRepositoryEloquent implements Divis
 {
     protected $fieldSearchable = [
         'Id',
-        'Name' => 'like',
         'CreationTime',
     ];
 
@@ -47,5 +46,23 @@ class DivisionRepositoryEloquent extends CoreRepositoryEloquent implements Divis
     public function boot()
     {
         $this->pushCriteria(app(RequestCriteria::class));
+    }
+
+    public function getDivision(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $division = $this->paginate($attributes['limit']);
+        } else {
+            $division = $this->get();
+        }
+
+        return $division;
     }
 }
