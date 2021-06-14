@@ -1,7 +1,7 @@
 import {
   getLeftMenuData,
   getTopMenuData,
-  getLeftMenuExchange,
+  getLeftMenuCommunications,
   getLeftMenuProfile,
   getLeftMenuSchedules,
   getLeftMenuConfiguration,
@@ -24,7 +24,7 @@ export default {
   state: {
     menuLeftData: [],
     menuTopData: [],
-    menuLeftExchange: [],
+    menuLeftCommunications: [],
     menuLeftObjectProfiles: [],
     menuLeftSchedules: [],
     menuConfiguration: [],
@@ -47,7 +47,7 @@ export default {
   effects: {
     *GET_DATA(action, { put, call }) {
       const menuLeftData = yield call(getLeftMenuData);
-      const menuLeftExchange = yield call(getLeftMenuExchange);
+      const menuLeftCommunications = yield call(getLeftMenuCommunications);
       const menuLeftObjectProfiles = yield call(getLeftMenuProfile);
       const menuLeftSchedules = yield call(getLeftMenuSchedules);
       const menuTopData = yield call(getTopMenuData);
@@ -69,7 +69,7 @@ export default {
         payload: {
           menuLeftData,
           menuTopData,
-          menuLeftExchange,
+          menuLeftCommunications,
           menuLeftObjectProfiles,
           menuLeftSchedules,
           menuConfiguration,

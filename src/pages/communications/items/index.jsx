@@ -252,7 +252,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -271,19 +271,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function reset form
@@ -434,7 +433,7 @@ class Index extends PureComponent {
               <Button
                 color="success"
                 onClick={() => history.push(`/trao-doi/${record.id}/chi-tiet`)}
-                permission="TD_PH_SUA"
+                permission="TD"
               >
                 Chi tiết
               </Button>
@@ -443,9 +442,7 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return !ability.can('TD_PH_SUA', 'TD_PH_SUA')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return !ability.can('TD', 'TD') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   render() {
@@ -470,7 +467,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`/trao-doi/tao-moi`)}
-              permission="TD_PH_THEM"
+              permission="TD"
             >
               Tạo trao đổi
             </Button>
@@ -539,7 +536,7 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('TD_PH_SUA', 'TD_PH_SUA')) {
+                  if (ability.can('TD', 'TD')) {
                     history.push(`/trao-doi/${record.id}/chi-tiet`);
                   }
                 },

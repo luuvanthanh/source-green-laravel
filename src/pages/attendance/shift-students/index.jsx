@@ -327,9 +327,7 @@ class Index extends PureComponent {
               checked={record.status === variablesModules.STATUS_SHIFT.ON}
               onChange={(event) => this.onChangeSwitch(record, event)}
             />
-            <span>
-              {record.status === variablesModules.STATUS_SHIFT.ON ? 'Đang bật' : 'Đang khóa'}
-            </span>
+            <span>{variablesModules.STATUS_SHIFT_NAME[record.status]}</span>
           </div>
         ),
       },

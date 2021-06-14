@@ -12,7 +12,7 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        const res = yield saga.call(services.createClassStudent, payload);
+        const res = yield saga.call(services.add, payload);
         callback(res);
       } catch (error) {
         callback(null, error);

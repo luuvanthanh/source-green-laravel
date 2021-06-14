@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
-import { Helper, variables } from '@/utils';
+import { Helper } from '@/utils';
 
 export function get(params = {}) {
   return request('/medicals', {

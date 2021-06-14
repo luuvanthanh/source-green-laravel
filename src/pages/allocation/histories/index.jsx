@@ -234,7 +234,7 @@ class Index extends PureComponent {
     const loading = effects['AllocationHistories/GET_DATA'];
     return (
       <>
-        <Helmet title="Lịch sử y tế" />
+        <Helmet title="Lịch sử phân bổ" />
         <div
           className={classnames(styles['content-form'], styles['content-form-AllocationHistories'])}
         >

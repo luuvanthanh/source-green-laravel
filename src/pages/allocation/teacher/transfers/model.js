@@ -20,7 +20,7 @@ export default {
     },
     *UPDATE({ payload, callback }, saga) {
       try {
-        const res = yield saga.call(services.changeClassTeacher, payload);
+        const res = yield saga.call(services.change, payload);
         callback(res);
       } catch (error) {
         callback(null, error);

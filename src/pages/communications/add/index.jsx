@@ -37,7 +37,7 @@ const mapStateToProps = ({ communicationsAdd, loading, menu, user }) => ({
   user: user.user,
   branches: communicationsAdd.branches,
   classes: communicationsAdd.classes,
-  menuData: menu.menuLeftExchange,
+  menuData: menu.menuLeftCommunications,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {

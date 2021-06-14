@@ -126,7 +126,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -145,23 +145,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function header table
@@ -208,16 +203,14 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet-v2`)}
-              permission="BUS_LOTRINH_SUA"
+              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
+              permission="BUS"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('BUS_LOTRINH_SUA', 'BUS_LOTRINH_SUA')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return !ability.can('BUS', 'BUS') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   render() {
@@ -232,15 +225,15 @@ class Index extends PureComponent {
     const loading = effects['tutorial/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh lộ trình" />
+        <Helmet title="Danh sách lộ trình" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH LỘ TRÌNH</Text>
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi-v2`)}
-              permission="BUS_LOTRINH_THEM"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="BUS"
             >
               Thêm mới
             </Button>

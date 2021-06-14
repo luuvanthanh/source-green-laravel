@@ -594,7 +594,7 @@ class Index extends PureComponent {
     const loadingRemoveOnly = effects['scheduleStudents/REMOVE_ONLY'];
     return (
       <>
-        <Helmet title="Danh sách học sinh" />
+        <Helmet title="Lịch học trẻ" />
         {/* MODAL CONFIRM */}
         <Modal
           visible={showConfirm}
@@ -664,7 +664,6 @@ class Index extends PureComponent {
           </Form>
         </Modal>
         {/* MODAL CHOOSE SHIFT */}
-        <Helmet title="Lịch làm việc" />
         <div
           className={classnames(styles['content-form'], styles['content-form-scheduleStudents'])}
         >

@@ -39,7 +39,7 @@ const mapStateToProps = ({ communicationsDetails, loading, menu, user }) => ({
   loading,
   details: communicationsDetails.details,
   error: communicationsDetails.error,
-  menuData: menu.menuLeftExchange,
+  menuData: menu.menuLeftCommunications,
   user: user.user,
 });
 @connect(mapStateToProps)
