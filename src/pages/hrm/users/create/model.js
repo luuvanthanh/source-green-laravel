@@ -278,7 +278,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_DEGREES',
           payload: error.data,
         });
       }
@@ -292,7 +292,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_TRAINNING_MAJORS',
           payload: error.data,
         });
       }
@@ -306,7 +306,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_TRAINNING_SCHOOLS',
           payload: error.data,
         });
       }
@@ -320,7 +320,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_BRANCHES',
           payload: error.data,
         });
       }
@@ -334,7 +334,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_DIVISIONS',
           payload: error.data,
         });
       }
@@ -348,7 +348,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_POSITIONS',
           payload: error.data,
         });
       }
@@ -362,7 +362,7 @@ export default {
         });
       } catch (error) {
         yield saga.put({
-          type: 'SET_ERROR',
+          type: 'SET_ERROR_ROLES',
           payload: error.data,
         });
       }
@@ -798,6 +798,18 @@ export default {
       }
     },
     // maternity-leaves
+    *STORAGE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.storage, payload);
+        yield saga.put({
+          type: 'SET_DETAILS',
+          payload: response,
+        });
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

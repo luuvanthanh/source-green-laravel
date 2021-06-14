@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 .table {
   :global(.ant-table-container) {
@@ -79,6 +79,14 @@
   background-color: #fff1f1;
 }
 
+.cell-heading-business {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $background-success;
+}
+
 .modal {
   :global(.ant-modal-footer) {
     display: flex;
@@ -105,7 +113,7 @@
     display: flex;
     justify-content: flex-end;
     padding: 0;
-    span[class*="icon"] {
+    span[class*='icon'] {
       font-size: 10px;
     }
     button {

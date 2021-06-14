@@ -240,6 +240,7 @@ class Index extends PureComponent {
         title: 'Cơ sở',
         key: 'position',
         className: 'min-width-150',
+        width: 150,
         render: (record) => (
           <Text size="normal">{get(record, 'positionLevel[0].branch.name')}</Text>
         ),

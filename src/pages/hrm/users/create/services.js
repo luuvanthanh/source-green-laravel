@@ -466,3 +466,13 @@ export function getMaternityLeaves(params = {}) {
   });
 }
 // maternity-leaves
+
+export function storage(data = {}) {
+  return requestLavarel(`/v1/employee/storage/${data.id}`, {
+    method: 'PUT',
+    data,
+    params: {
+      include: Helper.convertIncludes(['positionLevel']),
+    },
+  });
+}

@@ -316,6 +316,7 @@ const Index = memo(() => {
                 label="Ngày quyết định"
                 name="decisionDate"
                 type={variables.DATE_PICKER}
+                disabledDate={Helper.disabledDate}
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
