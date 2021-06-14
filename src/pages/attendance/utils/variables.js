@@ -19,6 +19,10 @@ export const variables = {
     ALL: 'ALL',
     TOTAL: 'TOTAL',
   },
+  STATUS_SHIFT_NAME: {
+    ON: 'Đang bật',
+    OFF: 'Đang khóa',
+  },
   TYPES_PARAMATER_VALUES: [
     {
       id: 'CONTRACT',

@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-export function createClassTeacher(data) {
+export function add(data) {
   return request('/class-teachers', {
     method: 'POST',
     data,

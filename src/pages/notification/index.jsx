@@ -324,7 +324,7 @@ class Index extends PureComponent {
                 event.stopPropagation();
                 history.push(`/thong-bao/${record.id}/chinh-sua`);
               }}
-              permission="THONGBAO_SUA"
+              permission="THONGBAO"
             />
             <Button
               color="danger"
@@ -333,14 +333,13 @@ class Index extends PureComponent {
                 event.stopPropagation();
                 this.onRemove(record.id);
               }}
-              permission="THONGBAO_XOA"
+              permission="THONGBAO"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('THONGBAO_SUA', 'THONGBAO_SUA') &&
-      !ability.can('THONGBAO_XOA', 'THONGBAO_XOA')
+    return !ability.can('THONGBAO', 'THONGBAO') && !ability.can('THONGBAO', 'THONGBAO')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -366,7 +365,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`/thong-bao/tao-moi`)}
-              permission="THONGBAO_THEM"
+              permission="THONGBAO"
             >
               Tạo thông báo
             </Button>
@@ -412,7 +411,7 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('THONGBAO_XEM', 'THONGBAO_XEM')) {
+                  if (ability.can('THONGBAO', 'THONGBAO')) {
                     history.push(`/thong-bao/${record.id}/chi-tiet`);
                   }
                 },

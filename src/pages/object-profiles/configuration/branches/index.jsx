@@ -250,20 +250,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH_COSO_SUA"
+              permission="CAUHINH"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH_COSO_XOA"
+              permission="CAU_HINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHINH_COSO_SUA', 'CAUHINH_COSO_SUA') &&
-      !ability.can('CAUHINH_COSO_XOA', 'CAUHINH_COSO_XOA')
+    return !ability.can('CAU_HINH', 'CAU_HINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -289,7 +288,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHINH_COSO_THEM"
+              permission="CAU_HINH"
             >
               Thêm mới
             </Button>

@@ -341,7 +341,7 @@ class Index extends PureComponent {
               color="success"
               ghost
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="YTE_SUA"
+              permission="YTE"
             >
               Chi tiết
             </Button>
@@ -349,9 +349,7 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return !ability.can('YTE_SUA', 'YTE_SUA')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return !ability.can('YTE', 'YTE') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   render() {
@@ -378,7 +376,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`/y-te/thong-ke/tao-moi`)}
-              permission="YTE_THEM"
+              permission="YTE"
             >
               Tạo y tế
             </Button>

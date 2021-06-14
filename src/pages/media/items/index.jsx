@@ -15,7 +15,7 @@ import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
-import localVariables from './utils/variables';
+import localVariables from '../utils/variables';
 
 const Index = memo(() => {
   const mounted = useRef(false);

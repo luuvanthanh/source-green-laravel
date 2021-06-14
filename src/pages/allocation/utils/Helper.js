@@ -1,8 +1,6 @@
-import { isArray, pickBy, isEmpty, get as getLodash, toString, omit, size } from 'lodash';
 import Tag from '@/components/CommonComponent/Tag';
-import Text from '@/components/CommonComponent/Text';
-import { variables } from './variables';
 import moment from 'moment';
+import { variables } from './variables';
 
 export default class Helpers {
   static tagStatus = (type) => {

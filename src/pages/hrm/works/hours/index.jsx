@@ -1,23 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
-import { Form, Avatar } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce, get, isInteger } from 'lodash';
-import { UserOutlined } from '@ant-design/icons';
+import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../../utils/Helper';
-import variablesModules from '../../utils/variables';
 import PropTypes from 'prop-types';
-import { CHOOSE } from './data.json';
 import Helpers from '@/utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../../utils/Helper';
+import { CHOOSE } from './data.json';
 
 let isMounted = true;
 /**
@@ -50,7 +47,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         type: query?.type || 'DATE',
         fullName: query?.fullName,
@@ -59,7 +55,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -252,8 +247,8 @@ class Index extends PureComponent {
     return null;
   };
 
-  redirectHistory = (item, record) => {
-    return `/lich-lam-viec/lich-su-ra-vao-v2?${Helper.convertParamSearch(
+  redirectHistory = (item, record) =>
+    `/lich-lam-viec/lich-su-ra-vao?${Helper.convertParamSearch(
       {
         startDate: Helper.getDate(item),
         endDate: Helper.getDate(item),
@@ -261,7 +256,6 @@ class Index extends PureComponent {
       },
       variables.QUERY_STRING,
     )}`;
-  };
 
   redirectAdditionaltime = (record) => {
     const { search } = this.state;
@@ -309,9 +303,6 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const { search } = this.state;
     const headerWork = [
       {
@@ -424,7 +415,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -453,6 +443,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -462,6 +453,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

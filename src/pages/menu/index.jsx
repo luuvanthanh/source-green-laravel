@@ -131,7 +131,7 @@ const Index = memo(() => {
             color="success"
             icon="plus"
             onClick={() => history.push(`/thuc-don/tao-moi`)}
-            permission="BEP_THEM"
+            permission="BEP"
           >
             Tạo thực đơn
           </Button>
