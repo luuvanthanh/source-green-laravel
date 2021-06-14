@@ -96,7 +96,7 @@ const Index = memo(() => {
               ...response,
               toolLevels: response.toolLevels.map((item) => ({
                 ...item,
-                evaluates: item.evaluate.map((item) => ({ name: item })),
+                evaluates: item.evaluates.map((item) => ({ ...item, name: item.evaluate })),
               })),
             });
           }
@@ -231,25 +231,23 @@ const Index = memo(() => {
                   />
                   <Text size="normal">Nhận xét</Text>
                 </Pane>
-                <Pane className="p20 d-flex justify-content-between align-items-center">
-                  {params.id && (
-                    <p className="btn-delete" role="presentation" onClick={remove}>
-                      Hủy
-                    </p>
-                  )}
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={
-                      loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']
-                    }
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
               </Loading>
+            </Pane>
+            <Pane className="d-flex justify-content-between align-items-center">
+              {params.id && (
+                <p className="btn-delete" role="presentation" onClick={remove}>
+                  Xóa
+                </p>
+              )}
+              <Button
+                className="ml-auto px25"
+                color="success"
+                htmlType="submit"
+                size="large"
+                loading={loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']}
+              >
+                Lưu
+              </Button>
             </Pane>
           </Form>
         </Pane>

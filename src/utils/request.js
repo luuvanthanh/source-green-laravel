@@ -43,6 +43,11 @@ request.interceptors.request.use(async (url, options) => {
 // response interceptor, handling response
 request.interceptors.response.use(
   async (response) => {
+    if (optionsRoot?.parse && response.status < 300) {
+      return {
+        status: 201,
+      };
+    }
     const dataRoot = await response.clone().json();
     if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
       if (response.status >= 400 && response.status <= 500) {
@@ -57,15 +62,10 @@ request.interceptors.response.use(
       }
       if (response.status >= 200 && response.status <= 300) {
         notification.success({
-          message: 'Cập nhật thành công',
+          message: 'Thông báo',
           description: 'Bạn đã cập nhật thành công dữ liệu',
         });
       }
-    }
-    if (optionsRoot?.parse && response.status < 300) {
-      return {
-        status: 201,
-      };
     }
     if (response.status === variables.STATUS_204) {
       return {

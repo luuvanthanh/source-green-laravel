@@ -16,7 +16,7 @@ import styles from '../index.scss';
 
 const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
-  const [ { bus, listBusByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
+  const [{ bus, listBusByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
     effects,
   ]);
@@ -28,7 +28,7 @@ const Index = memo(({ classId }) => {
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
-    keyWord: ''
+    keyWord: '',
   });
 
   const fetchDataBus = () => {
@@ -44,7 +44,7 @@ const Index = memo(({ classId }) => {
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }),
-      }
+      },
     });
   };
 
@@ -52,8 +52,8 @@ const Index = memo(({ classId }) => {
     dispatch({
       type: 'overView/GET_DATA_BUS_BY_STATUS',
       payload: {
-        ...search
-      }
+        ...search,
+      },
     });
   };
 
@@ -90,29 +90,24 @@ const Index = memo(({ classId }) => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <AvatarTable
-            fileImage="/images/slice/avatar_02.png"
-            srcLocal
-            shape="square"
-            size={40}
-          />
+          <AvatarTable fileImage="/images/slice/avatar_02.png" srcLocal shape="square" size={40} />
           <p className="mb0 ml10">Su Beo</p>
         </div>
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
       width: 120,
-      render: () => '32 tháng'
+      render: () => '32 tháng',
     },
     {
       title: 'Thời gian lên xe',
       key: 'time',
       className: 'min-width-120',
       width: 120,
-      render: () => '07:01:12'
+      render: () => '07:01:12',
     },
     {
       title: 'Phụ huynh',
@@ -121,29 +116,24 @@ const Index = memo(({ classId }) => {
       width: 250,
       render: () => (
         <div className="d-flex align-items-center">
-          <AvatarTable
-            fileImage="/images/slice/avatar.png"
-            srcLocal
-            shape="square"
-            size={40}
-          />
+          <AvatarTable fileImage="/images/slice/avatar.png" srcLocal shape="square" size={40} />
           <p className="mb0 ml10">Nguyễn Anh</p>
         </div>
-      )
+      ),
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-120',
       width: 120,
-      render: () => 'Preschool 1'
+      render: () => 'Preschool 1',
     },
     {
       title: 'Giáo viên',
       key: 'teacher',
       className: 'min-width-250',
       width: 250,
-      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
+      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh',
     },
   ];
 
@@ -162,7 +152,7 @@ const Index = memo(({ classId }) => {
   const handleSearch = _.debounce((value, name) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      [name]: value
+      [name]: value,
     }));
   }, 300);
 
@@ -171,7 +161,7 @@ const Index = memo(({ classId }) => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-   const changePagination = (page, limit) => {
+  const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -183,24 +173,14 @@ const Index = memo(({ classId }) => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: search.limit,
-    defaultCurrent: Number(search.page),
-    current: Number(search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  const pagination = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      search,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   return (
     <>
@@ -236,7 +216,10 @@ const Index = memo(({ classId }) => {
               </div>
               <div className="col-md-4 col-xl-6">
                 <p className="d-flex align-items-center justify-content-end mb0">
-                  {String(details?.name).charAt(0).toUpperCase() + String(details?.name).slice(1)} <span className="text-success font-size-30 font-weight-bold ml10">{details?.number}</span>
+                  {String(details?.name).charAt(0).toUpperCase() + String(details?.name).slice(1)}{' '}
+                  <span className="text-success font-size-30 font-weight-bold ml10">
+                    {details?.number}
+                  </span>
                 </p>
               </div>
             </div>
@@ -261,11 +244,15 @@ const Index = memo(({ classId }) => {
           <div className={styles['header-tab']}>
             <div>
               <img src="/images/home/road.svg" alt="notification" className={styles.icon} />
-              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Bus</span>
+              <span
+                className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}
+              >
+                Bus
+              </span>
             </div>
           </div>
           <div className="mt50">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355} >
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
               <div className={classnames(styles['content-bus'], 'px20')}>
                 {loading['overView/GET_DATA_BUS'] ? (
                   <>
@@ -276,65 +263,124 @@ const Index = memo(({ classId }) => {
                   <>
                     <div
                       className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
-                      onClick={() => getDetail({ number: bus.studentTotal, name: 'trẻ đăng ký xe bus' })}
+                      onClick={() =>
+                        getDetail({ number: bus.studentTotal, name: 'trẻ đăng ký xe bus' })
+                      }
                       aria-hidden="true"
                     >
-                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <div
+                        className={classnames(
+                          'd-flex',
+                          'align-items-center',
+                          'justify-content-between',
+                          styles['header-content-tab'],
+                        )}
+                      >
                         <div className="d-flex align-items-center">
-                          <AvatarTable
-                            fileImage="/images/icon/letter.svg"
-                            srcLocal
-                            size={27}
-                          />
+                          <AvatarTable fileImage="/images/icon/letter.svg" srcLocal size={27} />
                           <p className="mb0 ml10">Số trẻ đăng ký xe bus</p>
                         </div>
-                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.studentTotal || 0}</p>
+                        <p
+                          className={classnames(
+                            'mb0',
+                            'ml10',
+                            'font-size-30',
+                            'font-weight-bold',
+                            'text-black',
+                          )}
+                        >
+                          {bus?.studentTotal || 0}
+                        </p>
                       </div>
                     </div>
                     <div
                       className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
-                      onClick={() => getDetail({ number: bus.absentTotal || 0, name: 'trẻ đăng ký nhưng vắng'})}
+                      onClick={() =>
+                        getDetail({ number: bus.absentTotal || 0, name: 'trẻ đăng ký nhưng vắng' })
+                      }
                       aria-hidden="true"
                     >
-                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <div
+                        className={classnames(
+                          'd-flex',
+                          'align-items-center',
+                          'justify-content-between',
+                          styles['header-content-tab'],
+                        )}
+                      >
                         <div className="d-flex align-items-center">
-                          <AvatarTable
-                            fileImage="/images/icon/absent.svg"
-                            srcLocal
-                            size={27}
-                          />
+                          <AvatarTable fileImage="/images/icon/absent.svg" srcLocal size={27} />
                           <p className="mb0 ml10">Số trẻ đăng ký nhưng vắng</p>
                         </div>
-                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.absentTotal || 0}</p>
+                        <p
+                          className={classnames(
+                            'mb0',
+                            'ml10',
+                            'font-size-30',
+                            'font-weight-bold',
+                            'text-black',
+                          )}
+                        >
+                          {bus?.absentTotal || 0}
+                        </p>
                       </div>
                     </div>
                     <div
-                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                      className={classnames(
+                        styles['content-tab'],
+                        styles.bus,
+                        'width-100p',
+                        'mb12',
+                      )}
                     >
                       <div className="d-flex align-items-center">
-                        <Avatar
-                          src="/images/icon/right-arrow-green.svg"
-                          size={27}
-                        />
+                        <Avatar src="/images/icon/right-arrow-green.svg" size={27} />
                         <p className="mb0 ml10">Đi đến trường</p>
                       </div>
                       <div className="d-flex justify-content-between">
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            Trẻ lên xe
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.schoolGetInStatusTotal, name: 'trẻ lên xe - Đi đến trường'})}
+                            onClick={() =>
+                              getDetail({
+                                number: bus.schoolGetInStatusTotal,
+                                name: 'trẻ lên xe - Đi đến trường',
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              styles.number,
+                            )}
                           >
                             {bus?.schoolGetInStatusTotal}
                           </p>
                         </div>
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            Trẻ xuống xe
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.schoolGetOffStatusTotal, name: 'trẻ xuống xe - Đi đến trường'})}
+                            onClick={() =>
+                              getDetail({
+                                number: bus.schoolGetOffStatusTotal,
+                                name: 'trẻ xuống xe - Đi đến trường',
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              'text-right',
+                              styles.number,
+                            )}
                           >
                             {bus?.schoolGetOffStatusTotal}
                           </p>
@@ -342,32 +388,61 @@ const Index = memo(({ classId }) => {
                       </div>
                     </div>
                     <div
-                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb20')}
+                      className={classnames(
+                        styles['content-tab'],
+                        styles.bus,
+                        'width-100p',
+                        'mb20',
+                      )}
                     >
                       <div className="d-flex align-items-center">
-                        <Avatar
-                          src="/images/icon/left-arrow-orange.svg"
-                          size={27}
-                        />
+                        <Avatar src="/images/icon/left-arrow-orange.svg" size={27} />
                         <p className="mb0 ml10">Đi về nhà</p>
                       </div>
                       <div className="d-flex justify-content-between">
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            Trẻ lên xe
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.homeGetInStatusTotal, name: 'trẻ lên xe - Đi về nhà'})}
+                            onClick={() =>
+                              getDetail({
+                                number: bus.homeGetInStatusTotal,
+                                name: 'trẻ lên xe - Đi về nhà',
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              styles.number,
+                            )}
                           >
                             {bus?.homeGetInStatusTotal}
                           </p>
                         </div>
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            Trẻ xuống xe
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.homeGetOffStatusTotal, name: 'trẻ xuống xe - Đi về nhà'})}
+                            onClick={() =>
+                              getDetail({
+                                number: bus.homeGetOffStatusTotal,
+                                name: 'trẻ xuống xe - Đi về nhà',
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              'text-right',
+                              styles.number,
+                            )}
                           >
                             {bus?.homeGetOffStatusTotal}
                           </p>

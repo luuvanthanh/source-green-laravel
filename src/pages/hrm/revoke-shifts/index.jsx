@@ -1,20 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import HelperModules from '../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -30,7 +28,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ revokeShifts, loading }) => ({
   data: revokeShifts.data,
   pagination: revokeShifts.pagination,
@@ -46,7 +43,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -54,7 +50,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -157,7 +152,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -176,80 +171,68 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Họ và Tên',
-        key: 'fullName',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
-      },
-      {
-        title: 'Ngày bỏ ca',
-        key: 'date',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(record.dateViolation, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Ca làm việc',
-        key: 'shift',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'shift.shiftCode'),
-      },
-      {
-        title: 'Thời gian ca',
-        key: 'time',
-        className: classnames('min-width-200', 'max-width-200'),
-        render: (record) =>
-          record?.shift?.shiftDetail.map((item) => {
-            const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
-            const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
-            return (
-              <span key={item.id}>
-                {Helper.getTwoDate(startTime, endTime, variables.DATE_FORMAT.DATE_TIME)} &nbsp;&nbsp;
-              </span>
-            );
-          }),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 50,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Họ và Tên',
+      key: 'fullName',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => <Text size="normal">{record?.employee?.fullName}</Text>,
+    },
+    {
+      title: 'Ngày bỏ ca',
+      key: 'date',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => Helper.getDate(record.dateViolation, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Ca làm việc',
+      key: 'shift',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => get(record, 'shift.shiftCode'),
+    },
+    {
+      title: 'Thời gian ca',
+      key: 'time',
+      className: classnames('min-width-200', 'max-width-200'),
+      render: (record) =>
+        record?.shift?.shiftDetail.map((item) => {
+          const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL);
+          const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL);
+          return (
+            <span key={item.id}>
+              {Helper.getTwoDate(startTime, endTime, variables.DATE_FORMAT.DATE_TIME)} &nbsp;&nbsp;
+            </span>
+          );
+        }),
+    },
+  ];
 
   render() {
     const {
@@ -257,7 +240,6 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['revokeShifts/GET_DATA'];

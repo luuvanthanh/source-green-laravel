@@ -68,7 +68,7 @@ const Index = memo(() => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  const changePagination = (page, limit) => {
+  const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,

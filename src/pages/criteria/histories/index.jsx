@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -12,6 +10,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -28,7 +27,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ criteriaLearn, loading }) => ({
   data: criteriaLearn.data,
   pagination: criteriaLearn.pagination,
@@ -85,34 +83,34 @@ class Index extends PureComponent {
         key: 'thoiGian',
         width: 60,
         align: 'center',
-        render: (text, record, index) => <Text size="normal">15:31, 10/1/2021</Text>,
+        render: () => <Text size="normal">15:31, 10/1/2021</Text>,
       },
       {
         title: 'Tên tài khoản',
         key: 'tenTaiKhoan',
         className: 'min-width-150',
         width: 250,
-        render: (record) => <Text size="normal">Nguyễn Vân</Text>,
+        render: () => <Text size="normal">Nguyễn Vân</Text>,
       },
       {
         title: 'Hành động',
         key: 'hanhDong',
         className: 'min-width-150',
         width: 250,
-        render: (record) => <Text size="normal">Nhập thông tin</Text>,
+        render: () => <Text size="normal">Nhập thông tin</Text>,
       },
       {
         title: 'Chương trình học',
         key: 'chuongTrinhHoc',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Chương trình phát triển suy luận cho trẻ</Text>,
+        render: () => <Text size="normal">Chương trình phát triển suy luận cho trẻ</Text>,
       },
       {
         title: 'Trẻ',
         key: 'tre',
         className: 'min-width-150',
         width: 250,
-        render: (record) => <Text size="normal">Su Beo</Text>,
+        render: () => <Text size="normal">Su Beo</Text>,
       },
     ];
     return columns;
@@ -123,7 +121,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-   changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -142,31 +140,28 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   render() {
     const {
       match: { params },
-      data,
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { visible, objects, search } = this.state;
+    const { search } = this.state;
     const loading = effects['criteriaLearn/GET_DATA'];
-    const loadingSubmit = effects['criteriaLearn/ADD'] || effects['criteriaLearn/UPDATE'];
     return (
       <>
         <Helmet title="Lịch sử" />
@@ -207,10 +202,7 @@ class Index extends PureComponent {
                   />
                 </div>
                 <div className="col-lg-2 col-md-4">
-                  <FormItem
-                    name="time"
-                    type={variables.RANGE_PICKER}
-                  />
+                  <FormItem name="time" type={variables.RANGE_PICKER} />
                 </div>
               </div>
             </Form>
@@ -236,19 +228,15 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
-  data: [],
   pagination: {},
   loading: {},
-  dispatch: {},
   location: {},
 };
 

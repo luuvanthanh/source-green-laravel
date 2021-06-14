@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Typography } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -12,10 +12,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from '../utils/Helper';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import HelperModules from '../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,7 +30,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ workDeclarations, loading }) => ({
   data: workDeclarations.data,
   pagination: workDeclarations.pagination,
@@ -47,7 +45,6 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
@@ -55,7 +52,6 @@ class Index extends PureComponent {
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
         startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -158,7 +154,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -177,22 +173,13 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-  });
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
 
   renderDescription = (record) => {
     if (!isEmpty(record)) {
@@ -218,50 +205,41 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'text',
-        width: 50,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.sttList(
-            this.props.pagination?.current_page,
-            index,
-            this.props.pagination?.per_page,
-          ),
-      },
-      {
-        title: 'Họ và Tên',
-        key: 'name',
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Ngày công',
-        key: 'date',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
-      },
-      {
-        title: 'Giờ chấm',
-        key: 'time',
-        width: 150,
-        className: 'min-width-150',
-        render: (record) => record.time,
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'text',
+      width: 50,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+    },
+    {
+      title: 'Họ và Tên',
+      key: 'name',
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+          fullName={record?.employee?.fullName}
+        />
+      ),
+    },
+    {
+      title: 'Ngày công',
+      key: 'date',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+    },
+    {
+      title: 'Giờ chấm',
+      key: 'time',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => record.time,
+    },
+  ];
 
   render() {
     const {
