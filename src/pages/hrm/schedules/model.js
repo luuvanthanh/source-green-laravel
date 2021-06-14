@@ -16,6 +16,7 @@ export default {
       shifts: [],
     },
     holidays: [],
+    businessCards: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -49,6 +50,10 @@ export default {
         ? Helper.getArrayHolidays(head(payload?.parsePayload)?.holidayDetails)
         : [],
     }),
+    SET_BUSINESS_CARDS: (state, { payload }) => ({
+      ...state,
+      businessCards: payload?.parsePayload ? Helper.getArrayHolidays(payload?.parsePayload) : [],
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -72,6 +77,22 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_HOLIDAYS',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BUSINESS_CARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBusinessCards, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_BUSINESS_CARDS',
             payload: response,
           });
         }

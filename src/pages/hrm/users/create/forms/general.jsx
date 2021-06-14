@@ -1,8 +1,9 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Form } from 'antd';
+import { Form, Modal } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
 import { history, useParams } from 'umi';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -15,6 +16,7 @@ const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
 ];
+const { confirm } = Modal;
 
 const marginProps = { style: { marginBottom: 12 } };
 const General = memo(() => {
@@ -26,18 +28,12 @@ const General = memo(() => {
     loading: { effects },
     trainningMajors,
     trainningSchool,
-    branches,
-    divisions,
-    positions,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     details: HRMusersAdd.details,
     degrees: HRMusersAdd.degrees,
     trainningMajors: HRMusersAdd.trainningMajors,
     trainningSchool: HRMusersAdd.trainningSchool,
-    branches: HRMusersAdd.branches,
-    divisions: HRMusersAdd.divisions,
-    positions: HRMusersAdd.positions,
     error: HRMusersAdd.error,
   }));
   const dispatch = useDispatch();
@@ -48,12 +44,10 @@ const General = memo(() => {
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
     effects[`HRMusersAdd/ADD`] ||
+    effects[`HRMusersAdd/STORAGE`] ||
     effects[`HRMusersAdd/UPDATE`] ||
     effects[`HRMusersAdd/UPDATE_STATUS`];
   const loading =
-    effects[`HRMusersAdd/GET_BRANCHES`] ||
-    effects[`HRMusersAdd/GET_DIVISIONS`] ||
-    effects[`HRMusersAdd/GET_POSITIONS`] ||
     effects[`HRMusersAdd/GET_DETAILS`] ||
     effects[`HRMusersAdd/GET_DEGREES`] ||
     effects[`HRMusersAdd/GET_TRAINNING_MAJORS`] ||
@@ -90,6 +84,48 @@ const General = memo(() => {
   };
 
   /**
+   * Function submit form modal
+   * @param {object} values values of form
+   */
+  const storage = () => {
+    confirm({
+      title: 'Thông báo',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content:
+        details?.status === 'WORKING'
+          ? 'Bạn có muốn lưu trữ nhân viên này. Nếu lưu trữ sẽ ảnh hưởng đến giữ liệu đang có. Bạn có chắc chắn?'
+          : 'Bạn có muốn khôi phục nhân viên này. Nếu khôi phục sẽ ảnh hưởng đến giữ liệu đang có. Bạn có chắc chắn?',
+      onOk() {
+        dispatch({
+          type: 'HRMusersAdd/STORAGE',
+          payload: {
+            id: params.id,
+            status: details?.status === 'WORKING' ? 'STORE' : 'WORKING',
+          },
+          callback: (response, error) => {
+            if (error) {
+              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                error.data.errors.forEach((item) => {
+                  formRef.current.setFields([
+                    {
+                      name: get(item, 'source.pointer'),
+                      errors: [get(item, 'detail')],
+                    },
+                  ]);
+                });
+              }
+            }
+          },
+        });
+      },
+      onCancel() {},
+    });
+  };
+
+  /**
    * Load Items Degres
    */
   useEffect(() => {
@@ -115,36 +151,6 @@ const General = memo(() => {
   useEffect(() => {
     dispatch({
       type: 'HRMusersAdd/GET_TRAINNING_SCHOOLS',
-      payload: params,
-    });
-  }, []);
-
-  /**
-   * Load Items Branches
-   */
-  useEffect(() => {
-    dispatch({
-      type: 'HRMusersAdd/GET_BRANCHES',
-      payload: params,
-    });
-  }, []);
-
-  /**
-   * Load Items Divisions
-   */
-  useEffect(() => {
-    dispatch({
-      type: 'HRMusersAdd/GET_DIVISIONS',
-      payload: params,
-    });
-  }, []);
-
-  /**
-   * Load Items Positions
-   */
-  useEffect(() => {
-    dispatch({
-      type: 'HRMusersAdd/GET_POSITIONS',
       payload: params,
     });
   }, []);
@@ -349,51 +355,13 @@ const General = memo(() => {
               )}
             </div>
           </div>
-          <div style={{ padding: 20 }} className="pb-0 border-bottom">
-            <div className="row">
-              <div className="col-lg-6">
-                <FormItem
-                  data={branches}
-                  label="Cơ sở"
-                  name="branchId"
-                  type={variables.SELECT}
-                  // rules={[variables.RULES.EMPTY]}
-                  disabled={params.id}
-                />
-              </div>
-              <div className="col-lg-6">
-                <FormItem
-                  data={divisions}
-                  label="Bộ phận"
-                  name="divisionId"
-                  type={variables.SELECT}
-                  // rules={[variables.RULES.EMPTY]}
-                  disabled={params.id}
-                />
-              </div>
-              <div className="col-lg-6">
-                <FormItem
-                  data={positions}
-                  label="Chức vụ"
-                  name="positionId"
-                  type={variables.SELECT}
-                  // rules={[variables.RULES.EMPTY]}
-                  disabled={params.id}
-                />
-              </div>
-              <div className="col-lg-6">
-                <FormItem
-                  label="Thời gian bắt đầu"
-                  name="startDate"
-                  type={variables.DATE_PICKER}
-                  // rules={[variables.RULES.EMPTY]}
-                  disabled={params.id}
-                />
-              </div>
-            </div>
-          </div>
+          <div className="d-flex justify-content-between" style={{ padding: 20 }}>
+            {params.id && (
+              <Button color="primary" size="large" loading={loadingSubmit} onClick={storage}>
+                {details?.status === 'WORKING' ? 'Lưu trữ' : 'Khôi phục'}
+              </Button>
+            )}
 
-          <div className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
               Lưu
             </Button>

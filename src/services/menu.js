@@ -896,16 +896,6 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Ngày nghỉ phép của nv',
-          key: 'sabbatical-leaves',
-          url: [
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien',
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/tao-moi',
-            '/quan-ly-nhan-su/ngay-nghi-phep-cua-nhan-vien/:id/chi-tiet',
-          ],
-          permission: [permissions.HRM],
-        },
-        {
           title: 'Khai báo các khoản khác',
           key: 'other-declarationss',
           url: [

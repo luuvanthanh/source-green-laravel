@@ -240,6 +240,7 @@ class Index extends PureComponent {
                       name="date"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
+                      disabledDate={Helper.disabledDate}
                     />
                   </div>
                 </div>

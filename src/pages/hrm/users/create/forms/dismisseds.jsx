@@ -340,6 +340,7 @@ const Index = memo(() => {
               <FormItem
                 label="Ngày quyết định"
                 name="decisionDate"
+                disabledDate={Helper.disabledDate}
                 type={variables.DATE_PICKER}
                 rules={[variables.RULES.EMPTY]}
               />

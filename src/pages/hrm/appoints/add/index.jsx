@@ -11,6 +11,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -214,6 +215,7 @@ class Index extends PureComponent {
                     <FormItem
                       label="Ngày quyết định"
                       name="decisionDate"
+                      disabledDate={Helper.disabledDate}
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
                     />
@@ -286,6 +288,30 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  positions: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  loading: {},
+  dispatch: {},
+  branches: [],
+  categories: {},
+  error: {},
+  menuData: [],
+  positions: [],
+  divisions: [],
+};
 
 export default Index;
