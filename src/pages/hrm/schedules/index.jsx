@@ -566,17 +566,19 @@ class Index extends PureComponent {
                 )}
               >
                 {get(data, 'shift.shiftCode')}
-                <div className={stylesChildren['fade-cell']}>
-                  <button
-                    type="button"
-                    className={stylesChildren['fade-cell-item']}
-                    onClick={() => {
-                      this.onRemove(data, user);
-                    }}
-                  >
-                    <CloseOutlined />
-                  </button>
-                </div>
+                {moment(dayOfWeek).diff(moment(), 'days', true) >= 0 && (
+                  <div className={stylesChildren['fade-cell']}>
+                    <button
+                      type="button"
+                      className={stylesChildren['fade-cell-item']}
+                      onClick={() => {
+                        this.onRemove(data, user);
+                      }}
+                    >
+                      <CloseOutlined />
+                    </button>
+                  </div>
+                )}
               </div>
             </Tooltip>
           );
