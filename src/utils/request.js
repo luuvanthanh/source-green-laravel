@@ -43,7 +43,7 @@ request.interceptors.request.use(async (url, options) => {
 // response interceptor, handling response
 request.interceptors.response.use(
   async (response) => {
-    if (optionsRoot?.parse && response.status < 300) {
+    if (optionsRoot?.parse === true) {
       return {
         status: 201,
       };

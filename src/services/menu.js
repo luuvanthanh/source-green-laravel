@@ -510,32 +510,38 @@ export async function getLeftMenuCriteria() {
       pro: true,
     },
     {
-      title: 'Chương trình học',
-      key: 'study-program',
-      url: ['/chuong-trinh-hoc/chuong-trinh-hoc', '/chuong-trinh-hoc/chuong-trinh-hoc/them-moi'],
+      title: 'Học tập giáo cụ',
+      key: 'teaching-tools',
       icon: 'icon icon-list',
       permission: [permissions.CTH],
       pro: true,
-    },
-    {
-      title: 'Lịch sử',
-      key: 'history',
-      url: ['/chuong-trinh-hoc/lich-su'],
-      icon: 'icon icon-clock',
-      permission: [permissions.CTH],
-      pro: true,
-    },
-    {
-      title: 'Cấu hình',
-      key: 'categories',
-      icon: 'icon icon-setting',
-      permission: [permissions.CTH],
       children: [
         {
-          title: 'Hoạt động giáo cụ',
-          key: 'teaching-tools',
+          title: 'DS chương trình',
+          key: 'study-program',
+          url: [
+            '/chuong-trinh-hoc',
+            '/chuong-trinh-hoc/them-moi',
+            '/chuong-trinh-hoc/:id/chi-tiet',
+          ],
           permission: [permissions.CTH],
           pro: true,
+        },
+        {
+          title: 'DS template',
+          key: 'curriculum-templates',
+          url: [
+            '/chuong-trinh-hoc/templates',
+            '/chuong-trinh-hoc/templates/them-moi',
+            '/chuong-trinh-hoc/templates/:id/chi-tiet',
+          ],
+          permission: [permissions.CTH],
+          pro: true,
+        },
+        {
+          title: 'Cấu hình',
+          key: 'categories',
+          permission: [permissions.CTH],
           children: [
             {
               title: 'Góc giáo cụ',
@@ -561,6 +567,22 @@ export async function getLeftMenuCriteria() {
             },
           ],
         },
+      ],
+    },
+    {
+      title: 'Lịch sử',
+      key: 'history',
+      url: ['/chuong-trinh-hoc/lich-su'],
+      icon: 'icon icon-clock',
+      permission: [permissions.CTH],
+      pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'categories',
+      icon: 'icon icon-setting',
+      permission: [permissions.CTH],
+      children: [
         {
           title: 'Kiểu dữ liệu',
           key: 'criteria-datatypes',

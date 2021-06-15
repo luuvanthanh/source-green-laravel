@@ -36,7 +36,10 @@ export function getBranches(params = {}) {
 export function getClasses(params = {}) {
   return request('/classes', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }
 
@@ -189,6 +192,15 @@ export function getBusInformations(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getCurriculumTemplates() {
+  return request('/curriculum-templates', {
+    method: 'GET',
+    params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
