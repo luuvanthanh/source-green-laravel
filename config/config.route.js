@@ -23,7 +23,45 @@ export default [
         routes: [
           {
             path: '/chuong-trinh-hoc',
-            redirect: '/chuong-trinh-hoc/danh-gia-hoc-tap',
+            component: './criteria/curriculums/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/them-moi',
+            component: './criteria/curriculums/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/:id/chi-tiet',
+            component: './criteria/curriculums/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/templates',
+            component: './criteria/curriculum-templates/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/templates/them-moi',
+            component: './criteria/curriculum-templates/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/templates/:id/chi-tiet',
+            component: './criteria/curriculum-templates/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/lich-su',
+            component: './criteria/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
           },
           {
             path: '/chuong-trinh-hoc/danh-gia-hoc-tap',
@@ -94,24 +132,6 @@ export default [
           {
             path: '/chuong-trinh-hoc/cau-hinh/thuoc-nhom-tieu-chi/:id/chi-tiet',
             component: './criteria/criteria-group-properties/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CTH],
-          },
-          {
-            path: '/chuong-trinh-hoc/chuong-trinh-hoc',
-            component: './criteria/study-program',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CTH],
-          },
-          {
-            path: '/chuong-trinh-hoc/chuong-trinh-hoc/them-moi',
-            component: './criteria/study-program/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CTH],
-          },
-          {
-            path: '/chuong-trinh-hoc/lich-su',
-            component: './criteria/histories',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },

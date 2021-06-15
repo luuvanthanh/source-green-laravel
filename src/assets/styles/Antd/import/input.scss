@@ -1,5 +1,5 @@
 // Import mixins
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN INPUT */
@@ -122,4 +122,8 @@
   .ant-input {
     color: $text-dark;
   }
+}
+
+.ant-switch-checked {
+  background-color: $background-success;
 }
