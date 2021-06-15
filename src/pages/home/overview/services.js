@@ -55,10 +55,10 @@ export function getBus(params = {}) {
 }
 
 export function getBusByStatus(params = {}) {
-  return request('/medicals', {
+  return request(`/bus-place-log/${params.date}/student-bus-places`, {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
+      ...omit({ ...params, date: undefined }, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
     },
   });
@@ -100,6 +100,8 @@ export function getAttendanceByStatus(params = {}) {
         'attendance',
         'absent',
         'classStudent.class',
+        'parent',
+        'classStudent.class.teacher',
       ]),
     },
   });

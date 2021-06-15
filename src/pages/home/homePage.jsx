@@ -57,9 +57,12 @@ class HomePage extends PureComponent {
   }
 
   fetchClasses = () => {
-    const { dispatch } = this.props;
+    const { dispatch, user } = this.props;
     dispatch({
       type: 'categories/GET_CLASSES',
+      payload: {
+        branch: user?.user?.objectInfo?.positionLevel?.branchId || undefined,
+      },
       callback: (res) => {
         if (res) {
           this.setStateData({
@@ -143,10 +146,12 @@ class HomePage extends PureComponent {
 
 HomePage.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 HomePage.defaultProps = {
   dispatch: {},
+  user: {},
 };
 
 export default HomePage ;
