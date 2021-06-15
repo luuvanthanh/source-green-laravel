@@ -105,14 +105,77 @@ const Index = memo(({ classId }) => {
       key: 'parents',
       className: 'min-width-250',
       width: 250,
+       render: (record) => (
+        <AvatarTable
+          size={40}
+          fileImage={_.head(
+            (Helper.isJSON(
+              _.get(record, 'parent[0].fileImage'),
+            ) ||
+              Helper.isJSON(
+                _.get(record, 'parent[1].fileImage'),
+              )) &&
+              JSON.parse(
+                _.get(record, 'parent[0].fileImage') ||
+                  _.get(record, 'parent[1].fileImage'),
+              ),
+          )}
+          fullName={
+            _.get(record, 'parent[0].fullName') ||
+            _.get(record, 'parent[1].fullName')
+          }
+        />
+      ),
     },
     {
       title: 'Giáo viên',
       key: 'teacher',
-      className: 'min-width-300',
-      width: 300,
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        !_.isEmpty(record?.classStudent?.class?.teacher)
+          ? _.map(record?.classStudent?.class?.teacher, 'fullName').join(', ')
+          : ''
+      )
     },
   ];
+
+  const absent = () => [
+    {
+      title: 'Nghỉ từ ngày',
+      key: 'date',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => {
+        const date = record?.absent[0];
+        return `${ date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''}
+        ${ date?.startDate ? `- ${Helper.getDate(date?.endDate, variables.DATE_FORMAT.DATE_MONTH)}` : ''}`;
+      }
+    },
+    {
+      title: 'Số lượng ngày nghỉ',
+      key: 'absent',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => {
+        const date = record?.absent[0];
+        return moment(date?.startDate).diff(moment(date?.endDate), 'days') + 1;
+      }
+    },
+  ];
+
+  const switchHeader = () => {
+    switch(details?.status) {
+      case 'UNPAID_LEAVE':
+      case 'ANNUAL_LEAVE': {
+        const newHeader = [...header()];
+        const teacher = newHeader.pop();
+        return [ ...newHeader , ...absent(), teacher ];
+      }
+      default:
+        return header();
+    }
+  };
 
   const getDetails = (record) => {
     setVisible(true);
@@ -240,12 +303,12 @@ const Index = memo(({ classId }) => {
           </Form>
           <Table
             bordered
-            columns={header()}
+            columns={switchHeader()}
             dataSource={listAttendancesByStatus?.data}
             loading={loading['overView/GET_DATA_ATTENDANCE_BY_STATUS']}
             pagination={pagination(listAttendancesByStatus?.pagination)}
             params={{
-              header: header(),
+              header: switchHeader(),
               type: 'table',
             }}
             rowKey={(record) => record.id}
