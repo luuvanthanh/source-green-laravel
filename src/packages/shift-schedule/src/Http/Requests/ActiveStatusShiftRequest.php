@@ -24,19 +24,21 @@ class ActiveStatusShiftRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(Request $request)
+    public function rules()
     {
-        $checkUnique = [];
-
-        if ($request->status === Shift::ON) {
-            $checkUnique = Rule::unique('Shifts')->where(function ($query) use ($request) {
-                $query->where(['ShiftCode' => $request->shiftCode, 'Status' => Shift::ON]);
-            });
-        }
-
         return [
             'shiftCode' => [
-                'required', $checkUnique,
+                'required',
+                function ($attribute, $value, $fail) {
+
+                    if (request()->status === Shift::ON) {
+                        $shift = Shift::where(['ShiftCode' => $value, 'Status' => Shift::ON])->first();
+
+                        if (!is_null($shift)) {
+                            return $fail("Không hợp lệ, trùng mã ca!");
+                        }
+                    }
+                },
             ],
         ];
     }

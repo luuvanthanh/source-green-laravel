@@ -5,6 +5,7 @@ namespace GGPHP\Clover\Transformers;
 use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class ClassesTransformer.
@@ -31,6 +32,7 @@ class ClassesTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
+        'teacher',
     ];
 
     /**
@@ -48,7 +50,7 @@ class ClassesTransformer extends BaseTransformer
 
     /**
      * Include schedules
-     * @param Student $classes
+     * @param Classes $classes
      * @return \League\Fractal\Resource\Collection
      */
     public function includeBranch(Classes $classes)
@@ -58,5 +60,15 @@ class ClassesTransformer extends BaseTransformer
         }
 
         return $this->item($classes->branch, new BranchTransformer, 'Branch');
+    }
+
+    /**
+     * Include teacher
+     * @param Classes $classes
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTeacher(Classes $classes)
+    {
+        return $this->collection($classes->teacher, new UserTransformer, 'Teacher');
     }
 }

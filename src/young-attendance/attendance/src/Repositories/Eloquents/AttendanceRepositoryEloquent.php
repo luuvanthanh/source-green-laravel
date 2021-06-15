@@ -73,6 +73,19 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
      */
     public function create(array $attributes)
     {
+        $now = Carbon::now('GMT+7')->format('H:i:s');
+
+        switch ($attributes['status']) {
+            case 3:
+                $attributes['checkIn'] = $now;
+                break;
+            case 4:
+                $attributes['checkOut'] = $now;
+                break;
+            default:
+                break;
+        }
+
         $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $attributes['date'])->first();
 
         if (is_null($attendance)) {
@@ -91,7 +104,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $parentId = $attendance->student->parent->pluck('Id')->toArray();
             $nameStudent = $attendance->student->FullName;
             $message = '';
-            switch ($attendance->status) {
+            switch ($attendance->Status) {
                 case 2:
                     $date = $attendance->Date->format('d-m-Y');
                     $message = "Bé $nameStudent vắng không phép ngày $date";
@@ -143,7 +156,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
             $nameStudent = $attendance->student->FullName;
             $message = '';
-            switch ($attendance->status) {
+
+            switch ($attendance->Status) {
                 case 2:
                     $date = $attendance->Date->format('d-m-Y');
                     $message = "Bé $nameStudent vắng không phép ngày $date";
@@ -272,7 +286,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
     public function attendanceCrontab($attributes)
     {
         $students = Student::with(['inOutHistory'])->where('Status', '!=', Student::STORE)->get();
-        $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now()->format('Y-m-d');
+        $date = !empty($attributes['date']) ? $attributes['date'] : Carbon::now('GMT+7')->format('Y-m-d');
 
         foreach ($students as $student) {
             $studentTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($student->Id, $date, $date);

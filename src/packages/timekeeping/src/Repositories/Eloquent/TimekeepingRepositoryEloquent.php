@@ -279,6 +279,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $timekeepingReport = 0;
 
                         if (isset($workDeclarationByDate[$key])) {
+                            arraySortByColumn($workDeclarationByDate[$key], 'Time');
                             foreach ($workDeclarationByDate[$key] as $workDeclaration) {
                                 if ($workDeclaration->Time < $checkIn) {
                                     $checkIn = $workDeclaration->Time;
@@ -425,6 +426,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
                             foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
                                 if ($workDeclaration->Time < $checkIn) {
                                     $checkIn = $workDeclaration->Time;
@@ -599,6 +602,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
                             foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
                                 if ($workDeclaration->Time < $checkIn) {
                                     $checkIn = $workDeclaration->Time;
@@ -782,6 +787,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 }
 
                 if (isset($workDeclarationByDate[$key])) {
+                    arraySortByColumn($workDeclarationByDate[$key], 'Time');
+
                     foreach ($workDeclarationByDate[$key] as $workDeclaration) {
                         if ($workDeclaration->Time < $checkIn) {
                             $checkIn = $workDeclaration->Time;
