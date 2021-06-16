@@ -2,8 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
+import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -11,6 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 let isMounted = true;
 /**
@@ -27,10 +29,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ workShifts, loading }) => ({
-  data: workShifts.data,
-  error: workShifts.error,
-  pagination: workShifts.pagination,
+const mapStateToProps = ({ storages, loading }) => ({
+  data: storages.data,
+  pagination: storages.pagination,
+  branches: storages.branches,
+  divisions: storages.divisions,
+  positions: storages.positions,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,9 +48,11 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        ...query,
+        status: 'STORE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        fullName: query?.fullName,
       },
     };
     setIsMounted(true);
@@ -54,6 +60,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -83,19 +90,38 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'workShifts/GET_DATA',
+      type: 'storages/GET_DATA',
       payload: {
         ...search,
       },
     });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch(search),
+    });
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'storages/GET_BRANCHES',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'storages/GET_DIVISIONS',
+      payload: {
+        ...search,
+      },
+    });
+    dispatch({
+      type: 'storages/GET_POSITIONS',
+      payload: {
+        ...search,
+      },
+    });
   };
 
   /**
@@ -122,6 +148,24 @@ class Index extends PureComponent {
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
   };
 
   /**
@@ -157,76 +201,79 @@ class Index extends PureComponent {
     });
 
   /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const self = this;
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'workShifts/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) self.onLoad();
-          },
-        });
-      },
-    });
-  };
-
-  /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
-        title: 'Phòng ban',
+        title: 'Mã ID',
+        key: 'index',
+        className: 'min-width-70',
+        width: 70,
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+      },
+      {
+        title: 'Họ và Tên',
         key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record?.division?.name}</Text>,
-      },
-      {
-        title: 'Chấm công vào',
-        key: 'code',
-        className: 'min-width-150',
+        className: 'min-width-200',
+        width: 200,
         render: (record) => (
-          <Text size="normal">{get(record, 'shift.shiftDetail[0].startTime')}</Text>
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.fileImage)}
+            fullName={record.fullName}
+          />
         ),
       },
       {
-        title: 'Chấm công ra',
-        key: 'address',
-        className: 'min-width-150',
-        render: (record) => (
-          <Text size="normal">{get(record, 'shift.shiftDetail[1].endTime')}</Text>
-        ),
-      },
-      {
-        title: 'Ca làm việc',
+        title: 'Số điện thoại',
         key: 'phoneNumber',
         className: 'min-width-150',
+        width: 150,
+        render: (record) => <Text size="normal">{record.phoneNumber}</Text>,
+      },
+      {
+        title: 'Cơ sở',
+        key: 'position',
+        className: 'min-width-150',
+        width: 150,
         render: (record) => (
-          <Text size="normal">{record?.shift?.name || record?.shift?.shiftCode}</Text>
+          <Text size="normal">{get(record, 'positionLevel[0].branch.name')}</Text>
+        ),
+      },
+      {
+        title: 'Bộ phận',
+        key: 'division',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].division.name')}</Text>
+        ),
+      },
+      {
+        title: 'Chức vụ',
+        key: 'position',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => (
+          <Text size="normal">{get(record, 'positionLevel[0].position.name')}</Text>
         ),
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
+              color="success"
+              ghost
+              onClick={() => history.push(`/quan-ly-nhan-su/nhan-vien/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -236,26 +283,25 @@ class Index extends PureComponent {
 
   render() {
     const {
-      error,
       data,
+      branches,
+      positions,
+      divisions,
       pagination,
       match: { params },
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['workShifts/GET_DATA'];
+    const loading = effects['storages/GET_DATA'];
     return (
       <>
-        <Helmet title="Phân ca làm việc" />
+        <Helmet title="Danh sách nhân viên lưu trữ" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Phân ca làm việc</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
+          {/* FORM SEARCH */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <Text color="dark">Nhân viên lưu trữ</Text>
           </div>
-          <div className={styles['block-table']}>
+          <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
@@ -264,30 +310,52 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
+                    name="fullName"
+                    onChange={(event) => this.onChange(event, 'fullName')}
+                    placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={positions}
+                    name="positionId"
+                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={divisions}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
-              error={error}
-              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
+              bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '70vh' }}
             />
           </div>
         </div>
@@ -303,7 +371,9 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  positions: PropTypes.arrayOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -313,7 +383,9 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  error: {},
+  branches: [],
+  positions: [],
+  divisions: [],
 };
 
 export default Index;
