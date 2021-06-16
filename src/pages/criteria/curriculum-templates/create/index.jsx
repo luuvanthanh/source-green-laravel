@@ -14,7 +14,6 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 import { variables, Helper } from '@/utils';
-import Text from '@/components/CommonComponent/Text';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Loading from '@/components/CommonComponent/Loading';
 import variablesModules from '../utils/variables';
@@ -239,7 +238,11 @@ const Index = memo(() => {
         }
       />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
-        <Breadcrumbs className="pb30 pt0" last="Thêm mới" menu={menuLeftCriteria} />
+        <Breadcrumbs
+          className="pb30 pt0"
+          last={params.id ? 'Chỉnh sửa' : 'Thêm mới'}
+          menu={menuLeftCriteria}
+        />
         <Pane className="row">
           <Pane className="col-lg-8 offset-lg-2">
             <Form
@@ -365,7 +368,7 @@ const Index = memo(() => {
 
                 <Pane className="card mt-30">
                   <Pane type="form-title" className="heading-form border-bottom">
-                    <Text>Góc giáo cụ</Text>
+                    <Heading type="form-title">Góc giáo cụ</Heading>
                     <Switch onChange={onChangeCurriculums} checked={curriculums} />
                   </Pane>
                   <Pane className="px15">
