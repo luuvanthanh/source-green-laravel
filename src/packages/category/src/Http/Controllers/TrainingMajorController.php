@@ -33,18 +33,9 @@ class TrainingMajorController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
+        $trainingMajor = $this->trainingMajorRepository->getTrainingMajor($request->all());
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $trainingMajors = $this->trainingMajorRepository->all();
-        } else {
-            $trainingMajors = $this->trainingMajorRepository->paginate($limit);
-        }
-
-        return $this->success($trainingMajors, trans('lang::messages.common.getListSuccess'));
+        return $this->success($trainingMajor, trans('lang::messages.common.getListSuccess'));
     }
 
     /**

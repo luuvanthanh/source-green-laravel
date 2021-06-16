@@ -4,6 +4,8 @@ namespace GGPHP\Transfer\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
+use GGPHP\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
 use GGPHP\Transfer\Models\Transfer;
 use GGPHP\Transfer\Presenters\TransferPresenter;
 use GGPHP\Transfer\Repositories\Contracts\TransferRepository;
@@ -34,10 +36,15 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
      */
     public function __construct(
         WordExporterServices $wordExporterServices,
+        PositionLevelRepositoryEloquent $positionLevelRepository,
+        ScheduleRepositoryEloquent $scheduleRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->wordExporterServices = $wordExporterServices;
+        $this->positionLevelRepository = $positionLevelRepository;
+        $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
+
     }
 
     /**
@@ -75,6 +82,34 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
             $tranfer = Transfer::create($attributes);
             TransferDetailServices::add($tranfer->Id, $attributes['data']);
 
+            foreach ($attributes['data'] as $value) {
+                $dataPosition = [
+                    'employeeId' => $value['employeeId'],
+                    'branchId' => $value['branchId'],
+                    'positionId' => $value['positionId'],
+                    'divisionId' => $value['divisionId'],
+                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'type' => 'TRANFER',
+                ];
+
+                $this->positionLevelRepository->create($dataPosition);
+
+                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $tranfer->TimeApply->format('Y-m-d')], ['EndDate', '>=', $tranfer->TimeApply->format('Y-m-d')]])->first();
+
+                if (!is_null($divisionShift)) {
+                    $dataSchedule = [
+                        'employeeId' => $value['employeeId'],
+                        'shiftId' => $divisionShift->ShiftId,
+                        'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                        'endDate' => $tranfer->TimeApply->addYear()->format('Y-m-d'),
+                        'interval' => 1,
+                        'repeatBy' => 'daily',
+                    ];
+
+                    $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
+                }
+
+            }
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

@@ -17,7 +17,6 @@ class DegreeRepositoryEloquent extends CoreRepositoryEloquent implements DegreeR
 {
     protected $fieldSearchable = [
         'Id',
-        'Name' => 'like',
         'CreationTime',
     ];
 
@@ -49,4 +48,21 @@ class DegreeRepositoryEloquent extends CoreRepositoryEloquent implements DegreeR
         return DegreePresenter::class;
     }
 
+    public function getDegree(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $degree = $this->paginate($attributes['limit']);
+        } else {
+            $degree = $this->get();
+        }
+
+        return $degree;
+    }
 }

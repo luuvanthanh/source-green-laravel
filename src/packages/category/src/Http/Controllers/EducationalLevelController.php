@@ -33,18 +33,9 @@ class EducationalLevelController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
+        $educationalLevel = $this->educationalLevelRepository->getEducationalLevel($request->all());
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $educationalLevels = $this->educationalLevelRepository->all();
-        } else {
-            $educationalLevels = $this->educationalLevelRepository->paginate($limit);
-        }
-
-        return $this->success($educationalLevels, trans('lang::messages.common.getListSuccess'));
+        return $this->success($educationalLevel, trans('lang::messages.common.getListSuccess'));
     }
 
     /**

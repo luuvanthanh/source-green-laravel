@@ -98,8 +98,9 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             };
         }]);
 
-        if (!empty($attributes['fullName'])) {
-            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
+        if (!empty($attribute['fullName'])) {
+
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attribute['fullName']);
         }
 
         if (!empty($attribute['employeeId'])) {
@@ -158,6 +159,11 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeesByStore->tranferHistory($attributes);
+
+        $employeesByStore->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
 
         if (empty($attributes['limit'])) {
             $result = $employeesByStore->get();
@@ -251,16 +257,17 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         if (count($employeeHasTimekeeping) > 0) {
             $count = count($employeeTimeWorkShift);
-            $i = 1;
+
             foreach ($employeeTimeWorkShift as $key => $value) {
 
                 if (!is_null($dateOff) && $key >= $dateOff) {
                     break;
                 }
 
+                $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
+                $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
+
                 if (!empty($timeKeepingByDate[$key])) {
-                    $startTime = $value[0]['AfterStart'] ? $value[0]['AfterStart'] : $value[0]['StartTime'];
-                    $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
                     $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                     $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
 
@@ -270,6 +277,24 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     } else {
                         $type = 'KXD';
                         $timekeepingReport = 0;
+
+                        if (isset($workDeclarationByDate[$key])) {
+                            arraySortByColumn($workDeclarationByDate[$key], 'Time');
+                            foreach ($workDeclarationByDate[$key] as $workDeclaration) {
+                                if ($workDeclaration->Time < $checkIn) {
+                                    $checkIn = $workDeclaration->Time;
+                                }
+
+                                if ($workDeclaration->Time > $checkOut) {
+                                    $checkOut = $workDeclaration->Time;
+                                }
+                            }
+                        }
+
+                        if ($checkIn <= $startTime && $checkOut >= $endTime) {
+                            $type = 'BS';
+                            $timekeepingReport = 1;
+                        }
                     }
 
                     $result = [
@@ -278,7 +303,38 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'type' => $type,
                     ];
                     $responseTimeKeepingUser[] = $result;
-                    $i++;
+
+                } else if (!empty($workDeclarationByDate[$key])) {
+                    arraySortByColumn($workDeclarationByDate[$key], 'Time');
+                    $checkIn = $workDeclarationByDate[$key][0]->Time;
+                    $checkOut = end($workDeclarationByDate[$key])->Time;
+
+                    if ($checkIn <= $startTime && $checkOut >= $endTime) {
+                        $type = 'BS';
+                        $timekeepingReport = 1;
+
+                        $checkValue = array_search($key, array_column($responseTimeKeepingUser, 'date'));
+
+                        $result = [
+                            'date' => $key,
+                            'timekeepingReport' => $timekeepingReport,
+                            'type' => $type,
+                        ];
+
+                        if ($checkValue !== false) {
+                            $responseTimeKeepingUser[$checkValue] = [
+                                'date' => $key,
+                                'timekeepingReport' => $timekeepingReport,
+                                'type' => $type,
+                            ];
+                        } else {
+                            $responseTimeKeepingUser[] = [
+                                'date' => $key,
+                                'timekeepingReport' => $timekeepingReport,
+                                'type' => $type,
+                            ];
+                        }
+                    }
                 }
 
             }
@@ -370,6 +426,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
                             foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
                                 if ($workDeclaration->Time < $checkIn) {
                                     $checkIn = $workDeclaration->Time;
@@ -544,6 +602,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
 
                         if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
                             foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
                                 if ($workDeclaration->Time < $checkIn) {
                                     $checkIn = $workDeclaration->Time;
@@ -623,6 +683,11 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeesByStore->tranferHistory($attributes);
+
+        $employeesByStore->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
@@ -722,6 +787,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 }
 
                 if (isset($workDeclarationByDate[$key])) {
+                    arraySortByColumn($workDeclarationByDate[$key], 'Time');
+
                     foreach ($workDeclarationByDate[$key] as $workDeclaration) {
                         if ($workDeclaration->Time < $checkIn) {
                             $checkIn = $workDeclaration->Time;

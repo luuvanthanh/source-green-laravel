@@ -91,6 +91,10 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
             }
 
             $query->tranferHistory($request->all());
+
+            if ($request->has('fullName')) {
+                $query->whereLike('FullName', $request->fullName);
+            }
         });
 
         if ($request->has('startMonth')) {

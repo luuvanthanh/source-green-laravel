@@ -132,6 +132,11 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             $employees->whereLike('FullName', $attributes['fullName']);
         }
 
+        $employees->where(function ($query) use ($attributes) {
+            $query->where('DateOff', '>=', $attributes['startDate'])
+                ->orWhere('DateOff', null);
+        });
+
         if (empty($attributes['limit'])) {
             $result = $employees->get();
         } else {

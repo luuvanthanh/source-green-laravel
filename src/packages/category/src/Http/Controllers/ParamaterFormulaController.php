@@ -33,16 +33,8 @@ class ParamaterFormulaController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
 
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $paramaterFormulas = $this->paramaterFormulaRepository->all();
-        } else {
-            $paramaterFormulas = $this->paramaterFormulaRepository->paginate($limit);
-        }
+        $paramaterFormulas = $this->paramaterFormulaRepository->getParamaterFormula($request->all());
 
         return $this->success($paramaterFormulas, trans('lang::messages.common.getListSuccess'));
     }

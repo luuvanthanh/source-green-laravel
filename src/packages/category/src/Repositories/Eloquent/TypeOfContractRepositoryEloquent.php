@@ -63,7 +63,7 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
+
             \DB::rollback();
         }
 
@@ -89,5 +89,23 @@ class TypeOfContractRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         return parent::find($typeOfContract->Id);
+    }
+
+    public function getTypeOfContract(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['limit'])) {
+            $typeOfContract = $this->paginate($attributes['limit']);
+        } else {
+            $typeOfContract = $this->get();
+        }
+
+        return $typeOfContract;
     }
 }

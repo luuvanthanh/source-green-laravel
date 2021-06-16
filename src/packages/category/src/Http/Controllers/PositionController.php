@@ -54,20 +54,12 @@ class PositionController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $position = $this->positionRepository->all();
-        } else {
-            $position = $this->positionRepository->paginate($limit);
-        }
+        $position = $this->positionRepository->getPosition($request->all());
 
         return $this->success($position, trans('lang::messages.common.getListSuccess'));
     }

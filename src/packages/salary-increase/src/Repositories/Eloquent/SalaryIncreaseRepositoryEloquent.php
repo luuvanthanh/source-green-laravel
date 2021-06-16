@@ -71,17 +71,18 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
     {
         \DB::beginTransaction();
         try {
-            $tranfer = SalaryIncrease::create($attributes);
+            $salaryIncrease = SalaryIncrease::create($attributes);
             foreach ($attributes['detail'] as $value) {
-                $tranfer->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
+            dd($salaryIncrease);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($salaryIncrease->Id);
     }
 
     public function update(array $attributes, $id)
