@@ -11,7 +11,7 @@ class StudentObject extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'StudentObjects';
+    protected $table = 'fee.StudentObjects';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class StudentObject extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Description', 'Name', 'IsGrateful',
+        'Code', 'Name', 'Description', 'IsGrateful',
     ];
 
 }

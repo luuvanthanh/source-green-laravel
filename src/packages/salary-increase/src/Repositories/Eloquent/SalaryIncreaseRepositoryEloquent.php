@@ -76,7 +76,6 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
                 $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
-            dd($salaryIncrease);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateClassTypeRequest;
 use GGPHP\Fee\Http\Requests\UpdateClassTypeRequest;
+use GGPHP\Fee\Repositories\Contracts\ClassTypeRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

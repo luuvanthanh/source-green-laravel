@@ -266,7 +266,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         if (!empty($attributes['branchId'])) {
             $branchId = explode(',', $attributes['branchId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($branchId) {
-                $query->whereHas('branch', function ($query2) use ($branchId) {
+                $query->whereHas('classes', function ($query2) use ($branchId) {
                     $query2->whereIn('BranchId', $branchId);
                 });
             });

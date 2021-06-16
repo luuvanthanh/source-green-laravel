@@ -38,7 +38,7 @@ class UserController extends Controller
             $status = explode(',', $attributes['status']);
             $newStatus = [];
             foreach ($status as $value) {
-                $newStatus[] = Attendance::STATUS[$value];
+                $newStatus[] = User::STATUS[$value];
             }
 
             $attributes['status'] = $newStatus;

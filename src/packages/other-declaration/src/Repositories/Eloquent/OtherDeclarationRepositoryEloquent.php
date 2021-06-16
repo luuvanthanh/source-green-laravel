@@ -87,7 +87,6 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

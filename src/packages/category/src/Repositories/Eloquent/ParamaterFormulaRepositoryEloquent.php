@@ -67,4 +67,64 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         return $paramaterValue;
     }
+
+    public function create(array $attributes)
+    {
+        // $formular = null;
+        // foreach ($attributes['recipe'] as $value) {
+
+        //     if ($value['isDual']) {
+        //         foreach ($value['formular'] as $item) {
+        //             $operator = null;
+        //             if ($item['type'] == 'variable') {
+        //                 $a = ParamaterValue::where('Code', $item['variable'])->first()->ValueDefault;
+        //             } else {
+        //                 $a = $item['value'];
+        //             }
+
+        //             if (!is_null($item['operator'])) {
+        //                 $operator = $item['operator'];
+        //                 $formular .= $operator . $a;
+        //             } else {
+
+        //                 $formular .= $a;
+        //             }
+
+        //         }
+        //     } else {
+        //         $operator = null;
+        //         if ($value['type'] == 'variable') {
+        //             $a = ParamaterValue::where('Code', $value['variable'])->first()->ValueDefault;
+        //         } else {
+        //             $a = $value['value'];
+        //         }
+
+        //         if (!is_null($value['operator'])) {
+        //             $operator = $value['operator'];
+        //             $formular .= $operator . $a;
+        //         } else {
+        //             $formular .= $a;
+        //         }
+
+        //     }
+        // }
+
+        // $b = eval('return ' . $formular . ';');
+
+        $attributes['recipe'] = json_encode($attributes['recipe']);
+        $paramaterFormula = ParamaterFormula::create($attributes);
+
+        return parent::find($paramaterFormula->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $attributes['recipe'] = json_encode($attributes['recipe']);
+
+        $paramaterFormula = ParamaterFormula::findOrfail($id);
+
+        $paramaterFormula->update($attributes);
+
+        return parent::find($id);
+    }
 }

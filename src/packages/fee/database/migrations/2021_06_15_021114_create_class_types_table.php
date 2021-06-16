@@ -17,6 +17,7 @@ class CreateClassTypesTable extends Migration
         Schema::create('fee.ClassTypes', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
+            $table->string('Name');
             $table->string('Code');
             $table->string('From');
             $table->string('To');

@@ -50,6 +50,21 @@ class PaymentFormRepositoryEloquent extends CoreRepositoryEloquent implements Pa
 
     public function filterPaymentForm(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('Type', $attributes['type']);
+        }
+
+        if (!empty($attributes['isSemester'])) {
+            $this->model = $this->model->where('IsSemester', $attributes['isSemester']);
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {

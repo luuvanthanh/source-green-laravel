@@ -407,43 +407,44 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
-                        $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
-                        $key = array_search($value['StartTime'], array_column($shifts, 'StartTime'));
-                        unset($shifts[$key]);
-                        $shifts = array_values($shifts);
+                        if (isset($employeeTimeWorkShift[$value->Date->format('Y-m-d')])) {
+                            $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
+                            $key = array_search($value['StartTime'], array_column($shifts, 'StartTime'));
+                            unset($shifts[$key]);
+                            $shifts = array_values($shifts);
 
-                        $startTime = $shifts[0]['AfterStart'];
-                        $endTime = $shifts[0]['BeforeEnd'];
+                            $startTime = $shifts[0]['AfterStart'];
+                            $endTime = $shifts[0]['BeforeEnd'];
 
-                        $checkIn = $timeKeeping[0]->AttendedAt->format('H:i:s');
-                        $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
-
-                        if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                            $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
-                        } else {
-                            $type = $type . ' - KXD';
-                            $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
-                        }
-
-                        if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
-                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
-
-                            foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
-                                if ($workDeclaration->Time < $checkIn) {
-                                    $checkIn = $workDeclaration->Time;
-                                }
-
-                                if ($workDeclaration->Time > $checkOut) {
-                                    $checkOut = $workDeclaration->Time;
-                                }
-                            }
+                            $checkIn = $timeKeeping[0]->AttendedAt->format('H:i:s');
+                            $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
 
                             if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                                $type = $code . '/2' . ' - BS';
                                 $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
+                            } else {
+                                $type = $type . ' - KXD';
+                                $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
+                            }
+
+                            if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                                arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
+                                foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
+                                    if ($workDeclaration->Time < $checkIn) {
+                                        $checkIn = $workDeclaration->Time;
+                                    }
+
+                                    if ($workDeclaration->Time > $checkOut) {
+                                        $checkOut = $workDeclaration->Time;
+                                    }
+                                }
+
+                                if ($checkIn <= $startTime && $checkOut >= $endTime) {
+                                    $type = $code . '/2' . ' - BS';
+                                    $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
+                                }
                             }
                         }
-
                     }
                 }
 

@@ -350,5 +350,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
             ]);
         }
+
+        return parent::find($id);
     }
 }
