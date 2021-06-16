@@ -1056,6 +1056,12 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/luu-tru',
+            component: './hrm/storages',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/nhan-vien',
             component: './hrm/users',
             wrappers: ['@/wrappers/auth'],

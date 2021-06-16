@@ -158,14 +158,12 @@ export function getAttendancesReasons(data = {}) {
   return requestLaravel('/v1/attendances-reasons', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      search: Helper.convertParamSearchConvert({
-        Name: data.name,
-      }),
     },
   });
 }

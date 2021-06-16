@@ -84,7 +84,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -92,7 +92,6 @@ class Index extends PureComponent {
       type: 'HRMusers/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({

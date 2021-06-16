@@ -1006,6 +1006,14 @@ export async function getLeftMenuHRM() {
             },
           ],
         },
+        {
+          title: 'Lưu trữ',
+          key: 'storages',
+          url: [
+            '/quan-ly-nhan-su/luu-tru',
+          ],
+          permission: [permissions.HRM],
+        },
       ],
     },
     {
