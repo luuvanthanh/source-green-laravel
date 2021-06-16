@@ -502,14 +502,6 @@ export async function getLeftMenuCriteria() {
       pro: true,
     },
     {
-      title: 'Lượng nước uống',
-      key: 'water',
-      url: ['/chuong-trinh-hoc/luong-nuoc-uong'],
-      icon: 'icon icon-setting',
-      permission: [permissions.CTH],
-      pro: true,
-    },
-    {
       title: 'Học tập giáo cụ',
       key: 'teaching-tools',
       icon: 'icon icon-list',
@@ -540,7 +532,7 @@ export async function getLeftMenuCriteria() {
         },
         {
           title: 'Cấu hình',
-          key: 'categories',
+          key: 'categories-teaching-tools',
           permission: [permissions.CTH],
           children: [
             {
