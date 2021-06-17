@@ -13,6 +13,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
+import PropTypes from 'prop-types';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -30,13 +31,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, laboursContractsAdd, loading }) => ({
+const mapStateToProps = ({ menu, laboursContractsAdd, loading, user }) => ({
   loading,
   categories: laboursContractsAdd.categories,
   contractTypes: laboursContractsAdd.contractTypes,
   details: laboursContractsAdd.details,
   error: laboursContractsAdd.error,
   menuData: menu.menuLeftHRM,
+  user: user.user,
 });
 
 @connect(mapStateToProps)
@@ -264,7 +266,7 @@ class Index extends PureComponent {
           <InputNumber
             value={value}
             className={classnames('input-number')}
-            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
             onChange={this.changeValue(record)}
             placeholder="Nhập"
           />
@@ -522,6 +524,26 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  contractTypes: PropTypes.arrayOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  loading: {},
+  dispatch: {},
+  contractTypes: [],
+  categories: {},
+  error: {},
+  menuData: [],
+};
 
 export default Index;

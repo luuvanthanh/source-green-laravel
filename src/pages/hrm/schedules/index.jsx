@@ -39,6 +39,7 @@ const mapStateToProps = ({ schedulesChildren, loading }) => ({
   data: schedulesChildren.data,
   category: schedulesChildren.category,
   holidays: schedulesChildren.holidays,
+  businessCards: schedulesChildren.businessCards,
   pagination: schedulesChildren.pagination,
   loading,
 });
@@ -116,6 +117,12 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'schedulesChildren/GET_HOLIDAYS',
+      payload: {
+        ...search,
+      },
+    });
+    this.props.dispatch({
+      type: 'schedulesChildren/GET_BUSINESS_CARDS',
       payload: {
         ...search,
       },
@@ -224,7 +231,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -243,21 +250,13 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1,
-    showSizeChanger: true,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
 
   /**
    * Function reset form
@@ -387,12 +386,14 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
-    const { holidays } = this.props;
+    const { holidays, businessCards } = this.props;
     let checkBetween = false;
     let absentType = '';
     let absent = {};
     let isHolidays = false;
     let holiday = {};
+    let isBusinessCard = false;
+    let businessCard = {};
 
     const itemAbsentDetail = holidays?.find(
       (itemHoliday) =>
@@ -426,6 +427,43 @@ class Index extends PureComponent {
             )}
           >
             Nghỉ lễ
+          </div>
+        </Tooltip>
+      );
+    }
+
+    const itemBusiness = businessCards?.find(
+      (item) =>
+        Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
+        Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+    );
+    if (itemBusiness) {
+      isBusinessCard = true;
+      businessCard = itemBusiness;
+    } else {
+      isBusinessCard = false;
+    }
+
+    if (isBusinessCard) {
+      return (
+        <Tooltip
+          title={
+            <div className={stylesChildren['tooltip-container']}>
+              <strong>Đi công tác: </strong>
+              <br />
+              {businessCard.reason}
+            </div>
+          }
+          color="#00B24D"
+        >
+          <div
+            className={classnames(
+              stylesChildren['cell-content'],
+              stylesChildren['cell-content-code'],
+              stylesChildren['cell-heading-business'],
+            )}
+          >
+            Đi công tác
           </div>
         </Tooltip>
       );
@@ -528,17 +566,19 @@ class Index extends PureComponent {
                 )}
               >
                 {get(data, 'shift.shiftCode')}
-                <div className={stylesChildren['fade-cell']}>
-                  <button
-                    type="button"
-                    className={stylesChildren['fade-cell-item']}
-                    onClick={() => {
-                      this.onRemove(data, user);
-                    }}
-                  >
-                    <CloseOutlined />
-                  </button>
-                </div>
+                {moment(dayOfWeek).diff(moment(), 'days', true) >= 0 && (
+                  <div className={stylesChildren['fade-cell']}>
+                    <button
+                      type="button"
+                      className={stylesChildren['fade-cell-item']}
+                      onClick={() => {
+                        this.onRemove(data, user);
+                      }}
+                    >
+                      <CloseOutlined />
+                    </button>
+                  </div>
+                )}
               </div>
             </Tooltip>
           );
@@ -870,6 +910,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   category: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
+  businessCards: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -881,6 +922,7 @@ Index.defaultProps = {
   location: {},
   category: {},
   holidays: [],
+  businessCards: [],
 };
 
 export default Index;

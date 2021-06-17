@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -13,18 +12,10 @@ export default {
   effects: {
     *ADD({ payload, callback }, saga) {
       try {
-        const res = yield saga.call(services.createClassStudent, payload);
+        const res = yield saga.call(services.add, payload);
         callback(res);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Tạo thành công',
-        });
       } catch (error) {
         callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Tạo thất bại',
-        });
       }
     },
   },

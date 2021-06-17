@@ -49,7 +49,7 @@ export default {
     SET_DATA_BUS_BY_STATUS: (state, { payload }) => ({
       ...state,
       listBusByStatus: {
-        data: [{ id: 1 }] || payload.parsePayload,
+        data: payload.parsePayload,
         pagination: payload.pagination,
       },
     }),

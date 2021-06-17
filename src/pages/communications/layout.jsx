@@ -11,14 +11,6 @@ const mapStateToProps = ({ settings }) => ({
 @withRouter
 @connect(mapStateToProps)
 class Index extends PureComponent {
-  activeMenu = (pathname) => {
-    const arrayURL = pathname.split('/');
-    if (arrayURL.includes('tao-moi') && pathname.search('/tao-moi') > -1) {
-      return arrayURL.slice(0, -1).join('/');
-    }
-    return pathname;
-  };
-
   render() {
     const { children, isMenuCollapsed } = this.props;
     return (

@@ -3,12 +3,10 @@ import { connect, history } from 'umi';
 import { Modal, Form } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
 import allLocales from '@fullcalendar/core/locales-all';
 import FormItem from '@/components/CommonComponent/FormItem';
 import moment from 'moment';
@@ -19,7 +17,6 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import { sliceEvents, createPlugin } from '@fullcalendar/core';
 
 let isMounted = true;
 /**
@@ -36,7 +33,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ managerSchedules, loading }) => ({
   data: managerSchedules.data,
   pagination: managerSchedules.pagination,
@@ -134,7 +130,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -153,19 +149,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function reset form
@@ -246,27 +241,19 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'managerSchedules/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -281,26 +268,27 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'TÊN TIÊU CHÍ - ĐÁNH GIÁ',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Học thuật</Text>,
+        render: () => <Text size="normal">Học thuật</Text>,
       },
       {
         title: 'CẤU HÌNH LOẠI ÁP DỤNG',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Mẫu giáo</Text>,
+        render: () => <Text size="normal">Mẫu giáo</Text>,
       },
       {
         title: 'THỜI HẠN NHẬP',
         key: 'name',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">Hằng ngày</Text>,
+        render: () => <Text size="normal">Hằng ngày</Text>,
       },
       {
         key: 'action',
@@ -319,35 +307,11 @@ class Index extends PureComponent {
 
   render() {
     const {
-      match: { params },
-      data,
-      pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
     const { visible, objects, search } = this.state;
-    const loading = effects['managerSchedules/GET_DATA'];
     const loadingSubmit = effects['managerSchedules/ADD'] || effects['managerSchedules/UPDATE'];
-    const CustomViewConfig = {
-      classnames: ['custom-view'],
-
-      content: function (props) {
-        let segs = sliceEvents(props, true); // allDay=true
-        let html =
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-title">' +
-          props.dateProfile.currentRange.start.toUTCString() +
-          '</div>' +
-          '<div class="view-events">' +
-          segs.length +
-          ' events' +
-          '</div>';
-
-        return { html: html };
-      },
-    };
     return (
       <>
         <Helmet title="Danh sách tiêu chí - đánh giá" />
@@ -459,9 +423,9 @@ class Index extends PureComponent {
                 },
               }}
               locale="vi"
-              editable={true}
+              editable
               fixedWeekCount={false}
-              showNonCurrentDates={true}
+              showNonCurrentDates
               locales={allLocales}
               allDaySlot={false}
               height={650}
@@ -486,18 +450,12 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
   location: {},

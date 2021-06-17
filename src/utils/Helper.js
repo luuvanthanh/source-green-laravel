@@ -10,12 +10,14 @@ import {
   head,
   last,
 } from 'lodash';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Tag from '@/components/CommonComponent/Tag';
 import L from 'leaflet';
 import { variables } from './variables';
 
+const { confirm } = Modal;
 export default class Helpers {
   static tagStatus = (type, statusName) => {
     if (type === variables.STATUS.PENDING) {
@@ -767,5 +769,65 @@ export default class Helpers {
   static ICON_BUS = new L.Icon({
     iconUrl: '/images/marker-car.svg',
     iconAnchor: [17, 46],
+  });
+
+  static confirmAction = ({ callback }) => {
+    confirm({
+      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      okText: 'Có',
+      cancelText: 'Không',
+      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  static paginationLavarel = ({ pagination, callback }) => ({
+    size: 'default',
+    total: pagination?.total,
+    pageSize: pagination?.per_page,
+    defaultCurrent: pagination?.current_page,
+    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+    onChange: (page, size) => {
+      callback({ page, limit: size });
+    },
+    onShowSizeChange: (current, size) => {
+      callback({ page: current, limit: size });
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
+  });
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  static paginationNet = ({ pagination, query, callback }) => ({
+    size: 'default',
+    total: pagination.total,
+    pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
+    defaultCurrent: Number(query?.page),
+    current: Number(query?.page),
+    hideOnSinglePage: pagination.total <= 10,
+    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
+    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
+    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
+    onChange: (page, size) => {
+      callback({ page, limit: size });
+    },
+    onShowSizeChange: (current, size) => {
+      callback({ page: current, limit: size });
+    },
+    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 }

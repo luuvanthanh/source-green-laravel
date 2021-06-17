@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import { variables } from '@/utils';
 import * as categories from '@/services/categories';
 import * as services from './services';
@@ -64,15 +63,7 @@ export default {
       try {
         const response = yield saga.call(services.add, payload);
         callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -80,15 +71,7 @@ export default {
       try {
         const response = yield saga.call(services.addAccount, payload);
         callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: error.data?.error?.message || 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -96,15 +79,7 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -112,15 +87,7 @@ export default {
       try {
         yield saga.call(services.faceRegistration, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -206,15 +173,7 @@ export default {
       try {
         yield saga.call(services.changePassword, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },

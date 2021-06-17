@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -32,7 +31,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ OPchildren, loading }) => ({
   loading,
   data: OPchildren.data,
@@ -201,7 +199,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -224,53 +222,12 @@ class Index extends PureComponent {
     const {
       location: { query },
     } = this.props;
-    return {
-      size: 'default',
-      total: pagination.total,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(this.state.search.page),
-      current: Number(this.state.search.page),
-      hideOnSinglePage: pagination.total <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, size) => {
-        this.changePagination(page, size);
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
       },
-      onShowSizeChange: (current, size) => {
-        this.changePagination(current, size);
-      },
-      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-    };
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'OPchildren/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
-      },
-      onCancel() {},
     });
   };
 
@@ -285,7 +242,8 @@ class Index extends PureComponent {
         className: 'min-width-70',
         width: 70,
         align: 'center',
-        render: (text, record, index) => `HS${Helper.serialOrder(this.state.search?.page, index)}`,
+        render: (text, record, index) =>
+          `HS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
         title: 'Họ và Tên',
@@ -344,7 +302,7 @@ class Index extends PureComponent {
               color="success"
               ghost
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`)}
-              permission="HSDT_HS_XEM"
+              permission="HSDT"
             >
               Chi tiết
             </Button>
@@ -352,7 +310,7 @@ class Index extends PureComponent {
         ),
       },
     ];
-    return !ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')
+    return !ability.can('HSDT', 'HSDT')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -380,7 +338,7 @@ class Index extends PureComponent {
             <Button
               color="success"
               icon="plus"
-              permission="HSDT_HS_THEM"
+              permission="HSDT"
               onClick={() => history.push(`/ho-so-doi-tuong/hoc-sinh/tao-moi`)}
             >
               Tạo hồ sơ
@@ -440,7 +398,7 @@ class Index extends PureComponent {
               }}
               onRow={(record) => ({
                 onClick: () => {
-                  if (ability.can('HSDT_HS_XEM', 'HSDT_HS_XEM')) {
+                  if (ability.can('HSDT', 'HSDT')) {
                     history.push(`/ho-so-doi-tuong/hoc-sinh/${record.id}/chi-tiet`);
                   }
                 },

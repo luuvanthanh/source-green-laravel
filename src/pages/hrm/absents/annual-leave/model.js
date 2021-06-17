@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -61,22 +60,12 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *REMOVE({ payload, callback }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
+        callback(null, error);
       }
     },
   },

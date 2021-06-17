@@ -17,10 +17,10 @@ import variablesModules from '../variables';
 
 const Index = memo(({ studentId }) => {
   const dispatch = useDispatch();
-  const [ { notes, paginationNote }, loading] = useSelector(({ loading: { effects }, studentHomePage }) => [
-    studentHomePage,
-    effects,
-  ]);
+  const [
+    { notes, paginationNote },
+    loading,
+  ] = useSelector(({ loading: { effects }, studentHomePage }) => [studentHomePage, effects]);
 
   const [search, setSearch] = useState({
     classId: undefined,
@@ -29,8 +29,8 @@ const Index = memo(({ studentId }) => {
     status: '',
     rangeTime: [
       moment().clone().startOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
-      moment().clone().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER)
-    ]
+      moment().clone().endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+    ],
   });
 
   const onLoad = () => {
@@ -40,22 +40,26 @@ const Index = memo(({ studentId }) => {
         StudentId: studentId,
         ...search,
         rangeTime: undefined,
-        From: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: search.rangeTime[0],
-            targetValue: '00:00:00',
-          }),
-          isUTC: false,
-        }) : null,
-        To: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: search.rangeTime[1],
-            targetValue: '23:59:59',
-          }),
-          isUTC: false,
-        }) : null,
+        From: !_.isEmpty(search.rangeTime)
+          ? Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: search.rangeTime[0],
+                targetValue: '00:00:00',
+              }),
+              isUTC: false,
+            })
+          : null,
+        To: !_.isEmpty(search.rangeTime)
+          ? Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: search.rangeTime[1],
+                targetValue: '23:59:59',
+              }),
+              isUTC: false,
+            })
+          : null,
       },
     });
   };
@@ -63,7 +67,6 @@ const Index = memo(({ studentId }) => {
   useEffect(() => {
     onLoad();
   }, [search, studentId]);
-
 
   /**
    * Function header table
@@ -88,7 +91,10 @@ const Index = memo(({ studentId }) => {
         <>
           <p className="font-weight-bold font-size-14 mb5">{record?.name}</p>
           {record?.description && (
-            <p className="font-size-14 mb0">Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió nhé.</p>
+            <p className="font-size-14 mb0">
+              Bé hay bị lạnh, nhờ các cô giúp bé luôn mang áo ấm và tránh bé đứng trước quạt gió
+              nhé.
+            </p>
           )}
         </>
       ),
@@ -102,7 +108,7 @@ const Index = memo(({ studentId }) => {
         <Image.PreviewGroup>
           {Helper.isJSON(record.fileImage) &&
             JSON.parse(record.fileImage).map((item, index) => (
-              <div  key={index} className={styles['group-image']}>
+              <div key={index} className={styles['group-image']}>
                 <Image
                   key={index}
                   width={50}
@@ -111,7 +117,7 @@ const Index = memo(({ studentId }) => {
                   data-viewmore={`+${JSON.parse(record?.fileImage)?.length - 1}`}
                 />
               </div>
-          ))}
+            ))}
         </Image.PreviewGroup>
       ),
     },
@@ -122,7 +128,9 @@ const Index = memo(({ studentId }) => {
       width: 250,
       render: (record) => (
         <AvatarTable
-          fileImage={Helper.getPathAvatarJson(_.get(record, 'student.studentParents[0].parent.fileImage'))}
+          fileImage={Helper.getPathAvatarJson(
+            _.get(record, 'student.studentParents[0].parent.fileImage'),
+          )}
           fullName={_.get(record, 'student.studentParents[0].parent.fullName')}
           size={50}
         />
@@ -133,10 +141,11 @@ const Index = memo(({ studentId }) => {
       key: 'status',
       className: 'min-width-100',
       width: 140,
-      render: (record) =>Helper.tagStatus(
-        `${record?.status === variables.STATUS.CONFIRMING ? variables.STATUS.CONFIRMING : ''}`,
-        `${record?.status === variables.STATUS.CONFIRMING ? 'Chờ xác nhận' : 'Đã nhận'}`
-      )
+      render: (record) =>
+        Helper.tagStatus(
+          `${record?.status === variables.STATUS.CONFIRMING ? variables.STATUS.CONFIRMING : ''}`,
+          `${record?.status === variables.STATUS.CONFIRMING ? 'Chờ xác nhận' : 'Đã nhận'}`,
+        ),
     },
     {
       title: 'Giáo viên đã nhận',
@@ -167,7 +176,7 @@ const Index = memo(({ studentId }) => {
   const handleSearch = _.debounce((value, name) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      [name]: value
+      [name]: value,
     }));
   }, 300);
 
@@ -176,7 +185,7 @@ const Index = memo(({ studentId }) => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  const changePagination = (page, limit) => {
+  const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -188,34 +197,26 @@ const Index = memo(({ studentId }) => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: search.limit,
-    defaultCurrent: Number(search.page),
-    current: Number(search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  const pagination = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      search,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   return (
     <div className={classnames(styles['container-bus'], 'mt20')}>
-      <Form initialValues={{
-        ...search,
-        rangeTime: [
-          _.get(search, 'rangeTime[0]') ? moment(search?.rangeTime[0]) : null,
-          _.get(search, 'rangeTime[1]') ? moment(search?.rangeTime[1]) : null,
-        ],
-      }}>
+      <Form
+        initialValues={{
+          ...search,
+          rangeTime: [
+            _.get(search, 'rangeTime[0]') ? moment(search?.rangeTime[0]) : null,
+            _.get(search, 'rangeTime[1]') ? moment(search?.rangeTime[1]) : null,
+          ],
+        }}
+      >
         <div className="row">
           <div className="col-md-4 col-xl-2">
             <FormItem
@@ -245,7 +246,7 @@ const Index = memo(({ studentId }) => {
           type: 'table',
         }}
         rowKey={(record) => record.id}
-        scroll={{ x: '100%'}}
+        scroll={{ x: '100%' }}
       />
     </div>
   );

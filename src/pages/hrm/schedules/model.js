@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import { head } from 'lodash';
 import { Helper } from '@/utils';
 import * as services from './services';
@@ -17,6 +16,7 @@ export default {
       shifts: [],
     },
     holidays: [],
+    businessCards: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -50,6 +50,10 @@ export default {
         ? Helper.getArrayHolidays(head(payload?.parsePayload)?.holidayDetails)
         : [],
     }),
+    SET_BUSINESS_CARDS: (state, { payload }) => ({
+      ...state,
+      businessCards: payload?.parsePayload ? Helper.getArrayHolidays(payload?.parsePayload) : [],
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -73,6 +77,22 @@ export default {
         if (response) {
           yield saga.put({
             type: 'SET_HOLIDAYS',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BUSINESS_CARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBusinessCards, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_BUSINESS_CARDS',
             payload: response,
           });
         }
@@ -109,10 +129,6 @@ export default {
         if (response) {
           const response = yield saga.call(services.get, payload);
           if (response) {
-            notification.success({
-              message: 'Cập nhật thành công',
-              description: 'Bạn đã cập nhật thành công dữ liệu',
-            });
             yield saga.put({
               type: 'SET_DATA',
               payload: response,
@@ -132,10 +148,6 @@ export default {
         yield saga.call(services.removeSchedulesDetail, payload);
         const response = yield saga.call(services.get, payload);
         if (response) {
-          notification.success({
-            message: 'Cập nhật thành công',
-            description: 'Bạn đã cập nhật thành công dữ liệu',
-          });
           yield saga.put({
             type: 'SET_DATA',
             payload: response,
@@ -152,10 +164,6 @@ export default {
         yield saga.call(services.removeSchedulesDetail, payload);
         const response = yield saga.call(services.get, payload);
         if (response) {
-          notification.success({
-            message: 'Cập nhật thành công',
-            description: 'Bạn đã cập nhật thành công dữ liệu',
-          });
           yield saga.put({
             type: 'SET_DATA',
             payload: response,

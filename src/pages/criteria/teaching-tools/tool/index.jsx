@@ -39,7 +39,8 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) => `GC${Helper.serialOrder(search?.page, index)}`,
+      render: (text, record, index) =>
+        `GC${Helper.serialOrder(search?.page, index, search?.limit)}`,
     },
     {
       title: 'Giáo cụ',
@@ -137,7 +138,7 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    type={variables.INPUT}
+                    type={variables.INPUT_SEARCH}
                     name="keyWord"
                     onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
                     placeholder="Nhập từ khóa tìm kiếm"

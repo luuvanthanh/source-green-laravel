@@ -164,6 +164,52 @@ export const variables = {
     BEFORE_TEA_TIME: 'Trước xế chiều',
     AFTER_TEA_TIME: 'Sau xế chiều',
   },
+  TITLE_BUS: {
+    TOTAL: {
+      status: '',
+      title: 'Trẻ đăng ký xe bus',
+      title_quantity: 'Số trẻ đăng ký xe bus',
+      title_popup: 'Danh sách trẻ đăng ký xe bus'
+    },
+    ABSENT: {
+      status: 'ABSENCE',
+      title: 'Số trẻ đăng ký nhưng vắng',
+      title_quantity: 'Số trẻ đăng ký nhưng vắng',
+      title_popup: 'Danh sách trẻ đăng ký nhưng vắng'
+    },
+    SCHOOL: {
+      title: 'Đi đến trường',
+      status: 'SCHOOLWARD',
+      SCHOOLGETIN: {
+        status_school: 'SCHOOLGETIN',
+        title: 'Trẻ lên xe',
+        title_quantity: 'Số trẻ lên xe',
+        title_popup: 'Danh sách trẻ lên xe - Đi đến trường'
+      },
+      SCHOOLGETOFF: {
+        status_school: 'SCHOOLGETOFF',
+        title: 'Trẻ xuống xe',
+        title_quantity: 'Số trẻ xuống xe',
+        title_popup: 'Danh sách trẻ xuống xe - Đi đến trường'
+      }
+    },
+    HOME: {
+      title: 'Đi về nhà',
+      status: 'HOMEWARD',
+      HOMEGETIN: {
+        status_home: 'HOMEGETIN',
+        title: 'Trẻ lên xe',
+        title_quantity: 'Số trẻ lên xe',
+        title_popup: 'Danh sách trẻ lên xe - Đi về nhà'
+      },
+      HOMEGETOFF: {
+        status_home: 'HOMEGETOFF',
+        title: 'Trẻ xuống xe',
+        title_quantity: 'Số trẻ xuống xe',
+        title_popup: 'Danh sách trẻ xuống xe - Đi về nhà'
+      }
+    },
+  }
 };
 
 export default variables;

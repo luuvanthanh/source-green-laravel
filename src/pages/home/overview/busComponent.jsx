@@ -1,7 +1,7 @@
 import { memo, useState, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
-import { Form, Modal, Skeleton, Avatar } from 'antd';
+import { Form, Modal, Skeleton, Avatar, Typography } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
@@ -13,22 +13,32 @@ import { variables, Helper } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from '../index.scss';
+import variablesModule from '../variables';
+
+const { Paragraph } = Typography;
 
 const Index = memo(({ classId }) => {
   const dispatch = useDispatch();
-  const [ { bus, listBusByStatus }, loading] = useSelector(({ loading: { effects }, overView }) => [
-    overView,
-    effects,
-  ]);
+
+  const {
+    loading,
+    bus,
+    listBusByStatus,
+    user,
+  } = useSelector(({ loading, user, overView }) => ({
+    user: user.user,
+    loading: loading.effects,
+    bus: overView.bus,
+    listBusByStatus: overView.listBusByStatus,
+  }));
 
   const [visible, setVisible] = useState(false);
-  const [title, setTitle] = useState('');
   const [details, setDetails] = useState({});
   const [classes, setClasses] = useState([]);
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
-    keyWord: ''
+    keyWord: '',
   });
 
   const fetchDataBus = () => {
@@ -44,7 +54,7 @@ const Index = memo(({ classId }) => {
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }),
-      }
+      },
     });
   };
 
@@ -52,8 +62,17 @@ const Index = memo(({ classId }) => {
     dispatch({
       type: 'overView/GET_DATA_BUS_BY_STATUS',
       payload: {
-        ...search
-      }
+        date: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(),
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        Status: details?.status || undefined,
+        ...search,
+      },
     });
   };
 
@@ -61,7 +80,7 @@ const Index = memo(({ classId }) => {
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: '',
+        branch: user?.objectInfo?.positionLevel?.branchId,
       },
       callback: (res) => {
         if (!_.isEmpty(res.items)) {
@@ -76,8 +95,10 @@ const Index = memo(({ classId }) => {
   }, [classId]);
 
   useEffect(() => {
-    getListBusByStatus();
-  }, [search]);
+    if (visible) {
+      getListBusByStatus();
+    }
+  }, [search, visible]);
 
   /**
    * Function header table
@@ -88,70 +109,109 @@ const Index = memo(({ classId }) => {
       key: 'children',
       className: 'min-width-250',
       width: 250,
-      render: () => (
+      render: (record) => (
         <div className="d-flex align-items-center">
           <AvatarTable
-            fileImage="/images/slice/avatar_02.png"
-            srcLocal
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
             shape="square"
             size={40}
           />
-          <p className="mb0 ml10">Su Beo</p>
+          <p className="mb0 ml10">{record?.student?.fullName || ''}</p>
         </div>
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
-      className: 'min-width-120',
-      width: 120,
-      render: () => '32 tháng'
-    },
-    {
-      title: 'Thời gian lên xe',
-      key: 'time',
-      className: 'min-width-120',
-      width: 120,
-      render: () => '07:01:12'
+      className: 'min-width-100',
+      width: 100,
+      render: (record) => `${record?.student?.age || 0}tháng`,
     },
     {
       title: 'Phụ huynh',
       key: 'parents',
-      className: 'min-width-250',
-      width: 250,
-      render: () => (
-        <div className="d-flex align-items-center">
-          <AvatarTable
-            fileImage="/images/slice/avatar.png"
-            srcLocal
-            shape="square"
-            size={40}
-          />
-          <p className="mb0 ml10">Nguyễn Anh</p>
-        </div>
-      )
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => (
+        <AvatarTable
+          size={40}
+          fileImage={_.head(
+            (Helper.isJSON(
+              _.get(record, 'student.studentParents[0].parent.fileImage'),
+            ) ||
+              Helper.isJSON(
+                _.get(record, 'student.studentParents[0].farther.fileImage'),
+              )) &&
+              JSON.parse(
+                _.get(record, 'student.studentParents[0].parent.fileImage') ||
+                  _.get(record, 'student.studentParents[0].farther.fileImage'),
+              ),
+          )}
+          fullName={
+            _.get(record, 'student.studentParents[0].parent.fullName') ||
+            _.get(record, 'student.studentParents[0].farther.fullName')
+          }
+        />
+      ),
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-120',
       width: 120,
-      render: () => 'Preschool 1'
+      render: (record) => record?.class?.name || '',
+    }
+  ];
+
+  const absent = () => [
+    {
+      title: 'Nghỉ từ ngày',
+      key: 'date',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => {
+        const date = record?.student?.absentStudents[0];
+        return `${ date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''}
+        ${ date?.startDate ? `- ${Helper.getDate(date?.endDate, variables.DATE_FORMAT.DATE_MONTH)}` : ''}`;
+      }
     },
     {
-      title: 'Giáo viên',
-      key: 'teacher',
-      className: 'min-width-250',
-      width: 250,
-      render: () => 'Nguyễn Văn Tuyết, Lê Xuân Thanh, Lê Tiểu Linh'
+      title: 'Số lượng ngày nghỉ',
+      key: 'absent',
+      className: 'min-width-150',
+      width: 150,
+      render: (record) => {
+        const date = record?.student?.absentStudents[0];
+        return moment(date?.startDate).diff(moment(date?.endDate), 'days') + 1;
+      }
+    },
+    {
+      title: 'Bảo mẫu',
+      key: 'shuttler',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => (
+        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+          {record?.busPlace?.busRoute?.busRouteNannies
+            ?.map((item) => item?.nanny?.fullName)
+            .join(',')}
+        </Paragraph>
+      ),
     },
   ];
 
+  const switchHeader = () => {
+    switch(details?.status) {
+      case 'ABSENCE':
+        return [ ...header(), ...absent() ];
+      default:
+        return header();
+    }
+  };
+
   const getDetail = (record) => {
     setVisible(true);
-    setTitle(`Danh sách ${record?.name}`);
     setDetails(record);
-    getListBusByStatus();
     getClasses();
   };
 
@@ -162,7 +222,7 @@ const Index = memo(({ classId }) => {
   const handleSearch = _.debounce((value, name) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      [name]: value
+      [name]: value,
     }));
   }, 300);
 
@@ -171,7 +231,7 @@ const Index = memo(({ classId }) => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-   const changePagination = (page, limit) => {
+  const changePagination = (page, limit) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -207,7 +267,7 @@ const Index = memo(({ classId }) => {
       <Modal
         className={styles['modal-student-detail']}
         visible={visible}
-        title={title}
+        title={details.title_popup}
         width="95%"
         onCancel={cancelModal}
         footer={null}
@@ -236,19 +296,22 @@ const Index = memo(({ classId }) => {
               </div>
               <div className="col-md-4 col-xl-6">
                 <p className="d-flex align-items-center justify-content-end mb0">
-                  {String(details?.name).charAt(0).toUpperCase() + String(details?.name).slice(1)} <span className="text-success font-size-30 font-weight-bold ml10">{details?.number}</span>
+                  {details?.title_quantity}:
+                  <span className="text-success font-size-30 font-weight-bold ml10">
+                    {details?.quantity}
+                  </span>
                 </p>
               </div>
             </div>
           </Form>
           <Table
             bordered
-            columns={header()}
+            columns={switchHeader()}
             dataSource={listBusByStatus?.data}
             loading={loading['overView/GET_DATA_BUS_BY_STATUS']}
             pagination={pagination(listBusByStatus?.pagination)}
             params={{
-              header: header(),
+              header: switchHeader(),
               type: 'table',
             }}
             rowKey={(record) => record.id}
@@ -261,11 +324,15 @@ const Index = memo(({ classId }) => {
           <div className={styles['header-tab']}>
             <div>
               <img src="/images/home/road.svg" alt="notification" className={styles.icon} />
-              <span className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}>Bus</span>
+              <span
+                className={classnames('font-weight-bold', 'ml10', 'font-size-14', 'text-uppercase')}
+              >
+                Bus
+              </span>
             </div>
           </div>
           <div className="mt50">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355} >
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
               <div className={classnames(styles['content-bus'], 'px20')}>
                 {loading['overView/GET_DATA_BUS'] ? (
                   <>
@@ -276,65 +343,132 @@ const Index = memo(({ classId }) => {
                   <>
                     <div
                       className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
-                      onClick={() => getDetail({ number: bus.studentTotal, name: 'trẻ đăng ký xe bus' })}
+                      onClick={() =>
+                        getDetail({
+                          ...variablesModule.TITLE_BUS.TOTAL,
+                          quantity: bus.studentTotal,
+                        })
+                      }
                       aria-hidden="true"
                     >
-                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <div
+                        className={classnames(
+                          'd-flex',
+                          'align-items-center',
+                          'justify-content-between',
+                          styles['header-content-tab'],
+                        )}
+                      >
                         <div className="d-flex align-items-center">
-                          <AvatarTable
-                            fileImage="/images/icon/letter.svg"
-                            srcLocal
-                            size={27}
-                          />
-                          <p className="mb0 ml10">Số trẻ đăng ký xe bus</p>
+                          <AvatarTable fileImage="/images/icon/letter.svg" srcLocal size={27} />
+                          <p className="mb0 ml10">{variablesModule.TITLE_BUS.TOTAL.title}</p>
                         </div>
-                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.studentTotal || 0}</p>
+                        <p
+                          className={classnames(
+                            'mb0',
+                            'ml10',
+                            'font-size-30',
+                            'font-weight-bold',
+                            'text-black',
+                          )}
+                        >
+                          {bus?.studentTotal || 0}
+                        </p>
                       </div>
                     </div>
                     <div
                       className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb0')}
-                      onClick={() => getDetail({ number: bus.absentTotal || 0, name: 'trẻ đăng ký nhưng vắng'})}
+                      onClick={() =>
+                        getDetail({
+                          ...variablesModule.TITLE_BUS.ABSENT,
+                          quantity: bus.absentStudentTotal || 0,
+                        })
+                      }
                       aria-hidden="true"
                     >
-                      <div className={classnames('d-flex', 'align-items-center', 'justify-content-between', styles['header-content-tab'])}>
+                      <div
+                        className={classnames(
+                          'd-flex',
+                          'align-items-center',
+                          'justify-content-between',
+                          styles['header-content-tab'],
+                        )}
+                      >
                         <div className="d-flex align-items-center">
-                          <AvatarTable
-                            fileImage="/images/icon/absent.svg"
-                            srcLocal
-                            size={27}
-                          />
-                          <p className="mb0 ml10">Số trẻ đăng ký nhưng vắng</p>
+                          <AvatarTable fileImage="/images/icon/absent.svg" srcLocal size={27} />
+                          <p className="mb0 ml10">{variablesModule.TITLE_BUS.ABSENT.title}</p>
                         </div>
-                        <p className={classnames('mb0', 'ml10', 'font-size-30', 'font-weight-bold', 'text-black')}>{bus?.absentTotal || 0}</p>
+                        <p
+                          className={classnames(
+                            'mb0',
+                            'ml10',
+                            'font-size-30',
+                            'font-weight-bold',
+                            'text-black',
+                          )}
+                        >
+                          {bus?.absentStudentTotal || 0}
+                        </p>
                       </div>
                     </div>
                     <div
-                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb12')}
+                      className={classnames(
+                        styles['content-tab'],
+                        styles.bus,
+                        'width-100p',
+                        'mb12',
+                      )}
                     >
                       <div className="d-flex align-items-center">
-                        <Avatar
-                          src="/images/icon/right-arrow-green.svg"
-                          size={27}
-                        />
-                        <p className="mb0 ml10">Đi đến trường</p>
+                        <Avatar src="/images/icon/right-arrow-green.svg" size={27} />
+                        <p className="mb0 ml10">{variablesModule.TITLE_BUS.SCHOOL.title}</p>
                       </div>
                       <div className="d-flex justify-content-between">
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            {variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETIN.title}
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.schoolGetInStatusTotal, name: 'trẻ lên xe - Đi đến trường'})}
+                            onClick={() =>
+                              getDetail({
+                                ...variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETIN,
+                                status: variablesModule.TITLE_BUS.SCHOOL.status,
+                                quantity: bus.schoolGetInStatusTotal,
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              styles.number,
+                            )}
                           >
                             {bus?.schoolGetInStatusTotal}
                           </p>
                         </div>
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            {variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETOFF.title}
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.schoolGetOffStatusTotal, name: 'trẻ xuống xe - Đi đến trường'})}
+                            onClick={() =>
+                              getDetail({
+                                ...variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETOFF,
+                                status: variablesModule.TITLE_BUS.SCHOOL.status,
+                                quantity: bus.schoolGetOffStatusTotal,
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              'text-right',
+                              styles.number,
+                            )}
                           >
                             {bus?.schoolGetOffStatusTotal}
                           </p>
@@ -342,32 +476,63 @@ const Index = memo(({ classId }) => {
                       </div>
                     </div>
                     <div
-                      className={classnames(styles['content-tab'], styles.bus, 'width-100p', 'mb20')}
+                      className={classnames(
+                        styles['content-tab'],
+                        styles.bus,
+                        'width-100p',
+                        'mb20',
+                      )}
                     >
                       <div className="d-flex align-items-center">
-                        <Avatar
-                          src="/images/icon/left-arrow-orange.svg"
-                          size={27}
-                        />
-                        <p className="mb0 ml10">Đi về nhà</p>
+                        <Avatar src="/images/icon/left-arrow-orange.svg" size={27} />
+                        <p className="mb0 ml10">{variablesModule.TITLE_BUS.HOME.title}</p>
                       </div>
                       <div className="d-flex justify-content-between">
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ lên xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            {variablesModule.TITLE_BUS.HOME.HOMEGETIN.title}
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.homeGetInStatusTotal, name: 'trẻ lên xe - Đi về nhà'})}
+                            onClick={() =>
+                              getDetail({
+                                ...variablesModule.TITLE_BUS.HOME.HOMEGETIN,
+                                status: variablesModule.TITLE_BUS.HOME.status,
+                                quantity: bus.homeGetInStatusTotal,
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              styles.number,
+                            )}
                           >
                             {bus?.homeGetInStatusTotal}
                           </p>
                         </div>
                         <div>
-                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>Trẻ xuống xe</p>
+                          <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
+                            {variablesModule.TITLE_BUS.HOME.HOMEGETOFF.title}
+                          </p>
                           <p
-                            onClick={() => getDetail({ number: bus.homeGetOffStatusTotal, name: 'trẻ xuống xe - Đi về nhà'})}
+                            onClick={() =>
+                              getDetail({
+                                ...variablesModule.TITLE_BUS.HOME.HOMEGETOFF,
+                                status: variablesModule.TITLE_BUS.HOME.status,
+                                quantity: bus.homeGetOffStatusTotal,
+                              })
+                            }
                             aria-hidden="true"
-                            className={classnames('mb0', 'font-size-30', 'font-weight-bold', 'text-black', 'text-right', styles.number)}
+                            className={classnames(
+                              'mb0',
+                              'font-size-30',
+                              'font-weight-bold',
+                              'text-black',
+                              'text-right',
+                              styles.number,
+                            )}
                           >
                             {bus?.homeGetOffStatusTotal}
                           </p>

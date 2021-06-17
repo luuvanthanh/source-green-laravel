@@ -105,14 +105,77 @@ const Index = memo(({ classId }) => {
       key: 'parents',
       className: 'min-width-250',
       width: 250,
+       render: (record) => (
+        <AvatarTable
+          size={40}
+          fileImage={_.head(
+            (Helper.isJSON(
+              _.get(record, 'parent[0].fileImage'),
+            ) ||
+              Helper.isJSON(
+                _.get(record, 'parent[1].fileImage'),
+              )) &&
+              JSON.parse(
+                _.get(record, 'parent[0].fileImage') ||
+                  _.get(record, 'parent[1].fileImage'),
+              ),
+          )}
+          fullName={
+            _.get(record, 'parent[0].fullName') ||
+            _.get(record, 'parent[1].fullName')
+          }
+        />
+      ),
     },
     {
       title: 'Giáo viên',
       key: 'teacher',
-      className: 'min-width-300',
-      width: 300,
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => (
+        !_.isEmpty(record?.classStudent?.class?.teacher)
+          ? _.map(record?.classStudent?.class?.teacher, 'fullName').join(', ')
+          : ''
+      )
     },
   ];
+
+  const absent = () => [
+    {
+      title: 'Nghỉ từ ngày',
+      key: 'date',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => {
+        const date = record?.absent[0];
+        return `${ date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''}
+        ${ date?.startDate ? `- ${Helper.getDate(date?.endDate, variables.DATE_FORMAT.DATE_MONTH)}` : ''}`;
+      }
+    },
+    {
+      title: 'Số lượng ngày nghỉ',
+      key: 'absent',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => {
+        const date = record?.absent[0];
+        return moment(date?.startDate).diff(moment(date?.endDate), 'days') + 1;
+      }
+    },
+  ];
+
+  const switchHeader = () => {
+    switch(details?.status) {
+      case 'UNPAID_LEAVE':
+      case 'ANNUAL_LEAVE': {
+        const newHeader = [...header()];
+        const teacher = newHeader.pop();
+        return [ ...newHeader , ...absent(), teacher ];
+      }
+      default:
+        return header();
+    }
+  };
 
   const getDetails = (record) => {
     setVisible(true);
@@ -150,7 +213,7 @@ const Index = memo(({ classId }) => {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  const changePagination = (page, limit) => {
+  const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       page,
@@ -162,24 +225,13 @@ const Index = memo(({ classId }) => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: search.limit,
-    defaultCurrent: Number(search.page),
-    current: Number(search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  const pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const getTitleAmount = (record) => {
     if (
@@ -251,12 +303,12 @@ const Index = memo(({ classId }) => {
           </Form>
           <Table
             bordered
-            columns={header()}
+            columns={switchHeader()}
             dataSource={listAttendancesByStatus?.data}
             loading={loading['overView/GET_DATA_ATTENDANCE_BY_STATUS']}
             pagination={pagination(listAttendancesByStatus?.pagination)}
             params={{
-              header: header(),
+              header: switchHeader(),
               type: 'table',
             }}
             rowKey={(record) => record.id}

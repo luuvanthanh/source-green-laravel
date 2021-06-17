@@ -11,9 +11,8 @@ import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import HelperModules from '../utils/Helper';
-import variablesModules from '../utils/variables';
 import PropTypes from 'prop-types';
+import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -46,12 +45,10 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -147,7 +144,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -166,67 +163,58 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function header table
    */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    return [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
-      },
-      {
-        title: 'Tên tài khoản',
-        key: 'name',
-        className: 'min-width-130',
-        render: (record) => record.userName,
-      },
-      {
-        title: 'Email',
-        key: 'email',
-        className: 'min-width-130',
-        render: (record) => record.email,
-      },
-      {
-        title: 'Vai trò',
-        key: 'roles',
-        className: 'min-width-130',
-        render: (record) => 'Giáo viên',
-      },
-      {
-        title: 'Trạng thái',
-        key: 'status',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => HelperModules.tagStatus(record.status),
-      },
-    ];
-  };
+  header = () => [
+    {
+      title: 'STT',
+      key: 'index',
+      className: 'min-width-60',
+      width: 60,
+      align: 'center',
+      render: (text, record, index) =>
+        Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+    },
+    {
+      title: 'Tên tài khoản',
+      key: 'name',
+      className: 'min-width-130',
+      render: (record) => record.userName,
+    },
+    {
+      title: 'Email',
+      key: 'email',
+      className: 'min-width-130',
+      render: (record) => record.email,
+    },
+    {
+      title: 'Vai trò',
+      key: 'roles',
+      className: 'min-width-130',
+      render: () => 'Giáo viên',
+    },
+    {
+      title: 'Trạng thái',
+      key: 'status',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => HelperModules.tagStatus(record.status),
+    },
+  ];
 
   render() {
     const {
@@ -296,7 +284,6 @@ class Index extends PureComponent {
               </div>
             </Form>
             <Table
-              bordered
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
@@ -325,6 +312,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -334,6 +322,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  error: {},
 };
 
 export default Index;

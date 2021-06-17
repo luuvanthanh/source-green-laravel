@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, head, debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -28,7 +27,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ tablet, loading }) => ({
   data: tablet.data,
   error: tablet.error,
@@ -45,13 +43,11 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
-      visible: false,
       search: {
         name: query?.name,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      objects: {},
     };
     setIsMounted(true);
   }
@@ -155,7 +151,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -174,23 +170,18 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
 
   /**
    * Function remove items
@@ -198,27 +189,15 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
           type: 'tablet/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -236,37 +215,38 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'CƠ SỞ',
         key: 'branch',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Lake view</Text>,
+        render: () => <Text size="normal">Lake view</Text>,
       },
       {
         title: 'KHỐI LỚP',
         key: 'name',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Khối lớp 1</Text>,
+        render: () => <Text size="normal">Khối lớp 1</Text>,
       },
       {
         title: 'LỚP',
         key: 'class',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Presschool 1</Text>,
+        render: () => <Text size="normal">Presschool 1</Text>,
       },
       {
         title: 'TÊN THIẾT BỊ',
         key: 'device',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">Samsung Galaxy Tab A</Text>,
+        render: () => <Text size="normal">Samsung Galaxy Tab A</Text>,
       },
       {
         title: 'MAC ADDRESS',
         key: 'macAdress',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">00:1B:44:11:3A:B7</Text>,
+        render: () => <Text size="normal">00:1B:44:11:3A:B7</Text>,
       },
       {
         key: 'action',
@@ -290,7 +270,6 @@ class Index extends PureComponent {
   render() {
     const {
       error,
-      data,
       match: { params },
       pagination,
       loading: { effects },
@@ -367,16 +346,16 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
-  data: [],
+  error: {},
   pagination: {},
   loading: {},
   dispatch: {},

@@ -1,41 +1,33 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form, Modal } from 'antd';
-import { get, isEmpty, head } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import Text from '@/components/CommonComponent/Text';
 import Table from '@/components/CommonComponent/Table';
-import { history, useParams } from 'umi';
+import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
-import styles from '@/assets/styles/Common/common.scss';
 
-const { confirm } = Modal;
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [objects, setObjects] = useState({});
 
   const {
-    insurrances,
-    details,
     loading: { effects },
-    error,
+    insurrances,
   } = useSelector(({ loading, HRMusersAdd }) => ({
     loading,
     insurrances: HRMusersAdd.insurrances,
-    error: HRMusersAdd.error,
   }));
   const loadingSubmit =
     effects[`HRMusersAdd/ADD_INSURRANCES`] || effects[`HRMusersAdd/UPDATE_INSURRANCES`];
   const loading = effects[`HRMusersAdd/GET_INSURRANCES`];
   const dispatch = useDispatch();
   const params = useParams();
-  const formRef = useRef();
   const mounted = useRef(false);
   const formRefModal = useRef();
   const mountedSet = (action, value) => {
@@ -110,22 +102,15 @@ const Index = memo(() => {
    * @param {uid} id id of items
    */
   const onRemove = (id) => {
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
+    Helper.confirmAction({
+      callback: () => {
         dispatch({
-          type: 'HRMusersAdd/REMOVE_INSURRANCES',
+          type: 'HRMusersAdd/REMOVE',
           payload: {
             id,
           },
         });
       },
-      onCancel() {},
     });
   };
 
@@ -276,7 +261,6 @@ const Index = memo(() => {
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table
-            bordered
             columns={header()}
             dataSource={insurrances}
             pagination={false}

@@ -1,24 +1,29 @@
 import React from 'react';
 import { connect, Link, withRouter } from 'umi';
 import { reduce, isArray } from 'lodash';
-import styles from './style.module.scss';
 import validator from 'validator';
+import PropTypes from 'prop-types';
+import styles from './style.module.scss';
 
 const mapStateToProps = ({ menu }) => ({
-  menuLeftData: menu.menuLeftExchange,
+  menuLeftData: menu.menuLeftCommunications,
 });
 
 @withRouter
 @connect(mapStateToProps)
 class Breadcrumbs extends React.Component {
-  state = {
-    breadcrumb: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      breadcrumb: [],
+    };
+  }
 
   componentDidMount() {
     this.setBreadcrumbs(this.props);
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
     this.setBreadcrumbs(newProps);
   }
@@ -60,9 +65,7 @@ class Breadcrumbs extends React.Component {
     if (pathname) {
       const listItemPath = pathname.split('/');
       return listItemPath
-        .map((item, index) => {
-          return validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item;
-        })
+        .map((item) => (validator.isUUID(item) || Number.parseInt(item, 10) ? ':id' : item))
         .join('/');
     }
     return '';
@@ -102,7 +105,7 @@ class Breadcrumbs extends React.Component {
     const { breadcrumb } = this.state;
     const { last, className } = this.props;
     return (
-      <div className={`${styles.breadcrumbs} ${className}`} >
+      <div className={`${styles.breadcrumbs} ${className}`}>
         <div className={styles.path}>
           <Link className="text-muted" to="/">
             Trang chủ
@@ -119,5 +122,19 @@ class Breadcrumbs extends React.Component {
     );
   }
 }
+
+Breadcrumbs.propTypes = {
+  menu: PropTypes.any,
+  menuLeftData: PropTypes.any,
+  last: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Breadcrumbs.defaultProps = {
+  menu: null,
+  menuLeftData: null,
+  last: null,
+  className: '',
+};
 
 export default Breadcrumbs;

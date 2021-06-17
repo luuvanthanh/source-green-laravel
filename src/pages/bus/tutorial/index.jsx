@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -29,7 +28,6 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const { confirm } = Modal;
 const mapStateToProps = ({ tutorial, loading }) => ({
   data: tutorial.data,
   pagination: tutorial.pagination,
@@ -128,7 +126,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -147,51 +145,16 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination.total,
-    pageSize: variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(this.state.search.page),
-    current: Number(this.state.search.page),
-    hideOnSinglePage: pagination.total <= 10,
-    showSizeChanger: false,
-    pageSizeOptions: false,
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const { search } = this.state;
-    confirm({
-      title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      okText: 'Có',
-      cancelText: 'Không',
-      content: 'Dữ liệu này đang được sử dụng, nếu xóa dữ liệu này sẽ ảnh hưởng tới dữ liệu khác?',
-      onOk() {
-        dispatch({
-          type: 'tutorial/REMOVE',
-          payload: {
-            id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
-          },
-        });
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
       },
-      onCancel() {},
     });
   };
 
@@ -209,7 +172,8 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'TÊN LỘ TRÌNH',
@@ -239,16 +203,14 @@ class Index extends PureComponent {
             <Button
               color="primary"
               icon="edit"
-              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet-v2`)}
-              permission="BUS_LOTRINH_SUA"
+              onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
+              permission="BUS"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('BUS_LOTRINH_SUA', 'BUS_LOTRINH_SUA')
-      ? columns.filter((item) => item.key !== 'actions')
-      : columns;
+    return !ability.can('BUS', 'BUS') ? columns.filter((item) => item.key !== 'actions') : columns;
   };
 
   render() {
@@ -263,15 +225,15 @@ class Index extends PureComponent {
     const loading = effects['tutorial/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh lộ trình" />
+        <Helmet title="Danh sách lộ trình" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH LỘ TRÌNH</Text>
             <Button
               color="success"
               icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi-v2`)}
-              permission="BUS_LOTRINH_THEM"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="BUS"
             >
               Thêm mới
             </Button>

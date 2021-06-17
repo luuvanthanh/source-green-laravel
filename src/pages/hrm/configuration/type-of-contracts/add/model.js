@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { get } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -86,15 +84,7 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
         callback(null, error);
       }
     },
@@ -102,15 +92,7 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Vui lòng kiểm tra lại hệ thống',
-        });
         callback(null, error);
       }
     },

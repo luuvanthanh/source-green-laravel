@@ -36,7 +36,10 @@ export function getBranches(params = {}) {
 export function getClasses(params = {}) {
   return request('/classes', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
   });
 }
 
@@ -155,14 +158,12 @@ export function getAttendancesReasons(data = {}) {
   return requestLaravel('/v1/attendances-reasons', {
     method: 'GET',
     params: {
+      ...data,
       limit: data.limit,
       page: data.page,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      search: Helper.convertParamSearchConvert({
-        Name: data.name,
-      }),
     },
   });
 }
@@ -189,6 +190,15 @@ export function getBusInformations(params = {}) {
     method: 'GET',
     params: {
       ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getCurriculumTemplates() {
+  return request('/curriculum-templates', {
+    method: 'GET',
+    params: {
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });

@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -76,6 +77,8 @@ class Index extends PureComponent {
         timeApply: details.timeApply && moment(details.timeApply),
         detail: details.parameterValues.map((item) => ({
           ...item,
+          parameterValueId: item?.pivot?.parameterValueId,
+          value: item?.pivot?.value,
         })),
       });
     }
@@ -208,6 +211,7 @@ class Index extends PureComponent {
                   <FormItem
                     label="Ngày quyết định"
                     name="decisionDate"
+                    disabledDate={Helper.disabledDate}
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
@@ -335,6 +339,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  details: {},
+  categories: {},
+  menuData: [],
+};
 
 export default Index;

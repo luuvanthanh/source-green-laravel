@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -66,111 +65,57 @@ export default {
     *VALIDATE({ payload, callback }, { call }) {
       try {
         const response = yield call(services.validate, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *VALIDATE_ALL({ payload, callback }, { call }) {
       try {
         const response = yield call(services.validate, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *REMOVE_IMAGE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.removeImage, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        callback && callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *REMOVE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.remove, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        callback && callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *REMOVE_RECORD_FILES({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.removeRecordFiles, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        callback && callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *REMOVE_ALL({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.removeAll, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        callback && callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
     *MERGE({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.merge, payload);
-        callback && callback(response);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(response);
       } catch (error) {
-        callback && callback(null, error);
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
   },

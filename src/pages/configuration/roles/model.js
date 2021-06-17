@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -55,24 +53,12 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *REMOVE({ payload, callback }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
+        callback(payload);
       } catch (error) {
-        if (get(error.data, 'error.validationErrors[0]')) {
-          notification.error({
-            message: 'THÔNG BÁO',
-            description: get(error.data, 'error.validationErrors[0].message'),
-          });
-        }
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

@@ -47,7 +47,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        name: query?.name,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -132,7 +132,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -151,23 +151,13 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => ({
-    size: 'default',
-    total: pagination?.total,
-    pageSize: pagination?.per_page,
-    defaultCurrent: pagination?.current_page,
-    hideOnSinglePage: pagination?.total_pages <= 1 && pagination?.per_page <= 10,
-    showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-    pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-    locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-    onChange: (page, size) => {
-      this.changePagination(page, size);
-    },
-    onShowSizeChange: (current, size) => {
-      this.changePagination(current, size);
-    },
-    showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-  });
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
+      pagination,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
 
   /**
    * Function remove items
@@ -213,7 +203,8 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => `CS${Helper.serialOrder(this.state.search?.page, index)}`,
+        render: (text, record, index) =>
+          `CS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
         title: 'TÊN',
@@ -249,20 +240,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH_COSO_SUA"
+              permission="CAUHINH"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH_COSO_XOA"
+              permission="CAU_HINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHINH_COSO_SUA', 'CAUHINH_COSO_SUA') &&
-      !ability.can('CAUHINH_COSO_XOA', 'CAUHINH_COSO_XOA')
+    return !ability.can('CAU_HINH', 'CAU_HINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -288,7 +278,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHINH_COSO_THEM"
+              permission="CAU_HINH"
             >
               Thêm mới
             </Button>
@@ -304,8 +294,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />

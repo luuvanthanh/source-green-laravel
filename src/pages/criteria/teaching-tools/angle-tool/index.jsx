@@ -39,7 +39,8 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) => `GGC${Helper.serialOrder(search?.page, index)}`,
+      render: (text, record, index) =>
+        `GGC${Helper.serialOrder(search?.page, index, search?.limit)}`,
     },
     {
       title: 'Tên góc giáo cụ',
@@ -50,6 +51,7 @@ const Index = memo(() => {
     {
       title: 'Số lượng giáo cụ',
       key: 'description',
+      align: 'center',
       className: 'min-width-100',
       render: (record) => <Text size="normal">{size(record.toolDetails)}</Text>,
     },
@@ -143,7 +145,7 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    type={variables.INPUT}
+                    type={variables.INPUT_SEARCH}
                     name="keyWord"
                     onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
                     placeholder="Nhập từ khóa tìm kiếm"
@@ -155,7 +157,7 @@ const Index = memo(() => {
             <Table
               columns={columns}
               dataSource={data}
-              loading={loading['criteriaTool/GET_DATA']}
+              loading={loading['criteriaAngleTool/GET_DATA']}
               isError={error.isError}
               pagination={paginationProps}
               rowKey={(record) => record.id}

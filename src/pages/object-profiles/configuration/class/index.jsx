@@ -128,7 +128,7 @@ class Index extends PureComponent {
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
    */
-  changePagination = (page, limit) => {
+  changePagination = ({ page, limit }) => {
     this.setState(
       (prevState) => ({
         search: {
@@ -151,24 +151,13 @@ class Index extends PureComponent {
     const {
       location: { query },
     } = this.props;
-    return {
-      size: 'default',
-      total: pagination.total,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(this.state.search.page),
-      current: Number(this.state.search.page),
-      hideOnSinglePage: pagination.total <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, size) => {
-        this.changePagination(page, size);
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
       },
-      onShowSizeChange: (current, size) => {
-        this.changePagination(current, size);
-      },
-      showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
-    };
+    });
   };
 
   /**
@@ -215,7 +204,8 @@ class Index extends PureComponent {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(this.state.search?.page, index),
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'MÃ',
@@ -251,20 +241,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHINH_LOP_SUA"
+              permission="CAUHHINH"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHINH_LOP_XOA"
+              permission="CAUHHINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHINH_LOP_SUA', 'CAUHINH_LOP_SUA') &&
-      !ability.can('CAUHINH_LOP_XOA', 'CAUHINH_LOP_XOA')
+    return !ability.can('CAUHHINH', 'CAUHHINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -290,7 +279,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHINH_LOP_THEM"
+              permission="CAUHHINH"
             >
               Thêm mới
             </Button>

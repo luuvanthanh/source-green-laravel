@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -11,25 +11,30 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
   const [
-    { menuLeftCriteria },
+    menuData,
     loading,
     { toolDetails },
-  ] = useSelector(({ menu, loading: { effects }, criteriaAngleToolCreate }) => [
-    menu,
-    effects,
-    criteriaAngleToolCreate,
-  ]);
+  ] = useSelector(
+    ({ menu: { menuLeftCriteria }, loading: { effects }, criteriaAngleToolCreate }) => [
+      menuLeftCriteria,
+      effects,
+      criteriaAngleToolCreate,
+    ],
+  );
   const dispatch = useDispatch();
   const params = useParams();
 
   const history = useHistory();
   const formRef = useRef();
   const mounted = useRef(false);
-  // const mountedSet = (action, value) => mounted?.current && action(value);
+  const [itemsSelected, setItemsSelected] = useState([]);
+  const [items, setItems] = useState([]);
+  const mountedSet = (action, value) => mounted?.current && action(value);
 
   const onFinish = (values) => {
     dispatch({
@@ -58,6 +63,31 @@ const Index = memo(() => {
     });
   };
 
+  const remove = () => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'criteriaAngleToolCreate/REMOVE',
+          payload: {
+            ...params,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  const onChange = ({ target: { value } }) => {
+    mountedSet(
+      setItems,
+      toolDetails.filter((item) => Helper.slugify(item.name)?.indexOf(value) >= 0),
+    );
+  };
+
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -71,6 +101,10 @@ const Index = memo(() => {
               ...response,
               toolDetails: response.toolDetails.map((item) => item.id),
             });
+            mountedSet(
+              setItemsSelected,
+              response.toolDetails.map((item) => item.id),
+            );
           }
         },
       });
@@ -81,6 +115,11 @@ const Index = memo(() => {
     dispatch({
       type: 'criteriaAngleToolCreate/GET_TOOL_DETAILS',
       payload: {},
+      callback: (response) => {
+        if (response) {
+          mountedSet(setItems, response.items);
+        }
+      },
     });
   }, []);
 
@@ -92,7 +131,7 @@ const Index = memo(() => {
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
       <Helmet title="Tạo góc giáo cụ" />
-      <Breadcrumbs className="pb30 pt0" last="Tạo góc giáo cụ" menu={menuLeftCriteria} />
+      <Breadcrumbs className="pb30 pt0" last="Tạo góc giáo cụ" menu={menuData} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-6">
           <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
@@ -110,9 +149,9 @@ const Index = memo(() => {
             </Pane>
 
             <Pane className="mt20 mb0 card">
-              {/* <Heading type="form-title" className="p20">
-                Danh sách giáo cụ ({selectTools.length}/{STATUS_TIME_CODE.length})
-              </Heading> */}
+              <Heading type="form-title" className="p20">
+                Danh sách giáo cụ ({toolDetails.length}/{itemsSelected.length})
+              </Heading>
 
               <Pane className={csx('row')}>
                 <Pane className="col-12">
@@ -121,23 +160,30 @@ const Index = memo(() => {
                     type={variables.INPUT_SEARCH}
                     name="search"
                     placeholder="Tìm kiếm"
+                    onChange={onChange}
                   />
-                  <FormItem
-                    className="checkbox-column mb0"
-                    name="toolDetails"
-                    type={variables.CHECKBOX}
-                    data={toolDetails.map((item) => ({
-                      value: item.id,
-                      label: item.name,
-                    }))}
-                    // onChange={(values) => setSelectTool(values)}
-                  />
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                    <FormItem
+                      className="checkbox-column mb0"
+                      name="toolDetails"
+                      type={variables.CHECKBOX}
+                      data={items.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={(values) => setItemsSelected(values)}
+                    />
+                  </Scrollbars>
                 </Pane>
               </Pane>
             </Pane>
 
             <Pane className="py20 d-flex justify-content-between align-items-center">
-              <p className="btn-delete">Xóa</p>
+              {params.id && (
+                <p className="btn-delete" role="presentation" onClick={remove}>
+                  Xóa
+                </p>
+              )}
               <Button
                 className="ml-auto px25"
                 color="success"

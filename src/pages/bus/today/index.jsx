@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Form, Tabs, Checkbox, Input } from 'antd';
 import csx from 'classnames';
 import { useSelector, useDispatch } from 'dva';
-import { useLocation, useHistory } from 'umi';
+import { useLocation, useHistory, Link } from 'umi';
 import moment from 'moment';
 import { debounce, isEmpty } from 'lodash';
 
@@ -184,27 +184,41 @@ const Index = memo(() => {
                           />
                         </Pane>
 
-                        <Pane className="col-lg-6">
-                          {item?.busPlaceLog && (
-                            <Checkbox.Group
-                              className="checkbox-large"
-                              value={
-                                search.status === variablesModules.STATUS_TABS.SCHOOLWARD
-                                  ? item?.busPlaceLog?.schoolwardStatus
-                                  : item?.busPlaceLog?.homewardStatus
-                              }
-                              options={variablesModules.STATUS_BUS}
-                            />
-                          )}
-                          {!item?.busPlaceLog && (
-                            <Checkbox.Group
-                              className="checkbox-large"
-                              value={variablesModules.STATUS.NOT_YET_GOING}
-                              options={variablesModules.STATUS_BUS}
-                            />
-                          )}
-                          {item.description && <Input value={item.description} className="mt5" />}
-                        </Pane>
+                        {isEmpty(item?.student?.absentStudents) && (
+                          <Pane className="col-lg-6">
+                            {item?.busPlaceLog && (
+                              <Checkbox.Group
+                                className="checkbox-large"
+                                value={
+                                  search.status === variablesModules.STATUS_TABS.SCHOOLWARD
+                                    ? item?.busPlaceLog?.schoolwardStatus
+                                    : item?.busPlaceLog?.homewardStatus
+                                }
+                                options={variablesModules.STATUS_BUS}
+                              />
+                            )}
+                            {!item?.busPlaceLog && (
+                              <Checkbox.Group
+                                className="checkbox-large"
+                                value={variablesModules.STATUS.NOT_YET_GOING}
+                                options={variablesModules.STATUS_BUS}
+                              />
+                            )}
+                            {item.description && <Input value={item.description} className="mt5" />}
+                          </Pane>
+                        )}
+
+                        {!isEmpty(item?.student?.absentStudents) && (
+                          <Pane className="col-lg-6">
+                            <Link
+                              to={`/diem-danh/don-xin-phep-cho-be?endDate=${moment()}&startDate=${moment()}&fullName=${
+                                item?.student?.fullName
+                              }`}
+                            >
+                              Đã xin nghỉ phép
+                            </Link>
+                          </Pane>
+                        )}
 
                         <Pane className="col-lg-3">
                           <Button icon="phone" className="ml-auto" color="success" ghost>

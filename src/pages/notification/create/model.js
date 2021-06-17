@@ -1,6 +1,5 @@
-import { notification } from 'antd';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'notificationAdd',
@@ -57,7 +56,12 @@ export default {
           type: 'SET_BRANCHES',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_DIVISIONS({ payload }, saga) {
       try {
@@ -66,7 +70,12 @@ export default {
           type: 'SET_DIVISIONS',
           payload: response,
         });
-      } catch (error) {}
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
     },
     *GET_EMPLOYEES({ payload, callback }, saga) {
       try {
@@ -88,15 +97,7 @@ export default {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -104,15 +105,7 @@ export default {
       try {
         yield saga.call(services.update, payload);
         callback(payload);
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Dữ liệu cập nhật thành công',
-        });
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: error?.data?.error?.message || 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },

@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -22,17 +21,9 @@ export default {
     *UPDATE({ payload, callback }, saga) {
       try {
         const res = yield saga.call(services.changeClassStudent, payload);
-        callback && callback(res)
-        notification.success({
-          message: 'THÔNG BÁO',
-          description: 'Cập nhật thành công',
-        });
+        callback(res);
       } catch (error) {
-        callback && callback(null, error)
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Cập nhật thất bại',
-        });
+        callback(null, error);
       }
     },
   },

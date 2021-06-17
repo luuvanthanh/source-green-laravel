@@ -76,7 +76,7 @@ const Index = memo(() => {
         className: 'min-width-60',
         width: 60,
         align: 'center',
-        render: (text, record, index) => Helper.serialOrder(search?.page, index),
+        render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
       },
       {
         title: 'Trẻ',
