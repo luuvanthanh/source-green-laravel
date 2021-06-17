@@ -34,7 +34,7 @@ const Index = memo(() => {
   const [type, setType] = useState(variablesModules.ADD);
   const [programType, setProgramType] = useState(variablesModules.STUDENT);
   const [toolGroups, setToolGroups] = useState([]);
-  const [curriculums, setCurriculums] = useState(false);
+  const [isEnable, setIsEnable] = useState(false);
 
   const [
     { menuLeftCriteria },
@@ -60,8 +60,8 @@ const Index = memo(() => {
     mountedSet(setProgramType, event.target.value);
   };
 
-  const onChangeCurriculums = (value) => {
-    mountedSet(setCurriculums, value);
+  const onChangeIsEnable = (value) => {
+    mountedSet(setIsEnable, value);
   };
 
   const onChangeToolGroups = (isChoosed, record) => {
@@ -89,21 +89,18 @@ const Index = memo(() => {
   };
 
   const onFinish = (values) => {
-    let toolDetails = [];
-    toolGroups.forEach((item) => {
-      if (item.isChoosed) {
-        toolDetails = [
-          ...toolDetails,
-          ...item.toolDetails
-            .filter((item) => item.isChoosed)
-            .map((itemTool) => ({ toolDetailId: itemTool.id, toolGroupId: item.id })),
-        ];
-      }
-    });
     const payload = {
       ...values,
       ...params,
-      toolDetails,
+      toolGroups: toolGroups.map((item) => ({
+        toolGroupId: item.id,
+        isChoosed: item.id,
+        toolDetails: item.toolDetails.map((detail) => ({
+          toolDetailId: detail.id,
+          isChoosed: detail.id,
+        })),
+      })),
+      isEnable,
       objectCurriculums: [
         {
           studentId: values.studentId,
@@ -220,6 +217,7 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             mountedSet(setProgramType, response.programType);
+            mountedSet(setIsEnable, response.isEnable);
             formRef.current.setFieldsValue({
               ...response,
               fromDate: moment(response.fromDate),
@@ -422,7 +420,7 @@ const Index = memo(() => {
                 <Pane className="card mt-30">
                   <Pane type="form-title" className="heading-form border-bottom">
                     <Heading type="form-title">Góc giáo cụ</Heading>
-                    <Switch onChange={onChangeCurriculums} checked={curriculums} />
+                    <Switch onChange={onChangeIsEnable} checked={isEnable} />
                   </Pane>
                   <Pane className="px15">
                     <Pane className="row">
@@ -453,7 +451,7 @@ const Index = memo(() => {
                                                   <span className="title">{item.name}</span>
                                                 </Pane>
                                                 <Switch
-                                                  disabled={!curriculums}
+                                                  disabled={!isEnable}
                                                   className="mb0 btn-switch"
                                                   checked={item.isChoosed}
                                                   onChange={(value) =>
@@ -483,7 +481,7 @@ const Index = memo(() => {
                               <span className="text">{item.name}</span>
                             </Pane>
                             <Switch
-                              disabled={!curriculums}
+                              disabled={!isEnable}
                               className="mb0 btn-switch"
                               checked={item.isChoosed}
                               onChange={(value) => onChangeToolDetails(value, item)}
