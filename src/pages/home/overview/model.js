@@ -9,7 +9,7 @@ export default {
     medicals: [],
     detailsMedical: {},
     medicalsStudent: [],
-    bus: [],
+    bus: {},
     listBusByStatus: {
       data: [],
       pagination: {},
@@ -44,7 +44,10 @@ export default {
     }),
     SET_DATA_BUS: (state, { payload }) => ({
       ...state,
-      bus: payload,
+      bus: {
+        ...state.bus,
+        ...payload
+      },
     }),
     SET_DATA_BUS_BY_STATUS: (state, { payload }) => ({
       ...state,
@@ -131,27 +134,61 @@ export default {
     },
     *GET_DATA_BUS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getBus, payload);
-        yield saga.put({
-          type: 'SET_DATA_BUS',
-          payload: response?.summary,
-        });
+        let response = null;
+        if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status || payload.Status === variablesModules.TITLE_BUS.HOME.status) {
+          response = yield saga.call(services.getBusByStatusHomeWardSchoolWard, payload);
+          if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status) {
+            response = {
+              schoolGetInStatusTotal: response?.summary?.schoolGetInStatusTotal || 0,
+              schoolGetOffStatusTotal: response?.summary?.schoolGetOffStatusTotal || 0
+            };
+          } else {
+            response = {
+              homeGetInStatusTotal: response?.summary?.homeGetInStatusTotal || 0,
+              homeGetOffStatusTotal: response?.summary?.homeGetOffStatusTotal || 0
+            };
+          }
+        } else {
+          response = yield saga.call(services.getBusByStatus, payload);
+          if (!payload?.Status) {
+            response = {
+              studentTotal: response?.totalCount || 0
+            };
+          } else {
+            response = {
+              absentStudentTotal: response?.totalCount || 0
+            };
+          }
+        }
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA_BUS',
+            payload: response
+          });
+        }
       } catch (error) {
         // continue regardless of error
       }
     },
     *GET_DATA_BUS_BY_STATUS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.getBusByStatus, payload);
-        yield saga.put({
-          type: 'SET_DATA_BUS_BY_STATUS',
-          payload: {
-            parsePayload: response?.items,
-            pagination: {
-              total: response?.totalCount || 0,
+        let response = null;
+        if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status || payload.Status === variablesModules.TITLE_BUS.HOME.status) {
+          response = yield saga.call(services.getBusByStatusHomeWardSchoolWard, payload);
+        } else {
+          response = yield saga.call(services.getBusByStatus, payload);
+        }
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA_BUS_BY_STATUS',
+            payload: {
+              parsePayload: response?.items,
+              pagination: {
+                total: response?.totalCount || 0,
+              },
             },
-          },
-        });
+          });
+        }
       } catch (error) {
         // continue regardless of error
       }
