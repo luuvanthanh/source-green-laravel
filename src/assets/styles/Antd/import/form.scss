@@ -245,6 +245,23 @@ form .ant-cascader-picker:only-child {
   }
 }
 
+.checkbox-row {
+  flex-direction: row-reverse !important;
+  align-items: center;
+  .ant-form-item-label {
+    flex: 1;
+    margin-left: 15px;
+    padding-bottom: 0;
+  }
+  .ant-form-item-control {
+    width: 35px;
+    flex-grow: unset;
+  }
+  .ant-checkbox {
+    top: 0;
+  }
+}
+
 .btn-delete {
   font-weight: 600;
   font-size: 14px;

@@ -688,6 +688,42 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CAUHINH],
           },
+          {
+            path: '/cau-hinh/nhom-doi-tuong',
+            component: './configuration/manager-object',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/nhom-doi-tuong/tao-moi',
+            component: './configuration/manager-object/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/nhom-doi-tuong/:id/chi-tiet',
+            component: './configuration/manager-object/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/loai-lop',
+            component: './configuration/class-type',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/loai-lop/tao-moi',
+            component: './configuration/class-type/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/loai-lop/:id/chi-tiet',
+            component: './configuration/class-type/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
           // CẤP BẬC
           {
             path: '/cau-hinh/tablet-giao-vien',
