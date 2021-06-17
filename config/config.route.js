@@ -724,6 +724,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CAUHINH],
           },
+          {
+            path: '/cau-hinh/hinh-thuc-dong-phi',
+            component: './configuration/payment-method',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/hinh-thuc-dong-phi/tao-moi',
+            component: './configuration/payment-method/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/hinh-thuc-dong-phi/:id/chi-tiet',
+            component: './configuration/payment-method/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
           // CẤP BẬC
           {
             path: '/cau-hinh/tablet-giao-vien',
