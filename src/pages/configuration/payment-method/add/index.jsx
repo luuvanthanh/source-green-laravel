@@ -34,7 +34,7 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title={params?.id ? 'Chi tiết loại lớp' : 'Thêm mới loại lớp'} />
+      <Helmet title={params?.id ? 'Chi tiết hình thức đóng phí' : 'Thêm hình thức đóng phí'} />
       <Breadcrumbs className="pb30 pt0" last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`} menu={menuConfiguration} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-6">
@@ -47,13 +47,13 @@ const Index = memo(() => {
             >
               <Pane className="px20 pt20">
                 <Heading type="form-title" className="mb20">
-                  {params?.id ? 'Chi tiết loại lớp' : 'Thêm mới loại lớp'}
+                  {params?.id ? 'Chi tiết hình thức đóng phí' : 'Thêm hình thức đóng phí'}
                 </Heading>
 
                 <Pane className={csx('row')}>
                   <Pane className="col-lg-6">
                     <FormItem
-                      label="Mã loại lớp"
+                      label="Hình thức"
                       name="code"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
@@ -62,27 +62,29 @@ const Index = memo(() => {
 
                   <Pane className="col-lg-6">
                     <FormItem
-                      label="Tên loại lớp"
+                      label="Tên"
                       name="name"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
 
-                  <Pane className="col-lg-12">
+                  <Pane className="col-lg-6">
                     <FormItem
-                      label="Mô tả"
-                      name="description"
+                      label="Kiểu (Type)"
+                      name="type"
                       type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
+
                 </Pane>
               </Pane>
               {
                 !params?.id && (
                   <Pane className="p20 d-flex justify-content-between align-items-center border-top">
                     <p className="btn-delete" role="presentation" onClick={remove}>
-                      Xóa
+                      Hủy
                     </p>
                     <Button
                       className="ml-auto px25"

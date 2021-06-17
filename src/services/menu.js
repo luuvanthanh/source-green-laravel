@@ -410,6 +410,13 @@ export async function getLeftMenuConfiguration() {
           permission: [permissions.CAUHINH],
           pro: true,
         },
+        {
+          title: 'Hình thức đóng phí',
+          key: 'payment-method',
+          url: ['/cau-hinh/hinh-thuc-dong-phi', '/cau-hinh/hinh-thuc-dong-phi/tao-moi', '/cau-hinh/hinh-thuc-dong-phi/:id/chi-tiet'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
       ],
       pro: true,
     },
