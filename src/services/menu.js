@@ -1298,6 +1298,17 @@ export async function getLeftMenuFeePolicy() {
       icon: 'icon icon-fee-policy',
       permission: [permissions.CHINHSACHPHI],
     },
+    {
+      title: 'Năm học',
+      key: 'school-year',
+      url: [
+        '/chinh-sach-phi/nam-hoc',
+        '/chinh-sach-phi/nam-hoc/tao-moi',
+        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.CHINHSACHPHI],
+    },
   ];
 }
 export async function getTopMenuData() {
