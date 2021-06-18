@@ -1,9 +1,10 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, notification } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import csx from 'classnames';
+import * as _ from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -22,12 +23,36 @@ const Index = memo(() => {
   const history = useHistory();
   const formRef = useRef();
 
-  const onFinish = () => {
+  const [isGrateful, setisGrateful] = useState(false);
+
+  const onFinish = (values) => {
     dispatch({
-      type: 'upload/UPLOAD',
-      payload: {},
+      type: 'managerObjectAdd/ADD',
+      payload: {
+        ...values,
+        isGrateful
+      },
+      callback: (res, error) => {
+        if (res) {
+          notification.success({
+            message: 'Thông báo',
+            description: 'Bạn đã tạo thành công dữ liệu',
+          });
+          history.goBack();
+        }
+        if (error) {
+          notification.error({
+            message: 'Thông báo',
+            description: _.get(error.data, 'error.message') || 'Lỗi hệ thống vui lòng kiểm tra lại',
+          });
+        }
+      },
     });
-    history.goBack();
+  };
+
+  const onChange = (e) => {
+    const { checked } = e.target;
+    setisGrateful(checked);
   };
 
   return (
@@ -79,7 +104,9 @@ const Index = memo(() => {
                     <FormItem
                       className="checkbox-row"
                       label="Tri ân"
+                      onChange={onChange}
                       type={variables.CHECKBOX_SINGLE}
+                      checked={isGrateful}
                     />
                   </Pane>
                 </Pane>
@@ -91,7 +118,7 @@ const Index = memo(() => {
                     color="success"
                     htmlType="submit"
                     size="large"
-                    loading={loading['managerObjectAdd/GET_DETAILS']}
+                    loading={loading['managerObjectAdd/ADD']}
                   >
                     Lưu
                   </Button>

@@ -1,10 +1,9 @@
 import request from '@/utils/request';
 
 export function add(data = {}) {
-  return request('/manager-level', {
+  return request('/v1/student-objects', {
     method: 'POST',
     data,
-    parse: true,
   });
 }
 
