@@ -304,4 +304,13 @@ form .ant-cascader-picker:only-child {
 .font-weight-bold {
   font-family: $bold__font-family;
   font-weight: unset !important;
+  color: $text;
+}
+
+.btn-small {
+  height: 31px;
+  margin-top: 30px;
+  @media (max-width: $md-max-width) {
+    margin-top: 0;
+  }
 }

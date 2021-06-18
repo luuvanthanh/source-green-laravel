@@ -42,7 +42,7 @@ const Index = memo(({ classId }) => {
     classId: ''
   });
 
-  const fetchDataBus = () => {
+  const fetchDataBus = (status = '') => {
     dispatch({
       type: 'overView/GET_DATA_BUS',
       payload: {
@@ -55,51 +55,7 @@ const Index = memo(({ classId }) => {
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }),
-        Status: variablesModule.TITLE_BUS.ABSENT.status
-      },
-    });
-    dispatch({
-      type: 'overView/GET_DATA_BUS',
-      payload: {
-        ClassId: classId || undefined,
-        date: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-      },
-    });
-    dispatch({
-      type: 'overView/GET_DATA_BUS',
-      payload: {
-        ClassId: classId || undefined,
-        date: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-        Status: variablesModule.TITLE_BUS.HOME.status
-      },
-    });
-    dispatch({
-      type: 'overView/GET_DATA_BUS',
-      payload: {
-        ClassId: classId || undefined,
-        date: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-          }),
-          format: variables.DATE_FORMAT.DATE_AFTER,
-          isUTC: false,
-        }),
-        Status: variablesModule.TITLE_BUS.SCHOOL.status
+        Status: status || undefined
       },
     });
   };
@@ -138,6 +94,9 @@ const Index = memo(({ classId }) => {
 
   useEffect(() => {
     fetchDataBus();
+    fetchDataBus(variablesModule.TITLE_BUS.ABSENT.status);
+    fetchDataBus(variablesModule.TITLE_BUS.HOME.status);
+    fetchDataBus(variablesModule.TITLE_BUS.SCHOOL.status);
   }, [classId]);
 
   useEffect(() => {

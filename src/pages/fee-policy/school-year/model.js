@@ -1,7 +1,7 @@
 import { get } from './services';
 
 export default {
-  namespace: 'managerObject',
+  namespace: 'schoolYear',
   state: {
     data: [],
     pagination: {
