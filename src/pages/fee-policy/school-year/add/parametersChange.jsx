@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -8,6 +8,8 @@ import Table from '@/components/CommonComponent/Table';
 import { variables } from '@/utils';
 
 const Index = memo(() => {
+  const [paramChanges] = useState([{ id: 1 }]);
+
 
   const onFinish = () => {
   };
@@ -80,7 +82,7 @@ const Index = memo(() => {
         name="table"
         bordered
         columns={header()}
-        dataSource={[{ id: 1 }]}
+        dataSource={paramChanges}
         pagination={false}
         params={{
           header: header(),
