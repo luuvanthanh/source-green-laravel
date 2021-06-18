@@ -30,7 +30,6 @@ const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const [tab, setTab] = useState(null);
-  const [categoryTabs, setCategoryTabs] = useState(variablesModules.CATEGORY_TABS);
   const [type, setType] = useState(variablesModules.ADD);
   const [programType, setProgramType] = useState(variablesModules.STUDENT);
   const [toolGroups, setToolGroups] = useState([]);
@@ -94,10 +93,10 @@ const Index = memo(() => {
       ...params,
       toolGroups: toolGroups.map((item) => ({
         toolGroupId: item.id,
-        isChoosed: item.id,
+        isChoosed: !!item.isChoosed,
         toolDetails: item.toolDetails.map((detail) => ({
           toolDetailId: detail.id,
-          isChoosed: detail.id,
+          isChoosed: !!detail.isChoosed,
         })),
       })),
       isEnable,
@@ -228,8 +227,7 @@ const Index = memo(() => {
             mountedSet(
               setToolGroups,
               response.toolGroupCurriculums.map((item) => ({
-                ...item.toolGroup,
-                isChoosed: item.isChoosed,
+                ...item,
               })),
             );
           }
@@ -245,9 +243,21 @@ const Index = memo(() => {
       return;
     }
 
-    const items = reorder(categoryTabs, result.source.index, result.destination.index);
+    const items = reorder(toolGroups, result.source.index, result.destination.index);
 
-    setCategoryTabs(items);
+    setToolGroups(items);
+  };
+
+  const onDragEndContent = (result, record) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(record.toolDetails, result.source.index, result.destination.index);
+
+    setToolGroups(
+      toolGroups.map((item) => (item.id === record.id ? { ...item, toolDetails: items } : item)),
+    );
   };
 
   const enableToolDetails = (items) => {
@@ -256,6 +266,11 @@ const Index = memo(() => {
       return toolGroup.toolDetails.map((item) => ({ ...item, parentId: toolGroup.id }));
     }
     return [];
+  };
+
+  const enableParentId = (items) => {
+    const toolGroup = items.find((item) => item.id === tab && item.isChoosed);
+    return toolGroup;
   };
 
   return (
@@ -474,20 +489,43 @@ const Index = memo(() => {
                         </DragDropContext>
                       </Pane>
                       <Pane className="col-lg-8">
-                        {enableToolDetails(toolGroups)?.map((item, index) => (
-                          <Pane key={index} className="tab-space-between start py15 border-bottom">
-                            <Pane className="d-flex align-items-center">
-                              <span className="icon icon-drag" />
-                              <span className="text">{item.name}</span>
-                            </Pane>
-                            <Switch
-                              disabled={!isEnable}
-                              className="mb0 btn-switch"
-                              checked={item.isChoosed}
-                              onChange={(value) => onChangeToolDetails(value, item)}
-                            />
-                          </Pane>
-                        ))}
+                        <DragDropContext
+                          onDragEnd={(event) => onDragEndContent(event, enableParentId(toolGroups))}
+                        >
+                          <Droppable droppableId="droppable">
+                            {(provided) => (
+                              <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {enableToolDetails(toolGroups)?.map((item, index) => (
+                                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                                    {(provided) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Pane
+                                          key={index}
+                                          className="tab-space-between start py15 border-bottom"
+                                        >
+                                          <Pane className="d-flex align-items-center">
+                                            <span className="icon icon-drag" />
+                                            <span className="text">{item.name}</span>
+                                          </Pane>
+                                          <Switch
+                                            disabled={!isEnable}
+                                            className="mb0 btn-switch"
+                                            checked={item.isChoosed}
+                                            onChange={(value) => onChangeToolDetails(value, item)}
+                                          />
+                                        </Pane>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </Pane>
                     </Pane>
                   </Pane>
