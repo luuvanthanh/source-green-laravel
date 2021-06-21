@@ -1,10 +1,9 @@
-import { memo, useRef, useState } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, notification } from 'antd';
+import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import csx from 'classnames';
-import * as _ from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -16,7 +15,13 @@ import { variables } from '@/utils';
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading } = useSelector(({ loading }) => ({ loading }));
+  const {
+    loading,
+  } = useSelector(({ loading, managerObjectAdd }) => ({
+    loading: loading.effects,
+    details: managerObjectAdd.details,
+  }));
+
   const [{ menuConfiguration }] = useSelector(({ menu }) => [menu]);
   const dispatch = useDispatch();
 
@@ -25,6 +30,25 @@ const Index = memo(() => {
 
   const [isGrateful, setisGrateful] = useState(false);
 
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'managerObjectAdd/GET_DETAILS',
+        payload: {
+          ...params
+        },
+        callback: (res) => {
+          if (res) {
+            formRef.current.setFieldsValue({
+              ...res,
+            });
+            setisGrateful(res?.isGrateful || false);
+          }
+        },
+      });
+    }
+  }, []);
+
   const onFinish = (values) => {
     dispatch({
       type: 'managerObjectAdd/ADD',
@@ -32,19 +56,9 @@ const Index = memo(() => {
         ...values,
         isGrateful
       },
-      callback: (res, error) => {
+      callback: (res) => {
         if (res) {
-          notification.success({
-            message: 'Thông báo',
-            description: 'Bạn đã tạo thành công dữ liệu',
-          });
           history.goBack();
-        }
-        if (error) {
-          notification.error({
-            message: 'Thông báo',
-            description: _.get(error.data, 'error.message') || 'Lỗi hệ thống vui lòng kiểm tra lại',
-          });
         }
       },
     });
@@ -66,7 +80,6 @@ const Index = memo(() => {
               layout="vertical"
               ref={formRef}
               onFinish={onFinish}
-              initialValues={{}}
             >
               <Pane className="px20 pt20">
                 <Heading type="form-title" className="mb20">

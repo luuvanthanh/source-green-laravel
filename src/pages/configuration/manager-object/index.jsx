@@ -144,14 +144,13 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => {
+   pagination = (pagination) =>
     Helper.paginationLavarel({
       pagination,
       callback: (response) => {
         this.changePagination(response);
       },
     });
-  }
 
   /**
    * Function header table
@@ -181,6 +180,7 @@ class Index extends PureComponent {
         key: 'isGrateful',
         className: 'min-width-100',
         width: 100,
+        align: 'center',
         render: (record) => record?.isGrateful ? <span className={classnames('color-success', 'icon-checkmark')} />: ''
       },
       {
