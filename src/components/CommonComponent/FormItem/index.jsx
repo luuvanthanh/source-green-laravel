@@ -43,6 +43,7 @@ const renderChildren = (
   radioInline,
   disabledKeys,
   options,
+  checked
 ) => ({
   input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
@@ -272,7 +273,7 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
-  checkboxSingle: <Checkbox onChange={onChange} className={styles['checkbox--large']} />,
+  checkboxSingle: <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (
@@ -319,6 +320,7 @@ export default function FormItem({
   radioInline,
   disabledKeys,
   options,
+  checked,
   ...rest
 }) {
   return (
@@ -344,6 +346,7 @@ export default function FormItem({
           radioInline,
           disabledKeys,
           options,
+          checked
         )[type]
       }
     </Form.Item>
@@ -374,6 +377,7 @@ FormItem.propTypes = {
   radioInline: PropTypes.bool,
   disabledKeys: PropTypes.any,
   options: PropTypes.arrayOf(PropTypes.any),
+  checked: PropTypes.bool
 };
 
 FormItem.defaultProps = {
@@ -400,6 +404,7 @@ FormItem.defaultProps = {
   radioInline: false,
   disabledKeys: null,
   options: ['id', 'name'],
+  checked: false
 };
 
 FormItem.displayName = 'Form';
