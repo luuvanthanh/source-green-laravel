@@ -246,13 +246,13 @@ class Index extends PureComponent {
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAU_HINH"
+              permission="CAUHINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAU_HINH', 'CAU_HINH')
+    return !ability.can('CAUHINH', 'CAUHINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -278,7 +278,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAU_HINH"
+              permission="CAUHINH"
             >
               Thêm mới
             </Button>

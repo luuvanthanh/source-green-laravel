@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import moment from 'moment';
@@ -34,6 +34,8 @@ const mapStateToProps = ({ menu, absentStudentsAdd, loading, user }) => ({
   error: absentStudentsAdd.error,
   details: absentStudentsAdd.details,
   students: absentStudentsAdd.students,
+  branches: absentStudentsAdd.branches,
+  classes: absentStudentsAdd.classes,
   categories: absentStudentsAdd.categories,
   menuLeftSchedules: menu.menuLeftSchedules,
 });
@@ -56,13 +58,36 @@ class Index extends PureComponent {
     const {
       details,
       match: { params },
+      dispatch,
+      user,
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
         startDate: moment(details?.startDate),
         endDate: moment(details?.endDate),
+        classId: details?.student?.classStudent?.classId,
+        branchId: details?.student?.classStudent?.class?.branchId,
       });
+      if (user.role?.toUpperCase() !== variables.ROLES.PARENT && !user?.objectInfo?.id) {
+        if (details?.student?.classStudent?.class?.branchId) {
+          dispatch({
+            type: 'absentStudentsAdd/GET_CLASSES',
+            payload: {
+              branch: details?.student?.classStudent?.class?.branchId,
+            },
+          });
+        }
+        if (details?.student?.classStudent?.classId) {
+          dispatch({
+            type: 'absentStudentsAdd/GET_STUDENTS',
+            payload: {
+              class: details?.student?.classStudent?.classId,
+              classStatus: 'HAS_CLASS',
+            },
+          });
+        }
+      }
     }
   }
 
@@ -99,13 +124,47 @@ class Index extends PureComponent {
       });
     }
     dispatch({
+      type: 'absentStudentsAdd/GET_BRANCHES',
+      payload: {},
+    });
+    dispatch({
       type: 'absentStudentsAdd/GET_CATEGORIES',
       payload: {},
+    });
+    if (user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id) {
+      dispatch({
+        type: 'absentStudentsAdd/GET_STUDENTS',
+        payload: {
+          parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+          classStatus: 'HAS_CLASS',
+        },
+      });
+    }
+  };
+
+  onChangeBranch = (branch) => {
+    const { dispatch } = this.props;
+    this.formRef.current.setFieldsValue({
+      classId: null,
+      studentId: null,
+    });
+    dispatch({
+      type: 'absentStudentsAdd/GET_CLASSES',
+      payload: {
+        branch,
+      },
+    });
+  };
+
+  onChangeClass = (classId) => {
+    const { dispatch } = this.props;
+    this.formRef.current.setFieldsValue({
+      studentId: null,
     });
     dispatch({
       type: 'absentStudentsAdd/GET_STUDENTS',
       payload: {
-        parent: user.role?.toUpperCase() === variables.ROLES.PARENT && user?.objectInfo?.id,
+        class: classId,
         classStatus: 'HAS_CLASS',
       },
     });
@@ -117,10 +176,6 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (!user?.objectInfo?.id) {
-      message.error('Vui lòng đăng nhập tài khoản quản trị nhân sự');
-      return;
-    }
     dispatch({
       type: params.id ? 'absentStudentsAdd/UPDATE' : 'absentStudentsAdd/ADD',
       payload: {
@@ -151,17 +206,19 @@ class Index extends PureComponent {
 
   render() {
     const {
+      user,
       students,
       error,
       menuLeftSchedules,
       categories,
       loading: { effects },
       match: { params },
+      branches,
+      classes,
     } = this.props;
     const loading =
       effects['absentStudentsAdd/GET_DETAILS'] ||
       effects['absentStudentsAdd/GET_CATEGORIES'] ||
-      effects['absentStudentsAdd/GET_STUDENTS'] ||
       effects['absentStudentsAdd/GET_DETAILS'];
     const loadingSubmit = effects['absentStudentsAdd/ADD'];
     return (
@@ -182,21 +239,49 @@ class Index extends PureComponent {
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>
+
                 <div className="row mt-3">
-                  <div className="col-lg-6">
+                  {user.role?.toUpperCase() !== variables.ROLES.PARENT && !user?.objectInfo?.id && (
+                    <>
+                      <div className="col-lg-4">
+                        <FormItem
+                          data={branches}
+                          label="Cơ sở"
+                          name="branchId"
+                          rules={[variables.RULES.EMPTY]}
+                          type={variables.SELECT}
+                          onChange={this.onChangeBranch}
+                        />
+                      </div>
+                      <div className="col-lg-4">
+                        <FormItem
+                          data={classes}
+                          label="Lớp"
+                          name="classId"
+                          rules={[variables.RULES.EMPTY]}
+                          type={variables.SELECT}
+                          onChange={this.onChangeClass}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="col-lg-4">
                     <FormItem
-                      data={categories?.absentTypes || []}
-                      label="LOẠI NGHỈ PHÉP"
-                      name="absentTypeId"
+                      data={Helper.convertSelectUsers(students)}
+                      label="Học sinh"
+                      name="studentId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
                   </div>
+                </div>
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      data={Helper.convertSelectUsers(students)}
-                      label="HỌC SINH"
-                      name="studentId"
+                      data={categories?.absentTypes || []}
+                      label="Loại nghỉ phép"
+                      name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
@@ -273,6 +358,8 @@ Index.propTypes = {
   menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
   categories: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -285,6 +372,8 @@ Index.defaultProps = {
   menuLeftSchedules: [],
   categories: {},
   details: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;

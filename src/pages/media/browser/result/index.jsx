@@ -6,7 +6,8 @@ import { Helmet } from 'react-helmet';
 import { size, isEmpty } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -150,6 +151,18 @@ const Index = memo(() => {
     });
   };
 
+  const removePostChoose = () => {
+    dispatch({
+      type: 'mediaResult/REMOVE_ALL',
+      payload: groupIds,
+      callback: (response) => {
+        if (response) {
+          fetchMedia();
+        }
+      },
+    });
+  };
+
   const removeAllPost = () => {
     dispatch({
       type: 'mediaResult/REMOVE_ALL',
@@ -230,6 +243,29 @@ const Index = memo(() => {
     setClassifyData(data);
   }, [data]);
 
+  const handleMenuClick = (e) => {
+    if (e.key === 'MERGE_CHOOSE') {
+      merge();
+    }
+    if (e.key === 'REMOVE_ALL') {
+      removeAllPost();
+    }
+    if (e.key === 'REMOVE_CHOOSE') {
+      removePostChoose();
+    }
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      {isEmpty(groupIds) ||
+        (groupIds.length <= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
+      {isEmpty(groupIds) ||
+        (groupIds.length <= 1 && <Menu.Item key="REMOVE_CHOOSE">Xóa ghi nhận đã chọn</Menu.Item>)}
+      {isEmpty(groupIds) ||
+        (groupIds.length <= 1 && <Menu.Item key="REMOVE_ALL">Xóa tất cả ghi nhận</Menu.Item>)}
+    </Menu>
+  );
+
   return (
     <>
       <Helmet title="Duyệt hình" />
@@ -260,149 +296,131 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="col-lg-9 d-flex justify-content-end">
-                <Button
-                  className="mr20"
-                  color="dark"
-                  type="link"
-                  onClick={removeAllPost}
-                  disabled={isEmpty(classifyData)}
-                  loading={loading['mediaResult/GET_DATA']}
-                >
-                  Xóa tất cả ghi nhận
-                </Button>
-                <Button
-                  className="mr20"
-                  color="primary"
-                  onClick={merge}
-                  disabled={isEmpty(groupIds) || groupIds.length <= 1}
-                  loading={loading['mediaResult/GET_DATA']}
-                >
-                  Gộp ghi nhận
-                </Button>
+                <Dropdown overlay={menu} trigger={['click']}>
+                  <ButtonAnt>
+                    Thao tác <DownOutlined />
+                  </ButtonAnt>
+                </Dropdown>
                 <Button
                   color="success"
+                  className="ml20"
                   onClick={postAll}
                   loading={loading['mediaResult/VALIDATE_ALL'] || loading['mediaResult/GET_DATA']}
                 >
-                  Gửi tất cả
+                  Gửi tất cả ghi nhận
                 </Button>
               </Pane>
             </Pane>
           </Form>
         </Pane>
-
-        <Loading loading={loading['mediaResult/GET_DATA']} isEmpty={!size(classifyData)}>
-          <Form
-            layout="vertical"
-            ref={formRef}
-            initialValues={{
-              description: classifyData.map((item) => item.description),
-            }}
-          >
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 214}>
-              {(classifyData || []).map((post, index) => (
-                <Pane
-                  className={csx('card p20 mb-0', {
-                    mt15: !!index,
-                    'border border-primary': groupIds.includes(post?.id),
-                  })}
-                  key={post?.id}
-                >
-                  <Pane className="mb15 row">
-                    <Pane className="col-lg-3">
-                      <Pane className={infoStyles.userInformation}>
-                        <AvatarTable
-                          fileImage={Helper.getPathAvatarJson(post?.student?.fileImage)}
-                        />
+        {!!size(classifyData) && (
+          <Loading loading={loading['mediaResult/GET_DATA']} isEmpty={!size(classifyData)}>
+            <Form
+              layout="vertical"
+              ref={formRef}
+              initialValues={{
+                description: classifyData.map((item) => item.description),
+              }}
+            >
+              <Scrollbars autoHeight autoHeightMax={window.innerHeight - 214}>
+                {(classifyData || []).map((post, index) => (
+                  <Pane
+                    className={csx('card p20 mb-0', {
+                      mt15: !!index,
+                      'border border-primary': groupIds.includes(post?.id),
+                    })}
+                    key={post?.id}
+                  >
+                    <Pane className="mb15 row">
+                      <Pane className="col-lg-3">
                         <Pane>
-                          <h3>{post?.student?.fullName}</h3>
-                          <p>
-                            {post?.studentMaster?.student?.class?.branch?.name} -{' '}
-                            {post?.studentMaster?.student?.class?.name}
-                          </p>
+                          <label className={csx(infoStyles.infoLabel, 'mb-0')}>
+                            Thời gian tải lên:
+                          </label>
+                          <span className={infoStyles.infoText}>
+                            {moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME)}
+                          </span>
+                        </Pane>
+                        <Pane className={infoStyles.userInformation}>
+                          <AvatarTable
+                            fileImage={Helper.getPathAvatarJson(post?.student?.fileImage)}
+                          />
+                          <Pane>
+                            <h3>{post?.student?.fullName}</h3>
+                            <p>
+                              {post?.studentMaster?.student?.class?.branch?.name} -{' '}
+                              {post?.studentMaster?.student?.class?.name}
+                            </p>
+                          </Pane>
+                        </Pane>
+                      </Pane>
+                      <Pane className="col-lg-9 d-flex justify-content-end align-items-center">
+                        <Button className="mr20" color="gray" onClick={() => removePost(post?.id)}>
+                          Xóa
+                        </Button>
+
+                        <Button
+                          className="mr20"
+                          color="success"
+                          onClick={() => createPost(post, index)}
+                        >
+                          Gửi
+                        </Button>
+                        <Pane className="px5">
+                          <Checkbox
+                            style={{ transform: 'scale(1.5)' }}
+                            onChange={groupSelect(post?.id)}
+                          />
                         </Pane>
                       </Pane>
                     </Pane>
-                    <Pane className="col-lg-9 d-flex justify-content-end align-items-center">
-                      <Button
-                        className="mr20"
-                        color="danger"
-                        type="link"
-                        onClick={() => removePost(post?.id)}
-                      >
-                        Xóa ghi nhận
-                      </Button>
-                      <Pane className="mr20">
-                        <label className={csx(infoStyles.infoLabel, 'mb-0')}>
-                          Thời gian tải lên:
-                        </label>
-                        <span className={infoStyles.infoText}>
-                          {moment(post?.creationTime).format(variables.DATE_FORMAT.DATE_TIME)}
-                        </span>
-                      </Pane>
-                      <Button
-                        className="mr20"
-                        color="success"
-                        onClick={() => createPost(post, index)}
-                      >
-                        Gửi
-                      </Button>
-                      <Pane className="px5">
-                        <Checkbox
-                          style={{ transform: 'scale(1.5)' }}
-                          onChange={groupSelect(post?.id)}
-                        />
-                      </Pane>
+
+                    <FormItem
+                      label="Mô tả"
+                      onChange={changeDesctiption(post?.id)}
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                      placeholder="Nhập mô tả"
+                      name={['description', index]}
+                    />
+
+                    <Pane className="row">
+                      {(post?.files || []).map((image) => (
+                        <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
+                          <img
+                            className="d-block w-100"
+                            src={`${API_UPLOAD}${image?.url}`}
+                            alt="imageUpload"
+                          />
+                          <Button
+                            icon="cancel"
+                            className={styles.close}
+                            onClick={() => removeImage(post?.id, image)}
+                          />
+                        </Pane>
+                      ))}
                     </Pane>
                   </Pane>
-
-                  <FormItem
-                    label="Mô tả"
-                    onChange={changeDesctiption(post?.id)}
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY]}
-                    placeholder="Nhập mô tả"
-                    name={['description', index]}
-                  />
-
-                  <Pane className="row">
-                    {(post?.files || []).map((image) => (
-                      <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>
-                        <img
-                          className="d-block w-100"
-                          src={`${API_UPLOAD}${image?.url}`}
-                          alt="imageUpload"
-                        />
-                        <Button
-                          icon="cancel"
-                          className={styles.close}
-                          onClick={() => removeImage(post?.id, image)}
-                        />
-                      </Pane>
-                    ))}
-                  </Pane>
-                </Pane>
-              ))}
-            </Scrollbars>
-          </Form>
-        </Loading>
+                ))}
+              </Scrollbars>
+            </Form>
+          </Loading>
+        )}
 
         {!isEmpty(recordedFiles) && (
           <>
-            <Pane className="mt20 mb20 d-flex justify-content-between">
-              <Heading type="page-title">Những ảnh không xác định</Heading>
-              <Button
-                className="mr20"
-                color="dark"
-                type="link"
-                onClick={removeRecordFiles}
-                disabled={isEmpty(recordedFiles) || loading['mediaResult/GET_DATA']}
-              >
-                Xóa tất cả
-              </Button>
-            </Pane>
-
-            <Pane className={csx('card p20 mb-0')}>
+            <Pane className={csx('card p20 mb-0 mt10')}>
+              <Pane className="d-flex justify-content-between">
+                <Heading type="page-title">Hình ảnh không xác định</Heading>
+                <Button
+                  color="dark"
+                  type="link"
+                  onClick={removeRecordFiles}
+                  disabled={isEmpty(recordedFiles) || loading['mediaResult/GET_DATA']}
+                >
+                  Xóa tất cả
+                </Button>
+              </Pane>
               <Pane className="row">
                 {(recordedFiles || []).map((image) => (
                   <Pane className={csx('col-lg-2 my10', styles.imageWrapper)} key={image?.id}>

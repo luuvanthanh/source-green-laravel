@@ -108,7 +108,11 @@ class Index extends PureComponent {
                   <Image.PreviewGroup>
                     {Helper.isJSON(details.fileImage) &&
                       JSON.parse(details.fileImage).map((item, index) => (
-                        <div key={index} className="container-preview-image" style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}>
+                        <div
+                          key={index}
+                          className="container-preview-image"
+                          style={{ backgroundImage: `url(${API_UPLOAD}${item})` }}
+                        >
                           <Image
                             width={80}
                             height={80}
@@ -201,18 +205,21 @@ class Index extends PureComponent {
               {/* INFO CONTAINER */}
 
               {/* INFO FEEDBACK */}
-              <div className={classnames(styles['feedback-container'], 'mt20')}>
-                <div className="row">
-                  <div className="col-4">
-                    <p className={styles.time}>
-                      {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
-                    </p>
-                  </div>
-                  <div className="col-8">
-                    <p className={styles.norm}>{details?.employee?.fullName} đã nhận tin</p>
+              {details?.employee && (
+                <div className={classnames(styles['feedback-container'], 'mt20')}>
+                  <div className="row">
+                    <div className="col-4">
+                      <p className={styles.time}>
+                        {Helper.getDate(details?.confirmedTime, variables.DATE_FORMAT.DATE_TIME)}
+                      </p>
+                    </div>
+                    <div className="col-8">
+                      <p className={styles.norm}>{details?.employee?.fullName} đã nhận tin</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
               {/* INFO FEEDBACK */}
             </Loading>
           </div>

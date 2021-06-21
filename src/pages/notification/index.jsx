@@ -306,7 +306,7 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <div
-            style={{ maxHeight: '50px', overflowY: 'auto' }}
+            style={{ maxHeight: '100px', overflowY: 'auto' }}
             dangerouslySetInnerHTML={{ __html: record.content }}
           />
         ),

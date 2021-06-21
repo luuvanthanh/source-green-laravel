@@ -315,7 +315,7 @@ class Index extends PureComponent {
                     <div className="col-lg-12">
                       <FormItem
                         className="title-green"
-                        label="Chọn lớp để xếp"
+                        label="Chọn lớp để điều chuyển"
                         name="classChangeId"
                         type={variables.RADIO}
                         rules={[variables.RULES.EMPTY]}

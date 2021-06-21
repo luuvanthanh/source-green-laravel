@@ -20,6 +20,9 @@ export default class Helpers {
     if (type === variables.STATUS.VALID) {
       return <Tag color="danger">{variables.STATUS_NAME.VALID}</Tag>;
     }
+    if (type === variables.STATUS.CANCEL) {
+      return <Tag color="danger">{variables.STATUS_NAME.CANCEL}</Tag>;
+    }
     return <Tag color="success">{variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
