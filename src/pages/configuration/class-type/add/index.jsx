@@ -113,6 +113,14 @@ const Index = memo(() => {
                     />
                   </Pane>
 
+                  <Pane className="col-lg-12">
+                    <FormItem
+                      label="Mô tả"
+                      name="description"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_TEXTAREA]}
+                    />
+                  </Pane>
 
                 </Pane>
               </Pane>
@@ -120,7 +128,7 @@ const Index = memo(() => {
                 !params?.id && (
                   <Pane className="p20 d-flex justify-content-between align-items-center border-top">
                     <p className="btn-delete" role="presentation" onClick={remove}>
-                      Xóa
+                      Hủy
                     </p>
                     <Button
                       className="ml-auto px25"
