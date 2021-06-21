@@ -1,13 +1,10 @@
-import request from '@/utils/request';
-import { omit } from 'lodash';
-import { Helper } from '@/utils';
+import request from '@/utils/requestLavarel';
 
 export function get(params = {}) {
-  return request('/manager-level', {
+  return request('/v1/fees', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      ...params
     },
   });
 }
