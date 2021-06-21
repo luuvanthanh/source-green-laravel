@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Form } from 'antd';
 import classnames  from 'classnames';
 import { DeleteOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -10,9 +11,9 @@ import styles from '@/assets/styles/Common/common.scss';
 
 import { variables } from '@/utils';
 
-const Index = memo(() => (
+const Index = memo(({ fees }) => (
   <Pane className="p20">
-    <Form.List name="detail">
+    <Form.List name="fixedParameter">
       {(fields, { add, remove }) => (
         <>
           {fields.map((field) => (
@@ -26,11 +27,11 @@ const Index = memo(() => (
             >
               <div className="col-lg-4">
                 <FormItem
-                  data={[]}
+                  data={fees}
                   label="Hình thức"
-                  name={[field.name, 'parameterValueId']}
-                  fieldKey={[field.fieldKey, 'parameterValueId']}
-                  // rules={[variables.RULES.EMPTY]}
+                  name={[field.name, 'paymentFormId']}
+                  fieldKey={[field.fieldKey, 'paymentFormId']}
+                  rules={[variables.RULES.EMPTY]}
                   type={variables.SELECT}
                   // onChange={(event) => this.onChangeParamaterValues(event, index)}
                 />
@@ -38,7 +39,7 @@ const Index = memo(() => (
               <div className="col-lg-4">
                 <FormItem
                   label="Năm học"
-                  name={[field.name, 'year']}
+                  name={[field.name, 'duaDate']}
                   rules={[variables.RULES.EMPTY]}
                   type={variables.DATE_PICKER}
                 />
@@ -74,5 +75,13 @@ const Index = memo(() => (
     </Form.List>
   </Pane>
 ));
+
+Index.propTypes = {
+  fees: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  fees: []
+};
 
 export default Index;

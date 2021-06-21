@@ -1,4 +1,4 @@
-import { get } from './services';
+import * as services from './services';
 
 export default {
   namespace: 'schoolYear',
@@ -32,14 +32,12 @@ export default {
   effects: {
     *GET_DATA({ payload }, saga) {
       try {
-        const response = yield saga.call(get, payload);
+        const response = yield saga.call(services.get, payload);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
+            parsePayload: response.parsePayload,
+            pagination: response.pagination
           },
         });
       } catch (error) {
