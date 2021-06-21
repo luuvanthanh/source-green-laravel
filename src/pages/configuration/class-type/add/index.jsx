@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -22,15 +22,41 @@ const Index = memo(() => {
   const history = useHistory();
   const formRef = useRef();
 
-  const onFinish = () => {
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'classTypeAdd/GET_DETAILS',
+        payload: {
+          ...params
+        },
+        callback: (res) => {
+          if (res) {
+            formRef.current.setFieldsValue({
+              ...res,
+            });
+          }
+        },
+      });
+    }
+  }, []);
+
+  const onFinish = (values) => {
     dispatch({
-      type: 'upload/UPLOAD',
-      payload: {},
+      type: 'classTypeAdd/ADD',
+      payload: {
+        ...values,
+      },
+      callback: (res) => {
+        if (res) {
+          history.goBack();
+        }
+      },
     });
-    history.goBack();
   };
 
-  const remove = () => {};
+  const remove = () => {
+    formRef.current.resetFields();
+  };
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
@@ -56,7 +82,7 @@ const Index = memo(() => {
                       label="Mã loại lớp"
                       name="code"
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                     />
                   </Pane>
 
@@ -65,17 +91,29 @@ const Index = memo(() => {
                       label="Tên loại lớp"
                       name="name"
                       type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                    />
+                  </Pane>
+
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      label="Từ tháng tuổi"
+                      name="from"
+                      type={variables.INPUT_COUNT}
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
 
-                  <Pane className="col-lg-12">
+                  <Pane className="col-lg-6">
                     <FormItem
-                      label="Mô tả"
-                      name="description"
-                      type={variables.INPUT}
+                      label="Đến tháng tuổi"
+                      name="to"
+                      type={variables.INPUT_COUNT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
+
+
                 </Pane>
               </Pane>
               {

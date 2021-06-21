@@ -44,7 +44,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.name,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
