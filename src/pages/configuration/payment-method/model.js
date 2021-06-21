@@ -36,10 +36,8 @@ export default {
         yield saga.put({
           type: 'SET_DATA',
           payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
+            parsePayload: response.parsePayload,
+            pagination: response.pagination
           },
         });
       } catch (error) {

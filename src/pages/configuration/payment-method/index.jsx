@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ classType, loading }) => ({
-  data: classType.data,
-  error: classType.error,
-  pagination: classType.pagination,
+const mapStateToProps = ({ paymentMethod, loading }) => ({
+  data: paymentMethod.data,
+  error: paymentMethod.error,
+  pagination: paymentMethod.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,7 +44,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        name: query?.name,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -83,7 +83,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'classType/GET_DATA',
+      type: 'paymentMethod/GET_DATA',
       payload: {
         ...search,
       },
@@ -166,19 +166,19 @@ class Index extends PureComponent {
         title: 'Hình thức',
         key: 'code',
         className: 'min-width-150',
-        render: () => <Text size="normal">NAM</Text>,
+        render: (record) => record?.code || ''
       },
       {
         title: 'Tên',
         key: 'name',
         className: 'min-width-250',
-        render: () => <Text size="normal">Theo năm</Text>,
+        render: (record) => record?.name || ''
       },
       {
         title: 'Kiểu (type)',
         key: 'type',
         className: 'min-width-250',
-        render: () => <Text size="normal">HK</Text>,
+        render: (record) => record?.type || ''
       },
       {
         key: 'action',
@@ -205,9 +205,10 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      data
     } = this.props;
     const { search } = this.state;
-    const loading = effects['classType/GET_DATA'];
+    const loading = effects['paymentMethod/GET_DATA'];
     return (
       <>
         <Helmet title="Hình thức đóng phí" />
@@ -229,8 +230,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
@@ -240,7 +241,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
@@ -263,6 +264,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -271,6 +273,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  data: [],
 };
 
 export default Index;

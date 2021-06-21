@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -13,6 +13,8 @@ import FormItem from '@/components/CommonComponent/FormItem';
 
 import { variables } from '@/utils';
 
+import variablesModules from '../variables';
+
 const Index = memo(() => {
   const params = useParams();
   const { loading } = useSelector(({ loading }) => ({ loading }));
@@ -22,15 +24,40 @@ const Index = memo(() => {
   const history = useHistory();
   const formRef = useRef();
 
-  const onFinish = () => {
-    dispatch({
-      type: 'upload/UPLOAD',
-      payload: {},
-    });
-    history.goBack();
-  };
+  useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'paymentMethodAdd/GET_DETAILS',
+        payload: {
+          ...params
+        },
+        callback: (res) => {
+          if (res) {
+            formRef.current.setFieldsValue({
+              ...res,
+            });
+          }
+        },
+      });
+    }
+  }, []);
 
-  const remove = () => {};
+  const onFinish = (values) => {
+    dispatch({
+      type: 'paymentMethodAdd/ADD',
+      payload: {
+        ...values,
+      },
+      callback: (res) => {
+        if (res) {
+          history.goBack();
+        }
+      },
+    });
+  };
+  const remove = () => {
+    formRef.current.resetFields();
+  };
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
@@ -73,8 +100,10 @@ const Index = memo(() => {
                     <FormItem
                       label="Kiểu (Type)"
                       name="type"
-                      type={variables.INPUT}
+                      type={variables.SELECT}
+                      data={variablesModules.TYPE}
                       rules={[variables.RULES.EMPTY]}
+                      allowClear={false}
                     />
                   </Pane>
 
