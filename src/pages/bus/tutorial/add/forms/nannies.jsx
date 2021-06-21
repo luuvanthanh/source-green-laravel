@@ -108,8 +108,27 @@ class Index extends PureComponent {
     });
   };
 
+  enableSchedules = (items) => {
+    if (this.formRef.current) {
+      const data = this.formRef.current.getFieldsValue();
+      let dayOfWeeks = [];
+      data?.busRouteNannies?.forEach((item) => {
+        if (item?.dayOfWeeks) {
+          dayOfWeeks = [...dayOfWeeks, ...item?.dayOfWeeks];
+        }
+      });
+      return variablesModules.DAYS.filter(
+        (item) =>
+          !!items.find((itemSchedule) => itemSchedule.dayOfWeek === item.id) &&
+          !dayOfWeeks.includes(item.id),
+      );
+    }
+    return [];
+  };
+
   render() {
     const {
+      details,
       error,
       employees,
       loading: { effects },
@@ -161,7 +180,7 @@ class Index extends PureComponent {
                             <div className="row">
                               <div className="col-lg-12">
                                 <FormItem
-                                  data={variablesModules.DAYS}
+                                  data={this.enableSchedules(details?.busRouteSchedules || [])}
                                   label="Thời gian"
                                   fieldKey={[field.fieldKey, 'dayOfWeeks']}
                                   name={[field.name, 'dayOfWeeks']}

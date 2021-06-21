@@ -39,8 +39,8 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    sentDateFrom: query?.sentDateFrom,
-    sentDateTo: query?.sentDateTo,
+    sentDateFrom: query?.sentDateFrom || moment().startOf('months'),
+    sentDateTo: query?.sentDateTo || moment().endOf('months'),
     description: query?.description,
     branchId: query?.branchId,
     classId: query?.classId,
@@ -245,6 +245,8 @@ const Index = memo(() => {
                   search?.sentDateFrom ? moment(search?.sentDateFrom) : null,
                   search?.sentDateTo ? moment(search?.sentDateTo) : null,
                 ],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
             >
               <Pane className="row">
@@ -260,16 +262,18 @@ const Index = memo(() => {
                   <FormItem
                     name="branchId"
                     type={variables.SELECT}
-                    data={category?.branches || []}
+                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
                     onChange={(value) => changeFilterBranch('branchId')(value)}
+                    allowClear={false}
                   />
                 </Pane>
                 <Pane className="col-lg-3">
                   <FormItem
                     name="classId"
                     type={variables.SELECT}
-                    data={category?.classes || []}
+                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.classes]}
                     onChange={(value) => changeFilter('classId')(value)}
+                    allowClear={false}
                   />
                 </Pane>
                 <Pane className="col-lg-3">

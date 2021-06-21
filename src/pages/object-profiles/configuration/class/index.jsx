@@ -241,19 +241,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHHINH', 'CAUHHINH')
+    return !ability.can('CAUHINH', 'CAUHINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -279,7 +279,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             >
               Thêm mới
             </Button>
