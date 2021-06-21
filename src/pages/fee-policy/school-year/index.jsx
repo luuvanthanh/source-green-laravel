@@ -44,7 +44,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        name: query?.name,
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -208,6 +208,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      data
     } = this.props;
     const { search } = this.state;
     const loading = effects['schoolYear/GET_DATA'];
@@ -232,8 +233,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
@@ -243,7 +244,7 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={[{ id: 1 }]}
+              dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
@@ -266,6 +267,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -274,6 +276,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  data: []
 };
 
 export default Index;

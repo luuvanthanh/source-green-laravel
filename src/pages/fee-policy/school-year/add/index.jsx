@@ -4,6 +4,7 @@ import { Form, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import classnames  from 'classnames';
+import _ from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -34,25 +35,47 @@ const Index = memo(() => {
   const {
     loading,
     menuLeftFeePolicy,
-  } = useSelector(({ loading, menu }) => ({
+    fees,
+  } = useSelector(({ loading, menu, paymentMethod }) => ({
     loading: loading.effects,
     menuLeftFeePolicy: menu.menuLeftFeePolicy,
+    fees: paymentMethod.data
   }));
   const dispatch = useDispatch();
 
   const history = useHistory();
   const formRef = useRef();
   const [tab, setTab] = useState(tabs[0].id);
+  const [showDetails, setShowDetails] = useState(false);
+  const [paramChanges, setParamChanges] = useState([]);
 
-  const onFinish = () => {
+  const onFinish = (values) => {
+    const data = {
+      ...values,
+      rangeDate: undefined,
+      startDate: values.rangeDate[0],
+      endDate: values.rangeDate[1],
+      changeParameter: paramChanges
+    };
     dispatch({
-      type: 'upload/UPLOAD',
-      payload: {},
+      type: 'schoolyearAdd/ADD',
+      payload: {
+        ...data
+      },
+      history,
+      callback: (res) => {
+        if (res) {
+          history.goBack();
+        }
+      },
     });
-    history.goBack();
   };
 
-  const remove = () => {};
+  const remove = () => {
+    formRef?.current?.resetFields();
+    setShowDetails(false);
+    setParamChanges([]);
+  };
 
   const changeTab = (value) => {
     setTab(value);
@@ -62,12 +85,40 @@ const Index = memo(() => {
     switch(tab) {
       case 'parametersFixed':
         return (
-          <ParametersFixedComponent />
+          <ParametersFixedComponent fees={fees.filter(item => item.type === 'CD')} />
         );
       default:
-        return <ParametersChangeComponent />;
+        return (
+          <ParametersChangeComponent
+            formRef={formRef}
+            fees={fees.filter(item => item.type === 'TD')}
+            paramChanges={paramChanges}
+            setParamChanges={(values) => setParamChanges(values)}
+          />
+        );
     }
   };
+
+  const getPaymentForm = () => {
+    dispatch({
+      type: 'paymentMethod/GET_DATA',
+      payload: {
+        limit: variables.PAGINATION.SIZEMAX,
+        page: variables.PAGINATION.PAGE
+      },
+    });
+  };
+
+  const getDetail = _.debounce(() => {
+    const { getFieldsValue } = formRef?.current;
+    const { yearFrom, yearTo, rangeDate } = getFieldsValue();
+    if (yearFrom && yearTo && rangeDate) {
+      setShowDetails(true);
+      getPaymentForm();
+    } else {
+      setShowDetails(false);
+    }
+  }, 300);
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
@@ -87,54 +138,70 @@ const Index = memo(() => {
               </Heading>
 
               <Pane className={classnames('row')}>
-                <Pane className="col-lg-3">
+                <Pane className="col-lg-2">
                   <FormItem
-                    label="Năm học"
-                    name="year"
+                    label="Từ năm"
+                    name="yearFrom"
                     rules={[variables.RULES.EMPTY]}
-                    type={variables.DATE_PICKER}
+                    type={variables.INPUT_COUNT}
+                    onChange={getDetail}
+                  />
+                </Pane>
+
+                <Pane className="col-lg-2">
+                  <FormItem
+                    label="Đến năm"
+                    name="yearTo"
+                    rules={[variables.RULES.EMPTY]}
+                    type={variables.INPUT_COUNT}
+                    onChange={getDetail}
                   />
                 </Pane>
 
                 <Pane className="col-lg-4">
                   <FormItem
                     label="Thời gian hiệu lực"
-                    name="date"
+                    name="rangeDate"
                     type={variables.RANGE_PICKER}
+                    onChange={getDetail}
                   />
                 </Pane>
               </Pane>
             </Pane>
-            <Pane className="card mb0">
-              <Heading type="form-title" className="p20 border-bottom">
-                Chi tiết
-              </Heading>
+            {showDetails && (
+              <>
+                <Pane className="card mb0">
+                  <Heading type="form-title" className="p20 border-bottom">
+                    Chi tiết
+                  </Heading>
 
-              <Tabs onChange={changeTab} activeKey={tab} className={classnames(styles['tab-px20'], styles['tab-uppercase'])}>
-                {tabs.map(({ id, name }) => (
-                  <TabPane tab={name} key={id} />
-                ))}
-              </Tabs>
-              {renderTab(tab)}
-            </Pane>
-            {
-              !params?.id && (
-                <Pane className="p20 d-flex justify-content-between align-items-center">
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Hủy
-                  </p>
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loading['classTypeAdd/GET_DETAILS']}
-                  >
-                    Lưu
-                  </Button>
+                  <Tabs onChange={changeTab} activeKey={tab} className={classnames(styles['tab-px20'], styles['tab-uppercase'])}>
+                    {tabs.map(({ id, name }) => (
+                      <TabPane tab={name} key={id} />
+                    ))}
+                  </Tabs>
+                  {renderTab(tab)}
                 </Pane>
-              )
-            }
+                {
+                  !params?.id && (
+                    <Pane className="p20 d-flex justify-content-between align-items-center">
+                      <p className="btn-delete" role="presentation" onClick={remove}>
+                        Hủy
+                      </p>
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        loading={loading['classTypeAdd/GET_DETAILS']}
+                      >
+                        Lưu
+                      </Button>
+                    </Pane>
+                  )
+                }
+              </>
+            )}
           </Form>
         </Pane>
       </Pane>

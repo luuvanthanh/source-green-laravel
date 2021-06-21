@@ -4,16 +4,40 @@ import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 
-const Index = memo(() => {
-  const [paramChanges] = useState([{ id: 1 }]);
+const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
+  const { getFieldsValue } = formRef?.current;
+  const { rangeDate} = getFieldsValue();
 
+  const [disableApply, setDiableApply] = useState(true);
 
-  const onFinish = () => {
+  const renderData = (length, values) => {
+    const datasTable = [];
+    for (let i = 0; i < length; i += 1) {
+      datasTable.push({
+        id: i,
+        paymentFormId: values?.fee,
+        fee: fees.find(item => item.id === values?.fee)?.code,
+        duaDate: values?.expirationDate,
+        startDate: moment(rangeDate[1]).add(i, 'month').format('MM/YYYY'),
+        expirationDate: moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate).format('DD/MM/YYYY')
+      });
+    }
+    return datasTable;
   };
 
+  const onFinish = () => {
+    const values = getFieldsValue();
+    const result = moment(rangeDate[1]).diff(moment(rangeDate[0]), 'month') + 1;
+    if (result) {
+      const data = renderData(result, values);
+      setParamChanges(data);
+    }
+  };
 
   /**
    * Function header table
@@ -24,22 +48,31 @@ const Index = memo(() => {
         title: 'Hình thức',
         key: 'form',
         className: 'min-width-200',
-        render: () => 'THANG'
+        render: (record) => record?.fee || ''
       },
       {
         title: 'Ngày học theo lịch',
         key: 'date',
         className: 'min-width-200',
-        render: () => '08/2021',
+        render: (record) => record?.startDate || '',
       },
       {
         title: 'Ngày đến hạn thanh toán',
         key: 'expired',
         className: 'min-width-300',
-        render: () => '08/2021',
+        render: (record) => record?.expirationDate || '',
       },
     ];
     return columns;
+  };
+
+  const changeForm = () => {
+    const values = getFieldsValue();
+    if (values?.fee && values?.expirationDate) {
+      setDiableApply(false);
+    } else {
+      setDiableApply(true);
+    }
   };
 
   return (
@@ -47,24 +80,23 @@ const Index = memo(() => {
       <div className="row">
         <div className="col-lg-3">
           <label htmlFor="" className="mb5">Thời điểm</label>
-          <p className="mb0 py10 font-weight-bold">08/01/2021 - 31/05/2022</p>
+          <p className="mb0 py10 font-weight-bold">{Helper.getDate(rangeDate[0])} - {Helper.getDate(rangeDate[1])}</p>
         </div>
         <div className="col-lg-3">
           <FormItem
-            data={[]}
+            data={fees}
             label="Hình thức"
-            name='form'
-            // rules={[variables.RULES.EMPTY]}
+            name='fee'
             type={variables.SELECT}
-            // onChange={(event) => this.onChangeParamaterValues(event, index)}
+            onChange={changeForm}
           />
         </div>
         <div className="col-lg-3">
           <FormItem
-              label="TÊN"
-              name="name"
-              // rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-              type={variables.INPUT}
+              label="Ngày đến hạn mỗi THÁNG"
+              name="expirationDate"
+              type={variables.INPUT_COUNT}
+              onChange={changeForm}
             />
         </div>
         <div className="col-lg-3">
@@ -73,6 +105,7 @@ const Index = memo(() => {
             color="success"
             size="large"
             onClick={onFinish}
+            disabled={disableApply}
           >
             Áp dụng
           </Button>
@@ -94,5 +127,19 @@ const Index = memo(() => {
     </Pane>
   );
 });
+
+Index.propTypes = {
+  formRef: PropTypes.objectOf(PropTypes.any),
+  fees: PropTypes.arrayOf(PropTypes.any),
+  paramChanges: PropTypes.arrayOf(PropTypes.any),
+  setParamChanges: PropTypes.func,
+};
+
+Index.defaultProps = {
+  formRef: {},
+  fees: [],
+  paramChanges: [],
+  setParamChanges: () => {}
+};
 
 export default Index;
