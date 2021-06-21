@@ -1,23 +1,14 @@
-import request from '@/utils/request';
+import request from '@/utils/requestLavarel';
 
 export function add(data = {}) {
-  return request('/manager-level', {
+  return request('/v1/class-types', {
     method: 'POST',
     data,
-    parse: true,
-  });
-}
-
-export function update(data = {}) {
-  return request(`/manager-level/${data.id}`, {
-    method: 'PUT',
-    data,
-    parse: true,
   });
 }
 
 export function details(data = {}) {
-  return request(`/manager-level/${data.id}`, {
+  return request(`/v1/class-types/${data?.id}`, {
     method: 'GET',
   });
 }
