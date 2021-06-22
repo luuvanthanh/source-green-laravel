@@ -4,7 +4,6 @@ import { Form, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import classnames  from 'classnames';
-import _ from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -109,16 +108,17 @@ const Index = memo(() => {
     });
   };
 
-  const getDetail = _.debounce(() => {
+  const getDetail  = async () => {
     const { getFieldsValue } = formRef?.current;
     const { yearFrom, yearTo, rangeDate } = getFieldsValue();
+    setParamChanges([]);
     if (yearFrom && yearTo && rangeDate) {
       setShowDetails(true);
       getPaymentForm();
     } else {
       setShowDetails(false);
     }
-  }, 300);
+  };
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
@@ -142,9 +142,22 @@ const Index = memo(() => {
                   <FormItem
                     label="Từ năm"
                     name="yearFrom"
-                    rules={[variables.RULES.EMPTY]}
                     type={variables.INPUT_COUNT}
-                    onChange={getDetail}
+                    onChange={(e) => getDetail(e, 'yearFrom')}
+                    rules={[
+                      {
+                        ...variables.RULES.EMPTY
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value && getFieldValue('yearTo') && value >= getFieldValue('yearTo')) {
+                            setShowDetails(false);
+                            return Promise.reject(new Error(variables.RULES.YEAR_FROM));
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
                   />
                 </Pane>
 
@@ -152,9 +165,22 @@ const Index = memo(() => {
                   <FormItem
                     label="Đến năm"
                     name="yearTo"
-                    rules={[variables.RULES.EMPTY]}
                     type={variables.INPUT_COUNT}
-                    onChange={getDetail}
+                    onChange={(e) => getDetail(e, 'yearTo')}
+                    rules={[
+                      {
+                        ...variables.RULES.EMPTY
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (value && getFieldValue('yearFrom') && getFieldValue('yearFrom') >= value) {
+                            setShowDetails(false);
+                            return Promise.reject(new Error(variables.RULES.YEAR_TO));
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
                   />
                 </Pane>
 
@@ -163,7 +189,7 @@ const Index = memo(() => {
                     label="Thời gian hiệu lực"
                     name="rangeDate"
                     type={variables.RANGE_PICKER}
-                    onChange={getDetail}
+                    onChange={(e) => getDetail(e, 'rangeDate')}
                   />
                 </Pane>
               </Pane>
