@@ -69,6 +69,16 @@ class Index extends PureComponent {
   componentDidMount() {
     this.loadCategories();
     this.onLoad();
+    this.loadHolidays();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.search.startDate !== prevState.search.startDate &&
+      this.state.search.endDate !== prevState.search.endDate
+    ) {
+      this.loadHolidays();
+    }
   }
 
   componentWillUnmount() {
@@ -100,6 +110,17 @@ class Index extends PureComponent {
     });
   };
 
+  loadHolidays = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'works/GET_HOLIDAYS',
+      payload: {
+        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
+      },
+    });
+  };
+
   /**
    * Function load data
    */
@@ -108,12 +129,6 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    this.props.dispatch({
-      type: 'works/GET_HOLIDAYS',
-      payload: {
-        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
-      },
-    });
     this.props.dispatch({
       type: 'works/GET_DATA',
       payload: {
@@ -149,7 +164,7 @@ class Index extends PureComponent {
       }),
       () => this.onLoad(),
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function change input
@@ -202,7 +217,7 @@ class Index extends PureComponent {
         this.onLoad();
       },
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function change type
@@ -501,8 +516,8 @@ class Index extends PureComponent {
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
       className:
-        index === 0 ? 'min-width-300 min-parent-width-300' : 'min-width-300 min-parent-width-700',
-      width: 300,
+        index === 0 ? 'min-width-500 min-parent-width-500' : 'min-width-500 min-parent-width-700',
+      width: 500,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],

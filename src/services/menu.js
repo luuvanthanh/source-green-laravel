@@ -506,14 +506,14 @@ export async function getLeftMenuVehicel() {
       permission: [permissions.BUS],
       pro: true,
     },
-    {
-      title: 'Điểm danh hôm nay(Phụ Huynh)',
-      key: 'todayParent',
-      url: ['/quan-ly-phuong-tien/phu-huynh-hom-nay'],
-      icon: 'icon icon-notification',
-      permission: [permissions.BUS],
-      pro: true,
-    },
+    // {
+    //   title: 'Điểm danh hôm nay(Phụ Huynh)',
+    //   key: 'todayParent',
+    //   url: ['/quan-ly-phuong-tien/phu-huynh-hom-nay'],
+    //   icon: 'icon icon-notification',
+    //   permission: [permissions.BUS],
+    //   pro: true,
+    // },
   ];
 }
 export async function getLeftMenuCriteria() {
