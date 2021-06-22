@@ -105,6 +105,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -208,7 +210,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
-      data
+      data,
     } = this.props;
     const { search } = this.state;
     const loading = effects['schoolYear/GET_DATA'];
@@ -276,7 +278,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  data: []
+  data: [],
 };
 
 export default Index;

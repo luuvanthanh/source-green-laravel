@@ -235,7 +235,12 @@ const Index = memo(() => {
   }, []);
 
   const debouncedSearchStatus = debounce((value) => {
-    mountedSet(setSearch, { ...search, status: value });
+    mountedSet(setSearch, {
+      ...search,
+      status: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    });
   }, 300);
 
   /**
