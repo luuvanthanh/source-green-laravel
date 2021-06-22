@@ -69,6 +69,16 @@ class Index extends PureComponent {
   componentDidMount() {
     this.loadCategories();
     this.onLoad();
+    this.loadHolidays();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.search.startDate !== prevState.search.startDate &&
+      this.state.search.endDate !== prevState.search.endDate
+    ) {
+      this.loadHolidays();
+    }
   }
 
   componentWillUnmount() {
@@ -100,6 +110,17 @@ class Index extends PureComponent {
     });
   };
 
+  loadHolidays = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'worksBus/GET_HOLIDAYS',
+      payload: {
+        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
+      },
+    });
+  };
+
   /**
    * Function load data
    */
@@ -108,12 +129,6 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    this.props.dispatch({
-      type: 'worksBus/GET_HOLIDAYS',
-      payload: {
-        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
-      },
-    });
     this.props.dispatch({
       type: 'worksBus/GET_DATA',
       payload: {
