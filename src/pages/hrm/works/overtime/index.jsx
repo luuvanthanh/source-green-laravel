@@ -344,7 +344,7 @@ class Index extends PureComponent {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
             })}
           >
-            Nghỉ lễ
+            L
           </Link>
         </Tooltip>
       );
@@ -479,15 +479,17 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">CHẤM CÔNG NGOÀI GIỜ</Text>
-            <Button
-              color="success"
-              icon="export"
-              size="large"
-              onClick={this.exportExcel}
-              loading={downloading}
-            >
-              Tải bảng công ngoài giờ
-            </Button>
+            {!isEmpty(data) && (
+              <Button
+                color="success"
+                icon="export"
+                size="large"
+                onClick={this.exportExcel}
+                loading={downloading}
+              >
+                Tải bảng công ngoài giờ
+              </Button>
+            )}
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form

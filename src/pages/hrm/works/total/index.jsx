@@ -345,12 +345,9 @@ class Index extends PureComponent {
     );
     if (moment(dayOfWeek).isoWeekday() >= 6) {
       return (
-        <Link
-          to={this.redirectHistory(dayOfWeek, record, user)}
-          className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}
-        >
+        <div className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}>
           -
-        </Link>
+        </div>
       );
     }
     if (user.dateOff && moment(user.dateOff).isBefore(moment(dayOfWeek))) {
@@ -386,7 +383,7 @@ class Index extends PureComponent {
               [styles[`cell-heading-holidays`]]: !!holiday,
             })}
           >
-            Nghỉ lễ
+            L
           </Link>
         </Tooltip>
       );
