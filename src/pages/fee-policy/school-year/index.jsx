@@ -177,13 +177,13 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'school-year',
         className: 'min-width-200',
-        render: () => <Text size="normal">2021 - 2022</Text>,
+        render: (record) => `${record?.yearFrom} - ${record?.yearTo}`,
       },
       {
         title: 'Thời gian hiệu lực',
         key: 'date',
         className: 'min-width-300',
-        render: () => <Text size="normal">01/08/2021 - 31/05/2022</Text>,
+        render: (record) => `${Helper.getDate(record.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record.endDate, variables.DATE_FORMAT.DATE_VI)}`
       },
       {
         key: 'action',

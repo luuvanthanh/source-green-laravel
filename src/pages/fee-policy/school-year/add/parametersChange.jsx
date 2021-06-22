@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -15,16 +15,26 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
 
   const [disableApply, setDiableApply] = useState(true);
 
+  useEffect(() => {
+    const { getFieldsValue } = formRef?.current;
+    const { fee, expirationDate } = getFieldsValue();
+    if (fee && expirationDate) {
+      setDiableApply(false);
+    }
+  }, []);
+
   const renderData = (length, values) => {
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
+      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate);
+      const endMonth = moment(rangeDate[0]).add(i, 'month');
       datasTable.push({
         id: i,
         paymentFormId: values?.fee,
         fee: fees.find(item => item.id === values?.fee)?.code,
         duaDate: values?.expirationDate,
-        startDate: moment(rangeDate[1]).add(i, 'month').format('MM/YYYY'),
-        expirationDate: moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate).format('DD/MM/YYYY')
+        startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
+        expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
       });
     }
     return datasTable;
@@ -67,6 +77,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
   };
 
   const changeForm = () => {
+    setParamChanges([]);
     const values = getFieldsValue();
     if (values?.fee && values?.expirationDate) {
       setDiableApply(false);
@@ -97,6 +108,16 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
               name="expirationDate"
               type={variables.INPUT_COUNT}
               onChange={changeForm}
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    if (value && value > 31) {
+                      return Promise.reject(new Error(variables.RULES.INVALID_DATE));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
             />
         </div>
         <div className="col-lg-3">
