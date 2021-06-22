@@ -1304,7 +1304,7 @@ export async function getLeftMenuFeePolicy() {
       permission: [permissions.CHINHSACHPHI],
     },
     {
-      title: 'Danh mục phí',
+      title: 'Phí',
       key: 'fee',
       url: [
         '/chinh-sach-phi/phi',

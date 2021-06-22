@@ -1769,6 +1769,12 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
+            path: '/chinh-sach-phi/phi/:id/chi-tiet',
+            component: './fee-policy/fee/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
             path: '/chinh-sach-phi/chinh-sach',
             component: './fee-policy/policy',
             wrappers: ['@/wrappers/auth'],
