@@ -399,21 +399,33 @@ export async function getLeftMenuConfiguration() {
         {
           title: 'Nhóm đối tượng',
           key: 'manager-object',
-          url: ['/cau-hinh/nhom-doi-tuong', '/cau-hinh/nhom-doi-tuong/tao-moi', '/cau-hinh/nhom-doi-tuong/:id/chi-tiet'],
+          url: [
+            '/cau-hinh/nhom-doi-tuong',
+            '/cau-hinh/nhom-doi-tuong/tao-moi',
+            '/cau-hinh/nhom-doi-tuong/:id/chi-tiet',
+          ],
           permission: [permissions.CAUHINH],
           pro: true,
         },
         {
           title: 'Loại lớp',
           key: 'class-type',
-          url: ['/cau-hinh/loai-lop', '/cau-hinh/loai-lop/tao-moi', '/cau-hinh/loai-lop/:id/chi-tiet'],
+          url: [
+            '/cau-hinh/loai-lop',
+            '/cau-hinh/loai-lop/tao-moi',
+            '/cau-hinh/loai-lop/:id/chi-tiet',
+          ],
           permission: [permissions.CAUHINH],
           pro: true,
         },
         {
           title: 'Hình thức đóng phí',
           key: 'payment-method',
-          url: ['/cau-hinh/hinh-thuc-dong-phi', '/cau-hinh/hinh-thuc-dong-phi/tao-moi', '/cau-hinh/hinh-thuc-dong-phi/:id/chi-tiet'],
+          url: [
+            '/cau-hinh/hinh-thuc-dong-phi',
+            '/cau-hinh/hinh-thuc-dong-phi/tao-moi',
+            '/cau-hinh/hinh-thuc-dong-phi/:id/chi-tiet',
+          ],
           permission: [permissions.CAUHINH],
           pro: true,
         },
@@ -1030,9 +1042,7 @@ export async function getLeftMenuHRM() {
         {
           title: 'Lưu trữ',
           key: 'storages',
-          url: [
-            '/quan-ly-nhan-su/luu-tru',
-          ],
+          url: ['/quan-ly-nhan-su/luu-tru'],
           permission: [permissions.HRM],
         },
       ],
@@ -1195,6 +1205,23 @@ export async function getLeftMenuHRM() {
           url: ['/quan-ly-nhan-su/bang-cham-cong-xe-bus'],
           permission: [permissions.HRM],
           pro: true,
+        },
+        {
+          title: 'Cấu hình',
+          key: 'categoriesParamater',
+          permission: [permissions.HRM],
+          children: [
+            {
+              title: 'Máy chấm công',
+              key: 'fingerprint-timekeepers',
+              url: [
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong',
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/tao-moi',
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
+          ],
         },
       ],
     },
