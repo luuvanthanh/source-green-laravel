@@ -428,7 +428,7 @@ class Index extends PureComponent {
               stylesChildren['cell-heading-holidays'],
             )}
           >
-            Nghỉ lễ
+            L
           </div>
         </Tooltip>
       );
