@@ -314,3 +314,10 @@ form .ant-cascader-picker:only-child {
     margin-top: 0;
   }
 }
+
+.no-label {
+  margin-top: 30px;
+  @media (max-width: $md-max-width) {
+    margin-top: 0;
+  }
+}

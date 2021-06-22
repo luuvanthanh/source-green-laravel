@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -23,6 +23,7 @@ const Index = memo(() => {
 
   const history = useHistory();
   const formRef = useRef();
+  const [isSemester, setIsSemester] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -36,6 +37,7 @@ const Index = memo(() => {
             formRef.current.setFieldsValue({
               ...res,
             });
+            setIsSemester(res?.isSemester || false);
           }
         },
       });
@@ -47,6 +49,7 @@ const Index = memo(() => {
       type: 'paymentMethodAdd/ADD',
       payload: {
         ...values,
+        isSemester
       },
       callback: (res) => {
         if (res) {
@@ -57,6 +60,11 @@ const Index = memo(() => {
   };
   const remove = () => {
     formRef.current.resetFields();
+  };
+
+  const onChange = (e) => {
+    const { checked } = e.target;
+    setIsSemester(checked);
   };
 
   return (
@@ -104,6 +112,16 @@ const Index = memo(() => {
                       data={variablesModules.TYPE}
                       rules={[variables.RULES.EMPTY]}
                       allowClear={false}
+                    />
+                  </Pane>
+
+                  <Pane className="col-lg-6">
+                    <FormItem
+                      className="checkbox-row no-label"
+                      label="Học kỳ"
+                      onChange={onChange}
+                      type={variables.CHECKBOX_SINGLE}
+                      checked={isSemester}
                     />
                   </Pane>
 
