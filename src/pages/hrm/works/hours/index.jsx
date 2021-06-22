@@ -118,6 +118,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -165,6 +167,8 @@ class Index extends PureComponent {
             type: value,
             startDate: moment(prevState.search.startDate).startOf('month'),
             endDate: moment(prevState.search.endDate).endOf('month'),
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
           },
         }),
         () => {
@@ -181,6 +185,8 @@ class Index extends PureComponent {
           search: {
             ...prevState.search,
             type: value,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
           },
         }),
         () => this.onLoad(),

@@ -122,7 +122,7 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Danh sách thông báo" />
+      <Helmet title="Danh sách thực đơn" />
       <Pane className="p20">
         <Pane className="d-flex mb20">
           <Heading type="page-title">Thực đơn</Heading>

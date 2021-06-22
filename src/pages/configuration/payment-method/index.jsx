@@ -105,6 +105,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -166,19 +168,19 @@ class Index extends PureComponent {
         title: 'Hình thức',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => record?.code || ''
+        render: (record) => record?.code || '',
       },
       {
         title: 'Tên',
         key: 'name',
         className: 'min-width-250',
-        render: (record) => record?.name || ''
+        render: (record) => record?.name || '',
       },
       {
         title: 'Kiểu (type)',
         key: 'type',
         className: 'min-width-250',
-        render: (record) => record?.type || ''
+        render: (record) => record?.type || '',
       },
       {
         key: 'action',
@@ -205,7 +207,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
-      data
+      data,
     } = this.props;
     const { search } = this.state;
     const loading = effects['paymentMethod/GET_DATA'];

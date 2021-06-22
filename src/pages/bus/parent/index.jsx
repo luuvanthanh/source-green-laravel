@@ -101,10 +101,7 @@ class Index extends PureComponent {
 
       // create the connection instance
       this.connection = new signalR.HubConnectionBuilder()
-        .withUrl(
-          'https://erp-clover-api.demo.greenglobal.com.vn/messaging-hub',
-          options,
-        )
+        .withUrl('https://erp-clover-api.demo.greenglobal.com.vn/messaging-hub', options)
         .withHubProtocol(protocol)
         .build();
 
@@ -199,6 +196,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => {
