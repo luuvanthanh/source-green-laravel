@@ -1439,6 +1439,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/may-cham-cong',
+            component: './hrm/fingerprint-timekeepers',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/may-cham-cong/tao-moi',
+            component: './hrm/fingerprint-timekeepers/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
+            component: './hrm/fingerprint-timekeepers/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM
