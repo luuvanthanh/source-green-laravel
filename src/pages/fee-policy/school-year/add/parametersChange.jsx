@@ -1,27 +1,22 @@
 import { memo, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+import _ from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
-import PropTypes from 'prop-types';
-import moment from 'moment';
+import { useParams } from 'umi';
 
 import { variables, Helper } from '@/utils';
 
 const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
   const { getFieldsValue } = formRef?.current;
   const { rangeDate} = getFieldsValue();
+  const params = useParams();
 
   const [disableApply, setDiableApply] = useState(true);
-
-  useEffect(() => {
-    const { getFieldsValue } = formRef?.current;
-    const { fee, expirationDate } = getFieldsValue();
-    if (fee && expirationDate) {
-      setDiableApply(false);
-    }
-  }, []);
 
   const renderData = (length, values) => {
     const datasTable = [];
@@ -40,7 +35,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
     return datasTable;
   };
 
-  const onFinish = () => {
+  const handleApply = () => {
     const values = getFieldsValue();
     const result = moment(rangeDate[1]).diff(moment(rangeDate[0]), 'month') + 1;
     if (result) {
@@ -48,6 +43,17 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
       setParamChanges(data);
     }
   };
+
+  useEffect(() => {
+    const { getFieldsValue } = formRef?.current;
+    const { fee, expirationDate } = getFieldsValue();
+    if (fee && expirationDate) {
+      setDiableApply(false);
+    }
+    if(params?.id) {
+      handleApply();
+    }
+  }, []);
 
   /**
    * Function header table
@@ -58,19 +64,19 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
         title: 'Hình thức',
         key: 'form',
         className: 'min-width-200',
-        render: (record) => record?.fee || ''
+        render: (record) => record?.fee || record?.paymentForm?.name || ''
       },
       {
         title: 'Ngày học theo lịch',
         key: 'date',
         className: 'min-width-200',
-        render: (record) => record?.startDate || '',
+        render: (record) => record?.startDate || Helper.getDate(moment(record?.lastModificationTime).add(1, 'month'), 'MM/YYYY') || '',
       },
       {
         title: 'Ngày đến hạn thanh toán',
         key: 'expired',
         className: 'min-width-300',
-        render: (record) => record?.expirationDate || '',
+        render: (record) => record?.expirationDate || Helper.getDate(record?.lastModificationTime, 'DD/MM/YYYY') || '',
       },
     ];
     return columns;
@@ -91,7 +97,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
       <div className="row">
         <div className="col-lg-3">
           <label htmlFor="" className="mb5">Thời điểm</label>
-          <p className="mb0 py10 font-weight-bold">{Helper.getDate(rangeDate[0])} - {Helper.getDate(rangeDate[1])}</p>
+          <p className="mb0 py10 font-weight-bold">{ !_.isEmpty(rangeDate) ? `${Helper.getDate(rangeDate[0])} - ${Helper.getDate(rangeDate[1])}` : '' }</p>
         </div>
         <div className="col-lg-3">
           <FormItem
@@ -112,25 +118,29 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
                 () => ({
                   validator(_, value) {
                     if (value && value > 31) {
+                      setDiableApply(true);
                       return Promise.reject(new Error(variables.RULES.INVALID_DATE));
                     }
+                    setDiableApply(false);
                     return Promise.resolve();
                   },
                 }),
               ]}
             />
         </div>
-        <div className="col-lg-3">
-          <Button
-            className="px25 btn-small"
-            color="success"
-            size="large"
-            onClick={onFinish}
-            disabled={disableApply}
-          >
-            Áp dụng
-          </Button>
-        </div>
+        {!(params?.id) && (
+          <div className="col-lg-3">
+            <Button
+              className="px25 btn-small"
+              color="success"
+              size="large"
+              onClick={handleApply}
+              disabled={disableApply}
+            >
+              Áp dụng
+            </Button>
+          </div>
+        )}
       </div>
       <Table
         name="table"

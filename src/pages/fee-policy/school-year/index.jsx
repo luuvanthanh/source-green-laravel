@@ -193,7 +193,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`/cau-hinh/hinh-thuc-dong-phi/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
