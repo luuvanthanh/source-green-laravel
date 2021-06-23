@@ -29,18 +29,8 @@ export default {
     *GET_DETAILS({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response?.parsePayload,
-          });
-          callback(response?.parsePayload);
-        }
+        callback(response?.parsePayload);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
         callback(null, error?.data?.error);
       }
     },
