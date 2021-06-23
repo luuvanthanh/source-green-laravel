@@ -27,12 +27,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ payFees, loading, schoolYear }) => ({
+const mapStateToProps = ({ payFees, loading }) => ({
   data: payFees.data,
   error: payFees.error,
   pagination: payFees.pagination,
   loading,
-  yearSchool: schoolYear.data
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -87,18 +86,12 @@ class Index extends PureComponent {
       type: 'payFees/GET_DATA',
       payload: {
         ...search,
+        include: Helper.convertIncludes(['schoolYear']),
       },
     });
     history.push({
       pathname,
       query: Helper.convertParamSearch(search),
-    });
-    this.props.dispatch({
-      type: 'schoolYear/GET_DATA',
-      payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
     });
   };
 
@@ -170,7 +163,7 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = (yearSchool) => {
+  header = () => {
     const columns = [
       {
         title: 'STT',
@@ -185,10 +178,7 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'year',
         className: 'min-width-150',
-        render: (record) => {
-          const year = yearSchool.find(item => item.id === record.schoolYearId);
-          return year ? `${year?.yearFrom} - ${year?.yearTo}` : '';
-        }
+        render: (record) => `${record?.schoolYear?.yearFrom} - ${record?.schoolYear?.yearTo}`
       },
       {
         title: 'Ngày quyết định',
@@ -199,14 +189,15 @@ class Index extends PureComponent {
       {
         title: 'Số quyết định',
         key: 'number',
-        className: 'min-width-200',
+        className: 'min-width-130',
         render: (record) => record?.decisionNumber || ''
       },
       {
         title: 'Thời gian hiệu lực',
         key: 'effectiveTime',
         className: 'min-width-200',
-        render: (record) => record?.decisionNumber || ''
+        render: (record) => record?.schoolYear
+          ? `${Helper.getDate(record?.schoolYear.startDate, variables.DATE_FORMAT.DATE_VI)} - ${Helper.getDate(record?.schoolYear.endDate, variables.DATE_FORMAT.DATE_VI)}` : ''
       },
       {
         key: 'action',
@@ -233,7 +224,6 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
       data,
-      yearSchool
     } = this.props;
     const { search } = this.state;
     const loading = effects['payFees/GET_DATA'];
@@ -268,12 +258,12 @@ class Index extends PureComponent {
             </Form>
             <Table
               bordered
-              columns={this.header(yearSchool)}
+              columns={this.header()}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
-                header: this.header(yearSchool),
+                header: this.header(),
                 type: 'table',
               }}
               rowKey={(record) => record.id}
@@ -292,7 +282,6 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  yearSchool: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -301,7 +290,6 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   data: [],
-  yearSchool: []
 };
 
 export default Index;
