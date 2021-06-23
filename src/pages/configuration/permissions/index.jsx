@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
+import { connect } from 'umi';
 import { Form, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -29,7 +29,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ configurationPermissions, loading }) => ({
   data: configurationPermissions.data,
-  pagination: configurationPermissions.pagination,
+  permissions: configurationPermissions.permissions,
   loading,
 });
 @connect(mapStateToProps)
@@ -38,14 +38,8 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props);
-    const {
-      location: { query },
-    } = props;
     this.state = {
-      search: {
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
+      dataSource: [],
     };
     setIsMounted(true);
   }
@@ -76,18 +70,26 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
+    const { search } = this.state;
     this.props.dispatch({
       type: 'configurationPermissions/GET_DATA',
       payload: {
         ...search,
-        status,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataSource: response,
+          });
+        }
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    this.props.dispatch({
+      type: 'configurationPermissions/GET_PERMISSION_BY_ROLE',
+      payload: {
+        ...search,
+      },
+    });
   };
 
   /**
@@ -95,19 +97,16 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 300);
+  debouncedSearch = debounce((value) => {
+    const { data } = this.props;
+    this.setStateData({
+      dataSource: value
+        ? data.filter(
+            (item) => Helper.slugify(item.description)?.indexOf(Helper.slugify(value)) >= 0,
+          )
+        : data,
+    });
+  }, 100);
 
   /**
    * Function change input
@@ -136,94 +135,63 @@ class Index extends PureComponent {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
   };
 
-  /**
-   * Function set pagination
-   * @param {integer} page page of pagination
-   * @param {integer} size size of pagination
-   */
-  changePagination = ({ page, limit }) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          page,
-          limit,
-        },
-      }),
-      () => {
-        this.onLoad();
+  onChangePermission = (e, record, role) => {
+    this.props.dispatch({
+      type: 'configurationPermissions/UPDATE',
+      payload: {
+        providerName: 'R',
+        providerKey: role.name,
+        permissions: [
+          {
+            name: record.permissionKey,
+            isGranted: e.target.checked,
+          },
+        ],
       },
-    );
-  };
-
-  /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
-      pagination,
-      callback: (response) => {
-        this.changePagination(response);
-      },
+      callback: () => {},
     });
+  };
 
   /**
    * Function header table
    */
   header = () => {
+    const { permissions } = this.props;
     const columns = [
       {
         title: 'MÃ QUYỀN',
-        key: 'maQuyen',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.maQuyen}</Text>,
-      },
-      {
-        title: 'SUPERADMIN',
-        key: 'SUPERADMIN',
+        key: 'description',
         className: 'min-width-150',
         width: 150,
-        align: 'center',
-        render: () => <Checkbox />,
-      },
-      {
-        title: 'GIÁO VIÊN',
-        key: 'TEACHER',
-        className: 'min-width-150',
-        width: 150,
-        align: 'center',
-        render: () => <Checkbox />,
-      },
-      {
-        title: 'NHÂN VIÊN',
-        key: 'EMPLOYEES',
-        className: 'min-width-150',
-        width: 150,
-        align: 'center',
-        render: () => <Checkbox />,
-      },
-      {
-        title: 'PHỤ HUYNH',
-        key: 'PARENT',
-        className: 'min-width-150',
-        width: 150,
-        align: 'center',
-        render: () => <Checkbox />,
+        fixed: 'left',
+        render: (record) => <Text size="normal">{record.description}</Text>,
       },
     ];
-    return columns;
+    const permissionColums = permissions.map((item) => ({
+      title: item.name,
+      key: item.normalizedName,
+      className: 'min-width-100',
+      width: 100,
+      align: 'center',
+      render: (record) => (
+        <Checkbox
+          defaultChecked={!!item?.permissionGrants?.includes(record.permissionKey)}
+          onChange={(event) => this.onChangePermission(event, record, item)}
+        />
+      ),
+    }));
+    return columns.concat(permissionColums);
   };
 
   render() {
     const {
-      data,
-      pagination,
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search } = this.state;
-    const loading = effects['configurationPermissions/GET_DATA'];
+    const { dataSource } = this.state;
+    const loading =
+      effects['configurationPermissions/GET_DATA'] ||
+      effects['configurationPermissions/GET_PERMISSION_BY_ROLE'];
     return (
       <>
         <Helmet title="Phân quyền" />
@@ -238,15 +206,7 @@ class Index extends PureComponent {
             <Text color="dark">Phân quyền</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
-            <Form
-              initialValues={{
-                ...search,
-                productType: search.productType || null,
-                startDate: search.startDate && moment(search.startDate),
-              }}
-              layout="vertical"
-              ref={this.formRef}
-            >
+            <Form layout="vertical" ref={this.formRef}>
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
@@ -260,16 +220,16 @@ class Index extends PureComponent {
             </Form>
             <Table
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
-              pagination={this.pagination(pagination)}
+              pagination={false}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              bordered={false}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              bordered
+              rowKey={(record) => record.permissionKey}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
@@ -281,19 +241,17 @@ class Index extends PureComponent {
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
+  permissions: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
   data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
-  location: {},
+  permissions: [],
 };
 
 export default Index;

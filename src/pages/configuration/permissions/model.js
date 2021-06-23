@@ -1,18 +1,20 @@
 import * as services from './services';
-import { dataSource } from './data.json';
 
 export default {
   namespace: 'configurationPermissions',
   state: {
     data: [],
-    pagination: {},
+    permissions: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      data: payload,
+    }),
+    SET_PERMISSION_BY_ROLE: (state, { payload }) => ({
+      ...state,
+      permissions: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -23,25 +25,30 @@ export default {
         },
       },
     }),
-    UPDATE_DATA: (state, { payload }) => ({
-      ...state,
-      data: state.data.map((item) =>
-        item.id === payload.id ? { ...item, status: payload.status } : item,
-      ),
-    }),
   },
   effects: {
-    *GET_DATA(_, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
-        // const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getPermission, payload);
         yield saga.put({
           type: 'SET_DATA',
-          payload: {
-            parsePayload: dataSource,
-            pagination: {
-              total: 10,
-            },
-          },
+          payload: response,
+        });
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PERMISSION_BY_ROLE({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getPermissionByRole, payload);
+        yield saga.put({
+          type: 'SET_PERMISSION_BY_ROLE',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
@@ -50,34 +57,12 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *UPDATE({ payload, callback }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
+        yield saga.call(services.update, payload);
+        callback(payload);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-    *UPDATE_CONFIG({ payload }, saga) {
-      try {
-        const response = yield saga.call(services.activeStatus, payload);
-        if (response) {
-          yield saga.put({
-            type: 'UPDATE_DATA',
-            payload: response.parsePayload,
-          });
-        }
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
       }
     },
   },
