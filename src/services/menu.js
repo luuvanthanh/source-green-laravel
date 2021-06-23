@@ -1271,36 +1271,14 @@ export async function getLeftMenuHRM() {
 export async function getLeftMenuFeePolicy() {
   return [
     {
-      title: 'Danh mục nhóm đối tượng',
-      key: 'target',
+      title: 'Năm học',
+      key: 'school-year',
       url: [
-        '/chinh-sach-phi/nhom-doi-tuong',
-        '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
-        '/chinh-sach-phi/nhom-doi-tuong/:id/chi-tiet',
+        '/chinh-sach-phi/nam-hoc',
+        '/chinh-sach-phi/nam-hoc/tao-moi',
+        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
       ],
       icon: 'icon icon-list',
-      permission: [permissions.CHINHSACHPHI],
-    },
-    {
-      title: 'Danh mục loại lớp',
-      key: 'class',
-      url: [
-        '/chinh-sach-phi/lop',
-        '/chinh-sach-phi/lop/tao-moi',
-        '/chinh-sach-phi/lop/:id/chi-tiet',
-      ],
-      icon: 'icon icon-open-book',
-      permission: [permissions.CHINHSACHPHI],
-    },
-    {
-      title: 'Danh mục hình thức đóng phí',
-      key: 'format',
-      url: [
-        '/chinh-sach-phi/hinh-thuc',
-        '/chinh-sach-phi/hinh-thuc/tao-moi',
-        '/chinh-sach-phi/hinh-thuc/:id/chi-tiet',
-      ],
-      icon: 'icon icon-send-money',
       permission: [permissions.CHINHSACHPHI],
     },
     {
@@ -1315,25 +1293,14 @@ export async function getLeftMenuFeePolicy() {
       permission: [permissions.CHINHSACHPHI],
     },
     {
-      title: 'Chính sách đóng phí',
-      key: 'policy',
+      title: 'Tiền đóng',
+      key: 'pay-fees',
       url: [
-        '/chinh-sach-phi/chinh-sach',
-        '/chinh-sach-phi/chinh-sach/them-moi',
-        '/chinh-sach-phi/chinh-sach/:id/chi-tiet',
+        '/chinh-sach-phi/tien-dong',
+        '/chinh-sach-phi/tien-dong/tao-moi',
+        '/chinh-sach-phi/tien-dong/:id/chi-tiet',
       ],
       icon: 'icon icon-fee-policy',
-      permission: [permissions.CHINHSACHPHI],
-    },
-    {
-      title: 'Năm học',
-      key: 'school-year',
-      url: [
-        '/chinh-sach-phi/nam-hoc',
-        '/chinh-sach-phi/nam-hoc/tao-moi',
-        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
-      ],
-      icon: 'icon icon-list',
       permission: [permissions.CHINHSACHPHI],
     },
   ];

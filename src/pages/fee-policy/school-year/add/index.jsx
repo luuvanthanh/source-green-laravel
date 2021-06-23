@@ -61,7 +61,6 @@ const Index = memo(() => {
       payload: {
         ...data
       },
-      history,
       callback: (res) => {
         if (res) {
           history.goBack();

@@ -162,6 +162,8 @@ export const variables = {
   // eslint-disable-next-line security/detect-unsafe-regex
   REGEX_NUMBER: /\B(?=(\d{3})+(?!\d))/g,
   method: ['put', 'post', 'delete', 'patch'],
+  SEMESTER_1: 'HOCKY1',
+  SEMESTER_2: 'HOCKY2',
 };
 
 export default variables;
