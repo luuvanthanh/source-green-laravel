@@ -43,9 +43,10 @@ const renderChildren = (
   radioInline,
   disabledKeys,
   options,
-  checked
+  checked,
+  value
 ) => ({
-  input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
+  input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} value={value} />,
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputSearch: (
     <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
@@ -55,7 +56,9 @@ const renderChildren = (
       className={classnames('input-number', styles['input-number-container'])}
       disabled={disabled}
       formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
+      onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   inputCount: (
@@ -68,6 +71,7 @@ const renderChildren = (
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   inputDate: (
@@ -80,6 +84,7 @@ const renderChildren = (
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   select: (
@@ -97,6 +102,7 @@ const renderChildren = (
       showSearch
       options={options}
       disabled={disabled}
+      value={value}
     />
   ),
   selectAdd: (
@@ -168,6 +174,7 @@ const renderChildren = (
       format={['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
       placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
+      value={value}
     />
   ),
   datePicker: (
@@ -178,6 +185,7 @@ const renderChildren = (
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
       placeholder="ngày/tháng/năm"
+      value={value}
     />
   ),
   monthPicker: (
@@ -189,6 +197,7 @@ const renderChildren = (
       placeholder="Chọn"
       picker="month"
       allowClear={allowClear}
+      value={value}
     />
   ),
   yearPicker: (
@@ -200,6 +209,7 @@ const renderChildren = (
       placeholder="Chọn"
       picker="year"
       allowClear={allowClear}
+      value={value}
     />
   ),
   dateTimePicker: (
@@ -210,6 +220,7 @@ const renderChildren = (
       onBlur={onBlur}
       placeholder="ngày/tháng/năm"
       showTime={{ format: 'HH:mm' }}
+      value={value}
     />
   ),
   timeRange: (
@@ -217,6 +228,7 @@ const renderChildren = (
       format={variables.DATE_FORMAT.HOUR}
       onBlur={onBlur}
       placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
+      value={value}
     />
   ),
   timePicker: (
@@ -228,6 +240,7 @@ const renderChildren = (
       placeholder="Chọn"
       disabled={disabled}
       minuteStep={15}
+      value={value}
     />
   ),
   treeSelect: (
@@ -239,6 +252,7 @@ const renderChildren = (
       showSearch
       treeCheckable
       treeData={data}
+      value={value}
     />
   ),
   treeSelectAdd: (
@@ -251,6 +265,7 @@ const renderChildren = (
       showSearch
       treeCheckable
       treeData={data}
+      value={value}
     />
   ),
   treeSelectSingle: (
@@ -262,10 +277,11 @@ const renderChildren = (
       treeCheckable={false}
       treeData={data}
       treeDefaultExpandAll
+      value={value}
     />
   ),
   checkbox: (
-    <Checkbox.Group onChange={onChange}>
+    <Checkbox.Group onChange={onChange} >
       {data.map((item, index) => (
         <Checkbox key={index} value={item.value}>
           {item.label}
@@ -321,6 +337,7 @@ export default function FormItem({
   disabledKeys,
   options,
   checked,
+  value,
   ...rest
 }) {
   return (
@@ -346,7 +363,8 @@ export default function FormItem({
           radioInline,
           disabledKeys,
           options,
-          checked
+          checked,
+          value
         )[type]
       }
     </Form.Item>
@@ -377,7 +395,8 @@ FormItem.propTypes = {
   radioInline: PropTypes.bool,
   disabledKeys: PropTypes.any,
   options: PropTypes.arrayOf(PropTypes.any),
-  checked: PropTypes.bool
+  checked: PropTypes.bool,
+  value: PropTypes.any
 };
 
 FormItem.defaultProps = {
@@ -404,7 +423,8 @@ FormItem.defaultProps = {
   radioInline: false,
   disabledKeys: null,
   options: ['id', 'name'],
-  checked: false
+  checked: false,
+  value: ''
 };
 
 FormItem.displayName = 'Form';

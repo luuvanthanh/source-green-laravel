@@ -321,3 +321,10 @@ form .ant-cascader-picker:only-child {
     margin-top: 0;
   }
 }
+
+.btn-delete-table {
+  border: 1px solid $gray-darken;
+  padding: 4px;
+  border-radius: 50%;
+  color: $gray-darken;
+}

@@ -1775,19 +1775,19 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/chinh-sach',
+            path: '/chinh-sach-phi/tien-dong',
             component: './fee-policy/policy',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/chinh-sach/:id/chi-tiet',
+            path: '/chinh-sach-phi/tien-dong/:id/chi-tiet',
             component: './fee-policy/policy/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/chinh-sach/them-moi',
+            path: '/chinh-sach-phi/tien-dong/tao-moi',
             component: './fee-policy/policy/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
