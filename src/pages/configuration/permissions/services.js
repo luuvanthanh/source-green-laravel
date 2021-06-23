@@ -1,41 +1,27 @@
-import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
+import request from '@/utils/request';
+import requestLogin from '@/utils/requestLogin';
 
-export function get(data = {}) {
-  return request('/v1/shifts', {
+export function getPermission(_params = {}) {
+  return request('/permission-management/all-keys', {
     method: 'GET',
-    params: {
-      limit: data.limit,
-      page: data.page,
-      orderBy: 'CreationTime',
-      sortedBy: 'desc',
-      searchJoin: 'and',
-      include: Helper.convertIncludes(['store', 'shiftDetail']),
-      search: Helper.convertParamSearchConvert({
-        store_id: data.store_id,
-        shift_code: data.shift_code,
-      }),
-    },
+    params: {},
   });
 }
 
-export function remove(id) {
-  return request(`/v1/shifts/${id}`, {
-    method: 'DELETE',
-    data: {
-      shift_id: id,
-    },
-    parse: true,
+export function getPermissionByRole(_params = {}) {
+  return request(`/permission-management/role-permissions`, {
+    method: 'GET',
+    params: {},
   });
 }
 
-export function activeStatus(data) {
-  return request(`/v1/active-status-shift/${data.id}`, {
+export function update(data) {
+  return requestLogin(`/api/permission-management/permissions`, {
     method: 'PUT',
-    data: {
-      shift_code: data.shift_code,
-      store_id: data.store_id,
-      status: data.status,
+    data,
+    params: {
+      providerKey: data.providerKey,
+      providerName: data.providerName,
     },
   });
 }
