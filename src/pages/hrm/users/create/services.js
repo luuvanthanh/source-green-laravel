@@ -1,6 +1,5 @@
 import requestLavarel from '@/utils/requestLavarel';
 import request from '@/utils/request';
-import requestLogin from '@/utils/requestLogin';
 import { Helper, variables } from '@/utils';
 
 export function getDegrees(_params = {}) {
@@ -392,9 +391,11 @@ export function getPositionLevels(params = {}) {
 // position-levels
 
 export function changePassword(data = {}) {
-  return requestLogin(`/api/account/check-password`, {
-    method: 'POST',
-    data,
+  return request(`/user/${data.id}/change-password`, {
+    method: 'PATCH',
+    params: {
+      ...data,
+    },
   });
 }
 
