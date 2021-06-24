@@ -7,7 +7,7 @@ import classnames from 'classnames';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { head, isEmpty } from 'lodash';
+import { head, isEmpty, toString } from 'lodash';
 import { variables } from '@/utils';
 import ListUpload from '@/components/CommonComponent/ListUpload';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -123,6 +123,7 @@ class Index extends PureComponent {
       payload: {
         ...data,
         ...values,
+        gpsId: values.gpsId ? toString(values.gpsId) : null,
         fileImage,
       },
       callback: (response, error) => {
@@ -134,7 +135,7 @@ class Index extends PureComponent {
             error?.validationErrors.forEach((item) => {
               this.formRef.current.setFields([
                 {
-                  name: head(item.members),
+                  name: item.member,
                   errors: [item.message],
                 },
               ]);
