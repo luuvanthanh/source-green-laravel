@@ -142,19 +142,19 @@ const Index = memo(({ classId }) => {
           size={40}
           fileImage={_.head(
             (Helper.isJSON(
-              _.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'student.studentBusPlace.studentParents[0].parent.fileImage')
+              _.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fileImage')
             ) ||
               Helper.isJSON(
-                _.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'student.studentBusPlace.studentParents[0].farther.fileImage'),
+                _.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fileImage'),
               )) &&
               JSON.parse(
-                (_.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'student.studentBusPlace.studentParents[0].parent.fileImage'))
-                  || (_.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'student.studentBusPlace.studentParents[0].farther.fileImage')),
+                (_.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fileImage'))
+                  || (_.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fileImage')),
               ),
           )}
           fullName={
-            (_.get(record, 'student.studentParents[0].parent.fullName') || _.get(record, 'student.studentBusPlace.studentParents[0].parent.fullName')) ||
-            (_.get(record, 'student.studentParents[0].farther.fullName') || _.get(record, 'student.studentBusPlace.studentParents[0].farther.fullName'))
+            (_.get(record, 'student.studentParents[0].parent.fullName') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fullName')) ||
+            (_.get(record, 'student.studentParents[0].farther.fullName') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fullName'))
           }
         />
       ),
