@@ -103,7 +103,7 @@ const Index = memo(
       formRefModal.current.validateFields().then((values) => {
         dispatch({
           type: 'HRMusersAdd/CHANGE_PASSWORD',
-          payload: { ...values },
+          payload: { ...values, id: details.appUserId },
           callback: (response, error) => {
             if (response) {
               handleCancel();
@@ -180,14 +180,6 @@ const Index = memo(
         >
           <Form layout="vertical" ref={formRefModal}>
             <div className="row">
-              <div className="col-lg-12">
-                <FormItem
-                  label="Mật khẩu hiện tại"
-                  name="currentPassword"
-                  rules={[variables.RULES.EMPTY]}
-                  type={variables.INPUT_PASSWORD}
-                />
-              </div>
               <div className="col-lg-12">
                 <FormItem
                   label="Mật khẩu mới"
