@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Tabs, Form, message } from 'antd';
+import { Tabs, Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import csx from 'classnames';
 import moment from 'moment';
@@ -16,7 +16,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import commonStyles from '@/assets/styles/Common/common.scss';
 import { variables, Helper } from '@/utils';
 
-import variablesModules from './utils/variables';
 import ScheduleTable from './tables/schedule';
 import TuitionTable from './tables/tuition';
 import FoodTable from './tables/food';
@@ -45,6 +44,12 @@ const Index = memo(() => {
   const [feeDetail, setFeeDetail] = useState([]);
   const [moneyMeal, setMoneyMeal] = useState([]);
   const [otherMoneyDetail, setOtherMoneyDetail] = useState([]);
+  const [errorTable, setErrorTable] = useState({
+    schedule: false,
+    tuition: false,
+    food: false,
+    other: false
+  });
 
   useEffect(() => {
     dispatch({
@@ -64,7 +69,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           setSchoolYearInformation(res?.schoolYearInformation);
-          setFeeDetail(res?.feeDetail);
+          setFeeDetail(res?.feeDetail.map(item => ({...item, rangeDate: [moment(item?.startDate), moment(item?.endDate)]})));
           setMoneyMeal(res?.moneyMeal);
           setOtherMoneyDetail(res?.otherMoneyDetail);
           const timeToPay = [
@@ -104,7 +109,7 @@ const Index = memo(() => {
         id: i,
         paymentFormId: '',
         schedule,
-        schoolDay: 0,
+        schoolDay: "",
       });
     }
     return datasTable;
@@ -129,19 +134,24 @@ const Index = memo(() => {
     }
   };
 
-  const renderTab = (tab) => {
-    switch (tab) {
-      case 'schedule':
-        return <ScheduleTable schoolYearInformation={schoolYearInformation} setSchoolYearInformation={setSchoolYearInformation}/>;
-      case 'tuition':
-        return <TuitionTable feeDetail={feeDetail} setFeeDetail={setFeeDetail} />;
-      case 'food':
-        return <FoodTable moneyMeal={moneyMeal} setMoneyMeal={setMoneyMeal} />;
-      case 'other':
-        return <OtherTable otherMoneyDetail={otherMoneyDetail} setOtherMoneyDetail={setOtherMoneyDetail} />;
-      default:
-        return <ScheduleTable schoolYearInformation={schoolYearInformation} setSchoolYearInformation={setSchoolYearInformation}/>;
+  const checkProperties = (object) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in object) {
+      if (object[key] === "" || object[key] === null)
+        return true;
     }
+    return false;
+  };
+
+  const checkValidate = (data, name) => {
+    let pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
+    if (name === 'other') {
+      pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : false;
+    }
+    setErrorTable((prev) => ({
+      ...prev,
+      [name]: !!pass,
+    }));
   };
 
   const finishForm = async (values) => {
@@ -156,8 +166,11 @@ const Index = memo(() => {
       moneyMeal,
       otherMoneyDetail,
     };
-    if (_.isEmpty(schoolYearInformation) || _.isEmpty(feeDetail) || _.isEmpty(moneyMeal)) {
-      message.warning(`Vui lòng nhập ${_.isEmpty(schoolYearInformation) ? 'Lịch học, ' : ''}${_.isEmpty(feeDetail) ? 'Chi tiết tiền học phí của học sinh, ' : ''}${_.isEmpty(moneyMeal) ? 'Chi tiết tiền ăn' : ''}`);
+    checkValidate(schoolYearInformation, 'schedule');
+    checkValidate(feeDetail, 'tuition');
+    checkValidate(moneyMeal, 'food');
+    checkValidate(otherMoneyDetail, 'other');
+    if (!!(errorTable.chedule) || !!(errorTable.tuition) || !!(errorTable.food) || !!(errorTable.other)) {
       return;
     }
     dispatch({
@@ -172,6 +185,57 @@ const Index = memo(() => {
       },
     });
   };
+
+  const tabs = () => [
+    {
+      id: 'schedule',
+      name: 'Lịch học',
+      component: (
+        <ScheduleTable
+          schoolYearInformation={schoolYearInformation}
+          setSchoolYearInformation={setSchoolYearInformation}
+          error={errorTable.schedule}
+          checkValidate={checkValidate}
+        />
+      )
+    },
+    {
+      id: 'tuition',
+      name: 'Chi tiết tiền học phí của học sinh',
+      component: (
+        <TuitionTable
+          feeDetail={feeDetail}
+          setFeeDetail={setFeeDetail}
+          error={errorTable.tuition}
+          checkValidate={checkValidate}
+        />
+      )
+    },
+    {
+      id: 'food',
+      name: 'Chi tiết tiền ăn của học sinh',
+      component: (
+        <FoodTable
+          moneyMeal={moneyMeal}
+          setMoneyMeal={setMoneyMeal}
+          error={errorTable.food}
+          checkValidate={checkValidate}
+        />
+      )
+    },
+    {
+      id: 'other',
+      name: 'Chi tiết phí khác',
+      component: (
+        <OtherTable
+          otherMoneyDetail={otherMoneyDetail}
+          setOtherMoneyDetail={setOtherMoneyDetail}
+          error={errorTable.other}
+          checkValidate={checkValidate}
+        />
+      )
+    }
+  ];
 
   return (
     <Form layout="vertical" colon={false} ref={formRef} onFinish={finishForm}>
@@ -238,20 +302,25 @@ const Index = memo(() => {
           </Pane>
           {showDetails && (
             <>
-              <Pane className="card">
+              <Pane className="card mb0">
                 <Pane className={csx(commonStyles['block-table'], commonStyles['block-table-tab-new'])}>
                   <Heading type="form-title" className="heading-tab">
                     Chi tiết
                   </Heading>
-                  <Tabs onChange={changeTab} activeKey={tab} className="test">
-                    {variablesModules.TABS.map((item) => (
-                      <TabPane tab={item.name} key={item.id} className="test"/>
+                  <Tabs onChange={changeTab} activeKey={tab} className="test-12">
+                    {tabs().map(({ id, name, component }) => (
+                      <TabPane
+                        tab={(
+                          <span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>
+                        )}
+                        key={id}
+                      >
+                        {component}
+                      </TabPane>
                     ))}
                   </Tabs>
-                  {renderTab(tab)}
                 </Pane>
               </Pane>
-
               {
                 !params?.id && (
                   <Pane className="p20 d-flex justify-content-between align-items-center">
@@ -272,7 +341,6 @@ const Index = memo(() => {
               }
             </>
           )}
-
         </Loading>
       </Pane>
     </Form>

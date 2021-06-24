@@ -12,7 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
-const Index = memo(({ feeDetail, setFeeDetail }) => {
+const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
   const dispatch = useDispatch();
   const params = useParams();
   const {
@@ -51,6 +51,9 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       ...record,
       [name]: value
     };
+    if (error) {
+      checkValidate(newFeeDetail, 'tuition');
+    }
     setFeeDetail(newFeeDetail);
   };
 
@@ -65,16 +68,21 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'class',
       className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.SELECT}
-          placeholder="Chọn"
-          onChange={(e) => onChange(e, record, 'classTypeId')}
-          allowClear={false}
-          data={classes}
-          value={record?.classTypeId}
-          rules={[variables.RULES.EMPTY]}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.SELECT}
+            placeholder="Chọn"
+            onChange={(e) => onChange(e, record, 'classTypeId')}
+            allowClear={false}
+            data={classes}
+            value={record?.classTypeId}
+            rules={[variables.RULES.EMPTY]}
+          />
+          {error && !(record?.classTypeId) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -82,16 +90,21 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'format',
       className: 'min-width-150',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.SELECT}
-          placeholder="Chọn"
-          onChange={(e) => onChange(e, record, 'paymentFormId')}
-          allowClear={false}
-          data={paymentForm}
-          value={record?.paymentFormId}
-          rules={[variables.RULES.EMPTY]}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.SELECT}
+            placeholder="Chọn"
+            onChange={(e) => onChange(e, record, 'paymentFormId')}
+            allowClear={false}
+            data={paymentForm}
+            value={record?.paymentFormId}
+            rules={[variables.RULES.EMPTY]}
+          />
+          {error && !(record?.paymentFormId) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -99,13 +112,18 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'content',
       className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.INPUT}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.content}
-          onChange={(e) => onChange(e, record, 'content')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.content}
+            onChange={(e) => onChange(e, record, 'content')}
+          />
+          {error && !(record?.content) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -113,13 +131,18 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'deadline',
       className: 'min-width-250',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          rules={[variables.RULES.EMPTY]}
-          value={record?.rangeDate}
-          type={variables.RANGE_PICKER}
-          onChange={(e) => onChange(e, record, 'rangeDate')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            rules={[variables.RULES.EMPTY]}
+            value={record?.rangeDate}
+            type={variables.RANGE_PICKER}
+            onChange={(e) => onChange(e, record, 'rangeDate')}
+          />
+          {error && _.isEmpty(record?.rangeDate) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -127,13 +150,18 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'oldStudent',
       className: 'min-width-120',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.INPUT_NUMBER}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.oldStudent}
-          onChange={(e) => onChange(e, record, 'oldStudent')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT_NUMBER}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.oldStudent}
+            onChange={(e) => onChange(e, record, 'oldStudent')}
+          />
+          {error && !(record?.oldStudent) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -141,13 +169,18 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
       key: 'newStudent',
       className: 'min-width-120',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.INPUT_NUMBER}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.newStudent}
-          onChange={(e) => onChange(e, record, 'newStudent')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT_NUMBER}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.newStudent}
+            onChange={(e) => onChange(e, record, 'newStudent')}
+          />
+          {error && !(record?.newStudent) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -174,8 +207,8 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
         paymentFormId: "",
         content: "",
         rangeDate: [],
-        oldStudent: 0,
-        newStudent: 0
+        oldStudent: "",
+        newStudent: ""
       }
     ]);
   };
@@ -204,6 +237,9 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
           </Button>
         </Pane>
       )}
+      {_.isEmpty(feeDetail) && (
+        <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
+      )}
     </>
   );
 });
@@ -211,11 +247,15 @@ const Index = memo(({ feeDetail, setFeeDetail }) => {
 Index.propTypes = {
   feeDetail: PropTypes.arrayOf(PropTypes.any),
   setFeeDetail: PropTypes.func,
+  error: PropTypes.bool,
+  checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
   feeDetail: [],
-  setFeeDetail: () => {}
+  setFeeDetail: () => {},
+  error: false,
+  checkValidate: () => {},
 };
 
 export default Index;
