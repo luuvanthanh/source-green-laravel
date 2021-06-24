@@ -82,6 +82,27 @@ class Index extends PureComponent {
     this.loadCategories();
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      details,
+      match: { params },
+    } = this.props;
+    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+      this.formRef.current.setFieldsValue({
+        ...details,
+        date: moment(details.date),
+        hours: details?.hours?.map((item) => {
+          const inTime = moment(item.in, variables.DATE_FORMAT.TIME_FULL);
+          const outTime = moment(item.out, variables.DATE_FORMAT.TIME_FULL);
+          return {
+            in: inTime,
+            out: outTime,
+          };
+        }),
+      });
+    }
+  }
+
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -329,6 +350,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
   absentTypes: PropTypes.arrayOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -339,6 +361,7 @@ Index.defaultProps = {
   error: {},
   menuData: [],
   absentTypes: [],
+  details: {},
 };
 
 export default Index;

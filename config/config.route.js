@@ -930,6 +930,12 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/:id/chi-tiet',
+            component: './hrm/work-hours/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/cau-hinh/co-so',
             component: './hrm/configuration/branches',
             wrappers: ['@/wrappers/auth'],

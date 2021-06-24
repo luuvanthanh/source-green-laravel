@@ -104,6 +104,16 @@ export const variables = {
       name: 'Nghỉ thai sản',
     },
   ],
+  TYPES_DIFFIRENT_OUT: [
+    {
+      id: 'BUSINESS_TRAVEL',
+      name: 'Công tác',
+    },
+    {
+      id: 'GO_OUT',
+      name: 'Đi ra ngoài',
+    },
+  ],
   SHIFT_CODES: [
     {
       id: 'Ca sáng',

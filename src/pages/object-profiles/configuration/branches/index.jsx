@@ -206,7 +206,7 @@ class Index extends PureComponent {
         width: 60,
         align: 'center',
         render: (text, record, index) =>
-          `CS${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'TÊN',

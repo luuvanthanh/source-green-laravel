@@ -587,7 +587,7 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-6">
                     <FormItem
-                      data={variablesModules.TYPES_DIFFIRENT_ABSENTS || []}
+                      data={variablesModules.TYPES_DIFFIRENT_OUT || []}
                       label="Hình thức chấm công"
                       name="type"
                       rules={[variables.RULES.EMPTY]}

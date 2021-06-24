@@ -589,17 +589,17 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
-                    name="divisionId"
-                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
