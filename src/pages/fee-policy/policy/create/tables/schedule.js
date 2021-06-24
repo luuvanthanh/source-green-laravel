@@ -11,7 +11,7 @@ import { variables } from '@/utils';
 
 const { Summary } = TableAntd;
 
-const Index = memo(({ schoolYearInformation, setSchoolYearInformation }) => {
+const Index = memo(({ schoolYearInformation, setSchoolYearInformation, error, checkValidate }) => {
   const dispatch = useDispatch();
 
   const {
@@ -38,6 +38,9 @@ const Index = memo(({ schoolYearInformation, setSchoolYearInformation }) => {
       ...record,
       [name]: value
     };
+    if (error) {
+      checkValidate(newSchoolYearInformation, 'schedule');
+    }
     setSchoolYearInformation(newSchoolYearInformation);
   };
 
@@ -45,38 +48,48 @@ const Index = memo(({ schoolYearInformation, setSchoolYearInformation }) => {
     {
       title: 'Lịch học',
       key: 'date',
-      className: 'min-width-60',
+      className: 'min-width-200',
       render: (record) => record?.schedule || ''
     },
     {
       title: 'Học kỳ',
       key: 'semester',
-      className: 'min-width-100',
+      className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.SELECT}
-          placeholder="Chọn năm"
-          onChange={(e) => onChange(e, record, 'paymentFormId')}
-          allowClear={false}
-          data={paymentForm}
-          value={record?.paymentFormId}
-          rules={[variables.RULES.EMPTY]}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.SELECT}
+            placeholder="Chọn năm"
+            onChange={(e) => onChange(e, record, 'paymentFormId')}
+            allowClear={false}
+            data={paymentForm}
+            value={record?.paymentFormId}
+            rules={[variables.RULES.EMPTY]}
+          />
+          {error && !(record?.paymentFormId) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
       title: 'Số ngày học trong tháng',
       key: 'day',
-      className: 'min-width-100',
+      className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.INPUT_COUNT}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.schoolDay}
-          onChange={(e) => onChange(e, record, 'schoolDay')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT_COUNT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.schoolDay}
+            onChange={(e) => onChange(e, record, 'schoolDay')}
+          />
+          {error && !(record?.schoolDay) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     }
   ]);
@@ -132,11 +145,15 @@ const Index = memo(({ schoolYearInformation, setSchoolYearInformation }) => {
 Index.propTypes = {
   schoolYearInformation: PropTypes.arrayOf(PropTypes.any),
   setSchoolYearInformation: PropTypes.func,
+  error: PropTypes.bool,
+  checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
   schoolYearInformation: [],
-  setSchoolYearInformation: () => {}
+  setSchoolYearInformation: () => {},
+  error: false,
+  checkValidate: () => {},
 };
 
 export default Index;

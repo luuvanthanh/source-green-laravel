@@ -12,7 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
-const Index = memo(({ moneyMeal, setMoneyMeal }) => {
+const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
   const dispatch = useDispatch();
   const params = useParams();
   const {
@@ -47,6 +47,9 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
       ...record,
       [name]: value
     };
+    if (error) {
+      checkValidate(newMoneyMeal, 'food');
+    }
     setMoneyMeal(newMoneyMeal);
   };
 
@@ -61,16 +64,21 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
       key: 'class',
       className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.SELECT}
-          placeholder="Chọn"
-          onChange={(e) => onChange(e, record, 'classTypeId')}
-          allowClear={false}
-          data={classes}
-          value={record?.classTypeId}
-          rules={[variables.RULES.EMPTY]}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.SELECT}
+            placeholder="Chọn"
+            onChange={(e) => onChange(e, record, 'classTypeId')}
+            allowClear={false}
+            data={classes}
+            value={record?.classTypeId}
+            rules={[variables.RULES.EMPTY]}
+          />
+          {error && !(record?.classTypeId) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -78,16 +86,21 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
       key: 'format',
       className: 'min-width-150',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.SELECT}
-          placeholder="Chọn"
-          onChange={(e) => onChange(e, record, 'paymentFormId')}
-          allowClear={false}
-          data={paymentForm}
-          value={record?.paymentFormId}
-          rules={[variables.RULES.EMPTY]}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.SELECT}
+            placeholder="Chọn"
+            onChange={(e) => onChange(e, record, 'paymentFormId')}
+            allowClear={false}
+            data={paymentForm}
+            value={record?.paymentFormId}
+            rules={[variables.RULES.EMPTY]}
+          />
+          {error && !(record?.paymentFormId) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -95,13 +108,18 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
       key: 'money',
       className: 'min-width-200',
       render: (record) => (
-        <FormItem
-          className="mb-0"
-          type={variables.INPUT_NUMBER}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.money}
-          onChange={(e) => onChange(e, record, 'money')}
-        />
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT_NUMBER}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.money}
+            onChange={(e) => onChange(e, record, 'money')}
+          />
+          {error && !(record?.money) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
       )
     },
     {
@@ -126,7 +144,7 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
         id: uuidv4(),
         classTypeId: "",
         paymentFormId: "",
-        money: 0
+        money: ""
       }
     ]);
   };
@@ -155,6 +173,9 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
           </Button>
         </Pane>
       )}
+       {_.isEmpty(moneyMeal) && (
+        <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
+      )}
     </>
   );
 });
@@ -162,11 +183,15 @@ const Index = memo(({ moneyMeal, setMoneyMeal }) => {
 Index.propTypes = {
   moneyMeal: PropTypes.arrayOf(PropTypes.any),
   setMoneyMeal: PropTypes.func,
+  error: PropTypes.bool,
+  checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
   moneyMeal: [],
-  setMoneyMeal: () => {}
+  setMoneyMeal: () => {},
+  error: false,
+  checkValidate: () => {}
 };
 
 export default Index;
