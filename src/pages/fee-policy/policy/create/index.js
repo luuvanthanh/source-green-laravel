@@ -4,7 +4,7 @@ import { Tabs, Form, message } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import csx from 'classnames';
 import moment from 'moment';
-import { history } from 'umi';
+import { history, useParams } from 'umi';
 import _ from 'lodash';
 
 import Button from '@/components/CommonComponent/Button';
@@ -14,7 +14,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import FormItem from '@/components/CommonComponent/FormItem';
 import commonStyles from '@/assets/styles/Common/common.scss';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 
 import variablesModules from './utils/variables';
 import ScheduleTable from './tables/schedule';
@@ -27,6 +27,7 @@ const { TabPane } = Tabs;
 const Index = memo(() => {
   const formRef = useRef();
   const dispatch = useDispatch();
+  const params = useParams();
 
   const {
     loading,
@@ -53,6 +54,32 @@ const Index = memo(() => {
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
+    if (params?.id) {
+      setShowDetails(true);
+      dispatch({
+        type: 'feePolicyPolicyAdd/GET_DETAILS',
+        payload: {
+          id: params?.id,
+          include: Helper.convertIncludes(['schoolYear']),
+        },
+        callback: (res) => {
+          setSchoolYearInformation(res?.schoolYearInformation);
+          setFeeDetail(res?.feeDetail);
+          setMoneyMeal(res?.moneyMeal);
+          setOtherMoneyDetail(res?.otherMoneyDetail);
+          const timeToPay = [
+            moment(res?.schoolYear?.startDate),
+            moment(res?.schoolYear?.endDate)
+          ];
+          formRef?.current?.setFieldsValue({
+            schoolYearId: res?.schoolYearId,
+            decisionDate: res?.decisionDate ? moment(res?.decisionDate) : null,
+            decisionNumber: res?.decisionNumber,
+            timeToPay
+          });
+        },
+      });
+    }
   }, []);
 
   const changeTab = (key) => {
@@ -83,7 +110,11 @@ const Index = memo(() => {
     return datasTable;
   };
 
-  const getDetail  = async () => {
+  const getDetail  = async (e, name) => {
+    if (name === 'schoolYearId') {
+      const choolYearSelect = yearsSchool.find(item => item?.id === e);
+      await formRef?.current?.setFieldsValue({ timeToPay: [moment(choolYearSelect?.startDate), moment(choolYearSelect?.endDate)] });
+    }
     const { getFieldsValue } = formRef?.current;
     const { schoolYearId, decisionDate, decisionNumber, timeToPay } = getFieldsValue();
     if (schoolYearId && decisionDate && decisionNumber && timeToPay) {
@@ -144,10 +175,10 @@ const Index = memo(() => {
 
   return (
     <Form layout="vertical" colon={false} ref={formRef} onFinish={finishForm}>
-      <Breadcrumbs className="pb0" last="Thêm mới" menu={menuLeftFeePolicy} />
+      <Breadcrumbs className="pb0" last={params?.id ? 'Chi tiết' : 'Thêm mới'} menu={menuLeftFeePolicy} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Loading params={{ type: 'container' }}>
-          <Helmet title="Thêm mới chính sách" />
+          <Helmet title={params?.id ? 'Chi tiết tiền đóng' : 'Thêm mới tiền đóng'} />
 
           <Pane className="card p20">
             <Heading type="form-title" className="mb10">
@@ -162,10 +193,11 @@ const Index = memo(() => {
                   name="schoolYearId"
                   type={variables.SELECT}
                   placeholder="Chọn năm"
-                  onChange={e => getDetail(e)}
+                  onChange={e => getDetail(e, 'schoolYearId')}
                   allowClear={false}
                   data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
                   rules={[variables.RULES.EMPTY]}
+                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -173,9 +205,10 @@ const Index = memo(() => {
                   className="mb0"
                   label="Ngày quyết định"
                   name="decisionDate"
-                  onChange={e => getDetail(e)}
+                  onChange={e => getDetail(e, 'decisionDate')}
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
+                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -183,9 +216,10 @@ const Index = memo(() => {
                   className="mb0"
                   label="Số quyết định"
                   name="decisionNumber"
-                  onChange={e => getDetail(e)}
+                  onChange={e => getDetail(e, 'decisionNumber')}
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
+                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -195,9 +229,9 @@ const Index = memo(() => {
                   name="timeToPay"
                   type={variables.RANGE_PICKER}
                   data={[]}
-                  onChange={e => getDetail(e)}
                   allowClear={false}
                   rules={[variables.RULES.EMPTY]}
+                  disabled
                 />
               </div>
             </Pane>
@@ -218,20 +252,24 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
 
-              <Pane className="p20 d-flex justify-content-between align-items-center">
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Hủy
-                </p>
-                <Button
-                  className="ml-auto px25"
-                  color="success"
-                  htmlType="submit"
-                  size="large"
-                  loading={loading['classTypeAdd/GET_DETAILS']}
-                >
-                  Lưu
-                </Button>
-              </Pane>
+              {
+                !params?.id && (
+                  <Pane className="p20 d-flex justify-content-between align-items-center">
+                    <p className="btn-delete" role="presentation" onClick={remove}>
+                      Hủy
+                    </p>
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={loading['classTypeAdd/GET_DETAILS']}
+                    >
+                      Lưu
+                    </Button>
+                  </Pane>
+                )
+              }
             </>
           )}
 

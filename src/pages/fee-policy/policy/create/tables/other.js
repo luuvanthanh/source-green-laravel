@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
+import { useParams } from 'umi';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
@@ -13,6 +14,7 @@ import { variables } from '@/utils';
 
 const Index = memo(({ otherMoneyDetail, setOtherMoneyDetail }) => {
   const dispatch = useDispatch();
+  const params = useParams();
   const {
     classes,
     paymentForm,
@@ -159,7 +161,7 @@ const Index = memo(({ otherMoneyDetail, setOtherMoneyDetail }) => {
   return (
     <>
       <Table
-        columns={columns}
+        columns={params?.id ? _.initial(columns) : columns}
         dataSource={otherMoneyDetail}
         loading={false}
         error={{}}
@@ -168,16 +170,18 @@ const Index = memo(({ otherMoneyDetail, setOtherMoneyDetail }) => {
         rowKey="id"
         scroll={{ x: '100%' }}
       />
-      <Pane className="m20">
-        <Button
-          className="btn-create"
-          color="success"
-          icon="plus"
-          onClick={addLine}
-        >
-          Thêm dòng
-        </Button>
-      </Pane>
+      {!(params?.id) && (
+        <Pane className="m20">
+          <Button
+            className="btn-create"
+            color="success"
+            icon="plus"
+            onClick={addLine}
+          >
+            Thêm dòng
+          </Button>
+        </Pane>
+      )}
     </>
   );
 });

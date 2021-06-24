@@ -1781,13 +1781,13 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/tien-dong/:id/chi-tiet',
-            component: './fee-policy/policy/details',
+            path: '/chinh-sach-phi/tien-dong/tao-moi',
+            component: './fee-policy/policy/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/tien-dong/tao-moi',
+            path: '/chinh-sach-phi/tien-dong/:id/chi-tiet',
             component: './fee-policy/policy/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],

@@ -20,6 +20,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *GET_DETAILS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.details, payload);
+        callback(response?.parsePayload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };
