@@ -31,11 +31,11 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ tutorialAddV2, loading, menu, locationCurrent }) => ({
   loading,
-  error: tutorialAddV2.error,
-  details: tutorialAddV2.details,
   locationCurrent,
+  error: tutorialAddV2.error,
   branches: tutorialAddV2.branches,
   menuData: menu.menuLeftSchedules,
+  details: tutorialAddV2.details,
 });
 
 @connect(mapStateToProps)
@@ -194,6 +194,7 @@ class Index extends PureComponent {
       details,
       branches,
       loading: { effects },
+      match: { params },
     } = this.props;
     const { position, visibleMap } = this.state;
     const loading = effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_BRANCHES'];
@@ -202,20 +203,24 @@ class Index extends PureComponent {
       <Form
         layout="vertical"
         ref={this.formRef}
-        initialValues={{
-          ...details,
-          busRouteSchedules: details?.busRouteSchedules?.map((item) => item.dayOfWeek),
-          startDate: details?.startDate && moment(details?.startDate),
-          endDate: details?.startDate && moment(details?.endDate),
-          endedPlaceLatLng:
-            details?.endedPlaceLat && details?.endedPlaceLong
-              ? `${details?.endedPlaceLat},${details?.endedPlaceLong}`
-              : null,
-          startedPlaceLatLng:
-            details?.startedPlaceLat && details?.startedPlaceLong
-              ? `${details?.startedPlaceLat},${details?.startedPlaceLong}`
-              : null,
-        }}
+        initialValues={
+          params.id
+            ? {
+                ...details,
+                busRouteSchedules: details?.busRouteSchedules?.map((item) => item.dayOfWeek),
+                startDate: details?.startDate && moment(details?.startDate),
+                endDate: details?.startDate && moment(details?.endDate),
+                endedPlaceLatLng:
+                  details?.endedPlaceLat && details?.endedPlaceLong
+                    ? `${details?.endedPlaceLat},${details?.endedPlaceLong}`
+                    : null,
+                startedPlaceLatLng:
+                  details?.startedPlaceLat && details?.startedPlaceLong
+                    ? `${details?.startedPlaceLat},${details?.startedPlaceLong}`
+                    : null,
+              }
+            : {}
+        }
         onFinish={this.onFinish}
       >
         {visibleMap && (
