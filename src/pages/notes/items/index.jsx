@@ -336,14 +336,8 @@ class Index extends PureComponent {
         width: 200,
         render: (record) => (
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(
-              get(record, 'student.studentParents[0].parent.fileImage') ||
-                get(record, 'student.studentParents[0].farther.fileImage'),
-            )}
-            fullName={
-              get(record, 'student.studentParents[0].parent.fullName') ||
-              get(record, 'student.studentParents[0].farther.fullName')
-            }
+            fileImage={Helper.getPathAvatarJson(get(record, 'creator.fileImage'))}
+            fullName={get(record, 'creator.fullName')}
           />
         ),
       },

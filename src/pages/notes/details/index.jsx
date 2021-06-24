@@ -134,22 +134,8 @@ class Index extends PureComponent {
                       <p className={styles.norm}>Phụ huynh</p>
                       <AvatarTable
                         size={50}
-                        fileImage={head(
-                          (Helper.isJSON(
-                            get(details, 'student.studentParents[0].parent.fileImage'),
-                          ) ||
-                            Helper.isJSON(
-                              get(details, 'student.studentParents[0].farther.fileImage'),
-                            )) &&
-                            JSON.parse(
-                              get(details, 'student.studentParents[0].parent.fileImage') ||
-                                get(details, 'student.studentParents[0].farther.fileImage'),
-                            ),
-                        )}
-                        fullName={
-                          get(details, 'student.studentParents[0].parent.fullName') ||
-                          get(details, 'student.studentParents[0].farther.fullName')
-                        }
+                        fileImage={Helper.getPathAvatarJson(get(details, 'creator.fileImage'))}
+                        fullName={get(details, 'creator.fullName')}
                       />
                     </div>
                   </div>
