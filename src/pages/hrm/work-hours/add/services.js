@@ -1,5 +1,4 @@
 import request from '@/utils/requestLavarel';
-import { Helper } from '@/utils';
 
 export function getUsers() {
   return request('/v1/employees', {

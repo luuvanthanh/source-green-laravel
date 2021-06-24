@@ -37,6 +37,13 @@ request.interceptors.request.use(async (url, options) => {
 });
 
 async function covertData(response) {
+  if (response.status === 204) {
+    notification.success({
+      message: 'Thông báo',
+      description: 'Bạn đã cập nhật thành công dữ liệu',
+    });
+    return response;
+  }
   const dataRoot = await response.clone().json();
   if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
     if (response.status >= 400 && response.status <= 500) {
@@ -53,10 +60,6 @@ async function covertData(response) {
     }
   }
   if (response.status >= 200 && response.status < 300) {
-    if (response.status === 204) {
-      return response;
-    }
-
     const schema = normalize(dataRoot, {
       camelizeTypeValues: false,
       camelizeKeys: false,

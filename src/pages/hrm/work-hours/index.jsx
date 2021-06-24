@@ -205,57 +205,104 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'workHours/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
-  header = () => [
-    {
-      title: 'STT',
-      key: 'text',
-      width: 60,
-      className: 'min-width-60',
-      align: 'center',
-      render: (text, record, index) =>
-        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
-    },
-    {
-      title: 'Nhân viên',
-      key: 'fullName',
-      className: 'min-width-220',
-      width: 220,
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-          fullName={record?.employee?.fullName}
-        />
-      ),
-    },
-    {
-      title: 'Thời gian',
-      key: 'hours',
-      width: 170,
-      className: 'min-width-170',
-      render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
-    },
-    {
-      title: 'Ngày áp dụng',
-      key: 'date',
-      width: 120,
-      className: 'min-width-120',
-      render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
-    },
-    {
-      title: 'Loại',
-      key: 'absentType',
-      className: 'min-width-120',
-      render: (record) => record?.absentType?.name,
-    },
-    {
-      title: 'Lý do',
-      key: 'reason',
-      className: 'min-width-120',
-      render: (record) => record.reason,
-    },
-  ];
+  header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    return [
+      {
+        title: 'STT',
+        key: 'text',
+        width: 60,
+        className: 'min-width-60',
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.sttList(
+            this.props.pagination?.current_page,
+            index,
+            this.props.pagination?.per_page,
+          ),
+      },
+      {
+        title: 'Nhân viên',
+        key: 'fullName',
+        className: 'min-width-220',
+        width: 220,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+            fullName={record?.employee?.fullName}
+          />
+        ),
+      },
+      {
+        title: 'Thời gian',
+        key: 'hours',
+        width: 170,
+        className: 'min-width-170',
+        render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
+      },
+      {
+        title: 'Ngày áp dụng',
+        key: 'date',
+        width: 120,
+        className: 'min-width-120',
+        render: (record) => Helper.getDate(record.date, variables.DATE_FORMAT.DATE),
+      },
+      {
+        title: 'Loại',
+        key: 'absentType',
+        className: 'min-width-120',
+        render: (record) => record?.absentType?.name,
+      },
+      {
+        title: 'Lý do',
+        key: 'reason',
+        className: 'min-width-120',
+        render: (record) => record.reason,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+          </div>
+        ),
+      },
+    ];
+  };
 
   render() {
     const {

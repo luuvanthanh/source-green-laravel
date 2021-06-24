@@ -658,9 +658,12 @@ export default class Helpers {
     )}`;
 
   static getPathAvatarJson = (fileImage) => {
+    const allowTypes = ['jpeg', 'jpg', 'png'];
     if (this.isJSON(fileImage)) {
       const files = JSON.parse(fileImage);
-      if (!isEmpty(files) && isArray(files)) return head(files);
+      if (!isEmpty(files) && isArray(files)) {
+        return head(files.filter((item) => allowTypes.includes(last(item.split('.')))));
+      }
       return null;
     }
     return null;

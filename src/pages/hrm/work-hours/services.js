@@ -31,3 +31,10 @@ export function get(data = {}) {
     },
   });
 }
+
+export function remove(id) {
+  return request(`/v1/work-hours/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}

@@ -1,5 +1,3 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
 import * as services from './services';
 
 export default {
@@ -36,6 +34,18 @@ export default {
           });
         }
       } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

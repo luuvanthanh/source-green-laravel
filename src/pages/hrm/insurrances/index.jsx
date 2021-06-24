@@ -321,6 +321,7 @@ class Index extends PureComponent {
                     name="timeJoin"
                     onChange={(event) => this.onChangeDate(event, 'timeJoin')}
                     type={variables.DATE_PICKER}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -328,6 +329,7 @@ class Index extends PureComponent {
                     name="timeStart"
                     onChange={(event) => this.onChangeDate(event, 'timeStart')}
                     type={variables.DATE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>

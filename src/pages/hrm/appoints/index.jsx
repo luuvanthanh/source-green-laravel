@@ -369,6 +369,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -377,6 +378,7 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
                     type={variables.DATE_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    allowClear={false}
                   />
                 </div>
               </div>

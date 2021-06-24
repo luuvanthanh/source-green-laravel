@@ -380,7 +380,7 @@ class Index extends PureComponent {
                   <FormItem
                     label="Số công"
                     name="numberOfWorkdays"
-                    rules={[variables.RULES.EMPTY]}
+                    rules={[variables.RULES.EMPTY, variables.RULES.NUMBER]}
                     type={variables.INPUT_COUNT}
                   />
                 </div>
