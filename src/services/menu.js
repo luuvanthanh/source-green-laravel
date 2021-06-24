@@ -1278,7 +1278,7 @@ export async function getLeftMenuFeePolicy() {
         '/chinh-sach-phi/nam-hoc/tao-moi',
         '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
       ],
-      icon: 'icon icon-list',
+      icon: 'icon icon-calendar',
       permission: [permissions.CHINHSACHPHI],
     },
     {
@@ -1301,6 +1301,17 @@ export async function getLeftMenuFeePolicy() {
         '/chinh-sach-phi/tien-dong/:id/chi-tiet',
       ],
       icon: 'icon icon-fee-policy',
+      permission: [permissions.CHINHSACHPHI],
+    },
+    {
+      title: 'Tính phí cho học sinh mới',
+      key: 'new-student',
+      url: [
+        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi',
+        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/tao-moi',
+        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calculate',
       permission: [permissions.CHINHSACHPHI],
     },
   ];
