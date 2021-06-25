@@ -42,6 +42,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

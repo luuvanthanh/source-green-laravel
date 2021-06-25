@@ -53,10 +53,27 @@ const Index = memo(() => {
     });
   };
 
-  useEffect(() => {
+  const renderData = (length, values, rangeDate) => {
+    const datasTable = [];
+    for (let i = 0; i < length; i += 1) {
+      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate);
+      const endMonth = moment(rangeDate[0]).add(i, 'month');
+      datasTable.push({
+        id: i,
+        paymentFormId: values?.fee,
+        fee: [...fees].find(item => item.id === values?.fee)?.code,
+        duaDate: values?.expirationDate,
+        startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
+        expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
+      });
+    }
+    return datasTable;
+  };
+
+  useEffect(async () => {
+    getPaymentForm();
     if (params?.id) {
       setShowDetails(true);
-      getPaymentForm();
       dispatch({
         type: 'schoolyearAdd/GET_DETAILS',
         payload: {
@@ -67,7 +84,7 @@ const Index = memo(() => {
             const fixedParameter = !_.isEmpty(res?.fixedParameter)
               ? res?.fixedParameter.map(item => ({...item, duaDate: moment(item.duaDate)}))
               : [];
-            formRef?.current?.setFieldsValue({
+            const values = {
               ...res,
               expirationDate: !_.isEmpty(res?.changeParameter) ? res?.changeParameter[0]?.duaDate : '',
               fee: !_.isEmpty(res?.changeParameter) ? res?.changeParameter[0]?.paymentForm?.id : '',
@@ -76,7 +93,13 @@ const Index = memo(() => {
                 moment(res.startDate),
                 moment(res.endDate),
               ]
-            });
+            };
+            formRef?.current?.setFieldsValue({...values });
+            const result = moment(res.endDate).diff(moment(res.startDate), 'month') + 1;
+            if (result) {
+              const data = renderData(result, values, [moment(res.startDate), moment(res.endDate)]);
+              setParamChanges(data);
+            }
           }
         },
       });
@@ -98,7 +121,7 @@ const Index = memo(() => {
       fixedParameter: !values?.fixedParameter,
     }));
     checkIsEmpty(paramChanges, true, 'changeParameter');
-    if (!!(errorTable.fixedParameter) || !!(errorTable.changeParameter)) {
+    if (_.isEmpty(paramChanges) || !(values?.fixedParameter)) {
       return;
     }
     const data = {
@@ -109,9 +132,10 @@ const Index = memo(() => {
       changeParameter: paramChanges[0]
     };
     dispatch({
-      type: 'schoolyearAdd/ADD',
+      type: params?.id ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
       payload: {
-        ...data
+        ...data,
+        id: params?.id || undefined
       },
       callback: (res) => {
         if (res) {
@@ -132,6 +156,7 @@ const Index = memo(() => {
     formRef?.current?.resetFields();
     setShowDetails(false);
     setParamChanges([]);
+    setTab('fixedParameter');
   };
 
   const changeTab = (value) => {
@@ -156,7 +181,7 @@ const Index = memo(() => {
       name: 'Tham số cố định',
       component: <ParametersFixedComponent
         formRef={formRef}
-        fees={fees.filter(item => item.type === 'CD')}
+        fees={[...fees].filter(item => item.type === 'CD')}
         error={errorTable.fixedParameter}
         checkValidate={() => setErrorTable((prev) => ({
           ...prev,
@@ -169,7 +194,7 @@ const Index = memo(() => {
       name: 'Tham số thay đổi theo thời điểm',
       component: <ParametersChangeComponent
         formRef={formRef}
-        fees={fees.filter(item => item.type === 'TD')}
+        fees={[...fees].filter(item => item.type === 'TD')}
         paramChanges={paramChanges}
         setParamChanges={(values) => {
           setParamChanges(values);
@@ -281,24 +306,20 @@ const Index = memo(() => {
                     ))}
                   </Tabs>
                 </Pane>
-                {
-                  !params?.id && (
-                    <Pane className="p20 d-flex justify-content-between align-items-center">
-                      <p className="btn-delete" role="presentation" onClick={remove}>
-                        Hủy
-                      </p>
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                        loading={loading['classTypeAdd/GET_DETAILS']}
-                      >
-                        Lưu
-                      </Button>
-                    </Pane>
-                  )
-                }
+                <Pane className="p20 d-flex justify-content-between align-items-center">
+                  <p className="btn-delete" role="presentation" onClick={remove}>
+                    Hủy
+                  </p>
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    loading={loading['classTypeAdd/GET_DETAILS']}
+                  >
+                    Lưu
+                  </Button>
+                </Pane>
               </>
             )}
           </Form>

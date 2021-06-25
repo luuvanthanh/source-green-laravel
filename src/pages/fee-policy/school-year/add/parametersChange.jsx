@@ -50,7 +50,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
     if (fee && expirationDate) {
       setDiableApply(false);
     }
-    if(params?.id) {
+    if (params?.id) {
       handleApply();
     }
   }, []);
@@ -128,19 +128,17 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
               ]}
             />
         </div>
-        {!(params?.id) && (
-          <div className="col-lg-3">
-            <Button
-              className="px25 btn-small"
-              color="success"
-              size="large"
-              onClick={handleApply}
-              disabled={disableApply}
-            >
-              Áp dụng
-            </Button>
-          </div>
-        )}
+        <div className="col-lg-3">
+          <Button
+            className="px25 btn-small"
+            color="success"
+            size="large"
+            onClick={handleApply}
+            disabled={disableApply}
+          >
+            Áp dụng
+          </Button>
+        </div>
       </div>
       <Table
         name="table"

@@ -51,10 +51,11 @@ const Index = memo(() => {
 
   const onFinish = (values) => {
     dispatch({
-      type: 'managerObjectAdd/ADD',
+      type: params?.id ? 'managerObjectAdd/UPDATE' : 'managerObjectAdd/ADD',
       payload: {
         ...values,
-        isGrateful
+        isGrateful,
+        id: params?.id || undefined
       },
       callback: (res) => {
         if (res) {
@@ -124,19 +125,17 @@ const Index = memo(() => {
                   </Pane>
                 </Pane>
               </Pane>
-              {!params?.id && (
-                <Pane className="p20 border-top">
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loading['managerObjectAdd/ADD']}
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
-              )}
+              <Pane className="p20 border-top">
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['managerObjectAdd/ADD']}
+                >
+                  Lưu
+                </Button>
+              </Pane>
             </Form>
           </Pane>
         </Pane>

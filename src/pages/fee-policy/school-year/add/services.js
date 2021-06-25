@@ -12,3 +12,10 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
+
+export function update(data = {}) {
+  return request(`/v1/school-years/${data?.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
