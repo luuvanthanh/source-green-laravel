@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Form } from 'antd';
 import classnames  from 'classnames';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -12,11 +12,22 @@ import styles from '@/assets/styles/Common/common.scss';
 
 import { variables } from '@/utils';
 
-const Index = memo(({ fees }) => {
+const Index = memo(({ fees, error, formRef, checkValidate }) => {
   const params = useParams();
+  const fixedParameter = formRef?.current?.getFieldValue('fixedParameter');
+  const [showError, setShowError] = useState(true);
+
+  const handleChange = () => {
+    formRef.current.validateFields().then(() => {
+      checkValidate();
+    });
+  };
+
   return (
     <Pane className="p20">
-      <Form.List name="fixedParameter">
+      <Form.List
+        name="fixedParameter"
+      >
         {(fields, { add, remove }) => (
           <>
             {fields.map((field) => (
@@ -36,7 +47,7 @@ const Index = memo(({ fees }) => {
                     fieldKey={[field.fieldKey, 'paymentFormId']}
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT}
-                    // onChange={(event) => this.onChangeParamaterValues(event, index)}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -45,6 +56,7 @@ const Index = memo(({ fees }) => {
                     name={[field.name, 'duaDate']}
                     rules={[variables.RULES.EMPTY]}
                     type={variables.DATE_PICKER}
+                    onChange={handleChange}
                   />
                 </div>
                 {!params?.id && (
@@ -69,12 +81,19 @@ const Index = memo(({ fees }) => {
                   ghost
                   onClick={() => {
                     add();
+                    if (!fixedParameter) {
+                      setShowError(false);
+                    }
                   }}
                 >
                   Thêm hình thức
                 </Button>
               </div>
             </div>
+            {!fixedParameter && error && showError && (
+              <p className="text-danger mb0">{variables.RULES.EMPTY_INPUT.message}</p>
+            )}
+            {/* <Form.ErrorList errors={errors} /> */}
           </>
         )}
       </Form.List>
@@ -84,10 +103,16 @@ const Index = memo(({ fees }) => {
 
 Index.propTypes = {
   fees: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.bool,
+  formRef: PropTypes.objectOf(PropTypes.any),
+  checkValidate: PropTypes.func
 };
 
 Index.defaultProps = {
-  fees: []
+  fees: [],
+  error: false,
+  formRef: {},
+  checkValidate: () => {}
 };
 
 export default Index;

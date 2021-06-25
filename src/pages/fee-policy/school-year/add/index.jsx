@@ -35,10 +35,13 @@ const Index = memo(() => {
 
   const history = useHistory();
   const formRef = useRef();
-  const [tab, setTab] = useState('parametersFixed');
+  const [tab, setTab] = useState('fixedParameter');
   const [showDetails, setShowDetails] = useState(false);
   const [paramChanges, setParamChanges] = useState([]);
-  // const [paramChanges, setParamChanges] = useState([]);
+  const [errorTable, setErrorTable] = useState({
+    fixedParameter: false,
+    changeParameter: false,
+  });
 
   const getPaymentForm = () => {
     dispatch({
@@ -80,13 +83,30 @@ const Index = memo(() => {
     }
   }, []);
 
+  const checkIsEmpty = (datas = [], value = true, name = '') => {
+    if (_.isEmpty(datas) && name) {
+      setErrorTable((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
   const onFinish = (values) => {
+    setErrorTable((prev) => ({
+      ...prev,
+      fixedParameter: !values?.fixedParameter,
+    }));
+    checkIsEmpty(paramChanges, true, 'changeParameter');
+    if (!!(errorTable.fixedParameter) || !!(errorTable.changeParameter)) {
+      return;
+    }
     const data = {
       ...values,
       rangeDate: undefined,
       startDate: values.rangeDate[0],
       endDate: values.rangeDate[1],
-      changeParameter: paramChanges
+      changeParameter: paramChanges[0]
     };
     dispatch({
       type: 'schoolyearAdd/ADD',
@@ -99,6 +119,13 @@ const Index = memo(() => {
         }
       },
     });
+  };
+
+  const onFinishFailed = ({ errorFields }) => {
+    checkIsEmpty(paramChanges, true, 'changeParameter');
+    if (errorFields) {
+      checkIsEmpty([], true, 'fixedParameter');
+    }
   };
 
   const remove = () => {
@@ -125,21 +152,36 @@ const Index = memo(() => {
 
   const tabs = () => [
     {
-      id: 'parametersFixed',
+      id: 'fixedParameter',
       name: 'Tham số cố định',
       component: <ParametersFixedComponent
         formRef={formRef}
         fees={fees.filter(item => item.type === 'CD')}
+        error={errorTable.fixedParameter}
+        checkValidate={() => setErrorTable((prev) => ({
+          ...prev,
+          fixedParameter: false,
+        }))}
       />
     },
     {
-      id: 'parametersChange',
+      id: 'changeParameter',
       name: 'Tham số thay đổi theo thời điểm',
       component: <ParametersChangeComponent
         formRef={formRef}
         fees={fees.filter(item => item.type === 'TD')}
         paramChanges={paramChanges}
-        setParamChanges={(values) => setParamChanges(values)}
+        setParamChanges={(values) => {
+          setParamChanges(values);
+          if (!_.isEmpty(values)) {
+            setErrorTable((prev) => ({
+              ...prev,
+              changeParameter: false,
+            }));
+          }
+        }}
+        error={errorTable.changeParameter}
+        setErrorTable={setErrorTable}
       />
     }
   ];
@@ -154,6 +196,7 @@ const Index = memo(() => {
             layout="vertical"
             ref={formRef}
             onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
           >
             <Pane className="card px20 pt20">
               <Heading type="form-title" className="mb20">
@@ -226,7 +269,13 @@ const Index = memo(() => {
 
                   <Tabs onChange={changeTab} activeKey={tab} className={classnames(styles['tab-px20'], styles['tab-uppercase'])}>
                     {tabs().map(({ id, name, component }) => (
-                      <TabPane tab={name} key={id}>
+                      <TabPane
+                        tab={(
+                          <span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>
+                        )}
+                        key={id}
+                      >
+
                         {component}
                       </TabPane>
                     ))}
