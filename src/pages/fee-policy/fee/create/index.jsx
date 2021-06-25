@@ -108,24 +108,20 @@ const Index = memo(() => {
                   </Pane>
                 </Pane>
               </Pane>
-              {
-                !params?.id && (
-                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    <p className="btn-delete" role="presentation" onClick={remove}>
-                      Hủy
-                    </p>
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loading['classTypeAdd/GET_DETAILS']}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
-                )
-              }
+              <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                <p className="btn-delete" role="presentation" onClick={remove}>
+                  Hủy
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['classTypeAdd/GET_DETAILS']}
+                >
+                  Lưu
+                </Button>
+              </Pane>
             </Form>
           </Pane>
         </Pane>

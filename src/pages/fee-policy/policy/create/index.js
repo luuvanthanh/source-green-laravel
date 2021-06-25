@@ -93,7 +93,12 @@ const Index = memo(() => {
 
   const remove = () => {
     formRef?.current.resetFields();
+    setTab('schedule');
     setShowDetails(false);
+    setSchoolYearInformation([]);
+    setFeeDetail([]);
+    setMoneyMeal([]);
+    setOtherMoneyDetail([]);
   };
 
   const renderData = (length, timeToPay) => {

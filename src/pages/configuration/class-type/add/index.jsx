@@ -42,9 +42,10 @@ const Index = memo(() => {
 
   const onFinish = (values) => {
     dispatch({
-      type: 'classTypeAdd/ADD',
+      type: params?.id ? 'classTypeAdd/UPDATE' : 'classTypeAdd/ADD',
       payload: {
         ...values,
+        id: params?.id || undefined
       },
       callback: (res) => {
         if (res) {
@@ -124,24 +125,20 @@ const Index = memo(() => {
 
                 </Pane>
               </Pane>
-              {
-                !params?.id && (
-                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    <p className="btn-delete" role="presentation" onClick={remove}>
-                      Hủy
-                    </p>
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loading['classTypeAdd/GET_DETAILS']}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
-                )
-              }
+              <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                <p className="btn-delete" role="presentation" onClick={remove}>
+                  Hủy
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['classTypeAdd/GET_DETAILS']}
+                >
+                  Lưu
+                </Button>
+              </Pane>
             </Form>
           </Pane>
         </Pane>
