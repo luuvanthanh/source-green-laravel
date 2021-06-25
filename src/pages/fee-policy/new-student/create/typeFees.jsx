@@ -12,7 +12,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
-const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
+const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
   const dispatch = useDispatch();
   const params = useParams();
   const {
@@ -40,22 +40,26 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
     });
   }, []);
 
-  const onChange = (value, record, name) => {
-    const index = _.findIndex(moneyMeal, (item) => item.id === record?.id);
-    const newMoneyMeal = [...moneyMeal];
-    newMoneyMeal[index] = {
+  const onChange = (event, record, name) => {
+    let value = event;
+    if (name === 'content') {
+      value = event.target.value;
+    }
+    const index = _.findIndex(typeFees, (item) => item.id === record?.id);
+    const newTypeFees = [...typeFees];
+    newTypeFees[index] = {
       ...record,
       [name]: value
     };
     if (error) {
-      checkValidate(newMoneyMeal, 'food');
+      checkValidate(newTypeFees, 'tuition');
     }
-    setMoneyMeal(newMoneyMeal);
+    setTypeFees(newTypeFees);
   };
 
   const removeLine = (record) => {
-    const newMoneyMeal = [...moneyMeal].filter(item => item.id !== record.id);
-    setMoneyMeal(newMoneyMeal);
+    const newTypeFees = [...typeFees].filter(item => item.id !== record.id);
+    setTypeFees(newTypeFees);
   };
 
   const columns = useMemo(() => [
@@ -104,19 +108,76 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
       )
     },
     {
-      title: 'Tiền ăn',
-      key: 'money',
+      title: 'Nội dung',
+      key: 'content',
       className: 'min-width-200',
+      render: (record) => (
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.content}
+            onChange={(e) => onChange(e, record, 'content')}
+          />
+          {error && !(record?.content) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
+      )
+    },
+    {
+      title: 'Thời gian hiệu lực',
+      key: 'deadline',
+      className: 'min-width-250',
+      render: (record) => (
+        <>
+          <FormItem
+            className="mb-0"
+            rules={[variables.RULES.EMPTY]}
+            value={record?.rangeDate}
+            type={variables.RANGE_PICKER}
+            onChange={(e) => onChange(e, record, 'rangeDate')}
+          />
+          {error && _.isEmpty(record?.rangeDate) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
+      )
+    },
+    {
+      title: 'Học sinh cũ (đ)',
+      key: 'oldStudent',
+      className: 'min-width-120',
       render: (record) => (
         <>
           <FormItem
             className="mb-0"
             type={variables.INPUT_NUMBER}
             rules={[variables.RULES.EMPTY]}
-            value={record?.money}
-            onChange={(e) => onChange(e, record, 'money')}
+            value={record?.oldStudent}
+            onChange={(e) => onChange(e, record, 'oldStudent')}
           />
-          {error && !(record?.money) && (
+          {error && !(record?.oldStudent) && (
+            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+          )}
+        </>
+      )
+    },
+    {
+      title: 'Học sinh mới (đ)',
+      key: 'newStudent',
+      className: 'min-width-120',
+      render: (record) => (
+        <>
+          <FormItem
+            className="mb-0"
+            type={variables.INPUT_NUMBER}
+            rules={[variables.RULES.EMPTY]}
+            value={record?.newStudent}
+            onChange={(e) => onChange(e, record, 'newStudent')}
+          />
+          {error && !(record?.newStudent) && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -138,13 +199,16 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
   ]);
 
   const addLine = () => {
-    setMoneyMeal([
-      ...moneyMeal,
+    setTypeFees([
+      ...typeFees,
       {
         id: uuidv4(),
         classTypeId: "",
         paymentFormId: "",
-        money: ""
+        content: "",
+        rangeDate: [],
+        oldStudent: "",
+        newStudent: ""
       }
     ]);
   };
@@ -153,7 +217,7 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
     <>
       <Table
         columns={params?.id ? _.initial(columns) : columns}
-        dataSource={moneyMeal}
+        dataSource={typeFees}
         loading={false}
         error={{}}
         isError={false}
@@ -173,7 +237,7 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
           </Button>
         </Pane>
       )}
-       {_.isEmpty(moneyMeal) && error && (
+      {_.isEmpty(typeFees) && error && (
         <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
       )}
     </>
@@ -181,17 +245,17 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
 });
 
 Index.propTypes = {
-  moneyMeal: PropTypes.arrayOf(PropTypes.any),
-  setMoneyMeal: PropTypes.func,
+  typeFees: PropTypes.arrayOf(PropTypes.any),
+  setTypeFees: PropTypes.func,
   error: PropTypes.bool,
   checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
-  moneyMeal: [],
-  setMoneyMeal: () => {},
+  typeFees: [],
+  setTypeFees: () => {},
   error: false,
-  checkValidate: () => {}
+  checkValidate: () => {},
 };
 
 export default Index;
