@@ -41,7 +41,7 @@ const Index = memo(({ fees }) => {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    label="Năm học"
+                    label="Ngày đến hạn thanh toán"
                     name={[field.name, 'duaDate']}
                     rules={[variables.RULES.EMPTY]}
                     type={variables.DATE_PICKER}

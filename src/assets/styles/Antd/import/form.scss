@@ -119,6 +119,17 @@ form .ant-cascader-picker:only-child {
     }
   }
 }
+.row-radio-auto {
+  .ant-radio-group {
+    display: flex;
+    .ant-radio-wrapper {
+      margin: 0 0 0 15px;
+      &:first-child {
+        margin: 0;
+      }
+    }
+  }
+}
 
 .heading-form {
   display: flex;

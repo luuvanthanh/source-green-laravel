@@ -237,7 +237,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
           </Button>
         </Pane>
       )}
-      {_.isEmpty(feeDetail) && (
+      {_.isEmpty(feeDetail) && error && (
         <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
       )}
     </>
