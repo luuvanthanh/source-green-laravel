@@ -152,6 +152,7 @@ const Index = memo(() => {
       ...prev,
       [name]: !!pass,
     }));
+    return !!pass;
   };
 
   const finishForm = async (values) => {
@@ -166,11 +167,11 @@ const Index = memo(() => {
       moneyMeal,
       otherMoneyDetail,
     };
-    checkValidate(schoolYearInformation, 'schedule');
-    checkValidate(feeDetail, 'tuition');
-    checkValidate(moneyMeal, 'food');
-    checkValidate(otherMoneyDetail, 'other');
-    if (!!(errorTable.chedule) || !!(errorTable.tuition) || !!(errorTable.food) || !!(errorTable.other)) {
+    const chedule = checkValidate(schoolYearInformation, 'schedule');
+    const tuition = checkValidate(feeDetail, 'tuition');
+    const food = checkValidate(moneyMeal, 'food');
+    const other = checkValidate(otherMoneyDetail, 'other');
+    if (!!(chedule) || !!(tuition) || !!(food) || !!(other)) {
       return;
     }
     dispatch({

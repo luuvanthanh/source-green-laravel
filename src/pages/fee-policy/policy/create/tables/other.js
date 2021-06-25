@@ -136,7 +136,7 @@ const Index = memo(({ otherMoneyDetail, setOtherMoneyDetail, error, checkValidat
       )
     },
     {
-      title: 'Loại phí',
+      title: 'Tiền nộp',
       key: 'money',
       className: 'min-width-200',
       render: (record) => (
@@ -176,6 +176,7 @@ const Index = memo(({ otherMoneyDetail, setOtherMoneyDetail, error, checkValidat
         id: uuidv4(),
         classTypeId: "",
         paymentFormId: "",
+        feeId: "",
         money: ""
       }
     ]);
