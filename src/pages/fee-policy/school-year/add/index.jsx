@@ -61,7 +61,7 @@ const Index = memo(() => {
       datasTable.push({
         id: i,
         paymentFormId: values?.fee,
-        fee: [...fees].find(item => item.id === values?.fee)?.code,
+        fee: values?.changeParameter[0]?.paymentForm?.name || [...fees].find(item => item.id === values?.fee)?.code,
         duaDate: values?.expirationDate,
         startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
         expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
@@ -163,10 +163,12 @@ const Index = memo(() => {
     setTab(value);
   };
 
-  const getDetail  = async () => {
+  const getDetail  = (e, name) => {
     const { getFieldsValue } = formRef?.current;
     const { yearFrom, yearTo, rangeDate } = getFieldsValue();
-    setParamChanges([]);
+    if (name === 'rangeDate') {
+      setParamChanges([]);
+    }
     if (yearFrom && yearTo && rangeDate) {
       setShowDetails(true);
       getPaymentForm();
