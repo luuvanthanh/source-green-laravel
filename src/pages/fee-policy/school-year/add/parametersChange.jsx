@@ -11,7 +11,7 @@ import { useParams } from 'umi';
 
 import { variables, Helper } from '@/utils';
 
-const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
+const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => {
   const { getFieldsValue } = formRef?.current;
   const { rangeDate} = getFieldsValue();
   const params = useParams();
@@ -155,6 +155,9 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges }) => {
         rowKey={(record) => record.id}
         scroll={{ x: '100%' }}
       />
+      {_.isEmpty(paramChanges) && error && (
+        <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
+      )}
     </Pane>
   );
 });
@@ -164,13 +167,15 @@ Index.propTypes = {
   fees: PropTypes.arrayOf(PropTypes.any),
   paramChanges: PropTypes.arrayOf(PropTypes.any),
   setParamChanges: PropTypes.func,
+  error: PropTypes.bool,
 };
 
 Index.defaultProps = {
   formRef: {},
   fees: [],
   paramChanges: [],
-  setParamChanges: () => {}
+  setParamChanges: () => {},
+  error: false,
 };
 
 export default Index;
