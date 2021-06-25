@@ -7,14 +7,12 @@ import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
-import { useParams } from 'umi';
 
 import { variables, Helper } from '@/utils';
 
 const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => {
   const { getFieldsValue } = formRef?.current;
   const { rangeDate} = getFieldsValue();
-  const params = useParams();
 
   const [disableApply, setDiableApply] = useState(true);
 
@@ -26,7 +24,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
       datasTable.push({
         id: i,
         paymentFormId: values?.fee,
-        fee: fees.find(item => item.id === values?.fee)?.code,
+        fee: [...fees].find(item => item.id === values?.fee)?.code,
         duaDate: values?.expirationDate,
         startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
         expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
@@ -49,9 +47,6 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
     const { fee, expirationDate } = getFieldsValue();
     if (fee && expirationDate) {
       setDiableApply(false);
-    }
-    if (params?.id) {
-      handleApply();
     }
   }, []);
 
