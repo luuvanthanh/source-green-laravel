@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import { useParams } from 'umi';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
@@ -14,7 +13,6 @@ import { variables } from '@/utils';
 
 const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
   const dispatch = useDispatch();
-  const params = useParams();
   const {
     classes,
     paymentForm
@@ -152,7 +150,7 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
   return (
     <>
       <Table
-        columns={params?.id ? _.initial(columns) : columns}
+        columns={columns}
         dataSource={moneyMeal}
         loading={false}
         error={{}}
@@ -161,18 +159,16 @@ const Index = memo(({ moneyMeal, setMoneyMeal, error, checkValidate }) => {
         rowKey="id"
         scroll={{ x: '100%' }}
       />
-      {!(params?.id) && (
-        <Pane className="m20">
-          <Button
-            className="btn-create"
-            color="success"
-            icon="plus"
-            onClick={addLine}
-          >
-            Thêm dòng
-          </Button>
-        </Pane>
-      )}
+      <Pane className="m20">
+        <Button
+          className="btn-create"
+          color="success"
+          icon="plus"
+          onClick={addLine}
+        >
+          Thêm dòng
+        </Button>
+      </Pane>
        {_.isEmpty(moneyMeal) && error && (
         <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
       )}

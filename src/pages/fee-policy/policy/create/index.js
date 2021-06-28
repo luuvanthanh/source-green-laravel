@@ -68,7 +68,8 @@ const Index = memo(() => {
           include: Helper.convertIncludes(['schoolYear']),
         },
         callback: (res) => {
-          setSchoolYearInformation(res?.schoolYearInformation);
+          const newSchoolYear = res?.schoolYearInformation?.map(item => ({ ...item, schedule: moment.utc(item?.schedule, 'YYYY-DD-MM').local().format(variables.DATE_FORMAT.DATE_VI) }));
+          setSchoolYearInformation(newSchoolYear);
           setFeeDetail(res?.feeDetail.map(item => ({...item, rangeDate: [moment(item?.startDate), moment(item?.endDate)]})));
           setMoneyMeal(res?.moneyMeal);
           setOtherMoneyDetail(res?.otherMoneyDetail);
@@ -129,7 +130,7 @@ const Index = memo(() => {
     const { schoolYearId, decisionDate, decisionNumber, timeToPay } = getFieldsValue();
     if (schoolYearId && decisionDate && decisionNumber && timeToPay) {
       const result = moment(timeToPay[1]).diff(moment(timeToPay[0]), 'month') + 1;
-      if (result) {
+      if (result && (!params?.id || params?.id && name === 'schoolYearId')) {
         const data = renderData(result, timeToPay);
         setSchoolYearInformation(data);
       }
@@ -180,9 +181,10 @@ const Index = memo(() => {
       return;
     }
     dispatch({
-      type: 'feePolicyPolicyAdd/ADD',
+      type: params?.id ? 'feePolicyPolicyAdd/UPDATE' : 'feePolicyPolicyAdd/ADD',
       payload: {
-        ...data
+        ...data,
+        id: params?.id || undefined
       },
       callback: (res) => {
         if (res) {
@@ -267,7 +269,6 @@ const Index = memo(() => {
                   allowClear={false}
                   data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
                   rules={[variables.RULES.EMPTY]}
-                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -278,7 +279,6 @@ const Index = memo(() => {
                   onChange={e => getDetail(e, 'decisionDate')}
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
-                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -289,7 +289,6 @@ const Index = memo(() => {
                   onChange={e => getDetail(e, 'decisionNumber')}
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
-                  disabled={params?.id}
                 />
               </div>
               <div className="col-lg-3">
@@ -327,24 +326,20 @@ const Index = memo(() => {
                   </Tabs>
                 </Pane>
               </Pane>
-              {
-                !params?.id && (
-                  <Pane className="p20 d-flex justify-content-between align-items-center">
-                    <p className="btn-delete" role="presentation" onClick={remove}>
-                      Hủy
-                    </p>
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loading['classTypeAdd/GET_DETAILS']}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
-                )
-              }
+              <Pane className="p20 d-flex justify-content-between align-items-center">
+                <p className="btn-delete" role="presentation" onClick={remove}>
+                  Hủy
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading['classTypeAdd/GET_DETAILS']}
+                >
+                  Lưu
+                </Button>
+              </Pane>
             </>
           )}
         </Loading>
