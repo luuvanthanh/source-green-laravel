@@ -13,3 +13,10 @@ export function details(params = {}) {
     params
   });
 }
+
+export function update(data = {}) {
+  return request(`/v1/fee-policies/${data.id}`, {
+    method: 'PUT',
+    data
+  });
+}
