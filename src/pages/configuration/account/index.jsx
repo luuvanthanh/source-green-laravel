@@ -46,6 +46,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        filter: query?.filter,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -261,26 +262,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="shift_code"
-                    onChange={(event) => this.onChange(event, 'shift_code')}
+                    name="filter"
+                    onChange={(event) => this.onChange(event, 'filter')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="role_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'role_id')}
-                    type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="status"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'status')}
-                    type={variables.SELECT}
                   />
                 </div>
               </div>

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tabs } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -72,6 +72,15 @@ class Index extends PureComponent {
     this.loadCategories();
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      location: { query },
+    } = this.props;
+    if (query !== prevProps?.location?.query && isEmpty(query)) {
+      this.onInitSetSearch();
+    }
+  }
+
   componentWillUnmount() {
     setIsMounted(false);
   }
@@ -88,6 +97,34 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  onInitSetSearch = () => {
+    const {
+      location: { query },
+    } = this.props;
+    this.setStateData(
+      {
+        search: {
+          keyWord: query?.keyWord,
+          branchId: query?.branchId,
+          classId: query?.classId,
+          from: query?.from
+            ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
+            : moment().startOf('months'),
+          to: query?.to
+            ? moment(query?.to).format(variables.DATE_FORMAT.DATE_AFTER)
+            : moment().endOf('months'),
+          page: query?.page || variables.PAGINATION.PAGE,
+          limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+          status: query?.status || variablesModules.STATUS.CONFIRMING,
+        },
+      },
+      () => {
+        this.onLoad();
+        this.formRef.current.resetFields();
+      },
+    );
   };
 
   loadCategories = () => {
@@ -397,7 +434,7 @@ class Index extends PureComponent {
           </div>
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
-              defaultActiveKey={search?.status || variablesModules.STATUS.NEW}
+              activeKey={search?.status || variablesModules.STATUS.NEW}
               onChange={(event) => this.onChangeSelectStatus(event, 'status')}
             >
               {variablesModules.STATUS_TABS.map((item) => (
@@ -408,6 +445,8 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 date: search.from && search.to && [moment(search.from), moment(search.to)],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -423,18 +462,20 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...branches]}
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">

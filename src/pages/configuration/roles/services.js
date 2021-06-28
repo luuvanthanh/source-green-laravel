@@ -15,9 +15,6 @@ export function get(params = {}) {
 export function remove(id) {
   return request(`/api/identity/roles/${id}`, {
     method: 'DELETE',
-    data: {
-      shift_id: id,
-    },
     parse: true,
   });
 }

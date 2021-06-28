@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import { isEmpty } from 'lodash';
+import { Scrollbars } from 'react-custom-scrollbars';
 import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
@@ -117,38 +118,40 @@ const Index = memo(() => {
 
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <label className={styles.infoLabel}>Người nhận thông báo</label>
-                  {!isEmpty(details?.parentNews) &&
-                    details?.parentNews?.map((item, index) => (
-                      <Pane
-                        key={index}
-                        className={styles.userInformation}
-                        style={{ paddingTop: 20, paddingBottom: 20 }}
-                      >
-                        <AvatarTable
-                          fileImage={Helper.getPathAvatarJson(item?.parent?.fileImage)}
-                        />
-                        <Pane>
-                          <h3>{item?.parent?.fullName}</h3>
-                          <p>Phụ Huynh</p>
+                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                    {!isEmpty(details?.parentNews) &&
+                      details?.parentNews?.map((item, index) => (
+                        <Pane
+                          key={index}
+                          className={styles.userInformation}
+                          style={{ paddingTop: 20, paddingBottom: 20 }}
+                        >
+                          <AvatarTable
+                            fileImage={Helper.getPathAvatarJson(item?.parent?.fileImage)}
+                          />
+                          <Pane>
+                            <h3>{item?.parent?.fullName}</h3>
+                            <p>Phụ Huynh</p>
+                          </Pane>
                         </Pane>
-                      </Pane>
-                    ))}
-                  {!isEmpty(details?.employeeNews) &&
-                    details?.employeeNews?.map((item, index) => (
-                      <Pane
-                        key={index}
-                        className={styles.userInformation}
-                        style={{ paddingTop: 20, paddingBottom: 20 }}
-                      >
-                        <AvatarTable
-                          fileImage={Helper.getPathAvatarJson(item?.employee?.fileImage)}
-                        />
-                        <Pane>
-                          <h3>{item?.employee?.fullName}</h3>
-                          <p>Nhân viên</p>
+                      ))}
+                    {!isEmpty(details?.employeeNews) &&
+                      details?.employeeNews?.map((item, index) => (
+                        <Pane
+                          key={index}
+                          className={styles.userInformation}
+                          style={{ paddingTop: 20, paddingBottom: 20 }}
+                        >
+                          <AvatarTable
+                            fileImage={Helper.getPathAvatarJson(item?.employee?.fileImage)}
+                          />
+                          <Pane>
+                            <h3>{item?.employee?.fullName}</h3>
+                            <p>Nhân viên</p>
+                          </Pane>
                         </Pane>
-                      </Pane>
-                    ))}
+                      ))}
+                  </Scrollbars>
                 </Pane>
               </Pane>
 
