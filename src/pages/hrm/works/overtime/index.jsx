@@ -336,7 +336,7 @@ class Index extends PureComponent {
             [styles[`cell-heading-dateoff`]]: true,
           })}
         >
-          NV
+          -
         </div>
       );
     }
