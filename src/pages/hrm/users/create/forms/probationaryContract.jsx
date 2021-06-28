@@ -29,15 +29,7 @@ const Index = memo(() => {
 
   const dispatch = useDispatch();
   const [
-    {
-      contractTypes,
-      branches,
-      divisions,
-      positions,
-      probationaryContracts,
-      paramaterValues,
-      paramaterFormulas,
-    },
+    { contractTypes, branches, divisions, positions, probationaryContracts, paramaterValues },
     loading,
   ] = useSelector(({ HRMusersAdd, loading }) => [HRMusersAdd, loading?.effects]);
 
@@ -46,7 +38,7 @@ const Index = memo(() => {
   } = useRouteMatch();
 
   const [visible, setVisible] = useState(false);
-  const [contractDetails, setContractDetails] = useState({});
+  const [setContractDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
   const [details, setDetails] = useState({});
 
@@ -82,7 +74,6 @@ const Index = memo(() => {
         id: item.pivot.parameterValueId,
       })),
     );
-    setParameterValuesDetails;
     if (formRefModal.current) {
       formRefModal.current.setFieldsValue({
         ...record,
@@ -162,7 +153,7 @@ const Index = memo(() => {
         <InputNumber
           value={value}
           className={csx('input-number')}
-          formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
           onChange={changeValue(record)}
           placeholder="Nhập"
         />
@@ -260,7 +251,7 @@ const Index = memo(() => {
         render: (value) =>
           Helper.getPrice(
             (value || []).reduce(
-              (result, item, index) => (!!index ? result + item?.pivot?.value : result),
+              (result, item, index) => (index ? result + item?.pivot?.value : result),
               0,
             ),
           ),
@@ -306,6 +297,15 @@ const Index = memo(() => {
     [],
   );
 
+  const fetchProbationaryContracts = () => {
+    dispatch({
+      type: 'HRMusersAdd/GET_PROBATIONARY_CONTRACTS',
+      payload: {
+        employeeId,
+      },
+    });
+  };
+
   const finishForm = () => {
     const formValues = formRefModal?.current?.getFieldsValue();
 
@@ -339,25 +339,16 @@ const Index = memo(() => {
         if (err) {
           const { data } = err;
           if (data?.status === 400 && !!size(data?.errors)) {
-            for (const item of data?.errors) {
+            data?.errors.forEach((item) => {
               formRefModal?.current?.setFields([
                 {
                   name: item?.source?.pointer,
                   errors: [item?.details],
                 },
               ]);
-            }
+            });
           }
         }
-      },
-    });
-  };
-
-  const fetchProbationaryContracts = () => {
-    dispatch({
-      type: 'HRMusersAdd/GET_PROBATIONARY_CONTRACTS',
-      payload: {
-        employeeId,
       },
     });
   };
@@ -374,7 +365,7 @@ const Index = memo(() => {
 
   useEffect(() => {
     mounted.current = true;
-    return () => (mounted.current = false);
+    return mounted.current;
   }, []);
 
   useEffect(() => {
@@ -389,9 +380,6 @@ const Index = memo(() => {
     });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_VALUES' });
     dispatch({ type: 'HRMusersAdd/GET_PARAMATER_FORMULAS' });
-  }, []);
-
-  useEffect(() => {
     fetchProbationaryContracts();
   }, []);
 
@@ -506,7 +494,7 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
-                label="Tỷ lệ thử việc"
+                label="Tỷ lệ lương thử việc"
                 name="salaryRatio"
                 type={variables.INPUT_COUNT}
                 rules={[variables.RULES.EMPTY]}
@@ -598,7 +586,6 @@ const Index = memo(() => {
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table
-            bordered
             columns={columns}
             loading={loading['HRMusersAdd/GET_PROBATIONARY_CONTRACTS']}
             dataSource={probationaryContracts}
