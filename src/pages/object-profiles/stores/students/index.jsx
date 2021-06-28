@@ -33,6 +33,8 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ storeStudents, loading }) => ({
   data: storeStudents.data,
+  classes: storeStudents.classes,
+  branches: storeStudents.branches,
   pagination: storeStudents.pagination,
   loading,
 });
@@ -51,6 +53,8 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
+        class: query?.class,
+        branchId: query?.branchId,
       },
     };
     setIsMounted(true);
@@ -58,6 +62,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadBranches();
   }
 
   componentWillUnmount() {
@@ -76,6 +81,26 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  /**
+   * Function get list students
+   */
+  loadBranches = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    if (search.branchId) {
+      dispatch({
+        type: 'storeStudents/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    dispatch({
+      type: 'storeStudents/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -163,6 +188,21 @@ class Index extends PureComponent {
         this.onLoad();
       },
     );
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'storeStudents/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -272,6 +312,8 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      branches,
+      classes,
     } = this.props;
     const { search } = this.state;
     const loading = effects['storeStudents/GET_DATA'];
@@ -302,25 +344,18 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }]}
-                    name="manufacturer"
-                    onChange={(event) => this.onChangeSelect(event, 'manufacturer')}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả lớp' }]}
+                    data={classes}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>
@@ -359,6 +394,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -368,6 +405,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;

@@ -191,6 +191,11 @@ class Index extends PureComponent {
           payload: {
             id,
           },
+          callback: (response) => {
+            if (response) {
+              this.onLoad();
+            }
+          },
         });
       },
     });

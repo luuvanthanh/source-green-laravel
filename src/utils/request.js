@@ -50,6 +50,10 @@ request.interceptors.response.use(
       };
     }
     if (optionsRoot?.parse === true) {
+      notification.success({
+        message: 'Thông báo',
+        description: 'Bạn đã cập nhật thành công dữ liệu',
+      });
       return {
         status: 201,
       };

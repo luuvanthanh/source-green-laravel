@@ -408,46 +408,49 @@ const Index = memo(() => {
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
-
-                  <Pane className="border-bottom">
-                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
-                      <InfiniteScroll
-                        hasMore={!searchEmployee.loading && searchEmployee.hasMore}
-                        initialLoad={searchEmployee.loading}
-                        loadMore={handleInfiniteOnLoad}
-                        pageStart={0}
-                        useWindow={false}
-                      >
-                        <List
-                          loading={searchEmployee.loading}
-                          dataSource={employees}
-                          renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
-                            <ListItem key={id} className={styles.listItem}>
-                              <Pane className="px20 w-100 d-flex align-items-center">
-                                <Checkbox
-                                  checked={!!checked}
-                                  className="mr15"
-                                  onChange={() => changeCheckboxEmployee(id)}
-                                />
-                                <Pane className={styles.userInformation}>
-                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                  <Pane>
-                                    <h3>{fullName}</h3>
-                                    <p>{head(positionLevel)?.position?.name}</p>
+                  {!isAllEmployees && (
+                    <Pane className="border-bottom">
+                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                        <InfiniteScroll
+                          hasMore={!searchEmployee.loading && searchEmployee.hasMore}
+                          initialLoad={searchEmployee.loading}
+                          loadMore={handleInfiniteOnLoad}
+                          pageStart={0}
+                          useWindow={false}
+                        >
+                          <List
+                            loading={searchEmployee.loading}
+                            dataSource={employees}
+                            renderItem={({ id, fullName, positionLevel, fileImage, checked }) => (
+                              <ListItem key={id} className={styles.listItem}>
+                                <Pane className="px20 w-100 d-flex align-items-center">
+                                  <Checkbox
+                                    checked={!!checked}
+                                    className="mr15"
+                                    onChange={() => changeCheckboxEmployee(id)}
+                                  />
+                                  <Pane className={styles.userInformation}>
+                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                    <Pane>
+                                      <h3>{fullName}</h3>
+                                      <p>{head(positionLevel)?.position?.name}</p>
+                                    </Pane>
                                   </Pane>
                                 </Pane>
-                              </Pane>
-                            </ListItem>
-                          )}
-                        />
-                      </InfiniteScroll>
-                    </Scrollbars>
-                  </Pane>
+                              </ListItem>
+                            )}
+                          />
+                        </InfiniteScroll>
+                      </Scrollbars>
+                    </Pane>
+                  )}
 
                   <Pane className="p20">
-                    <Text color="dark" size="normal">
-                      Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
-                    </Text>
+                    {!isAllEmployees && (
+                      <Text color="dark" size="normal">
+                        Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
+                      </Text>
+                    )}
                   </Pane>
                 </>
               )}
@@ -464,43 +467,47 @@ const Index = memo(() => {
                     </FormItemAntd>
                   </Pane>
 
-                  <Pane className="border-bottom">
-                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 500}>
-                      <InfiniteScroll
-                        hasMore={!searchParent.loading && searchParent.hasMore}
-                        initialLoad={searchParent.loading}
-                        loadMore={handleInfiniteOnLoadParent}
-                        pageStart={0}
-                        useWindow={false}
-                      >
-                        <List
-                          dataSource={parents}
-                          renderItem={({ id, fullName, fileImage, checked }) => (
-                            <ListItem key={id} className={styles.listItem}>
-                              <Pane className="px20 w-100 d-flex align-items-center">
-                                <Checkbox
-                                  checked={!!checked}
-                                  className="mr15"
-                                  onChange={() => changeCheckboxParent(id)}
-                                />
-                                <Pane className={styles.userInformation}>
-                                  <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
-                                  <Pane>
-                                    <h3>{fullName}</h3>
+                  {!isAllParents && (
+                    <Pane className="border-bottom">
+                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 500}>
+                        <InfiniteScroll
+                          hasMore={!searchParent.loading && searchParent.hasMore}
+                          initialLoad={searchParent.loading}
+                          loadMore={handleInfiniteOnLoadParent}
+                          pageStart={0}
+                          useWindow={false}
+                        >
+                          <List
+                            dataSource={parents}
+                            renderItem={({ id, fullName, fileImage, checked }) => (
+                              <ListItem key={id} className={styles.listItem}>
+                                <Pane className="px20 w-100 d-flex align-items-center">
+                                  <Checkbox
+                                    checked={!!checked}
+                                    className="mr15"
+                                    onChange={() => changeCheckboxParent(id)}
+                                  />
+                                  <Pane className={styles.userInformation}>
+                                    <AvatarTable fileImage={Helper.getPathAvatarJson(fileImage)} />
+                                    <Pane>
+                                      <h3>{fullName}</h3>
+                                    </Pane>
                                   </Pane>
                                 </Pane>
-                              </Pane>
-                            </ListItem>
-                          )}
-                        />
-                      </InfiniteScroll>
-                    </Scrollbars>
-                  </Pane>
+                              </ListItem>
+                            )}
+                          />
+                        </InfiniteScroll>
+                      </Scrollbars>
+                    </Pane>
+                  )}
 
                   <Pane className="p20">
-                    <Text color="dark" size="normal">
-                      Đã chọn {size(parents.filter((item) => item.checked))} phụ huynh
-                    </Text>
+                    {!isAllParents && (
+                      <Text color="dark" size="normal">
+                        Đã chọn {size(parents.filter((item) => item.checked))} phụ huynh
+                      </Text>
+                    )}
                   </Pane>
                 </>
               )}

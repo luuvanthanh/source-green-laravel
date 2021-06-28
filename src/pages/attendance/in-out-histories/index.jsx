@@ -33,6 +33,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ inOutHistories, loading }) => ({
   data: inOutHistories.data,
   pagination: inOutHistories.pagination,
+  classes: inOutHistories.classes,
+  branches: inOutHistories.branches,
   loading,
 });
 @connect(mapStateToProps)
@@ -46,7 +48,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        fullName: query?.fullName,
+        nameStudent: query?.nameStudent,
+        classId: query?.classId,
+        branchId: query?.branchId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -58,6 +62,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadBranches();
   }
 
   componentWillUnmount() {
@@ -76,6 +81,26 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  /**
+   * Function get list students
+   */
+  loadBranches = () => {
+    const { dispatch } = this.props;
+    const { search } = this.state;
+    if (search.branchId) {
+      dispatch({
+        type: 'inOutHistories/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    dispatch({
+      type: 'inOutHistories/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -148,6 +173,51 @@ class Index extends PureComponent {
    */
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+  };
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((startDate, endDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate,
+          endDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'inOutHistories/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -272,48 +342,59 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      branches,
+      classes,
     } = this.props;
     const { search } = this.state;
     const loading = effects['inOutHistories/GET_DATA'];
     return (
       <>
-        <Helmet title="Lịch sử vào ra" />
+        <Helmet title="Lịch sử vào ra lớp" />
         <div className={classnames(styles['content-form'], styles['content-form-inOutHistories'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Lịch sử vào ra</Text>
+            <Text color="dark">Lịch sử vào ra lớp</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                date: search.startDate &&
+                  search.endDate && [moment(search.startDate), moment(search.endDate)],
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
+                    name="nameStudent"
+                    onChange={(event) => this.onChange(event, 'nameStudent')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
                   />
                 </div>
               </div>
@@ -345,6 +426,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -354,6 +437,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;
