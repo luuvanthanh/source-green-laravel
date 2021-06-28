@@ -7,7 +7,7 @@ import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, uniqBy } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
@@ -204,6 +204,65 @@ class Index extends PureComponent {
     }
   };
 
+  disabledHours = (index, key = 'in') => {
+    const { getFieldsValue } = this.formRef.current;
+    const { hours } = getFieldsValue();
+    const itemLast = hours.find((item, indexTime) => indexTime === index);
+    if (get(itemLast, 'in') || get(itemLast, 'out')) {
+      const arrayHours = [];
+      const startTime = itemLast.in ? parseInt(moment(itemLast.in).format('H'), 10) : null;
+      const endTime = itemLast.out ? parseInt(moment(itemLast.out).format('H'), 10) : null;
+      if (key === 'out') {
+        for (let i = 0; i < startTime; i += 1) {
+          arrayHours.push(i);
+        }
+        return uniqBy(arrayHours);
+      }
+      if (key === 'in') {
+        for (let i = endTime + 1; i <= 23; i += 1) {
+          arrayHours.push(i);
+        }
+        return uniqBy(arrayHours);
+      }
+
+      return uniqBy(arrayHours);
+    }
+    return [];
+  };
+
+  disabledMinutes = (selectedHour, index, type = 'in') => {
+    const { getFieldsValue } = this.formRef.current;
+    const { hours } = getFieldsValue();
+    const itemLast = hours.find((item, indexTime) => indexTime === index);
+    if (get(itemLast, 'in') && get(itemLast, 'out')) {
+      const arrayHours = [];
+      const startTime = parseInt(moment(itemLast.in).format('H'), 10);
+      const endTime = parseInt(moment(itemLast.out).format('H'), 10);
+      const startTimeMinutes = parseInt(moment(itemLast.in).format('m'), 10);
+      const endTimeMinutes = parseInt(moment(itemLast.out).format('m'), 10);
+      if (selectedHour !== endTime) {
+        return [];
+      }
+      if (type === 'out') {
+        if (startTime === endTime) {
+          for (let i = 0; i <= startTimeMinutes; i += 1) {
+            arrayHours.push(i);
+          }
+        }
+      }
+      if (type === 'in') {
+        if (startTime === endTime) {
+          for (let i = endTimeMinutes; i < 59; i += 1) {
+            arrayHours.push(i);
+          }
+        }
+      }
+
+      return uniqBy(arrayHours);
+    }
+    return [];
+  };
+
   render() {
     const {
       error,
@@ -285,6 +344,10 @@ class Index extends PureComponent {
                               fieldKey={[field.fieldKey, 'in']}
                               rules={[variables.RULES.EMPTY]}
                               type={variables.TIME_PICKER}
+                              disabledHours={() => this.disabledHours(index)}
+                              disabledMinutes={(selectedHour) =>
+                                this.disabledMinutes(selectedHour, index)
+                              }
                             />
                           </div>
                           <div className="col-lg-6">
@@ -295,6 +358,10 @@ class Index extends PureComponent {
                               fieldKey={[field.fieldKey, 'out']}
                               rules={[variables.RULES.EMPTY]}
                               type={variables.TIME_PICKER}
+                              disabledHours={() => this.disabledHours(index, 'out')}
+                              disabledMinutes={(selectedHour) =>
+                                this.disabledMinutes(selectedHour, index, 'out')
+                              }
                             />
                           </div>
                         </div>
