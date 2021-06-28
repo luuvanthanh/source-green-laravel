@@ -311,7 +311,7 @@ const Index = memo(({ classId }) => {
           <div className="row">
             <div className="col-md-6 col-lg-3">
               <p className="mb20">Thời gian gửi: <span className="font-weight-bold">
-                {Helper.getDate(detailsMedical?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}
+                {Helper.getDate(detailsMedical?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}
               </span></p>
             </div>
             <div className="col-md-6 col-lg-3">
