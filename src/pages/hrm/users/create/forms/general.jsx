@@ -272,6 +272,7 @@ const General = memo(() => {
                   label="Ngày cấp"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
+                  disabledDate={Helper.disabledDateFuture}
                 />
               </div>
             </div>

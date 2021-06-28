@@ -180,8 +180,6 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-              </div>
-              <div className="row">
                 <div className="col-lg-6">
                   <FormItem
                     label="Số quyết định"
@@ -190,11 +188,16 @@ class Index extends PureComponent {
                     rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </div>
+              </div>
+              <div className="row">
                 <div className="col-lg-6">
                   <FormItem
                     label="Ngày quyết định"
                     name="decisionDate"
-                    disabledDate={Helper.disabledDate}
+                    disabledDate={(current) => {
+                      Helper.disabledDate(current);
+                      Helper.disabledDateFrom(current, this.formRef, 'timeApply');
+                    }}
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                   />
@@ -205,6 +208,9 @@ class Index extends PureComponent {
                     name="timeApply"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={(current) =>
+                      Helper.disabledDateTo(current, this.formRef, 'decisionDate')
+                    }
                   />
                 </div>
               </div>
