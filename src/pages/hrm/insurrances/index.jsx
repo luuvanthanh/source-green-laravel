@@ -33,6 +33,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ insurrances, loading }) => ({
   data: insurrances.data,
   pagination: insurrances.pagination,
+  employees: insurrances.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,10 +49,11 @@ class Index extends PureComponent {
       search: {
         type: query?.type,
         fullName: query?.fullName,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         timeStart: HelperModules.getStartDate(query?.timeStart, query?.choose),
-        timeJoin: HelperModules.getStartDate(query?.timeJoin, query?.choose),
+        timeJoin: HelperModules.getEndDate(query?.timeJoin, query?.choose),
       },
     };
     setIsMounted(true);
@@ -59,6 +61,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -77,6 +80,14 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'insurrances/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -279,6 +290,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -308,7 +320,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -322,6 +334,9 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'timeJoin')}
                     type={variables.DATE_PICKER}
                     allowClear={false}
+                    disabledDate={(current) =>
+                      Helper.disabledDateFrom(current, this.formRef, 'timeStart')
+                    }
                   />
                 </div>
                 <div className="col-lg-3">
@@ -330,6 +345,18 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChangeDate(event, 'timeStart')}
                     type={variables.DATE_PICKER}
                     allowClear={false}
+                    disabledDate={(current) =>
+                      Helper.disabledDateTo(current, this.formRef, 'timeJoin')
+                    }
+                  />
+                </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -361,6 +388,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -370,6 +398,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
 };
 
 export default Index;
