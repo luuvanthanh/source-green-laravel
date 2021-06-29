@@ -11,6 +11,7 @@ export default {
     branches: [],
     divisions: [],
     positions: [],
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -40,8 +41,26 @@ export default {
       ...state,
       positions: payload.parsePayload,
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);
