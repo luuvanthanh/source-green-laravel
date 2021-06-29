@@ -127,3 +127,15 @@
 .ant-switch-checked {
   background-color: $background-success;
 }
+
+.ant-checkbox-indeterminate {
+  .ant-checkbox-inner {
+    width: 24px;
+    height: 24px;
+    &::after {
+      left: 50%;
+      width: 13px;
+      height: 13px;
+    }
+  }
+}

@@ -833,4 +833,18 @@ export default class Helpers {
     },
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
+
+  static getStartDate = (date, choose) => {
+    if (date) {
+      return moment(date);
+    }
+    return moment().startOf(choose || 'isoWeek');
+  };
+
+  static getEndDate = (date, choose) => {
+    if (date) {
+      return moment(date);
+    }
+    return moment().endOf(choose || 'isoWeek');
+  };
 }

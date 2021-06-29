@@ -238,32 +238,78 @@ class Index extends PureComponent {
     }
   };
 
-  onChangeTimeStart = (event, record) => {
-    this.setStateData((prevState) => ({
-      detail: prevState.detail.map((item) => {
-        if (item.index === record.index) {
-          return {
-            ...item,
-            startTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
-          };
-        }
-        return item;
-      }),
-    }));
+  onChangeTimeStart = (event, record, type = null) => {
+    if (type === 'OUT') {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            let hours = 0;
+            if (item.endTime) {
+              const duration = moment.duration(
+                moment(item.endTime, variables.DATE_FORMAT.TIME_FULL).diff(moment(event)),
+              );
+              hours = duration.asHours();
+            }
+            return {
+              ...item,
+              startTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+              number: parseFloat(hours).toFixed(2),
+            };
+          }
+          return item;
+        }),
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            return {
+              ...item,
+              startTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+            };
+          }
+          return item;
+        }),
+      }));
+    }
   };
 
-  onChangeTimeEnd = (event, record) => {
-    this.setStateData((prevState) => ({
-      detail: prevState.detail.map((item) => {
-        if (item.index === record.index) {
-          return {
-            ...item,
-            endTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
-          };
-        }
-        return item;
-      }),
-    }));
+  onChangeTimeEnd = (event, record, type = null) => {
+    if (type === 'OUT') {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            let hours = 0;
+            if (item.startTime) {
+              const duration = moment.duration(
+                moment(event, variables.DATE_FORMAT.TIME_FULL).diff(
+                  moment(item.startTime, variables.DATE_FORMAT.TIME_FULL),
+                ),
+              );
+              hours = duration.asHours();
+            }
+            return {
+              ...item,
+              endTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+              number: parseFloat(hours).toFixed(2),
+            };
+          }
+          return item;
+        }),
+      }));
+    } else {
+      this.setStateData((prevState) => ({
+        detail: prevState.detail.map((item) => {
+          if (item.index === record.index) {
+            return {
+              ...item,
+              endTime: moment(event).format(variables.DATE_FORMAT.TIME_FULL),
+            };
+          }
+          return item;
+        }),
+      }));
+    }
   };
 
   /**
@@ -289,7 +335,7 @@ class Index extends PureComponent {
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
               value={record.startTime && moment(record.startTime, variables.DATE_FORMAT.TIME_FULL)}
-              onSelect={(value) => this.onChangeTimeStart(value, record)}
+              onSelect={(value) => this.onChangeTimeStart(value, record, 'OUT')}
             />
           ),
         },
@@ -302,7 +348,7 @@ class Index extends PureComponent {
               format={variables.DATE_FORMAT.HOUR}
               placeholder="Chọn"
               value={record.endTime && moment(record.endTime, variables.DATE_FORMAT.TIME_FULL)}
-              onSelect={(value) => this.onChangeTimeEnd(value, record)}
+              onSelect={(value) => this.onChangeTimeEnd(value, record, 'OUT')}
             />
           ),
         },

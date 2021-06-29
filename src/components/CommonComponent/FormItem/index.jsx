@@ -44,9 +44,16 @@ const renderChildren = (
   disabledKeys,
   options,
   checked,
-  value
+  value,
 ) => ({
-  input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} value={value} />,
+  input: (
+    <Input
+      disabled={disabled}
+      onChange={onChange}
+      placeholder={placeholder || 'Nhập'}
+      value={value}
+    />
+  ),
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputSearch: (
     <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
@@ -175,6 +182,7 @@ const renderChildren = (
       onChange={onChange}
       placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
       value={value}
+      allowClear={allowClear}
     />
   ),
   datePicker: (
@@ -281,7 +289,7 @@ const renderChildren = (
     />
   ),
   checkbox: (
-    <Checkbox.Group onChange={onChange} >
+    <Checkbox.Group onChange={onChange}>
       {data.map((item, index) => (
         <Checkbox key={index} value={item.value}>
           {item.label}
@@ -289,7 +297,9 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
-  checkboxSingle: <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />,
+  checkboxSingle: (
+    <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
+  ),
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (
@@ -364,7 +374,7 @@ export default function FormItem({
           disabledKeys,
           options,
           checked,
-          value
+          value,
         )[type]
       }
     </Form.Item>
@@ -396,7 +406,7 @@ FormItem.propTypes = {
   disabledKeys: PropTypes.any,
   options: PropTypes.arrayOf(PropTypes.any),
   checked: PropTypes.bool,
-  value: PropTypes.any
+  value: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -424,7 +434,7 @@ FormItem.defaultProps = {
   disabledKeys: null,
   options: ['id', 'name'],
   checked: false,
-  value: ''
+  value: '',
 };
 
 FormItem.displayName = 'Form';
