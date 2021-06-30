@@ -36,6 +36,7 @@ const mapStateToProps = ({ worksBus, loading }) => ({
   holidays: worksBus.holidays,
   branches: worksBus.branches,
   divisions: worksBus.divisions,
+  employees: worksBus.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -51,6 +52,7 @@ class Index extends PureComponent {
       search: {
         fullName: query?.fullName,
         branchId: query?.branchId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         divisionId: query?.divisionId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -106,6 +108,10 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'worksBus/GET_DIVISIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'worksBus/GET_EMPLOYEES',
       payload: {},
     });
   };
@@ -480,6 +486,7 @@ class Index extends PureComponent {
       data,
       error,
       pagination,
+      employees,
       match: { params },
       loading: { effects },
       divisions,
@@ -550,6 +557,15 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -586,6 +602,7 @@ Index.propTypes = {
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -599,6 +616,7 @@ Index.defaultProps = {
   holidays: [],
   divisions: [],
   branches: [],
+  employees: [],
 };
 
 export default Index;

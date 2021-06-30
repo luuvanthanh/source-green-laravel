@@ -277,13 +277,6 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'Lịch sử điểm danh',
-          key: 'attendanceLogs',
-          url: ['/diem-danh/lich-su-diem-danh'],
-          permission: [permissions.DD],
-          pro: true,
-        },
-        {
           title: 'Lý do điểm danh',
           key: 'attendances-reasons',
           url: [
@@ -339,6 +332,13 @@ export async function getLeftMenuSchedules() {
           ],
         },
       ],
+    },
+    {
+      title: 'Lịch sử điểm danh',
+      key: 'attendanceLogs',
+      url: ['/diem-danh/lich-su-diem-danh'],
+      permission: [permissions.DD],
+      pro: true,
     },
   ];
 }
