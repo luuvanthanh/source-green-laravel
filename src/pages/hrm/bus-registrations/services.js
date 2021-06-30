@@ -27,6 +27,7 @@ export function get(data = {}) {
         isUTC: false,
       }),
       fullName: data.fullName,
+      employeeId: data.employeeId && data.employeeId.join(','),
       include: Helper.convertIncludes(['employee.positionLevelNow']),
     },
   });

@@ -36,6 +36,7 @@ const mapStateToProps = ({ worksOvertime, loading }) => ({
   holidays: worksOvertime.holidays,
   branches: worksOvertime.branches,
   divisions: worksOvertime.divisions,
+  employees: worksOvertime.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -52,6 +53,7 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         branchId: query?.branchId,
         divisionId: query?.divisionId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate
@@ -106,6 +108,10 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'worksOvertime/GET_DIVISIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'worksOvertime/GET_EMPLOYEES',
       payload: {},
     });
   };
@@ -479,6 +485,7 @@ class Index extends PureComponent {
     const {
       data,
       error,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -550,6 +557,15 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -586,6 +602,7 @@ Index.propTypes = {
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -599,6 +616,7 @@ Index.defaultProps = {
   holidays: [],
   divisions: [],
   branches: [],
+  employees: [],
 };
 
 export default Index;

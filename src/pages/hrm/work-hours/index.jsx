@@ -33,6 +33,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ workHours, loading }) => ({
   data: workHours.data,
   pagination: workHours.pagination,
+  employees: workHours.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -46,6 +47,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -58,6 +60,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -76,6 +79,14 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'workHours/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -307,6 +318,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -360,6 +372,15 @@ class Index extends PureComponent {
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                   />
                 </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -389,6 +410,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -398,6 +420,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
 };
 
 export default Index;
