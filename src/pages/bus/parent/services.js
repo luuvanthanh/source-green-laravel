@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import moment from 'moment';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 
 export function get(params = {}) {
   return request(

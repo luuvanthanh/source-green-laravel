@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Switch } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -47,6 +47,7 @@ class Index extends PureComponent {
       search: {
         keyWord: query?.keyWord,
         nannyId: query?.nannyId,
+        isActive: query?.isActive,
         driverId: query?.driverId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -89,7 +90,7 @@ class Index extends PureComponent {
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -97,7 +98,6 @@ class Index extends PureComponent {
       type: 'tutorial/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({
@@ -181,6 +181,26 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onChangeSwitch = (record, checked) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'tutorial/UPDATE',
+      payload: {
+        ...record?.busRoute,
+        isActive: !!checked,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -214,6 +234,21 @@ class Index extends PureComponent {
         key: 'children',
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record?.studentTotal}</Text>,
+      },
+      {
+        title: 'TRẠNG THÁI',
+        key: 'lock',
+        className: 'min-width-120',
+        width: 120,
+        align: 'center',
+        render: (record) => (
+          <div className={styles['table-switch']}>
+            <Switch
+              checked={record?.busRoute?.isActive}
+              onChange={(event) => this.onChangeSwitch(record, event)}
+            />
+          </div>
+        ),
       },
       {
         key: 'actions',
@@ -267,18 +302,33 @@ class Index extends PureComponent {
                 ...search,
                 nannyId: search.nannyId || null,
                 driverId: search.driverId || null,
+                isActive: search.isActive || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-3">
                   <FormItem
                     label="TÌM KIẾM"
                     name="keyword"
                     placeholder="Nhập từ khóa"
                     onChange={(event) => this.onChange(event, 'keyword')}
                     type={variables.INPUT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[
+                      { id: null, name: 'Chọn tất cả' },
+                      { id: 'ON', name: 'Hoạt động' },
+                      { id: 'OFF', name: 'Ngừng hoạt động' },
+                    ]}
+                    label="TRẠNG THÁI"
+                    name="isActive"
+                    allowClear={false}
+                    onChange={(event) => this.onChangeSelect(event, 'isActive')}
+                    type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
