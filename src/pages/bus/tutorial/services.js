@@ -7,6 +7,8 @@ export function get(params = {}) {
     params: {
       ...params,
       ...Helper.getPagination(params.page, params.limit),
+      // eslint-disable-next-line no-nested-ternary
+      isActive: params.isActive ? (params.isActive === 'ON' ? true : 'false') : undefined,
     },
   });
 }
@@ -19,9 +21,12 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/bus-routes/${data.id}`, {
+  return request(`/bus-routes/${data.id}/change-active`, {
     method: 'PUT',
-    data,
+    params: {
+      id: data.id,
+      isActive: data.isActive || 'false',
+    },
   });
 }
 
