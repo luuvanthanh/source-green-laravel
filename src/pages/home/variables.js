@@ -170,7 +170,7 @@ export const variables = {
       title: 'Trẻ đăng ký xe bus',
       title_quantity: 'Số trẻ đăng ký xe bus',
       title_popup: 'Danh sách trẻ đăng ký xe bus',
-      field: 'studentTotal'
+      field: 'studentTotal',
     },
     ABSENT: {
       status: 'ABSENCE',
@@ -195,7 +195,7 @@ export const variables = {
         title: 'Trẻ xuống xe',
         title_quantity: 'Số trẻ xuống xe',
         field: 'schoolGetOffStatusTotal',
-      }
+      },
     },
     HOME: {
       status: 'HOMEWARD',
@@ -206,16 +206,16 @@ export const variables = {
         status_home: 'HOMEGETIN',
         title: 'Trẻ lên xe',
         title_quantity: 'Số trẻ lên xe',
-        field: 'homeGetInStatusTotal'
+        field: 'homeGetInStatusTotal',
       },
       get_off: {
         status_home: 'HOMEGETOFF',
         title: 'Trẻ xuống xe',
         title_quantity: 'Số trẻ xuống xe',
-        field: 'homeGetOffStatusTotal'
-      }
+        field: 'homeGetOffStatusTotal',
+      },
     },
-  }
+  },
 };
 
 export default variables;
