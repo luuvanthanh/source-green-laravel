@@ -315,6 +315,8 @@ const Index = memo(() => {
             );
             formRef.current.setFieldsValue({
               title: response.title,
+              branchId: response?.branch?.id,
+              divisionId: response?.division?.id,
             });
             mountedSet(
               setParents,
@@ -328,6 +330,8 @@ const Index = memo(() => {
                 };
               }),
             );
+            mountedSet(setIsAllEmployees, response.isAllEmployees);
+            mountedSet(setIsAllParents, response.isAllParents);
             mountedSet(
               setEmployees,
               employees.map((item) => {
