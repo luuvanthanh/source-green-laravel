@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 .block {
   width: 100%;
@@ -144,10 +144,12 @@
     :global(.ant-select-clear) {
       display: none;
     }
-    :global(.ant-select-arrow), :global(.ant-select-selection-placeholder) {
+    :global(.ant-select-arrow),
+    :global(.ant-select-selection-placeholder) {
       color: $white;
     }
-    :global(.ant-select-show-search.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+    :global(.ant-select-show-search.ant-select:not(.ant-select-customize-input)
+        .ant-select-selector) {
       cursor: pointer;
       box-shadow: unset;
     }
@@ -162,7 +164,7 @@
   }
 }
 .body-tab {
-  background: rgba($color: #EDF0F4, $alpha: 0.96);
+  background: rgba($color: #edf0f4, $alpha: 0.96);
   border-radius: 10px;
   padding: 15px 0;
   height: 100%;
@@ -179,11 +181,11 @@
   :global(.ant-tabs) {
     padding: 0 20px;
   }
-  :global(.ant-tabs>.ant-tabs-nav) {
+  :global(.ant-tabs > .ant-tabs-nav) {
     justify-content: center;
     margin: 0;
   }
-  :global(.ant-tabs>.ant-tabs-nav .ant-tabs-nav-wrap) {
+  :global(.ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap) {
     flex: unset;
   }
   :global(.ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar) {
@@ -199,7 +201,7 @@
   :global(.ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap) {
     &:before {
       content: unset;
-    };
+    }
     &:after {
       content: unset;
     }
@@ -220,7 +222,7 @@
     margin-bottom: 12px;
   }
   .date {
-    color: rgba($color: #3E4247, $alpha: 0.7);
+    color: rgba($color: #3e4247, $alpha: 0.7);
     font-size: 12px;
   }
   .number {
@@ -272,7 +274,7 @@
   :global(.ant-tabs > .ant-tabs-nav) {
     &:before {
       content: unset;
-    };
+    }
     &:after {
       content: unset;
     }
@@ -301,7 +303,6 @@
   }
   @media (max-width: $xs-max-width) {
     width: calc(100% / 2);
-
   }
   .content-student {
     padding: 10px;
@@ -324,12 +325,12 @@
     width: 100%;
     background: rgba($color: #464646, $alpha: 0.3);
     border-color: transparent;
-    box-shadow: 0px 4px 12px rgba(49, 56, 67, .2);
+    box-shadow: 0px 4px 12px rgba(49, 56, 67, 0.2);
     border-radius: 52px;
     color: $white;
     padding: 8px 20px;
     &:hover {
-      border-color: rgba(49,56,67, .2);
+      border-color: rgba(49, 56, 67, 0.2);
     }
   }
   :global(.ant-input-affix-wrapper > input.ant-input) {
@@ -348,7 +349,7 @@
   }
   :global(.ant-modal-content) {
     overflow: hidden;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, .12);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
     border-radius: 12px;
   }
   .header-modal {
@@ -376,7 +377,7 @@
     cursor: pointer;
     transition: all 0.5s ease;
     &.actived {
-      background: #DEF4D7;
+      background: #def4d7;
       border-radius: 2px;
       .title-menu {
         font-family: $bold__font-family;
@@ -397,7 +398,7 @@
 }
 .item-health {
   padding: 15px;
-  border: 1px solid #DFE6EA;
+  border: 1px solid #dfe6ea;
   box-sizing: border-box;
   border-radius: 4px;
   height: 100%;
@@ -406,7 +407,7 @@
   }
 }
 .container-timeline {
-  border: 1px solid #DFE6EA;
+  border: 1px solid #dfe6ea;
   box-sizing: border-box;
   border-radius: 2px;
   margin-bottom: 20px;
@@ -459,5 +460,22 @@
 }
 
 .checkbox-table {
-  background: red;
+  background: $background-danger;
+}
+
+.timeline-container {
+  .norm {
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 20px;
+    color: $text-dark;
+    margin-bottom: 0;
+  }
+  :global(.ant-timeline-item-tail) {
+    border-left: 2px solid rgba($color: #3e4247, $alpha: 0.3);
+  }
+  :global(.ant-timeline-item-head) {
+    color: $text-success;
+    border-color: $border-success;
+  }
 }

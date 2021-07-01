@@ -29,9 +29,8 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ tutorialAddV2, loading, menu, locationCurrent }) => ({
+const mapStateToProps = ({ tutorialAddV2, loading, menu }) => ({
   loading,
-  locationCurrent,
   error: tutorialAddV2.error,
   branches: tutorialAddV2.branches,
   menuData: menu.menuLeftSchedules,
@@ -44,12 +43,8 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { locationCurrent } = props;
     this.state = {
-      position:
-        locationCurrent.lat && locationCurrent?.lng
-          ? [locationCurrent.lat, locationCurrent?.lng]
-          : [],
+      position: [],
       visibleMap: false,
       keyMap: null,
     };
@@ -57,6 +52,11 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setStateData({
+        position: [position?.coords?.latitude, position?.coords?.longitude],
+      });
+    });
     this.loadCategories();
   }
 
@@ -365,7 +365,6 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
-  locationCurrent: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -375,7 +374,6 @@ Index.defaultProps = {
   error: {},
   details: {},
   branches: [],
-  locationCurrent: {},
 };
 
 export default withRouter(Index);

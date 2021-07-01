@@ -14,6 +14,7 @@ import variablesModules from './variables';
 import Overview from './overview';
 import Application from './application';
 import Student from './student';
+import Activity from './activity';
 
 const { TabPane } = Tabs;
 
@@ -34,7 +35,6 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 
 @connect(({ user, loading }) => ({ user, loading }))
-
 class HomePage extends PureComponent {
   formRef = React.createRef();
 
@@ -43,7 +43,7 @@ class HomePage extends PureComponent {
     this.state = {
       classes: [],
       classId: '',
-      tab: 'overview'
+      tab: 'overview',
     };
     setIsMounted(true);
   }
@@ -66,7 +66,9 @@ class HomePage extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            classes: !_.isEmpty(res?.items) ? _.concat([{ id: '', name: 'Tất cả lớp'}], res?.items) : []
+            classes: !_.isEmpty(res?.items)
+              ? _.concat([{ id: '', name: 'Tất cả lớp' }], res?.items)
+              : [],
           });
         }
       },
@@ -80,7 +82,7 @@ class HomePage extends PureComponent {
    * @returns {void} call this.setState to update state
    * @memberof setStateData
    */
-   setStateData = (state, callback) => {
+  setStateData = (state, callback) => {
     if (!getIsMounted()) {
       return;
     }
@@ -89,24 +91,26 @@ class HomePage extends PureComponent {
 
   handleChangeClass = (classId) => {
     this.setState({ classId });
-  }
+  };
 
   changeTab = (tab) => {
     this.setStateData({ tab });
-  }
+  };
 
   renderComponent = (tab, classId) => {
-    switch(tab) {
+    switch (tab) {
       case 'overview':
         return <Overview classId={classId} />;
       case 'application':
         return <Application classId={classId} />;
       case 'student':
-        return  <Student classId={classId} />;
+        return <Student classId={classId} />;
+      case 'activity':
+        return <Activity classId={classId} />;
       default:
         return <Overview classId={classId} />;
     }
-  }
+  };
 
   render() {
     const { classes, classId, tab } = this.state;
@@ -115,8 +119,10 @@ class HomePage extends PureComponent {
         <div className={styles.title}>Lake View</div>
         <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
-            <div className={styles['date-header']}>{moment().format(variables.DATE_FORMAT.DATE_MONTH)}</div>
-            <Form layout="vertical" ref={this.formRef} initialValues={{ classId }} >
+            <div className={styles['date-header']}>
+              {moment().format(variables.DATE_FORMAT.DATE_MONTH)}
+            </div>
+            <Form layout="vertical" ref={this.formRef} initialValues={{ classId }}>
               <FormItem
                 className={classnames('mb0', styles.select)}
                 name="classId"
@@ -128,16 +134,13 @@ class HomePage extends PureComponent {
             </Form>
           </div>
           <div className={styles['custom-tab']}>
-            <Tabs
-              onChange={this.changeTab}
-              activeKey={tab}
-            >
+            <Tabs onChange={this.changeTab} activeKey={tab}>
               {variablesModules.TABS.map(({ id, name }) => (
                 <TabPane tab={name} key={id} />
               ))}
             </Tabs>
           </div>
-          { this.renderComponent(tab, classId) }
+          {this.renderComponent(tab, classId)}
         </div>
       </div>
     );
@@ -154,4 +157,4 @@ HomePage.defaultProps = {
   user: {},
 };
 
-export default HomePage ;
+export default HomePage;

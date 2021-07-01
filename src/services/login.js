@@ -12,6 +12,7 @@ export function login(data) {
     data: qs.stringify({
       ...data,
     }),
+    isLogin: true,
   });
 }
 
@@ -37,5 +38,6 @@ export async function logout() {
   return requestLogin('/api/logout', {
     method: 'POST',
     parse: true,
+    isLogin: true,
   });
 }

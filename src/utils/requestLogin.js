@@ -69,10 +69,17 @@ request.interceptors.response.use(
         });
       }
       if (response.status >= 200 && response.status <= 300) {
-        notification.success({
-          message: 'Thông báo',
-          description: 'Bạn đã cập nhật thành công dữ liệu',
-        });
+        if (optionsRoot.isLogin) {
+          notification.success({
+            message: 'Thông báo',
+            description: 'Bạn đã đăng nhập thành công',
+          });
+        } else {
+          notification.success({
+            message: 'Thông báo',
+            description: 'Bạn đã cập nhật thành công dữ liệu',
+          });
+        }
       }
     }
 

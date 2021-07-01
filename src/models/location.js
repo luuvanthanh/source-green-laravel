@@ -40,18 +40,6 @@ export default {
     },
   },
   subscriptions: {
-    setup: ({ dispatch }) => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        dispatch({
-          type: 'GET_LOCATION',
-          payload: {
-            lat: position?.coords?.latitude,
-            lng: position?.coords?.longitude,
-            access_token: ACCESS_TOKEN_MAPBOX,
-            language: 'vi',
-          },
-        });
-      });
-    },
+    setup: (_) => {},
   },
 };
