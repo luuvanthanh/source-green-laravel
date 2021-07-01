@@ -71,7 +71,9 @@ const Index = memo(() => {
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <label className={styles.infoLabel}>Người gửi</label>
                   <Pane className={styles.userInformation} style={{ paddingBottom: 20 }}>
-                    <AvatarTable fileImage={null} />
+                    <AvatarTable
+                      fileImage={Helper.getPathAvatarJson(details?.sender?.objectInfo?.fileImage)}
+                    />
                     <Pane>
                       <h3>{details?.sender?.objectInfo?.fullName || details?.sender?.name}</h3>
                       <p>{details?.sender?.role}</p>
@@ -88,33 +90,31 @@ const Index = memo(() => {
                     <strong>{!isEmpty(details?.parentNews) ? 'Phụ Huynh' : 'Nhân viên'}</strong>
                   </p>
                 </Pane>
-                <Pane className="border-bottom" style={{ padding: 20 }}>
-                  <Pane className="row">
-                    <Pane className="col-lg-6">
-                      <label className={styles.infoLabel}>Cơ sở</label>
-                      <Pane className="d-flex align-items-center">
-                        <span className={styles.circleIcon}>
-                          <span className="icon-school" />
-                        </span>
-                        <span className={styles.infoText}>
-                          {details?.sender?.objectInfo?.class?.branch?.name}
-                        </span>
+                {details?.branch?.name && details?.division?.name && (
+                  <Pane className="border-bottom" style={{ padding: 20 }}>
+                    <Pane className="row">
+                      <Pane className="col-lg-6">
+                        <label className={styles.infoLabel}>Cơ sở</label>
+                        <Pane className="d-flex align-items-center">
+                          <span className={styles.circleIcon}>
+                            <span className="icon-school" />
+                          </span>
+                          <span className={styles.infoText}>{details?.branch?.name}</span>
+                        </Pane>
                       </Pane>
-                    </Pane>
 
-                    <Pane className="col-lg-6">
-                      <label className={styles.infoLabel}>Lớp</label>
-                      <Pane className="d-flex align-items-center">
-                        <span className={styles.circleIcon}>
-                          <span className="icon-open-book" />
-                        </span>
-                        <span className={styles.infoText}>
-                          {details?.sender?.objectInfo?.class?.name}
-                        </span>
+                      <Pane className="col-lg-6">
+                        <label className={styles.infoLabel}>Bộ phận</label>
+                        <Pane className="d-flex align-items-center">
+                          <span className={styles.circleIcon}>
+                            <span className="icon-open-book" />
+                          </span>
+                          <span className={styles.infoText}>{details?.division?.name}</span>
+                        </Pane>
                       </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
+                )}
 
                 <Pane className="border-bottom" style={{ padding: 20 }}>
                   <label className={styles.infoLabel}>Người nhận thông báo</label>
@@ -124,7 +124,7 @@ const Index = memo(() => {
                         <Pane
                           key={index}
                           className={styles.userInformation}
-                          style={{ paddingTop: 20, paddingBottom: 20 }}
+                          style={{ paddingTop: 10, paddingBottom: 10 }}
                         >
                           <AvatarTable
                             fileImage={Helper.getPathAvatarJson(item?.parent?.fileImage)}
