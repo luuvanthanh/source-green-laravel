@@ -1799,14 +1799,26 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi',
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
             component: './fee-policy/new-student',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
           {
-            path: '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/tao-moi',
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
             component: './fee-policy/new-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
+            component: './fee-policy/old-student',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/tao-moi',
+            component: './fee-policy/old-student/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },

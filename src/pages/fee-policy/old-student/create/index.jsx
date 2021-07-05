@@ -14,17 +14,6 @@ import { variables } from '@/utils';
 
 import TypeFees from './typeFees';
 
-const radios = [
-  {
-    value: 'newStudent',
-    label: 'Học sinh mới'
-  },
-  {
-    value: 'oldStudent',
-    label: 'Học sinh có sẵn'
-  }
-];
-
 const Index = memo(() => {
   const params = useParams();
   const { loading } = useSelector(({ loading }) => ({ loading }));
@@ -74,9 +63,6 @@ const Index = memo(() => {
     formRef.current.resetFields();
   };
 
-  const onChangeType = () => {
-  };
-
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in object) {
@@ -112,94 +98,51 @@ const Index = memo(() => {
             <Pane className="card">
               <Pane className="p20">
                 <Heading type="form-title" className="mb20">
-                  Thông tin học sinh
+                  Thông tin chung
                 </Heading>
-                <FormItem
-                  className="row-radio-auto mb0"
-                  name="type"
-                  type={variables.RADIO}
-                  data={radios}
-                  rules={[variables.RULES.EMPTY]}
-                  onChange={onChangeType}
-                />
               </Pane>
               <Pane className="p20 border-top">
                 <div className="row">
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Tên học sinh"
-                      name="name"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="Năm học"
                       name="creator"
                       data={[]}
                       type={variables.SELECT}
+                      // rules={[variables.RULES.EMPTY]}
                     />
+                  </div>
+                  <div className="col-lg-9">
+                    <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
+                    <p className="mb0 font-size-13 mt10 font-weight-bold">01/08/2021 - 31/05/2022</p>
                   </div>
                   <div className="col-lg-3">
                     <FormItem
-                      label="Ngày sinh"
-                      name="dob"
-                      type={variables.DATE_PICKER}
-                      allowClear={false}
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <label htmlFor="" className="mb5 font-size-13" >Tuổi (tháng)</label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold">32</p>
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Ngày nhập học"
-                      name="dob"
-                      type={variables.DATE_PICKER}
-                      allowClear={false}
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Lớp học dự kiến"
-                      name="creator"
-                      data={[]}
-                      type={variables.SELECT}
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Họ tên Cha"
-                      name="nameFather"
+                      label="Mã học sinh"
+                      name="code"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="SĐT Cha"
-                      name="sdtFather"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="Họ tên Mẹ"
-                      name="nameMother"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <FormItem
-                      label="SĐT Mẹ"
-                      name="sdtMother"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
+                  <div className="col-lg-9">
+                    <div className="row">
+                      <div className="col-lg-3">
+                        <label htmlFor="" className="mb5 font-size-13" >Tên học sinh</label>
+                        <p className="mb0 font-size-13 mt10 font-weight-bold">Nguyễn Văn A</p>
+                      </div>
+                      <div className="col-lg-3">
+                        <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
+                        <p className="mb0 font-size-13 mt10 font-weight-bold">Lake View</p>
+                      </div>
+                      <div className="col-lg-3">
+                        <label htmlFor="" className="mb5 font-size-13" >Khối lớp</label>
+                        <p className="mb0 font-size-13 mt10 font-weight-bold">Preschool</p>
+                      </div>
+                      <div className="col-lg-3">
+                        <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
+                        <p className="mb0 font-size-13 mt10">Preschool 2</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Pane>
