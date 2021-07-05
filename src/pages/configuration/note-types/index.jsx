@@ -107,7 +107,7 @@ const Index = memo(() => {
                           style={{ minWidth: '100px' }}
                           format={variables.DATE_FORMAT.HOUR}
                           value={moment(itemConfig.value, variables.DATE_FORMAT.HOUR)}
-                          onChange={(e) => onSetValue(e, item)}
+                          onChange={(e) => onSetValue(e, itemConfig)}
                         />
                       </Pane>
                     ))}
