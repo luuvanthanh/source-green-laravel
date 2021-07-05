@@ -761,6 +761,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CAUHINH],
           },
+          {
+            path: '/cau-hinh/canh-bao/suc-khoe',
+            component: './configuration/healthy-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/canh-bao/ghi-chu',
+            component: './configuration/note-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/canh-bao/y-te',
+            component: './configuration/medical-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
         ],
       },
       // CONFIGURATION
