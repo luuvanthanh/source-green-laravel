@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'NoteTypes',
+  namespace: 'MedicalTypes',
   state: {
     data: [],
     error: {

@@ -435,13 +435,27 @@ export async function getLeftMenuConfiguration() {
     {
       title: 'Cảnh báo',
       key: 'warning',
-      icon: 'icon icon-list',
+      icon: 'icon icon-notification',
       permission: [permissions.CAUHINH],
       children: [
         {
           title: 'Sức khỏe',
           key: 'warning-healthy',
           url: ['/cau-hinh/canh-bao/suc-khoe'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Ghi chú',
+          key: 'warning-note',
+          url: ['/cau-hinh/canh-bao/ghi-chu'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Y tế',
+          key: 'warning-medical',
+          url: ['/cau-hinh/canh-bao/y-te'],
           permission: [permissions.CAUHINH],
           pro: true,
         },
