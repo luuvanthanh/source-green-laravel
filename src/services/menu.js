@@ -433,6 +433,21 @@ export async function getLeftMenuConfiguration() {
       pro: true,
     },
     {
+      title: 'Cảnh báo',
+      key: 'warning',
+      icon: 'icon icon-list',
+      permission: [permissions.CAUHINH],
+      children: [
+        {
+          title: 'Sức khỏe',
+          key: 'warning-healthy',
+          url: ['/cau-hinh/canh-bao/suc-khoe'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Tablet giáo viên',
       key: 'tablet',
       url: [

@@ -1000,3 +1000,15 @@
     text-transform: uppercase;
   }
 }
+
+// CARD ITEM
+.card-item {
+  padding: 20px;
+  &:not(:first-child){
+    border-top: 1px solid #EAEAEA;
+  }
+  .label {
+    white-space: nowrap;
+  }
+}
+// CARD ITEM
