@@ -13,9 +13,9 @@ import Loading from '@/components/CommonComponent/Loading';
 
 const Index = memo(() => {
   // const params = useParams();
-  const { loading, data } = useSelector(({ loading, NoteTypes }) => ({
+  const { loading, data } = useSelector(({ loading, MedicalTypes }) => ({
     loading: loading.effects,
-    data: NoteTypes.data,
+    data: MedicalTypes.data,
   }));
 
   // const [{}] = useSelector(({ _ }) => []);
@@ -26,16 +26,16 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'NoteTypes/GET_DATA',
+      type: 'MedicalTypes/GET_DATA',
       payload: {
-        type: 'NOTE',
+        type: 'MEDICAL',
       },
     });
   }, []);
 
   const onActive = (event, record) => {
     dispatch({
-      type: 'NoteTypes/ACTIVE',
+      type: 'MedicalTypes/ACTIVE',
       payload: {
         id: record.id,
         isActive: event,
@@ -43,9 +43,9 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           dispatch({
-            type: 'NoteTypes/GET_DATA',
+            type: 'MedicalTypes/GET_DATA',
             payload: {
-              type: 'NOTE',
+              type: 'MEDICAL',
             },
           });
         }
@@ -55,7 +55,7 @@ const Index = memo(() => {
 
   const onSetValue = (value, record) => {
     dispatch({
-      type: 'NoteTypes/SET_VALUE',
+      type: 'MedicalTypes/SET_VALUE',
       payload: {
         id: record.id,
         value: moment(value).format(variables.DATE_FORMAT.HOUR),
@@ -63,9 +63,9 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           dispatch({
-            type: 'NoteTypes/GET_DATA',
+            type: 'MedicalTypes/GET_DATA',
             payload: {
-              type: 'NOTE',
+              type: 'MEDICAL',
             },
           });
         }
@@ -75,18 +75,18 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title="Thiết lập cảnh báo ghi chú" />
+      <Helmet title="Thiết lập cảnh báo y tế" />
       <Pane className="row justify-content-center">
-        <Pane className="col-lg-8">
+        <Pane className="col-lg-12">
           <Heading type="form-title" className="mb20">
-            Thiết lập cảnh báo ghi chú
+            Thiết lập cảnh báo y tế
           </Heading>
           <Pane className="card">
-            <Loading loading={loading['NoteTypes/GET_DATA']}>
+            <Loading loading={loading['MedicalTypes/GET_DATA']}>
               {data.map((item) => (
                 <Pane className={styles['card-item']} key={item.id}>
                   <Pane className="row">
-                    <Pane className="col-6 d-flex align-items-center">
+                    <Pane className="col-4 d-flex align-items-center">
                       <Pane className={styles['table-switch']}>
                         <Switch
                           checked={item.isActive}
@@ -97,7 +97,7 @@ const Index = memo(() => {
                     </Pane>
                     {item.configs.map((itemConfig) => (
                       <Pane
-                        className="col-6 text-right d-flex align-items-center"
+                        className="col-4 text-right d-flex align-items-center"
                         key={itemConfig.id}
                       >
                         <span className={classnames(styles.label, 'mr10')}>

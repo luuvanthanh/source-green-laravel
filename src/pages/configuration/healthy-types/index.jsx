@@ -13,9 +13,9 @@ import Loading from '@/components/CommonComponent/Loading';
 
 const Index = memo(() => {
   // const params = useParams();
-  const { loading, data } = useSelector(({ loading, NoteTypes }) => ({
+  const { loading, data } = useSelector(({ loading, HealthyTypes }) => ({
     loading: loading.effects,
-    data: NoteTypes.data,
+    data: HealthyTypes.data,
   }));
 
   // const [{}] = useSelector(({ _ }) => []);
@@ -26,16 +26,16 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'NoteTypes/GET_DATA',
+      type: 'HealthyTypes/GET_DATA',
       payload: {
-        type: 'NOTE',
+        type: 'HEALTH',
       },
     });
   }, []);
 
   const onActive = (event, record) => {
     dispatch({
-      type: 'NoteTypes/ACTIVE',
+      type: 'HealthyTypes/ACTIVE',
       payload: {
         id: record.id,
         isActive: event,
@@ -43,9 +43,9 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           dispatch({
-            type: 'NoteTypes/GET_DATA',
+            type: 'HealthyTypes/GET_DATA',
             payload: {
-              type: 'NOTE',
+              type: 'HEALTH',
             },
           });
         }
@@ -55,7 +55,7 @@ const Index = memo(() => {
 
   const onSetValue = (value, record) => {
     dispatch({
-      type: 'NoteTypes/SET_VALUE',
+      type: 'HealthyTypes/SET_VALUE',
       payload: {
         id: record.id,
         value: moment(value).format(variables.DATE_FORMAT.HOUR),
@@ -63,9 +63,9 @@ const Index = memo(() => {
       callback: (response) => {
         if (response) {
           dispatch({
-            type: 'NoteTypes/GET_DATA',
+            type: 'HealthyTypes/GET_DATA',
             payload: {
-              type: 'NOTE',
+              type: 'HEALTH',
             },
           });
         }
@@ -75,14 +75,14 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title="Thiết lập cảnh báo ghi chú" />
+      <Helmet title="Thiết lập cảnh báo sức khỏe" />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-8">
           <Heading type="form-title" className="mb20">
-            Thiết lập cảnh báo ghi chú
+            Thiết lập cảnh báo sức khỏe
           </Heading>
           <Pane className="card">
-            <Loading loading={loading['NoteTypes/GET_DATA']}>
+            <Loading loading={loading['HealthyTypes/GET_DATA']}>
               {data.map((item) => (
                 <Pane className={styles['card-item']} key={item.id}>
                   <Pane className="row">
