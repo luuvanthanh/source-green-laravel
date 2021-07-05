@@ -16,7 +16,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import commonStyles from '@/assets/styles/Common/common.scss';
 import { variables, Helper } from '@/utils';
 
-import ScheduleTable from './tables/schedule';
 import TuitionTable from './tables/tuition';
 import FoodTable from './tables/food';
 import OtherTable from './tables/other';
@@ -38,14 +37,12 @@ const Index = memo(() => {
     yearsSchool: schoolYear.data
   }));
 
-  const [tab, setTab] = useState('schedule');
+  const [tab, setTab] = useState('tuition');
   const [showDetails, setShowDetails] = useState(false);
-  const [schoolYearInformation, setSchoolYearInformation] = useState([]);
   const [feeDetail, setFeeDetail] = useState([]);
   const [moneyMeal, setMoneyMeal] = useState([]);
   const [otherMoneyDetail, setOtherMoneyDetail] = useState([]);
   const [errorTable, setErrorTable] = useState({
-    schedule: false,
     tuition: false,
     food: false,
     other: false
@@ -68,9 +65,7 @@ const Index = memo(() => {
           include: Helper.convertIncludes(['schoolYear']),
         },
         callback: (res) => {
-          const newSchoolYear = res?.schoolYearInformation?.map(item => ({ ...item, schedule: moment.utc(item?.schedule, 'YYYY-DD-MM').local().format(variables.DATE_FORMAT.DATE_VI) }));
-          setSchoolYearInformation(newSchoolYear);
-          setFeeDetail(res?.feeDetail.map(item => ({...item, rangeDate: [moment(item?.startDate), moment(item?.endDate)]})));
+          setFeeDetail(res?.feeDetail.map(item => ({...item, rangeDate: [moment(item?.applyStartTime), moment(item?.applyEndTime)]})));
           setMoneyMeal(res?.moneyMeal);
           setOtherMoneyDetail(res?.otherMoneyDetail);
           const timeToPay = [
@@ -96,44 +91,20 @@ const Index = memo(() => {
     formRef?.current.resetFields();
     setTab('schedule');
     setShowDetails(false);
-    setSchoolYearInformation([]);
     setFeeDetail([]);
     setMoneyMeal([]);
     setOtherMoneyDetail([]);
   };
 
-  const renderData = (length, timeToPay) => {
-    const datasTable = [];
-    for (let i = 0; i < length; i += 1) {
-      let schedule = moment(timeToPay[0]).add(i, 'month');
-      if (i === 0) {
-        schedule = schedule.format(variables.DATE_FORMAT.DATE_VI);
-      } else {
-        schedule = schedule.startOf('month').format(variables.DATE_FORMAT.DATE_VI);
-      }
-      datasTable.push({
-        id: i,
-        paymentFormId: '',
-        schedule,
-        schoolDay: "",
-      });
-    }
-    return datasTable;
-  };
-
-  const getDetail  = async (e, name) => {
+  const onChange  = async (e, name) => {
     if (name === 'schoolYearId') {
       const choolYearSelect = yearsSchool.find(item => item?.id === e);
       await formRef?.current?.setFieldsValue({ timeToPay: [moment(choolYearSelect?.startDate), moment(choolYearSelect?.endDate)] });
     }
+
     const { getFieldsValue } = formRef?.current;
     const { schoolYearId, decisionDate, decisionNumber, timeToPay } = getFieldsValue();
     if (schoolYearId && decisionDate && decisionNumber && timeToPay) {
-      const result = moment(timeToPay[1]).diff(moment(timeToPay[0]), 'month') + 1;
-      if (result && (!params?.id || params?.id && name === 'schoolYearId')) {
-        const data = renderData(result, timeToPay);
-        setSchoolYearInformation(data);
-      }
       setShowDetails(true);
     } else {
       setShowDetails(false);
@@ -164,7 +135,6 @@ const Index = memo(() => {
   const finishForm = async (values) => {
     const data = {
       ...values,
-      schoolYearInformation,
       feeDetail: !_.isEmpty(feeDetail) ? feeDetail.map(item => ({
         ...item,
         applyStartTime: item?.rangeDate[0],
@@ -173,17 +143,23 @@ const Index = memo(() => {
       moneyMeal,
       otherMoneyDetail,
     };
-    const chedule = checkValidate(schoolYearInformation, 'schedule');
     const tuition = checkValidate(feeDetail, 'tuition');
     const food = checkValidate(moneyMeal, 'food');
     const other = checkValidate(otherMoneyDetail, 'other');
-    if (!!(chedule) || !!(tuition) || !!(food) || !!(other)) {
+    if (!!(tuition) || !!(food) || !!(other)) {
       return;
     }
     dispatch({
       type: params?.id ? 'feePolicyPolicyAdd/UPDATE' : 'feePolicyPolicyAdd/ADD',
       payload: {
         ...data,
+        decisionDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: data.decisionDate,
+          }),
+          isUTC: false,
+        }),
         id: params?.id || undefined
       },
       callback: (res) => {
@@ -195,18 +171,6 @@ const Index = memo(() => {
   };
 
   const tabs = () => [
-    {
-      id: 'schedule',
-      name: 'Lịch học',
-      component: (
-        <ScheduleTable
-          schoolYearInformation={schoolYearInformation}
-          setSchoolYearInformation={setSchoolYearInformation}
-          error={errorTable.schedule}
-          checkValidate={checkValidate}
-        />
-      )
-    },
     {
       id: 'tuition',
       name: 'Chi tiết tiền học phí của học sinh',
@@ -265,7 +229,7 @@ const Index = memo(() => {
                   name="schoolYearId"
                   type={variables.SELECT}
                   placeholder="Chọn năm"
-                  onChange={e => getDetail(e, 'schoolYearId')}
+                  onChange={e => onChange(e, 'schoolYearId')}
                   allowClear={false}
                   data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
                   rules={[variables.RULES.EMPTY]}
@@ -276,7 +240,7 @@ const Index = memo(() => {
                   className="mb0"
                   label="Ngày quyết định"
                   name="decisionDate"
-                  onChange={e => getDetail(e, 'decisionDate')}
+                  onChange={e => onChange(e, 'decisionDate')}
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
                 />
@@ -286,7 +250,7 @@ const Index = memo(() => {
                   className="mb0"
                   label="Số quyết định"
                   name="decisionNumber"
-                  onChange={e => getDetail(e, 'decisionNumber')}
+                  onChange={e => onChange(e, 'decisionNumber')}
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
                 />
