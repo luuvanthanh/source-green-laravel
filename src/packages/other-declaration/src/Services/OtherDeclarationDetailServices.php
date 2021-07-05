@@ -12,7 +12,9 @@ class OtherDeclarationDetailServices
     public static function add($id, $attributes)
     {
         foreach ($attributes as $value) {
+
             $value['OtherDeclarationId'] = $id;
+            $value['detail'] = json_encode($value['detail']);
             $shiftDetail = OtherDeclarationDetail::create($value);
         }
 

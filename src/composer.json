@@ -92,6 +92,7 @@
             "GGPHP\\MaternityLeave\\": "packages/maternity_leave/src",
             "GGPHP\\ExcelExporter\\": "packages/excel-exporter/src/",
             "GGPHP\\Fee\\": "packages/fee/src/",
+            "GGPHP\\Salary\\": "packages/salary/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

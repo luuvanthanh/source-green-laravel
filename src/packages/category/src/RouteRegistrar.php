@@ -38,11 +38,14 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::resource('paramater-value-logs', 'ParamaterValueLogController');
                 \Route::resource('paramater-formulas', 'ParamaterFormulaController');
                 \Route::resource('paramater-formula-logs', 'ParamaterFormulaLogController');
+                \Route::resource('parameter-taxs', 'ParameterTaxController');
+                \Route::resource('parameter-tax-logs', 'ParameterTaxLogController');
                 \Route::resource('type-of-contracts', 'TypeOfContractController');
                 \Route::resource('branches', 'BranchController');
                 \Route::resource('divisions', 'DivisionController');
                 \Route::resource('positions', 'PositionController');
                 \Route::resource('holidays', 'HolidayController');
+
             });
 
         });

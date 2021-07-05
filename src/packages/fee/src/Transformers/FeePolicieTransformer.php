@@ -14,7 +14,7 @@ class FeePolicieTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = ['schoolYear'];
-    protected $defaultIncludes = ['schoolYearInformation', 'feeDetail', 'moneyMeal', 'otherMoneyDetail'];
+    protected $defaultIncludes = ['feeDetail', 'moneyMeal', 'otherMoneyDetail'];
 
     public function customAttributes($model): array
     {

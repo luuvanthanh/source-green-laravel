@@ -167,4 +167,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Fee\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\Salary\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
 });

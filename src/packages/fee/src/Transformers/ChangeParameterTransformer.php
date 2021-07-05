@@ -14,7 +14,7 @@ class ChangeParameterTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = [];
-    protected $defaultIncludes = ['paymentForm'];
+    protected $defaultIncludes = ['paymentForm', 'changeParameterDetail'];
 
     public function customAttributes($model): array
     {
@@ -35,6 +35,17 @@ class ChangeParameterTransformer extends BaseTransformer
         }
 
         return $this->item($changeParameter->paymentForm, new PaymentFormTransformer, 'PaymentForm');
+    }
+
+    /**
+     * Include ChangeParameterDetail
+     * @param ChangeParameter $changeParameter
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeChangeParameterDetail(ChangeParameter $changeParameter)
+    {
+
+        return $this->collection($changeParameter->changeParameterDetail, new ChangeParameterDetailTransformer, 'ChangeParameterDetail');
     }
 
 }

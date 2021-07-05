@@ -226,7 +226,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
-            'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value),
+            'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value),
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);

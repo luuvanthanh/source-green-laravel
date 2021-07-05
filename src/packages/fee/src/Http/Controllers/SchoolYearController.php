@@ -46,8 +46,13 @@ class SchoolYearController extends Controller
      */
     public function store(CreateSchoolYearRequest $request)
     {
-        $schoolYears = $this->schoolYearRepository->create($request->all());
-        return $this->success($schoolYears, trans('lang::messages.common.createSuccess'));
+        try {
+            $schoolYears = $this->schoolYearRepository->create($request->all());
+
+            return $this->success($schoolYears, trans('lang::messages.common.createSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -73,9 +78,13 @@ class SchoolYearController extends Controller
      */
     public function update(UpdateSchoolYearRequest $request, $id)
     {
-        $credentials = $request->all();
-        $schoolYear = $this->schoolYearRepository->update($credentials, $id);
-        return $this->success($schoolYear, trans('lang::messages.common.modifySuccess'));
+        try {
+            $credentials = $request->all();
+            $schoolYear = $this->schoolYearRepository->update($credentials, $id);
+            return $this->success($schoolYear, trans('lang::messages.common.modifySuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**

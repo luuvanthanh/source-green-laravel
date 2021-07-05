@@ -17,7 +17,6 @@ use GGPHP\Timekeeping\Repositories\Contracts\TimekeepingRepository;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -303,7 +302,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'type' => $type,
                     ];
                     $responseTimeKeepingUser[] = $result;
-
                 } else if (!empty($workDeclarationByDate[$key])) {
                     arraySortByColumn($workDeclarationByDate[$key], 'Time');
                     $checkIn = $workDeclarationByDate[$key][0]->Time;
@@ -336,9 +334,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
                     }
                 }
-
             }
-
         }
 
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
@@ -357,7 +353,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             } else {
                 $totalWorks += $item['timekeepingReport'];
             }
-
         }
 
         $employee->totalWorks = $totalWorks;
@@ -461,7 +456,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         "type" => $type,
                     ];
                 }
-
             }
         }
 
@@ -636,7 +630,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         "type" => $type,
                     ];
                 }
-
             }
         }
 
@@ -848,7 +841,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     $responseInvalid[] = $result;
                 }
-
             }
         }
         $employee->responseInvalid = $responseInvalid;
@@ -1046,7 +1038,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                             $listMerge[] = $merge;
                         }
                     }
-
                 }
                 $sheet->getColumnDimension($currentColumn)->setWidth(3);
             },
@@ -1071,7 +1062,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;
@@ -1083,7 +1073,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
         ];
 
@@ -1093,7 +1082,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $sheet->mergeCells($item);
                 }
                 $sheet->mergeCells('A1:AJ2');
-
             },
 
         ];

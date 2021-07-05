@@ -13,7 +13,7 @@ class PaymentFormsTableSeeder extends Seeder
     public function run()
     {
 
-        \DB::table('fee.PaymentForms')->delete();
+        \DB::table('fee.PaymentForms')->truncate();
 
         \DB::table('fee.PaymentForms')->insert(array(
             0 => array(

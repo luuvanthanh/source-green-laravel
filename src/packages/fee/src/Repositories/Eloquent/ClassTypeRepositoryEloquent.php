@@ -61,6 +61,10 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
             $this->model = $this->model->where('Type', $attributes['type']);
         }
 
+        if (!empty($attributes['age'])) {
+            $this->model = $this->model->where('From', '<=', $attributes['age'])->where('To', '>=', $attributes['age']);
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {

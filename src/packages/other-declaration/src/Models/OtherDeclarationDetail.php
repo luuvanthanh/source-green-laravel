@@ -19,8 +19,7 @@ class OtherDeclarationDetail extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'OtherDeclarationId', 'EmployeeId', 'Allowance', 'Bonus', 'Retrieval', 'PaymentOfSocialInsurance',
-        'EmployeeSocialInsurance', 'CompanySocialInsurance', 'Charity',
+        'OtherDeclarationId', 'EmployeeId', 'Detail',
     ];
 
     /**

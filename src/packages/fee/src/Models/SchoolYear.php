@@ -19,8 +19,21 @@ class SchoolYear extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'YearFrom', 'YearTo', 'StartDate', 'EndDate',
+        'YearFrom', 'YearTo', 'StartDate', 'EndDate', 'TotalMonth',
     ];
+
+    protected $dateTimeFields = [
+
+        'StartDate',
+        'EndDate',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -35,6 +48,14 @@ class SchoolYear extends UuidModel
      */
     public function changeParameter()
     {
-        return $this->hasMany(ChangeParameter::class, 'SchoolYearId');
+        return $this->hasOne(ChangeParameter::class, 'SchoolYearId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function timetable()
+    {
+        return $this->hasMany(Timetable::class, 'SchoolYearId');
     }
 }

@@ -14,7 +14,7 @@ class SchoolYearTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = [];
-    protected $defaultIncludes = ['fixedParameter', 'changeParameter'];
+    protected $defaultIncludes = ['fixedParameter', 'changeParameter', 'timetable'];
 
     public function customAttributes($model): array
     {
@@ -40,6 +40,20 @@ class SchoolYearTransformer extends BaseTransformer
      */
     public function includeChangeParameter(SchoolYear $schoolYear)
     {
-        return $this->collection($schoolYear->changeParameter, new ChangeParameterTransformer, 'ChangeParameter');
+        if (empty($schoolYear->changeParameter)) {
+            return;
+        }
+
+        return $this->item($schoolYear->changeParameter, new ChangeParameterTransformer, 'ChangeParameter');
+    }
+
+    /**
+     * Include Owner
+     * @param SchoolYear $schoolYear
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeTimetable(SchoolYear $schoolYear)
+    {
+        return $this->collection($schoolYear->timetable, new TimetableTransformer, 'Timetable');
     }
 }

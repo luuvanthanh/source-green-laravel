@@ -202,7 +202,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $labourContract = ProbationaryContract::findOrFail($id);
         $now = Carbon::now();
 
-        $salary = $labourContract->parameterValues->where('Code', 'LUONG')->first() ? $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value : 0;
+        $salary = $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first() ? $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value : 0;
         $allowance = $labourContract->parameterValues->where('Code', 'PHU_CAP')->first() ? $labourContract->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
 
         $total = $salary + $allowance;

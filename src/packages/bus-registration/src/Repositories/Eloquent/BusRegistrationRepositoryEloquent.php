@@ -159,6 +159,8 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
 
         $employee->busRegistrationSummary = $newBusRegistration;
         $employee->totalBusRegistration = $totalBusRegistration;
+
+        return $employee;
     }
 
     public function exportBusRegistrationReport(array $attributes)

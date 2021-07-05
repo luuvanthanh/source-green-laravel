@@ -2,6 +2,7 @@
 
 namespace GGPHP\Profile\Http\Requests;
 
+use GGPHP\Profile\Models\LabourContract;
 use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
 
