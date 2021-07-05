@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ newStudent, loading }) => ({
-  data: newStudent.data,
-  error: newStudent.error,
-  pagination: newStudent.pagination,
+const mapStateToProps = ({ oldStudent, loading }) => ({
+  data: oldStudent.data,
+  error: oldStudent.error,
+  pagination: oldStudent.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,7 +83,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'newStudent/GET_DATA',
+      type: 'oldStudent/GET_DATA',
       payload: {
         ...search,
       },
@@ -252,13 +252,13 @@ class Index extends PureComponent {
       data,
     } = this.props;
     const { search } = this.state;
-    const loading = effects['newStudent/GET_DATA'];
+    const loading = effects['oldStudent/GET_DATA'];
     return (
       <>
-        <Helmet title="Tính phí học sinh mới" />
+        <Helmet title="Tính phí học sinh cũ" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tính phí học sinh mới</Text>
+            <Text color="dark">Tính phí học sinh cũ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

@@ -1333,12 +1333,23 @@ export async function getLeftMenuFeePolicy() {
       permission: [permissions.CHINHSACHPHI],
     },
     {
-      title: 'Tính phí cho học sinh mới',
+      title: 'Tính phí học sinh mới',
       key: 'new-student',
       url: [
-        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi',
-        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/tao-moi',
-        '/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/:id/chi-tiet',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calculate',
+      permission: [permissions.CHINHSACHPHI],
+    },
+    {
+      title: 'Tính phí học sinh cũ',
+      key: 'old-student',
+      url: [
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/tao-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
       ],
       icon: 'icon icon-calculate',
       permission: [permissions.CHINHSACHPHI],
