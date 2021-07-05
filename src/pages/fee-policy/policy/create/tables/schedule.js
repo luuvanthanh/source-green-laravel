@@ -26,7 +26,7 @@ const Index = memo(({ schoolYearInformation, setSchoolYearInformation, error, ch
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
-        IsSemester: true
+        isSemester: true
       },
     });
   }, []);
