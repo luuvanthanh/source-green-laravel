@@ -339,3 +339,9 @@ form .ant-cascader-picker:only-child {
   border-radius: 50%;
   color: $gray-darken;
 }
+
+.content-vertical-top {
+  .ant-table-tbody > tr > td {
+    vertical-align: top;
+  }
+}

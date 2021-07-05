@@ -1724,43 +1724,7 @@ export default [
         routes: [
           {
             path: '/chinh-sach-phi',
-            redirect: '/chinh-sach-phi/nhom-doi-tuong',
-          },
-          {
-            path: '/chinh-sach-phi/nhom-doi-tuong',
-            component: './fee-policy/target',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
-            component: './fee-policy/target/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/lop',
-            component: './fee-policy/class',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/lop/tao-moi',
-            component: './fee-policy/class/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/hinh-thuc',
-            component: './fee-policy/format',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
-          },
-          {
-            path: '/chinh-sach-phi/hinh-thuc/tao-moi',
-            component: './fee-policy/format/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CHINHSACHPHI],
+            redirect: '/chinh-sach-phi/nam-hoc',
           },
           {
             path: '/chinh-sach-phi/phi',

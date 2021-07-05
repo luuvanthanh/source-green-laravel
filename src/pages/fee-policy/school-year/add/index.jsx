@@ -14,7 +14,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import styles from '@/assets/styles/Common/common.scss';
 
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import ParametersFixedComponent from './parametersFixed';
 import ParametersChangeComponent from './parametersChange';
 
@@ -53,23 +53,6 @@ const Index = memo(() => {
     });
   };
 
-  const renderData = (length, values, rangeDate) => {
-    const datasTable = [];
-    for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate);
-      const endMonth = moment(rangeDate[0]).add(i, 'month');
-      datasTable.push({
-        id: i,
-        paymentFormId: values?.fee,
-        fee: values?.changeParameter[0]?.paymentForm?.name || [...fees].find(item => item.id === values?.fee)?.code,
-        duaDate: values?.expirationDate,
-        startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
-        expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
-      });
-    }
-    return datasTable;
-  };
-
   useEffect(async () => {
     getPaymentForm();
     if (params?.id) {
@@ -80,6 +63,7 @@ const Index = memo(() => {
           id: params?.id
         },
         callback: (res) => {
+
           if (res) {
             const fixedParameter = !_.isEmpty(res?.fixedParameter)
               ? res?.fixedParameter.map(item => ({...item, duaDate: moment(item.duaDate)}))
@@ -92,14 +76,17 @@ const Index = memo(() => {
               rangeDate: [
                 moment(res.startDate),
                 moment(res.endDate),
-              ]
+              ],
+              paymentFormId: res?.changeParameter?.paymentFormId,
+              duaDate: res?.changeParameter?.duaDate,
             };
+            const newChangeParameter = !_.isEmpty(res?.changeParameter?.changeParameterDetail) ? res?.changeParameter?.changeParameterDetail?.map(item => ({
+              ...item,
+              rangeDate: [moment(item.startDate), moment(item.endDate)],
+              fee: res?.changeParameter?.paymentForm?.name || ''
+            })) : [];
+            setParamChanges(newChangeParameter);
             formRef?.current?.setFieldsValue({...values });
-            const result = moment(res.endDate).diff(moment(res.startDate), 'month') + 1;
-            if (result) {
-              const data = renderData(result, values, [moment(res.startDate), moment(res.endDate)]);
-              setParamChanges(data);
-            }
           }
         },
       });
@@ -115,22 +102,70 @@ const Index = memo(() => {
     }
   };
 
+  const checkProperties = (object) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in object) {
+      if (object[key] === "" || object[key] === null)
+        return true;
+    }
+    return false;
+  };
+
+  const checkValidate = (data, name) => {
+    const pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
+    setErrorTable((prev) => ({
+      ...prev,
+      [name]: !!pass,
+    }));
+    return !!pass;
+  };
+
   const onFinish = (values) => {
     setErrorTable((prev) => ({
       ...prev,
       fixedParameter: !values?.fixedParameter,
     }));
-    checkIsEmpty(paramChanges, true, 'changeParameter');
-    if (_.isEmpty(paramChanges) || !(values?.fixedParameter)) {
+
+    const errorParamChanges = checkValidate(paramChanges, 'changeParameter');;
+    if (!!(errorParamChanges) || !(values?.fixedParameter)) {
       return;
     }
+
     const data = {
       ...values,
       rangeDate: undefined,
       startDate: values.rangeDate[0],
       endDate: values.rangeDate[1],
-      changeParameter: paramChanges[0]
+      changeParameter: {
+        paymentFormId: values.paymentFormId,
+        duaDate: values.duaDate,
+        detail: paramChanges.map(item => ({
+          ...item,
+          startDate: item.rangeDate[0],
+          endDate: item?.rangeDate[1],
+          rangeDate: undefined,
+          id: undefined,
+          fee: undefined,
+          date: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(item.date, 'MM/YYYY'),
+            }),
+            format: variables.DATE_FORMAT.DATE_TIME_UTC,
+            isUTC: false,
+          }),
+          duaDate: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(item.duaDate, 'DD/MM/YYYY'),
+            }),
+            format: variables.DATE_FORMAT.DATE_TIME_UTC,
+            isUTC: false,
+          }),
+        }))
+      }
     };
+
     dispatch({
       type: params?.id ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
       payload: {
@@ -146,7 +181,7 @@ const Index = memo(() => {
   };
 
   const onFinishFailed = ({ errorFields }) => {
-    checkIsEmpty(paramChanges, true, 'changeParameter');
+    checkValidate(paramChanges, 'changeParameter');
     if (errorFields) {
       checkIsEmpty([], true, 'fixedParameter');
     }
@@ -196,19 +231,11 @@ const Index = memo(() => {
       name: 'Tham số thay đổi theo thời điểm',
       component: <ParametersChangeComponent
         formRef={formRef}
-        fees={[...fees].filter(item => item.type === 'TD')}
+        fees={fees}
         paramChanges={paramChanges}
-        setParamChanges={(values) => {
-          setParamChanges(values);
-          if (!_.isEmpty(values)) {
-            setErrorTable((prev) => ({
-              ...prev,
-              changeParameter: false,
-            }));
-          }
-        }}
+        setParamChanges={setParamChanges}
         error={errorTable.changeParameter}
-        setErrorTable={setErrorTable}
+        checkValidate={checkValidate}
       />
     }
   ];
@@ -302,7 +329,6 @@ const Index = memo(() => {
                         )}
                         key={id}
                       >
-
                         {component}
                       </TabPane>
                     ))}
