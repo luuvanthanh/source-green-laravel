@@ -12,13 +12,11 @@ class ShiftDetailsTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
-        \DB::table('ShiftDetails')->delete();
-        
-        \DB::table('ShiftDetails')->insert(array (
-            0 => 
-            array (
+        \DB::table('ShiftDetails')->truncate();
+
+        \DB::table('ShiftDetails')->insert(array(
+            0 => array(
                 'Id' => '536fc901-c425-4451-b046-69cd106dbd2d',
                 'StartTime' => '08:00:00',
                 'EndTime' => '11:00:00',
@@ -26,8 +24,7 @@ class ShiftDetailsTableSeeder extends Seeder
                 'CreationTime' => '2021-04-19 08:51:22',
                 'LastModificationTime' => '2021-04-19 08:51:22',
             ),
-            1 => 
-            array (
+            1 => array(
                 'Id' => 'f66f17e3-797a-408f-a386-8df1b1264e87',
                 'StartTime' => '13:00:00',
                 'EndTime' => '17:00:00',
@@ -36,7 +33,6 @@ class ShiftDetailsTableSeeder extends Seeder
                 'LastModificationTime' => '2021-04-19 08:51:40',
             ),
         ));
-        
-        
+
     }
 }

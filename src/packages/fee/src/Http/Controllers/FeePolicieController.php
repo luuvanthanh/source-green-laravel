@@ -4,6 +4,7 @@ namespace GGPHP\Fee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateFeePolicieRequest;
+use GGPHP\Fee\Http\Requests\MoneyFeePolicieRequest;
 use GGPHP\Fee\Http\Requests\UpdateFeePolicieRequest;
 use GGPHP\Fee\Repositories\Contracts\FeePolicieRepository;
 use Illuminate\Http\Request;
@@ -46,8 +47,12 @@ class FeePolicieController extends Controller
      */
     public function store(CreateFeePolicieRequest $request)
     {
-        $feePolicies = $this->feePolicieRepository->create($request->all());
-        return $this->success($feePolicies, trans('lang::messages.common.createSuccess'));
+        try {
+            $feePolicies = $this->feePolicieRepository->create($request->all());
+            return $this->success($feePolicies, trans('lang::messages.common.createSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -73,9 +78,13 @@ class FeePolicieController extends Controller
      */
     public function update(UpdateFeePolicieRequest $request, $id)
     {
-        $credentials = $request->all();
-        $feePolicie = $this->feePolicieRepository->update($credentials, $id);
-        return $this->success($feePolicie, trans('lang::messages.common.modifySuccess'));
+        try {
+            $credentials = $request->all();
+            $feePolicie = $this->feePolicieRepository->update($credentials, $id);
+            return $this->success($feePolicie, trans('lang::messages.common.modifySuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -87,6 +96,15 @@ class FeePolicieController extends Controller
     public function destroy($id)
     {
         $this->feePolicieRepository->delete($id);
+
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+    }
+
+    public function moneyFeePolicies(MoneyFeePolicieRequest $request)
+    {
+
+        $feePolicies = $this->feePolicieRepository->moneyFeePolicies($request->all());
+
+        return $this->success($feePolicies, trans('lang::messages.common.getListSuccess'));
     }
 }

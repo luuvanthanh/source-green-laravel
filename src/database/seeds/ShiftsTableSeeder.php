@@ -12,13 +12,11 @@ class ShiftsTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
-        \DB::table('Shifts')->delete();
-        
-        \DB::table('Shifts')->insert(array (
-            0 => 
-            array (
+        \DB::table('Shifts')->truncate();
+
+        \DB::table('Shifts')->insert(array(
+            0 => array(
                 'Id' => '9d31a263-98b0-463d-b931-8fd8a5d2e695',
                 'ShiftCode' => 'C-A1',
                 'Description' => 'ca sáng',
@@ -26,8 +24,7 @@ class ShiftsTableSeeder extends Seeder
                 'CreationTime' => '2021-04-19 08:51:22',
                 'LastModificationTime' => '2021-04-19 08:51:22',
             ),
-            1 => 
-            array (
+            1 => array(
                 'Id' => 'e32735b6-a383-40dd-93df-843b0fe49d09',
                 'ShiftCode' => 'C-A2',
                 'Description' => 'ca chiều',
@@ -36,7 +33,6 @@ class ShiftsTableSeeder extends Seeder
                 'LastModificationTime' => '2021-04-19 08:51:40',
             ),
         ));
-        
-        
+
     }
 }

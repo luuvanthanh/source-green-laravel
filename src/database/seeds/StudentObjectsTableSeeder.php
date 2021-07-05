@@ -13,7 +13,7 @@ class StudentObjectsTableSeeder extends Seeder
     public function run()
     {
 
-        \DB::table('fee.StudentObjects')->delete();
+        \DB::table('fee.StudentObjects')->truncate();
 
         \DB::table('fee.StudentObjects')->insert(array(
             0 => array(

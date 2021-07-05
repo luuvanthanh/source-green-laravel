@@ -15,6 +15,13 @@ class OtherDeclarationDetailTransformer extends BaseTransformer
 {
     protected $availableIncludes = ['employee'];
 
+    public function customAttributes($model): array
+    {
+        return [
+            "Detail" => json_decode($model->Detail),
+        ];
+    }
+
     /**
      * Include User
      * @param  OtherDeclarationDetail $otherDeclarationDetail

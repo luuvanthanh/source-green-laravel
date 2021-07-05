@@ -211,6 +211,7 @@ return [
         GGPHP\OtherDeclaration\Providers\OtherDeclarationServiceProvider::class,
         GGPHP\Children\Providers\ChildrenServiceProvider::class,
         GGPHP\Fee\Providers\FeeServiceProvider::class,
+        GGPHP\Salary\Providers\SalaryServiceProvider::class,
         GGPHP\Attendance\Providers\AttendanceServiceProvider::class,
         GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
         GGPHP\MagneticCard\Providers\MagneticCardServiceProvider::class,

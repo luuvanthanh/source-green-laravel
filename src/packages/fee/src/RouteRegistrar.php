@@ -3,6 +3,7 @@
 namespace GGPHP\Fee;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
+use Illuminate\Support\Facades\Route;
 
 class RouteRegistrar extends CoreRegistrar
 {
@@ -30,17 +31,25 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             //class-types
-            \Route::resource('class-types', 'ClassTypeController');
+            Route::resource('class-types', 'ClassTypeController');
             //fees
-            \Route::resource('fees', 'FeeController');
+            Route::resource('fees', 'FeeController');
             //payment-forms
-            \Route::resource('payment-forms', 'PaymentFormController');
+            Route::resource('payment-forms', 'PaymentFormController');
             //student-objects
-            \Route::resource('student-objects', 'StudentObjectController');
+            Route::resource('student-objects', 'StudentObjectController');
             //school-years
-            \Route::resource('school-years', 'SchoolYearController');
+            Route::resource('school-years', 'SchoolYearController');
             //fee-policie
-            \Route::resource('fee-policies', 'FeePolicieController');
+            Route::resource('fee-policies', 'FeePolicieController');
+            //charge-students
+            Route::resource('charge-students', 'ChargeStudentController');
+            //tuitions
+            Route::resource('tuitions', 'TuitionController');
+            //potential-students
+            Route::resource('potential-students', 'PotentialStudentController');
+
+            Route::get('money-fee-policies', 'FeePolicieController@moneyFeePolicies');
 
         });
     }

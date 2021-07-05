@@ -30,4 +30,12 @@ class ChangeParameter extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Fee\Models\PaymentForm::class, 'PaymentFormId');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function changeParameterDetail()
+    {
+        return $this->hasMany(ChangeParameterDetail::class, 'ChangeParameterId');
+    }
 }

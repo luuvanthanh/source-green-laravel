@@ -13,7 +13,7 @@ class ClassTypesTableSeeder extends Seeder
     public function run()
     {
 
-        \DB::table('fee.ClassTypes')->delete();
+        \DB::table('fee.ClassTypes')->truncate();
 
         \DB::table('fee.ClassTypes')->insert(array(
             0 => array(

@@ -12,13 +12,11 @@ class TypeOfContractsTableSeeder extends Seeder
      */
     public function run()
     {
-        
 
-        \DB::table('TypeOfContracts')->delete();
-        
-        \DB::table('TypeOfContracts')->insert(array (
-            0 => 
-            array (
+        \DB::table('TypeOfContracts')->truncate();
+
+        \DB::table('TypeOfContracts')->insert(array(
+            0 => array(
                 'Id' => '40e36b39-cbbc-48fd-9123-3db6365dc6b2',
                 'Code' => 'TV',
                 'Type' => 'THU_VIEC',
@@ -28,8 +26,7 @@ class TypeOfContractsTableSeeder extends Seeder
                 'CreationTime' => '2021-04-19 08:55:04',
                 'LastModificationTime' => '2021-04-19 08:55:04',
             ),
-            1 => 
-            array (
+            1 => array(
                 'Id' => '5c864427-ec29-4562-aed6-048d68ac28da',
                 'Code' => 'CT',
                 'Type' => 'CHINH_THUC',
@@ -40,7 +37,6 @@ class TypeOfContractsTableSeeder extends Seeder
                 'LastModificationTime' => '2021-04-19 08:55:28',
             ),
         ));
-        
-        
+
     }
 }

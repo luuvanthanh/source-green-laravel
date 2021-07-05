@@ -70,47 +70,6 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
 
     public function create(array $attributes)
     {
-        // $formular = null;
-        // foreach ($attributes['recipe'] as $value) {
-
-        //     if ($value['isDual']) {
-        //         foreach ($value['formular'] as $item) {
-        //             $operator = null;
-        //             if ($item['type'] == 'variable') {
-        //                 $a = ParamaterValue::where('Code', $item['variable'])->first()->ValueDefault;
-        //             } else {
-        //                 $a = $item['value'];
-        //             }
-
-        //             if (!is_null($item['operator'])) {
-        //                 $operator = $item['operator'];
-        //                 $formular .= $operator . $a;
-        //             } else {
-
-        //                 $formular .= $a;
-        //             }
-
-        //         }
-        //     } else {
-        //         $operator = null;
-        //         if ($value['type'] == 'variable') {
-        //             $a = ParamaterValue::where('Code', $value['variable'])->first()->ValueDefault;
-        //         } else {
-        //             $a = $value['value'];
-        //         }
-
-        //         if (!is_null($value['operator'])) {
-        //             $operator = $value['operator'];
-        //             $formular .= $operator . $a;
-        //         } else {
-        //             $formular .= $a;
-        //         }
-
-        //     }
-        // }
-
-        // $b = eval('return ' . $formular . ';');
-
         $attributes['recipe'] = json_encode($attributes['recipe']);
         $paramaterFormula = ParamaterFormula::create($attributes);
 
@@ -126,5 +85,39 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
         $paramaterFormula->update($attributes);
 
         return parent::find($id);
+    }
+
+    public function getFormular($attributes)
+    {
+        $formular = null;
+        foreach ($attributes as $item) {
+            switch ($item['type']) {
+                case 'variable':
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . $item['variable'];
+                    } else {
+                        $formular .= $item['variable'];
+                    }
+                    break;
+                case 'value':
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . $item['value'];
+                    } else {
+                        $formular .= $item['value'];
+                    }
+                    break;
+                case 'formular':
+                    $value = $this->getFormular($item['formular']);
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . "(" . $value . ")";
+                    } else {
+                        $formular .= "(" . $value . ")";
+                    }
+                    break;
+            }
+        }
+
+        // $b = eval('return ' . $formular . ';');
+        return $formular;
     }
 }
