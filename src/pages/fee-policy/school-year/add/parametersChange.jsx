@@ -10,24 +10,29 @@ import Table from '@/components/CommonComponent/Table';
 
 import { variables, Helper } from '@/utils';
 
-const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => {
+import variablesModules from '../variables';
+
+const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, checkValidate }) => {
   const { getFieldsValue } = formRef?.current;
-  const { rangeDate} = getFieldsValue();
+  const { rangeDate } = getFieldsValue();
 
   const [disableApply, setDiableApply] = useState(true);
 
   const renderData = (length, values) => {
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.expirationDate);
+      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.duaDate);
       const endMonth = moment(rangeDate[0]).add(i, 'month');
       datasTable.push({
         id: i,
-        paymentFormId: values?.fee,
-        fee: [...fees].find(item => item.id === values?.fee)?.code,
-        duaDate: values?.expirationDate,
-        startDate: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
-        expirationDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
+        fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
+        date: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
+        duaDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
+        rangeDate: null,
+        paymentFormId: null,
+        schoolDay: '',
+        fullMonth: null,
+        actualWeek: '',
       });
     }
     return datasTable;
@@ -44,11 +49,24 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
 
   useEffect(() => {
     const { getFieldsValue } = formRef?.current;
-    const { fee, expirationDate } = getFieldsValue();
-    if (fee && expirationDate) {
+    const { paymentFormId, duaDate } = getFieldsValue();
+    if (paymentFormId && duaDate) {
       setDiableApply(false);
     }
   }, []);
+
+  const onChange = (value, record, name) => {
+    const index = _.findIndex(paramChanges, (item) => item.id === record?.id);
+    const newParamChanges = [...paramChanges];
+    newParamChanges[index] = {
+      ...record,
+      [name]: value
+    };
+    if (error) {
+      checkValidate(newParamChanges, 'changeParameter');
+    }
+    setParamChanges(newParamChanges);
+  };
 
   /**
    * Function header table
@@ -58,20 +76,116 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
       {
         title: 'Hình thức',
         key: 'form',
-        className: 'min-width-200',
+        className: 'min-width-150',
         render: (record) => record?.fee || record?.paymentForm?.name || ''
       },
       {
         title: 'Ngày học theo lịch',
         key: 'date',
-        className: 'min-width-200',
-        render: (record) => record?.startDate || Helper.getDate(moment(record?.lastModificationTime).add(1, 'month'), 'MM/YYYY') || '',
+        className: 'min-width-150',
+        render: (record) => record?.date || Helper.getDate(moment(record?.lastModificationTime).add(1, 'month'), 'MM/YYYY') || '',
       },
       {
         title: 'Ngày đến hạn thanh toán',
         key: 'expired',
-        className: 'min-width-300',
-        render: (record) => record?.expirationDate || Helper.getDate(record?.lastModificationTime, 'DD/MM/YYYY') || '',
+        className: 'min-width-200',
+        render: (record) => record?.duaDate || Helper.getDate(record?.lastModificationTime, 'DD/MM/YYYY') || '',
+      },
+      {
+        title: 'Số tuần thực tế',
+        key: 'actualWeek',
+        className: 'min-width-150',
+        render: (record) => (
+          <>
+            <FormItem
+              className="mb0"
+              value={record?.actualWeek}
+              type={variables.INPUT_COUNT}
+              rules={[variables.RULES.EMPTY]}
+              onChange={(event) => onChange(event, record, 'actualWeek')}
+            />
+            {error && !(record?.actualWeek) && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
+        )
+      },
+      {
+        title: 'Từ ngày đến ngày',
+        key: 'rangeDate',
+        className: 'min-width-250',
+        render: (record) => (
+          <>
+            <FormItem
+              className="mb0"
+              value={record?.rangeDate}
+              onChange={(event) => onChange(event, record, 'rangeDate')}
+              type={variables.RANGE_PICKER}
+            />
+            {error && _.isEmpty(record?.rangeDate) && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
+        )
+      },
+      {
+        title: 'Học kỳ',
+        key: 'paymentFormId',
+        className: 'min-width-200',
+        render: (record) => (
+          <>
+            <FormItem
+              className="mb0"
+              data={[...fees].filter(item => item.isSemester)}
+              value={record?.paymentFormId}
+              rules={[variables.RULES.EMPTY]}
+              type={variables.SELECT}
+              onChange={(event) => onChange(event, record, 'paymentFormId')}
+            />
+            {error && !(record?.paymentFormId) && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
+        )
+      },
+      {
+        title: 'Số ngày học trong tháng',
+        key: 'schoolDay',
+        className: 'min-width-150',
+        render: (record) => (
+          <>
+            <FormItem
+              className="mb0"
+              value={record?.schoolDay}
+              type={variables.INPUT_COUNT}
+              rules={[variables.RULES.EMPTY]}
+              onChange={(event) => onChange(event, record, 'schoolDay')}
+            />
+            {error && !(record?.schoolDay) && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
+        )
+      },
+      {
+        title: 'Tròn tháng',
+        key: 'fullMonth',
+        className: 'min-width-150',
+        render: (record) => (
+          <>
+            <FormItem
+              className="mb0"
+              data={variablesModules.MONTH}
+              value={record?.fullMonth}
+              rules={[variables.RULES.EMPTY]}
+              type={variables.SELECT}
+              onChange={(event) => onChange(event, record, 'fullMonth')}
+            />
+            {error && !(record?.fullMonth) && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
+        )
       },
     ];
     return columns;
@@ -80,7 +194,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
   const changeForm = () => {
     setParamChanges([]);
     const values = getFieldsValue();
-    if (values?.fee && values?.expirationDate) {
+    if (values?.fee && values?.duaDate) {
       setDiableApply(false);
     } else {
       setDiableApply(true);
@@ -96,9 +210,9 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
         </div>
         <div className="col-lg-3">
           <FormItem
-            data={fees}
+            data={[...fees].filter(item => item.type === 'TD')}
             label="Hình thức"
-            name='fee'
+            name='paymentFormId'
             type={variables.SELECT}
             onChange={changeForm}
           />
@@ -106,7 +220,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
         <div className="col-lg-3">
           <FormItem
               label="Ngày đến hạn mỗi THÁNG"
-              name="expirationDate"
+              name="duaDate"
               type={variables.INPUT_COUNT}
               onChange={changeForm}
               rules={[
@@ -136,6 +250,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error }) => 
         </div>
       </div>
       <Table
+        className="content-vertical-top"
         name="table"
         bordered
         columns={header()}
@@ -161,6 +276,7 @@ Index.propTypes = {
   paramChanges: PropTypes.arrayOf(PropTypes.any),
   setParamChanges: PropTypes.func,
   error: PropTypes.bool,
+  checkValidate: PropTypes.func
 };
 
 Index.defaultProps = {
@@ -169,6 +285,7 @@ Index.defaultProps = {
   paramChanges: [],
   setParamChanges: () => {},
   error: false,
+  checkValidate: () => {}
 };
 
 export default Index;
