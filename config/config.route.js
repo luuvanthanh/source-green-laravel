@@ -761,6 +761,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CAUHINH],
           },
+          {
+            path: '/cau-hinh/canh-bao/suc-khoe',
+            component: './configuration/note-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
         ],
       },
       // CONFIGURATION
