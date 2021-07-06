@@ -17,6 +17,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import { variables, Helper } from '@/utils';
 import ParametersFixedComponent from './parametersFixed';
 import ParametersChangeComponent from './parametersChange';
+import ScheduleComponent from './schedule';
 
 const { TabPane } = Tabs;
 
@@ -237,6 +238,14 @@ const Index = memo(() => {
         error={errorTable.changeParameter}
         checkValidate={checkValidate}
       />
+    },
+    {
+      id: 'schedule',
+      name: 'Lịch học',
+      component: <ScheduleComponent
+        formRef={formRef}
+        rangeDate={formRef?.current?.getFieldValue('rangeDate')}
+      />
     }
   ];
 
@@ -322,7 +331,7 @@ const Index = memo(() => {
                   </Heading>
 
                   <Tabs onChange={changeTab} activeKey={tab} className={classnames(styles['tab-px20'], styles['tab-uppercase'])}>
-                    {tabs().map(({ id, name, component }) => (
+                    {(params?.id ? tabs() : _.initial(tabs()) ).map(({ id, name, component }) => (
                       <TabPane
                         tab={(
                           <span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>

@@ -12,3 +12,10 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
+
+export function update(data = {}) {
+  return request(`/v1/fees/${data?.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
