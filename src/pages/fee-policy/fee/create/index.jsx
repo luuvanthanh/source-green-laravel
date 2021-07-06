@@ -44,7 +44,7 @@ const Index = memo(() => {
 
   const onFinish = (values) => {
     dispatch({
-      type: 'feesAdd/ADD',
+      type: params?.id ? 'feesAdd/UPDATE' : 'feesAdd/ADD',
       payload: {
         ...values,
       },

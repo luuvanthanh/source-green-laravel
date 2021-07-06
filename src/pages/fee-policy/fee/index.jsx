@@ -213,10 +213,10 @@ class Index extends PureComponent {
     const loading = effects['fees/GET_DATA'];
     return (
       <>
-        <Helmet title="Năm học" />
+        <Helmet title="Phí" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Năm học</Text>
+            <Text color="dark">Phí</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
