@@ -87,6 +87,7 @@ export const variables = {
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
     MONTH_FULL: '[Tháng] MM/YYYY',
     MONTH_NAME: '[Tháng] MM',
+    MONTH_YEAR: 'MM/YYYY',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',

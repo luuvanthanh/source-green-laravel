@@ -21,13 +21,13 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   const renderData = (length, values) => {
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(rangeDate[0]).add(i, 'month').set('date', values?.duaDate);
+      const startMonth = moment(rangeDate[0]).add(i - 1, 'month').set('date', values?.duaDate);
       const endMonth = moment(rangeDate[0]).add(i, 'month');
       datasTable.push({
         id: i,
         fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
-        date: moment(rangeDate[0]).add(i + 1, 'month').format('MM/YYYY'),
-        duaDate: startMonth.format('MM') <= endMonth.format('MM') ? startMonth.format('DD/MM/YYYY'): endMonth.endOf('month').format('DD/MM/YYYY'),
+        date: moment(rangeDate[0]).add(i, 'month').set('date', 1).format(variables.DATE_FORMAT.DATE_AFTER),
+        duaDate: startMonth.format('MM') < endMonth.format('MM') ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER) : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
         rangeDate: null,
         paymentFormId: null,
         schoolDay: '',
@@ -83,13 +83,13 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
         title: 'Ngày học theo lịch',
         key: 'date',
         className: 'min-width-150',
-        render: (record) => record?.date || Helper.getDate(moment(record?.lastModificationTime).add(1, 'month'), 'MM/YYYY') || '',
+        render: (record) =>  Helper.getDate(moment(record?.date, variables.DATE_FORMAT.DATE_AFTER), variables.DATE_FORMAT.MONTH_YEAR) || '',
       },
       {
         title: 'Ngày đến hạn thanh toán',
         key: 'expired',
         className: 'min-width-200',
-        render: (record) => record?.duaDate || Helper.getDate(record?.lastModificationTime, 'DD/MM/YYYY') || '',
+        render: (record) => Helper.getDate(moment(record?.duaDate, variables.DATE_FORMAT.DATE_AFTER), variables.DATE_FORMAT.DATE_VI) || '',
       },
       {
         title: 'Số tuần thực tế',
