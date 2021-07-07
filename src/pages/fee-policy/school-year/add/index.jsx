@@ -43,6 +43,10 @@ const Index = memo(() => {
     fixedParameter: false,
     changeParameter: false,
   });
+  const [details, setDetails] = useState({
+    duaDate: undefined,
+    paymentFormId: undefined
+  });
 
   const getPaymentForm = () => {
     dispatch({
@@ -87,6 +91,11 @@ const Index = memo(() => {
               fee: res?.changeParameter?.paymentForm?.name || ''
             })) : [];
             setParamChanges(newChangeParameter);
+            setDetails((prev) => ({
+              ...prev,
+              paymentFormId: res?.changeParameter?.paymentFormId,
+              duaDate: res?.changeParameter?.duaDate,
+            }));
             formRef?.current?.setFieldsValue({...values });
           }
         },
@@ -137,20 +146,26 @@ const Index = memo(() => {
       rangeDate: undefined,
       startDate: values.rangeDate[0],
       endDate: values.rangeDate[1],
+      fixedParameter: values?.fixedParameter.map(item => ({
+        paymentFormId: item.paymentFormId,
+        duaDate: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: moment(item.duaDate, variables.DATE_FORMAT.DATE_AFTER),
+          }),
+          format: variables.DATE_FORMAT.DATE_TIME_UTC,
+          isUTC: false,
+        }),
+      })),
       changeParameter: {
-        paymentFormId: values.paymentFormId,
-        duaDate: values.duaDate,
+        paymentFormId: values.paymentFormId || details?.paymentFormId,
+        duaDate: values.duaDate || details?.duaDate,
         detail: paramChanges.map(item => ({
-          ...item,
-          startDate: item.rangeDate[0],
-          endDate: item?.rangeDate[1],
-          rangeDate: undefined,
-          id: undefined,
-          fee: undefined,
+          actualWeek: item.actualWeek,
           date: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: moment(item.date, 'MM/YYYY'),
+              originValue: moment(item.date, variables.DATE_FORMAT.DATE_AFTER),
             }),
             format: variables.DATE_FORMAT.DATE_TIME_UTC,
             isUTC: false,
@@ -158,11 +173,30 @@ const Index = memo(() => {
           duaDate: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: moment(item.duaDate, 'DD/MM/YYYY'),
+              originValue: moment(item.duaDate, variables.DATE_FORMAT.DATE_AFTER),
             }),
             format: variables.DATE_FORMAT.DATE_TIME_UTC,
             isUTC: false,
           }),
+          startDate: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(item.rangeDate[0], variables.DATE_FORMAT.DATE_AFTER),
+            }),
+            format: variables.DATE_FORMAT.DATE_TIME_UTC,
+            isUTC: false,
+          }),
+          endDate: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(item.rangeDate[1], variables.DATE_FORMAT.DATE_AFTER),
+            }),
+            format: variables.DATE_FORMAT.DATE_TIME_UTC,
+            isUTC: false,
+          }),
+          fullMonth: item.fullMonth,
+          paymentFormId: item.paymentFormId,
+          schoolDay: item.schoolDay
         }))
       }
     };
