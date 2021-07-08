@@ -35,6 +35,8 @@ const mapStateToProps = ({ attendances, loading, user }) => ({
   user: user.user,
   data: attendances.data,
   pagination: attendances.pagination,
+  classes: attendances.classes,
+  branches: attendances.branches,
   attendancesReasons: attendances.attendancesReasons,
 });
 @connect(mapStateToProps)
@@ -50,7 +52,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        fullName: query?.fullName,
+        nameStudent: query?.nameStudent,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query?.date
@@ -87,6 +89,22 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'attendances/GET_DETAILS',
+        payload: {
+          ...params,
+        },
+      });
+    }
+    dispatch({
+      type: 'attendances/GET_BRANCHES',
+      payload: {},
+    });
     this.props.dispatch({
       type: 'attendances/GET_ATTENDANCES_REASONS',
       payload: {},
@@ -119,6 +137,21 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'attendances/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
    * Function debounce search
    * @param {string} value value of object search
    * @param {string} type key of object search
@@ -129,6 +162,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -357,6 +392,8 @@ class Index extends PureComponent {
       match: { params },
       attendancesReasons,
       loading: { effects },
+      branches,
+      classes,
     } = this.props;
     const { search, visible, object } = this.state;
     const loading = effects['attendances/GET_DATA'];
@@ -420,15 +457,31 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
+                    name="nameStudent"
+                    onChange={(event) => this.onChange(event, 'nameStudent')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
+                  <FormItem
+                    data={branches}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={classes}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
                   <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDate(event, 'date')}
@@ -466,6 +519,8 @@ Index.propTypes = {
   pagination: PropTypes.objectOf(PropTypes.any),
   attendancesReasons: PropTypes.arrayOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -477,6 +532,8 @@ Index.defaultProps = {
   location: {},
   pagination: {},
   attendancesReasons: [],
+  branches: [],
+  classes: [],
 };
 
 export default Index;

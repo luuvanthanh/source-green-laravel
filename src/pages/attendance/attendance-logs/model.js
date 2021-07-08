@@ -69,6 +69,20 @@ export default {
         });
       }
     },
+    *GET_STUDENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getStudents, payload);
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

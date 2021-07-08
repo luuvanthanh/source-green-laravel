@@ -32,6 +32,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ timekeepingInvalid, loading }) => ({
   data: timekeepingInvalid.data,
   pagination: timekeepingInvalid.pagination,
+  employees: timekeepingInvalid.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -46,6 +47,7 @@ class Index extends PureComponent {
     this.state = {
       search: {
         fullName: query?.fullName,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -57,6 +59,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -75,6 +78,14 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'timekeepingInvalid/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -115,6 +126,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -287,6 +300,7 @@ class Index extends PureComponent {
     const {
       data,
       pagination,
+      employees,
       match: { params },
       loading: { effects },
     } = this.props;
@@ -339,6 +353,15 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -370,6 +393,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -379,6 +403,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
 };
 
 export default Index;

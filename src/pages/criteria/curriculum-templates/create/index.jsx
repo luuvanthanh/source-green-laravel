@@ -30,10 +30,9 @@ const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const [tab, setTab] = useState(null);
-  const [categoryTabs, setCategoryTabs] = useState(variablesModules.CATEGORY_TABS);
   const [programType, setProgramType] = useState(variablesModules.STUDENT);
   const [toolGroups, setToolGroups] = useState([]);
-  const [curriculums, setCurriculums] = useState(false);
+  const [isEnable, setIsEnable] = useState(false);
 
   const [
     { menuLeftCriteria },
@@ -55,8 +54,8 @@ const Index = memo(() => {
     mountedSet(setProgramType, event.target.value);
   };
 
-  const onChangeCurriculums = (value) => {
-    mountedSet(setCurriculums, value);
+  const onChangeIsEnable = (value) => {
+    mountedSet(setIsEnable, value);
   };
 
   const onChangeToolGroups = (isChoosed, record) => {
@@ -190,6 +189,7 @@ const Index = memo(() => {
         callback: (response) => {
           if (response) {
             mountedSet(setProgramType, response.programType);
+            mountedSet(setIsEnable, response.isEnable);
             formRef.current.setFieldsValue({
               ...response,
               fromDate: moment(response.fromDate),
@@ -217,9 +217,21 @@ const Index = memo(() => {
       return;
     }
 
-    const items = reorder(categoryTabs, result.source.index, result.destination.index);
+    const items = reorder(toolGroups, result.source.index, result.destination.index);
 
-    setCategoryTabs(items);
+    setToolGroups(items);
+  };
+
+  const onDragEndContent = (result, record) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(record.toolDetails, result.source.index, result.destination.index);
+
+    setToolGroups(
+      toolGroups.map((item) => (item.id === record.id ? { ...item, toolDetails: items } : item)),
+    );
   };
 
   const enableToolDetails = (items) => {
@@ -228,6 +240,11 @@ const Index = memo(() => {
       return toolGroup.toolDetails.map((item) => ({ ...item, parentId: toolGroup.id }));
     }
     return [];
+  };
+
+  const enableParentId = (items) => {
+    const toolGroup = items.find((item) => item.id === tab && item.isChoosed);
+    return toolGroup;
   };
 
   return (
@@ -369,7 +386,7 @@ const Index = memo(() => {
                 <Pane className="card mt-30">
                   <Pane type="form-title" className="heading-form border-bottom">
                     <Heading type="form-title">Góc giáo cụ</Heading>
-                    <Switch onChange={onChangeCurriculums} checked={curriculums} />
+                    <Switch onChange={onChangeIsEnable} checked={isEnable} />
                   </Pane>
                   <Pane className="px15">
                     <Pane className="row">
@@ -400,7 +417,7 @@ const Index = memo(() => {
                                                   <span className="title">{item.name}</span>
                                                 </Pane>
                                                 <Switch
-                                                  disabled={!curriculums}
+                                                  disabled={!isEnable}
                                                   className="mb0 btn-switch"
                                                   checked={item.isChoosed}
                                                   onChange={(value) =>
@@ -423,20 +440,43 @@ const Index = memo(() => {
                         </DragDropContext>
                       </Pane>
                       <Pane className="col-lg-8">
-                        {enableToolDetails(toolGroups)?.map((item, index) => (
-                          <Pane key={index} className="tab-space-between start py15 border-bottom">
-                            <Pane className="d-flex align-items-center">
-                              <span className="icon icon-drag" />
-                              <span className="text">{item.name}</span>
-                            </Pane>
-                            <Switch
-                              disabled={!curriculums}
-                              className="mb0 btn-switch"
-                              checked={item.isChoosed}
-                              onChange={(value) => onChangeToolDetails(value, item)}
-                            />
-                          </Pane>
-                        ))}
+                        <DragDropContext
+                          onDragEnd={(event) => onDragEndContent(event, enableParentId(toolGroups))}
+                        >
+                          <Droppable droppableId="droppable">
+                            {(provided) => (
+                              <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {enableToolDetails(toolGroups)?.map((item, index) => (
+                                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                                    {(provided) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Pane
+                                          key={index}
+                                          className="tab-space-between start py15 border-bottom"
+                                        >
+                                          <Pane className="d-flex align-items-center">
+                                            <span className="icon icon-drag" />
+                                            <span className="text">{item.name}</span>
+                                          </Pane>
+                                          <Switch
+                                            disabled={!isEnable}
+                                            className="mb0 btn-switch"
+                                            checked={item.isChoosed}
+                                            onChange={(value) => onChangeToolDetails(value, item)}
+                                          />
+                                        </Pane>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </Pane>
                     </Pane>
                   </Pane>

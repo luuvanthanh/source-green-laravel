@@ -11,6 +11,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -189,6 +190,9 @@ class Index extends PureComponent {
                       name="timeJoin"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) =>
+                        Helper.disabledDateFrom(current, this.formRef, 'timeStart')
+                      }
                     />
                   </div>
                   <div className="col-lg-6">
@@ -197,6 +201,9 @@ class Index extends PureComponent {
                       name="timeStart"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
+                      disabledDate={(current) =>
+                        Helper.disabledDateTo(current, this.formRef, 'timeJoin')
+                      }
                     />
                   </div>
                 </div>
@@ -230,6 +237,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  details: {},
+  error: {},
+  categories: {},
+  menuData: [],
+};
 
 export default Index;

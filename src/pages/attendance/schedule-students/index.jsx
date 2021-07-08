@@ -135,6 +135,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -155,6 +157,8 @@ class Index extends PureComponent {
             type: value,
             startDate: moment(prevState.search.startDate).startOf('month'),
             endDate: moment(prevState.search.endDate).endOf('month'),
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
           },
         }),
         () => {
@@ -171,6 +175,8 @@ class Index extends PureComponent {
           search: {
             ...prevState.search,
             type: value,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
           },
         }),
         () => this.onLoad(),
@@ -410,17 +416,19 @@ class Index extends PureComponent {
                 )}
               >
                 {get(data, 'shift.shiftCode')}
-                <div className={stylesChildren['fade-cell']}>
-                  <button
-                    type="button"
-                    className={stylesChildren['fade-cell-item']}
-                    onClick={() => {
-                      this.onRemove(data, user);
-                    }}
-                  >
-                    <CloseOutlined />
-                  </button>
-                </div>
+                {moment(dayOfWeek).diff(moment(), 'days', true) >= 0 && (
+                  <div className={stylesChildren['fade-cell']}>
+                    <button
+                      type="button"
+                      className={stylesChildren['fade-cell-item']}
+                      onClick={() => {
+                        this.onRemove(data, user);
+                      }}
+                    >
+                      <CloseOutlined />
+                    </button>
+                  </div>
+                )}
               </div>
             </Tooltip>
           );
@@ -433,12 +441,15 @@ class Index extends PureComponent {
           [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
         })}
       >
-        <Button
-          color="primary"
-          icon="plusMain"
-          type="dashed"
-          onClick={() => this.onShowModal(dayOfWeek, record, user)}
-        />
+        {moment(dayOfWeek).diff(moment(), 'days', true) >= 0 &&
+          moment(dayOfWeek).isoWeekday() < 6 && (
+            <Button
+              color="primary"
+              icon="plusMain"
+              type="dashed"
+              onClick={() => this.onShowModal(dayOfWeek, record, user)}
+            />
+          )}
       </div>
     );
   };
@@ -457,6 +468,7 @@ class Index extends PureComponent {
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
             fullName={record.fullName}
+            description={`${record?.classStudent?.class?.name} - ${record?.classStudent?.class?.branch?.name}`}
           />
         ),
       },

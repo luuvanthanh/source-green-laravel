@@ -151,11 +151,13 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function debounce search
@@ -174,7 +176,7 @@ class Index extends PureComponent {
       }),
       () => this.onLoad(),
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function debounce search
@@ -237,26 +239,6 @@ class Index extends PureComponent {
         branch: e,
       },
     });
-  };
-
-  /**
-   * Function set pagination
-   * @param {integer} page page of pagination
-   * @param {integer} size size of pagination
-   */
-  changePagination = ({ page, limit }) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          page,
-          limit,
-        },
-      }),
-      () => {
-        this.onLoad();
-      },
-    );
   };
 
   convertData = (items) => {

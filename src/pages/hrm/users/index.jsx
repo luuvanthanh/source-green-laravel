@@ -33,6 +33,7 @@ const mapStateToProps = ({ HRMusers, loading }) => ({
   data: HRMusers.data,
   pagination: HRMusers.pagination,
   branches: HRMusers.branches,
+  employees: HRMusers.employees,
   divisions: HRMusers.divisions,
   positions: HRMusers.positions,
   loading,
@@ -52,6 +53,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         fullName: query?.fullName,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
       },
     };
     setIsMounted(true);
@@ -101,25 +103,22 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
-    const { search } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'HRMusers/GET_BRANCHES',
-      payload: {
-        ...search,
-      },
+      payload: {},
     });
     dispatch({
       type: 'HRMusers/GET_DIVISIONS',
-      payload: {
-        ...search,
-      },
+      payload: {},
     });
     dispatch({
       type: 'HRMusers/GET_POSITIONS',
-      payload: {
-        ...search,
-      },
+      payload: {},
+    });
+    dispatch({
+      type: 'HRMusers/GET_EMPLOYEES',
+      payload: {},
     });
   };
 
@@ -134,6 +133,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -287,6 +288,7 @@ class Index extends PureComponent {
     const {
       data,
       branches,
+      employees,
       positions,
       divisions,
       pagination,
@@ -315,6 +317,9 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                positionId: search.positionId || null,
+                divisionId: search.divisionId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -330,26 +335,38 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={positions}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...positions]}
                     name="positionId"
                     onChange={(event) => this.onChangeSelect(event, 'positionId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={divisions}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...divisions]}
                     name="divisionId"
                     onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả' }, ...branches]}
                     name="branchId"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -365,7 +382,7 @@ class Index extends PureComponent {
               }}
               bordered={false}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '70vh' }}
+              scroll={{ x: '100%', y: '55vh' }}
             />
           </div>
         </div>
@@ -384,6 +401,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   positions: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -396,6 +414,7 @@ Index.defaultProps = {
   branches: [],
   positions: [],
   divisions: [],
+  employees: [],
 };
 
 export default Index;

@@ -50,7 +50,9 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
         <Pane className="col">
           {!params.id && <Heading type="page-title">Tạo hồ sơ học sinh</Heading>}
           {params.id && (
-            <Heading type="page-title">Chi tiết hồ sơ học sinh ({details?.student?.fullName})</Heading>
+            <Heading type="page-title">
+              Chi tiết hồ sơ học sinh ({details?.student?.fullName})
+            </Heading>
           )}
         </Pane>
       </Pane>

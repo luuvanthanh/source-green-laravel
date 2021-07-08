@@ -277,13 +277,6 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'Lịch sử điểm danh',
-          key: 'attendanceLogs',
-          url: ['/diem-danh/lich-su-diem-danh'],
-          permission: [permissions.DD],
-          pro: true,
-        },
-        {
           title: 'Lý do điểm danh',
           key: 'attendances-reasons',
           url: [
@@ -339,6 +332,13 @@ export async function getLeftMenuSchedules() {
           ],
         },
       ],
+    },
+    {
+      title: 'Lịch sử điểm danh',
+      key: 'attendanceLogs',
+      url: ['/diem-danh/lich-su-diem-danh'],
+      permission: [permissions.DD],
+      pro: true,
     },
   ];
 }
@@ -396,8 +396,70 @@ export async function getLeftMenuConfiguration() {
           permission: [permissions.CAUHINH],
           pro: true,
         },
+        {
+          title: 'Nhóm đối tượng',
+          key: 'manager-object',
+          url: [
+            '/cau-hinh/nhom-doi-tuong',
+            '/cau-hinh/nhom-doi-tuong/tao-moi',
+            '/cau-hinh/nhom-doi-tuong/:id/chi-tiet',
+          ],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Loại lớp',
+          key: 'class-type',
+          url: [
+            '/cau-hinh/loai-lop',
+            '/cau-hinh/loai-lop/tao-moi',
+            '/cau-hinh/loai-lop/:id/chi-tiet',
+          ],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Hình thức đóng phí',
+          key: 'payment-method',
+          url: [
+            '/cau-hinh/hinh-thuc-dong-phi',
+            '/cau-hinh/hinh-thuc-dong-phi/tao-moi',
+            '/cau-hinh/hinh-thuc-dong-phi/:id/chi-tiet',
+          ],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
       ],
       pro: true,
+    },
+    {
+      title: 'Cảnh báo',
+      key: 'warning',
+      icon: 'icon icon-notification',
+      permission: [permissions.CAUHINH],
+      children: [
+        {
+          title: 'Sức khỏe',
+          key: 'warning-healthy',
+          url: ['/cau-hinh/canh-bao/suc-khoe'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Ghi chú',
+          key: 'warning-note',
+          url: ['/cau-hinh/canh-bao/ghi-chu'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Y tế',
+          key: 'warning-medical',
+          url: ['/cau-hinh/canh-bao/y-te'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+      ],
     },
     {
       title: 'Tablet giáo viên',
@@ -439,7 +501,7 @@ export async function getLeftMenuVehicel() {
         '/quan-ly-phuong-tien/xe/tao-moi',
         '/quan-ly-phuong-tien/xe/:id/chi-tiet',
       ],
-      icon: 'icon icon-checkmark',
+      icon: 'icon icon-school-bus',
       permission: [permissions.BUS],
       pro: true,
     },
@@ -453,7 +515,7 @@ export async function getLeftMenuVehicel() {
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/tao-moi',
         '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
       ],
-      icon: 'icon icon-notification',
+      icon: 'icon icon-location-placeholder',
       permission: [permissions.BUS],
       pro: true,
     },
@@ -461,7 +523,7 @@ export async function getLeftMenuVehicel() {
       title: 'Lịch sử điểm danh',
       key: 'history',
       url: ['/quan-ly-phuong-tien/lich-su'],
-      icon: 'icon icon-notification',
+      icon: 'icon icon-list',
       permission: [permissions.BUS],
       pro: true,
     },
@@ -469,18 +531,18 @@ export async function getLeftMenuVehicel() {
       title: 'Điểm danh hôm nay',
       key: 'today',
       url: ['/quan-ly-phuong-tien/hom-nay'],
-      icon: 'icon icon-notification',
+      icon: 'icon icon-clock',
       permission: [permissions.BUS],
       pro: true,
     },
-    {
-      title: 'Điểm danh hôm nay(Phụ Huynh)',
-      key: 'todayParent',
-      url: ['/quan-ly-phuong-tien/phu-huynh-hom-nay'],
-      icon: 'icon icon-notification',
-      permission: [permissions.BUS],
-      pro: true,
-    },
+    // {
+    //   title: 'Điểm danh hôm nay(Phụ Huynh)',
+    //   key: 'todayParent',
+    //   url: ['/quan-ly-phuong-tien/phu-huynh-hom-nay'],
+    //   icon: 'icon icon-notification',
+    //   permission: [permissions.BUS],
+    //   pro: true,
+    // },
   ];
 }
 export async function getLeftMenuCriteria() {
@@ -1009,9 +1071,7 @@ export async function getLeftMenuHRM() {
         {
           title: 'Lưu trữ',
           key: 'storages',
-          url: [
-            '/quan-ly-nhan-su/luu-tru',
-          ],
+          url: ['/quan-ly-nhan-su/luu-tru'],
           permission: [permissions.HRM],
         },
       ],
@@ -1175,6 +1235,23 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
           pro: true,
         },
+        {
+          title: 'Cấu hình',
+          key: 'categoriesParamater',
+          permission: [permissions.HRM],
+          children: [
+            {
+              title: 'Máy chấm công',
+              key: 'fingerprint-timekeepers',
+              url: [
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong',
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/tao-moi',
+                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
+          ],
+        },
       ],
     },
     {
@@ -1223,40 +1300,18 @@ export async function getLeftMenuHRM() {
 export async function getLeftMenuFeePolicy() {
   return [
     {
-      title: 'Danh mục nhóm đối tượng',
-      key: 'target',
+      title: 'Năm học',
+      key: 'school-year',
       url: [
-        '/chinh-sach-phi/nhom-doi-tuong',
-        '/chinh-sach-phi/nhom-doi-tuong/tao-moi',
-        '/chinh-sach-phi/nhom-doi-tuong/:id/chi-tiet',
+        '/chinh-sach-phi/nam-hoc',
+        '/chinh-sach-phi/nam-hoc/tao-moi',
+        '/chinh-sach-phi/nam-hoc/:id/chi-tiet',
       ],
-      icon: 'icon icon-list',
+      icon: 'icon icon-calendar',
       permission: [permissions.CHINHSACHPHI],
     },
     {
-      title: 'Danh mục loại lớp',
-      key: 'class',
-      url: [
-        '/chinh-sach-phi/lop',
-        '/chinh-sach-phi/lop/tao-moi',
-        '/chinh-sach-phi/lop/:id/chi-tiet',
-      ],
-      icon: 'icon icon-open-book',
-      permission: [permissions.CHINHSACHPHI],
-    },
-    {
-      title: 'Danh mục hình thức đóng phí',
-      key: 'format',
-      url: [
-        '/chinh-sach-phi/hinh-thuc',
-        '/chinh-sach-phi/hinh-thuc/tao-moi',
-        '/chinh-sach-phi/hinh-thuc/:id/chi-tiet',
-      ],
-      icon: 'icon icon-send-money',
-      permission: [permissions.CHINHSACHPHI],
-    },
-    {
-      title: 'Danh mục phí',
+      title: 'Phí',
       key: 'fee',
       url: [
         '/chinh-sach-phi/phi',
@@ -1267,14 +1322,36 @@ export async function getLeftMenuFeePolicy() {
       permission: [permissions.CHINHSACHPHI],
     },
     {
-      title: 'Chính sách đóng phí',
-      key: 'policy',
+      title: 'Tiền đóng',
+      key: 'pay-fees',
       url: [
-        '/chinh-sach-phi/chinh-sach',
-        '/chinh-sach-phi/chinh-sach/them-moi',
-        '/chinh-sach-phi/chinh-sach/:id/chi-tiet',
+        '/chinh-sach-phi/tien-dong',
+        '/chinh-sach-phi/tien-dong/tao-moi',
+        '/chinh-sach-phi/tien-dong/:id/chi-tiet',
       ],
       icon: 'icon icon-fee-policy',
+      permission: [permissions.CHINHSACHPHI],
+    },
+    {
+      title: 'Tính phí học sinh mới',
+      key: 'new-student',
+      url: [
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/tao-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calculate',
+      permission: [permissions.CHINHSACHPHI],
+    },
+    {
+      title: 'Tính phí học sinh cũ',
+      key: 'old-student',
+      url: [
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/tao-moi',
+        '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
+      ],
+      icon: 'icon icon-calculate',
       permission: [permissions.CHINHSACHPHI],
     },
   ];

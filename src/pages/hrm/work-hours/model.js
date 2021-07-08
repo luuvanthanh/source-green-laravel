@@ -1,5 +1,4 @@
-import { notification } from 'antd';
-import { get, isEmpty } from 'lodash';
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -7,6 +6,7 @@ export default {
   state: {
     data: [],
     pagination: {},
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -24,8 +24,26 @@ export default {
         },
       },
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
@@ -36,6 +54,18 @@ export default {
           });
         }
       } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
         yield saga.put({
           type: 'SET_ERROR',
           payload: error.data,

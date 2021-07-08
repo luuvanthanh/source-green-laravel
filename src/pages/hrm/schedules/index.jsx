@@ -56,6 +56,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        fullName: query?.fullName,
         type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -73,6 +74,16 @@ class Index extends PureComponent {
   componentDidMount() {
     this.onLoad();
     this.loadCategories();
+    this.loadCategoriesSchedules();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.search.startDate !== prevState.search.startDate &&
+      this.state.search.endDate !== prevState.search.endDate
+    ) {
+      this.loadCategoriesSchedules();
+    }
   }
 
   componentWillUnmount() {
@@ -101,20 +112,8 @@ class Index extends PureComponent {
     });
   };
 
-  /**
-   * Function load data
-   */
-  onLoad = () => {
+  loadCategoriesSchedules = () => {
     const { search } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
-      type: 'schedulesChildren/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
     this.props.dispatch({
       type: 'schedulesChildren/GET_HOLIDAYS',
       payload: {
@@ -123,6 +122,23 @@ class Index extends PureComponent {
     });
     this.props.dispatch({
       type: 'schedulesChildren/GET_BUSINESS_CARDS',
+      payload: {
+        ...search,
+      },
+    });
+  };
+
+  /**
+   * Function load data
+   */
+  onLoad = () => {
+    const { search } = this.state;
+    const {
+      dispatch,
+      location: { pathname },
+    } = this.props;
+    dispatch({
+      type: 'schedulesChildren/GET_DATA',
       payload: {
         ...search,
       },
@@ -148,11 +164,13 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function debounce search
@@ -189,7 +207,7 @@ class Index extends PureComponent {
         () => this.onLoad(),
       );
     }
-  }, 300);
+  }, 500);
 
   /**
    * Function change input
@@ -225,6 +243,32 @@ class Index extends PureComponent {
   onChangeDate = (e, type) => {
     this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
   };
+
+  onChangeMonth = (e) => {
+    this.debouncedSearchMonth(e);
+  };
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchMonth = debounce((value) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate: moment(value).startOf('month'),
+          endDate: moment(value).endOf('month'),
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => {
+        this.onLoad();
+      },
+    );
+  }, 500);
 
   /**
    * Function set pagination
@@ -426,7 +470,7 @@ class Index extends PureComponent {
               stylesChildren['cell-heading-holidays'],
             )}
           >
-            Nghỉ lễ
+            L
           </div>
         </Tooltip>
       );
@@ -838,6 +882,7 @@ class Index extends PureComponent {
                 type: search.type || 'DATE',
                 startDate: search.startDate && moment(search.startDate),
                 endDate: search.endDate && moment(search.endDate),
+                date: search.startDate && moment(search.startDate),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -860,24 +905,38 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
-                    allowClear={false}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
-                    allowClear={false}
-                  />
-                </div>
+                {search.type === 'DATE' && (
+                  <>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="startDate"
+                        onChange={(event) => this.onChangeDate(event, 'startDate')}
+                        type={variables.DATE_PICKER}
+                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                        allowClear={false}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="endDate"
+                        onChange={(event) => this.onChangeDate(event, 'endDate')}
+                        type={variables.DATE_PICKER}
+                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                        allowClear={false}
+                      />
+                    </div>
+                  </>
+                )}
+                {search.type === 'MONTH' && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      name="date"
+                      onChange={(event) => this.onChangeMonth(event, 'date')}
+                      type={variables.MONTH_PICKER}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
               </div>
             </Form>
             <Table

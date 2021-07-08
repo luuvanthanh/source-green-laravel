@@ -35,6 +35,7 @@ const mapStateToProps = ({ absents, loading }) => ({
   data: absents.data,
   absentTypes: absents.absentTypes,
   pagination: absents.pagination,
+  employees: absents.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,6 +51,7 @@ class Index extends PureComponent {
       search: {
         fullName: query?.fullName,
         absentTypeId: query?.absentTypeId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -88,6 +90,10 @@ class Index extends PureComponent {
       payload: {
         type: 'ABSENT',
       },
+    });
+    this.props.dispatch({
+      type: 'absents/GET_EMPLOYEES',
+      payload: {},
     });
   };
 
@@ -129,6 +135,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -315,6 +323,7 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -381,6 +390,15 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -411,6 +429,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   absentTypes: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -421,6 +440,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   absentTypes: [],
+  employees: [],
 };
 
 export default Index;

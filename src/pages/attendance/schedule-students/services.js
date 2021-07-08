@@ -30,6 +30,7 @@ export function get(data = {}) {
         'schedules.shift',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
+        'classStudent.class',
       ]),
     },
   });

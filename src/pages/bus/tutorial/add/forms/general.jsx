@@ -29,13 +29,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ tutorialAddV2, loading, menu, locationCurrent }) => ({
+const mapStateToProps = ({ tutorialAddV2, loading, menu }) => ({
   loading,
   error: tutorialAddV2.error,
-  details: tutorialAddV2.details,
-  locationCurrent,
   branches: tutorialAddV2.branches,
   menuData: menu.menuLeftSchedules,
+  details: tutorialAddV2.details,
 });
 
 @connect(mapStateToProps)
@@ -44,12 +43,8 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { locationCurrent } = props;
     this.state = {
-      position:
-        locationCurrent.lat && locationCurrent?.lng
-          ? [locationCurrent.lat, locationCurrent?.lng]
-          : [],
+      position: [],
       visibleMap: false,
       keyMap: null,
     };
@@ -57,6 +52,11 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.setStateData({
+        position: [position?.coords?.latitude, position?.coords?.longitude],
+      });
+    });
     this.loadCategories();
   }
 
@@ -194,6 +194,7 @@ class Index extends PureComponent {
       details,
       branches,
       loading: { effects },
+      match: { params },
     } = this.props;
     const { position, visibleMap } = this.state;
     const loading = effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_BRANCHES'];
@@ -202,20 +203,24 @@ class Index extends PureComponent {
       <Form
         layout="vertical"
         ref={this.formRef}
-        initialValues={{
-          ...details,
-          busRouteSchedules: details?.busRouteSchedules?.map((item) => item.dayOfWeek),
-          startDate: details?.startDate && moment(details?.startDate),
-          endDate: details?.startDate && moment(details?.endDate),
-          endedPlaceLatLng:
-            details?.endedPlaceLat && details?.endedPlaceLong
-              ? `${details?.endedPlaceLat},${details?.endedPlaceLong}`
-              : null,
-          startedPlaceLatLng:
-            details?.startedPlaceLat && details?.startedPlaceLong
-              ? `${details?.startedPlaceLat},${details?.startedPlaceLong}`
-              : null,
-        }}
+        initialValues={
+          params.id
+            ? {
+                ...details,
+                busRouteSchedules: details?.busRouteSchedules?.map((item) => item.dayOfWeek),
+                startDate: details?.startDate && moment(details?.startDate),
+                endDate: details?.startDate && moment(details?.endDate),
+                endedPlaceLatLng:
+                  details?.endedPlaceLat && details?.endedPlaceLong
+                    ? `${details?.endedPlaceLat},${details?.endedPlaceLong}`
+                    : null,
+                startedPlaceLatLng:
+                  details?.startedPlaceLat && details?.startedPlaceLong
+                    ? `${details?.startedPlaceLat},${details?.startedPlaceLong}`
+                    : null,
+              }
+            : {}
+        }
         onFinish={this.onFinish}
       >
         {visibleMap && (
@@ -360,7 +365,6 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
-  locationCurrent: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -370,7 +374,6 @@ Index.defaultProps = {
   error: {},
   details: {},
   branches: [],
-  locationCurrent: {},
 };
 
 export default withRouter(Index);

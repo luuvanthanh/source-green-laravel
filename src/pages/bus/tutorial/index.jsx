@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Switch } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -29,9 +29,10 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ tutorial, loading }) => ({
+  loading,
   data: tutorial.data,
   pagination: tutorial.pagination,
-  loading,
+  employees: tutorial.employees,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,6 +46,9 @@ class Index extends PureComponent {
     this.state = {
       search: {
         keyWord: query?.keyWord,
+        nannyId: query?.nannyId,
+        isActive: query?.isActive,
+        driverId: query?.driverId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -54,6 +58,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.onLoadCategories();
   }
 
   componentWillUnmount() {
@@ -74,11 +79,18 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  onLoadCategories = () => {
+    this.props.dispatch({
+      type: 'tutorial/GET_EMPLOYEES',
+      payload: {},
+    });
+  };
+
   /**
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -86,7 +98,6 @@ class Index extends PureComponent {
       type: 'tutorial/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
     history.push({
@@ -106,6 +117,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -119,6 +132,15 @@ class Index extends PureComponent {
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
   /**
@@ -159,6 +181,26 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onChangeSwitch = (record, checked) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'tutorial/UPDATE',
+      payload: {
+        ...record?.busRoute,
+        isActive: !!checked,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -194,6 +236,21 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record?.studentTotal}</Text>,
       },
       {
+        title: 'TRẠNG THÁI',
+        key: 'lock',
+        className: 'min-width-120',
+        width: 120,
+        align: 'center',
+        render: (record) => (
+          <div className={styles['table-switch']}>
+            <Switch
+              checked={record?.busRoute?.isActive}
+              onChange={(event) => this.onChangeSwitch(record, event)}
+            />
+          </div>
+        ),
+      },
+      {
         key: 'actions',
         className: 'min-width-80',
         width: 80,
@@ -220,6 +277,7 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
+      employees,
     } = this.props;
     const { search } = this.state;
     const loading = effects['tutorial/GET_DATA'];
@@ -242,12 +300,15 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                nannyId: search.nannyId || null,
+                driverId: search.driverId || null,
+                isActive: search.isActive || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-6">
+                <div className="col-lg-3">
                   <FormItem
                     label="TÌM KIẾM"
                     name="keyword"
@@ -258,19 +319,41 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[]}
-                    label="TÀI XẾ"
-                    name="type"
-                    onChange={(event) => this.onChange(event, 'type')}
+                    data={[
+                      { id: null, name: 'Chọn tất cả' },
+                      { id: 'ON', name: 'Hoạt động' },
+                      { id: 'OFF', name: 'Ngừng hoạt động' },
+                    ]}
+                    label="TRẠNG THÁI"
+                    name="isActive"
+                    allowClear={false}
+                    onChange={(event) => this.onChangeSelect(event, 'isActive')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[]}
+                    data={[
+                      { id: null, name: 'Chọn tất cả' },
+                      ...Helper.convertSelectUsers(employees),
+                    ]}
+                    label="TÀI XẾ"
+                    name="driverId"
+                    allowClear={false}
+                    onChange={(event) => this.onChangeSelect(event, 'driverId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[
+                      { id: null, name: 'Chọn tất cả' },
+                      ...Helper.convertSelectUsers(employees),
+                    ]}
                     label="BẢO MẪU"
-                    name="life"
-                    onChange={(event) => this.onChange(event, 'life')}
+                    name="nannyId"
+                    allowClear={false}
+                    onChange={(event) => this.onChangeSelect(event, 'nannyId')}
                     type={variables.SELECT}
                   />
                 </div>
@@ -303,6 +386,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -312,6 +396,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  employees: [],
 };
 
 export default Index;

@@ -27,6 +27,7 @@ export function get(data = {}) {
         }),
         isUTC: false,
       }),
+      employeeId: data.employeeId && data.employeeId.join(','),
       include: Helper.convertIncludes(['timekeeping', 'positionLevelNow']),
     },
   });

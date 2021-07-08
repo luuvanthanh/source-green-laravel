@@ -263,7 +263,7 @@ const General = memo(() => {
                   name="idCard"
                   label="Số CMND"
                   type={variables.INPUT}
-                  rules={[variables.RULES.EMPTY]}
+                  rules={[variables.RULES.EMPTY, variables.RULES.NUMBER]}
                 />
               </div>
               <div className="col-lg-4">
@@ -272,6 +272,7 @@ const General = memo(() => {
                   label="Ngày cấp"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}
+                  disabledDate={Helper.disabledDateFuture}
                 />
               </div>
             </div>
@@ -350,7 +351,12 @@ const General = memo(() => {
               </div>
               {params.id && (
                 <div className="col-lg-4">
-                  <FormItem name="dateOff" label="Ngày nghỉ việc" type={variables.DATE_PICKER} />
+                  <FormItem
+                    name="dateOff"
+                    label="Ngày nghỉ việc"
+                    disabled
+                    type={variables.DATE_PICKER}
+                  />
                 </div>
               )}
             </div>

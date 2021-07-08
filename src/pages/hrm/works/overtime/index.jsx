@@ -36,6 +36,7 @@ const mapStateToProps = ({ worksOvertime, loading }) => ({
   holidays: worksOvertime.holidays,
   branches: worksOvertime.branches,
   divisions: worksOvertime.divisions,
+  employees: worksOvertime.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -52,6 +53,7 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         branchId: query?.branchId,
         divisionId: query?.divisionId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate
@@ -69,6 +71,16 @@ class Index extends PureComponent {
   componentDidMount() {
     this.loadCategories();
     this.onLoad();
+    this.loadHolidays();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.search.startDate !== prevState.search.startDate &&
+      this.state.search.endDate !== prevState.search.endDate
+    ) {
+      this.loadHolidays();
+    }
   }
 
   componentWillUnmount() {
@@ -98,6 +110,21 @@ class Index extends PureComponent {
       type: 'worksOvertime/GET_DIVISIONS',
       payload: {},
     });
+    this.props.dispatch({
+      type: 'worksOvertime/GET_EMPLOYEES',
+      payload: {},
+    });
+  };
+
+  loadHolidays = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'worksOvertime/GET_HOLIDAYS',
+      payload: {
+        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
+      },
+    });
   };
 
   /**
@@ -108,12 +135,6 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    this.props.dispatch({
-      type: 'worksOvertime/GET_HOLIDAYS',
-      payload: {
-        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
-      },
-    });
     this.props.dispatch({
       type: 'worksOvertime/GET_DATA',
       payload: {
@@ -143,6 +164,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -192,6 +215,8 @@ class Index extends PureComponent {
           ...prevState.search,
           startDate: moment(value).startOf('month').subtract(1, 'months').add(25, 'days'),
           endDate: moment(value).startOf('month').add(24, 'days'),
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => {
@@ -317,7 +342,7 @@ class Index extends PureComponent {
             [styles[`cell-heading-dateoff`]]: true,
           })}
         >
-          NV
+          -
         </div>
       );
     }
@@ -340,7 +365,7 @@ class Index extends PureComponent {
               [styles[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
             })}
           >
-            Nghỉ lễ
+            L
           </Link>
         </Tooltip>
       );
@@ -460,6 +485,7 @@ class Index extends PureComponent {
     const {
       data,
       error,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -475,15 +501,17 @@ class Index extends PureComponent {
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">CHẤM CÔNG NGOÀI GIỜ</Text>
-            <Button
-              color="success"
-              icon="export"
-              size="large"
-              onClick={this.exportExcel}
-              loading={downloading}
-            >
-              Tải bảng công ngoài giờ
-            </Button>
+            {!isEmpty(data) && (
+              <Button
+                color="success"
+                icon="export"
+                size="large"
+                onClick={this.exportExcel}
+                loading={downloading}
+              >
+                Tải bảng công ngoài giờ
+              </Button>
+            )}
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -515,18 +543,27 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
                     name="divisionId"
                     onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-12">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -565,6 +602,7 @@ Index.propTypes = {
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -578,6 +616,7 @@ Index.defaultProps = {
   holidays: [],
   divisions: [],
   branches: [],
+  employees: [],
 };
 
 export default Index;

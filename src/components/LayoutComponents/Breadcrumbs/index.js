@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect, Link, withRouter } from 'umi';
-import { reduce, isArray } from 'lodash';
+import { reduce, isArray, head } from 'lodash';
 import validator from 'validator';
 import PropTypes from 'prop-types';
 import styles from './style.module.scss';
@@ -77,27 +77,33 @@ class Breadcrumbs extends React.Component {
       return path.reverse().map((item, index) => {
         if (index === path?.length - 1) {
           return (
-            <span key={item.key}>
-              <span className={`${styles.arrow} text-muted`} />
-              <span className="text-muted">{item.title}</span>
+            <Link
+              className="text-muted"
+              to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
+              key={item.key}
+            >
               <span className={styles.arrow} />
               <strong className={styles.title}>{activeMenuItem.title}</strong>
-            </span>
+            </Link>
           );
         }
         return (
-          <span key={item.key}>
-            <span className={`${styles.arrow} text-muted`} />
-            <span className="text-muted">{item.title}</span>
-          </span>
+          <Link
+            className="text-muted"
+            to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
+            key={item.key}
+          >
+            <span className={styles.arrow} />
+            <strong className={styles.title}>{activeMenuItem.title}</strong>
+          </Link>
         );
       });
     }
     return (
-      <span>
+      <Link className="text-muted" to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}>
         <span className={styles.arrow} />
         <strong className={styles.title}>{activeMenuItem.title}</strong>
-      </span>
+      </Link>
     );
   };
 

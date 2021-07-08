@@ -152,6 +152,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -169,6 +171,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -436,6 +440,7 @@ class Index extends PureComponent {
         render: (record) =>
           !record.children && (
             <Checkbox
+              disabled={!record.isReceived}
               checked={record.isDrunk}
               onChange={(event) => this.onChangeDrunk(event, record)}
             />

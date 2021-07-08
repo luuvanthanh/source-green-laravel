@@ -87,6 +87,8 @@ export function update(data = {}) {
 export function get(params = {}) {
   return requestLavarel(`/v1/absent-students/${params.id}`, {
     method: 'GET',
-    params: {},
+    params: {
+      include: Helper.convertIncludes(['student.classStudent.class']),
+    },
   });
 }

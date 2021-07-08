@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 // TABS LINK
 .tabs-link {
@@ -13,7 +13,7 @@
     line-height: 20px;
     color: $text;
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       top: 100%;
@@ -147,6 +147,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-self: baseline;
+  border-right: 1px solid #eaeaea;
 }
 .right-container {
   width: calc(50% - 15px);

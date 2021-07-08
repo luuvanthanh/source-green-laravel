@@ -1,22 +1,12 @@
 import { memo, useRef, useEffect } from 'react';
-import { Form, Input, DatePicker } from 'antd';
-import moment from 'moment';
-import { head, isEmpty, get } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { Form, Input } from 'antd';
+import { head, isEmpty } from 'lodash';
+import { connect, withRouter } from 'umi';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import Select from '@/components/CommonComponent/Select';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
-
-import { variables } from '@/utils/variables';
 
 const { Item: FormItem } = Form;
-
-const genders = [
-  { id: 0, name: 'Nam' },
-  { id: 1, name: 'Nữ' },
-];
 
 const mapStateToProps = ({ loading, OPchildrenAdd }) => ({
   loading,

@@ -47,7 +47,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        name: query?.name,
+        KeyWord: query?.KeyWord,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -108,6 +108,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -241,19 +243,19 @@ class Index extends PureComponent {
               color="primary"
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             />
             <Button
               color="danger"
               icon="remove"
               onClick={() => this.onRemove(record.id)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             />
           </div>
         ),
       },
     ];
-    return !ability.can('CAUHHINH', 'CAUHHINH')
+    return !ability.can('CAUHINH', 'CAUHINH')
       ? columns.filter((item) => item.key !== 'actions')
       : columns;
   };
@@ -279,7 +281,7 @@ class Index extends PureComponent {
               color="success"
               icon="plus"
               onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="CAUHHINH"
+              permission="CAUHINH"
             >
               Thêm mới
             </Button>
@@ -295,8 +297,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="KeyWord"
+                    onChange={(event) => this.onChange(event, 'KeyWord')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />

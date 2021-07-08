@@ -87,7 +87,12 @@ const Index = memo(() => {
   }, [loadData]);
 
   const debouncedSearchStatus = debounce((value) => {
-    mountedSet(setSearch, { ...search, status: value });
+    mountedSet(setSearch, {
+      ...search,
+      status: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    });
   }, 300);
 
   /**
@@ -185,7 +190,7 @@ const Index = memo(() => {
                         </Pane>
 
                         {isEmpty(item?.student?.absentStudents) && (
-                          <Pane className="col-lg-6">
+                          <Pane className="col-lg-9">
                             {item?.busPlaceLog && (
                               <Checkbox.Group
                                 className="checkbox-large"
@@ -219,12 +224,6 @@ const Index = memo(() => {
                             </Link>
                           </Pane>
                         )}
-
-                        <Pane className="col-lg-3">
-                          <Button icon="phone" className="ml-auto" color="success" ghost>
-                            Gọi phụ huynh
-                          </Button>
-                        </Pane>
                       </Pane>
                     ))}
                   </Pane>

@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'dva';
 import { size, isEmpty } from 'lodash';
 import moment from 'moment';
 import csx from 'classnames';
+import * as signalR from '@aspnet/signalr';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -135,6 +136,44 @@ const Index = memo(() => {
     setVisibleProgress(false);
   };
 
+  const onNotifReceived = () => {
+    getProgress();
+  };
+
+  const setUpSignalRConnection = async () => {
+    const protocol = new signalR.JsonHubProtocol();
+
+    const transport = signalR.HttpTransportType.WebSockets;
+
+    const options = {
+      transport,
+      logMessageContent: true,
+      logger: signalR.LogLevel.Trace,
+    };
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(URL_API_REALTIME, options)
+      .withHubProtocol(protocol)
+      .build();
+
+    connection.on('ProgressImage', (message) => {
+      if (message) {
+        onNotifReceived();
+      }
+    });
+
+    try {
+      await connection.start();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err);
+    }
+    return connection;
+  };
+
+  useEffect(() => {
+    setUpSignalRConnection().then((con) => {});
+  }, []);
   return (
     <>
       <Helmet title="Duyệt hình" />

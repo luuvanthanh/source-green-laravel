@@ -412,7 +412,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-4">
                     <FormItem
-                      label="Tỷ lệ thử việc"
+                      label="Tỷ lệ lương thử việc"
                       name="salaryRatio"
                       type={variables.INPUT_COUNT}
                       rules={[variables.RULES.EMPTY]}

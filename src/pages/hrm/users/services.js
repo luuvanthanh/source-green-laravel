@@ -11,6 +11,7 @@ export function get(params = {}) {
       searchJoin: 'and',
       include: Helper.convertIncludes(['positionLevel']),
       fullName: params.fullName,
+      employeeId: params.employeeId && params.employeeId.join(','),
     },
   });
 }

@@ -507,7 +507,7 @@ class Index extends PureComponent {
                           className="ml-3"
                           size="large"
                           value={item.address}
-                          style={{ width: '400px' }}
+                          style={{ width: '35vw' }}
                           onChange={(event) => this.onChangeAddress(event, item)}
                           suffix={
                             !isEmpty(position) && (

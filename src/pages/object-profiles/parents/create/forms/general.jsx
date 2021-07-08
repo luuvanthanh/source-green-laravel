@@ -83,7 +83,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       },
       callback: (response) => {
         if (response) {
-          history.push(`/ho-so-doi-tuong/phu-huynh`);
+          dispatch({
+            type: 'OPParentsAdd/GET_DETAILS',
+            payload: params,
+          });
         }
       },
     });

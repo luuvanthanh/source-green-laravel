@@ -8,9 +8,10 @@ import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
-import variablesModules from '../../utils/variables';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
+import variablesModules from '../../utils/variables';
 
 let isMounted = true;
 /**
@@ -28,7 +29,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ configurationAccountAdd, loading, menu }) => ({
-  loading: loading,
+  loading,
   error: configurationAccountAdd.error,
   details: configurationAccountAdd.details,
   roles: configurationAccountAdd.roles,
@@ -122,10 +123,7 @@ class Index extends PureComponent {
   };
 
   onFinish = (values) => {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
+    const { dispatch } = this.props;
     const { type } = this.state;
     dispatch({
       type:
@@ -139,7 +137,7 @@ class Index extends PureComponent {
           userName: values.userName,
           password: values.password,
           email: values.email,
-          roleId: values.roleId,
+          roles: values.roles,
         },
       },
       callback: (response, error) => {
@@ -221,9 +219,9 @@ class Index extends PureComponent {
                     <FormItem
                       data={roles}
                       label="Vai trò"
-                      name="roleId"
+                      name="roles"
                       rules={[variables.RULES.EMPTY]}
-                      type={variables.SELECT}
+                      type={variables.SELECT_MUTILPLE}
                     />
                   </div>
                 </div>
@@ -307,6 +305,28 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  menuConfiguration: PropTypes.arrayOf(PropTypes.any),
+  roles: PropTypes.arrayOf(PropTypes.any),
+  parents: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  menuConfiguration: [],
+  roles: [],
+  parents: [],
+  employees: [],
+};
 
 export default Index;

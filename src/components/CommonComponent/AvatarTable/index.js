@@ -14,9 +14,16 @@ class AvatarTable extends Component {
           <div className="container-image">
             <div
               className="background-avatar"
-              style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`, borderRadius: shape === 'circle' ? '50%' : '4px' }}
+              style={{
+                backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`,
+                borderRadius: shape === 'circle' ? '50%' : '4px',
+              }}
             />
-            <Avatar shape={shape} size={size || 40} src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`} />
+            <Avatar
+              shape={shape}
+              size={size || 40}
+              src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`}
+            />
           </div>
           {fullName && description && (
             <div className={styles.info}>
@@ -34,7 +41,12 @@ class AvatarTable extends Component {
     }
     if (!fileImage && fullName) {
       return (
-        <div className={classnames(styles['avatar-container'], `${className ? styles[`${className}`] : ''}`)}>
+        <div
+          className={classnames(
+            styles['avatar-container'],
+            `${className ? styles[`${className}`] : ''}`,
+          )}
+        >
           <Avatar size={size || 40} shape={shape} icon={<UserOutlined />} />
           {fullName && description && (
             <div className={styles.info}>
@@ -55,9 +67,16 @@ class AvatarTable extends Component {
         <div className="container-image">
           <div
             className="background-avatar"
-            style={{ backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`, borderRadius: shape === 'circle' ? '50%' : '4px' }}
+            style={{
+              backgroundImage: `url(${srcLocal ? '' : API_UPLOAD}${fileImage})`,
+              borderRadius: shape === 'circle' ? '50%' : '4px',
+            }}
           />
-          <Avatar shape={shape} size={size || 40} src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`} />
+          <Avatar
+            shape={shape}
+            size={size || 40}
+            src={`${srcLocal ? '' : API_UPLOAD}${fileImage}`}
+          />
         </div>
       );
     }
@@ -71,8 +90,8 @@ AvatarTable.propTypes = {
   description: PropTypes.string,
   className: PropTypes.string,
   fileImage: PropTypes.any,
-  shape:  PropTypes.string,
-  srcLocal:  PropTypes.bool,
+  shape: PropTypes.string,
+  srcLocal: PropTypes.bool,
 };
 AvatarTable.defaultProps = {
   size: 40,

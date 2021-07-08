@@ -43,8 +43,17 @@ const renderChildren = (
   radioInline,
   disabledKeys,
   options,
+  checked,
+  value,
 ) => ({
-  input: <Input disabled={disabled} onChange={onChange} placeholder={placeholder || 'Nhập'} />,
+  input: (
+    <Input
+      disabled={disabled}
+      onChange={onChange}
+      placeholder={placeholder || 'Nhập'}
+      value={value}
+    />
+  ),
   inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
   inputSearch: (
     <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
@@ -54,7 +63,9 @@ const renderChildren = (
       className={classnames('input-number', styles['input-number-container'])}
       disabled={disabled}
       formatter={(value) => `${value}`.replace(variables.REGEX_NUMBER, ',')}
+      onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   inputCount: (
@@ -67,6 +78,7 @@ const renderChildren = (
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   inputDate: (
@@ -79,6 +91,7 @@ const renderChildren = (
       disabled={disabled}
       onChange={onChange}
       placeholder="Nhập"
+      value={value}
     />
   ),
   select: (
@@ -96,6 +109,7 @@ const renderChildren = (
       showSearch
       options={options}
       disabled={disabled}
+      value={value}
     />
   ),
   selectAdd: (
@@ -167,6 +181,8 @@ const renderChildren = (
       format={['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
       placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
+      value={value}
+      allowClear={allowClear}
     />
   ),
   datePicker: (
@@ -177,6 +193,7 @@ const renderChildren = (
       format={variables.DATE_FORMAT.DATE}
       onChange={onChange}
       placeholder="ngày/tháng/năm"
+      value={value}
     />
   ),
   monthPicker: (
@@ -188,6 +205,7 @@ const renderChildren = (
       placeholder="Chọn"
       picker="month"
       allowClear={allowClear}
+      value={value}
     />
   ),
   yearPicker: (
@@ -199,6 +217,7 @@ const renderChildren = (
       placeholder="Chọn"
       picker="year"
       allowClear={allowClear}
+      value={value}
     />
   ),
   dateTimePicker: (
@@ -209,6 +228,7 @@ const renderChildren = (
       onBlur={onBlur}
       placeholder="ngày/tháng/năm"
       showTime={{ format: 'HH:mm' }}
+      value={value}
     />
   ),
   timeRange: (
@@ -216,6 +236,7 @@ const renderChildren = (
       format={variables.DATE_FORMAT.HOUR}
       onBlur={onBlur}
       placeholder={['Thời gian bắt đầu', 'Thời gian kết thúc']}
+      value={value}
     />
   ),
   timePicker: (
@@ -227,6 +248,7 @@ const renderChildren = (
       placeholder="Chọn"
       disabled={disabled}
       minuteStep={15}
+      value={value}
     />
   ),
   treeSelect: (
@@ -238,6 +260,7 @@ const renderChildren = (
       showSearch
       treeCheckable
       treeData={data}
+      value={value}
     />
   ),
   treeSelectAdd: (
@@ -250,6 +273,7 @@ const renderChildren = (
       showSearch
       treeCheckable
       treeData={data}
+      value={value}
     />
   ),
   treeSelectSingle: (
@@ -261,6 +285,7 @@ const renderChildren = (
       treeCheckable={false}
       treeData={data}
       treeDefaultExpandAll
+      value={value}
     />
   ),
   checkbox: (
@@ -272,7 +297,9 @@ const renderChildren = (
       ))}
     </Checkbox.Group>
   ),
-  checkboxSingle: <Checkbox onChange={onChange} className={styles['checkbox--large']} />,
+  checkboxSingle: (
+    <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
+  ),
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (
@@ -319,6 +346,8 @@ export default function FormItem({
   radioInline,
   disabledKeys,
   options,
+  checked,
+  value,
   ...rest
 }) {
   return (
@@ -344,6 +373,8 @@ export default function FormItem({
           radioInline,
           disabledKeys,
           options,
+          checked,
+          value,
         )[type]
       }
     </Form.Item>
@@ -374,6 +405,8 @@ FormItem.propTypes = {
   radioInline: PropTypes.bool,
   disabledKeys: PropTypes.any,
   options: PropTypes.arrayOf(PropTypes.any),
+  checked: PropTypes.bool,
+  value: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -400,6 +433,8 @@ FormItem.defaultProps = {
   radioInline: false,
   disabledKeys: null,
   options: ['id', 'name'],
+  checked: false,
+  value: '',
 };
 
 FormItem.displayName = 'Form';

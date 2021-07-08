@@ -9,6 +9,7 @@ export function getBusRoutes(params = {}) {
     params: {
       ...params,
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+      isActive: true,
     },
   });
 }

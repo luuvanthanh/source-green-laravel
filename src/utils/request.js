@@ -43,7 +43,17 @@ request.interceptors.request.use(async (url, options) => {
 // response interceptor, handling response
 request.interceptors.response.use(
   async (response) => {
+    if (response.status === variables.STATUS_204) {
+      return {
+        ...response,
+        status: response.status,
+      };
+    }
     if (optionsRoot?.parse === true) {
+      notification.success({
+        message: 'Thông báo',
+        description: 'Bạn đã cập nhật thành công dữ liệu',
+      });
       return {
         status: 201,
       };
@@ -67,12 +77,7 @@ request.interceptors.response.use(
         });
       }
     }
-    if (response.status === variables.STATUS_204) {
-      return {
-        ...response,
-        status: response.status,
-      };
-    }
+
     return response;
   },
   (error) => error,

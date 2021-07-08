@@ -169,47 +169,53 @@ export const variables = {
       status: '',
       title: 'Trẻ đăng ký xe bus',
       title_quantity: 'Số trẻ đăng ký xe bus',
-      title_popup: 'Danh sách trẻ đăng ký xe bus'
+      title_popup: 'Danh sách trẻ đăng ký xe bus',
+      field: 'studentTotal',
     },
     ABSENT: {
       status: 'ABSENCE',
       title: 'Số trẻ đăng ký nhưng vắng',
       title_quantity: 'Số trẻ đăng ký nhưng vắng',
-      title_popup: 'Danh sách trẻ đăng ký nhưng vắng'
+      title_popup: 'Danh sách trẻ đăng ký nhưng vắng',
+      field: 'absentStudentTotal',
     },
     SCHOOL: {
-      title: 'Đi đến trường',
       status: 'SCHOOLWARD',
-      SCHOOLGETIN: {
+      title: 'Đi đến trường',
+      title_popup: 'Danh sách trẻ đi đến trường',
+      field: '',
+      get_in: {
         status_school: 'SCHOOLGETIN',
         title: 'Trẻ lên xe',
         title_quantity: 'Số trẻ lên xe',
-        title_popup: 'Danh sách trẻ lên xe - Đi đến trường'
+        field: 'schoolGetInStatusTotal',
       },
-      SCHOOLGETOFF: {
+      get_off: {
         status_school: 'SCHOOLGETOFF',
         title: 'Trẻ xuống xe',
         title_quantity: 'Số trẻ xuống xe',
-        title_popup: 'Danh sách trẻ xuống xe - Đi đến trường'
-      }
+        field: 'schoolGetOffStatusTotal',
+      },
     },
     HOME: {
-      title: 'Đi về nhà',
       status: 'HOMEWARD',
-      HOMEGETIN: {
+      title: 'Đi về nhà',
+      title_popup: 'Danh sách trẻ đi về nhà',
+      field: '',
+      get_in: {
         status_home: 'HOMEGETIN',
         title: 'Trẻ lên xe',
         title_quantity: 'Số trẻ lên xe',
-        title_popup: 'Danh sách trẻ lên xe - Đi về nhà'
+        field: 'homeGetInStatusTotal',
       },
-      HOMEGETOFF: {
+      get_off: {
         status_home: 'HOMEGETOFF',
         title: 'Trẻ xuống xe',
         title_quantity: 'Số trẻ xuống xe',
-        title_popup: 'Danh sách trẻ xuống xe - Đi về nhà'
-      }
+        field: 'homeGetOffStatusTotal',
+      },
     },
-  }
+  },
 };
 
 export default variables;

@@ -51,12 +51,7 @@ class Index extends PureComponent {
             >
               <img src="images/login/logo.png" alt="imageLogin" className={styles.logo} />
             </div>
-            <Form
-              hideRequiredMark
-              initialValues={{ password: '1q2w3E*', username: 'admin' }}
-              layout="vertical"
-              onFinish={this.onFinish}
-            >
+            <Form hideRequiredMark initialValues={{}} layout="vertical" onFinish={this.onFinish}>
               <FormItem
                 label="User ID / Email"
                 name="username"

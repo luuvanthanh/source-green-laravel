@@ -92,7 +92,7 @@ const Index = memo(({ classId }) => {
         <div className={classnames('px15', styles['header-modal'])}>
           <div className="row">
             <div className="col-12 mt20">
-              <p className="mb0">{Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}</p>
+              <p className="mb0">{Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}</p>
               <h5 className="font-size-24 my5 font-weight-bold">{detailsNote?.name}</h5>
               <p className="font-size-16">{detailsNote?.description}</p>
               {
@@ -166,7 +166,7 @@ const Index = memo(({ classId }) => {
             <div className="col-md-6 py20 border-top">
               <p className="mb5">Giáo viên đã nhận</p>
               <p className="font-weight-bold">
-                {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}`}
+                {`${detailsNote?.employee?.fullName || ''} lúc ${Helper.getDate(detailsNote?.creationTime, variables.DATE_FORMAT.TIME_DATE_MONTH)}`}
               </p>
             </div>
           </div>

@@ -64,6 +64,16 @@ export function getBusByStatus(params = {}) {
   });
 }
 
+export function getBusByStatusHomeWardSchoolWard(params = {}) {
+  return request(`/bus-place-log/${params.date}`, {
+    method: 'GET',
+    params: {
+      ...omit({ ...params, date: undefined }, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
 export function getAttendance(params = {}) {
   return requestLavarel('/v1/attendance-summary', {
     method: 'GET',

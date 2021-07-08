@@ -1,5 +1,4 @@
 import request from '@/utils/request';
-import requestLogin from '@/utils/requestLogin';
 import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
@@ -49,6 +48,7 @@ export function updateStatus(data = {}) {
   return request(`/parents/${data.id}/update-status?status=${data.status}`, {
     method: 'PUT',
     data,
+    parse: true,
   });
 }
 
@@ -60,8 +60,10 @@ export function faceRegistration(data = {}) {
 }
 
 export function changePassword(data = {}) {
-  return requestLogin(`/api/account/check-password`, {
-    method: 'POST',
-    data,
+  return request(`/user/${data.id}/change-password`, {
+    method: 'PATCH',
+    params: {
+      ...data,
+    },
   });
 }

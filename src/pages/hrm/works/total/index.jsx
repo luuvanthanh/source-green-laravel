@@ -36,6 +36,7 @@ const mapStateToProps = ({ works, loading }) => ({
   holidays: works.holidays,
   branches: works.branches,
   divisions: works.divisions,
+  employees: works.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -52,6 +53,7 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         branchId: query?.branchId,
         divisionId: query?.divisionId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate
@@ -69,6 +71,16 @@ class Index extends PureComponent {
   componentDidMount() {
     this.loadCategories();
     this.onLoad();
+    this.loadHolidays();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.search.startDate !== prevState.search.startDate &&
+      this.state.search.endDate !== prevState.search.endDate
+    ) {
+      this.loadHolidays();
+    }
   }
 
   componentWillUnmount() {
@@ -98,6 +110,21 @@ class Index extends PureComponent {
       type: 'works/GET_DIVISIONS',
       payload: {},
     });
+    this.props.dispatch({
+      type: 'works/GET_EMPLOYEES',
+      payload: {},
+    });
+  };
+
+  loadHolidays = () => {
+    const { search } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'works/GET_HOLIDAYS',
+      payload: {
+        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
+      },
+    });
   };
 
   /**
@@ -108,12 +135,6 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    this.props.dispatch({
-      type: 'works/GET_HOLIDAYS',
-      payload: {
-        name: Helper.getDate(search.endDate, variables.DATE_FORMAT.YEAR),
-      },
-    });
     this.props.dispatch({
       type: 'works/GET_DATA',
       payload: {
@@ -143,11 +164,13 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function change input
@@ -192,13 +215,15 @@ class Index extends PureComponent {
           ...prevState.search,
           startDate: moment(value).startOf('month').subtract(1, 'months').add(25, 'days'),
           endDate: moment(value).startOf('month').add(24, 'days'),
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => {
         this.onLoad();
       },
     );
-  }, 300);
+  }, 500);
 
   /**
    * Function change type
@@ -341,12 +366,9 @@ class Index extends PureComponent {
     );
     if (moment(dayOfWeek).isoWeekday() >= 6) {
       return (
-        <Link
-          to={this.redirectHistory(dayOfWeek, record, user)}
-          className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}
-        >
+        <div className={classnames(styles['item-schedules'], [styles[`cell-heading-weekend`]])}>
           -
-        </Link>
+        </div>
       );
     }
     if (user.dateOff && moment(user.dateOff).isBefore(moment(dayOfWeek))) {
@@ -359,7 +381,7 @@ class Index extends PureComponent {
             [styles[`cell-heading-dateoff`]]: true,
           })}
         >
-          NV
+          -
         </div>
       );
     }
@@ -382,7 +404,7 @@ class Index extends PureComponent {
               [styles[`cell-heading-holidays`]]: !!holiday,
             })}
           >
-            Nghỉ lễ
+            L
           </Link>
         </Tooltip>
       );
@@ -500,8 +522,8 @@ class Index extends PureComponent {
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
       className:
-        index === 0 ? 'min-width-300 min-parent-width-300' : 'min-width-300 min-parent-width-700',
-      width: 300,
+        index === 0 ? 'min-width-500 min-parent-width-500' : 'min-width-500 min-parent-width-700',
+      width: 500,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
@@ -518,6 +540,7 @@ class Index extends PureComponent {
     const {
       data,
       error,
+      employees,
       pagination,
       match: { params },
       loading: { effects },
@@ -573,18 +596,27 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
                     data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
                     name="divisionId"
                     onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-12">
                   <FormItem
-                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -623,6 +655,7 @@ Index.propTypes = {
   holidays: PropTypes.arrayOf(PropTypes.any),
   divisions: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -636,6 +669,7 @@ Index.defaultProps = {
   holidays: [],
   divisions: [],
   branches: [],
+  employees: [],
 };
 
 export default Index;

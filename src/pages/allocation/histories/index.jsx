@@ -50,6 +50,8 @@ class Index extends PureComponent {
         creator: query?.creator,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        from: Helper.getEndDate(query?.from, query?.choose),
+        to: Helper.getStartDate(query?.to, query?.choose),
       },
     };
     setIsMounted(true);
@@ -57,6 +59,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -92,7 +95,16 @@ class Index extends PureComponent {
         status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+          from: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          to: Helper.getDate(search.to, variables.DATE_FORMAT.DATE_AFTER),
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   loadCategories = () => {
@@ -113,11 +125,43 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
     );
   }, 300);
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((from, to) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          from,
+          to,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
 
   /**
    * Function change input
@@ -246,6 +290,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                date: search.from && search.to && [moment(search.from), moment(search.to)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -269,9 +314,10 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>

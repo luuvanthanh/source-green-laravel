@@ -2,6 +2,7 @@ import { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useRouteMatch, history } from 'umi';
 import { useSelector, useDispatch } from 'dva';
+import { Image } from 'antd';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -81,11 +82,23 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="row">
-                {(details?.files || []).map(({ id, name, url }) => (
-                  <Pane className="col-lg-2" key={id}>
-                    <img className="d-block w-100" src={`${API_UPLOAD}${url}`} alt={name} />
-                  </Pane>
-                ))}
+                <Pane className="col-lg-12">
+                  <Image.PreviewGroup>
+                    {(details?.files || []).map(({ id, name, url }) => (
+                      <Image
+                        key={id}
+                        width={200}
+                        height={200}
+                        src={`${API_UPLOAD}${url}`}
+                        alt={name}
+                        preview={{
+                          maskClassName: 'customize-mask',
+                          mask: <></>,
+                        }}
+                      />
+                    ))}
+                  </Image.PreviewGroup>
+                </Pane>
               </Pane>
             </Pane>
 

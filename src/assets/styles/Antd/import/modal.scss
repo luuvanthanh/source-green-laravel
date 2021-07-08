@@ -1,5 +1,5 @@
 // Import mixins
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /*  ANT DESIGN MODAL */
@@ -27,6 +27,7 @@
   }
   .ant-image-img {
     opacity: 0;
+    object-fit: cover;
   }
 }
 

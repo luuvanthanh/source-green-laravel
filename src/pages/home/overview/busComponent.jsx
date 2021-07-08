@@ -39,9 +39,10 @@ const Index = memo(({ classId }) => {
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.PAGE_SIZE,
     keyWord: '',
+    classId: ''
   });
 
-  const fetchDataBus = () => {
+  const fetchDataBus = (status = '') => {
     dispatch({
       type: 'overView/GET_DATA_BUS',
       payload: {
@@ -54,6 +55,7 @@ const Index = memo(({ classId }) => {
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
         }),
+        Status: status || undefined
       },
     });
   };
@@ -92,6 +94,9 @@ const Index = memo(({ classId }) => {
 
   useEffect(() => {
     fetchDataBus();
+    fetchDataBus(variablesModule.TITLE_BUS.ABSENT.status);
+    fetchDataBus(variablesModule.TITLE_BUS.HOME.status);
+    fetchDataBus(variablesModule.TITLE_BUS.SCHOOL.status);
   }, [classId]);
 
   useEffect(() => {
@@ -112,11 +117,11 @@ const Index = memo(({ classId }) => {
       render: (record) => (
         <div className="d-flex align-items-center">
           <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage || record?.studentBusPlace?.student?.fileImage)}
             shape="square"
             size={40}
           />
-          <p className="mb0 ml10">{record?.student?.fullName || ''}</p>
+          <p className="mb0 ml10">{record?.student?.fullName || record?.studentBusPlace?.student?.fullName || ''}</p>
         </div>
       ),
     },
@@ -125,7 +130,7 @@ const Index = memo(({ classId }) => {
       key: 'age',
       className: 'min-width-100',
       width: 100,
-      render: (record) => `${record?.student?.age || 0}tháng`,
+      render: (record) => `${record?.student?.age || record?.studentBusPlace?.student?.age || 0} tháng`,
     },
     {
       title: 'Phụ huynh',
@@ -137,19 +142,19 @@ const Index = memo(({ classId }) => {
           size={40}
           fileImage={_.head(
             (Helper.isJSON(
-              _.get(record, 'student.studentParents[0].parent.fileImage'),
+              _.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fileImage')
             ) ||
               Helper.isJSON(
-                _.get(record, 'student.studentParents[0].farther.fileImage'),
+                _.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fileImage'),
               )) &&
               JSON.parse(
-                _.get(record, 'student.studentParents[0].parent.fileImage') ||
-                  _.get(record, 'student.studentParents[0].farther.fileImage'),
+                (_.get(record, 'student.studentParents[0].parent.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fileImage'))
+                  || (_.get(record, 'student.studentParents[0].farther.fileImage') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fileImage')),
               ),
           )}
           fullName={
-            _.get(record, 'student.studentParents[0].parent.fullName') ||
-            _.get(record, 'student.studentParents[0].farther.fullName')
+            (_.get(record, 'student.studentParents[0].parent.fullName') || _.get(record, 'studentBusPlace.student.studentParents[0].parent.fullName')) ||
+            (_.get(record, 'student.studentParents[0].farther.fullName') || _.get(record, 'studentBusPlace.student.studentParents[0].farther.fullName'))
           }
         />
       ),
@@ -159,8 +164,21 @@ const Index = memo(({ classId }) => {
       key: 'class',
       className: 'min-width-120',
       width: 120,
-      render: (record) => record?.class?.name || '',
-    }
+      render: (record) => record?.class?.name || record?.studentBusPlace?.class?.name || '',
+    },
+    {
+      title: 'Bảo mẫu',
+      key: 'shuttler',
+      width: 150,
+      className: 'min-width-150',
+      render: (record) => (
+        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+          {(record?.busPlace?.busRoute?.busRouteNannies || record?.studentBusPlace?.busPlace?.busRoute?.busRouteNannies)
+            ?.map((item) => item?.nanny?.fullName)
+            .join(',')}
+        </Paragraph>
+      ),
+    },
   ];
 
   const absent = () => [
@@ -200,10 +218,37 @@ const Index = memo(({ classId }) => {
     },
   ];
 
+  const headerTime = () => [
+    {
+      title: 'Thời gian lên xe',
+      key: 'getIn',
+      className: 'min-width-110',
+      width: 110,
+      render: (record) => {
+        const getIn = record[`${details?.status === "SCHOOLWARD" ? 'schoolwardGetIn' : 'homewardGetIn'}`];
+        return `${ getIn ? Helper.getDate(getIn, variables.DATE_FORMAT.TIME_FULL) : ''}`;
+      }
+    },
+    {
+      title: 'Thời gian xuống xe',
+      key: 'getOff',
+      className: 'min-width-120',
+      width: 120,
+      render: (record) => {
+        const getOff = record[`${details?.status === "SCHOOLWARD" ? 'schoolwardGetOff' : 'homewardGetOff'}`];
+        return `${ getOff ? Helper.getDate(getOff, variables.DATE_FORMAT.TIME_FULL) : ''}`;
+      }
+    },
+  ];
+
   const switchHeader = () => {
     switch(details?.status) {
-      case 'ABSENCE':
-        return [ ...header(), ...absent() ];
+      case 'HOMEWARD':
+      case 'SCHOOLWARD':
+        return [ ...(header().slice(0, 2)), ...headerTime(),  ...(header().slice(2, 5)) ];
+      case 'ABSENCE': {
+        return [ ...(_.initial(header())), ...absent() ];
+      }
       default:
         return header();
     }
@@ -262,6 +307,38 @@ const Index = memo(({ classId }) => {
     showTotal: (total, [start, end]) => `Hiển thị ${start}-${end} trong ${total}`,
   });
 
+  const renderQuantity = () => {
+    switch(details?.status) {
+      case 'SCHOOLWARD':
+      case 'HOMEWARD':
+        return (
+          <div className="d-flex justify-content-end">
+            <p className="d-flex align-items-center justify-content-end mb0 mr30">
+              {details?.get_in?.title_quantity}:
+              <span className="text-success font-size-30 font-weight-bold ml10">
+                {bus[`${details?.get_in?.field}`]}
+              </span>
+            </p>
+            <p className="d-flex align-items-center justify-content-end mb0">
+              {details?.get_off?.title_quantity}:
+              <span className="text-success font-size-30 font-weight-bold ml10">
+                {bus[`${details?.get_off?.field}`]}
+              </span>
+            </p>
+          </div>
+        );
+      default:
+        return (
+          <p className="d-flex align-items-center justify-content-end mb0">
+            {details?.title_quantity}:
+            <span className="text-success font-size-30 font-weight-bold ml10">
+              {bus[`${details.field}`]}
+            </span>
+          </p>
+        );
+    }
+  };
+
   return (
     <>
       <Modal
@@ -274,19 +351,19 @@ const Index = memo(({ classId }) => {
       >
         <div className="p20">
           <Form>
-            <div className="row">
-              <div className="col-md-4 col-xl-3">
+            <div className="row align-items-center">
+              <div className="col-md-4 col-xl-3 mb15">
                 <FormItem
-                  className="mb-10"
+                  className="mb0"
                   name="keyWord"
                   onChange={(event) => handleSearch(event.target.value, 'keyWord')}
                   placeholder="Nhập từ khóa tìm kiếm"
                   type={variables.INPUT_SEARCH}
                 />
               </div>
-              <div className="col-md-4 col-xl-3">
+              <div className="col-md-4 col-xl-3 mb15">
                 <FormItem
-                  className="mb-10"
+                  className="mb0"
                   name="class"
                   type={variables.SELECT}
                   data={[{ id: '', name: 'Tất cả các lớp' }, ...classes]}
@@ -294,13 +371,8 @@ const Index = memo(({ classId }) => {
                   allowClear={false}
                 />
               </div>
-              <div className="col-md-4 col-xl-6">
-                <p className="d-flex align-items-center justify-content-end mb0">
-                  {details?.title_quantity}:
-                  <span className="text-success font-size-30 font-weight-bold ml10">
-                    {details?.quantity}
-                  </span>
-                </p>
+              <div className="col-md-4 col-xl-6 mb15">
+                {renderQuantity()}
               </div>
             </div>
           </Form>
@@ -418,6 +490,14 @@ const Index = memo(({ classId }) => {
                         'width-100p',
                         'mb12',
                       )}
+                      onClick={() =>
+                        getDetail({
+                          ...variablesModule.TITLE_BUS.SCHOOL,
+                          status: variablesModule.TITLE_BUS.SCHOOL.status,
+                          quantity: bus.schoolGetInStatusTotal,
+                        })
+                      }
+                      aria-hidden="true"
                     >
                       <div className="d-flex align-items-center">
                         <Avatar src="/images/icon/right-arrow-green.svg" size={27} />
@@ -426,17 +506,9 @@ const Index = memo(({ classId }) => {
                       <div className="d-flex justify-content-between">
                         <div>
                           <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
-                            {variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETIN.title}
+                            {variablesModule.TITLE_BUS.SCHOOL.get_in.title}
                           </p>
                           <p
-                            onClick={() =>
-                              getDetail({
-                                ...variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETIN,
-                                status: variablesModule.TITLE_BUS.SCHOOL.status,
-                                quantity: bus.schoolGetInStatusTotal,
-                              })
-                            }
-                            aria-hidden="true"
                             className={classnames(
                               'mb0',
                               'font-size-30',
@@ -450,17 +522,9 @@ const Index = memo(({ classId }) => {
                         </div>
                         <div>
                           <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
-                            {variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETOFF.title}
+                            {variablesModule.TITLE_BUS.SCHOOL.get_off.title}
                           </p>
                           <p
-                            onClick={() =>
-                              getDetail({
-                                ...variablesModule.TITLE_BUS.SCHOOL.SCHOOLGETOFF,
-                                status: variablesModule.TITLE_BUS.SCHOOL.status,
-                                quantity: bus.schoolGetOffStatusTotal,
-                              })
-                            }
-                            aria-hidden="true"
                             className={classnames(
                               'mb0',
                               'font-size-30',
@@ -482,6 +546,14 @@ const Index = memo(({ classId }) => {
                         'width-100p',
                         'mb20',
                       )}
+                      onClick={() =>
+                        getDetail({
+                          ...variablesModule.TITLE_BUS.HOME,
+                          status: variablesModule.TITLE_BUS.HOME.status,
+                          quantity: bus.schoolGetInStatusTotal,
+                        })
+                      }
+                      aria-hidden="true"
                     >
                       <div className="d-flex align-items-center">
                         <Avatar src="/images/icon/left-arrow-orange.svg" size={27} />
@@ -490,17 +562,9 @@ const Index = memo(({ classId }) => {
                       <div className="d-flex justify-content-between">
                         <div>
                           <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
-                            {variablesModule.TITLE_BUS.HOME.HOMEGETIN.title}
+                            {variablesModule.TITLE_BUS.HOME.get_in.title}
                           </p>
                           <p
-                            onClick={() =>
-                              getDetail({
-                                ...variablesModule.TITLE_BUS.HOME.HOMEGETIN,
-                                status: variablesModule.TITLE_BUS.HOME.status,
-                                quantity: bus.homeGetInStatusTotal,
-                              })
-                            }
-                            aria-hidden="true"
                             className={classnames(
                               'mb0',
                               'font-size-30',
@@ -514,17 +578,9 @@ const Index = memo(({ classId }) => {
                         </div>
                         <div>
                           <p className={classnames('mt15', 'mb0', 'font-size-13', 'text-black')}>
-                            {variablesModule.TITLE_BUS.HOME.HOMEGETOFF.title}
+                            {variablesModule.TITLE_BUS.HOME.get_off.title}
                           </p>
                           <p
-                            onClick={() =>
-                              getDetail({
-                                ...variablesModule.TITLE_BUS.HOME.HOMEGETOFF,
-                                status: variablesModule.TITLE_BUS.HOME.status,
-                                quantity: bus.homeGetOffStatusTotal,
-                              })
-                            }
-                            aria-hidden="true"
                             className={classnames(
                               'mb0',
                               'font-size-30',

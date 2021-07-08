@@ -53,6 +53,9 @@ export const variables = {
       pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/,
       message: 'Trường này là số điện thoại',
     },
+    YEAR_FROM: 'Từ Năm không được lớn hơn Đến Năm',
+    YEAR_TO: 'Đến Năm không được nhỏ hơn Từ Năm',
+    INVALID_DATE: 'Ngày không hợp lệ',
   },
   // PAGINATION
   PAGINATION: {
@@ -84,6 +87,7 @@ export const variables = {
     SHOW_FULL_DATE: 'dddd - DD/MM/YYYY',
     MONTH_FULL: '[Tháng] MM/YYYY',
     MONTH_NAME: '[Tháng] MM',
+    MONTH_YEAR: 'MM/YYYY',
   },
   PARENT_ID: '00000000-0000-0000-0000-000000000000',
   SYMBOL: 'xem thêm',
@@ -159,6 +163,8 @@ export const variables = {
   // eslint-disable-next-line security/detect-unsafe-regex
   REGEX_NUMBER: /\B(?=(\d{3})+(?!\d))/g,
   method: ['put', 'post', 'delete', 'patch'],
+  SEMESTER_1: 'HOCKY1',
+  SEMESTER_2: 'HOCKY2',
 };
 
 export default variables;

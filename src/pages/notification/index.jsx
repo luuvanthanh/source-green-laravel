@@ -113,6 +113,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -130,6 +132,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -184,6 +188,8 @@ class Index extends PureComponent {
           ...prevState.search,
           fromDate,
           toDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -306,7 +312,7 @@ class Index extends PureComponent {
         className: 'min-width-200',
         render: (record) => (
           <div
-            style={{ maxHeight: '50px', overflowY: 'auto' }}
+            style={{ maxHeight: '100px', overflowY: 'auto' }}
             dangerouslySetInnerHTML={{ __html: record.content }}
           />
         ),

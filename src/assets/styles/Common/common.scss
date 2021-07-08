@@ -183,8 +183,19 @@
     }
   }
   &.block-table-tab-new {
-    @extend .block-table-tab;
     padding: 0;
+    :global(.ant-empty) {
+      padding: 20px;
+    }
+    :global(.ant-tabs) {
+      margin: 0 -20px;
+    }
+    :global(.ant-tabs-nav-wrap) {
+      padding: 0 20px;
+    }
+    :global(.ant-table-tbody > tr > td) {
+      vertical-align: top;
+    }
     :global(.ant-tabs) {
       margin: 0;
     }
@@ -726,6 +737,18 @@
       color: $danger;
     }
   }
+  .btn-delete {
+    position: relative;
+    margin-top: 32px;
+    margin-bottom: 15px;
+    border: 1px solid  $gray-darken;
+    border-radius: 50%;
+    padding: 7px;
+    color: $gray-darken;
+    @media (max-width: $md-max-width) {
+      margin-top: 0;
+    }
+  }
 }
 
 .item-schedules {
@@ -963,3 +986,29 @@
     color: $text-danger;
   }
 }
+
+.tab-px20 {
+  :global(.ant-tabs-nav) {
+    padding: 0 20px;
+  }
+  :global(.ant-tabs-tab-active) {
+    font-family: $bold__font-family;
+  }
+}
+.tab-uppercase {
+  :global(.ant-tabs-nav) {
+    text-transform: uppercase;
+  }
+}
+
+// CARD ITEM
+.card-item {
+  padding: 20px;
+  &:not(:first-child){
+    border-top: 1px solid #EAEAEA;
+  }
+  .label {
+    white-space: nowrap;
+  }
+}
+// CARD ITEM

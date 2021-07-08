@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -13,6 +14,8 @@ export default {
       users: [],
     },
     students: [],
+    branches: [],
+    classes: [],
     error: {
       isError: false,
       data: {},
@@ -51,8 +54,44 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
+    SET_CLASSES: (state, { payload }) => ({
+      ...state,
+      classes: payload.items,
+    }),
   },
   effects: {
+    *GET_CLASSES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getClasses, payload);
+        yield saga.put({
+          type: 'SET_CLASSES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
