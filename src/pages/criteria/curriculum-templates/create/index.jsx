@@ -36,7 +36,7 @@ const Index = memo(() => {
 
   const [
     { menuLeftCriteria },
-    { students, classes, error },
+    { error },
     loading,
   ] = useSelector(({ menu, curriculumTemplatesAdd, loading: { effects } }) => [
     menu,
@@ -49,10 +49,6 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const params = useParams();
   const mountedSet = (action, value) => mounted?.current && action(value);
-
-  const onChangeProgramType = (event) => {
-    mountedSet(setProgramType, event.target.value);
-  };
 
   const onChangeIsEnable = (value) => {
     mountedSet(setIsEnable, value);
@@ -83,31 +79,22 @@ const Index = memo(() => {
   };
 
   const onFinish = (values) => {
-    let toolDetails = [];
-    toolGroups.forEach((item) => {
-      if (item.isChoosed) {
-        toolDetails = [
-          ...toolDetails,
-          ...item.toolDetails
-            .filter((item) => item.isChoosed)
-            .map((itemTool) => ({ toolDetailId: itemTool.id, toolGroupId: item.id })),
-        ];
-      }
-    });
-    const payload = {
-      ...values,
-      ...params,
-      toolDetails,
-      objectCurriculums: [
-        {
-          studentId: values.studentId,
-          classId: values.classId,
-        },
-      ],
-    };
     dispatch({
       type: params.id ? 'curriculumTemplatesAdd/UPDATE' : 'curriculumTemplatesAdd/ADD',
-      payload,
+      payload: {
+        ...values,
+        ...params,
+        curriculumType: 'TOOL',
+        toolGroups: toolGroups.map((item) => ({
+          toolGroupId: item.id,
+          isChoosed: !!item.isChoosed,
+          toolDetails: item.toolDetails.map((detail) => ({
+            toolDetailId: detail.id,
+            isChoosed: !!detail.isChoosed,
+          })),
+        })),
+        isEnable,
+      },
       callback: (response, error) => {
         if (response) {
           history.push('/chuong-trinh-hoc/templates');
@@ -297,73 +284,8 @@ const Index = memo(() => {
                     Thông tin chung
                   </Heading>
 
-                  <Pane className={csx('row', 'border-bottom')}>
-                    <Pane className="col-lg-12">
-                      <FormItem
-                        className="row-radio"
-                        name="programType"
-                        type={variables.RADIO}
-                        data={variablesModules.RADIOS}
-                        rules={[variables.RULES.EMPTY]}
-                        onChange={onChangeProgramType}
-                      />
-                    </Pane>
-                  </Pane>
-
-                  <Pane className={csx('row', 'border-bottom')}>
-                    {programType === variablesModules.STUDENT && (
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          className="mt20"
-                          label="Trẻ"
-                          name="studentId"
-                          type={variables.SELECT}
-                          data={Helper.convertSelectUsers(students)}
-                          allowClear={false}
-                        />
-                      </Pane>
-                    )}
-                    {programType === variablesModules.CLASS && (
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          className="mt20"
-                          label="Lớp"
-                          name="classId"
-                          type={variables.SELECT}
-                          data={classes}
-                          allowClear={false}
-                        />
-                      </Pane>
-                    )}
-
-                    <Pane className="col-lg-4">
-                      <FormItem
-                        className="mt20"
-                        label="Bắt đầu từ"
-                        name="fromDate"
-                        rules={[variables.RULES.EMPTY]}
-                        type={variables.DATE_PICKER}
-                        disabledDate={(current) =>
-                          Helper.disabledDateFrom(current, formRef, 'toDate')
-                        }
-                      />
-                    </Pane>
-                    <Pane className="col-lg-4">
-                      <FormItem
-                        className="mt20"
-                        label="Kết thúc"
-                        name="toDate"
-                        rules={[variables.RULES.EMPTY]}
-                        type={variables.DATE_PICKER}
-                        disabledDate={(current) =>
-                          Helper.disabledDateTo(current, formRef, 'fromDate')
-                        }
-                      />
-                    </Pane>
-                  </Pane>
-
                   <Pane className={csx('row')}>
-                    <Pane className="col-lg-12 mt20">
+                    <Pane className="col-lg-12">
                       <FormItem
                         label="Tên chương trình"
                         name="name"
