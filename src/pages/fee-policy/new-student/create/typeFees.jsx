@@ -12,20 +12,20 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 
-const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
   const dispatch = useDispatch();
   const params = useParams();
   const {
-    classes,
+    fees,
     paymentForm
-  } = useSelector(({ classType, paymentMethod }) => ({
-    classes: classType.data,
+  } = useSelector(({ fees, paymentMethod }) => ({
+    fees: fees.data,
     paymentForm: paymentMethod.data
   }));
 
   useEffect(() => {
     dispatch({
-      type: 'classType/GET_DATA',
+      type: 'fees/GET_DATA',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -45,21 +45,21 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
     if (name === 'content') {
       value = event.target.value;
     }
-    const index = _.findIndex(typeFees, (item) => item.id === record?.id);
-    const newTypeFees = [...typeFees];
-    newTypeFees[index] = {
+    const index = _.findIndex(tuition, (item) => item.id === record?.id);
+    const newTuition = [...tuition];
+    newTuition[index] = {
       ...record,
       [name]: value
     };
     if (error) {
-      checkValidate(newTypeFees, 'tuition');
+      checkValidate(newTuition, 'tuition');
     }
-    setTypeFees(newTypeFees);
+    setTuition(newTuition);
   };
 
   const removeLine = (record) => {
-    const newTypeFees = [...typeFees].filter(item => item.id !== record.id);
-    setTypeFees(newTypeFees);
+    const newTuition = [...tuition].filter(item => item.id !== record.id);
+    setTuition(newTuition);
   };
 
   const columns = useMemo(() => [
@@ -73,13 +73,13 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
             className="mb-0"
             type={variables.SELECT}
             placeholder="Chọn"
-            onChange={(e) => onChange(e, record, 'classTypeId')}
+            onChange={(e) => onChange(e, record, 'feeId')}
             allowClear={false}
-            data={classes}
-            value={record?.classTypeId}
+            data={fees}
+            value={record?.feeId}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !(record?.classTypeId) && (
+          {error && !(record?.feeId) && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -109,7 +109,7 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
     },
     {
       title: 'Tiền dự kiến đ',
-      key: 'price',
+      key: 'money',
       className: 'min-width-120',
       render: (record) => (
         <>
@@ -117,10 +117,10 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
             className="mb-0"
             type={variables.INPUT_NUMBER}
             rules={[variables.RULES.EMPTY]}
-            value={record?.price}
-            onChange={(e) => onChange(e, record, 'price')}
+            value={record?.money}
+            onChange={(e) => onChange(e, record, 'money')}
           />
-          {error && !(record?.price) && (
+          {error && !(record?.money) && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
@@ -142,16 +142,13 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
   ]);
 
   const addLine = () => {
-    setTypeFees([
-      ...typeFees,
+    setTuition([
+      ...tuition,
       {
         id: uuidv4(),
-        classTypeId: "",
+        feeId: "",
         paymentFormId: "",
-        content: "",
-        rangeDate: [],
-        oldStudent: "",
-        newStudent: ""
+        money: "",
       }
     ]);
   };
@@ -159,8 +156,9 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
   return (
     <>
       <Table
-        columns={params?.id ? _.initial(columns) : columns}
-        dataSource={typeFees}
+        className="content-vertical-top"
+        columns={columns}
+        dataSource={tuition}
         loading={false}
         error={{}}
         isError={false}
@@ -180,7 +178,7 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
           </Button>
         </Pane>
       )}
-      {_.isEmpty(typeFees) && error && (
+      {_.isEmpty(tuition) && error && (
         <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
       )}
     </>
@@ -188,15 +186,15 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
 });
 
 Index.propTypes = {
-  typeFees: PropTypes.arrayOf(PropTypes.any),
-  setTypeFees: PropTypes.func,
+  tuition: PropTypes.arrayOf(PropTypes.any),
+  setTuition: PropTypes.func,
   error: PropTypes.bool,
   checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
-  typeFees: [],
-  setTypeFees: () => {},
+  tuition: [],
+  setTuition: () => {},
   error: false,
   checkValidate: () => {},
 };

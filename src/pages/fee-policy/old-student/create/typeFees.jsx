@@ -159,7 +159,8 @@ const Index = memo(({ typeFees, setTypeFees, error, checkValidate }) => {
   return (
     <>
       <Table
-        columns={params?.id ? _.initial(columns) : columns}
+        className="content-vertical-top"
+        columns={columns}
         dataSource={typeFees}
         loading={false}
         error={{}}

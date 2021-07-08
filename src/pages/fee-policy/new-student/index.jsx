@@ -86,6 +86,7 @@ class Index extends PureComponent {
       type: 'newStudent/GET_DATA',
       payload: {
         ...search,
+        include: Helper.convertIncludes(['schoolYear']),
       },
     });
     history.push({
@@ -166,63 +167,63 @@ class Index extends PureComponent {
     const columns = [
       {
         title: 'Năm học',
-        key: 'code',
+        key: 'schoolYear',
         className: 'min-width-150',
-        render: (record) => record?.code || '',
+        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
         title: 'Tên học sinh',
-        key: 'name',
+        key: 'nameStudent',
         className: 'min-width-200',
-        render: (record) => record?.name || '',
+        render: (record) => record?.nameStudent || '',
       },
       {
         title: 'Sinh ngày',
-        key: 'name',
+        key: 'dateOfBirth',
         className: 'min-width-200',
-        render: (record) => record?.name || '',
+        render: (record) => record?.dateOfBirth ? Helper.getDate(record?.dateOfBirth, variables.DATE_FORMAT.DATE_VI) : '',
       },
       {
         title: 'Tháng tuổi',
-        key: 'name',
+        key: 'age',
         className: 'min-width-100',
-        render: (record) => record?.name || '',
+        render: (record) => record?.age || '',
       },
       {
         title: 'Ngày nhập học',
-        key: 'name',
+        key: 'dayAdmission',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.dayAdmission ? Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI) : '',
       },
       {
         title: 'Họ tên cha',
-        key: 'name',
+        key: 'fatherName',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.fatherName || '',
       },
       {
         title: 'SĐT cha',
-        key: 'name',
+        key: 'fatherPhoneNumber',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.fatherPhoneNumber || '',
       },
       {
         title: 'Họ tên mẹ',
-        key: 'name',
+        key: 'motherName',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.motherName || '',
       },
       {
         title: 'SĐT mẹ',
-        key: 'name',
+        key: 'motherPhoneNumber',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.motherPhoneNumber || '',
       },
       {
         title: 'Tổng học phí đóng đ',
-        key: 'type',
+        key: 'totalMoney',
         className: 'min-width-200',
-        render: (record) => record?.type || ''
+        render: (record) => Helper.getPrice(record.totalMoney) || ''
       },
       {
         key: 'action',
@@ -232,7 +233,7 @@ class Index extends PureComponent {
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/${record?.id}/chi-tiet`)}
+              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-moi/${record?.id}/chi-tiet`)}
             >
               Chi tiết
             </Button>
@@ -260,7 +261,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Tính phí học sinh mới</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
+              Tạo mới
             </Button>
           </div>
           <div className={styles['block-table']}>

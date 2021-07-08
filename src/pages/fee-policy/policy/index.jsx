@@ -178,7 +178,7 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'year',
         className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom} - ${record?.schoolYear?.yearTo}`
+        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
         title: 'Ngày quyết định',

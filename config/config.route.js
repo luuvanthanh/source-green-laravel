@@ -1811,6 +1811,12 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+            component: './fee-policy/new-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
             path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
             component: './fee-policy/old-student',
             wrappers: ['@/wrappers/auth'],
