@@ -1,14 +1,21 @@
 import request from '@/utils/requestLavarel';
 
 export function add(data = {}) {
-  return request('/v1/fees', {
+  return request('/v1/charge-students', {
     method: 'POST',
     data,
   });
 }
 
-export function details(data = {}) {
-  return request(`/v1/fees/${data?.id}`, {
+export function details(params = {}) {
+  return request(`/v1/charge-students/${params?.id}`, {
     method: 'GET',
+  });
+}
+
+export function update(data = {}) {
+  return request(`/v1/charge-students/${data?.id}`, {
+    method: 'PUT',
+    data
   });
 }

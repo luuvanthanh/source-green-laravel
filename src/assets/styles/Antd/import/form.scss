@@ -345,3 +345,11 @@ form .ant-cascader-picker:only-child {
     vertical-align: top;
   }
 }
+
+.input-noborder {
+  .ant-input {
+    border: unset;
+    padding: 4px 0;
+    pointer-events: none;
+  }
+}
