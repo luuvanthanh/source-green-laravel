@@ -22,12 +22,12 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
       const startMonth = moment(rangeDate[0]).add(i - 1, 'month').set('date', values?.duaDate);
-      const endMonth = moment(rangeDate[0]).add(i, 'month');
+      const endMonth = moment(rangeDate[0]).add(i, 'month').set('date', 1);
       datasTable.push({
         id: i,
         fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
         date: moment(rangeDate[0]).add(i, 'month').set('date', 1).format(variables.DATE_FORMAT.DATE_AFTER),
-        duaDate: startMonth.format('MM') < endMonth.format('MM') ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER) : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+        duaDate: moment(startMonth).diff(endMonth, 'days') < 0 ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER) : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
         rangeDate: null,
         paymentFormId: null,
         schoolDay: '',
