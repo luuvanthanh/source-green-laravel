@@ -294,27 +294,6 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record?.name}</Text>,
       },
       {
-        title: 'Loại chương trình',
-        key: 'life',
-        width: 180,
-        className: 'min-width-180',
-        render: (record) => (
-          <Text size="normal">{variablesModules.PROGRAM_TYPE[record?.programType]}</Text>
-        ),
-      },
-      {
-        title: 'Thời gian áp dụng',
-        key: 'creationTime',
-        className: 'min-width-250',
-        width: 250,
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.fromDate, variables.DATE_FORMAT.DATE_AFTER)} -{' '}
-            {Helper.getDate(record.toDate, variables.DATE_FORMAT.DATE_AFTER)}
-          </Text>
-        ),
-      },
-      {
         key: 'actions',
         className: 'min-width-80',
         width: 80,

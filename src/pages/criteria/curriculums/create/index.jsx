@@ -152,18 +152,19 @@ const Index = memo(() => {
     const template = curriculumTemplates.find((item) => item.id === value);
     if (template) {
       mountedSet(setProgramType, template.programType);
+      mountedSet(setIsEnable, template.isEnable);
       formRef.current.setFieldsValue({
         ...template,
-        fromDate: moment(template.fromDate),
-        toDate: moment(template.toDate),
-        studentId: head(template.objectCurriculumTemplates)?.student?.id,
-        classId: head(template.objectCurriculumTemplates)?.class?.id,
       });
       mountedSet(
         setToolGroups,
         template.toolGroupCurriculums.map((item) => ({
-          ...item.toolGroup,
-          isChoosed: item.isChoosed,
+          ...item,
+          index: item.groupIndex,
+          toolDetails: item.toolDetails.map((itemTool) => ({
+            ...itemTool,
+            index: itemTool.detailIndex,
+          })),
         })),
       );
     }
