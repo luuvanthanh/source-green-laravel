@@ -47,6 +47,18 @@ export default {
         });
       }
     },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, payload);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
   },
   subscriptions: {},
 };

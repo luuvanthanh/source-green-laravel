@@ -1828,6 +1828,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
+            component: './fee-policy/old-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY

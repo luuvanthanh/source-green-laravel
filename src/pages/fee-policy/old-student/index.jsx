@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty, map } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -27,11 +27,12 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ oldStudent, loading }) => ({
+const mapStateToProps = ({ oldStudent, schoolYear, loading }) => ({
   data: oldStudent.data,
   error: oldStudent.error,
   pagination: oldStudent.pagination,
   loading,
+  yearsSchool: schoolYear.data
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,6 +46,7 @@ class Index extends PureComponent {
     this.state = {
       search: {
         key: query?.key,
+        schoolYearId: query?.schoolYearId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -53,7 +55,15 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.onLoad();
+    this.props.dispatch({
+      type: 'schoolYear/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    this.getStudents();
+
   }
 
   componentWillUnmount() {
@@ -77,7 +87,7 @@ class Index extends PureComponent {
   /**
    * Function load data
    */
-  onLoad = () => {
+  getStudents = () => {
     const { search } = this.state;
     const {
       location: { pathname },
@@ -86,6 +96,7 @@ class Index extends PureComponent {
       type: 'oldStudent/GET_DATA',
       payload: {
         ...search,
+        include: Helper.convertIncludes(['student.classStudent.class']),
       },
     });
     history.push({
@@ -109,7 +120,7 @@ class Index extends PureComponent {
           limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
-      () => this.onLoad(),
+      () => this.getStudents(),
     );
   }, 300);
 
@@ -119,7 +130,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
+    this.debouncedSearch((e?.target?.value || e), type);
   };
 
   /**
@@ -137,7 +148,7 @@ class Index extends PureComponent {
         },
       }),
       () => {
-        this.onLoad();
+        this.getStudents();
       },
     );
   };
@@ -160,69 +171,75 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+   onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'oldStudent/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.getStudents();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
     const columns = [
       {
-        title: 'Năm học',
+        title: 'Mã học sinh',
         key: 'code',
         className: 'min-width-150',
-        render: (record) => record?.code || '',
+        render: (record) => record?.student?.code || '',
       },
       {
         title: 'Tên học sinh',
-        key: 'name',
+        key: 'fullName',
         className: 'min-width-200',
-        render: (record) => record?.name || '',
+        render: (record) => record?.student?.fullName || '',
       },
       {
-        title: 'Sinh ngày',
-        key: 'name',
+        title: 'Cơ sở',
+        key: 'branch',
         className: 'min-width-200',
-        render: (record) => record?.name || '',
+        render: (record) => record?.student?.classStudent?.class?.branch?.name || '',
       },
       {
-        title: 'Tháng tuổi',
-        key: 'name',
+        title: 'Khối lớp',
+        key: 'grade',
         className: 'min-width-100',
-        render: (record) => record?.name || '',
+        render: (record) => record?.grade || '',
       },
       {
-        title: 'Ngày nhập học',
-        key: 'name',
+        title: 'Lớp',
+        key: 'class',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => record?.student?.classStudent?.class?.name || '',
       },
       {
-        title: 'Họ tên cha',
-        key: 'name',
+        title: 'Năm học',
+        key: 'schoolYear',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
+        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
       },
       {
-        title: 'SĐT cha',
-        key: 'name',
+        title: 'Chi tiết các loại phí',
+        key: 'tuition',
         className: 'min-width-150',
-        render: (record) => record?.name || '',
-      },
-      {
-        title: 'Họ tên mẹ',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => record?.name || '',
-      },
-      {
-        title: 'SĐT mẹ',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => record?.name || '',
-      },
-      {
-        title: 'Tổng học phí đóng đ',
-        key: 'type',
-        className: 'min-width-200',
-        render: (record) => record?.type || ''
+        render: (record) => !isEmpty(record?.tuition) ? map(record?.tuition, 'fee.name').join(', ') : '',
       },
       {
         key: 'action',
@@ -231,11 +248,11 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
-              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-cho-hoc-sinh-moi/${record?.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
+              color="primary"
+              icon="edit"
+              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-cu/${record?.id}/chi-tiet`)}
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
@@ -250,6 +267,7 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
       data,
+      yearsSchool
     } = this.props;
     const { search } = this.state;
     const loading = effects['oldStudent/GET_DATA'];
@@ -278,6 +296,17 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    name="schoolYearId"
+                    type={variables.SELECT}
+                    placeholder="Chọn năm"
+                    allowClear={false}
+                    data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
+                    rules={[variables.RULES.EMPTY]}
+                    onChange={(event) => this.onChange(event, 'schoolYearId')}
                   />
                 </div>
               </div>
@@ -309,6 +338,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
+  yearsSchool: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -318,6 +348,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   data: [],
+  yearsSchool: []
 };
 
 export default Index;

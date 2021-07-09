@@ -291,7 +291,7 @@ const Index = memo(() => {
                       type={variables.SELECT}
                       placeholder="Chọn năm"
                       allowClear={false}
-                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
+                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
                       rules={[variables.RULES.EMPTY]}
                       onChange={loadTableFees}
                     />
