@@ -3,24 +3,22 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import { useParams } from 'umi';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRef }) => {
   const dispatch = useDispatch();
-  const params = useParams();
   const {
     fees,
-    paymentForm
+    paymentForm,
   } = useSelector(({ fees, paymentMethod }) => ({
     fees: fees.data,
-    paymentForm: paymentMethod.data
+    paymentForm: paymentMethod.data,
   }));
 
   useEffect(() => {
@@ -40,21 +38,60 @@ const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
     });
   }, []);
 
-  const onChange = (event, record, name) => {
-    let value = event;
-    if (name === 'content') {
-      value = event.target.value;
-    }
-    const index = _.findIndex(tuition, (item) => item.id === record?.id);
+  const getMoney = async (formRef, tuition, name, value , index) => {
+    const { getFieldsValue } = formRef?.current;
+    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
+    const { feeId, paymentFormId } = tuition[index];
     const newTuition = [...tuition];
+
+    if (value && (name === 'feeId' && paymentFormId || name === 'paymentFormId' && feeId) ) {
+      return dispatch({
+        type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+        payload: {
+          classTypeId,
+          schoolYearId,
+          dayAdmission: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: dayAdmission,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          }),
+          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
+          feeId: name === 'feeId' ? value : feeId,
+          student: 'new'
+        },
+        callback: (res) => {
+          newTuition[index] = {
+            ...newTuition[index],
+            [name]: value,
+            money: res?.money || 0,
+          };
+          if (error) {
+            checkValidate(newTuition, 'tuition');
+          }
+          return setTuition(newTuition);
+        },
+      });;
+    };
     newTuition[index] = {
-      ...record,
+      ...newTuition[index],
       [name]: value
     };
     if (error) {
       checkValidate(newTuition, 'tuition');
     }
-    setTuition(newTuition);
+    return setTuition(newTuition);
+  };
+
+  const onChange = async (event, record, name) => {
+    let value = event;
+    if (name === 'content') {
+      value = event.target.value;
+    }
+    const index = _.findIndex(tuition, (item) => item.id === record?.id);
+    getMoney(formRef, tuition, name, value , index);
   };
 
   const removeLine = (record) => {
@@ -112,18 +149,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
       key: 'money',
       className: 'min-width-120',
       render: (record) => (
-        <>
-          <FormItem
-            className="mb-0"
-            type={variables.INPUT_NUMBER}
-            rules={[variables.RULES.EMPTY]}
-            value={record?.money}
-            onChange={(e) => onChange(e, record, 'money')}
-          />
-          {error && !(record?.money) && (
-            <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
-          )}
-        </>
+        <FormItem
+          className="mb-0 input-noborder"
+          type={variables.INPUT}
+          rules={[variables.RULES.EMPTY]}
+          value={record?.money}
+          onChange={(e) => onChange(e, record, 'money')}
+        />
       )
     },
     {
@@ -146,9 +178,9 @@ const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
       ...tuition,
       {
         id: uuidv4(),
-        feeId: "",
-        paymentFormId: "",
-        money: "",
+        feeId: null,
+        paymentFormId: null,
+        money: 0,
       }
     ]);
   };
@@ -156,7 +188,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
   return (
     <>
       <Table
-        className="content-vertical-top"
+        className="content-vertical-top mb20"
         columns={columns}
         dataSource={tuition}
         loading={false}
@@ -166,8 +198,8 @@ const Index = memo(({ tuition, setTuition, error, checkValidate }) => {
         rowKey="id"
         scroll={{ x: '100%' }}
       />
-      {!(params?.id) && (
-        <Pane className="m20">
+      {addFees && (
+        <Pane className="px20 pt20">
           <Button
             className="btn-create"
             color="success"
@@ -190,6 +222,8 @@ Index.propTypes = {
   setTuition: PropTypes.func,
   error: PropTypes.bool,
   checkValidate: PropTypes.func,
+  addFees: PropTypes.bool,
+  formRef: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -197,6 +231,8 @@ Index.defaultProps = {
   setTuition: () => {},
   error: false,
   checkValidate: () => {},
+  addFees: false,
+  formRef: {}
 };
 
 export default Index;
