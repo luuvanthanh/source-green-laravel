@@ -231,7 +231,7 @@ const Index = memo(() => {
                   placeholder="Chọn năm"
                   onChange={e => onChange(e, 'schoolYearId')}
                   allowClear={false}
-                  data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
+                  data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
                   rules={[variables.RULES.EMPTY]}
                 />
               </div>
