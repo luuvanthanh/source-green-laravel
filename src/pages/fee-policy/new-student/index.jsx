@@ -223,7 +223,7 @@ class Index extends PureComponent {
         title: 'Tổng học phí đóng đ',
         key: 'totalMoney',
         className: 'min-width-200',
-        render: (record) => Helper.getPrice(record.totalMoney) || ''
+        render: (record) => Helper.getPrice(record.totalMoney) || 0
       },
       {
         key: 'action',

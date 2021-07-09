@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import _ from 'lodash';
+import _, { isEmpty } from 'lodash';
 import moment from 'moment';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -32,23 +32,27 @@ const Index = memo(() => {
     loading,
     menuLeftFeePolicy,
     yearsSchool,
-    classes
-  } = useSelector(({ loading, menu, schoolYear, classType }) => ({
+    classes,
+    students,
+  } = useSelector(({ loading, menu, schoolYear, classType, newStudentAdd }) => ({
     loading: loading.effects,
     menuLeftFeePolicy: menu.menuLeftFeePolicy,
     yearsSchool: schoolYear.data,
-    classes: classType.data
+    classes: classType.data,
+    students: newStudentAdd.students
   }));
 
   const dispatch = useDispatch();
 
   const history = useHistory();
   const formRef = useRef();
+  const type = formRef?.current?.getFieldValue('type');
 
   const [tuition, setTuition] = useState([]);
   const [errorTable, setErrorTable] = useState({
     tuition: false,
   });
+  const [addFees, setAddFees] = useState(false);
 
   useEffect(() => {
     dispatch({
@@ -83,7 +87,7 @@ const Index = memo(() => {
               id: item.id,
               feeId: item.feeId || '',
               paymentFormId: item.paymentFormId || '',
-              money: item.money || '',
+              money: item.money || 0,
             })));
           }
         },
@@ -157,14 +161,72 @@ const Index = memo(() => {
     }
   };
 
+  const loadTableFees = () => {
+    const { getFieldsValue } = formRef?.current;
+    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
+    if (schoolYearId && classTypeId && dayAdmission) {
+      setAddFees(true);
+    } else {
+      setAddFees(false);
+    }
+    setTuition([]);
+  };
+
   const changeDateOfBirth = (date) => {
     if (!date) {
       return;
     }
     const age = (Math.round( moment().diff(date, 'months', true) * 100 ) / 100).toFixed(0);
+    dispatch({
+      type: 'classType/GET_CLASS_BY_AGE',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE,
+        age,
+      },
+      callback: (res) => {
+        if (!_.isEmpty(res)) {
+          formRef.current.setFieldsValue({
+            classTypeId: res[0].id,
+          });
+          loadTableFees();
+        }
+      },
+    });
     formRef.current.setFieldsValue({
       age,
     });
+  };
+
+  const changeTab = (e) => {
+    formRef.current.resetFields();
+    setTuition([]);
+    const { value } = e.target;
+    formRef.current.setFieldsValue({
+      type: value,
+    });
+    dispatch({
+      type: 'newStudentAdd/GET_STUDENTS',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+  };
+
+  const selectStudent = (value) => {
+    if (value && isEmpty(students)) {
+      return;
+    }
+    const response = students.find(item => item.id === value);
+    if (response?.id) {
+      formRef.current.setFieldsValue({
+        ...response,
+        dateOfBirth: moment(response.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        type,
+      });
+    }
   };
 
   return (
@@ -182,26 +244,44 @@ const Index = memo(() => {
           >
             <Pane className="card">
               <Pane className="p20">
-                <Heading type="form-title" className="mb20">
+                <Heading type="form-title" className={!params?.id ? "mb20" : ''}>
                   Thông tin học sinh
                 </Heading>
-                <FormItem
-                  className="row-radio-auto mb0"
-                  type={variables.RADIO}
-                  data={radios}
-                  rules={[variables.RULES.EMPTY]}
-                  name="type"
-                />
+                {!params?.id && (
+                  <FormItem
+                    className="row-radio-auto mb0"
+                    type={variables.RADIO}
+                    data={radios}
+                    rules={[variables.RULES.EMPTY]}
+                    name="type"
+                    onChange={changeTab}
+                  />
+                )}
               </Pane>
               <Pane className="p20 border-top">
                 <div className="row">
                   <div className="col-lg-3">
-                    <FormItem
-                      label="Tên học sinh"
-                      name="nameStudent"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
+                    {type === 'newStudent' ? (
+                      <FormItem
+                        label="Tên học sinh"
+                        name="nameStudent"
+                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                        type={variables.INPUT}
+                      />
+                    ) : (
+                      <FormItem
+                        className="mb-0"
+                        label="Tên học sinh"
+                        name="nameStudent"
+                        type={variables.SELECT}
+                        placeholder="Chọn học sinh"
+                        allowClear={false}
+                        data={students.map(item => ({ ...item, name: item?.nameStudent || '-' }))}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={selectStudent}
+                      />
+                    )}
+
                   </div>
                   <div className="col-lg-3">
                     <FormItem
@@ -213,16 +293,19 @@ const Index = memo(() => {
                       allowClear={false}
                       data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
                       rules={[variables.RULES.EMPTY]}
+                      onChange={loadTableFees}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
+                      className={type === 'oldStudent' ? 'input-noborder' : ''}
                       label="Ngày sinh"
                       name="dateOfBirth"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
                       onChange={changeDateOfBirth}
                       allowClear={false}
+                      disabledDate={(current) => current > moment().add(-1, 'day')}
                     />
                   </div>
                   <div className="col-lg-3">
@@ -237,11 +320,13 @@ const Index = memo(() => {
                   </div>
                   <div className="col-lg-3">
                     <FormItem
+                      className={type === 'oldStudent' ? 'input-noborder' : ''}
                       label="Ngày nhập học"
                       name="dayAdmission"
                       type={variables.DATE_PICKER}
                       rules={[variables.RULES.EMPTY]}
                       allowClear={false}
+                      onChange={loadTableFees}
                     />
                   </div>
                   <div className="col-lg-3">
@@ -251,6 +336,7 @@ const Index = memo(() => {
                       data={classes}
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
+                      onChange={loadTableFees}
                     />
                   </div>
                   <div className="col-lg-3">
@@ -288,11 +374,18 @@ const Index = memo(() => {
                 </div>
               </Pane>
             </Pane>
-            <Pane className="card mb0">
+            <Pane className="card pb20">
               <Heading type="form-title" className="heading-tab p20">
                 Các khoản học phí
               </Heading>
-              <TypeFees tuition={tuition} setTuition={setTuition} error={errorTable?.tuition} checkValidate={checkValidate}/>
+              <TypeFees
+                tuition={tuition}
+                setTuition={setTuition}
+                error={errorTable?.tuition}
+                checkValidate={checkValidate}
+                addFees={addFees}
+                formRef={formRef}
+              />
             </Pane>
             <Pane className="p20 d-flex justify-content-between align-items-center">
               <p className="btn-delete" role="presentation" onClick={remove}>

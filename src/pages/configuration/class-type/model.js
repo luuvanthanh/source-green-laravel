@@ -47,6 +47,14 @@ export default {
         });
       }
     },
+    *GET_CLASS_BY_AGE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getClassByAge, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

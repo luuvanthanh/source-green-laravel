@@ -19,3 +19,19 @@ export function update(data = {}) {
     data
   });
 }
+
+export function moneyFeePolicies(params = {}) {
+  return request('/v1/money-fee-policies', {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getStudents(params = {}) {
+  return request('/v1/potential-students', {
+    method: 'GET',
+    params: {
+      ...params
+    },
+  });
+}
