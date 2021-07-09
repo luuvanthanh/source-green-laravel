@@ -97,6 +97,7 @@ const Index = memo(() => {
 
   const remove = () => {
     formRef.current.resetFields();
+    setTuition([]);
   };
 
   const checkProperties = (object) => {
