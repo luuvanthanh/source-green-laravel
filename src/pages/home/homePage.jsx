@@ -15,6 +15,7 @@ import Overview from './overview';
 import Application from './application';
 import Student from './student';
 import Activity from './activity';
+import Warning from './warning';
 
 const { TabPane } = Tabs;
 
@@ -107,6 +108,8 @@ class HomePage extends PureComponent {
         return <Student classId={classId} />;
       case 'activity':
         return <Activity classId={classId} />;
+      case 'warning':
+        return <Warning classId={classId} />;
       default:
         return <Overview classId={classId} />;
     }
