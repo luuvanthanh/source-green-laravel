@@ -11,6 +11,7 @@ export default {
     categories: {
       users: [],
       absentTypes: [],
+      paramaterValues: []
     },
     details: {},
   },
@@ -38,6 +39,7 @@ export default {
       ...state,
       categories: {
         users: payload.users.parsePayload,
+        paramaterValues: payload.paramaterValues.parsePayload,
       },
     }),
   },
@@ -46,6 +48,7 @@ export default {
       try {
         const response = yield saga.all({
           users: saga.call(categories.getUsers),
+          paramaterValues: saga.call(services.getParamaterValues),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',
