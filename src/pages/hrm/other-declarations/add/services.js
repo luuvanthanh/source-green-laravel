@@ -16,6 +16,18 @@ export function getAbsentTypes() {
   });
 }
 
+export function getParamaterValues() {
+  return request(`/v1/paramater-values`, {
+    method: 'GET',
+    params: {
+      type: 'DECLARE',
+      search: Helper.convertParamSearchConvert({
+        Type: 'DECLARE',
+      }),
+    },
+  });
+}
+
 export function add(data = {}) {
   return request('/v1/other-declarations', {
     method: 'POST',

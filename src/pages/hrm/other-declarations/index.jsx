@@ -33,6 +33,7 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ otherDeclarations, loading }) => ({
   data: otherDeclarations.data,
   pagination: otherDeclarations.pagination,
+  paramaterValues: otherDeclarations.paramaterValues,
   loading,
 });
 @connect(mapStateToProps)
@@ -58,6 +59,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -76,6 +78,14 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'otherDeclarations/GET_PARAMATER_VALUES',
+      payload: {},
+    });
   };
 
   /**
@@ -211,8 +221,9 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
+      paramaterValues,
     } = this.props;
-    return [
+    const columns = [
       {
         title: 'Các tháng đã khai báo',
         key: 'time',
@@ -244,55 +255,6 @@ class Index extends PureComponent {
         },
       },
       {
-        title: 'Phụ cấp HT-TCSK',
-        key: 'allowance',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.allowance),
-      },
-      {
-        title: 'Thưởng tháng 13',
-        key: 'bonus',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.bonus),
-      },
-      {
-        title: 'Truy lĩnh',
-        key: 'retrieval',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.retrieval),
-      },
-      {
-        title: 'Thanh toán BHXH',
-        key: 'paymentOfSocialInsurance',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => Helper.getPrice(record.paymentOfSocialInsurance),
-      },
-      {
-        title: 'Điều chỉnh BHXH NLĐ',
-        key: 'employeeSocialInsurance',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getPrice(record.employeeSocialInsurance),
-      },
-      {
-        title: 'Điều chỉnh BHXH CTT',
-        key: 'companySocialInsurance',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getPrice(record.companySocialInsurance),
-      },
-      {
-        title: 'Đóng góp từ thiện',
-        key: 'charity',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getPrice(record.charity),
-      },
-      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -314,6 +276,17 @@ class Index extends PureComponent {
         },
       },
     ];
+    const columnsMerge = paramaterValues.map((item) => ({
+      title: item.name,
+      key: item.code,
+      className: 'min-width-200',
+      width: 200,
+      render: (record) => {
+        const itemParamater = record?.detail?.find((itemDetail) => itemDetail.code === item.code);
+        return Helper.getPrice(itemParamater?.value);
+      },
+    }));
+    return [...columns.slice(0, 3), ...columnsMerge, ...columns.slice(3)];
   };
 
   render() {
@@ -406,6 +379,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  paramaterValues: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -415,6 +389,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  paramaterValues: [],
 };
 
 export default Index;

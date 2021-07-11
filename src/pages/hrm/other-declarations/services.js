@@ -35,6 +35,18 @@ export function get(data = {}) {
   });
 }
 
+export function getParamaterValues() {
+  return request(`/v1/paramater-values`, {
+    method: 'GET',
+    params: {
+      type: 'DECLARE',
+      search: Helper.convertParamSearchConvert({
+        Type: 'DECLARE',
+      }),
+    },
+  });
+}
+
 export function remove(id) {
   return request(`/v1/other-declarations/${id}`, {
     method: 'DELETE',
