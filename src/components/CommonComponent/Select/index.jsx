@@ -5,14 +5,12 @@ import Helper from '@/utils/Helper';
 
 import NoData from '../NoData';
 
-export default function SelectCustom({ options, dataSet, ...rest }) {
+export default function SelectCustom({ options, dataSet, notFoundContent, filterOption, ...rest }) {
   return (
     <Select
       {...rest}
-      filterOption={(input, option) =>
-        Helper.slugify(option.children)?.indexOf(Helper.slugify(input)) >= 0
-      }
-      notFoundContent={<NoData simple />}
+      filterOption={filterOption}
+      notFoundContent={ notFoundContent || <NoData simple />}
     >
       {dataSet.map((item) => (
         <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]}>
@@ -26,10 +24,16 @@ export default function SelectCustom({ options, dataSet, ...rest }) {
 SelectCustom.propTypes = {
   options: PropTypes.arrayOf(PropTypes.any),
   dataSet: PropTypes.arrayOf(PropTypes.any).isRequired,
+  notFoundContent: PropTypes.any,
+  filterOption: PropTypes.any,
 };
 
 SelectCustom.defaultProps = {
   options: ['id', 'name'],
+  notFoundContent: (
+    <NoData simple />
+  ),
+  filterOption: (input, option) => Helper.slugify(option.children)?.indexOf(Helper.slugify(input)) >= 0
 };
 
 SelectCustom.displayName = 'Button';
