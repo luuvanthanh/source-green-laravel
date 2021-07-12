@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty, map } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -27,12 +26,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ reportFees, schoolYear, loading }) => ({
+const mapStateToProps = ({ reportFees, schoolYear, classType, OPchildren, loading }) => ({
   data: reportFees.data,
   error: reportFees.error,
   pagination: reportFees.pagination,
   loading,
-  yearsSchool: schoolYear.data
+  yearsSchool: schoolYear.data,
+  classTypes: classType.data,
+  students: OPchildren.data
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,8 +46,10 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
-        schoolYearId: query?.schoolYearId,
+        schoolYearId: query?.schoolYearId || '',
+        branchId: query?.branchId || '',
+        classTypeId: query?.classTypeId || '',
+        studentId: query?.studentId || '',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -62,8 +65,14 @@ class Index extends PureComponent {
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
-    this.getStudents();
-
+    this.props.dispatch({
+      type: 'OPchildren/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    this.loadData();
   }
 
   componentWillUnmount() {
@@ -87,7 +96,7 @@ class Index extends PureComponent {
   /**
    * Function load data
    */
-  getStudents = () => {
+  loadData = () => {
     const { search } = this.state;
     const {
       location: { pathname },
@@ -106,31 +115,19 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.getStudents(),
-    );
-  }, 300);
-
-  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChange = (e, type) => {
-    this.debouncedSearch((e?.target?.value || e), type);
+  onChange = (value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [type]: value,
+        },
+      }),
+    );
   };
 
   /**
@@ -148,7 +145,7 @@ class Index extends PureComponent {
         },
       }),
       () => {
-        this.getStudents();
+        this.loadData();
       },
     );
   };
@@ -186,7 +183,7 @@ class Index extends PureComponent {
           },
           callback: (response) => {
             if (response) {
-              self.getStudents();
+              self.loadData();
             }
           },
         });
@@ -197,77 +194,73 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => {
+  header = (name, columnsName) => {
     const columns = [
       {
-        title: 'Mã học sinh',
-        key: 'code',
-        className: 'min-width-150',
-        render: (record) => record?.student?.code || '',
-      },
-      {
-        title: 'Tên học sinh',
-        key: 'fullName',
-        className: 'min-width-200',
-        render: (record) => record?.student?.fullName || '',
-      },
-      {
-        title: 'Cơ sở',
-        key: 'branch',
-        className: 'min-width-200',
-        render: (record) => record?.student?.classStudent?.class?.branch?.name || '',
-      },
-      {
-        title: 'Khối lớp',
-        key: 'grade',
-        className: 'min-width-100',
-        render: (record) => record?.grade || '',
-      },
-      {
-        title: 'Lớp',
-        key: 'class',
-        className: 'min-width-150',
-        render: (record) => record?.student?.classStudent?.class?.name || '',
-      },
-      {
-        title: 'Năm học',
-        key: 'schoolYear',
-        className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
-      },
-      {
-        title: 'Chi tiết các loại phí',
-        key: 'tuition',
-        className: 'min-width-150',
-        render: (record) => !isEmpty(record?.tuition) ? map(record?.tuition, 'fee.name').join(', ') : '',
-      },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-cu/${record?.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
-      },
+        title: name,
+        align: 'left',
+        children: [
+          {
+            title: 'Tháng',
+            dataIndex: 'student',
+            key: 'month',
+            width: 150,
+            className: 'min-width-150',
+            render: (record) => record?.[`${columnsName?.month}`] || '2/21',
+          },
+          {
+            title: 'Số tiền',
+            dataIndex: 'money',
+            key: 'money',
+            className: 'min-width-200',
+            width: 200,
+            render: (record) => record?.[`${columnsName.money}`] || '10,000,000',
+          },
+          {
+            title: 'Ngày đến hạn',
+            dataIndex: 'dueDate',
+            key: 'dueDate',
+            width: 150,
+            className: 'min-width-150',
+            render: (record) => record?.[`${columnsName.dueDate}`] || '25/07/21',
+          },
+          {
+            title: 'Đã nộp',
+            dataIndex: 'dn',
+            key: 'dn',
+            width: 150,
+            className: 'min-width-150',
+            render: (record) => record?.[`${columnsName.dn}`] || '10,000,000',
+          },
+          {
+            title: 'Còn lại',
+            dataIndex: 'cl',
+            key: 'cl',
+            width: 150,
+            className: 'min-width-150',
+            render: (record) => record?.[`${columnsName.cl}`] || '0',
+          },
+        ]
+      }
     ];
     return columns;
   };
 
+  onFinish = () => {
+    this.loadData();
+  }
+
+  exportData = () => {
+    Helper.exportExcel('/v1/dismisseds-export-word', {}, 'QDMienNhiem.docx');
+  };
+
   render() {
     const {
-      match: { params },
       pagination,
       loading: { effects },
-      location: { pathname },
       data,
-      yearsSchool
+      yearsSchool,
+      students,
     } = this.props;
     const { search } = this.state;
     const loading = effects['reportFees/GET_DATA'];
@@ -277,43 +270,79 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Lịch nộp tiền học</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
           </div>
-          <div className={styles['block-table']}>
+          <div className={classnames(styles['block-table'], 'mb20', 'pb0')}>
             <Form
               initialValues={{
                 ...search,
               }}
               layout="vertical"
               ref={this.formRef}
+              onFinish={this.onFinish}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
+                    label="Mã học sinh"
+                    name="studentId"
+                    type={variables.SELECT}
+                    placeholder="Chọn học sinh"
+                    allowClear={false}
+                    data={students.map(item => ({ ...item, name: item.code || '-' }))}
+                    onChange={(event) => this.onChange(event, 'studentId')}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
+                    label="Năm học"
                     name="schoolYearId"
                     type={variables.SELECT}
                     placeholder="Chọn năm"
                     allowClear={false}
                     data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
-                    rules={[variables.RULES.EMPTY]}
                     onChange={(event) => this.onChange(event, 'schoolYearId')}
                   />
                 </div>
+                <div className="col-lg-3">
+                  <Button color="success" className="mb20 no-label" htmlType="submit" >
+                    <span className="icon icon-report" />
+                    <span>Tải dữ liệu</span>
+                  </Button>
+                </div>
               </div>
             </Form>
+          </div>
+          <div className={styles['block-table']}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <Text color="dark">Chi tiết báo cáo</Text>
+              <Button color="primary" onClick={this.exportData} icon="export">
+                Export
+              </Button>
+            </div>
             <Table
               bordered
-              columns={this.header(params)}
+              columns={[
+                ...this.header('Tiền học phí A1'),
+                ...[{
+                  ...this.header('Tiền ăn A2')[0],
+                  children: [...this.header('Tiền ăn A2')[0].children.slice(1)]
+                }]
+              ]}
+              dataSource={data}
+              loading={loading}
+              pagination={this.pagination(pagination)}
+              params={{
+                header: this.header(),
+                type: 'table',
+              }}
+              rowKey={(record) => record.id}
+              scroll={{ x: '100%' }}
+            />
+            <Table
+              bordered
+              columns={[
+                ...this.header('Các loại phí khác A3'),
+              ]}
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
@@ -332,23 +361,23 @@ class Index extends PureComponent {
 }
 
 Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
   yearsSchool: PropTypes.arrayOf(PropTypes.any),
+  students: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
-  match: {},
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
   data: [],
-  yearsSchool: []
+  yearsSchool: [],
+  students: []
 };
 
 export default Index;
