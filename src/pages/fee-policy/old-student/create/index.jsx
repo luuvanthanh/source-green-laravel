@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, Spin } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import _ from 'lodash';
@@ -48,16 +48,20 @@ const Index = memo(() => {
     classTypeId: '',
   });
 
+  const getStudents = (keyWord = '') => {
+    dispatch({
+      type: 'OPchildren/GET_DATA',
+      payload: {
+        keyWord: keyWord || undefined,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+      },
+    });
+  };
+
   useEffect(() => {
     dispatch({
       type: 'schoolYear/GET_DATA',
-      payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
-    });
-    dispatch({
-      type: 'OPchildren/GET_DATA',
       payload: {
         page: variables.PAGINATION.PAGE,
         limit: variables.PAGINATION.SIZEMAX,
@@ -72,6 +76,7 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res) {
+            getStudents(res?.student?.code);
             setTuition(res?.tuition);
             setDetails((prev) => ({
               ...prev,
@@ -92,6 +97,8 @@ const Index = memo(() => {
           }
         },
       });
+    } else {
+      getStudents();
     }
   }, []);
 
@@ -194,6 +201,10 @@ const Index = memo(() => {
     }
   };
 
+  const onSearch = _.debounce((val) => {
+    getStudents(val);
+  }, 300);
+
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
       <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
@@ -235,10 +246,13 @@ const Index = memo(() => {
                     <FormItem
                       label="Mã học sinh"
                       name="studentId"
-                      data={[...students].map(item => ({ ...item, name: item.code || '-' }) )}
+                      data={loading['OPchildren/GET_DATA'] ? [] : [...students].map(item => ({ ...item, name: item.code || '-' }) )}
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
                       onChange={changeStudent}
+                      onSearch={onSearch}
+                      notFoundContent={loading['OPchildren/GET_DATA'] ? <Spin size="small" /> : null}
+                      filterOption
                     />
                   </div>
                   <div className="col-lg-9">

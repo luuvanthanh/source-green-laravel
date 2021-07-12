@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Spin } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -10,6 +10,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 let isMounted = true;
 /**
@@ -65,13 +66,7 @@ class Index extends PureComponent {
         limit: variables.PAGINATION.SIZEMAX,
       },
     });
-    this.props.dispatch({
-      type: 'OPchildren/GET_DATA',
-      payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
-    });
+    this.getStudents();
     this.loadData();
   }
 
@@ -91,6 +86,17 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  getStudents = (keyWord = '') => {
+    this.props.dispatch({
+      type: 'OPchildren/GET_DATA',
+      payload: {
+        keyWord: keyWord || undefined,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+      },
+    });
   };
 
   /**
@@ -254,6 +260,10 @@ class Index extends PureComponent {
     Helper.exportExcel('/v1/dismisseds-export-word', {}, 'QDMienNhiem.docx');
   };
 
+  onSearch = _.debounce((val) => {
+    this.getStudents(val);
+  }, 300);
+
   render() {
     const {
       pagination,
@@ -288,8 +298,11 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                     placeholder="Chọn học sinh"
                     allowClear={false}
-                    data={students.map(item => ({ ...item, name: item.code || '-' }))}
+                    data={effects['OPchildren/GET_DATA'] ? [] : students.map(item => ({ ...item, name: item.code || '-' }))}
                     onChange={(event) => this.onChange(event, 'studentId')}
+                    onSearch={this.onSearch}
+                    notFoundContent={effects['OPchildren/GET_DATA'] ? <Spin size="small" /> : null}
+                    filterOption
                   />
                 </div>
                 <div className="col-lg-3">

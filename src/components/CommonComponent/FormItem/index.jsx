@@ -45,6 +45,8 @@ const renderChildren = (
   options,
   checked,
   value,
+  notFoundContent,
+  filterOption
 ) => ({
   input: (
     <Input
@@ -98,10 +100,8 @@ const renderChildren = (
     <Select
       allowClear={allowClear}
       dataSet={data}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
-      notFoundContent={null}
+      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      notFoundContent={notFoundContent}
       onChange={onChange}
       onPopupScroll={handleScroll}
       onSearch={onSearch}
@@ -117,10 +117,8 @@ const renderChildren = (
       allowClear
       dataSet={data}
       dropdownRender={dropdownRender}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
-      notFoundContent={null}
+      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      notFoundContent={notFoundContent}
       onBlur={onBlur}
       onChange={onChange}
       onPopupScroll={handleScroll}
@@ -348,6 +346,8 @@ export default function FormItem({
   options,
   checked,
   value,
+  notFoundContent,
+  filterOption,
   ...rest
 }) {
   return (
@@ -375,6 +375,8 @@ export default function FormItem({
           options,
           checked,
           value,
+          notFoundContent,
+          filterOption
         )[type]
       }
     </Form.Item>
@@ -407,6 +409,8 @@ FormItem.propTypes = {
   options: PropTypes.arrayOf(PropTypes.any),
   checked: PropTypes.bool,
   value: PropTypes.any,
+  notFoundContent: PropTypes.any,
+  filterOption: PropTypes.bool,
 };
 
 FormItem.defaultProps = {
@@ -435,6 +439,8 @@ FormItem.defaultProps = {
   options: ['id', 'name'],
   checked: false,
   value: '',
+  notFoundContent: null,
+  filterOption: false
 };
 
 FormItem.displayName = 'Form';
