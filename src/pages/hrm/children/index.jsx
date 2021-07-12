@@ -233,7 +233,7 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Họ tên con',
+        title: 'Họ và tên',
         key: 'fullName',
         className: 'min-width-180',
         width: 180,
