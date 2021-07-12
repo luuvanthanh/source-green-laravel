@@ -356,3 +356,17 @@ form .ant-cascader-picker:only-child {
     }
   }
 }
+
+.header-search {
+  display: flex;
+  .form-search {
+    flex: 1;
+    margin-right: 20px;
+  }
+  @media (max-width: $md-max-width) {
+    display: block;
+    .form-search {
+      margin-right: 0;
+    }
+  }
+}
