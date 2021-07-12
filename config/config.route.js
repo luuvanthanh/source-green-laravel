@@ -1834,6 +1834,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu',
+            component: './fee-policy/report/expected-fees',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop',
+            component: './fee-policy/report/details-payments',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/bao-cao/lich-nop-tien-hoc',
+            component: './fee-policy/report/tuition-payment-schedule',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY

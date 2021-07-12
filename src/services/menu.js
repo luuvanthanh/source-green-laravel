@@ -1300,6 +1300,41 @@ export async function getLeftMenuHRM() {
 export async function getLeftMenuFeePolicy() {
   return [
     {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-report',
+      permission: [permissions.CHINHSACHPHI],
+      children: [
+        {
+          title: 'Dự kiến các khoản phải thu',
+          key: 'expected-fees',
+          url: [
+            '/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Chi tiết các khoản tiền nộp',
+          key: 'details-of-payments',
+          url: [
+            '/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Lịch nộp tiền học',
+          key: 'tuition-payment-schedule',
+          url: [
+            '/chinh-sach-phi/bao-cao/lich-nop-tien-hoc',
+          ],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Năm học',
       key: 'school-year',
       url: [
