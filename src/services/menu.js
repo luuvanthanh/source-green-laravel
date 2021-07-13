@@ -584,17 +584,6 @@ export async function getLeftMenuCriteria() {
       permission: [permissions.CTH],
       children: [
         {
-          title: 'Kiểu dữ liệu',
-          key: 'criteria-datatypes',
-          url: [
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu',
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu/tao-moi',
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu/:id/chi-tiet',
-          ],
-          permission: [permissions.CTH],
-          pro: true,
-        },
-        {
           title: 'Nhóm tiêu chí',
           key: 'criteria-groups',
           url: [

@@ -278,7 +278,7 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
+        title: 'Mã CT',
         key: 'index',
         align: 'center',
         className: 'min-width-60',
@@ -403,6 +403,7 @@ class Index extends PureComponent {
                         name: item.label,
                       })),
                     ]}
+                    allowClear={false}
                     type={variables.SELECT}
                     onChange={(event) => this.onChangeSelect(event, 'programType')}
                   />
