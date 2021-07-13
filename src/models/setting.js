@@ -25,7 +25,7 @@ export default {
       isMenuShadow: true,
       isGreenTheme: false
     }),
-    background: localStorage.getItem('background') || 'images/bg.png',
+    background: localStorage.getItem('background') || 'images/bg.jpg',
   },
   reducers: {
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
