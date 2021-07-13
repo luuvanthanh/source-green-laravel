@@ -41,8 +41,32 @@ class Index extends PureComponent {
         ...item,
         key: item.id,
       })),
+      categories: {
+        branches: [],
+        classes: [],
+      },
+      form: {
+        left: {
+          branchId: '',
+          classId: '',
+          keyWord: ''
+        },
+        right: {
+          branchId: '',
+          classId: '',
+          keyWord: ''
+        }
+      },
+      students: props.students.map((item) => ({
+        ...item,
+        key: item.id,
+      })),
     };
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    this.fetchBranches();
   }
 
   componentWillUnmount() {
@@ -61,6 +85,45 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  fetchBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          this.formRef?.current?.resetFields(['classId-left']);
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              branches: res?.parsePayload || [],
+              classes: []
+            },
+          }));
+        }
+      },
+    });
+  };
+
+  fetchClasses = (branchId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_CLASSES',
+      payload: {
+        branch: branchId,
+      },
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              classes: res?.items || [],
+            },
+          }));
+        }
+      },
+    });
   };
 
   handleCancel = () => {
@@ -115,11 +178,71 @@ class Index extends PureComponent {
     return columns;
   };
 
+  filterData = (data, keyWord, branchId, classId) => [...data].filter(item => {
+    const checkKeyWord = keyWord ? item?.fullName?.toUpperCase()?.indexOf(keyWord.toUpperCase()) !== -1 : true;
+    const checkBranchId = branchId ? item?.class?.branch?.id === branchId : true;
+    const checkClassId = classId ? item?.class?.id === classId : true;
+    return checkKeyWord && checkBranchId && checkClassId;
+  })
+
+  changeSearch = (e, name, direction) => {
+    let value = e;
+    if (name === 'keyWord') {
+      value = e?.target?.value;
+    }
+
+    const { form, students, targetKeys } = this.state;
+    let dataLeft = students.filter((item) => !targetKeys.includes(item.key));;
+    let dataRight = students.filter((item) => targetKeys.includes(item.key));;
+
+    let result = [];
+    if (name === 'keyWord') {
+      result = this.filterData(direction === 'left' ? dataLeft : dataRight, value, form[direction].branchId, form[direction].classId);
+    }
+    if (name === 'branchId') {
+      result = this.filterData(direction === 'left' ? dataLeft : dataRight, form[direction].keyWord, value, '');
+    }
+    if (name === 'classId') {
+      result = this.filterData(direction === 'left' ? dataLeft : dataRight, form[direction].keyWord, form[direction].branchId, value);
+    }
+
+    if (direction === 'left') {
+      dataLeft = result;
+    } else {
+      dataRight = result;
+    }
+
+    if (name === 'branchId') {
+      this.fetchClasses(e);
+      return this.setStateData(({ form }) => ({
+        dataSource: [...dataLeft, ...dataRight],
+        form: {
+          ...form,
+          [direction]: {
+            ...form[direction],
+            [name]: value,
+            classId: undefined,
+          },
+        },
+      }));
+    }
+    return this.setStateData(({ form }) => ({
+      dataSource: [...dataLeft, ...dataRight],
+      form: {
+        ...form,
+        [direction]: {
+          ...form[direction],
+          [name]: value
+        },
+      },
+    }));
+  }
+
   render() {
     const {
       loading: { effects },
     } = this.props;
-    const { targetKeys, dataSource } = this.state;
+    const { targetKeys, dataSource, categories, form } = this.state;
     const loadingSubmit = effects['BOContract/ADD'] || effects['BOContract/UPDATE'];
     return (
       <Modal
@@ -154,12 +277,16 @@ class Index extends PureComponent {
         <TableTransfer
           dataSource={dataSource}
           targetKeys={targetKeys}
-          showSearch
+          // showSearch
           onChange={this.onChange}
           filterOption={(inputValue, item) => item?.fullName?.indexOf(inputValue) !== -1}
           leftColumns={this.header()}
           rightColumns={this.header()}
           showSelectAll={false}
+          search={['keyWord', 'branch', 'class']}
+          changeSearch={(e, name, direction) => this.changeSearch(e, name, direction)}
+          categories={categories}
+          valuesForm={form}
         />
       </Modal>
     );
@@ -174,6 +301,7 @@ Index.propTypes = {
   listId: PropTypes.any,
   studentBusPlaces: PropTypes.arrayOf(PropTypes.any),
   students: PropTypes.arrayOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -184,6 +312,7 @@ Index.defaultProps = {
   listId: [],
   studentBusPlaces: [],
   students: [],
+  dispatch: {}
 };
 
 export default withRouter(Index);
