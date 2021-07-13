@@ -187,8 +187,7 @@ const Index = memo(() => {
             mountedSet(
               setToolGroups,
               response.toolGroupCurriculums.map((item) => ({
-                ...item.toolGroup,
-                isChoosed: item.isChoosed,
+                ...item,
               })),
             );
           }
