@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Tabs, Checkbox, Input } from 'antd';
+import { Form, Tabs, Checkbox, Input, Modal } from 'antd';
 import csx from 'classnames';
 import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory, Link } from 'umi';
@@ -47,6 +47,7 @@ const Index = memo(() => {
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
   });
+  const [listSDT, setListSDT] = useState({});
 
   const hiddenRoute = () => {
     mountedSet(setVisibleRoute, false);
@@ -108,6 +109,37 @@ const Index = memo(() => {
     if (values.id) {
       mountedSet(setSearch, { ...search, ...values });
     }
+  };
+
+  const cancelModal = () => {
+    setListSDT({});
+  };
+
+  const openModal = (name, item) => {
+    let title = '';
+    let data = [];
+    if (name === 'employee') {
+      title = "Gọi bảo mẫu";
+      data.push({
+        fullName: item?.fullName || '',
+        fileImage: item?.fileImage || '',
+        type: 'Bảo mẫu',
+        phone: item?.phoneNumber || ''
+      });
+    }
+    if (name === 'parents') {
+      title = "Gọi phụ huynh";
+      data = item?.map(item => ({
+        fullName: item?.parent?.fullName || '',
+        fileImage: item?.parent?.fileImage || '',
+        type: item?.relationType ? 'phụ huynh' : 'Người đưa đón',
+        phone: item?.parent?.phone || ''
+      }));
+    }
+    setListSDT({
+      title,
+      data,
+    });
   };
 
   return (
@@ -191,24 +223,46 @@ const Index = memo(() => {
 
                         {isEmpty(item?.student?.absentStudents) && (
                           <Pane className="col-lg-9">
-                            {item?.busPlaceLog && (
-                              <Checkbox.Group
-                                className="checkbox-large"
-                                value={
-                                  search.status === variablesModules.STATUS_TABS.SCHOOLWARD
-                                    ? item?.busPlaceLog?.schoolwardStatus
-                                    : item?.busPlaceLog?.homewardStatus
-                                }
-                                options={variablesModules.STATUS_BUS}
-                              />
-                            )}
-                            {!item?.busPlaceLog && (
-                              <Checkbox.Group
-                                className="checkbox-large"
-                                value={variablesModules.STATUS.NOT_YET_GOING}
-                                options={variablesModules.STATUS_BUS}
-                              />
-                            )}
+                            <div className="d-flex flex-wrap align-items-center">
+                              {item?.busPlaceLog && (
+                                <Checkbox.Group
+                                  className="checkbox-large mt5"
+                                  value={
+                                    search.status === variablesModules.STATUS_TABS.SCHOOLWARD
+                                      ? item?.busPlaceLog?.schoolwardStatus
+                                      : item?.busPlaceLog?.homewardStatus
+                                  }
+                                  options={variablesModules.STATUS_BUS}
+                                />
+                              )}
+                              {!item?.busPlaceLog && (
+                                <Checkbox.Group
+                                  className="checkbox-large mt5"
+                                  value={variablesModules.STATUS.NOT_YET_GOING}
+                                  options={variablesModules.STATUS_BUS}
+                                />
+                              )}
+                              {!isEmpty(item?.student?.employee) && (
+                                <div
+                                  className="ml15 pointer mt5 color-success"
+                                  onClick={() => openModal('employee', item?.student?.employee)}
+                                  aria-hidden
+                                >
+                                  <span className="icon icon-phone mr5" />
+                                  <span>Gọi bảo mẫu</span>
+                                </div>
+                              )}
+                              {!isEmpty(item?.student?.studentParents) && (
+                                <div
+                                  className="ml15 pointer mt5 color-success"
+                                  onClick={() => openModal('parents', item?.student?.studentParents)}
+                                  aria-hidden
+                                >
+                                  <span className="icon icon-phone mr5" />
+                                  <span>Gọi phụ huynh</span>
+                                </div>
+                              )}
+                            </div>
                             {item.description && <Input value={item.description} className="mt5" />}
                           </Pane>
                         )}
@@ -233,6 +287,28 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
+      <Modal
+        className={styles['modal-note']}
+        title={listSDT?.title}
+        visible={!!(listSDT?.title)}
+        width={576}
+        onCancel={cancelModal}
+        footer={null}
+      >
+        {!isEmpty(listSDT?.data) && listSDT?.data.map((item, index) => (
+          <div className={`d-flex justify-content-between align-items-center ${index !== 0 ? 'mt15' : ''}`} key={index}>
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(item?.fileImage)}
+              fullName={item?.fullName}
+              description={item?.type}
+            />
+            <div className="ml15 pointer mt5 color-success">
+              <span className="icon icon-phone mr5" />
+              <span>{item?.phone || ''}</span>
+            </div>
+          </div>
+        ))}
+      </Modal>
       {visibleRoute && (
         <RouteModal
           routes={data}

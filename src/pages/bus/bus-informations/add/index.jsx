@@ -271,7 +271,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-3">
                     <FormItem
-                      label="GPSID"
+                      label="MÃ IMEI THIẾT BỊ GPS"
                       name="gpsId"
                       type={variables.INPUT_COUNT}
                       rules={[variables.RULES.EMPTY]}
