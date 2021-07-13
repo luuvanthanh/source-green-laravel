@@ -20,7 +20,7 @@ class LoginLayout extends React.PureComponent {
           <div
             className={styles.content}
             style={{
-              backgroundImage: background ? `url(${background})` : `url('images/bg.png')`,
+              backgroundImage: background ? `url(${background})` : `url('images/bg.jpg')`,
             }}
           >
             {children}
