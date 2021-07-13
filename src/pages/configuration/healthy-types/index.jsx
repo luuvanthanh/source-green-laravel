@@ -104,6 +104,7 @@ const Index = memo(() => {
                           {itemConfig?.configProperty?.description}
                         </span>
                         <TimePicker
+                          disabled={!item.isActive}
                           style={{ minWidth: '100px' }}
                           format={variables.DATE_FORMAT.HOUR}
                           value={moment(itemConfig.value, variables.DATE_FORMAT.HOUR)}
