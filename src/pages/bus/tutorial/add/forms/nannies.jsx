@@ -41,11 +41,27 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    const { details } = props;
     this.state = {
-      busRouteNannies: !isEmpty(details.busRouteNannies) ? details.busRouteNannies : [{}],
+      dayOfWeeks: [],
     };
     setIsMounted(true);
+  }
+
+  componentDidMount() {
+    this.loadCategories();
+    const { details } = this.props;
+    if (!isEmpty(details?.busRouteNannies)) {
+      let dayOfWeeks = [];
+      details?.busRouteNannies?.forEach((item) => {
+        if (item?.dayOfWeeks) {
+          dayOfWeeks = [...dayOfWeeks, ...item?.dayOfWeeks];
+        }
+      });
+      this.setStateData({ dayOfWeeks });
+      this.formRef?.current?.setFieldsValue({
+        busRouteNannies: details?.busRouteNannies,
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -65,10 +81,6 @@ class Index extends PureComponent {
     }
     this.setState(state, callback);
   };
-
-  componentDidMount() {
-    this.loadCategories();
-  }
 
   loadCategories = () => {
     const { dispatch } = this.props;
@@ -108,41 +120,30 @@ class Index extends PureComponent {
     });
   };
 
-  enableSchedules = (items) => {
-    if (this.formRef.current) {
-      const data = this.formRef.current.getFieldsValue();
-      let dayOfWeeks = [];
-      data?.busRouteNannies?.forEach((item) => {
-        if (item?.dayOfWeeks) {
-          dayOfWeeks = [...dayOfWeeks, ...item?.dayOfWeeks];
-        }
-      });
-      return variablesModules.DAYS.filter(
-        (item) =>
-          !!items.find((itemSchedule) => itemSchedule.dayOfWeek === item.id) &&
-          !dayOfWeeks.includes(item.id),
-      );
-    }
-    return [];
-  };
+  onChangeTime = () => {
+    const data = this.formRef.current.getFieldsValue();
+    let dayOfWeeks = [];
+    data?.busRouteNannies?.forEach((item) => {
+      if (item?.dayOfWeeks) {
+        dayOfWeeks = [...dayOfWeeks, ...item?.dayOfWeeks];
+      }
+    });
+    this.setStateData({ dayOfWeeks });
+  }
 
   render() {
     const {
-      details,
       error,
       employees,
       loading: { effects },
     } = this.props;
-    const { busRouteNannies } = this.state;
+    const { dayOfWeeks } = this.state;
     const loading = effects['tutorialAddV2/GET_DETAILS'] || effects['tutorialAddV2/GET_EMPLOYEES'];
     const loadingSubmit = effects['tutorialAddV2/ADD'] || effects['tutorialAddV2/UPDATE'];
     return (
       <Form
         layout="vertical"
         ref={this.formRef}
-        initialValues={{
-          busRouteNannies,
-        }}
         onFinish={this.onFinish}
       >
         <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
@@ -180,8 +181,9 @@ class Index extends PureComponent {
                             <div className="row">
                               <div className="col-lg-12">
                                 <FormItem
-                                  data={this.enableSchedules(details?.busRouteSchedules || [])}
+                                  data={variablesModules.DAYS.filter((item) => !dayOfWeeks.includes(item.id))}
                                   label="Thời gian"
+                                  onChange={this.onChangeTime}
                                   fieldKey={[field.fieldKey, 'dayOfWeeks']}
                                   name={[field.name, 'dayOfWeeks']}
                                   type={variables.SELECT_MUTILPLE}
