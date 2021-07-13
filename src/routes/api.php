@@ -172,4 +172,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
+    //face-book
+    \GGPHP\Facebook\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });

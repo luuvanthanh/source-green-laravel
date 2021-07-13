@@ -8,56 +8,52 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Zalo\Zalo;
+use Zalo\ZaloEndPoint;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ResponseTrait;
 
-    public function webhook(Request $request)
+    public function zalo(Request $request)
     {
+        $config = array(
+            'app_id' => '176286014935476029',
+            'app_secret' => 'vBRk6NCSGQIGHLW5JGVX',
+            'callback_url' => 'https://87d07c9f4241.ngrok.io/zalo/',
+        );
 
-        $access_token = "EAAHdA7jSIYIBAPiHLw9D8FMbaFup1eWTzvTj4lZBotnwSklE9pp3uD49VZBzEaDUAuGQWPMHdepZAmfSwWkpM1iA4CNlQwcDLOGqB4SNJkdyvBCKYsUomd7IZCjw7TmZCOKNVB5vy0jTUcYGWZBlsc4YxZAGqjnlGnd0aZBlWjOtaZBP3kIofSoNw";
-        $verify_token = "clover";
-        $hub_verify_token = null;
+        $zalo = new Zalo($config);
 
-        $data = $request->all();
+        $helper = $zalo->getRedirectLoginHelper();
 
-        $id = $data["entry"][0]["messaging"][0]["sender"]["id"];
-        $senderMessage = $data["entry"][0]["messaging"][0]['message'];
+        $callBackUrl = "https://87d07c9f4241.ngrok.io/zalo/";
 
-        if (!empty($senderMessage)) {
-            $this->sendTextMessage($id, "Hi buddy");
+        $oauthCode = isset($_GET['code']) ? $_GET['code'] : "THIS NOT CALLBACK PAGE !!!"; // get oauthoauth code from url params
+        $accessToken = $helper->getAccessToken($callBackUrl); // get access token
+
+        if ($accessToken != null) {
+            echo $accessToken;
+            $expires = $accessToken->getExpiresAt(); // get expires time
+            $params = ['fields' => 'id,name,birthday,gender,picture'];
+            $response = $zalo->get(ZaloEndpoint::API_GRAPH_ME, $accessToken, $params);
+            $result = $response->getDecodedBody(); // result
+            // $params = ['offset' => 0, 'limit' => 10, 'fields' => "id, name"];
+            // $response = $zalo->get(ZaloEndpoint::API_GRAPH_INVITABLE_FRIENDS, $accessToken, $params);
+            // $result = $response->getDecodedBody(); // result
+            echo "<pre>";
+            print_r($result);
+        } else {
+            $loginUrl = $helper->getLoginUrl($callBackUrl); // This is login url
+
         }
-
-        // if (isset($request->hub_challenge)) {
-        //     $challenge = $request->hub_challenge;
-        //     $hub_verify_token = $request->hub_verify_token;
-        // }
-
-        // if ($hub_verify_token === $verify_token) {
-        //     return $challenge;
-        // }
-
     }
 
-    private function sendTextMessage($recipientId, $messageText)
+    public function webhookZalo(Request $request)
     {
-        $messageData = [
-            "recipient" => [
-                "id" => $recipientId,
-            ],
-            "message" => [
-                "text" => $messageText,
-            ],
-        ];
-        $ch = curl_init('https://graph.facebook.com/v2.6/me/messages?access_token=' . env("PAGE_ACCESS_TOKEN"));
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($messageData));
-        curl_exec($ch);
-        curl_close($ch);
+        $data = $request->all();
+
+        \Log::info('ac', $data);
 
     }
 }

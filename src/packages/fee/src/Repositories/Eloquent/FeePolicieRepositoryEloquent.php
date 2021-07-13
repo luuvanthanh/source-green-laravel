@@ -282,6 +282,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
                 break;
         }
+
         return [
             'data' => [
                 'dayAdmission' => $attributes['dayAdmission'],
