@@ -57,6 +57,8 @@ class Index extends PureComponent {
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
+        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
       },
     };
     setIsMounted(true);
@@ -99,10 +101,16 @@ class Index extends PureComponent {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+          creationTimeFrom: Helper.getDate(search.creationTimeFrom, variables.DATE_FORMAT.DATE_AFTER),
+          creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -209,6 +217,36 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
+  };
+
+   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+    debouncedSearchDateRank = debounce((creationTimeFrom, creationTimeTo) => {
+      this.setStateData(
+        (prevState) => ({
+          search: {
+            ...prevState.search,
+            creationTimeFrom,
+            creationTimeTo,
+          },
+        }),
+        () => this.onLoad(),
+      );
+    }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -397,6 +435,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                date: search.creationTimeFrom && search.creationTimeTo && [moment(search.creationTimeFrom), moment(search.creationTimeTo)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -428,9 +467,10 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>

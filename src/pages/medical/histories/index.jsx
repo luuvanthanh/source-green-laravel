@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -47,6 +47,8 @@ class Index extends PureComponent {
         actionType: query?.actionType,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
+        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
       },
     };
     setIsMounted(true);
@@ -54,6 +56,15 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location: { query },
+    } = this.props;
+    if (query !== prevProps?.location?.query && isEmpty(query)) {
+      this.initSearch();
+    }
   }
 
   componentWillUnmount() {
@@ -74,11 +85,31 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  initSearch = () => {
+    const {
+      location: { query },
+    } = this.props;
+    this.setStateData(
+      {
+        search: {
+          actionType: query?.actionType,
+          page: query?.page || variables.PAGINATION.PAGE,
+          limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+          creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
+          creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
+        },
+      },
+      () => {
+        this.onLoad();
+      },
+    );
+  };
+
   /**
    * Function load data
    */
   onLoad = () => {
-    const { search, status } = this.state;
+    const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
@@ -86,10 +117,21 @@ class Index extends PureComponent {
       type: 'medicalHistories/GET_DATA',
       payload: {
         ...search,
-        status,
       },
     });
-    history.push(`${pathname}?${Helper.convertParamSearchConvert(search, variables.QUERY_STRING)}`);
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+          creationTimeFrom: Helper.getDate(
+            search.creationTimeFrom,
+            variables.DATE_FORMAT.DATE_AFTER,
+          ),
+          creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -139,6 +181,36 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((creationTimeFrom, creationTimeTo) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          creationTimeFrom,
+          creationTimeTo,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
+  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -180,6 +252,15 @@ class Index extends PureComponent {
    */
   header = () => [
     {
+      title: 'STT',
+      key: 'index',
+      align: 'center',
+      className: 'min-width-60',
+      width: 60,
+      render: (text, record, index) =>
+        Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+    },
+    {
       title: 'Thời gian',
       key: 'code',
       width: 150,
@@ -194,7 +275,11 @@ class Index extends PureComponent {
       title: 'Tên tài khoản',
       key: 'name',
       className: 'min-width-130',
-      render: () => 'Nguyễn Ngọc Bích',
+      render: (record) => (
+        <Text size="normal">
+          {record?.creator?.objectInfo?.fullName || record?.creator?.userName}
+        </Text>
+      ),
     },
     {
       title: 'Hành động',
@@ -233,6 +318,11 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                date: search.creationTimeFrom &&
+                  search.creationTimeTo && [
+                    moment(search.creationTimeFrom),
+                    moment(search.creationTimeTo),
+                  ],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -259,10 +349,10 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="startDate"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>

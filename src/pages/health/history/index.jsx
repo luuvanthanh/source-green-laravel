@@ -236,13 +236,13 @@ class Index extends PureComponent {
       {
         title: 'Cơ sở',
         key: 'branch',
-        className: 'min-width-150',
+        className: 'min-width-180',
         render: (record) => <Text size="normal">{get(record, 'student.class.branch.name')}</Text>,
       },
       {
         title: 'Lớp',
         key: 'class',
-        className: 'min-width-150',
+        className: 'min-width-180',
         render: (record) => <Text size="normal">{get(record, 'student.class.name')}</Text>,
       },
       {
@@ -260,6 +260,7 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
@@ -315,6 +316,8 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 reportDate: search.reportDate && moment(search.reportDate),
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -330,7 +333,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
@@ -338,7 +341,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}

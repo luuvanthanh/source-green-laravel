@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Checkbox, Input } from 'antd';
+import { Form, Checkbox, Input, Image } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -394,11 +394,27 @@ class Index extends PureComponent {
         className: 'min-width-200',
         width: 200,
         render: (record) =>
-          !record.children && (
-            <AvatarTable
-              fileImage={Helper.getPathAvatarJson(record?.medicine?.files)}
-              fullName={record?.medicine?.name}
-            />
+          Helper.getPathAvatarJson(record?.medicine?.files) && (
+            <div className={classnames(styles['avatar-container'])}>
+              <div className="container-image">
+                <Image.PreviewGroup>
+                  <Image
+                    width={40}
+                    height={40}
+                    src={`${API_UPLOAD}${Helper.getPathAvatarJson(record?.medicine?.files)}`}
+                    preview={{
+                      maskClassName: 'customize-mask',
+                      mask: <></>,
+                    }}
+                  />
+                </Image.PreviewGroup>
+              </div>
+              {record?.medicine?.name && (
+                <div className={styles.info}>
+                  <p className={styles.name}>{record?.medicine?.name}</p>
+                </div>
+              )}
+            </div>
           ),
       },
       {
