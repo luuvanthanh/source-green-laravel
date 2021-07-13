@@ -563,7 +563,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   data: PropTypes.arrayOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.any,
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
@@ -571,7 +571,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   data: [],
-  dispatch: {},
+  dispatch: null,
   location: {},
   branches: [],
   classes: [],

@@ -150,6 +150,7 @@ const Index = memo(
                             label="Chọn lớp"
                             name="classTimetables"
                             type={variables.CHECKBOX}
+                            rules={[variables.RULES.EMPTY]}
                             className="checkbox-group group-column"
                             data={classes.map((item) => ({
                               value: item.id,
@@ -216,6 +217,7 @@ const Index = memo(
                                         label="Nội dung"
                                         name={[name, 'content']}
                                         type={variables.INPUT}
+                                        rules={[variables.RULES.EMPTY]}
                                       />
                                     </Pane>
                                   </Pane>
