@@ -181,13 +181,14 @@ class Index extends PureComponent {
                             <div className="row">
                               <div className="col-lg-12">
                                 <FormItem
-                                  data={variablesModules.DAYS.filter((item) => !dayOfWeeks.includes(item.id))}
+                                  data={variablesModules.DAYS}
                                   label="Thời gian"
                                   onChange={this.onChangeTime}
                                   fieldKey={[field.fieldKey, 'dayOfWeeks']}
                                   name={[field.name, 'dayOfWeeks']}
                                   type={variables.SELECT_MUTILPLE}
                                   rules={[variables.RULES.EMPTY]}
+                                  disabledOptions={dayOfWeeks}
                                 />
                               </div>
                             </div>

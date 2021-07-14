@@ -46,7 +46,8 @@ const renderChildren = (
   checked,
   value,
   notFoundContent,
-  filterOption
+  filterOption,
+  disabledOptions,
 ) => ({
   input: (
     <Input
@@ -110,6 +111,7 @@ const renderChildren = (
       options={options}
       disabled={disabled}
       value={value}
+      disabledOptions={disabledOptions}
     />
   ),
   selectAdd: (
@@ -125,6 +127,7 @@ const renderChildren = (
       onSearch={onSearch}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      disabledOptions={disabledOptions}
     />
   ),
   selectMutilple: (
@@ -139,6 +142,7 @@ const renderChildren = (
       onPopupScroll={handleScroll}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      disabledOptions={disabledOptions}
     />
   ),
   tags: (
@@ -348,6 +352,7 @@ export default function FormItem({
   value,
   notFoundContent,
   filterOption,
+  disabledOptions,
   ...rest
 }) {
   return (
@@ -376,7 +381,8 @@ export default function FormItem({
           checked,
           value,
           notFoundContent,
-          filterOption
+          filterOption,
+          disabledOptions
         )[type]
       }
     </Form.Item>
@@ -411,6 +417,7 @@ FormItem.propTypes = {
   value: PropTypes.any,
   notFoundContent: PropTypes.any,
   filterOption: PropTypes.bool,
+  disabledOptions: PropTypes.arrayOf(PropTypes.any),
 };
 
 FormItem.defaultProps = {
@@ -440,7 +447,8 @@ FormItem.defaultProps = {
   checked: false,
   value: '',
   notFoundContent: null,
-  filterOption: false
+  filterOption: false,
+  disabledOptions: [],
 };
 
 FormItem.displayName = 'Form';
