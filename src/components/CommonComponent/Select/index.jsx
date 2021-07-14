@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Select } from 'antd';
 import Helper from '@/utils/Helper';
+import _ from 'lodash';
 
 import NoData from '../NoData';
 
-export default function SelectCustom({ options, dataSet, notFoundContent, filterOption, ...rest }) {
+export default function SelectCustom({ options, dataSet, notFoundContent, filterOption, disabledOptions, ...rest }) {
   return (
     <Select
       {...rest}
@@ -13,7 +14,7 @@ export default function SelectCustom({ options, dataSet, notFoundContent, filter
       notFoundContent={ notFoundContent || <NoData simple />}
     >
       {dataSet.map((item) => (
-        <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]}>
+        <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]} className={_.includes(disabledOptions, item[`${options[0]}`]) ? 'disable-option-select' : ''}>
           {item[`${options[1]}`]}
         </Select.Option>
       ))}
@@ -26,6 +27,7 @@ SelectCustom.propTypes = {
   dataSet: PropTypes.arrayOf(PropTypes.any).isRequired,
   notFoundContent: PropTypes.any,
   filterOption: PropTypes.any,
+  disabledOptions: PropTypes.arrayOf(PropTypes.any),
 };
 
 SelectCustom.defaultProps = {
@@ -33,7 +35,8 @@ SelectCustom.defaultProps = {
   notFoundContent: (
     <NoData simple />
   ),
-  filterOption: (input, option) => Helper.slugify(option.children)?.indexOf(Helper.slugify(input)) >= 0
+  filterOption: (input, option) => Helper.slugify(option.children)?.indexOf(Helper.slugify(input)) >= 0,
+  disabledOptions: []
 };
 
 SelectCustom.displayName = 'Button';

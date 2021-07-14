@@ -370,3 +370,10 @@ form .ant-cascader-picker:only-child {
     }
   }
 }
+
+.disable-option-select {
+  pointer-events: none;
+  &:not(.ant-select-item-option-disabled) {
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}
