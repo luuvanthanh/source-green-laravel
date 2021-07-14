@@ -99,7 +99,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         boD: moment(details.boD),
       });
       if (Helper.isJSON(details?.fileImage)) {
-        mountedSet(setFiles, JSON.parse(details?.fileImage));
+        setFiles(JSON.parse(details?.fileImage));
       }
     }
   }, [details]);
