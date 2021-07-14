@@ -378,7 +378,7 @@ class Index extends PureComponent {
           onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/don-xin-phep' }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG

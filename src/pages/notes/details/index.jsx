@@ -93,7 +93,7 @@ class Index extends PureComponent {
         <Breadcrumbs last="Chi tiết ghi chú" menu={menuData} />
         <div className="row">
           <div className="col-lg-8 offset-lg-2">
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/ghi-chu' }}>
               {/* DETAILS CONTAINER */}
               <div className={classnames(styles['info-container'])}>
                 <p className={styles.time}>

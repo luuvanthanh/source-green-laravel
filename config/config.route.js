@@ -262,12 +262,6 @@ export default [
             authority: [permissions.BUS],
           },
           {
-            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
-            component: './bus/tutorial/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BUS],
-          },
-          {
             path: '/quan-ly-phuong-tien/lich-su',
             component: './bus/history',
             wrappers: ['@/wrappers/auth'],

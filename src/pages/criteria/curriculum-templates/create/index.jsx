@@ -263,7 +263,7 @@ const Index = memo(() => {
                   loading['curriculumTemplatesAdd/GET_STUDENTS']
                 }
                 isError={error.isError}
-                params={{ error, type: 'container' }}
+                params={{ error, type: 'container', goBack: '/chuong-trinh-hoc/templates' }}
               >
                 <Pane className="card px15">
                   <Pane className={csx('row', 'border-bottom')}>

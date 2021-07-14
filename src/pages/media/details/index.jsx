@@ -62,7 +62,7 @@ const Index = memo(() => {
         <Loading
           loading={loading['mediaDetails/GET_DETAILS']}
           isError={error.isError}
-          params={{ error, type: 'container' }}
+          params={{ error, type: 'container', goBack: '/ghi-nhan' }}
         >
           <Pane className="card">
             <Pane className="border-bottom" style={{ padding: 20 }}>

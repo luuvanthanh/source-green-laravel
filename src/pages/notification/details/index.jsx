@@ -59,7 +59,7 @@ const Index = memo(() => {
         <Loading
           loading={loading['notificationsDetails/GET_DATA']}
           isError={error.isError}
-          params={{ error, type: 'container' }}
+          params={{ error, type: 'container', goBack: '/thong-bao/danh-sach' }}
         >
           <Pane className="row">
             <Pane className="col-lg-6">
