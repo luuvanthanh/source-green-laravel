@@ -46,7 +46,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        action: query?.action,
+        actionStatus: query?.actionStatus,
         creator: query?.creator,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -306,9 +306,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="action"
+                    name="actionStatus"
                     data={variablesModules.ACTION_TYPE_STATUS}
-                    onChange={(event) => this.onChangeSelect(event, 'action')}
+                    onChange={(event) => this.onChangeSelect(event, 'actionStatus')}
                     type={variables.SELECT}
                   />
                 </div>
