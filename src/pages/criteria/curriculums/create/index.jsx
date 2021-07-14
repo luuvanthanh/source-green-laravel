@@ -301,7 +301,7 @@ const Index = memo(() => {
                   loading['curriculumsAdd/GET_STUDENTS']
                 }
                 isError={error.isError}
-                params={{ error, type: 'container' }}
+                params={{ error, type: 'container', goBack: '/chuong-trinh-hoc' }}
               >
                 {!params.id && (
                   <Pane className="card px15 pt20">

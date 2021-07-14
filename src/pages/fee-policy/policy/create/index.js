@@ -213,7 +213,7 @@ const Index = memo(() => {
     <Form layout="vertical" colon={false} ref={formRef} onFinish={finishForm}>
       <Breadcrumbs className="pb0" last={params?.id ? 'Chi tiết' : 'Thêm mới'} menu={menuLeftFeePolicy} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
-        <Loading params={{ type: 'container' }}>
+        <Loading params={{ type: 'container', goBack: '/chinh-sach-phi/tien-dong' }}>
           <Helmet title={params?.id ? 'Chi tiết tiền đóng' : 'Thêm mới tiền đóng'} />
 
           <Pane className="card p20">

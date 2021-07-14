@@ -129,7 +129,7 @@ const Index = memo(() => {
                 <Loading
                   loading={loading['criteriaToolCreate/GET_DATA']}
                   isError={error.isError}
-                  params={{ error, type: 'container' }}
+                  params={{ error, type: 'container', goBack: '/chuong-trinh-hoc/cau-hinh/giao-cu' }}
                 >
                   <Pane className="border-bottom p20">
                     <Heading type="form-title" className="mb20">

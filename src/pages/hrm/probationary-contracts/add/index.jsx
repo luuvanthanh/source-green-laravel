@@ -356,7 +356,7 @@ class Index extends PureComponent {
             <Loading
               loading={loading}
               isError={error.isError}
-              params={{ error, type: 'container' }}
+              params={{ error, type: 'container', goBack: '/quan-ly-nhan-su/hop-dong-thu-viec' }}
             >
               <div className={classnames(styles['content-children'], 'mt0')}>
                 <Text color="dark" size="large-medium">

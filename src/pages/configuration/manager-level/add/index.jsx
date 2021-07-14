@@ -136,7 +136,7 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/cau-hinh/cap-bac' }}>
             <div className={styles['content-form']}>
               <div className="d-flex justify-content-between">
                 <Text color="dark">TẠO MỚI CẤP BẬC</Text>
