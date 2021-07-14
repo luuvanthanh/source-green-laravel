@@ -370,6 +370,7 @@ class Index extends PureComponent {
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    placeholder="Chọn cơ sở"
                   />
                 </div>
                 <div className="col-lg-3">
@@ -378,6 +379,7 @@ class Index extends PureComponent {
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
+                    placeholder="Chọn lớp"
                   />
                 </div>
               </div>
