@@ -14,7 +14,7 @@ export default function SelectCustom({ options, dataSet, notFoundContent, filter
       notFoundContent={ notFoundContent || <NoData simple />}
     >
       {dataSet.map((item) => (
-        <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]} className={_.includes(disabledOptions, item[`${options[0]}`]) ? 'disable-option-select' : ''}>
+        <Select.Option key={item[`${options[0]}`]} value={item[`${options[0]}`]} disabled={_.includes(disabledOptions, item[`${options[0]}`])}>
           {item[`${options[1]}`]}
         </Select.Option>
       ))}
