@@ -115,7 +115,10 @@ class Index extends PureComponent {
 
     dispatch({
       type: 'allocationTeacherList/GET_STUDENTS',
-      payload,
+      payload: {
+        isStoreStaus: 'false',
+        ...payload
+      },
       callback: (res, error) => {
         if (res) {
           this.setStateData({
