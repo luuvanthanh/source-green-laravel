@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, withRouter } from 'umi';
 import { Form } from 'antd';
 import PropTypes from 'prop-types';
-import { isEmpty, head } from 'lodash';
+import { isEmpty, head, xorWith, isEqual } from 'lodash';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
@@ -131,6 +131,12 @@ class Index extends PureComponent {
     this.setStateData({ dayOfWeeks });
   }
 
+  getValue = (data, index) => {
+    const values = this.formRef?.current?.getFieldsValue();
+    const dayOfWeeks = values?.busRouteNannies?.[index]?.dayOfWeeks;
+    return xorWith(dayOfWeeks, data, isEqual);
+  }
+
   render() {
     const {
       error,
@@ -188,7 +194,7 @@ class Index extends PureComponent {
                                   name={[field.name, 'dayOfWeeks']}
                                   type={variables.SELECT_MUTILPLE}
                                   rules={[variables.RULES.EMPTY]}
-                                  disabledOptions={dayOfWeeks}
+                                  disabledOptions={this.getValue(dayOfWeeks, index)}
                                 />
                               </div>
                             </div>
