@@ -287,10 +287,16 @@ class Index extends PureComponent {
           `CT${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
+        title: 'Tên template',
+        key: 'template',
+        className: 'min-width-180',
+        render: (record) => <Text size="normal">{record?.curriculumName || '-'}</Text>,
+      },
+      {
         title: 'Tên chương trình',
         key: 'title',
         className: 'min-width-180',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
+        render: (record) => <Text size="normal">{record?.name || '-'}</Text>,
       },
       {
         key: 'actions',
@@ -324,6 +330,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['curriculumTemplates/GET_DATA'];
+
     return (
       <>
         <Helmet title="Danh sách template" />

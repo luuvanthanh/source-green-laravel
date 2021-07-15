@@ -365,7 +365,7 @@ const Index = memo(() => {
                       <Pane className="col-lg-4">
                         <FormItem
                           className="mt20"
-                          label="Trẻ"
+                          label="Học sinh"
                           name="studentId"
                           type={variables.SELECT}
                           data={Helper.convertSelectUsers(students)}
