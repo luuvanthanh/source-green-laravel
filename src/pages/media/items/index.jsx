@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react';
+import { memo, useRef, useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useLocation, useHistory } from 'umi';
@@ -118,28 +118,30 @@ const Index = memo(() => {
     },
   ];
 
-  const paginationProps = useMemo(
-    () => ({
-      size: 'default',
-      total: pagination?.total || 0,
-      pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      defaultCurrent: Number(search.page),
-      current: Number(search.page),
-      hideOnSinglePage: (pagination?.total || 0) <= 10,
-      showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
-      pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,
-      locale: { items_per_page: variables.PAGINATION.PER_PAGE_TEXT },
-      onChange: (page, limit) => {
-        setSearch((prev) => ({
-          ...prev,
-          page,
-          limit,
-        }));
-        // callback
-      },
-    }),
-    [pagination],
-  );
+  /**
+ * Function set pagination
+ * @param {integer} page page of pagination
+ * @param {integer} size size of pagination
+ */
+  const changePagination = ({ page, limit }) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      page,
+      limit,
+    }));
+  };
+
+  /**
+   * Function pagination of table
+   * @param {object} pagination value of pagination items
+   */
+  const paginationTable = (pagination) => Helper.paginationNet({
+    pagination,
+    query,
+    callback: (response) => {
+      changePagination(response);
+    },
+  });
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -291,7 +293,7 @@ const Index = memo(() => {
               dataSource={data}
               loading={loading['media/GET_DATA']}
               isError={error.isError}
-              pagination={paginationProps}
+              pagination={paginationTable(pagination)}
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
