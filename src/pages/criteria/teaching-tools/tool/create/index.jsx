@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -12,6 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
+import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
@@ -26,11 +27,12 @@ const Index = memo(() => {
   ]);
   const dispatch = useDispatch();
   const params = useParams();
+  const [fileImage, setFileImage] = useState(null);
 
   const history = useHistory();
   const formRef = useRef();
   const mounted = useRef(false);
-  // const mountedSet = (action, value) => mounted?.current && action(value);
+  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction && setFunction(value);
 
   const onFinish = (values) => {
     dispatch({
@@ -38,6 +40,7 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
+        fileUrl: fileImage,
         isFeedback: !!values.isFeedback,
         toolLevels: values.toolLevels.map((item, index) => ({
           ...item,
@@ -91,6 +94,7 @@ const Index = memo(() => {
           ...params,
         },
         callback: (response) => {
+          setFileImage(response?.fileUrl || null);
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
@@ -136,12 +140,31 @@ const Index = memo(() => {
                       Thông tin chung
                     </Heading>
                     <FormItem
-                      className="mb0"
                       label="Tên giáo cụ"
                       name="name"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
                     />
+                    <FormItem
+                      label="Mô tả"
+                      name="description"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
+                    />
+                    <FormItem
+                      label="Hữu ích"
+                      name="benefit"
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      type={variables.TEXTAREA}
+                    />
+                    <Form.Item name="avatar" label="Hình ảnh học sinh">
+                      <ImageUpload
+                        callback={(res) => {
+                          mountedSet(setFileImage, res.fileInfo.url);
+                        }}
+                        fileImage={fileImage}
+                      />
+                    </Form.Item>
                   </Pane>
                   <Pane className="border-bottom p20">
                     <Heading type="form-title" className="mb10">
@@ -234,7 +257,7 @@ const Index = memo(() => {
                   </Pane>
                 </Loading>
               </Pane>
-              <Pane className="d-flex justify-content-between align-items-center">
+              <Pane className="d-flex justify-content-between align-items-center mb20">
                 {params.id && (
                   <p className="btn-delete" role="presentation" onClick={remove}>
                     Xóa

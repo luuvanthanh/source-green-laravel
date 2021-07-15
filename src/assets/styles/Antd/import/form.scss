@@ -377,3 +377,35 @@ form .ant-cascader-picker:only-child {
     background-color: rgba(0, 0, 0, 0.07);
   }
 }
+
+.group-image {
+  display: inline-block;
+  .ant-image-mask-info {
+    display: none;
+  }
+  .ant-image-img {
+    border-radius: 4px;
+  }
+  &:nth-child(n + 3) {
+    display: none;
+  }
+  &:nth-child(2) {
+    [data-viewmore]::before {
+      content: attr(data-viewmore);
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba($color: $text-dark, $alpha: 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: $bold__font-family;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  }
+}
