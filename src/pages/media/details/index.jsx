@@ -117,7 +117,7 @@ const Index = memo(() => {
                       <h3>
                         {details?.studentMaster?.farther?.fullName ||
                           details?.studentMaster?.mother?.fullName ||
-                          'Nguyễn Anh'}
+                          ''}
                       </h3>
                     </Pane>
                   </Pane>
@@ -129,7 +129,7 @@ const Index = memo(() => {
                       fileImage={Helper.getPathAvatarJson(details?.student?.fileImage)}
                     />
                     <Pane>
-                      <h3>{details?.student?.fullName || 'Su Beo'}</h3>
+                      <h3>{details?.student?.fullName || ''}</h3>
                     </Pane>
                   </Pane>
                 </Pane>
@@ -140,7 +140,7 @@ const Index = memo(() => {
                       <span className="icon-school" />
                     </span>
                     <span className={styles.infoText}>
-                      {details?.class?.branch?.name || 'Lake view'}
+                      {details?.studentMaster?.student?.class?.branch?.name || ''}
                     </span>
                   </Pane>
                 </Pane>
@@ -150,7 +150,7 @@ const Index = memo(() => {
                     <span className={styles.circleIcon}>
                       <span className="icon-open-book" />
                     </span>
-                    <span className={styles.infoText}>{details?.class?.name || 'Preschool 2'}</span>
+                    <span className={styles.infoText}>{details?.studentMaster?.student?.class?.name || ''}</span>
                   </Pane>
                 </Pane>
               </Pane>
@@ -165,7 +165,7 @@ const Index = memo(() => {
                       fileImage={Helper.getPathAvatarJson(details?.creator?.objectInfo?.fileImage)}
                     />
                     <Pane>
-                      <h3>{details?.creator?.objectInfo?.fullName || 'Lê Thị Vân'}</h3>
+                      <h3>{details?.creator?.objectInfo?.fullName || 'admin'}</h3>
                     </Pane>
                   </Pane>
                 </Pane>
