@@ -131,7 +131,7 @@ const Index = memo(() => {
                           />
                           <Pane>
                             <h3>{item?.parent?.fullName}</h3>
-                            <p>Phụ Huynh</p>
+                            <p>Phụ huynh</p>
                           </Pane>
                         </Pane>
                       ))}
@@ -147,7 +147,7 @@ const Index = memo(() => {
                           />
                           <Pane>
                             <h3>{item?.employee?.fullName}</h3>
-                            <p>Nhân viên</p>
+                            <p>{item?.employee?.positionLevel?.position?.name || ''}</p>
                           </Pane>
                         </Pane>
                       ))}
