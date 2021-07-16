@@ -50,14 +50,19 @@ const Index = memo(() => {
       render: (record) => (
         <div className="d-flex align-items-center">
           <Image.PreviewGroup>
-            <div className="group-image">
-              <Image
-                width={50}
-                height={50}
-                src={`${API_UPLOAD}${record?.fileUrl}`}
-                fallback="/default-upload.png"
-              />
-            </div>
+            {Helper.isJSON(record?.fileUrl) &&
+              JSON.parse(record?.fileUrl).map((item, index) => (
+                <div key={index} className="group-image">
+                  <Image
+                    key={index}
+                    width={42}
+                    height={42}
+                    src={`${API_UPLOAD}${item}`}
+                    data-viewmore={`+${JSON.parse(record?.fileUrl)?.length - 1}`}
+                    fallback="/default-upload.png"
+                  />
+                </div>
+            ))}
           </Image.PreviewGroup>
         </div>
       ),
