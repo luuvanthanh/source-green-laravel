@@ -1475,6 +1475,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/tinh-luong',
+            component: './hrm/payroll',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong',
+            component: './hrm/salary',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM

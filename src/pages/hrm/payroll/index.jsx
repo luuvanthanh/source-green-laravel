@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, isEmpty } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -11,6 +11,26 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+
+const DATA_SOURCE = [
+  {
+    id: 'CHOT_BANG_LUONG',
+    name: 'Chốt bảng lương tháng',
+  },
+  {
+    id: 'CHOT_BANG_THUONG_KPI',
+    name: 'Chốt bảng thương KPI',
+  },
+  {
+    id: 'KHAI_BAO_KHOAN_KHAC',
+    name: 'Khai báo các khoản tính lương',
+  },
+  {
+    id: 'TINH_LUONG',
+    name: 'Tính lương',
+  },
+];
 
 let isMounted = true;
 /**
@@ -27,10 +47,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ paramaterFormulas, loading }) => ({
-  data: paramaterFormulas.data,
-  error: paramaterFormulas.error,
-  pagination: paramaterFormulas.pagination,
+const mapStateToProps = ({ payroll, loading }) => ({
+  data: payroll.data,
+  error: payroll.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,9 +63,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+        month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
     };
     setIsMounted(true);
@@ -82,20 +99,23 @@ class Index extends PureComponent {
     const {
       location: { pathname },
     } = this.props;
-    this.props.dispatch({
-      type: 'paramaterFormulas/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
+    if (search.month) {
+      this.props.dispatch({
+        type: 'payroll/GET_DATA',
+        payload: {
           ...search,
         },
-        variables.QUERY_STRING,
-      )}`,
-    );
+      });
+      history.push(
+        `${pathname}?${Helper.convertParamSearchConvert(
+          {
+            ...search,
+            month: Helper.getDate(search.month, variables.DATE_FORMAT.DATE_AFTER),
+          },
+          variables.QUERY_STRING,
+        )}`,
+      );
+    }
   };
 
   /**
@@ -109,8 +129,6 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
@@ -128,13 +146,23 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),
     );
   }, 200);
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDate = (e, type) => {
+    this.debouncedSearch(
+      moment(e).startOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
+      type,
+    );
+  };
 
   /**
    * Function change input
@@ -196,7 +224,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'paramaterFormulas/REMOVE',
+          type: 'payroll/REMOVE',
           payload: {
             id,
           },
@@ -208,35 +236,79 @@ class Index extends PureComponent {
     });
   };
 
-  renderCalulator = (items) =>
-    items
-      .map((item) => {
-        if (!isEmpty(item.formular)) {
-          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
+  update = (record, key) => {
+    const { dispatch } = this.props;
+    if (key === 'CHOT_BANG_LUONG') {
+      dispatch({
+        type: 'payroll/UPDATE',
+        payload: {
+          id: record.id,
+          isTimesheet: true,
+          isBonus: record.isBonus,
+          isOther: record.isOther,
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+    if (key === 'CHOT_BANG_THUONG_KPI') {
+      dispatch({
+        type: 'payroll/UPDATE',
+        payload: {
+          id: record.id,
+          isBonus: true,
+          isOther: record.isOther,
+          isTimesheet: record.isTimesheet,
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+    if (key === 'KHAI_BAO_KHOAN_KHAC') {
+      dispatch({
+        type: 'payroll/UPDATE',
+        payload: {
+          id: record.id,
+          isOther: true,
+          isBonus: record.isBonus,
+          isTimesheet: record.isTimesheet,
+        },
+        callback: (response) => {
+          if (response) {
+            this.onLoad();
+          }
+        },
+      });
+    }
+  };
+
+  updateSalary = (record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'payroll/UPDATE_SALARY',
+      payload: {
+        id: record.id,
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
         }
-        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
-          item.formular,
-        )})`;
-      })
-      .join(' ');
+      },
+    });
+  };
 
   /**
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
+    const { data } = this.props;
     const columns = [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) =>
-          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
-      },
       {
         title: 'TÊN',
         key: 'name',
@@ -244,45 +316,31 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
-        title: 'MÃ',
-        key: 'code',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.code}</Text>,
-      },
-      {
-        title: 'NGÀY ÁP DỤNG',
-        key: 'apply_date',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{Helper.getDate(record.applyDate)}</Text>,
-      },
-      {
-        title: 'CÔNG THỨC',
-        key: 'recipe',
-        className: 'min-width-150',
-        render: (record) => {
-          if (!isEmpty(record.recipe)) {
-            return (
-              <Text size="normal">
-                {record.code} = {this.renderCalulator(record.recipe)}
-              </Text>
-            );
-          }
-          return null;
-        },
-      },
-      {
         key: 'action',
-        className: 'min-width-100',
-        width: 100,
-        fixed: 'right',
+        className: 'min-width-80',
+        width: 80,
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            {record.id === 'CHOT_BANG_LUONG' && !data.isTimesheet && (
+              <Button color="primary" onClick={() => this.update(data, 'CHOT_BANG_LUONG')}>
+                Chốt bảng công
+              </Button>
+            )}
+            {record.id === 'CHOT_BANG_THUONG_KPI' && !data.isBonus && (
+              <Button color="primary" onClick={() => this.update(data, 'CHOT_BANG_THUONG_KPI')}>
+                Chốt KPI
+              </Button>
+            )}
+            {record.id === 'KHAI_BAO_KHOAN_KHAC' && !data.isOther && (
+              <Button color="primary" onClick={() => this.update(data, 'KHAI_BAO_KHOAN_KHAC')}>
+                Khai báo
+              </Button>
+            )}
+            {record.id === 'TINH_LUONG' && !data.isSalary && (
+              <Button color="primary" onClick={() => this.updateSalary(data)}>
+                Tính lương
+              </Button>
+            )}
           </div>
         ),
       },
@@ -293,39 +351,34 @@ class Index extends PureComponent {
   render() {
     const {
       error,
-      data,
       match: { params },
-      pagination,
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['paramaterFormulas/GET_DATA'];
+    const loading = effects['payroll/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách tham số công thức" />
+        <Helmet title="Tính lương" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">DANH SÁCH THAM SỐ CÔNG THỨC</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
+            <Text color="dark">TÍNH LƯƠNG</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
+                month: search.month && moment(search.month),
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-12">
+                <div className="col-lg-4">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
+                    name="month"
+                    onChange={(event) => this.onChangeDate(event, 'month')}
+                    type={variables.MONTH_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -333,9 +386,9 @@ class Index extends PureComponent {
             <Table
               bordered
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={DATA_SOURCE}
               loading={loading}
-              pagination={this.pagination(pagination)}
+              pagination={false}
               error={error}
               isError={error.isError}
               params={{
@@ -343,7 +396,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '65vh' }}
+              scroll={{ x: '100%' }}
             />
           </div>
         </div>
@@ -355,7 +408,6 @@ class Index extends PureComponent {
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
@@ -365,7 +417,6 @@ Index.propTypes = {
 Index.defaultProps = {
   match: {},
   data: [],
-  pagination: {},
   loading: {},
   dispatch: {},
   location: {},
