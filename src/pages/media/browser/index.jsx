@@ -172,8 +172,9 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    setUpSignalRConnection().then((con) => {});
+    setUpSignalRConnection().then(() => {});
   }, []);
+
   return (
     <>
       <Helmet title="Duyệt hình" />

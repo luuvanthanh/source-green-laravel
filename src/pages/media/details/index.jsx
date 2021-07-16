@@ -165,7 +165,7 @@ const Index = memo(() => {
                       fileImage={Helper.getPathAvatarJson(details?.creator?.objectInfo?.fileImage)}
                     />
                     <Pane>
-                      <h3>{details?.creator?.objectInfo?.fullName || 'admin'}</h3>
+                      <h3>{details?.creator?.objectInfo?.fullName || 'Admin'}</h3>
                     </Pane>
                   </Pane>
                 </Pane>
