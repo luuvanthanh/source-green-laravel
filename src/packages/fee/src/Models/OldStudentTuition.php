@@ -4,14 +4,14 @@ namespace GGPHP\Fee\Models;
 
 use GGPHP\Core\Models\UuidModel;
 
-class Tuition extends UuidModel
+class OldStudentTuition extends UuidModel
 {
     public $incrementing = false;
 
     /**
      * Declare the table name
      */
-    protected $table = 'fee.Tuitions';
+    protected $table = 'fee.OldStudentTuitions';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class Tuition extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'ChargeStudentId', 'FeeId', 'PaymentFormId', 'Money',
+        'ChargeOldStudentId', 'FeeId', 'PaymentFormId', 'Money',
     ];
 
     /**

@@ -199,8 +199,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
     {
         $fee = \GGPHP\Fee\Models\Fee::findOrFail($attributes['feeId']);
         $paymentForm = \GGPHP\Fee\Models\PaymentForm::findOrFail($attributes['paymentFormId']);
-        $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schooleYearId'])->first();
-        $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schooleYearId']);
+        $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schoolYearId'])->first();
+        $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
 
         $dayAdmission = $attributes['dayAdmission'];
 
@@ -222,64 +222,76 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
         $totalWeekStudyInMonth = count($timetable);
 
-        $remainingWeek = $totalWeekStudyInMonth - $weekDayAdmission->Week + 1;
+        if (!is_null($weekDayAdmission)) {
+            $remainingWeek = $totalWeekStudyInMonth - $weekDayAdmission->Week + 1;
+        } else {
+            $remainingWeek = 1;
+        }
 
         $monthAdmission = Carbon::parse($dayAdmission)->setDay(1);
         $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
 
         $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
+
         $money = 0;
-        switch ($fee->Type) {
-            case 'HP':
-                $feeDetail = $feePolicie->feeDetail()
-                    ->where('ClassTypeId', $attributes['classTypeId'])
-                    ->where('PaymentFormId', $attributes['paymentFormId'])->first();
+        if (!is_null($feePolicie)) {
+            switch ($fee->Type) {
+                case 'HP':
+                    $feeDetail = $feePolicie->feeDetail()
+                        ->where('ClassTypeId', $attributes['classTypeId'])
+                        ->where('PaymentFormId', $attributes['paymentFormId'])->first();
 
-                switch ($attributes['student']) {
-                    case 'new':
-                        $money = $feeDetail->NewStudent;
-                        break;
-                    case 'old':
-                        $money = $feeDetail->OldStudent;
-                        break;
-                }
-                break;
-            case 'TIENAN':
-                $feeDetail = $feePolicie->moneyMeal()
-                    ->where('ClassTypeId', $attributes['classTypeId'])
-                    ->where('PaymentFormId', $attributes['paymentFormId'])->first();
+                    switch ($attributes['student']) {
+                        case 'new':
+                            $money = $feeDetail->NewStudent;
+                            break;
+                        case 'old':
+                            $money = $feeDetail->OldStudent;
+                            break;
+                    }
+                    break;
+                case 'TIENAN':
+                    $feeDetail = $feePolicie->moneyMeal()
+                        ->where('ClassTypeId', $attributes['classTypeId'])
+                        ->where('PaymentFormId', $attributes['paymentFormId'])->first();
 
-                $money = $feeDetail->Money;
+                    $money = $feeDetail->Money;
 
-                break;
-            case 'KHAC':
-                $feeDetail = $feePolicie->otherMoneyDetail()
-                    ->where('ClassTypeId', $attributes['classTypeId'])
-                    ->where('FeeId', $attributes['feeId'])
-                    ->where('PaymentFormId', $attributes['paymentFormId'])->first();
+                    break;
+                case 'KHAC':
+                    $feeDetail = $feePolicie->otherMoneyDetail()
+                        ->where('ClassTypeId', $attributes['classTypeId'])
+                        ->where('FeeId', $attributes['feeId'])
+                        ->where('PaymentFormId', $attributes['paymentFormId'])->first();
 
-                $money = $feeDetail->Money;
-                break;
+                    $money = $feeDetail->Money;
+                    break;
+            }
         }
 
         $result = 0;
+
         switch ($paymentForm->Code) {
             case 'HOCKY1':
-                if ($totalMonthsemester1 > 0) {
+                if ($totalMonthsemester1 > 0 && $totalWeekStudyInMonth > 0) {
                     $result = $money / $totalMonthsemester1 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester1 - $monthStudied);
                 }
                 break;
             case 'HOCKY2':
-                if ($totalMonthsemester2 > 0) {
+                if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
 
                     $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
                 }
                 break;
             case 'NAM':
-                $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
+                if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
+                    $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
+                }
                 break;
             case 'THANG':
-                $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
+                if ($totalWeekStudyInMonth > 0) {
+                    $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
+                }
                 break;
         }
 
