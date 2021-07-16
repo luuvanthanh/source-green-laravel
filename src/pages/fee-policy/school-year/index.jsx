@@ -197,6 +197,12 @@ class Index extends PureComponent {
             >
               Chi tiết
             </Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet?type=ban-sao`)}
+            >
+              Thêm bản sao mới
+            </Button>
           </div>
         ),
       },

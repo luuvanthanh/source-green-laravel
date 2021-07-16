@@ -36,6 +36,8 @@ const Index = memo(() => {
 
   const history = useHistory();
   const formRef = useRef();
+  const isCopy = !!(history?.location?.query?.type === 'ban-sao');
+
   const [tab, setTab] = useState('fixedParameter');
   const [showDetails, setShowDetails] = useState(false);
   const [paramChanges, setParamChanges] = useState([]);
@@ -202,10 +204,10 @@ const Index = memo(() => {
     };
 
     dispatch({
-      type: params?.id ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
+      type: (params?.id && !isCopy) ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
       payload: {
         ...data,
-        id: params?.id || undefined
+        id: (params?.id && !isCopy) ? params?.id : undefined
       },
       callback: (res) => {
         if (res) {
@@ -220,13 +222,6 @@ const Index = memo(() => {
     if (errorFields) {
       checkIsEmpty([], true, 'fixedParameter');
     }
-  };
-
-  const remove = () => {
-    formRef?.current?.resetFields();
-    setShowDetails(false);
-    setParamChanges([]);
-    setTab('fixedParameter');
   };
 
   const changeTab = (value) => {
@@ -285,8 +280,8 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title={params?.id ? 'Chi tiết năm học' : 'Thêm mới năm học'} />
-      <Breadcrumbs className="pb30 pt0" last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
+      <Helmet title={(params?.id && !isCopy) ? 'Chi tiết năm học' : 'Thêm mới năm học'} />
+      <Breadcrumbs className="pb30 pt0" last={`${(params?.id && !isCopy) ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
       <Pane className="row">
         <Pane className="col-12">
           <Form
@@ -378,9 +373,6 @@ const Index = memo(() => {
                   </Tabs>
                 </Pane>
                 <Pane className="p20 d-flex justify-content-between align-items-center">
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Hủy
-                  </p>
                   <Button
                     className="ml-auto px25"
                     color="success"
