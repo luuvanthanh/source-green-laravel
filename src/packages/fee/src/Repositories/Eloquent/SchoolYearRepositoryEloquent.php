@@ -53,6 +53,10 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
 
     public function filterSchoolYear(array $attributes)
     {
+        if (!empty($attributes['from']) && !empty($attributes['to'])) {
+            $this->model = $this->model->where('YearFrom', $attributes['from'])->where('YearTo', $attributes['to']);
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {

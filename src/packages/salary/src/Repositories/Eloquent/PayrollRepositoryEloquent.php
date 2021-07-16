@@ -72,7 +72,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function filterPayroll(array $attributes)
     {
-        $payroll = Payroll::where('Month', $attributes['month'])->first();
+        $payroll = Payroll::where('Month', $attributes['month'])->with('payrollDetail')->first();
 
         if (is_null($payroll)) {
             $payroll = Payroll::create($attributes);
@@ -99,6 +99,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         if (!is_null($otherDeclaration)) {
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
+            dd($employees);
             foreach ($employees as &$employee) {
                 $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
             }
@@ -111,6 +112,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'columnIncurredAllowance' => json_encode(array_values($columnIncurredAllowance)),
             ]);
 
+            $payroll->update(['IsSalary' => true]);
         }
 
         return parent::find($attributes['id']);
@@ -119,27 +121,30 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
     {
+
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalWorks;
         $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
 
-        $incurredAllowance = json_encode([]);
+        $incurredAllowance = [];
 
         if (!is_null($otherDeclarationDetail)) {
-            $incurredAllowance = $otherDeclarationDetail->Detail;
-
-            foreach (json_decode($incurredAllowance) as $itemIncurredAllowance) {
-
-                if (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
-                    $columnIncurredAllowance[$itemIncurredAllowance->code] = [
-                        'code' => $itemIncurredAllowance->code,
-                        'name' => $itemIncurredAllowance->name,
-                    ];
+            if (!is_null($otherDeclarationDetail->Detail)) {
+                $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
+                foreach ($incurredAllowance as $itemIncurredAllowance) {
+                    if (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
+                        $columnIncurredAllowance[$itemIncurredAllowance->code] = [
+                            'code' => $itemIncurredAllowance->code,
+                            'name' => $itemIncurredAllowance->name,
+                        ];
+                    }
                 }
+
             }
         }
+        $incurredAllowance = json_encode($incurredAllowance);
 
         $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
             'startDate' => $startDate,
@@ -293,38 +298,38 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'Id' => \Webpatser\Uuid\Uuid::generate(4)->string,
                 'PayrollId' => $payroll->Id,
                 'EmployeeId' => $employee->Id,
-                'DateStartWork' => null,
-                'IsProbation' => false,
-                'IsMaternity' => false,
-                'IsSocialInsurance' => false,
-                'BasicSalaryAndAllowance' => $basicSalaryAndAllowance,
-                'IncurredAllowance' => $incurredAllowance,
-                'TotalIncome' => (int) $totalIncome,
-                'KpiBonus' => null,
-                'OtTax' => (int) $totalOtFax,
-                'OtNoTax' => (int) $totalOtNoFax,
-                'UnpaidLeave' => null,
-                'TotalWork' => (int) $totalWorks,
-                'TotalIncomeMonth' => (int) $totalIncomeMonth,
-                'SocialInsuranceEmployee' => (int) $socialInsuranceEmployee,
-                'SocialInsuranceAdjustedEmployee' => null,
-                'SocialInsuranceCompany' => (int) $socialInsuranceEmployee,
-                'SocialInsuranceAdjustedCompany' => null,
-                'HealthInsuranceEmployee' => (int) $healthInsuranceEmployee,
-                'HealthInsuranceCompany' => (int) $healthInsuranceCompany,
-                'UnemploymentInsuranceEmployee' => (int) $unemploymentInsuranceEmployee,
-                'UnemploymentInsuranceCompany' => (int) $unemploymentInsuranceCompany,
-                'UnionDues' => null,
-                'DependentPerson' => null,
-                'Eeduce' => null,
-                'Charity' => $dependentPerson,
-                'TotalReduce' => (int) $dependentTotal,
-                'RentalIncome' => (int) $rentalIncome,
-                'PersonalIncomeTax' => (int) $personalIncomeTax,
-                'SocialInsurancePayment' => null,
-                'Advance' => null,
-                'ActuallyReceived' => (int) $actuallyReceived,
-                'Note' => null,
+                'DateStartWork' => null, // ngày bắt đầu làm việc
+                'IsProbation' => false, //thử việc
+                'IsMaternity' => false, //Nghỉ không lương/Thai sản
+                'IsSocialInsurance' => false, //Không tham gia BHXH
+                'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
+                'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
+                'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
+                'KpiBonus' => null, //THƯỞNG KPI
+                'OtTax' => (int) $totalOtFax, //Tính thuế
+                'OtNoTax' => (int) $totalOtNoFax, //"không tính thuế"
+                'UnpaidLeave' => null, //Nghỉ không lương
+                'TotalWork' => (int) $totalWorks, //Ngày công thực tế trong tháng
+                'TotalIncomeMonth' => (int) $totalIncomeMonth, //TỔNG THU NHẬP TRONG THÁNG
+                'SocialInsuranceEmployee' => (int) $socialInsuranceEmployee, //BHXH nld
+                'SocialInsuranceAdjustedEmployee' => null, //Điều chỉnh BHXH nld
+                'SocialInsuranceCompany' => (int) $socialInsuranceEmployee, //BHXH cty
+                'SocialInsuranceAdjustedCompany' => null, //Điều chỉnh BHXH cty
+                'HealthInsuranceEmployee' => (int) $healthInsuranceEmployee, //BHYT  nld
+                'HealthInsuranceCompany' => (int) $healthInsuranceCompany, //BHYT  cty
+                'UnemploymentInsuranceEmployee' => (int) $unemploymentInsuranceEmployee, //BHTN nld
+                'UnemploymentInsuranceCompany' => (int) $unemploymentInsuranceCompany, //BHTN cty
+                'UnionDues' => null, //Phí công đoàn
+                'DependentPerson' => null, //Số người phụ thuộc
+                'Eeduce' => $dependentPerson, //Tổng giảm trừ bản thân và người phụ thuộc
+                'Charity' => null, //Đóng góp từ thiện
+                'TotalReduce' => (int) $dependentTotal, //Tổng các khoản giảm trừ
+                'RentalIncome' => (int) $rentalIncome, //Thu nhập tính thuế
+                'PersonalIncomeTax' => (int) $personalIncomeTax, //Thuế TNCN
+                'SocialInsurancePayment' => null, //Thanh toán từ BHXH
+                'Advance' => null, // tạm ứng
+                'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
+                'Note' => null, // ghi chú
             ];
 
         }

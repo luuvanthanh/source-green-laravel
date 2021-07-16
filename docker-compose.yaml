@@ -40,3 +40,26 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     restart: on-failure
+  # redis
+  # redis:
+  #   image: 'bitnami/redis:latest'
+  #   environment:
+  #     # ALLOW_EMPTY_PASSWORD is recommended only for development.
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+  #   ports:
+  #     - '6379:6379'
+  laravel-echo-server:
+    image: oanhnn/laravel-echo-server:latest
+    environment:
+      LARAVEL_ECHO_SERVER_AUTH_HOST: ${LARAVEL_ECHO_SERVER_AUTH_HOST}
+      LARAVEL_ECHO_SERVER_DEBUG: ${LARAVEL_ECHO_SERVER_DEBUG}
+      LARAVEL_ECHO_SERVER_REDIS_HOST: ${LARAVEL_ECHO_SERVER_REDIS_HOST}
+      LARAVEL_ECHO_SERVER_REDIS_PORT: ${LARAVEL_ECHO_SERVER_REDIS_PORT}
+      LARAVEL_ECHO_SERVER_REDIS_PASSWORD: ${LARAVEL_ECHO_SERVER_REDIS_PASSWORD}
+      REDIS_DB: 0
+    ports:
+      - ${LARAVEL_ECHO_SERVER_PORT}:6001
+    volumes:
+      - ./src:/app
+    restart: unless-stopped

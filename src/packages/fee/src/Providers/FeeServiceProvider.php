@@ -2,8 +2,8 @@
 
 namespace GGPHP\Fee\Providers;
 
-use GGPHP\Fee\Repositories\Contracts\ChargeStudentRepository;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
+use GGPHP\Fee\Repositories\Contracts\ChargeStudentRepository;
 use GGPHP\Fee\Repositories\Contracts\ClassTypeRepository;
 use GGPHP\Fee\Repositories\Contracts\FeePolicieRepository;
 use GGPHP\Fee\Repositories\Contracts\FeeRepository;

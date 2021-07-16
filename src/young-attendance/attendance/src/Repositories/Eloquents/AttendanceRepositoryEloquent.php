@@ -128,6 +128,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'title' => 'Clover',
                     'imageURL' => 'string',
                     'message' => $message,
+                    'moduleType' => 6,
+                    'refId' => $attributes['studentId'],
                 ]);
             }
         } else {
@@ -181,6 +183,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'title' => 'Clover',
                     'imageURL' => 'string',
                     'message' => $message,
+                    'moduleType' => 6,
+                    'refId' => $attributes['studentId'],
                 ]);
             }
         }
@@ -339,7 +343,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
                                 ];
 
-                                $this->model->create($dataCheckIn);
+                                $attendance = $this->model->create($dataCheckIn);
 
                                 $urlNoti = env('NOTI_URL') . '/api/notification';
                                 $parents = $student->parent;
@@ -361,6 +365,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'title' => 'Clover',
                                         'imageURL' => 'string',
                                         'message' => "Bé $nameStudent đã vào lớp lúc $timeCheckIn",
+                                        'moduleType' => 6,
+                                        'refId' => $student->Id,
                                     ]);
                                 }
                             }
@@ -414,6 +420,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'title' => 'Clover',
                                         'imageURL' => 'string',
                                         'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
+                                        'moduleType' => 6,
+                                        'refId' => $student->Id,
                                     ]);
                                 }
                             } else if ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
@@ -443,6 +451,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'title' => 'Clover',
                                         'imageURL' => 'string',
                                         'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
+                                        'moduleType' => 6,
+                                        'refId' => $student->Id,
                                     ]);
                                 }
                             }
@@ -488,6 +498,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'title' => 'Clover',
                                     'imageURL' => 'string',
                                     'message' => "Bé $nameStudent vắng không phép ngày $date",
+                                    'moduleType' => 6,
+                                    'refId' => $student->Id,
                                 ]);
                             }
                         }

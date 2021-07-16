@@ -24,6 +24,7 @@ class CreateChargeStudentRequest extends FormRequest
     public function rules()
     {
         return [
+
         ];
     }
 }

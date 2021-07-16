@@ -19,7 +19,7 @@ class ClassType extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Name', 'Code', 'From', 'To',
+        'Name', 'Code', 'From', 'To', 'Description',
     ];
 
 }

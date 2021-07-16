@@ -160,6 +160,24 @@ class ParameterFormulasTableSeeder extends Seeder
                 'LastModificationTime' => '2021-07-01 04:07:57',
                 'Recipe' => '[{"variable":"BHXH_NLD","type":"variable","value":null,"operator":null,"formular":[]},{"variable":"BHYT_NLD","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"BHTN_NLD","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"GIAM_TRU_BAN_THAN_PHU_THUOC","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"OT_KHONG_TINH_THUE","type":"variable","value":null,"operator":"+","formular":[]},{"type":"formular","operator":"+","value":null,"variable":null,"formular":[{"variable":"PC_DONG_PHUC","type":"variable","value":null,"operator":null,"formular":[]},{"variable":"SO_NGAY_CHUAN","type":"variable","value":null,"operator":"\\/","formular":[]},{"variable":"SO_NGAY_LAM_VIEC_TRONG_THANG","type":"variable","value":null,"operator":"*","formular":[]}]},{"type":"formular","operator":"+","value":null,"variable":null,"formular":[{"variable":"PC_AN_TRUA","type":"variable","value":null,"operator":null,"formular":[]},{"variable":"SO_NGAY_CHUAN","type":"variable","value":null,"operator":"\\/","formular":[]},{"variable":"SO_NGAY_LAM_VIEC_TRONG_THANG","type":"variable","value":null,"operator":"*","formular":[]}]}]',
             ),
+            16 => array(
+                'Id' => '0479869f-4317-47f4-a1cb-2bb4008ed6ee',
+                'Code' => 'TONG_THU_NHAP_TRONG_THANG',
+                'Name' => 'Tổng thu nhập trong tháng',
+                'ApplyDate' => '2021-01-01',
+                'CreationTime' => '2021-07-07 07:12:23',
+                'LastModificationTime' => '2021-07-07 07:12:23',
+                'Recipe' => '[{"variable":"TONG_THU_NHAP","type":"variable","value":null,"operator":null,"formular":[]},{"variable":"SO_NGAY_CHUAN","type":"variable","value":null,"operator":"\\/","formular":[]},{"variable":"SO_NGAY_LAM_VIEC_TRONG_THANG","type":"variable","value":null,"operator":"*","formular":[]},{"variable":"PC_HT_TCSK","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"PC_BUS","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"PC_LEAD_LOP_HOC","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"THUONG_THANG_13","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"THUONG_KPI","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"TRUY_LINH","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"THUONG_DANH_GIA_CV","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"TOTAL_OT","type":"variable","value":null,"operator":"+","formular":[]}]',
+            ),
+            17 => array(
+                'Id' => '6dd0b39a-6f70-4639-a2a4-6dbae943d4e1',
+                'Code' => 'GIAM_TRU_BAN_THAN_PHU_THUOC',
+                'Name' => 'Giảm trừ bản thân và người phụ thuộc',
+                'ApplyDate' => '2021-01-01',
+                'CreationTime' => '2021-07-07 07:29:07',
+                'LastModificationTime' => '2021-07-07 07:29:07',
+                'Recipe' => '[{"variable":"TNCN_GIAM_TRU_BAN_THAN","type":"variable","value":null,"operator":null,"formular":[]},{"variable":"TNCN_GIAM_TRU_BAN_THAN","type":"variable","value":null,"operator":"+","formular":[]},{"variable":"SO_NGUOI_PHU_THUOC","type":"variable","value":null,"operator":"*","formular":[]}]',
+            ),
         ));
 
     }

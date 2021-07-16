@@ -26,8 +26,8 @@ class MoneyFeePolicieRequest extends FormRequest
         return [
             'classTypeId' => 'required',
             'schoolYearId' => 'required',
-            'paymentFormId' => 'required',
-            'feeId' => 'required',
+            'details.*.paymentFormId' => 'required',
+            'details.*.feeId' => 'required',
             'student' => 'required',
             'dayAdmission' => 'required',
         ];

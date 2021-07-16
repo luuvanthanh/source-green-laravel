@@ -167,6 +167,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'title' => 'Clover',
                     'imageURL' => "string",
                     'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
+                    'moduleType' => 9,
+                    'refId' => $absent->Id,
                 ]);
             }
         } else {
@@ -193,6 +195,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'title' => 'Clover',
                     'imageURL' => "string",
                     'message' => "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
+                    'moduleType' => 9,
+                    'refId' => $absent->Id,
                 ]);
             }
         }
@@ -262,6 +266,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'title' => 'Clover',
                     'imageURL' => "string",
                     'message' => "Bé $nameStudent xin nghỉ phép được thay đổi ngày $startDate - $endDate",
+                    'moduleType' => 9,
+                    'refId' => $absent->Id,
                 ]);
             }
 
@@ -288,6 +294,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'title' => 'Clover',
                     'imageURL' => "string",
                     'message' => "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
+                    'moduleType' => 9,
+                    'refId' => $absent->Id,
                 ]);
             }
         }
@@ -348,6 +356,8 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 'title' => 'Clover',
                 'imageURL' => "string",
                 'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
+                'moduleType' => 9,
+                'refId' => $absent->Id,
             ]);
         }
 

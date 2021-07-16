@@ -52,6 +52,16 @@ class ChargeStudentRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function filterChargeStudent(array $attributes)
     {
+        if (!empty($attributes['nameStudent'])) {
+            $this->model = $this->model->whereLike('NameStudent', $attributes['nameStudent']);
+        }
+
+        if (!empty($attributes['from']) && !empty($attributes['to'])) {
+            $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
+                $query->where('YearFrom', $attributes['from'])->where('YearTo', $attributes['to']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $paymentForm = $this->paginate($attributes['limit']);
         } else {
