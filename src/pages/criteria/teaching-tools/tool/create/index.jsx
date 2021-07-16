@@ -12,7 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
@@ -27,7 +27,7 @@ const Index = memo(() => {
   ]);
   const dispatch = useDispatch();
   const params = useParams();
-  const [fileImage, setFileImage] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const history = useHistory();
   const formRef = useRef();
@@ -40,7 +40,7 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
-        fileUrl: fileImage,
+        fileUrl: JSON.stringify(files),
         isFeedback: !!values.isFeedback,
         toolLevels: values.toolLevels.map((item, index) => ({
           ...item,
@@ -94,7 +94,9 @@ const Index = memo(() => {
           ...params,
         },
         callback: (response) => {
-          setFileImage(response?.fileUrl || null);
+          if (Helper.isJSON(response?.fileUrl)) {
+            mountedSet(setFiles, JSON.parse(response?.fileUrl));
+          }
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
@@ -113,6 +115,10 @@ const Index = memo(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
+
+  const uploadFiles = (file) => {
+    mountedSet(setFiles, (prev) => [...prev, file]);
+  };
 
   return (
     <Pane style={{ paddingTop: 20 }}>
@@ -158,11 +164,10 @@ const Index = memo(() => {
                       type={variables.TEXTAREA}
                     />
                     <Form.Item name="avatar" label="Hình ảnh học sinh">
-                      <ImageUpload
-                        callback={(res) => {
-                          mountedSet(setFileImage, res.fileInfo.url);
-                        }}
-                        fileImage={fileImage}
+                      <MultipleImageUpload
+                        files={files}
+                        callback={(files) => uploadFiles(files)}
+                        removeFiles={(files) => mountedSet(setFiles, files)}
                       />
                     </Form.Item>
                   </Pane>
