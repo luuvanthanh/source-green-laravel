@@ -917,6 +917,18 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
+          title: 'Tính lương',
+          key: 'payroll',
+          url: ['/quan-ly-nhan-su/tinh-luong'],
+          permission: [permissions.HRM],
+        },
+        {
+          title: 'Bảng lương',
+          key: 'salary',
+          url: ['/quan-ly-nhan-su/bang-luong'],
+          permission: [permissions.HRM],
+        },
+        {
           title: 'Thống kê con của nhân viên',
           key: 'children',
           url: [
@@ -1243,27 +1255,21 @@ export async function getLeftMenuFeePolicy() {
         {
           title: 'Dự kiến các khoản phải thu',
           key: 'expected-fees',
-          url: [
-            '/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu',
-          ],
+          url: ['/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu'],
           permission: [permissions.HRM],
           pro: true,
         },
         {
           title: 'Chi tiết các khoản tiền nộp',
           key: 'details-of-payments',
-          url: [
-            '/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop',
-          ],
+          url: ['/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop'],
           permission: [permissions.HRM],
           pro: true,
         },
         {
           title: 'Lịch nộp tiền học',
           key: 'tuition-payment-schedule',
-          url: [
-            '/chinh-sach-phi/bao-cao/lich-nop-tien-hoc',
-          ],
+          url: ['/chinh-sach-phi/bao-cao/lich-nop-tien-hoc'],
           permission: [permissions.HRM],
           pro: true,
         },
