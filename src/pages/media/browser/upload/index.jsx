@@ -24,7 +24,7 @@ const uploadTypes = [
 ];
 const DEFAULT_TYPE = 'AUTO';
 
-const Index = memo(({ onOk, ...props }) => {
+const Index = memo(({ onOk, onCancel, ...props }) => {
   const formRef = useRef();
 
   const dispatch = useDispatch();
@@ -110,9 +110,17 @@ const Index = memo(({ onOk, ...props }) => {
     fetchStudents();
   }, []);
 
+  const cancelModal = () => {
+    if (loading['upload/UPLOAD'] || loading['mediaUpload/UPLOAD'] || loading['mediaUpload/CREATE']) {
+      return;
+    }
+    onCancel();
+  };
+
   return (
     <Modal
       {...props}
+      onCancel={cancelModal }
       title="Tải ảnh lên"
       footer={
         <Button
@@ -169,7 +177,7 @@ const Index = memo(({ onOk, ...props }) => {
         )}
       </Form>
 
-      <Dragger {...imageUploadProps} customRequest={addFile} multiple>
+      <Dragger {...imageUploadProps} customRequest={addFile} multiple accept=".jpg, .jpeg, .png">
         <Pane className="text-center p20">
           <span className={csx('icon-images', styles.icon)} />
           <Text size="normal">Kéo thả hình ảnh vào đây để tải lên hoặc click vào đây</Text>
@@ -209,10 +217,12 @@ const Index = memo(({ onOk, ...props }) => {
 
 Index.propTypes = {
   onOk: PropTypes.func,
+  onCancel: PropTypes.func,
 };
 
 Index.defaultProps = {
   onOk: () => {},
+  onCancel: () => {}
 };
 
 export default Index;
