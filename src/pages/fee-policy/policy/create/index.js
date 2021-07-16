@@ -87,15 +87,6 @@ const Index = memo(() => {
     setTab(key);
   };
 
-  const remove = () => {
-    formRef?.current.resetFields();
-    setTab('schedule');
-    setShowDetails(false);
-    setFeeDetail([]);
-    setMoneyMeal([]);
-    setOtherMoneyDetail([]);
-  };
-
   const onChange  = async (e, name) => {
     if (name === 'schoolYearId') {
       const choolYearSelect = yearsSchool.find(item => item?.id === e);
@@ -291,9 +282,6 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="p20 d-flex justify-content-between align-items-center">
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Hủy
-                </p>
                 <Button
                   className="ml-auto px25"
                   color="success"

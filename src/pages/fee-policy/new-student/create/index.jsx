@@ -95,11 +95,6 @@ const Index = memo(() => {
     }
   }, []);
 
-  const remove = () => {
-    formRef.current.resetFields();
-    setTuition([]);
-  };
-
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in object) {
@@ -388,9 +383,6 @@ const Index = memo(() => {
               />
             </Pane>
             <Pane className="p20 d-flex justify-content-between align-items-center">
-              <p className="btn-delete" role="presentation" onClick={remove}>
-                Hủy
-              </p>
               <Button
                 className="ml-auto px25"
                 color="success"
