@@ -1475,18 +1475,6 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
-          {
-            path: '/quan-ly-nhan-su/tinh-luong',
-            component: './hrm/payroll',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HRM],
-          },
-          {
-            path: '/quan-ly-nhan-su/bang-luong',
-            component: './hrm/salary',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.HRM],
-          },
         ],
       },
       // HRM
@@ -1861,6 +1849,48 @@ export default [
         ],
       },
       // FEE POLICY
+      // MEDIA
+      {
+        path: '/bang-luong',
+        component: './salary/layout',
+        routes: [
+          {
+            path: '/bang-luong',
+            redirect: '/bang-luong/danh-sach',
+          },
+          {
+            path: '/bang-luong/tinh-luong',
+            component: './salary/payroll',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/danh-sach',
+            component: './salary/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc',
+            component: './salary/paramater-formulas',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc/tao-moi',
+            component: './salary/paramater-formulas/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
+            component: './salary/paramater-formulas/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+        ],
+      },
+      // MEDIA
       {
         path: '/404',
         component: './404',
