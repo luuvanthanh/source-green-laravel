@@ -34,12 +34,12 @@ const Index = memo(() => {
     yearsSchool,
     classes,
     students,
-  } = useSelector(({ loading, menu, schoolYear, classType, newStudentAdd }) => ({
+  } = useSelector(({ loading, menu, schoolYear, classType, newStudent }) => ({
     loading: loading.effects,
     menuLeftFeePolicy: menu.menuLeftFeePolicy,
     yearsSchool: schoolYear.data,
     classes: classType.data,
-    students: newStudentAdd.students
+    students: newStudent.data
   }));
 
   const dispatch = useDispatch();
@@ -53,6 +53,10 @@ const Index = memo(() => {
     tuition: false,
   });
   const [addFees, setAddFees] = useState(false);
+  const [disableDayAdmission, setDisableDayAdmission] = useState({
+    startDate: null,
+    endDate: null
+  });
 
   useEffect(() => {
     dispatch({
@@ -157,13 +161,22 @@ const Index = memo(() => {
     }
   };
 
-  const loadTableFees = () => {
-    const { getFieldsValue } = formRef?.current;
+  const loadTableFees = (value, name) => {
+    const { getFieldsValue, setFieldsValue } = formRef?.current;
     const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
     if (schoolYearId && classTypeId && dayAdmission) {
       setAddFees(true);
     } else {
       setAddFees(false);
+    }
+    if (name === 'schoolYearId') {
+      const yearSchool = yearsSchool.find(item => item.id === value);
+      setDisableDayAdmission((prev) => ({
+        ...prev,
+        startDate: yearSchool.startDate || null,
+        endDate: yearSchool.endDate || null,
+      }));
+      setFieldsValue({ dayAdmission: '' });
     }
     setTuition([]);
   };
@@ -207,10 +220,12 @@ const Index = memo(() => {
     });
     if (value === 'oldStudent') {
       dispatch({
-        type: 'newStudentAdd/GET_STUDENTS',
+        type: 'newStudent/GET_DATA',
         payload: {
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.SIZEMAX,
+          orderBy: 'CreationTime',
+          sortedBy: 'desc',
         },
       });
     }
@@ -298,7 +313,7 @@ const Index = memo(() => {
                       allowClear={false}
                       data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
                       rules={[variables.RULES.EMPTY]}
-                      onChange={loadTableFees}
+                      onChange={(e) => loadTableFees(e, 'schoolYearId')}
                     />
                   </div>
                   <div className="col-lg-3">
@@ -332,6 +347,9 @@ const Index = memo(() => {
                       rules={[variables.RULES.EMPTY]}
                       allowClear={false}
                       onChange={loadTableFees}
+                      disabledDate={(current) => disableDayAdmission?.startDate ?
+                        current < moment(disableDayAdmission?.startDate) || current >= moment(disableDayAdmission.endDate)
+                      : false }
                     />
                   </div>
                   <div className="col-lg-3">
