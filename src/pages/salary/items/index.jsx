@@ -294,7 +294,7 @@ class Index extends PureComponent {
         title: 'Họ và tên',
         key: 'name',
         width: 200,
-        className: 'min-width-200',
+        className: 'min-width-200 thead-green',
         fixed: 'left',
         render: (record) => (
           <AvatarTable
@@ -306,46 +306,47 @@ class Index extends PureComponent {
       {
         title: 'Ngày bắt đầu làm việc',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => Helper.getDate(record.dateStartWork, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Nghỉ không lương/Thai sản',
         key: 'isMaternity',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => record?.isMaternity && 'Có',
       },
       {
         title: 'Thử việc',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => record?.isProbation && 'Có',
       },
       {
         title: 'Không tham gia BHXH',
         key: 'isSocialInsurance',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => record?.isProbation && 'Có',
       },
       {
         title: 'Tổng thu nhập',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => Helper.getPrice(record.totalIncome),
       },
       {
         title: 'Lương cơ bản + Phụ Cấp',
         key: 'name',
+        className: 'thead-green',
         children:
           data?.columnBasicSalaryAndAllowance?.map((item) => ({
             title: item.name,
             key: item.code,
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => {
               const basicSalaryAndAllowance =
@@ -364,11 +365,12 @@ class Index extends PureComponent {
       {
         title: 'Phụ cấp phát sinh trong tháng',
         key: 'name',
+        className: 'thead-green-1',
         children:
           data?.columnIncurredAllowance?.map((item) => ({
             title: item.name,
             key: item.code,
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green-1',
             width: 150,
             render: (record) => {
               const incurredAllowance =
@@ -386,25 +388,26 @@ class Index extends PureComponent {
       {
         title: 'Thưởng KPI',
         key: 'kpiBonus',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-yellow text-yellow',
         width: 150,
         render: (record) => Helper.getPrice(record.kpiBonus),
       },
       {
         title: 'OT',
         key: 'name',
+        className: 'thead-green',
         children: [
           {
-            title: 'OT tính thuế',
+            title: 'OT tính thuế ',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.otTax),
           },
           {
             title: 'OT không tính thuế',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.otNoTax),
           },
@@ -413,53 +416,54 @@ class Index extends PureComponent {
       {
         title: 'Nghỉ không lương',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => record.unpaidLeave,
       },
       {
         title: 'Ngày công thực tế trong tháng',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => record.totalWork,
       },
       {
         title: 'Tổng thu nhập trong tháng',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green text-primary',
         width: 150,
         render: (record) => Helper.getPrice(record.totalIncomeMonth),
       },
       {
         title: 'Người lao động',
         key: 'name',
+        className: 'thead-primary',
         children: [
           {
             title: 'BHXH 8%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-primary',
             width: 150,
             render: (record) => Helper.getPercent(record.socialInsuranceEmployee),
           },
           {
             title: 'BHYT 1.5%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-primary',
             width: 150,
             render: (record) => Helper.getPercent(record.healthInsuranceEmployee),
           },
           {
             title: 'BHTN 1%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-primary',
             width: 150,
             render: (record) => Helper.getPercent(record.unemploymentInsuranceEmployee),
           },
           {
             title: 'Điều chỉnh BHXH',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-primary',
             width: 150,
             render: (record) => Helper.getPercent(record.socialInsuranceAdjustedEmployee),
           },
@@ -468,39 +472,40 @@ class Index extends PureComponent {
       {
         title: 'Công ty',
         key: 'name',
+        className: 'thead-green',
         children: [
           {
             title: 'BHXH 17.5%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.socialInsuranceCompany),
           },
           {
             title: 'BHYT 3%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.healthInsuranceCompany),
           },
           {
             title: 'BHTN 1%',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.unemploymentInsuranceCompany),
           },
           {
             title: 'Điều chỉnh BHXH',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.socialInsuranceAdjustedCompany),
           },
           {
             title: 'Phí công đoàn',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPercent(record.unionDues),
           },
@@ -509,25 +514,26 @@ class Index extends PureComponent {
       {
         title: 'Tham số tính thuế TNCN',
         key: 'name',
+        className: 'thead-green',
         children: [
           {
             title: 'Số người phụ thuộc',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => record.DependentPerson,
           },
           {
             title: 'Tổng giảm trừ bản thân và người phụ thuộc',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPrice(record.eeduce),
           },
           {
             title: 'Đóng góp từ thiện',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => Helper.getPrice(record.charity),
           },
@@ -536,39 +542,40 @@ class Index extends PureComponent {
       {
         title: 'Tổng các khoản giảm trừ',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green',
         width: 150,
         render: (record) => Helper.getPrice(record.totalReduce),
       },
       {
         title: 'Thu nhập tính thuế',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green',
         width: 150,
         render: (record) => Helper.getPrice(record.rentalIncome),
       },
       {
         title: 'Thuế TNCN',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-green',
         width: 150,
         render: (record) => Helper.getPrice(record.personalIncomeTax),
       },
       {
         title: 'Các khoản thanh toán không tính thuế',
         key: 'name',
+        className: 'thead-yellow',
         children: [
           {
             title: 'Thanh toán từ BHXH',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-yellow',
             width: 150,
             render: (record) => Helper.getPrice(record.SocialInsurancePayment),
           },
           {
             title: 'Trừ các khoản đã chi tạm ứng',
             key: 'name',
-            className: 'min-width-150',
+            className: 'min-width-150 thead-yellow text-yellow',
             width: 150,
             render: (record) => Helper.getPrice(record.advance),
           },
@@ -577,14 +584,14 @@ class Index extends PureComponent {
       {
         title: 'Ghi chú',
         key: 'note',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-yellow',
         width: 150,
         render: (record) => record.note,
       },
       {
         title: 'Lương thực nhận',
         key: 'name',
-        className: 'min-width-150',
+        className: 'min-width-150 thead-yellow text-primary',
         width: 150,
         fixed: 'right',
         render: (record) => Helper.getPrice(record.actuallyReceived),
@@ -631,6 +638,7 @@ class Index extends PureComponent {
             </Form>
             <Table
               bordered
+              className="table-salary"
               columns={this.header(params)}
               dataSource={data?.payrollDetail || []}
               loading={loading}
