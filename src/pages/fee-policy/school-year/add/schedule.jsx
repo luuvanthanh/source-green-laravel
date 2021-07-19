@@ -32,16 +32,22 @@ const Index = memo(({ rangeDate }) => {
       if (_.isInteger(i / 7)) {
         const startMonth = moment(startDate).add(i + 6, 'days');
         const endMonth = moment(startMonth).endOf('month');
-        const numberSameMonth = Number(moment(endMonth).diff(moment(startMonth), 'weeks')) + 1;
+        let numberSameMonth = 0;
+        if (data[1].diff(startMonth, 'months') === 0) {
+          numberSameMonth = Number(moment(endMonth).diff(moment(startMonth).add(-1, 'week'), 'weeks')) + 1;
+        } else {
+          numberSameMonth = Number(moment(endMonth).diff(moment(startMonth), 'weeks')) + 1;
+        }
+
         let numberMonth = 0;
-        if (number === i / 7) {
+        if (number === (i / 7)) {
           number += numberSameMonth;
           numberMonth = numberSameMonth;
         } else {
           numberMonth = 0;
         }
         const date = {
-          id: i,
+          id: i / 7,
           month: `Tháng ${(i + 6 >= length) ? moment(data[1]).format('MM') : moment(startDate).add(i + 6, 'days').format('MM')}`,
           numberMonth,
           week: getWeek(i, NumberStartDate),
@@ -129,20 +135,20 @@ const Index = memo(({ rangeDate }) => {
       render: (record) => record?.friday || '',
     },
     {
-      title: 'Thứ Bảy',
+      title: () => <span className="text-danger">Thứ Bảy</span>,
       key: 'saturday',
       className: 'min-width-150',
       width: 150,
       align: 'center',
-      render: (record) => record?.saturday || '',
+      render: (record) => <span className="text-danger">{record?.saturday || ''}</span>,
     },
     {
-      title: 'Chủ nhật',
+      title: () => <span className="text-danger">Chủ nhật</span>,
       key: 'sunday',
       className: 'min-width-150',
       width: 150,
       align: 'center',
-      render: (record) => record?.sunday || '',
+      render: (record) => <span className="text-danger">{record?.sunday || ''}</span>
     },
   ];
 
