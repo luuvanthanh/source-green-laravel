@@ -119,7 +119,7 @@ const Index = memo(() => {
                       label="Mô tả"
                       name="description"
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_TEXTAREA]}
+                      rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
                     />
                   </Pane>
 

@@ -86,6 +86,8 @@ class Index extends PureComponent {
       type: 'schoolYear/GET_DATA',
       payload: {
         ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
       },
     });
     history.push({

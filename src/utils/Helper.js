@@ -41,9 +41,9 @@ export default class Helpers {
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
-  static getPrice = (value, number = 0) => {
+  static getPrice = (value, number = 0, unit = false) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ`;
+      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${unit ? '' : ` đ`}`;
     }
     return null;
   };

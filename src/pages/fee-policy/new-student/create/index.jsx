@@ -89,6 +89,7 @@ const Index = memo(() => {
               paymentFormId: item.paymentFormId || '',
               money: item.money || 0,
             })));
+            setAddFees(true);
           }
         },
       });
@@ -167,11 +168,7 @@ const Index = memo(() => {
     setTuition([]);
   };
 
-  const changeDateOfBirth = (date) => {
-    if (!date) {
-      return;
-    }
-    const age = (Math.round( moment().diff(date, 'months', true) * 100 ) / 100).toFixed(0);
+  const  getClassByAge = (age = 0) => {
     dispatch({
       type: 'classType/GET_CLASS_BY_AGE',
       payload: {
@@ -188,6 +185,14 @@ const Index = memo(() => {
         }
       },
     });
+  };
+
+  const changeDateOfBirth = (date) => {
+    if (!date) {
+      return;
+    }
+    const age = (Math.round( moment().diff(date, 'months', true) * 100 ) / 100).toFixed(0);
+    getClassByAge(age);
     formRef.current.setFieldsValue({
       age,
     });
@@ -200,13 +205,15 @@ const Index = memo(() => {
     formRef.current.setFieldsValue({
       type: value,
     });
-    dispatch({
-      type: 'newStudentAdd/GET_STUDENTS',
-      payload: {
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.SIZEMAX,
-      },
-    });
+    if (value === 'oldStudent') {
+      dispatch({
+        type: 'newStudentAdd/GET_STUDENTS',
+        payload: {
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+      });
+    }
   };
 
   const selectStudent = (value) => {
@@ -221,6 +228,9 @@ const Index = memo(() => {
         dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
       });
+    }
+    if (response.age) {
+      getClassByAge(response?.age);
     }
   };
 
@@ -346,7 +356,7 @@ const Index = memo(() => {
                     <FormItem
                       label="SĐT Cha"
                       name="fatherPhoneNumber"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.PHONE]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -362,7 +372,7 @@ const Index = memo(() => {
                     <FormItem
                       label="SĐT Mẹ"
                       name="motherPhoneNumber"
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.PHONE]}
                       type={variables.INPUT}
                     />
                   </div>
@@ -371,7 +381,7 @@ const Index = memo(() => {
             </Pane>
             <Pane className="card pb20">
               <Heading type="form-title" className="heading-tab p20">
-                Các khoản học phí
+                Các khoản học phí <span className="text-danger">*</span>
               </Heading>
               <TypeFees
                 tuition={tuition}
