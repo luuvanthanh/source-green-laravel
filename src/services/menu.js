@@ -917,18 +917,6 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Tính lương',
-          key: 'payroll',
-          url: ['/quan-ly-nhan-su/tinh-luong'],
-          permission: [permissions.HRM],
-        },
-        {
-          title: 'Bảng lương',
-          key: 'salary',
-          url: ['/quan-ly-nhan-su/bang-luong'],
-          permission: [permissions.HRM],
-        },
-        {
           title: 'Thống kê con của nhân viên',
           key: 'children',
           url: [
@@ -1204,7 +1192,7 @@ export async function getLeftMenuHRM() {
     {
       title: 'Cấu hình',
       key: 'categoriesParamater',
-      icon: 'icon icon-list',
+      icon: 'icon icon-setting',
       permission: [permissions.HRM],
       children: [
         {
@@ -1214,17 +1202,6 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri',
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/tao-moi',
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
-          ],
-          permission: [permissions.HRM],
-          pro: true,
-        },
-        {
-          title: 'Tham số công thức',
-          key: 'paramater-formulas',
-          url: [
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
           pro: true,
@@ -1345,6 +1322,44 @@ export async function getLeftMenuNotes() {
       icon: 'icon icon-list',
       permission: [permissions.GHICHU],
       pro: true,
+    },
+  ];
+}
+
+export async function getLeftMenuSalary() {
+  return [
+    {
+      title: 'Tính lương',
+      key: 'payroll',
+      icon: 'icon icon-calculate',
+      url: ['/bang-luong/tinh-luong'],
+      permission: [permissions.BANGLUONG],
+    },
+    {
+      title: 'Bảng lương',
+      key: 'salary',
+      icon: 'icon icon-salary',
+      url: ['/bang-luong/danh-sach'],
+      permission: [permissions.BANGLUONG],
+    },
+    {
+      title: 'Cấu hình',
+      key: 'categoriesParamater',
+      icon: 'icon icon-setting',
+      permission: [permissions.BANGLUONG],
+      children: [
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/bang-luong/tham-so-cong-thuc',
+            '/bang-luong/tham-so-cong-thuc/tao-moi',
+            '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [permissions.BANGLUONG],
+          pro: true,
+        },
+      ],
     },
   ];
 }

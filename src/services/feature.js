@@ -99,7 +99,7 @@ export const feature = {
       title: 'Bảng lương',
       src: '/images/home/drive.svg',
       animation: animationImage.salary,
-      url: '/',
+      url: '/bang-luong',
       permission: [permissions.BANGLUONG],
     },
     {
