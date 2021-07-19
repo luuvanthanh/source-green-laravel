@@ -8,14 +8,25 @@ import Table from '@/components/CommonComponent/Table';
 const Index = memo(({ rangeDate }) => {
   const [schedules, setSchedules] = useState([]);
 
+  const getWeek = (index, NumberStartDate) => {
+    if ((NumberStartDate === 5 || NumberStartDate === 6) && index === 0) {
+      return '';
+    }
+    if ((NumberStartDate === 5 || NumberStartDate === 6) && index !== 0) {
+      return `Tuần ${(index / 7)}`;
+    }
+    return `Tuần ${(index / 7) + 1}`;
+  };
+
   const renderData = (data) => {
     const result = [];
     if (_.isEmpty(data)) {
       return result;
     }
     const NumberStartDate = Number(moment(data[0], 'DD/MM/YYYY').day()) > 0 ? Number(moment(data[0], 'DD/MM/YYYY').day()) - 1 : 6;
-    const startDate = moment(data[0]).add(-NumberStartDate, 'days');
-    const length = data[1].diff(startDate, 'days') + 1;
+    const startDate = moment(data[0]).add(-NumberStartDate, 'days').startOf('month');
+    const endDate = moment(data[1]).endOf('month');
+    const length = endDate.diff(startDate, 'days') + 1;
     let number = 0;
 
     for (let i = 0; i < length; i += 1) {
@@ -34,7 +45,7 @@ const Index = memo(({ rangeDate }) => {
           id: i,
           month: `Tháng ${(i + 6 >= length) ? moment(data[1]).format('MM') : moment(startDate).add(i + 6, 'days').format('MM')}`,
           numberMonth,
-          week: `Tuần ${(i / 7) + 1}`,
+          week: getWeek(i, NumberStartDate),
           monday: ((i >= length ) || (i < NumberStartDate)) ? '' : moment(startDate).add(i, 'days').format('DD'),
           tuesday: ((i + 1 >= length) || (i + 1 < NumberStartDate)) ? '' : moment(startDate).add(i + 1, 'days').format('DD'),
           wednesday: ((i + 2 >= length) || (i + 2 < NumberStartDate)) ? '' : moment(startDate).add(i + 2, 'days').format('DD'),
