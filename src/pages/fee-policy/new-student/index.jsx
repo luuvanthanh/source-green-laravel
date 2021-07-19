@@ -44,7 +44,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        nameStudent: query?.nameStudent,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -277,8 +277,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="nameStudent"
+                    onChange={(event) => this.onChange(event, 'nameStudent')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />

@@ -11,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -27,12 +28,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ oldStudent, schoolYear, loading }) => ({
+const mapStateToProps = ({ oldStudent, loading }) => ({
   data: oldStudent.data,
   error: oldStudent.error,
   pagination: oldStudent.pagination,
   loading,
-  yearsSchool: schoolYear.data
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,8 +45,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
-        schoolYearId: query?.schoolYearId,
+        nameStudent: query?.nameStudent,
+        yearFrom: query?.yearFrom || null,
+        yearTo: query?.yearTo || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -63,7 +64,6 @@ class Index extends PureComponent {
       },
     });
     this.getStudents();
-
   }
 
   componentWillUnmount() {
@@ -108,16 +108,28 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
+   * Function change input
+   * @param {object} e event of input
    * @param {string} type key of object search
    */
-  debouncedSearch = debounce((value, type) => {
+  onChange = debounce((value, type) => {
+    let { search: { yearFrom, yearTo } } = this.state;
+    if (type === 'years') {
+      if (!isEmpty(value)) {
+        yearFrom = moment(value[0]).format('YYYY');
+        yearTo = moment(value[1]).format('YYYY');
+      } else {
+        yearFrom = null;
+        yearTo = null;
+      }
+    }
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          [`${type}`]: value,
+          nameStudent: type === 'nameStudent' ? value : prevState.search.nameStudent,
+          yearFrom,
+          yearTo,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -125,15 +137,6 @@ class Index extends PureComponent {
       () => this.getStudents(),
     );
   }, 300);
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch((e?.target?.value || e), type);
-  };
 
   /**
    * Function set pagination
@@ -269,10 +272,10 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
       data,
-      yearsSchool
     } = this.props;
     const { search } = this.state;
     const loading = effects['oldStudent/GET_DATA'];
+
     return (
       <>
         <Helmet title="Tính phí học sinh cũ" />
@@ -287,6 +290,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                years: (search?.yearFrom && search?.yearTo) ? [moment(search?.yearFrom), moment(search?.yearTo)] : null
               }}
               layout="vertical"
               ref={this.formRef}
@@ -294,21 +298,20 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
+                    name="nameStudent"
+                    onChange={(event) => this.onChange(event?.target?.value, 'nameStudent')}
                     placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
-                    name="schoolYearId"
-                    type={variables.SELECT}
-                    placeholder="Chọn năm"
-                    allowClear={false}
-                    data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
-                    rules={[variables.RULES.EMPTY]}
-                    onChange={(event) => this.onChange(event, 'schoolYearId')}
+                    name="years"
+                    onChange={(event) => this.onChange(event, 'years')}
+                    picker="year"
+                    format={['YYYY', 'YYYY']}
+                    placeholder={['Từ Năm', 'Đến Năm']}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>
@@ -340,7 +343,6 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
-  yearsSchool: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -350,7 +352,6 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   data: [],
-  yearsSchool: []
 };
 
 export default Index;
