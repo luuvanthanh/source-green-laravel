@@ -96,6 +96,8 @@ class Index extends PureComponent {
       type: 'oldStudent/GET_DATA',
       payload: {
         ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
         include: Helper.convertIncludes(['student.classStudent.class']),
       },
     });

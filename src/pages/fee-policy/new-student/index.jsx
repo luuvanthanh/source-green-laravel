@@ -86,6 +86,8 @@ class Index extends PureComponent {
       type: 'newStudent/GET_DATA',
       payload: {
         ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
         include: Helper.convertIncludes(['schoolYear']),
       },
     });

@@ -409,3 +409,13 @@ form .ant-cascader-picker:only-child {
     }
   }
 }
+
+.text-right {
+  .ant-input {
+    text-align: right;
+  }
+}
+
+.underline {
+  text-decoration: underline;
+}

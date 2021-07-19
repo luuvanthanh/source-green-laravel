@@ -41,7 +41,7 @@ const Index = memo(() => {
     schoolYearId: '',
     startDate: '',
     endDate: '',
-    studentName: '',
+    code: '',
     branchName: '',
     grade: '',
     className: '',
@@ -83,7 +83,7 @@ const Index = memo(() => {
               startDate: res?.schoolYear?.startDate ? Helper.getDate(res?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI) : '',
               endDate: res?.schoolYear?.endDate ? Helper.getDate(res?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI) : '',
               schoolYearId: res?.schoolYearId || '',
-              studentName: res?.student?.fullName || '',
+              code: res?.student?.code || '',
               branchName: res?.student?.classStudent?.class?.branch?.name || '',
               grade: res?.grade || '',
               className: res?.student?.classStudent?.class?.name || '',
@@ -147,7 +147,7 @@ const Index = memo(() => {
     if (!value) {
       setDetails((prev) => ({
         ...prev,
-        studentName: '',
+        code: '',
         branchName: '',
         grade: '',
         className: '',
@@ -159,7 +159,7 @@ const Index = memo(() => {
     if (response?.id) {
       setDetails((prev) => ({
         ...prev,
-        studentName: response?.fullName || '',
+        code: response?.code || '',
         branchName: response?.class?.branch?.name || '',
         grade: '',
         className: response?.class?.name || '',
@@ -239,9 +239,9 @@ const Index = memo(() => {
                 <div className="row">
                   <div className="col-lg-3">
                     <FormItem
-                      label="Mã học sinh"
+                      label="Tên học sinh"
                       name="studentId"
-                      data={loading['OPchildren/GET_DATA'] ? [] : [...students].map(item => ({ ...item, name: item.code || '-' }) )}
+                      data={loading['OPchildren/GET_DATA'] ? [] : students.map(item => ({ ...item, name: item?.fullName || '-' }))}
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
                       onChange={changeStudent}
@@ -253,8 +253,8 @@ const Index = memo(() => {
                   <div className="col-lg-9">
                     <div className="row">
                       <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Tên học sinh</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.studentName || ''}</p>
+                        <label htmlFor="" className="mb5 font-size-13" >Mã học sinh</label>
+                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.code || ''}</p>
                       </div>
                       <div className="col-lg-3">
                         <label htmlFor="" className="mb5 font-size-13" >Cơ sở</label>
@@ -275,14 +275,13 @@ const Index = memo(() => {
             </Pane>
             <Pane className="card pb20">
               <Heading type="form-title" className="heading-tab p20">
-                Các khoản học phí
+                Các khoản học phí <span className="text-danger">*</span>
               </Heading>
               <TypeFees
                 tuition={tuition}
                 setTuition={setTuition}
                 error={errorTable?.tuition}
                 checkValidate={checkValidate}
-                addFees={!!(details?.schoolYearId && details?.classTypeId)}
                 details={details}
               />
             </Pane>

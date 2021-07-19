@@ -86,6 +86,8 @@ class Index extends PureComponent {
       type: 'fees/GET_DATA',
       payload: {
         ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
       },
     });
     history.push({

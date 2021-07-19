@@ -11,7 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
-const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, details }) => {
+const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
   const dispatch = useDispatch();
   const {
     fees,
@@ -144,15 +144,21 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, detail
       )
     },
     {
-      title: 'Tiền dự kiến đ',
+      title: () => (
+        <>
+          <span>Tiền </span>
+          <span className="underline">đ</span>
+        </>
+      ),
       key: 'money',
       className: 'min-width-120',
+      align: 'right',
       render: (record) => (
         <FormItem
-          className="mb-0 input-noborder"
+          className="mb-0 input-noborder text-right"
           type={variables.INPUT}
           rules={[variables.RULES.EMPTY]}
-          value={record?.money}
+          value={record?.money ? Helper.getPrice(record?.money, 0, true) : 0}
           onChange={(e) => onChange(e, record, 'money')}
         />
       )
@@ -197,7 +203,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, detail
         rowKey="id"
         scroll={{ x: '100%' }}
       />
-      {addFees && (
+      {!!(details?.schoolYearId && details?.classTypeId) && (
         <Pane className="px20">
           <Button
             className="btn-create"
@@ -210,7 +216,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, detail
         </Pane>
       )}
       {_.isEmpty(tuition) && error && (
-        <p className="text-danger px20">{variables.RULES.EMPTY_INPUT.message}</p>
+        <p className="text-danger px20 pt20 mb0">{variables.RULES.EMPTY_INPUT.message}</p>
       )}
     </>
   );
@@ -221,7 +227,6 @@ Index.propTypes = {
   setTuition: PropTypes.func,
   error: PropTypes.bool,
   checkValidate: PropTypes.func,
-  addFees: PropTypes.bool,
   details: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -230,7 +235,6 @@ Index.defaultProps = {
   setTuition: () => {},
   error: false,
   checkValidate: () => {},
-  addFees: false,
   details: {}
 };
 

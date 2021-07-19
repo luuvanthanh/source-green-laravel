@@ -347,6 +347,7 @@ const Index = memo(() => {
                     label="Thời gian hiệu lực"
                     name="rangeDate"
                     type={variables.RANGE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
                     onChange={(e) => getDetail(e, 'rangeDate')}
                   />
                 </Pane>
