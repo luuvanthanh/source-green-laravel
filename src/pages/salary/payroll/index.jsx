@@ -16,11 +16,11 @@ import moment from 'moment';
 const DATA_SOURCE = [
   {
     id: 'CHOT_BANG_LUONG',
-    name: 'Chốt bảng lương tháng',
+    name: 'Chốt bảng công tháng',
   },
   {
     id: 'CHOT_BANG_THUONG_KPI',
-    name: 'Chốt bảng thương KPI',
+    name: 'Chốt bảng thưởng KPI',
   },
   {
     id: 'KHAI_BAO_KHOAN_KHAC',
@@ -375,7 +375,11 @@ class Index extends PureComponent {
                   history.push(
                     `/quan-ly-nhan-su/tong-hop-cong?startDate=${Helper.getDate(
                       moment(search.month).startOf('months'),
-                    )}&endDate=${Helper.getDate(search.month.endOf('months'))}`,
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}&endDate=${Helper.getDate(
+                      moment(search.month).endOf('months'),
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}`,
                   )
                 }
               >
@@ -389,7 +393,11 @@ class Index extends PureComponent {
                   history.push(
                     `/quan-ly-nhan-su/tong-hop-cong?startDate=${Helper.getDate(
                       moment(search.month).startOf('months'),
-                    )}&endDate=${Helper.getDate(search.month.endOf('months'))}`,
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}&endDate=${Helper.getDate(
+                      moment(search.month).endOf('months'),
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}`,
                   )
                 }
               >
@@ -403,7 +411,11 @@ class Index extends PureComponent {
                   history.push(
                     `/quan-ly-nhan-su/khai-bao-cac-khoan-khac?startDate=${Helper.getDate(
                       moment(search.month).startOf('months'),
-                    )}&endDate=${Helper.getDate(search.month.endOf('months'))}`,
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}&endDate=${Helper.getDate(
+                      moment(search.month).endOf('months'),
+                      variables.DATE_FORMAT.DATE_AFTER,
+                    )}`,
                   )
                 }
               >
