@@ -24,9 +24,8 @@ const Index = memo(({ rangeDate }) => {
       return result;
     }
     const NumberStartDate = Number(moment(data[0], 'DD/MM/YYYY').day()) > 0 ? Number(moment(data[0], 'DD/MM/YYYY').day()) - 1 : 6;
-    const startDate = moment(data[0]).add(-NumberStartDate, 'days').startOf('month');
-    const endDate = moment(data[1]).endOf('month');
-    const length = endDate.diff(startDate, 'days') + 1;
+    const startDate = moment(data[0]).add(-NumberStartDate, 'days');
+    const length = data[1].diff(startDate, 'days') + 1;
     let number = 0;
 
     for (let i = 0; i < length; i += 1) {
