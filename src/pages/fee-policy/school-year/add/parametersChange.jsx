@@ -57,7 +57,9 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
       });
       setParamChanges(data);
     } else {
-      const result = moment(rangeDate[1]).diff(moment(rangeDate[0]), 'month') + 1;
+      const startDate = moment(rangeDate[0]).startOf('month');
+      const endDate = moment(rangeDate[1]).endOf('month');
+      const result = moment(endDate).diff(moment(startDate), 'month') + 1;
       if (result) {
         const data = renderData(result, values);
         setParamChanges(data);
