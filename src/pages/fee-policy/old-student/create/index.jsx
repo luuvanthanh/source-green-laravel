@@ -31,6 +31,7 @@ const Index = memo(() => {
   const dispatch = useDispatch();
 
   const history = useHistory();
+  const isCopy = !!(history?.location?.query?.type === 'ban-sao');
   const formRef = useRef();
 
   const [tuition, setTuition] = useState([]);
@@ -120,8 +121,42 @@ const Index = memo(() => {
     return pass;
   };
 
+  const getMoney = (details) => {
+    if (_.isEmpty(tuition)) {
+      return;
+    }
+    const newTuition = tuition.map(item => ({
+      id: item.id,
+      money: item.money,
+      feeId: item.feeId,
+      paymentFormId: item.paymentFormId
+    }));
+
+    dispatch({
+      type: 'oldStudentAdd/GET_ALL_MONEY',
+      payload: {
+        details: JSON.stringify(newTuition),
+        classTypeId: details?.classTypeId,
+        schoolYearId: details?.schoolYearId,
+        dayAdmission: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: details?.startDate,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        student: 'old'
+      },
+      callback: (res) => {
+        if (res) {
+          setTuition(res);
+        }
+      },
+    });
+  };
+
   const changeYear = (value) => {
-    setTuition([]);
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -131,19 +166,23 @@ const Index = memo(() => {
       }));
       return;
     }
+
     const response = yearsSchool.find(item => item.id === value);
     if (response?.id) {
-      setDetails((prev) => ({
-        ...prev,
+      const newDetails = {
+        ...details,
         startDate: response.startDate ? Helper.getDate(response.startDate, variables.DATE_FORMAT.DATE_VI) : '',
         endDate: response.endDate ? Helper.getDate(response.endDate, variables.DATE_FORMAT.DATE_VI) : '',
         schoolYearId: value,
-      }));
+      };
+      setDetails(newDetails);
+      if (details?.classTypeId) {
+        getMoney(newDetails);
+      }
     }
   };
 
   const changeStudent = (value) => {
-    setTuition([]);
     if (!value) {
       setDetails((prev) => ({
         ...prev,
@@ -155,16 +194,21 @@ const Index = memo(() => {
       }));
       return;
     }
-    const response = students.find(item => item.id === value);
-    if (response?.id) {
-      setDetails((prev) => ({
-        ...prev,
-        code: response?.code || '',
-        branchName: response?.class?.branch?.name || '',
+
+    const student = students.find(item => item.id === value);
+    if (student?.id) {
+      const newDetails = {
+        ...details,
+        code: student?.code || '',
+        branchName: student?.class?.branch?.name || '',
         grade: '',
-        className: response?.class?.name || '',
-        classTypeId: response?.class?.id || '',
-      }));
+        className: student?.class?.name || '',
+        classTypeId: student?.class?.classTypeId || '',
+      };
+      setDetails(newDetails);
+      if (newDetails?.schoolYearId) {
+        getMoney(newDetails);
+      }
     }
   };
 
@@ -177,10 +221,10 @@ const Index = memo(() => {
       schoolYearId: values?.schoolYearId || undefined,
       studentId: values?.studentId || undefined,
       tuition,
-      id: params?.id || undefined,
+      id: (params?.id && !isCopy) ? params?.id : undefined,
     };
     dispatch({
-      type: params?.id ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
+      type: (params?.id && !isCopy ) ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
       payload,
       callback: (res) => {
         if (res) {
@@ -202,8 +246,8 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title={params?.id ? 'Chi tiết' : 'Thêm mới'} />
-      <Breadcrumbs className="pb30 pt0" last={`${params?.id ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
+      <Helmet title={(params?.id && !isCopy) ? 'Chi tiết' : 'Thêm mới'} />
+      <Breadcrumbs className="pb30 pt0" last={`${(params?.id && !isCopy) ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
       <Pane className="row justify-content-center">
         <Pane className="col-lg-12">
           <Form
