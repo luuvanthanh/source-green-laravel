@@ -138,6 +138,13 @@ export const feature = {
       target: true,
       permission: [permissions.CAMERAAI],
     },
+    {
+      title: 'Phát triển thể chất',
+      src: '/images/home/physical.svg',
+      animation: animationImage.setting,
+      url: '/phat-trien-the-chat',
+      permission: [],
+    },
   ],
 };
 

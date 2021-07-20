@@ -24,6 +24,7 @@ import HRMLayout from './HRM';
 import FeePolicyLayout from './Fee-Policy';
 import NotesLayout from './Notes';
 import SalaryLayout from './Salary';
+import PhysicalLayout from './Physical';
 
 const Layouts = {
   public: PublicLayout,
@@ -46,7 +47,8 @@ const Layouts = {
   hrm: HRMLayout,
   feePolicy: FeePolicyLayout,
   notes: NotesLayout,
-  salary: SalaryLayout
+  salary: SalaryLayout,
+  physical: PhysicalLayout
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -119,6 +121,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/bang-luong(?=\/|$)/i.test(pathname)) {
         return 'salary';
+      }
+      if (/^\/phat-trien-the-chat(?=\/|$)/i.test(pathname)) {
+        return 'physical';
       }
       return 'public';
     };
