@@ -179,7 +179,6 @@ const renderChildren = (
   ),
   rangePicker: (
     <DatePicker.RangePicker
-
       disabled={disabled}
       format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
@@ -440,7 +439,7 @@ FormItem.defaultProps = {
   dropdownRender: null,
   onSelect: () => {},
   allowClear: true,
-  picker: null,
+  picker: 'date',
   disabledHours: null,
   disabledMinutes: null,
   radioInline: false,

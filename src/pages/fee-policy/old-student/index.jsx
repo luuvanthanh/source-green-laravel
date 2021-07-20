@@ -46,8 +46,8 @@ class Index extends PureComponent {
     this.state = {
       search: {
         nameStudent: query?.nameStudent,
-        yearFrom: query?.yearFrom || null,
-        yearTo: query?.yearTo || null,
+        from: query?.from || null,
+        to: query?.to || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -113,14 +113,14 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChange = debounce((value, type) => {
-    let { search: { yearFrom, yearTo } } = this.state;
+    let { search: { from, to } } = this.state;
     if (type === 'years') {
       if (!isEmpty(value)) {
-        yearFrom = moment(value[0]).format('YYYY');
-        yearTo = moment(value[1]).format('YYYY');
+        from = moment(value[0]).format('YYYY');
+        to = moment(value[1]).format('YYYY');
       } else {
-        yearFrom = null;
-        yearTo = null;
+        from = null;
+        to = null;
       }
     }
     this.setStateData(
@@ -128,8 +128,8 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           nameStudent: type === 'nameStudent' ? value : prevState.search.nameStudent,
-          yearFrom,
-          yearTo,
+          from,
+          to,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -290,7 +290,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                years: (search?.yearFrom && search?.yearTo) ? [moment(search?.yearFrom), moment(search?.yearTo)] : null
+                years: (search?.from && search?.to) ? [moment(search?.from), moment(search?.to)] : null
               }}
               layout="vertical"
               ref={this.formRef}

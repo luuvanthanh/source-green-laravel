@@ -45,8 +45,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        yearFrom: query?.yearFrom || null,
-        yearTo: query?.yearTo || null,
+        from: query?.from || null,
+        to: query?.to || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -108,8 +108,8 @@ class Index extends PureComponent {
       (prevState) => ({
         search: {
           ...prevState.search,
-          yearFrom: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
-          yearTo: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
+          from: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
+          to: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -239,7 +239,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                years: (search?.yearFrom && search?.yearTo) ? [moment(search.yearFrom), moment(search.yearTo)] : null
+                years: (search?.from && search?.to) ? [moment(search.from), moment(search.to)] : null
               }}
               layout="vertical"
               ref={this.formRef}
