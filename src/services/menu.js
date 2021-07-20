@@ -1363,3 +1363,37 @@ export async function getLeftMenuSalary() {
     },
   ];
 }
+
+export async function getLeftMenuPhysical() {
+  return [
+    {
+      title: 'Tất cả học sinh',
+      key: 'students',
+      icon: 'icon icon-list',
+      url: ['/phat-trien-the-chat/tat-ca-hoc-sinh'],
+      permission: [],
+    },
+    {
+      title: 'Học sinh thừa cân',
+      key: 'overweight-students',
+      icon: 'icon icon-list',
+      url: ['/phat-trien-the-chat/hoc-sinh-thua-can'],
+      permission: [],
+    },
+    {
+      title: 'Học sinh thiếu cân',
+      key: 'underweight-students',
+      icon: 'icon icon-list',
+      url: ['/phat-trien-the-chat/hoc-sinh-thieu-can'],
+      permission: [],
+    },
+    {
+      title: 'Lịch sử',
+      key: 'history',
+      url: ['/phat-trien-the-chat/lich-su'],
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
+    },
+  ];
+}

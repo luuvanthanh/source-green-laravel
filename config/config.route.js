@@ -1891,6 +1891,42 @@ export default [
         ],
       },
       // MEDIA
+      //PHYSICAL
+      {
+        path: '/phat-trien-the-chat',
+        component: './physical/layout',
+        routes: [
+          {
+            path: '/phat-trien-the-chat',
+            redirect: '/phat-trien-the-chat/tat-ca-hoc-sinh',
+          },
+          {
+            path: '/phat-trien-the-chat/tat-ca-hoc-sinh',
+            component: './physical/students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/hoc-sinh-thua-can',
+            component: './physical/overweight',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/hoc-sinh-thieu-can',
+            component: './physical/underweight',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/lich-su',
+            component: './physical/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      //PHYSICAL
       {
         path: '/404',
         component: './404',
