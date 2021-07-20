@@ -10,6 +10,7 @@ import Pane from '@/components/CommonComponent/Pane';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import moment from 'moment';
 
 const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
   const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           dayAdmission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: startDate,
+              originValue: moment(startDate, variables.DATE_FORMAT.DATE_VI),
             }),
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,

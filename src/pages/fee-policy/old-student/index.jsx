@@ -225,8 +225,8 @@ class Index extends PureComponent {
       {
         title: 'Khối lớp',
         key: 'grade',
-        className: 'min-width-100',
-        render: (record) => record?.grade || '',
+        className: 'min-width-150',
+        render: (record) => record?.student?.classStudent?.class?.name || '',
       },
       {
         title: 'Lớp',
