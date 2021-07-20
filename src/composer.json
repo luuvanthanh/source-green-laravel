@@ -99,6 +99,7 @@
             "GGPHP\\Fee\\": "packages/fee/src/",
             "GGPHP\\Salary\\": "packages/salary/src/",
             "GGPHP\\Facebook\\": "crm/facebook/src/",
+            "GGPHP\\Zalo\\": "crm/zalo/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

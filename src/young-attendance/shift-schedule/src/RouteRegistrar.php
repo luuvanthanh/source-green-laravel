@@ -93,8 +93,8 @@ class RouteRegistrar extends CoreRegistrar
             ]);
 
             //repeat
-            \Route::group(['prefix' => 'schedules/repeat'], function () {
-                \Route::delete('delete-students/{id}', [
+            \Route::group(['prefix' => 'schedule-students/repeat'], function () {
+                \Route::delete('delete/{id}', [
                     'comment' => 'Xóa ca lặp lại',
                     'uses' => 'ScheduleController@deleteScheduleRepeat',
                     'as' => 'schedule.repeat.delete',

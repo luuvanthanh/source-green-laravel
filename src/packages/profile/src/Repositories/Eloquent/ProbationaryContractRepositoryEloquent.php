@@ -158,9 +158,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
 
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
-                    'employeeId' => $value['employeeId'],
+                    'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'startDate' => $probationaryContract->ContractTo->addYear()->format('Y-m-d'),
                     'endDate' => $probationaryContract->ContractFrom->addYear()->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',

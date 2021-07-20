@@ -33,13 +33,26 @@ if (!function_exists('arraySortByColumn')) {
 if (!function_exists('getFacebookSdk')) {
     function getFacebookSdk()
     {
-        $fb = new \Facebook\Facebook([
+        $facebook = new \Facebook\Facebook([
             'app_id' => env("APP_ID_FACEBOOK"),
             'app_secret' => env("APP_SECRET_FACEBOOK"),
             'default_graph_version' => 'v11.0',
             // 'default_access_token' => $accessToken, // optional
         ]);
 
-        return $fb;
+        return $facebook;
+    }
+}
+
+if (!function_exists('getZaloSdk')) {
+    function getZaloSdk()
+    {
+        $zalo = new \Zalo\Zalo([
+            'app_id' => env("APP_ID_ZALO"),
+            'app_secret' => env("APP_SECRET_ZALO"),
+            'callback_url' => 'https://b876de6d9e94.ngrok.io/zalo-callback',
+        ]);
+
+        return $zalo;
     }
 }

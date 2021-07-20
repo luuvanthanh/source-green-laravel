@@ -158,9 +158,9 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
 
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
-                    'employeeId' => $value['employeeId'],
+                    'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'startDate' => $labourContract->ContractTo->addYear()->format('Y-m-d'),
                     'endDate' => $labourContract->ContractFrom->addYear()->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
@@ -170,6 +170,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             }
             \DB::commit();
         } catch (\Exception $e) {
+            dd($e);
             \DB::rollback();
         }
 

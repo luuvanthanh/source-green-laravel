@@ -54,7 +54,11 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
     public function filterSchoolYear(array $attributes)
     {
         if (!empty($attributes['from']) && !empty($attributes['to'])) {
-            $this->model = $this->model->where('YearFrom', $attributes['from'])->where('YearTo', $attributes['to']);
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->where([['YearFrom', '<=', $attributes['from']], ['YearTo', '>=', $attributes['to']]])
+                    ->orWhere([['YearFrom', '>', $attributes['from']], ['YearFrom', '<=', $attributes['to']]])
+                    ->orWhere([['YearTo', '>=', $attributes['from']], ['YearTo', '<', $attributes['to']]]);
+            });
         }
 
         if (!empty($attributes['limit'])) {

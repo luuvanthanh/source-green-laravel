@@ -119,4 +119,20 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
 
         return parent::delete($id);
     }
+
+    public function getShift(array $attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->orWhereLike('Name', $attributes['key']);
+            $this->model = $this->model->orWhereLike('ShiftCode', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $result = $this->paginate($attributes['limit']);
+        } else {
+            $result = $this->get();
+        }
+
+        return $result;
+    }
 }
