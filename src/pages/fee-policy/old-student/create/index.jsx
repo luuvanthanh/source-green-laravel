@@ -44,7 +44,7 @@ const Index = memo(() => {
     endDate: '',
     code: '',
     branchName: '',
-    grade: '',
+    classType: '',
     className: '',
     classTypeId: '',
   });
@@ -86,7 +86,7 @@ const Index = memo(() => {
               schoolYearId: res?.schoolYearId || '',
               code: res?.student?.code || '',
               branchName: res?.student?.classStudent?.class?.branch?.name || '',
-              grade: res?.grade || '',
+              classType: res?.classType || '',
               className: res?.student?.classStudent?.class?.name || '',
               classTypeId: res?.student?.classStudent?.class?.id || '',
             }));
@@ -201,9 +201,9 @@ const Index = memo(() => {
         ...details,
         code: student?.code || '',
         branchName: student?.class?.branch?.name || '',
-        grade: '',
+        classType: student?.class?.classType?.name || '',
         className: student?.class?.name || '',
-        classTypeId: student?.class?.classTypeId || '',
+        classTypeId: student?.class?.classType?.id || '',
       };
       setDetails(newDetails);
       if (newDetails?.schoolYearId) {
@@ -306,7 +306,7 @@ const Index = memo(() => {
                       </div>
                       <div className="col-lg-3">
                         <label htmlFor="" className="mb5 font-size-13" >Khối lớp</label>
-                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.grade || ''}</p>
+                        <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
                       </div>
                       <div className="col-lg-3">
                         <label htmlFor="" className="mb5 font-size-13" >Lớp</label>
