@@ -87,15 +87,6 @@ const Index = memo(() => {
     setTab(key);
   };
 
-  const remove = () => {
-    formRef?.current.resetFields();
-    setTab('schedule');
-    setShowDetails(false);
-    setFeeDetail([]);
-    setMoneyMeal([]);
-    setOtherMoneyDetail([]);
-  };
-
   const onChange  = async (e, name) => {
     if (name === 'schoolYearId') {
       const choolYearSelect = yearsSchool.find(item => item?.id === e);
@@ -213,7 +204,7 @@ const Index = memo(() => {
     <Form layout="vertical" colon={false} ref={formRef} onFinish={finishForm}>
       <Breadcrumbs className="pb0" last={params?.id ? 'Chi tiết' : 'Thêm mới'} menu={menuLeftFeePolicy} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
-        <Loading params={{ type: 'container' }}>
+        <Loading params={{ type: 'container', goBack: '/chinh-sach-phi/tien-dong' }}>
           <Helmet title={params?.id ? 'Chi tiết tiền đóng' : 'Thêm mới tiền đóng'} />
 
           <Pane className="card p20">
@@ -231,7 +222,7 @@ const Index = memo(() => {
                   placeholder="Chọn năm"
                   onChange={e => onChange(e, 'schoolYearId')}
                   allowClear={false}
-                  data={yearsSchool.map(item => ({ ...item, name: `${item?.yearTo} - ${item?.yearFrom}`}))}
+                  data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
                   rules={[variables.RULES.EMPTY]}
                 />
               </div>
@@ -291,9 +282,6 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="p20 d-flex justify-content-between align-items-center">
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Hủy
-                </p>
                 <Button
                   className="ml-auto px25"
                   color="success"

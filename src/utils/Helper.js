@@ -41,9 +41,9 @@ export default class Helpers {
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
-  static getPrice = (value, number = 0) => {
+  static getPrice = (value, number = 0, unit = false) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ`;
+      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${unit ? '' : ` đ`}`;
     }
     return null;
   };
@@ -819,8 +819,8 @@ export default class Helpers {
     size: 'default',
     total: pagination.total,
     pageSize: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    defaultCurrent: Number(query?.page),
-    current: Number(query?.page),
+    defaultCurrent: Number(query?.page || variables.PAGINATION.PAGE),
+    current: Number(query?.page || variables.PAGINATION.PAGE),
     hideOnSinglePage: pagination.total <= 10,
     showSizeChanger: variables.PAGINATION.SHOW_SIZE_CHANGER,
     pageSizeOptions: variables.PAGINATION.PAGE_SIZE_OPTIONS,

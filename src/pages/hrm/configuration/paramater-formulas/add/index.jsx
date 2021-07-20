@@ -11,7 +11,9 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import variablesModules from '../../../utils/variables';
+import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
+import RecipeComponent from './components/Recipe';
 
 let isMounted = true;
 /**
@@ -41,7 +43,10 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      dataRecipe: [],
+      code: '',
+    };
     setIsMounted(true);
   }
 
@@ -68,6 +73,7 @@ class Index extends PureComponent {
         ...details,
         applyDate: details.applyDate && moment(details.applyDate),
       });
+      this.onSetRecipe(details.recipe);
     }
   }
 
@@ -89,16 +95,66 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
+  reverseData = (items, parentId = null, level = 1) =>
+    items.map((item) => {
+      const uID = uuidv4();
+      return {
+        ...item,
+        key: uID,
+        id: uID,
+        parentId,
+        level,
+        children: this.reverseData(item.formular, uID, level + 1),
+      };
+    });
+
+  onSetRecipe = (recipe) => {
+    if (!isEmpty(recipe)) {
+      this.setStateData({
+        dataRecipe: Helper.flatten(this.reverseData(recipe)),
+      });
+    }
+  };
+
+  onChangeCode = (e) => {
+    this.setStateData({
+      code: e.target.value,
+    });
+  };
+
+  covertDataRecipe = (items) =>
+    items.map((item) => {
+      if (item.value) {
+        return {
+          type: 'value',
+          variable: item.variable,
+          value: item.value,
+          operator: item.operator,
+          formular: this.covertDataRecipe(item.children),
+        };
+      }
+      return {
+        type: !isEmpty(item.children) ? 'formular' : 'variable',
+        variable: item.variable,
+        value: item.value,
+        operator: item.operator,
+        formular: this.covertDataRecipe(item.children),
+      };
+    });
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
+    const { dataRecipe } = this.state;
+    const recipe = this.covertDataRecipe(Helper.nest(dataRecipe));
     dispatch({
       type: params.id ? 'paramaterFormulasAdd/UPDATE' : 'paramaterFormulasAdd/ADD',
       payload: {
         ...values,
         id: params.id,
+        recipe,
       },
       callback: (response, error) => {
         if (response) {
@@ -120,6 +176,24 @@ class Index extends PureComponent {
     });
   };
 
+  onSaveData = (dataRecipe) => {
+    this.setStateData({
+      dataRecipe,
+    });
+  };
+
+  renderCalulator = (items) =>
+    items
+      .map((item) => {
+        if (!isEmpty(item.children)) {
+          return `${item.operator || ''} (${this.renderCalulator(item.children)})`;
+        }
+        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
+          item.children,
+        )})`;
+      })
+      .join(' ');
+
   render() {
     const {
       error,
@@ -127,6 +201,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
+    const { dataRecipe, code } = this.state;
     const loadingSubmit =
       effects['paramaterFormulasAdd/ADD'] || effects['paramaterFormulasAdd/UPDATE'];
     const loading = effects['paramaterFormulasAdd/GET_DETAILS'];
@@ -143,7 +218,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -156,6 +235,7 @@ class Index extends PureComponent {
                       name="code"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                      onChange={this.onChangeCode}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -176,15 +256,18 @@ class Index extends PureComponent {
                       type={variables.DATE_PICKER}
                     />
                   </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="CÔNG THỨC"
-                      name="recipe"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                    />
-                  </div>
                 </div>
+                <Text color="dark" size="large-medium">
+                  CÔNG THỨC
+                </Text>
+                {code && (
+                  <div className="mt10">
+                    <Text color="dark" size="large-medium">
+                      {code} = {this.renderCalulator(Helper.nest(dataRecipe))}
+                    </Text>
+                  </div>
+                )}
+                <RecipeComponent data={dataRecipe} onSaveData={this.onSaveData} />
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -203,6 +286,7 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
+                  disabled={isEmpty(dataRecipe)}
                 >
                   LƯU
                 </Button>
@@ -215,6 +299,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  menuData: [],
+  details: {},
+};
 
 export default Index;

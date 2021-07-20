@@ -5,6 +5,7 @@ export default {
   state: {
     data: [],
     pagination: {},
+    paramaterValues: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -12,6 +13,10 @@ export default {
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
+    }),
+    SET_PARAMATER_VALUES: (state, { payload }) => ({
+      ...state,
+      paramaterValues: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -24,6 +29,22 @@ export default {
     }),
   },
   effects: {
+    *GET_PARAMATER_VALUES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParamaterValues, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_PARAMATER_VALUES',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

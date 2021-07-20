@@ -365,37 +365,11 @@ export async function getLeftMenuConfiguration() {
       pro: true,
     },
     {
-      title: 'Môn học',
-      key: 'subjects',
-      url: ['/cau-hinh/mon-hoc', '/cau-hinh/mon-hoc/tao-moi', '/cau-hinh/mon-hoc/:id/chi-tiet'],
-      icon: 'icon icon-list',
-      permission: [permissions.CAUHINH],
-      pro: true,
-    },
-    {
       title: 'Danh mục',
       key: 'categories',
       icon: 'icon icon-list',
       permission: [permissions.CAUHINH],
       children: [
-        {
-          title: 'Loại công việc',
-          key: 'job-types',
-          url: [
-            '/cau-hinh/loai-cong-viec',
-            '/cau-hinh/loai-cong-viec/tao-moi',
-            '/cau-hinh/loai-cong-viec/:id/chi-tiet',
-          ],
-          permission: [permissions.CAUHINH],
-          pro: true,
-        },
-        {
-          title: 'Quản lý cấp bậc',
-          key: 'manager-level',
-          url: ['/cau-hinh/cap-bac', '/cau-hinh/cap-bac/tao-moi', '/cau-hinh/cap-bac/:id/chi-tiet'],
-          permission: [permissions.CAUHINH],
-          pro: true,
-        },
         {
           title: 'Nhóm đối tượng',
           key: 'manager-object',
@@ -460,26 +434,6 @@ export async function getLeftMenuConfiguration() {
           pro: true,
         },
       ],
-    },
-    {
-      title: 'Tablet giáo viên',
-      key: 'tablet',
-      url: [
-        '/cau-hinh/tablet-giao-vien',
-        '/cau-hinh/tablet-giao-vien/tao-moi',
-        '/cau-hinh/tablet-giao-vien/:id/chi-tiet',
-      ],
-      icon: 'icon icon-tablet',
-      permission: [permissions.CAUHINH],
-      pro: true,
-    },
-    {
-      title: 'Lịch học',
-      key: 'schedules',
-      url: ['/cau-hinh/lich-hoc', '/cau-hinh/lich-hoc/tao-moi', '/cau-hinh/lich-hoc/:id/chi-tiet'],
-      icon: 'icon icon-list',
-      permission: [permissions.CAUHINH],
-      pro: true,
     },
     {
       title: 'Phân quyền',
@@ -552,14 +506,6 @@ export async function getLeftMenuCriteria() {
       key: 'report',
       url: ['/chuong-trinh-hoc/bao-cao-tong-quat-tre'],
       icon: 'icon icon-dashboard',
-      permission: [permissions.CTH],
-      pro: true,
-    },
-    {
-      title: 'Đánh giá học tập',
-      key: 'learn',
-      url: ['/chuong-trinh-hoc/danh-gia-hoc-tap', '/chuong-trinh-hoc/danh-gia-hoc-tap/tao-moi'],
-      icon: 'icon icon-checkmark',
       permission: [permissions.CTH],
       pro: true,
     },
@@ -637,17 +583,6 @@ export async function getLeftMenuCriteria() {
       icon: 'icon icon-setting',
       permission: [permissions.CTH],
       children: [
-        {
-          title: 'Kiểu dữ liệu',
-          key: 'criteria-datatypes',
-          url: [
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu',
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu/tao-moi',
-            '/chuong-trinh-hoc/cau-hinh/kieu-du-lieu/:id/chi-tiet',
-          ],
-          permission: [permissions.CTH],
-          pro: true,
-        },
         {
           title: 'Nhóm tiêu chí',
           key: 'criteria-groups',
@@ -1257,7 +1192,7 @@ export async function getLeftMenuHRM() {
     {
       title: 'Cấu hình',
       key: 'categoriesParamater',
-      icon: 'icon icon-list',
+      icon: 'icon icon-setting',
       permission: [permissions.HRM],
       children: [
         {
@@ -1267,17 +1202,6 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri',
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/tao-moi',
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
-          ],
-          permission: [permissions.HRM],
-          pro: true,
-        },
-        {
-          title: 'Tham số công thức',
-          key: 'paramater-formulas',
-          url: [
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
-            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
           pro: true,
@@ -1299,6 +1223,35 @@ export async function getLeftMenuHRM() {
 }
 export async function getLeftMenuFeePolicy() {
   return [
+    {
+      title: 'Báo cáo',
+      key: 'report',
+      icon: 'icon icon-report',
+      permission: [permissions.CHINHSACHPHI],
+      children: [
+        {
+          title: 'Dự kiến các khoản phải thu',
+          key: 'expected-fees',
+          url: ['/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Chi tiết các khoản tiền nộp',
+          key: 'details-of-payments',
+          url: ['/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Lịch nộp tiền học',
+          key: 'tuition-payment-schedule',
+          url: ['/chinh-sach-phi/bao-cao/lich-nop-tien-hoc'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+      ],
+    },
     {
       title: 'Năm học',
       key: 'school-year',
@@ -1369,6 +1322,44 @@ export async function getLeftMenuNotes() {
       icon: 'icon icon-list',
       permission: [permissions.GHICHU],
       pro: true,
+    },
+  ];
+}
+
+export async function getLeftMenuSalary() {
+  return [
+    {
+      title: 'Tính lương',
+      key: 'payroll',
+      icon: 'icon icon-calculate',
+      url: ['/bang-luong/tinh-luong'],
+      permission: [permissions.BANGLUONG],
+    },
+    {
+      title: 'Bảng lương',
+      key: 'salary',
+      icon: 'icon icon-salary',
+      url: ['/bang-luong/danh-sach'],
+      permission: [permissions.BANGLUONG],
+    },
+    {
+      title: 'Cấu hình',
+      key: 'categoriesParamater',
+      icon: 'icon icon-setting',
+      permission: [permissions.BANGLUONG],
+      children: [
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/bang-luong/tham-so-cong-thuc',
+            '/bang-luong/tham-so-cong-thuc/tao-moi',
+            '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [permissions.BANGLUONG],
+          pro: true,
+        },
+      ],
     },
   ];
 }

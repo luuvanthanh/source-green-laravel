@@ -59,7 +59,7 @@ const Index = memo(() => {
         <Loading
           loading={loading['notificationsDetails/GET_DATA']}
           isError={error.isError}
-          params={{ error, type: 'container' }}
+          params={{ error, type: 'container', goBack: '/thong-bao/danh-sach' }}
         >
           <Pane className="row">
             <Pane className="col-lg-6">
@@ -131,7 +131,7 @@ const Index = memo(() => {
                           />
                           <Pane>
                             <h3>{item?.parent?.fullName}</h3>
-                            <p>Phụ Huynh</p>
+                            <p>Phụ huynh</p>
                           </Pane>
                         </Pane>
                       ))}
@@ -147,7 +147,7 @@ const Index = memo(() => {
                           />
                           <Pane>
                             <h3>{item?.employee?.fullName}</h3>
-                            <p>Nhân viên</p>
+                            <p>{item?.employee?.positionLevel?.position?.name || ''}</p>
                           </Pane>
                         </Pane>
                       ))}

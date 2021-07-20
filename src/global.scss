@@ -29,6 +29,10 @@ label {
   font-family: $base__font-family;
 }
 
+.label-required {
+  color: $text-danger;
+}
+
 #root {
   height: 100%;
 }

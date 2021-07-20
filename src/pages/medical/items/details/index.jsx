@@ -58,7 +58,7 @@ const Index = memo(() => {
       <Breadcrumbs last="Chi tiết y tế" menu={menuData} />
       <Helmet title="Chi tiết y tế" />
       <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
-        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container', goBack: '/y-te/thong-ke' }}>
           <Pane className="row">
             <Pane className="col-lg-6">
               <Pane className="card">

@@ -45,6 +45,9 @@ const renderChildren = (
   options,
   checked,
   value,
+  notFoundContent,
+  filterOption,
+  disabledOptions,
 ) => ({
   input: (
     <Input
@@ -98,10 +101,8 @@ const renderChildren = (
     <Select
       allowClear={allowClear}
       dataSet={data}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
-      notFoundContent={null}
+      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      notFoundContent={notFoundContent}
       onChange={onChange}
       onPopupScroll={handleScroll}
       onSearch={onSearch}
@@ -110,6 +111,7 @@ const renderChildren = (
       options={options}
       disabled={disabled}
       value={value}
+      disabledOptions={disabledOptions}
     />
   ),
   selectAdd: (
@@ -117,16 +119,15 @@ const renderChildren = (
       allowClear
       dataSet={data}
       dropdownRender={dropdownRender}
-      filterOption={(input, option) =>
-        Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
-      }
-      notFoundContent={null}
+      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      notFoundContent={notFoundContent}
       onBlur={onBlur}
       onChange={onChange}
       onPopupScroll={handleScroll}
       onSearch={onSearch}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      disabledOptions={disabledOptions}
     />
   ),
   selectMutilple: (
@@ -141,6 +142,7 @@ const renderChildren = (
       onPopupScroll={handleScroll}
       placeholder={placeholder || 'Chọn'}
       showSearch
+      disabledOptions={disabledOptions}
     />
   ),
   tags: (
@@ -178,11 +180,12 @@ const renderChildren = (
   rangePicker: (
     <DatePicker.RangePicker
       disabled={disabled}
-      format={['DD-MM-YYYY', 'DD-MM-YYYY']}
+      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
-      placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
+      placeholder={picker === 'year' ? ['Từ năm', 'Đến năm'] : ['ngày/tháng/năm', 'ngày/tháng/năm']}
       value={value}
       allowClear={allowClear}
+      picker={picker}
     />
   ),
   datePicker: (
@@ -348,6 +351,9 @@ export default function FormItem({
   options,
   checked,
   value,
+  notFoundContent,
+  filterOption,
+  disabledOptions,
   ...rest
 }) {
   return (
@@ -375,6 +381,9 @@ export default function FormItem({
           options,
           checked,
           value,
+          notFoundContent,
+          filterOption,
+          disabledOptions,
         )[type]
       }
     </Form.Item>
@@ -407,6 +416,9 @@ FormItem.propTypes = {
   options: PropTypes.arrayOf(PropTypes.any),
   checked: PropTypes.bool,
   value: PropTypes.any,
+  notFoundContent: PropTypes.any,
+  filterOption: PropTypes.bool,
+  disabledOptions: PropTypes.arrayOf(PropTypes.any),
 };
 
 FormItem.defaultProps = {
@@ -427,7 +439,7 @@ FormItem.defaultProps = {
   dropdownRender: null,
   onSelect: () => {},
   allowClear: true,
-  picker: null,
+  picker: 'date',
   disabledHours: null,
   disabledMinutes: null,
   radioInline: false,
@@ -435,6 +447,9 @@ FormItem.defaultProps = {
   options: ['id', 'name'],
   checked: false,
   value: '',
+  notFoundContent: null,
+  filterOption: false,
+  disabledOptions: [],
 };
 
 FormItem.displayName = 'Form';

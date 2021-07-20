@@ -1,7 +1,5 @@
-import { isEmpty, get } from 'lodash';
-import { notification } from 'antd';
-import * as services from './services';
 import * as categories from '@/services/categories';
+import * as services from './services';
 
 export default {
   namespace: 'configurationAccountAdd',
@@ -62,6 +60,7 @@ export default {
           type: 'SET_ROLES',
           payload: response,
         });
+      // eslint-disable-next-line no-empty
       } catch (error) {}
     },
     *GET_PARENTS({ payload }, saga) {
@@ -71,6 +70,7 @@ export default {
           type: 'SET_PARENTS',
           payload: response,
         });
+      // eslint-disable-next-line no-empty
       } catch (error) {}
     },
     *GET_EMPLOYEES({ payload }, saga) {
@@ -80,6 +80,7 @@ export default {
           type: 'SET_EMPLOYEES',
           payload: response,
         });
+      // eslint-disable-next-line no-empty
       } catch (error) {}
     },
     *ADD({ payload, callback }, saga) {
@@ -95,10 +96,6 @@ export default {
         yield saga.call(services.addEmployeesAccounts, payload);
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -107,10 +104,6 @@ export default {
         yield saga.call(services.addParentAccounts, payload);
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
-        });
         callback(null, error?.data?.error);
       }
     },

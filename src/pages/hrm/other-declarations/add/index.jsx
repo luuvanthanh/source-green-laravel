@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, last, omit, differenceWith, size } from 'lodash';
+import { get, isEmpty, last, omit, differenceWith, size, head } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -44,6 +44,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       detail: [],
+      paramaterValues: [],
     };
     setIsMounted(true);
   }
@@ -78,8 +79,11 @@ class Index extends PureComponent {
         ...details,
         time: details.time && moment(details.time),
         employeeId: details.otherDeclarationDetail.map((item) => item.employeeId),
+        paramaterValues:
+          head(details.otherDeclarationDetail)?.detail?.map((item) => item.id) || undefined,
       });
       this.onSetDetail(details.otherDeclarationDetail);
+      this.onSetParamaterValues(head(details.otherDeclarationDetail));
     }
   }
 
@@ -102,6 +106,12 @@ class Index extends PureComponent {
     dispatch({
       type: 'otherDeclarationsAdd/GET_CATEGORIES',
       payload: {},
+    });
+  };
+
+  onSetParamaterValues = (item) => {
+    this.setStateData({
+      paramaterValues: item.detail,
     });
   };
 
@@ -149,7 +159,7 @@ class Index extends PureComponent {
   };
 
   onChangeEmployee = (value) => {
-    const { detail } = this.state;
+    const { detail, paramaterValues } = this.state;
     const { categories } = this.props;
     if (size(value) < size(detail)) {
       const diffirence = differenceWith(
@@ -166,26 +176,45 @@ class Index extends PureComponent {
           ...prevState.detail,
           {
             employee,
-            allowance: 0,
-            bonus: 0,
-            retrieval: 0,
-            paymentOfSocialInsurance: 0,
-            employeeSocialInsurance: 0,
-            charity: 0,
-            companySocialInsurance: 0,
+            detail: paramaterValues,
           },
         ],
       }));
     }
   };
 
-  onChangeNumber = (value, record, key = 'allowance') => {
+  onChangeParamater = (value) => {
+    const { categories } = this.props;
+    this.setStateData((prevState) => ({
+      paramaterValues: [
+        ...prevState.paramaterValues,
+        categories.paramaterValues.find((item) => item.id === last(value)),
+      ],
+      detail: prevState.detail.map((item) => ({
+        ...item,
+        detail: [
+          ...prevState.paramaterValues,
+          categories.paramaterValues.find((item) => item.id === last(value)),
+        ],
+      })),
+    }));
+  };
+
+  onChangeNumber = (value, record, paramaterValue) => {
     this.setStateData((prevState) => ({
       detail: prevState.detail.map((item) => {
         if (item?.employee?.id === record?.employee?.id) {
           return {
             ...item,
-            [key]: value,
+            detail: item.detail.map((itemDetail) => {
+              if (itemDetail.id === paramaterValue.id) {
+                return {
+                  ...itemDetail,
+                  value,
+                };
+              }
+              return itemDetail;
+            }),
           };
         }
         return item;
@@ -207,136 +236,53 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => [
-    {
-      title: 'Nhân viên',
-      key: 'user',
+  header = () => {
+    const { paramaterValues } = this.state;
+    const columns = [
+      {
+        title: 'Nhân viên',
+        key: 'user',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
+            fullName={get(record, 'employee.fullName')}
+          />
+        ),
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record)} />
+          </div>
+        ),
+      },
+    ];
+    const columnsMerge = paramaterValues.map((item) => ({
+      title: item.name,
+      key: item.code,
       className: 'min-width-200',
       width: 200,
-      render: (record) => (
-        <AvatarTable
-          fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
-          fullName={get(record, 'employee.fullName')}
-        />
-      ),
-    },
-    {
-      title: 'Phụ cấp HT-TCSK',
-      key: 'allowance',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.allowance}
-          onChange={(value) => this.onChangeNumber(value, record, 'allowance')}
-        />
-      ),
-    },
-    {
-      title: 'Thưởng tháng 13',
-      key: 'bonus',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.bonus}
-          onChange={(value) => this.onChangeNumber(value, record, 'bonus')}
-        />
-      ),
-    },
-    {
-      title: 'Truy lĩnh',
-      key: 'retrieval',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.retrieval}
-          onChange={(value) => this.onChangeNumber(value, record, 'retrieval')}
-        />
-      ),
-    },
-    {
-      title: 'Thanh toán từ BHXH',
-      key: 'paymentOfSocialInsurance',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.paymentOfSocialInsurance}
-          onChange={(value) => this.onChangeNumber(value, record, 'paymentOfSocialInsurance')}
-        />
-      ),
-    },
-    {
-      title: 'Điều chỉnh BHXH NLĐ',
-      key: 'employeeSocialInsurance',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.employeeSocialInsurance}
-          onChange={(value) => this.onChangeNumber(value, record, 'employeeSocialInsurance')}
-        />
-      ),
-    },
-    {
-      title: 'Điều chỉnh BHXH CTT',
-      key: 'companySocialInsurance',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.companySocialInsurance}
-          onChange={(value) => this.onChangeNumber(value, record, 'companySocialInsurance')}
-        />
-      ),
-    },
-    {
-      title: 'Đóng góp từ thiện',
-      key: 'charity',
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => (
-        <InputNumber
-          className={classnames('input-number', styles['input-number-container'])}
-          formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-          placeholder="Nhập"
-          value={record.charity}
-          onChange={(value) => this.onChangeNumber(value, record, 'charity')}
-        />
-      ),
-    },
-    {
-      key: 'action',
-      className: 'min-width-80',
-      width: 80,
-      fixed: 'right',
-      render: (record) => (
-        <div className={styles['list-button']}>
-          <Button color="danger" icon="remove" onClick={() => this.onRemove(record)} />
-        </div>
-      ),
-    },
-  ];
+      render: (record) => {
+        const itemParamater = record?.detail?.find((itemDetail) => itemDetail.id === item.id);
+        return (
+          <InputNumber
+            className={classnames('input-number', styles['input-number-container'])}
+            formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+            placeholder="Nhập"
+            value={itemParamater?.value || 0}
+            onChange={(value) => this.onChangeNumber(value, record, item)}
+          />
+        );
+      },
+    }));
+    return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
+  };
 
   render() {
     const {
@@ -394,6 +340,18 @@ class Index extends PureComponent {
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT_MUTILPLE}
                     onChange={this.onChangeEmployee}
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-lg-12">
+                  <FormItem
+                    data={categories?.paramaterValues}
+                    label="KHAI BÁO"
+                    name="paramaterValues"
+                    rules={[variables.RULES.EMPTY]}
+                    type={variables.SELECT_MUTILPLE}
+                    onChange={this.onChangeParamater}
                   />
                 </div>
               </div>

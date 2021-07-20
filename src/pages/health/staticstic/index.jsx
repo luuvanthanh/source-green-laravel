@@ -379,6 +379,7 @@ class Index extends PureComponent {
                   <FormItem
                     data={branches}
                     name="branchId"
+                    placeholder="Chọn cơ sở"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                   />
@@ -387,6 +388,7 @@ class Index extends PureComponent {
                   <FormItem
                     data={classes}
                     name="classId"
+                    placeholder="Chọn lớp"
                     onChange={(event) => this.onChangeSelectClass(event, 'classId')}
                     type={variables.SELECT}
                   />
@@ -395,22 +397,26 @@ class Index extends PureComponent {
                   <FormItem
                     data={Helper.convertSelectUsers(students)}
                     name="studentId"
+                    placeholder="Chọn học sinh"
                     onChange={(event) => this.onChangeSelect(event, 'studentId')}
                     type={variables.SELECT}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={criteriaGroupProperties.map((item) => ({
-                      id: item.id,
-                      name: item.property,
-                    }))}
+                    data={criteriaGroupProperties
+                      .filter((item) => item.property === 'PIPI' || item.property === 'PUPU')
+                      .map((item) => ({
+                        id: item.id,
+                        name: item.property,
+                      }))}
                     name="propertyId"
+                    placeholder="Chọn loại"
                     onChange={(event) => this.onChangeSelect(event, 'propertyId')}
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-6">
                   <FormItem
                     name="date"
                     onChange={(event) => this.onChangeDateRank(event, 'date')}
@@ -419,6 +425,9 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
+            <Text color="dark">
+              {criteriaGroupProperties?.find((item) => item.id === search.propertyId)?.property}
+            </Text>
             <div id="chart">
               <ReactApexChart
                 options={this.state.options}

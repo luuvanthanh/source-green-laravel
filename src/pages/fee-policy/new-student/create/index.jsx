@@ -3,14 +3,15 @@ import { Helmet } from 'react-helmet';
 import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import _ from 'lodash';
+import _, { isEmpty } from 'lodash';
+import moment from 'moment';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 
 import TypeFees from './typeFees';
 
@@ -27,55 +28,77 @@ const radios = [
 
 const Index = memo(() => {
   const params = useParams();
-  const { loading } = useSelector(({ loading }) => ({ loading }));
-  const [{ menuLeftFeePolicy }] = useSelector(({ menu }) => [menu]);
+  const {
+    loading,
+    menuLeftFeePolicy,
+    yearsSchool,
+    classes,
+    students,
+  } = useSelector(({ loading, menu, schoolYear, classType, newStudent }) => ({
+    loading: loading.effects,
+    menuLeftFeePolicy: menu.menuLeftFeePolicy,
+    yearsSchool: schoolYear.data,
+    classes: classType.data,
+    students: newStudent.data
+  }));
+
   const dispatch = useDispatch();
 
   const history = useHistory();
   const formRef = useRef();
+  const type = formRef?.current?.getFieldValue('type');
 
-  const [typeFees, setTypeFees] = useState([]);
+  const [tuition, setTuition] = useState([]);
   const [errorTable, setErrorTable] = useState({
-    typeFees: false,
+    tuition: false,
+  });
+  const [addFees, setAddFees] = useState(false);
+  const [disableDayAdmission, setDisableDayAdmission] = useState({
+    startDate: null,
+    endDate: null
   });
 
   useEffect(() => {
+    dispatch({
+      type: 'schoolYear/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
+    dispatch({
+      type: 'classType/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
+    });
     if (params.id) {
       dispatch({
-        type: 'feesAdd/GET_DETAILS',
+        type: 'newStudentAdd/GET_DETAILS',
         payload: {
           ...params
         },
         callback: (res) => {
-          if (res) {
+          if (res?.id) {
             formRef.current.setFieldsValue({
               ...res,
+              dateOfBirth: moment(res.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              dayAdmission: moment(res.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+              type: 'newStudent'
             });
+            setTuition(res?.tuition?.map(item => ({
+              id: item.id,
+              feeId: item.feeId || '',
+              paymentFormId: item.paymentFormId || '',
+              money: item.money || 0,
+            })));
+            setAddFees(true);
           }
         },
       });
     }
   }, []);
-
-  const onFinish = (values) => {
-    dispatch({
-      type: 'feesAdd/ADD',
-      payload: {
-        ...values,
-      },
-      callback: (res) => {
-        if (res) {
-          history.goBack();
-        }
-      },
-    });
-  };
-  const remove = () => {
-    formRef.current.resetFields();
-  };
-
-  const onChangeType = () => {
-  };
 
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
@@ -87,14 +110,143 @@ const Index = memo(() => {
   };
 
   const checkValidate = (data, name) => {
-    let pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
-    if (name === 'other') {
-      pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : false;
-    }
+    const pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
     setErrorTable((prev) => ({
       ...prev,
       [name]: !!pass,
     }));
+    return pass;
+  };
+
+  const onFinish = (values) => {
+    const errorTuition = checkValidate(tuition, 'tuition');
+    if(errorTuition) {
+      return;
+    }
+    const payload = {
+      ...values,
+      dateOfBirth: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(values.dateOfBirth, variables.DATE_FORMAT.DATE_AFTER),
+        }),
+        format: variables.DATE_FORMAT.DATE_TIME_UTC,
+        isUTC: false,
+      }),
+      dayAdmission: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(values.dayAdmission, variables.DATE_FORMAT.DATE_AFTER),
+        }),
+        format: variables.DATE_FORMAT.DATE_TIME_UTC,
+        isUTC: false,
+      }),
+      tuition,
+      id: params?.id || undefined,
+    };
+    dispatch({
+      type: params?.id ? 'newStudentAdd/UPDATE' : 'newStudentAdd/ADD',
+      payload,
+      callback: (res) => {
+        if (res) {
+          history.goBack();
+        }
+      },
+    });
+  };
+
+  const onFinishFailed = ({ errorFields }) => {
+    if (errorFields) {
+      checkValidate(tuition, 'tuition');
+    }
+  };
+
+  const loadTableFees = (value, name) => {
+    const { getFieldsValue, setFieldsValue } = formRef?.current;
+    const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
+    if (schoolYearId && classTypeId && dayAdmission) {
+      setAddFees(true);
+    } else {
+      setAddFees(false);
+    }
+    if (name === 'schoolYearId') {
+      const yearSchool = yearsSchool.find(item => item.id === value);
+      setDisableDayAdmission((prev) => ({
+        ...prev,
+        startDate: yearSchool.startDate || null,
+        endDate: yearSchool.endDate || null,
+      }));
+      setFieldsValue({ dayAdmission: '' });
+    }
+    setTuition([]);
+  };
+
+  const  getClassByAge = (age = 0) => {
+    dispatch({
+      type: 'classType/GET_CLASS_BY_AGE',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE,
+        age,
+      },
+      callback: (res) => {
+        if (!_.isEmpty(res)) {
+          formRef.current.setFieldsValue({
+            classTypeId: res[0].id,
+          });
+          loadTableFees();
+        }
+      },
+    });
+  };
+
+  const changeDateOfBirth = (date) => {
+    if (!date) {
+      return;
+    }
+    const age = (Math.round( moment().diff(date, 'months', true) * 100 ) / 100).toFixed(0);
+    getClassByAge(age);
+    formRef.current.setFieldsValue({
+      age,
+    });
+  };
+
+  const changeTab = (e) => {
+    formRef.current.resetFields();
+    setTuition([]);
+    const { value } = e.target;
+    formRef.current.setFieldsValue({
+      type: value,
+    });
+    if (value === 'oldStudent') {
+      dispatch({
+        type: 'newStudent/GET_DATA',
+        payload: {
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+          orderBy: 'CreationTime',
+          sortedBy: 'desc',
+        },
+      });
+    }
+  };
+
+  const selectStudent = (value) => {
+    if (value && isEmpty(students)) {
+      return;
+    }
+    const response = students.find(item => item.id === value);
+    if (response?.id) {
+      formRef.current.setFieldsValue({
+        ...response,
+        dateOfBirth: moment(response.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
+        type,
+      });
+    }
+    if (response.age) {
+      getClassByAge(response?.age);
+    }
   };
 
   return (
@@ -107,127 +259,168 @@ const Index = memo(() => {
             layout="vertical"
             ref={formRef}
             onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
             initialValues={{ type: 'newStudent' }}
           >
             <Pane className="card">
               <Pane className="p20">
-                <Heading type="form-title" className="mb20">
+                <Heading type="form-title" className={!params?.id ? "mb20" : ''}>
                   Thông tin học sinh
                 </Heading>
-                <FormItem
-                  className="row-radio-auto mb0"
-                  name="type"
-                  type={variables.RADIO}
-                  data={radios}
-                  rules={[variables.RULES.EMPTY]}
-                  onChange={onChangeType}
-                />
+                {!params?.id && (
+                  <FormItem
+                    className="row-radio-auto mb0"
+                    type={variables.RADIO}
+                    data={radios}
+                    rules={[variables.RULES.EMPTY]}
+                    name="type"
+                    onChange={changeTab}
+                  />
+                )}
               </Pane>
               <Pane className="p20 border-top">
                 <div className="row">
                   <div className="col-lg-3">
-                    <FormItem
-                      label="Tên học sinh"
-                      name="name"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
+                    {type === 'newStudent' ? (
+                      <FormItem
+                        label="Tên học sinh"
+                        name="nameStudent"
+                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                        type={variables.INPUT}
+                      />
+                    ) : (
+                      <FormItem
+                        className="mb-0"
+                        label="Tên học sinh"
+                        name="nameStudent"
+                        type={variables.SELECT}
+                        placeholder="Chọn học sinh"
+                        allowClear={false}
+                        data={students.map(item => ({ ...item, name: item?.nameStudent || '-' }))}
+                        rules={[variables.RULES.EMPTY]}
+                        onChange={selectStudent}
+                      />
+                    )}
+
                   </div>
                   <div className="col-lg-3">
                     <FormItem
+                      className="mb-0"
                       label="Năm học"
-                      name="creator"
-                      data={[]}
+                      name="schoolYearId"
                       type={variables.SELECT}
+                      placeholder="Chọn năm"
+                      allowClear={false}
+                      data={yearsSchool.map(item => ({ ...item, name: `${item?.yearFrom} - ${item?.yearTo}`}))}
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={(e) => loadTableFees(e, 'schoolYearId')}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
+                      className={type === 'oldStudent' ? 'input-noborder' : ''}
                       label="Ngày sinh"
-                      name="dob"
+                      name="dateOfBirth"
                       type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={changeDateOfBirth}
                       allowClear={false}
+                      disabledDate={(current) => current > moment().add(-1, 'day')}
                     />
                   </div>
                   <div className="col-lg-3">
-                    <label htmlFor="" className="mb5 font-size-13" >Tuổi (tháng)</label>
-                    <p className="mb0 font-size-13 mt10 font-weight-bold">32</p>
+                    <FormItem
+                      className="input-noborder"
+                      label="Tuổi (tháng)"
+                      name="age"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.INPUT}
+                      placeholder="Tháng tuổi"
+                    />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
+                      className={type === 'oldStudent' ? 'input-noborder' : ''}
                       label="Ngày nhập học"
-                      name="dob"
+                      name="dayAdmission"
                       type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
                       allowClear={false}
+                      onChange={loadTableFees}
+                      disabledDate={(current) => disableDayAdmission?.startDate ?
+                        current < moment(disableDayAdmission?.startDate) || current >= moment(disableDayAdmission.endDate)
+                      : false }
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="Lớp học dự kiến"
-                      name="creator"
-                      data={[]}
+                      name="classTypeId"
+                      data={classes}
                       type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY]}
+                      onChange={loadTableFees}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="Họ tên Cha"
-                      name="nameFather"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      name="fatherName"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="SĐT Cha"
-                      name="sdtFather"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      name="fatherPhoneNumber"
+                      rules={[variables.RULES.PHONE]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="Họ tên Mẹ"
-                      name="nameMother"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      name="motherName"
+                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                     />
                   </div>
                   <div className="col-lg-3">
                     <FormItem
                       label="SĐT Mẹ"
-                      name="sdtMother"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      name="motherPhoneNumber"
+                      rules={[variables.RULES.PHONE]}
                       type={variables.INPUT}
                     />
                   </div>
                 </div>
               </Pane>
             </Pane>
-            <Pane className="card mb0">
+            <Pane className="card pb20">
               <Heading type="form-title" className="heading-tab p20">
-                Các khoản học phí
+                Các khoản học phí <span className="text-danger">*</span>
               </Heading>
-              <TypeFees typeFees={typeFees} setTypeFees={setTypeFees} error={errorTable?.typeFees} checkValidate={checkValidate}/>
+              <TypeFees
+                tuition={tuition}
+                setTuition={setTuition}
+                error={errorTable?.tuition}
+                checkValidate={checkValidate}
+                addFees={addFees}
+                formRef={formRef}
+              />
             </Pane>
-            {
-              !params?.id && (
-                <Pane className="p20 d-flex justify-content-between align-items-center">
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Hủy
-                  </p>
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={loading['classTypeAdd/GET_DETAILS']}
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
-              )
-            }
+            <Pane className="p20 d-flex justify-content-between align-items-center">
+              <Button
+                className="ml-auto px25"
+                color="success"
+                htmlType="submit"
+                size="large"
+                loading={loading['newStudentAdd/ADD'] || loading['newStudentAdd/UPDATE']}
+              >
+                Lưu
+              </Button>
+            </Pane>
           </Form>
         </Pane>
       </Pane>

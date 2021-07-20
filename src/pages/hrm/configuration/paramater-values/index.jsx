@@ -309,7 +309,7 @@ class Index extends PureComponent {
           <div className={classnames(styles['block-table'], styles['block-table-tab'])}>
             <Tabs
               defaultActiveKey={search?.status || variablesModules.PARAMATER_VALUES.CONTRACT}
-              onChange={(event) => this.onChangeSelectStatus(event, 'status')}
+              onChange={(event) => this.onChangeSelectStatus(event, 'type')}
             >
               {variablesModules.TYPES_PARAMATER_VALUES.map((item) => (
                 <TabPane tab={item.name} key={item.id} />

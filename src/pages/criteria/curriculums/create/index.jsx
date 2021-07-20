@@ -152,18 +152,19 @@ const Index = memo(() => {
     const template = curriculumTemplates.find((item) => item.id === value);
     if (template) {
       mountedSet(setProgramType, template.programType);
+      mountedSet(setIsEnable, template.isEnable);
       formRef.current.setFieldsValue({
         ...template,
-        fromDate: moment(template.fromDate),
-        toDate: moment(template.toDate),
-        studentId: head(template.objectCurriculumTemplates)?.student?.id,
-        classId: head(template.objectCurriculumTemplates)?.class?.id,
       });
       mountedSet(
         setToolGroups,
         template.toolGroupCurriculums.map((item) => ({
-          ...item.toolGroup,
-          isChoosed: item.isChoosed,
+          ...item,
+          index: item.groupIndex,
+          toolDetails: item.toolDetails.map((itemTool) => ({
+            ...itemTool,
+            index: itemTool.detailIndex,
+          })),
         })),
       );
     }
@@ -300,7 +301,7 @@ const Index = memo(() => {
                   loading['curriculumsAdd/GET_STUDENTS']
                 }
                 isError={error.isError}
-                params={{ error, type: 'container' }}
+                params={{ error, type: 'container', goBack: '/chuong-trinh-hoc' }}
               >
                 {!params.id && (
                   <Pane className="card px15 pt20">
@@ -364,7 +365,7 @@ const Index = memo(() => {
                       <Pane className="col-lg-4">
                         <FormItem
                           className="mt20"
-                          label="Trẻ"
+                          label="Học sinh"
                           name="studentId"
                           type={variables.SELECT}
                           data={Helper.convertSelectUsers(students)}

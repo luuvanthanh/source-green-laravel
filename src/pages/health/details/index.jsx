@@ -62,7 +62,7 @@ const Index = memo(() => {
       <Helmet title="Chi tiết" />
       <Breadcrumbs last="Chi tiết" menu={menuData} />
       <Pane style={{ padding: '0 20px' }}>
-        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container', goBack: '/suc-khoe/lich-su' }}>
           {!isEmpty(details) && (
             <Pane className="row">
               <Pane className="col-lg-5">

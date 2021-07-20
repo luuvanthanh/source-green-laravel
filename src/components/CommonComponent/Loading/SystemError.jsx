@@ -6,7 +6,10 @@ import { variables } from '@/utils';
 
 export default function systemError(props) {
   const onBack = () => {
-    history.goBack();
+    if (props.goBack) {
+      return history.push(props.goBack);
+    }
+    return history.goBack();
   };
 
   if (get(props, 'error.status') === variables.STATUS_404) {
@@ -60,7 +63,7 @@ export default function systemError(props) {
           </Button>
         }
         status={404}
-        subTitle={'Dữ liệu không tồn tại. Bạn vui lòng kiểm tra lại'}
+        subTitle="Dữ liệu không tồn tại. Bạn vui lòng kiểm tra lại"
         title="Thông báo"
       />
     );
@@ -73,7 +76,7 @@ export default function systemError(props) {
         </Button>
       }
       status={404}
-      subTitle={'Dữ liệu không tồn tại. Bạn vui lòng kiểm tra lại'}
+      subTitle="Dữ liệu không tồn tại. Bạn vui lòng kiểm tra lại"
       title="Thông báo"
     />
   );

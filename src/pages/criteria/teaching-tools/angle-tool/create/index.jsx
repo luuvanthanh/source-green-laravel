@@ -84,7 +84,7 @@ const Index = memo(() => {
   const onChange = ({ target: { value } }) => {
     mountedSet(
       setItems,
-      toolDetails.filter((item) => Helper.slugify(item.name)?.indexOf(value) >= 0),
+      toolDetails.filter((item) => Helper.slugify(item.name)?.indexOf(Helper.slugify(value)) >= 0),
     );
   };
 
@@ -129,77 +129,79 @@ const Index = memo(() => {
   }, []);
 
   return (
-    <Pane style={{ padding: 20, paddingBottom: 0 }}>
+    <Pane style={{ paddingTop: 20 }}>
       <Helmet title="Tạo góc giáo cụ" />
       <Breadcrumbs className="pb30 pt0" last="Tạo góc giáo cụ" menu={menuData} />
-      <Pane className="row justify-content-center">
-        <Pane className="col-lg-6">
-          <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
-            <Pane className="p20 pt20 card">
-              <Heading type="form-title" className="mb20">
-                Thông tin chung
-              </Heading>
-              <FormItem
-                className="mb0"
-                label="Tên góc giáo cụ"
-                name="name"
-                type={variables.INPUT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
+      <Pane style={{ padding: 20, paddingBottom: 0 }}>
+        <Pane className="row justify-content-center">
+          <Pane className="col-lg-6">
+            <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
+              <Pane className="p20 pt20 card">
+                <Heading type="form-title" className="mb20">
+                  Thông tin chung
+                </Heading>
+                <FormItem
+                  className="mb0"
+                  label="Tên góc giáo cụ"
+                  name="name"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
 
-            <Pane className="mt20 mb0 card">
-              <Heading type="form-title" className="p20">
-                Danh sách giáo cụ ({toolDetails.length}/{itemsSelected.length})
-              </Heading>
+              <Pane className="mt20 mb0 card">
+                <Heading type="form-title" className="p20">
+                  Danh sách giáo cụ ({itemsSelected.length}/{toolDetails.length})
+                </Heading>
 
-              <Pane className={csx('row')}>
-                <Pane className="col-12">
-                  <FormItem
-                    className="search-form mb0"
-                    type={variables.INPUT_SEARCH}
-                    name="search"
-                    placeholder="Tìm kiếm"
-                    onChange={onChange}
-                  />
-                  <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                <Pane className={csx('row')}>
+                  <Pane className="col-12">
                     <FormItem
-                      className="checkbox-column mb0"
-                      name="toolDetails"
-                      type={variables.CHECKBOX}
-                      data={items.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                      onChange={(values) => setItemsSelected(values)}
+                      className="search-form mb0"
+                      type={variables.INPUT_SEARCH}
+                      name="search"
+                      placeholder="Tìm kiếm"
+                      onChange={onChange}
                     />
-                  </Scrollbars>
+                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                      <FormItem
+                        className="checkbox-column mb0"
+                        name="toolDetails"
+                        type={variables.CHECKBOX}
+                        data={items.map((item) => ({
+                          value: item.id,
+                          label: item.name,
+                        }))}
+                        onChange={(values) => setItemsSelected(values)}
+                      />
+                    </Scrollbars>
+                  </Pane>
                 </Pane>
               </Pane>
-            </Pane>
 
-            <Pane className="py20 d-flex justify-content-between align-items-center">
-              {params.id && (
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Xóa
-                </p>
-              )}
-              <Button
-                className="ml-auto px25"
-                color="success"
-                htmlType="submit"
-                size="large"
-                loading={
-                  loading['criteriaAngleToolCreate/ADD'] ||
-                  loading['criteriaAngleToolCreate/UPDATE'] ||
-                  loading['criteriaAngleToolCreate/GET_TOOL_DETAILS'] ||
-                  loading['criteriaAngleToolCreate/GET_DATA']
-                }
-              >
-                Lưu
-              </Button>
-            </Pane>
-          </Form>
+              <Pane className="py20 d-flex justify-content-between align-items-center">
+                {params.id && (
+                  <p className="btn-delete" role="presentation" onClick={remove}>
+                    Xóa
+                  </p>
+                )}
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={
+                    loading['criteriaAngleToolCreate/ADD'] ||
+                    loading['criteriaAngleToolCreate/UPDATE'] ||
+                    loading['criteriaAngleToolCreate/GET_TOOL_DETAILS'] ||
+                    loading['criteriaAngleToolCreate/GET_DATA']
+                  }
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Form>
+          </Pane>
         </Pane>
       </Pane>
     </Pane>

@@ -15,6 +15,7 @@ import Overview from './overview';
 import Application from './application';
 import Student from './student';
 import Activity from './activity';
+import Warning from './warning';
 
 const { TabPane } = Tabs;
 
@@ -43,6 +44,7 @@ class HomePage extends PureComponent {
     this.state = {
       classes: [],
       classId: '',
+      classObject: {},
       tab: 'overview',
     };
     setIsMounted(true);
@@ -90,7 +92,10 @@ class HomePage extends PureComponent {
   };
 
   handleChangeClass = (classId) => {
-    this.setState({ classId });
+    this.setStateData((prevState) => ({
+      classId,
+      classObject: prevState.classes.find((item) => item.id === classId),
+    }));
   };
 
   changeTab = (tab) => {
@@ -98,22 +103,26 @@ class HomePage extends PureComponent {
   };
 
   renderComponent = (tab, classId) => {
+    const { classObject } = this.state;
     switch (tab) {
       case 'overview':
-        return <Overview classId={classId} />;
+        return <Overview classId={classId} classObject={classObject} />;
       case 'application':
-        return <Application classId={classId} />;
+        return <Application classId={classId} classObject={classObject} />;
       case 'student':
-        return <Student classId={classId} />;
+        return <Student classId={classId} classObject={classObject} />;
       case 'activity':
-        return <Activity classId={classId} />;
+        return <Activity classId={classId} classObject={classObject} />;
+      case 'warning':
+        return <Warning classId={classId} classObject={classObject} />;
       default:
-        return <Overview classId={classId} />;
+        return <Overview classId={classId} classObject={classObject} />;
     }
   };
 
   render() {
     const { classes, classId, tab } = this.state;
+
     return (
       <div className={styles.container}>
         <div className={styles.title}>Lake View</div>

@@ -49,7 +49,7 @@ const Index = memo(() => {
         render: (text, record, index) => index + 1,
       },
       {
-        title: 'Họ tên con',
+        title: 'Họ và tên',
         key: 'full_name',
         render: (record) => get(record, 'full_name'),
       },

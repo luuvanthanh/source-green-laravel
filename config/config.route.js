@@ -262,12 +262,6 @@ export default [
             authority: [permissions.BUS],
           },
           {
-            path: '/quan-ly-phuong-tien/quan-ly-lo-trinh/:id/chi-tiet',
-            component: './bus/tutorial/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BUS],
-          },
-          {
             path: '/quan-ly-phuong-tien/lich-su',
             component: './bus/history',
             wrappers: ['@/wrappers/auth'],
@@ -1811,6 +1805,12 @@ export default [
             authority: [permissions.CHINHSACHPHI],
           },
           {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-moi/:id/chi-tiet',
+            component: './fee-policy/new-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
             path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu',
             component: './fee-policy/old-student',
             wrappers: ['@/wrappers/auth'],
@@ -1822,9 +1822,75 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CHINHSACHPHI],
           },
+          {
+            path: '/chinh-sach-phi/tinh-phi-hoc-sinh-cu/:id/chi-tiet',
+            component: './fee-policy/old-student/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu',
+            component: './fee-policy/report/expected-fees',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/bao-cao/chi-tiet-cac-khoan-tien-nop',
+            component: './fee-policy/report/details-payments',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
+          {
+            path: '/chinh-sach-phi/bao-cao/lich-nop-tien-hoc',
+            component: './fee-policy/report/tuition-payment-schedule',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CHINHSACHPHI],
+          },
         ],
       },
       // FEE POLICY
+      // MEDIA
+      {
+        path: '/bang-luong',
+        component: './salary/layout',
+        routes: [
+          {
+            path: '/bang-luong',
+            redirect: '/bang-luong/danh-sach',
+          },
+          {
+            path: '/bang-luong/tinh-luong',
+            component: './salary/payroll',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/danh-sach',
+            component: './salary/items',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc',
+            component: './salary/paramater-formulas',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc/tao-moi',
+            component: './salary/paramater-formulas/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+          {
+            path: '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
+            component: './salary/paramater-formulas/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BANGLUONG],
+          },
+        ],
+      },
+      // MEDIA
       {
         path: '/404',
         component: './404',

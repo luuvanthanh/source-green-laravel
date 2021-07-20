@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import _ from 'lodash';
+import { useParams, useHistory } from 'umi';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -13,6 +14,10 @@ import { variables, Helper } from '@/utils';
 import variablesModules from '../variables';
 
 const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, checkValidate }) => {
+  const params = useParams();
+  const history = useHistory();
+  const isCopy = !!(history?.location?.query?.type === 'ban-sao');
+
   const { getFieldsValue } = formRef?.current;
   const { rangeDate } = getFieldsValue();
 
@@ -39,11 +44,26 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   };
 
   const handleApply = () => {
+    const { getFieldsValue } = formRef?.current;
     const values = getFieldsValue();
-    const result = moment(rangeDate[1]).diff(moment(rangeDate[0]), 'month') + 1;
-    if (result) {
-      const data = renderData(result, values);
+    if (isCopy) {
+      const data = [...paramChanges].map(item => {
+        const endMonth = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).endOf('month');
+        const valueDuaDate = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).set('date', values?.duaDate);
+        return {
+          ...item,
+          duaDate: (moment(valueDuaDate).diff(moment(endMonth), 'days') + 1) <= 0 ? moment(valueDuaDate).format(variables.DATE_FORMAT.DATE_AFTER) : moment(endMonth).format(variables.DATE_FORMAT.DATE_AFTER),
+        };
+      });
       setParamChanges(data);
+    } else {
+      const startDate = moment(rangeDate[0]).startOf('month');
+      const endDate = moment(rangeDate[1]).endOf('month');
+      const result = moment(endDate).diff(moment(startDate), 'month') + 1;
+      if (result) {
+        const data = renderData(result, values);
+        setParamChanges(data);
+      }
     }
   };
 
@@ -192,7 +212,9 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   };
 
   const changeForm = () => {
-    setParamChanges([]);
+    if (!isCopy) {
+      setParamChanges([]);
+    }
     const values = getFieldsValue();
     if (values?.fee && values?.duaDate) {
       setDiableApply(false);
@@ -215,6 +237,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
             name='paymentFormId'
             type={variables.SELECT}
             onChange={changeForm}
+            disabled={params?.id}
           />
         </div>
         <div className="col-lg-3">
@@ -223,6 +246,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               name="duaDate"
               type={variables.INPUT_COUNT}
               onChange={changeForm}
+              disabled={(params?.id && !isCopy)}
               rules={[
                 () => ({
                   validator(_, value) {
@@ -243,7 +267,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
             color="success"
             size="large"
             onClick={handleApply}
-            disabled={disableApply}
+            disabled={disableApply || (params?.id && !isCopy)}
           >
             Áp dụng
           </Button>

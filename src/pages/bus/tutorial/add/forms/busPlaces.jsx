@@ -237,11 +237,11 @@ class Index extends PureComponent {
   onRemoveChildren = (record, object) => {
     this.setStateData((prevState) => ({
       busPlaces: prevState.busPlaces.map((item) => {
-        if (item.parentId === object.parentId) {
+        if (item.id === object.id) {
           return {
             ...item,
             studentBusPlaces: item.studentBusPlaces.filter(
-              (itemChildren) => itemChildren.key !== record.key,
+              (itemChildren) => itemChildren.id !== record.id,
             ),
           };
         }
@@ -253,7 +253,7 @@ class Index extends PureComponent {
   onChangeCheckbox = (record, object, key = 'isSchoolWard') => {
     this.setStateData((prevState) => ({
       busPlaces: prevState.busPlaces.map((item) => {
-        if (item.parentId === object.parentId) {
+        if (item.id === object.id) {
           return {
             ...item,
             studentBusPlaces: item.studentBusPlaces.map((itemStudent) =>

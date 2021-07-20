@@ -4,6 +4,7 @@ export default {
   namespace: 'newStudentAdd',
   state: {
     details: {},
+    students: [],
     error: {
       isError: false,
       data: {},
@@ -23,6 +24,10 @@ export default {
     SET_DETAILS: (state, { payload }) => ({
       ...state,
       details: payload,
+    }),
+    SET_STUDENTS: (state, { payload }) => ({
+      ...state,
+      students: payload,
     })
   },
   effects: {
@@ -50,6 +55,31 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_MONEY_FEE_POLICIES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.moneyFeePolicies, payload);
+        callback(response?.payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_STUDENTS({ payload }, saga) {
+      const response = yield saga.call(services.getStudents, payload);
+      if (response) {
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: response?.parsePayload,
+        });
       }
     },
   },

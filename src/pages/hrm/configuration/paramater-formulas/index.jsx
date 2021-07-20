@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -208,6 +208,18 @@ class Index extends PureComponent {
     });
   };
 
+  renderCalulator = (items) =>
+    items
+      .map((item) => {
+        if (!isEmpty(item.formular)) {
+          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
+        }
+        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
+          item.formular,
+        )})`;
+      })
+      .join(' ');
+
   /**
    * Function header table
    */
@@ -247,12 +259,22 @@ class Index extends PureComponent {
         title: 'CÔNG THỨC',
         key: 'recipe',
         className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.recipe}</Text>,
+        render: (record) => {
+          if (!isEmpty(record.recipe)) {
+            return (
+              <Text size="normal">
+                {record.code} = {this.renderCalulator(record.recipe)}
+              </Text>
+            );
+          }
+          return null;
+        },
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-100',
+        width: 100,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
@@ -321,7 +343,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '65vh' }}
             />
           </div>
         </div>

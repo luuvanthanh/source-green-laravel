@@ -64,13 +64,6 @@
       padding: 5px 10px !important;
     }
   }
-  th {
-    &.ant-table-cell {
-      font-size: 13px;
-      font-family: $base__font-family;
-      padding: 5px 10px !important;
-    }
-  }
 }
 
 .table-edit {
@@ -144,6 +137,10 @@
     font-weight: normal;
     color: $text-purple;
   }
+  .ant-form-item {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 }
 
 .row-dragging {
@@ -188,6 +185,7 @@
   .ant-table-header {
     > table {
       visibility: unset !important;
+      table-layout: unset !important;
     }
     .ant-table-cell-fix-right.ant-table-cell-scrollbar {
       display: none;
@@ -222,16 +220,39 @@
   }
 }
 
-
-.ant-table-selection {
-  .ant-checkbox-wrapper {
-    :not(.ant-checkbox-checked){
-      .ant-checkbox-inner {
-        &:after {
-          
-        }
-      }
+.table-salary {
+  .ant-table-container {
+    &:after {
+      background-color: $background-white;
     }
-  
   }
+  th.thead-green {
+    background-color: #ccffcc;
+    font-weight: bold;
+    color: #000000;
+  }
+  th.thead-green-1 {
+    background-color: #c5e0b3;
+    font-weight: bold;
+    color: #000000;
+  }
+  th.thead-yellow {
+    background-color: #fef2cb;
+    font-weight: bold;
+    color: #000000;
+  }
+  th.thead-primary {
+    background-color: #bdd6ee;
+    font-weight: bold;
+    color: #000000;
+  }
+  th.text-primary{
+    color: #0000cc;
+    font-weight: bold;
+  }
+  th.text-yellow {
+    color: #ff0000;
+    font-weight: bold;
+  }
+ 
 }

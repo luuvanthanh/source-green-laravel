@@ -287,7 +287,7 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
           ref={this.formRef}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them' }}>
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">

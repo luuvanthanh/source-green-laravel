@@ -8,3 +8,12 @@ export function get(params = {}) {
     },
   });
 }
+
+export function getClassByAge(params = {}) {
+  return request('/v1/class-types', {
+    method: 'GET',
+    params: {
+      ...params
+    },
+  });
+}

@@ -47,6 +47,7 @@ const Index = memo(() => {
       type: params?.id ? 'feesAdd/UPDATE' : 'feesAdd/ADD',
       payload: {
         ...values,
+        id: params?.id || undefined
       },
       callback: (res) => {
         if (res) {
@@ -54,9 +55,6 @@ const Index = memo(() => {
         }
       },
     });
-  };
-  const remove = () => {
-    formRef.current.resetFields();
   };
 
   return (
@@ -109,15 +107,12 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                <p className="btn-delete" role="presentation" onClick={remove}>
-                  Hủy
-                </p>
                 <Button
                   className="ml-auto px25"
                   color="success"
                   htmlType="submit"
                   size="large"
-                  loading={loading['classTypeAdd/GET_DETAILS']}
+                  loading={loading['classTypeAdd/ADD'] || loading['classTypeAdd/UPDATE']}
                 >
                   Lưu
                 </Button>

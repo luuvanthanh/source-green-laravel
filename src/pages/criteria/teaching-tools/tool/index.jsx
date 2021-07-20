@@ -1,6 +1,6 @@
 import { memo, useMemo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, Image } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import { debounce } from 'lodash';
@@ -41,6 +41,31 @@ const Index = memo(() => {
       className: 'min-width-70',
       render: (text, record, index) =>
         `GC${Helper.serialOrder(search?.page, index, search?.limit)}`,
+    },
+    {
+      title: 'Hình ảnh',
+      key: 'image',
+      className: 'min-width-100',
+      width: 170,
+      render: (record) => (
+        <div className="d-flex align-items-center">
+          <Image.PreviewGroup>
+            {Helper.isJSON(record?.fileUrl) &&
+              JSON.parse(record?.fileUrl).map((item, index) => (
+                <div key={index} className="group-image">
+                  <Image
+                    key={index}
+                    width={42}
+                    height={42}
+                    src={`${API_UPLOAD}${item}`}
+                    data-viewmore={`+${JSON.parse(record?.fileUrl)?.length - 1}`}
+                    fallback="/default-upload.png"
+                  />
+                </div>
+            ))}
+          </Image.PreviewGroup>
+        </div>
+      ),
     },
     {
       title: 'Giáo cụ',

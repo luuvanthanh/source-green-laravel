@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -51,12 +50,6 @@ class Index extends PureComponent {
       search: {
         keyWord: query?.keyWord,
         programType: query?.programType,
-        fromDate: query?.fromDate
-          ? moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().startOf('months'),
-        toDate: query?.toDate
-          ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
-          : moment().endOf('months'),
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         isEnd: query?.isEnd || false,
@@ -105,8 +98,6 @@ class Index extends PureComponent {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
-        fromDate: Helper.getDate(search.fromDate, variables.DATE_FORMAT.DATE_AFTER),
-        toDate: Helper.getDate(search.toDate, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
   };
@@ -141,26 +132,6 @@ class Index extends PureComponent {
         search: {
           ...prevState.search,
           [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchDateRank = debounce((fromDate, toDate) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          fromDate,
-          toDate,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -212,27 +183,6 @@ class Index extends PureComponent {
   };
 
   /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
-  };
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDateRank = (e) => {
-    this.debouncedSearchDateRank(
-      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-    );
-  };
-
-  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -278,7 +228,7 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
+        title: 'Mã CT',
         key: 'index',
         align: 'center',
         className: 'min-width-60',
@@ -375,8 +325,6 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 programType: search.programType || null,
-                date: search.fromDate &&
-                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -396,22 +344,16 @@ class Index extends PureComponent {
                     data={[
                       {
                         id: null,
-                        name: 'Chọn tất cả',
+                        name: 'Tất cả loại chương trình',
                       },
                       ...variablesModules.RADIOS.map((item) => ({
                         id: item.value,
                         name: item.label,
                       })),
                     ]}
+                    allowClear={false}
                     type={variables.SELECT}
                     onChange={(event) => this.onChangeSelect(event, 'programType')}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

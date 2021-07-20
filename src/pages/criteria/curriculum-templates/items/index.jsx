@@ -278,41 +278,25 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'STT',
+        title: 'Mã CT',
         key: 'index',
         align: 'center',
-        className: 'min-width-60',
-        width: 60,
+        className: 'min-width-100',
+        width: 100,
         render: (text, record, index) =>
           `CT${Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit)}`,
       },
       {
+        title: 'Tên template',
+        key: 'template',
+        className: 'min-width-180',
+        render: (record) => <Text size="normal">{record?.curriculumName || '-'}</Text>,
+      },
+      {
         title: 'Tên chương trình',
         key: 'title',
-        width: 180,
         className: 'min-width-180',
-        render: (record) => <Text size="normal">{record?.name}</Text>,
-      },
-      {
-        title: 'Loại chương trình',
-        key: 'life',
-        width: 180,
-        className: 'min-width-180',
-        render: (record) => (
-          <Text size="normal">{variablesModules.PROGRAM_TYPE[record?.programType]}</Text>
-        ),
-      },
-      {
-        title: 'Thời gian áp dụng',
-        key: 'creationTime',
-        className: 'min-width-250',
-        width: 250,
-        render: (record) => (
-          <Text size="normal">
-            {Helper.getDate(record.fromDate, variables.DATE_FORMAT.DATE_AFTER)} -{' '}
-            {Helper.getDate(record.toDate, variables.DATE_FORMAT.DATE_AFTER)}
-          </Text>
-        ),
+        render: (record) => <Text size="normal">{record?.name || '-'}</Text>,
       },
       {
         key: 'actions',
@@ -346,6 +330,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['curriculumTemplates/GET_DATA'];
+
     return (
       <>
         <Helmet title="Danh sách template" />
@@ -374,9 +359,6 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                programType: search.programType || null,
-                date: search.fromDate &&
-                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -388,30 +370,6 @@ class Index extends PureComponent {
                     onChange={(event) => this.onChange(event, 'keyWord')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="programType"
-                    data={[
-                      {
-                        id: null,
-                        name: 'Chọn tất cả',
-                      },
-                      ...variablesModules.RADIOS.map((item) => ({
-                        id: item.value,
-                        name: item.label,
-                      })),
-                    ]}
-                    type={variables.SELECT}
-                    onChange={(event) => this.onChangeSelect(event, 'programType')}
-                  />
-                </div>
-                <div className="col-lg-4">
-                  <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

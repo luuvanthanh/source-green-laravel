@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -11,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 let isMounted = true;
 /**
@@ -44,7 +45,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
-        key: query?.key,
+        from: query?.from || null,
+        to: query?.to || null,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -86,6 +88,8 @@ class Index extends PureComponent {
       type: 'schoolYear/GET_DATA',
       payload: {
         ...search,
+        orderBy: 'CreationTime',
+        sortedBy: 'desc',
       },
     });
     history.push({
@@ -99,12 +103,13 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearch = debounce((value, type) => {
+  debouncedSearch = debounce((value) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          [`${type}`]: value,
+          from: !isEmpty(value) ? moment(value[0]).format('YYYY') : null,
+          to: !isEmpty(value) ? moment(value[1]).format('YYYY') : null,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
@@ -118,8 +123,8 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
+  onChange = (value, type) => {
+    this.debouncedSearch(value, type);
   };
 
   /**
@@ -197,6 +202,12 @@ class Index extends PureComponent {
             >
               Chi tiết
             </Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`/chinh-sach-phi/nam-hoc/${record?.id}/chi-tiet?type=ban-sao`)}
+            >
+              Thêm bản sao mới
+            </Button>
           </div>
         ),
       },
@@ -228,6 +239,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                years: (search?.from && search?.to) ? [moment(search.from), moment(search.to)] : null
               }}
               layout="vertical"
               ref={this.formRef}
@@ -235,10 +247,10 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
+                    name="years"
+                    onChange={(event) => this.onChange(event, 'years')}
+                    picker="year"
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

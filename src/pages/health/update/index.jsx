@@ -59,18 +59,6 @@ const Index = memo(() => {
     mountedSet(setVisible, false);
   };
 
-  const showModal = () => {
-    if (formRefModal.current) {
-      formRefModal.current.setFieldsValue({
-        data: waterBottles.map((item) => ({
-          ...item,
-          applyDate: moment(item.applyDate),
-        })),
-      });
-    }
-    mountedSet(setVisible, true);
-  };
-
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
@@ -291,7 +279,7 @@ const Index = memo(() => {
         <Breadcrumbs last="Chỉnh sửa sức khỏe" menu={menuData} />
         <Pane style={{ padding: '0 20px' }}>
           <Helmet title="Chi tiết" />
-          <Loading loading={loading} isError={error.isError} params={{ error, type: 'container' }}>
+          <Loading loading={loading} isError={error.isError} params={{ error, type: 'container', goBack: '/suc-khoe/hom-nay' }}>
             <Pane className="row">
               <Pane className="col-lg-5">
                 <Pane className="card">
@@ -361,7 +349,7 @@ const Index = memo(() => {
 
                   <Pane className="border-bottom" style={{ padding: 20 }}>
                     <Pane className="row align-items-end">
-                      <Pane className="col-lg-6">
+                      <Pane className="col-lg-12">
                         <label className={styles.infoLabel}>Bình nước đang áp dụng</label>
                         <Pane className="d-flex align-items-center">
                           <span className={styles.circleIcon}>
@@ -373,17 +361,6 @@ const Index = memo(() => {
                               : 0}{' '}
                             ml
                           </span>
-                        </Pane>
-                      </Pane>
-                      <Pane className="col-lg-6 text-right">
-                        <Pane
-                          className={csx('d-flex', 'align-items-center', styles.setting)}
-                          onClick={showModal}
-                        >
-                          <span className={styles.circleIcon}>
-                            <span className="icon-setting" />
-                          </span>
-                          <span className={styles.infoText}>Cấu hình</span>
                         </Pane>
                       </Pane>
                     </Pane>
@@ -404,14 +381,14 @@ const Index = memo(() => {
                             <Pane className="col-md-5">
                               <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
                                 {Helper.getDate(
-                                  itemChange.changeTime,
+                                  item.changeTime,
                                   variables.DATE_FORMAT.DATE_TIME,
                                 )}
                               </Heading>
                             </Pane>
                             <Pane className="col-md-7">
                               <Pane>
-                                {item?.editor?.userName}{' '}
+                                {itemChange?.editor?.userName}{' '}
                                 {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}{' '}
                                 {itemChange.criteriaGroupPropertypeName}
                               </Pane>

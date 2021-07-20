@@ -57,7 +57,7 @@ const Index = memo(() => {
     <Loading
       loading={loading['tutorialAddV2/GET_DETAILS']}
       isError={error.isError}
-      params={{ error }}
+      params={{ error, goBack: '/quan-ly-phuong-tien/quan-ly-lo-trinh' }}
     >
       <Breadcrumbs last="Chi tiết lộ trình" menu={menuData} />
       <Pane style={{ padding: '0 20px' }}>

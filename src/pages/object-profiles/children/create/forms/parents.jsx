@@ -281,7 +281,7 @@ const Parents = memo(
         }}
       >
         <Pane className="card">
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/ho-so-doi-tuong/hoc-sinh' }}>
             <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
                 Phụ huynh

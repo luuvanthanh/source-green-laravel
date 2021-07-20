@@ -140,7 +140,7 @@ const Index = memo(() => {
         render: (text, record, index) => index + 1,
       },
       {
-        title: 'Họ tên con',
+        title: 'Họ và tên',
         key: 'fullName',
         className: 'min-width-150',
         width: 150,

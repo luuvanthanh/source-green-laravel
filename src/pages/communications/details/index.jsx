@@ -279,7 +279,7 @@ class Index extends PureComponent {
     const loadingSave = effects['communicationsDetails/UPDATE'];
     return (
       <Form layout="vertical" ref={this.formRef}>
-        <Loading loading={loading} isError={error.isError} params={{ error }}>
+        <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/trao-doi' }}>
           <Helmet title="Chi tiết trao đổi" />
           <Breadcrumbs last="Chi tiết trao đổi" menu={menuData} />
           <div
