@@ -336,7 +336,7 @@ class Index extends PureComponent {
             return (
               <Switch
                 checked={data.isBonus}
-                disabled={data.isBonus}
+                disabled={!data.isTimesheet || data.isBonus}
                 onChange={() => this.update(data, 'CHOT_BANG_THUONG_KPI')}
               />
             );
@@ -345,7 +345,7 @@ class Index extends PureComponent {
             return (
               <Switch
                 checked={data.isOther}
-                disabled={data.isOther}
+                disabled={!data.isTimesheet || !data.isBonus || data.isOther}
                 onChange={() => this.update(data, 'KHAI_BAO_KHOAN_KHAC')}
               />
             );
@@ -354,7 +354,7 @@ class Index extends PureComponent {
             return (
               <Switch
                 checked={data.isSalary}
-                disabled={data.isSalary}
+                disabled={!data.isTimesheet || !data.isBonus || !data.isOther || data.isSalary}
                 onChange={() => this.updateSalary(data)}
               />
             );
@@ -363,6 +363,7 @@ class Index extends PureComponent {
         },
       },
       {
+        title: 'Thao tác',
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -383,7 +384,7 @@ class Index extends PureComponent {
                   )
                 }
               >
-                Chốt bảng công
+                Xem bảng công
               </Button>
             )}
             {record.id === 'CHOT_BANG_THUONG_KPI' && (
@@ -401,7 +402,7 @@ class Index extends PureComponent {
                   )
                 }
               >
-                Chốt KPI
+                Xem KPI
               </Button>
             )}
             {record.id === 'KHAI_BAO_KHOAN_KHAC' && (
@@ -419,7 +420,7 @@ class Index extends PureComponent {
                   )
                 }
               >
-                Khai báo
+                Xem Khai báo
               </Button>
             )}
             {record.id === 'TINH_LUONG' && (
@@ -429,11 +430,12 @@ class Index extends PureComponent {
                   history.push(
                     `/bang-luong/danh-sach?month=${Helper.getDate(
                       moment(search.month).startOf('months'),
+                      variables.DATE_FORMAT.DATE_AFTER,
                     )}`,
                   )
                 }
               >
-                Tính lương
+                Xem tính lương
               </Button>
             )}
           </div>
