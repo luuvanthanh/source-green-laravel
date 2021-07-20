@@ -60,6 +60,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *GET_ALL_MONEY({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getAllMoneyFeePolicies, payload);
+        callback(response?.payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
   },
   subscriptions: {},
 };

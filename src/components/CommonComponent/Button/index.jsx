@@ -30,6 +30,7 @@ const ICON_BUTTON = {
   cloud: <span className="icon-cloud" />,
   cloudUpload: <span className="icon-cloud" />,
   cloudDownload: <span className="icon-cloud" />,
+  copy: <span className="icon-copy" />,
 };
 export default function ButtonCustom({
   children,

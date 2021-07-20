@@ -20,3 +20,10 @@ export function update(data = {}) {
     data,
   });
 }
+
+export function getAllMoneyFeePolicies(params = {}) {
+  return request('/v1/money-fee-policies', {
+    method: 'GET',
+    params
+  });
+}
