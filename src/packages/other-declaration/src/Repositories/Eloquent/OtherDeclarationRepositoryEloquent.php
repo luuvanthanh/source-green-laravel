@@ -8,6 +8,7 @@ use GGPHP\OtherDeclaration\Presenters\OtherDeclarationPresenter;
 use GGPHP\OtherDeclaration\Repositories\Contracts\OtherDeclarationRepository;
 use GGPHP\OtherDeclaration\Services\OtherDeclarationDetailServices;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class OtherDeclarationRepositoryEloquent.
@@ -87,8 +88,8 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::find($otherDeclaration->Id);
@@ -108,8 +109,8 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
 
             \DB::commit();
         } catch (\Exception $e) {
-
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::find($otherDeclaration->Id);

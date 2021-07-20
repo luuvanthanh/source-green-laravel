@@ -55,14 +55,15 @@ trait ResponseTrait
         ];
         if (!empty($message) && is_string($message)) {
             $response['errors'][] = [
-                'title' => $message,
+                'title' => $error,
                 'detail' => $message,
             ];
+
         } else {
             $detailErrors = array_unique(array_flatten(is_array($message) ? $message : $message->toArray()));
             foreach ($detailErrors as $detailError) {
                 $response['errors'][] = [
-                    'title' => $detailError,
+                    'title' => $error,
                     'detail' => $detailError,
                 ];
             }

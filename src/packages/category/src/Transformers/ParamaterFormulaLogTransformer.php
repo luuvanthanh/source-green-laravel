@@ -15,4 +15,10 @@ class ParamaterFormulaLogTransformer extends BaseTransformer
 
     protected $availableIncludes = [];
 
+    public function customAttributes($model): array
+    {
+        return [
+            "Recipe" => json_decode($model->Recipe),
+        ];
+    }
 }

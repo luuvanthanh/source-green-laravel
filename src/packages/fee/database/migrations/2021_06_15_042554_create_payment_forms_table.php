@@ -19,6 +19,7 @@ class CreatePaymentFormsTable extends Migration
             $table->string('Name');
             $table->string('Code');
             $table->string('Type')->nullable();
+            $table->boolean('IsSemester')->default(false);
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });

@@ -50,6 +50,21 @@ class ClassTypeRepositoryEloquent extends CoreRepositoryEloquent implements Clas
 
     public function filterClassType(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('Type', $attributes['type']);
+        }
+
+        if (!empty($attributes['age'])) {
+            $this->model = $this->model->where('From', '<=', $attributes['age'])->where('To', '>=', $attributes['age']);
+        }
+
         if (!empty($attributes['limit'])) {
             $fee = $this->paginate($attributes['limit']);
         } else {

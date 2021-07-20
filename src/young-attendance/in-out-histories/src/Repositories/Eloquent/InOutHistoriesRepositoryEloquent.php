@@ -74,6 +74,26 @@ class InOutHistoriesRepositoryEloquent extends CoreRepositoryEloquent implements
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereIn('Id', $studentId);
         }
 
+        if (!empty($attributes['classId'])) {
+            $classId = explode(',', $attributes['classId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($classId) {
+                $query->whereIn('ClassId', $classId);
+            });
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($branchId) {
+                $query->whereHas('classes', function ($query2) use ($branchId) {
+                    $query2->whereIn('BranchId', $branchId);
+                });
+            });
+        }
+
+        if (!empty($attributes['nameStudent'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['nameStudent']);
+        }
+
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->where('Status', '!=', Student::STORE);
 
         if (!empty($attributes['limit'])) {

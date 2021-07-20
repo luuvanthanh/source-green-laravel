@@ -20,7 +20,7 @@ class Classes extends UuidModel
      */
     protected $fillable = [
         'Code', 'Name', 'Year', 'BranchId', 'Description', 'ExtraProperties', 'ConcurrencyStamp',
-        'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime',
+        'CreatorId', 'LastModifierId', 'IsDeleted', 'DeleterId', 'DeletionTime', 'ClassTypeId',
     ];
 
     public function branch()
@@ -31,5 +31,10 @@ class Classes extends UuidModel
     public function teacher()
     {
         return $this->belongsToMany(\GGPHP\Users\Models\User::class, 'distribution.ClassTeachers', 'ClassId', 'EmployeeId');
+    }
+
+    public function classType()
+    {
+        return $this->belongsTo(\GGPHP\Fee\Models\ClassType::class, 'ClassTypeId');
     }
 }

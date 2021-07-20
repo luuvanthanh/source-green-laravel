@@ -5,6 +5,7 @@ namespace GGPHP\Clover\Transformers;
 use GGPHP\Category\Transformers\BranchTransformer;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Fee\Transformers\ClassTypeTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
 
 /**
@@ -19,7 +20,7 @@ class ClassesTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['branch'];
+    protected $defaultIncludes = ['branch', 'classType'];
 
     /**
      * Array attribute doesn't parse.
@@ -60,6 +61,20 @@ class ClassesTransformer extends BaseTransformer
         }
 
         return $this->item($classes->branch, new BranchTransformer, 'Branch');
+    }
+
+    /**
+     * Include schedules
+     * @param Classes $classes
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeClassType(Classes $classes)
+    {
+        if (empty($classes->classType)) {
+            return;
+        }
+
+        return $this->item($classes->classType, new ClassTypeTransformer, 'ClassType');
     }
 
     /**

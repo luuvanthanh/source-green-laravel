@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateFeeRequest;
 use GGPHP\Fee\Http\Requests\UpdateFeeRequest;
+use GGPHP\Fee\Repositories\Contracts\FeeRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

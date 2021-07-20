@@ -2,21 +2,18 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use CloudCreativity\LaravelJsonApi\Exceptions\ValidationException;
-use CloudCreativity\LaravelJsonApi\Document\Error\Translator;
 use CloudCreativity\LaravelJsonApi\Http\Requests\ValidatedRequest;
-
-use Illuminate\Translation;
 
 class RegisterValidator extends ValidatedRequest
 {
 
-    public function getType() {
+    public function getType()
+    {
         return 'users';
     }
 
-    public function getResourceType() {
+    public function getResourceType()
+    {
         return 'users';
     }
 
@@ -51,7 +48,6 @@ class RegisterValidator extends ValidatedRequest
     {
         $document = $this->decode();
         $validators = app()->make(\App\Http\Requests\RegisterValidator::class);
-        dd($validators);
         /** If there is a decoded JSON API document, check it complies with the spec. */
         if ($document) {
             $this->validateDocumentCompliance($document, $validators);

@@ -78,7 +78,6 @@ class AddSubTimeRepositoryEloquent extends CoreRepositoryEloquent implements Add
 
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 

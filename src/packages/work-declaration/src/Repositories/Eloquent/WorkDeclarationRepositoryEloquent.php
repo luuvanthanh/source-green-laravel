@@ -58,7 +58,6 @@ class WorkDeclarationRepositoryEloquent extends CoreRepositoryEloquent implement
             // WorkDeclarationDetailService::add($workDeclaration->Id, $attributes['data']);
             \DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             \DB::rollback();
         }
 

@@ -211,12 +211,14 @@ return [
         GGPHP\OtherDeclaration\Providers\OtherDeclarationServiceProvider::class,
         GGPHP\Children\Providers\ChildrenServiceProvider::class,
         GGPHP\Fee\Providers\FeeServiceProvider::class,
+        GGPHP\Salary\Providers\SalaryServiceProvider::class,
         GGPHP\Attendance\Providers\AttendanceServiceProvider::class,
         GGPHP\BusRegistration\Providers\BusRegistrationServiceProvider::class,
         GGPHP\MagneticCard\Providers\MagneticCardServiceProvider::class,
         GGPHP\WordExporter\Providers\WordExporterServiceProvider::class,
         GGPHP\MaternityLeave\Providers\MaternityLeaveServiceProvider::class,
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
+        GGPHP\Facebook\Providers\FacebookServiceProvider::class,
     ],
 
     /*

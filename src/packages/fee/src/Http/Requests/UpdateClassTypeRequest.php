@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\ClassType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClassTypeRequest extends FormRequest
@@ -24,6 +25,16 @@ class UpdateClassTypeRequest extends FormRequest
     public function rules()
     {
         return [
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $shift = ClassType::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($shift)) {
+                        return $fail('Mã đã tồn tại.');
+                    }
+                },
+            ],
         ];
     }
 }

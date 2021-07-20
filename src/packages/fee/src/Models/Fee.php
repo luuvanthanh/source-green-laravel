@@ -11,7 +11,7 @@ class Fee extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'Fees';
+    protected $table = 'fee.Fees';
 
     /**
      * The attributes that are mass assignable.

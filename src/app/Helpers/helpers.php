@@ -29,3 +29,17 @@ if (!function_exists('arraySortByColumn')) {
         array_multisort($reference_array, $direction, $array);
     }
 }
+
+if (!function_exists('getFacebookSdk')) {
+    function getFacebookSdk()
+    {
+        $fb = new \Facebook\Facebook([
+            'app_id' => env("APP_ID_FACEBOOK"),
+            'app_secret' => env("APP_SECRET_FACEBOOK"),
+            'default_graph_version' => 'v11.0',
+            // 'default_access_token' => $accessToken, // optional
+        ]);
+
+        return $fb;
+    }
+}

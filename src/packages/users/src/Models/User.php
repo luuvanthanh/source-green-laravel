@@ -33,7 +33,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     use SyncToDevice;
 
     const STATUS = [
-        "WORKING" => 0,
+        'WORKING' => 0,
         'INACTIVITY' => 1,
         'MATERNITY' => 2,
         'STORE' => 3,

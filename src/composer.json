@@ -14,7 +14,8 @@
         "cloudcreativity/laravel-json-api": "^2.0",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",
         "cviebrock/eloquent-sluggable": "^7.0",
-        "doctrine/dbal": "2.10",
+        "doctrine/dbal": "^2.10",
+        "facebook/graph-sdk": "^5.7",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
@@ -23,11 +24,15 @@
         "laravel/ui": "^2.0",
         "league/fractal": "^0.19.2",
         "orangehill/iseed": "^2.6",
+        "php-http/curl-client": "^2.2",
         "phpoffice/phpword": "^0.18.1",
+        "pimax/fb-messenger-php": "^2.0",
+        "predis/predis": "^1.1",
         "prettus/l5-repository": "^2.6",
         "spatie/laravel-medialibrary": "^8.0.0",
         "staudenmeir/eloquent-json-relations": "^1.1",
         "webpatser/laravel-uuid": "^4.0",
+        "zaloplatform/zalo-php-sdk": "^2.0",
         "zerodahero/laravel-workflow": "^3.1"
     },
     "require-dev": {
@@ -92,6 +97,8 @@
             "GGPHP\\MaternityLeave\\": "packages/maternity_leave/src",
             "GGPHP\\ExcelExporter\\": "packages/excel-exporter/src/",
             "GGPHP\\Fee\\": "packages/fee/src/",
+            "GGPHP\\Salary\\": "packages/salary/src/",
+            "GGPHP\\Facebook\\": "crm/facebook/src/",
             "ZK\\": "packages/zk/src"
         },
         "classmap": [

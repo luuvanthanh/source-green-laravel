@@ -17,7 +17,6 @@ use GGPHP\Timekeeping\Repositories\Contracts\TimekeepingRepository;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -303,7 +302,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         'type' => $type,
                     ];
                     $responseTimeKeepingUser[] = $result;
-
                 } else if (!empty($workDeclarationByDate[$key])) {
                     arraySortByColumn($workDeclarationByDate[$key], 'Time');
                     $checkIn = $workDeclarationByDate[$key][0]->Time;
@@ -336,9 +334,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         }
                     }
                 }
-
             }
-
         }
 
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
@@ -357,7 +353,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             } else {
                 $totalWorks += $item['timekeepingReport'];
             }
-
         }
 
         $employee->totalWorks = $totalWorks;
@@ -407,43 +402,44 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
                     } else {
                         $timeKeeping = $timeKeepingByDate[$value->Date->format('Y-m-d')];
-                        $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
-                        $key = array_search($value['StartTime'], array_column($shifts, 'StartTime'));
-                        unset($shifts[$key]);
-                        $shifts = array_values($shifts);
+                        if (isset($employeeTimeWorkShift[$value->Date->format('Y-m-d')])) {
+                            $shifts = $employeeTimeWorkShift[$value->Date->format('Y-m-d')];
+                            $key = array_search($value['StartTime'], array_column($shifts, 'StartTime'));
+                            unset($shifts[$key]);
+                            $shifts = array_values($shifts);
 
-                        $startTime = $shifts[0]['AfterStart'];
-                        $endTime = $shifts[0]['BeforeEnd'];
+                            $startTime = $shifts[0]['AfterStart'];
+                            $endTime = $shifts[0]['BeforeEnd'];
 
-                        $checkIn = $timeKeeping[0]->AttendedAt->format('H:i:s');
-                        $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
-
-                        if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                            $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
-                        } else {
-                            $type = $type . ' - KXD';
-                            $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
-                        }
-
-                        if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
-                            arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
-
-                            foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
-                                if ($workDeclaration->Time < $checkIn) {
-                                    $checkIn = $workDeclaration->Time;
-                                }
-
-                                if ($workDeclaration->Time > $checkOut) {
-                                    $checkOut = $workDeclaration->Time;
-                                }
-                            }
+                            $checkIn = $timeKeeping[0]->AttendedAt->format('H:i:s');
+                            $checkOut = end($timeKeeping)->AttendedAt->format('H:i:s');
 
                             if ($checkIn <= $startTime && $checkOut >= $endTime) {
-                                $type = $code . '/2' . ' - BS';
                                 $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
+                            } else {
+                                $type = $type . ' - KXD';
+                                $timekeepingReport = $isTimeKeeping ? 0.5 : 0;
+                            }
+
+                            if (isset($workDeclarationByDate[$value->Date->format('Y-m-d')])) {
+                                arraySortByColumn($workDeclarationByDate[$value->Date->format('Y-m-d')], 'Time');
+
+                                foreach ($workDeclarationByDate[$value->Date->format('Y-m-d')] as $workDeclaration) {
+                                    if ($workDeclaration->Time < $checkIn) {
+                                        $checkIn = $workDeclaration->Time;
+                                    }
+
+                                    if ($workDeclaration->Time > $checkOut) {
+                                        $checkOut = $workDeclaration->Time;
+                                    }
+                                }
+
+                                if ($checkIn <= $startTime && $checkOut >= $endTime) {
+                                    $type = $code . '/2' . ' - BS';
+                                    $timekeepingReport = $isTimeKeeping ? 1 : 0.5;
+                                }
                             }
                         }
-
                     }
                 }
 
@@ -460,7 +456,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         "type" => $type,
                     ];
                 }
-
             }
         }
 
@@ -635,7 +630,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         "type" => $type,
                     ];
                 }
-
             }
         }
 
@@ -847,7 +841,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                     $responseInvalid[] = $result;
                 }
-
             }
         }
         $employee->responseInvalid = $responseInvalid;
@@ -1045,7 +1038,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                             $listMerge[] = $merge;
                         }
                     }
-
                 }
                 $sheet->getColumnDimension($currentColumn)->setWidth(3);
             },
@@ -1070,7 +1062,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;
@@ -1082,7 +1073,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
         ];
 
@@ -1092,7 +1082,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     $sheet->mergeCells($item);
                 }
                 $sheet->mergeCells('A1:AJ2');
-
             },
 
         ];

@@ -46,8 +46,13 @@ class OtherDeclarationController extends Controller
      */
     public function store(CreatOtherDeclarationRequest $request)
     {
-        $otherDeclarations = $this->otherDeclarationRepository->create($request->all());
-        return $this->success($otherDeclarations, trans('lang::messages.common.createSuccess'));
+        try {
+            $otherDeclarations = $this->otherDeclarationRepository->create($request->all());
+            return $this->success($otherDeclarations, trans('lang::messages.common.createSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
+
     }
 
     /**
@@ -73,9 +78,14 @@ class OtherDeclarationController extends Controller
      */
     public function update(UpdateOtherDeclarationRequest $request, $id)
     {
-        $credentials = $request->all();
-        $otherDeclaration = $this->otherDeclarationRepository->update($credentials, $id);
-        return $this->success($otherDeclaration, trans('lang::messages.common.modifySuccess'));
+        try {
+            $credentials = $request->all();
+            $otherDeclaration = $this->otherDeclarationRepository->update($credentials, $id);
+
+            return $this->success($otherDeclaration, trans('lang::messages.common.modifySuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**

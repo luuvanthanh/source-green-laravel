@@ -67,4 +67,57 @@ class ParamaterFormulaRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         return $paramaterValue;
     }
+
+    public function create(array $attributes)
+    {
+        $attributes['recipe'] = json_encode($attributes['recipe']);
+        $paramaterFormula = ParamaterFormula::create($attributes);
+
+        return parent::find($paramaterFormula->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $attributes['recipe'] = json_encode($attributes['recipe']);
+
+        $paramaterFormula = ParamaterFormula::findOrfail($id);
+
+        $paramaterFormula->update($attributes);
+
+        return parent::find($id);
+    }
+
+    public function getFormular($attributes)
+    {
+        $formular = null;
+        foreach ($attributes as $item) {
+            switch ($item['type']) {
+                case 'variable':
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . $item['variable'];
+                    } else {
+                        $formular .= $item['variable'];
+                    }
+                    break;
+                case 'value':
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . $item['value'];
+                    } else {
+                        $formular .= $item['value'];
+                    }
+                    break;
+                case 'formular':
+                    $value = $this->getFormular($item['formular']);
+                    if (!is_null($item['operator'])) {
+                        $formular .= $item['operator'] . "(" . $value . ")";
+                    } else {
+                        $formular .= "(" . $value . ")";
+                    }
+                    break;
+            }
+        }
+
+        // $b = eval('return ' . $formular . ';');
+        return $formular;
+    }
 }

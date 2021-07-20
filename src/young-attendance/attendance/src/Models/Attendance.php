@@ -29,8 +29,8 @@ class Attendance extends UuidModel
         'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason',
     ];
 
-    protected $dateTimeFields = [
-        'Date',
+    protected $casts = [
+        'Date' => 'date:Y-m-d',
     ];
 
     /**

@@ -38,7 +38,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forCronJob();
     });
 
-    // Route::group(['middleware' => 'auth:api'], function () {
     \GGPHP\Fingerprint\RouteRegistrar::routes();
     \GGPHP\Timekeeping\RouteRegistrar::routes();
     \GGPHP\Absent\RouteRegistrar::routes();
@@ -163,5 +162,18 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\BusRegistration\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
-    // });
+
+    //fee
+    \GGPHP\Fee\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\Salary\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    //face-book
+    \GGPHP\Facebook\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });

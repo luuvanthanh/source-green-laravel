@@ -11,7 +11,7 @@ class PaymentForm extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'PaymentForms';
+    protected $table = 'fee.PaymentForms';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class PaymentForm extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'Name', 'Type',
+        'Code', 'Name', 'Type', 'IsSemester',
     ];
 
 }

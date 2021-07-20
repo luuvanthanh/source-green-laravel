@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Laravel</title>
 
@@ -64,6 +65,21 @@
         </style>
     </head>
     <body>
+        <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io('http://localhost:6001', {
+                transports: ['websocket'],
+            });
+            socket.on('connect', () => {
+                console.log('Connected', socket.id);
+                socket.emit('subscribe', {
+                channel: 'facebook',
+                });
+            });
+            socket.on('facebook.receive.message', (event, data) => {
+                console.log(data);
+            });
+        </script>
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">

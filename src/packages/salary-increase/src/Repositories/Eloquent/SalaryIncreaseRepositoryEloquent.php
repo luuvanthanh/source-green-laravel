@@ -76,7 +76,6 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
                 $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
-            dd($salaryIncrease);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -143,10 +142,10 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         $probationaryContract = $employee->probationaryContract->last();
         $labourContract = $employee->labourContract->last();
         $oldSalary = is_null($labourContract) ?
-        is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value
-        : $labourContract->parameterValues->where('Code', 'LUONG')->first()->pivot->Value;
+        is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value
+        : $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value;
 
-        $salary = $salaryIncrease->parameterValues->where('Code', 'LUONG')->first() ? $salaryIncrease->parameterValues->where('Code', 'LUONG')->first()->pivot->Value : 0;
+        $salary = $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first() ? $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value : 0;
         $allowance = $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first() ? $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
 
         $total = $salary + $allowance;

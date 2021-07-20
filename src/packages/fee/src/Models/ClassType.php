@@ -11,7 +11,7 @@ class ClassType extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'ClassTypes';
+    protected $table = 'fee.ClassTypes';
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +19,7 @@ class ClassType extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Code', 'From', 'To',
+        'Name', 'Code', 'From', 'To', 'Description',
     ];
 
 }

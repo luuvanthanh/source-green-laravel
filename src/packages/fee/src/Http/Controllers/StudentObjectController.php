@@ -5,6 +5,7 @@ namespace GGPHP\Fee\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Fee\Http\Requests\CreateStudentObjectRequest;
 use GGPHP\Fee\Http\Requests\UpdateStudentObjectRequest;
+use GGPHP\Fee\Repositories\Contracts\StudentObjectRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

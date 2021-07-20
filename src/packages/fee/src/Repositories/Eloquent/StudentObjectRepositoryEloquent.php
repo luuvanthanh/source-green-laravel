@@ -50,6 +50,13 @@ class StudentObjectRepositoryEloquent extends CoreRepositoryEloquent implements 
 
     public function filterStudentObject(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $studentObject = $this->paginate($attributes['limit']);
         } else {

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\ClassType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateClassTypeRequest extends FormRequest
@@ -24,6 +25,19 @@ class CreateClassTypeRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => 'required',
+            'code' => [
+                'required', 'string',
+                function ($attribute, $value, $fail) {
+                    $shift = ClassType::where('Code', $value)->first();
+
+                    if (!is_null($shift)) {
+                        return $fail('Mã đã tồn tại.');
+                    }
+                },
+            ],
+            'from' => 'required',
+            'to' => 'required',
         ];
     }
 }
