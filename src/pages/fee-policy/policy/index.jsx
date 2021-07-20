@@ -257,8 +257,6 @@ class Index extends PureComponent {
                     name="years"
                     onChange={(event) => this.onChange(event, 'years')}
                     picker="year"
-                    format={['YYYY', 'YYYY']}
-                    placeholder={['Từ Năm', 'Đến Năm']}
                     type={variables.RANGE_PICKER}
                   />
                 </div>
