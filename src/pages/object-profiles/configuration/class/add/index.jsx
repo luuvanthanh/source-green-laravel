@@ -27,12 +27,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, classesAdd }) => ({
+const mapStateToProps = ({ menu, loading, classesAdd, classType }) => ({
   menuData: menu.menuLeftObjectProfiles,
   loading,
   details: classesAdd.details,
   branches: classesAdd.branches,
   error: classesAdd.error,
+  classTypes: classType.data,
 });
 
 @connect(mapStateToProps)
@@ -59,6 +60,13 @@ class Index extends PureComponent {
     dispatch({
       type: 'classesAdd/GET_BRANCHES',
       payload: params,
+    });
+    dispatch({
+      type: 'classType/GET_DATA',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.SIZEMAX,
+      },
     });
   }
 
@@ -130,6 +138,7 @@ class Index extends PureComponent {
       branches,
       menuData,
       loading: { effects },
+      classTypes
     } = this.props;
     const loadingSubmit = effects['classesAdd/ADD'] || effects['classesAdd/UPDATE'];
     const loading = effects['classesAdd/GET_DETAILS'];
@@ -176,6 +185,17 @@ class Index extends PureComponent {
                       data={branches}
                       label="CƠ SỞ"
                       name="branchId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      data={classTypes}
+                      label="Loại lớp"
+                      name="classTypeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
                     />
@@ -229,6 +249,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  classTypes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -239,6 +260,7 @@ Index.defaultProps = {
   error: {},
   menuData: [],
   branches: [],
+  classTypes: []
 };
 
 export default Index;
