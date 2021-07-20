@@ -48,7 +48,6 @@ const renderChildren = (
   notFoundContent,
   filterOption,
   disabledOptions,
-  format,
 ) => ({
   input: (
     <Input
@@ -180,10 +179,11 @@ const renderChildren = (
   ),
   rangePicker: (
     <DatePicker.RangePicker
+
       disabled={disabled}
-      format={format || ['DD-MM-YYYY', 'DD-MM-YYYY']}
+      format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
-      placeholder={placeholder || ['ngày/tháng/năm', 'ngày/tháng/năm']}
+      placeholder={picker === 'year' ? ['Từ năm', 'Đến năm'] : ['ngày/tháng/năm', 'ngày/tháng/năm']}
       value={value}
       allowClear={allowClear}
       picker={picker}
@@ -355,7 +355,6 @@ export default function FormItem({
   notFoundContent,
   filterOption,
   disabledOptions,
-  format,
   ...rest
 }) {
   return (
@@ -386,7 +385,6 @@ export default function FormItem({
           notFoundContent,
           filterOption,
           disabledOptions,
-          format,
         )[type]
       }
     </Form.Item>
@@ -422,7 +420,6 @@ FormItem.propTypes = {
   notFoundContent: PropTypes.any,
   filterOption: PropTypes.bool,
   disabledOptions: PropTypes.arrayOf(PropTypes.any),
-  format: PropTypes.any,
 };
 
 FormItem.defaultProps = {
@@ -454,7 +451,6 @@ FormItem.defaultProps = {
   notFoundContent: null,
   filterOption: false,
   disabledOptions: [],
-  format: null
 };
 
 FormItem.displayName = 'Form';
