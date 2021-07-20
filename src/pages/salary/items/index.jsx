@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Table from '@/components/CommonComponent/Table';
+import TableCus from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
@@ -349,11 +349,8 @@ class Index extends PureComponent {
             className: 'min-width-150 thead-green',
             width: 150,
             render: (record) => {
-              const basicSalaryAndAllowance =
-                Helper.isJSON(record.basicSalaryAndAllowance) &&
-                JSON.parse(record.basicSalaryAndAllowance);
-              if (basicSalaryAndAllowance) {
-                const basic = basicSalaryAndAllowance.find(
+              if (record.basicSalaryAndAllowance) {
+                const basic = record.basicSalaryAndAllowance.find(
                   (itemBasic) => itemBasic.code === item.code,
                 );
                 return Helper.getPrice(basic?.value || 0);
@@ -373,10 +370,8 @@ class Index extends PureComponent {
             className: 'min-width-150 thead-green-1',
             width: 150,
             render: (record) => {
-              const incurredAllowance =
-                Helper.isJSON(record.incurredAllowance) && JSON.parse(record.incurredAllowance);
-              if (incurredAllowance) {
-                const incurred = incurredAllowance.find(
+              if (record.incurredAllowance) {
+                const incurred = record.incurredAllowance.find(
                   (itemIncurred) => itemIncurred.code === item.code,
                 );
                 return Helper.getPrice(incurred?.value || 0);
@@ -636,7 +631,7 @@ class Index extends PureComponent {
                 </div>
               </div>
             </Form>
-            <Table
+            <TableCus
               bordered
               className="table-salary"
               columns={this.header(params)}
