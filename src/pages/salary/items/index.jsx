@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Table } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty, toNumber } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -516,7 +516,7 @@ class Index extends PureComponent {
             key: 'name',
             className: 'min-width-150 thead-green',
             width: 150,
-            render: (record) => record.DependentPerson,
+            render: (record) => record.dependentPerson,
           },
           {
             title: 'Tổng giảm trừ bản thân và người phụ thuộc',
@@ -565,7 +565,7 @@ class Index extends PureComponent {
             key: 'name',
             className: 'min-width-150 thead-yellow',
             width: 150,
-            render: (record) => Helper.getPrice(record.SocialInsurancePayment),
+            render: (record) => Helper.getPrice(record.socialInsurancePayment),
           },
           {
             title: 'Trừ các khoản đã chi tạm ứng',
@@ -644,6 +644,158 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              summary={(pageData) => (
+                <Table.Summary.Row>
+                  <Table.Summary.Cell colSpan={5} />
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalIncome, 0))}
+                  </Table.Summary.Cell>
+                  {data.columnBasicSalaryAndAllowance.map((item) => {
+                    let summary = 0;
+                    pageData.forEach((itemPage) => {
+                      if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
+                        const basic = itemPage.basicSalaryAndAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
+                        );
+                        if (basic) summary += toNumber(basic.value);
+                      }
+                    });
+                    return (
+                      <Table.Summary.Cell key={item.code}>
+                        {Helper.getPrice(summary)}
+                      </Table.Summary.Cell>
+                    );
+                  })}
+                  {data.columnIncurredAllowance.map((item) => {
+                    let summary = 0;
+                    pageData.forEach((itemPage) => {
+                      if (!isEmpty(itemPage.incurredAllowance)) {
+                        const basic = itemPage.incurredAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
+                        );
+                        if (basic) summary += toNumber(basic.value);
+                      }
+                    });
+                    return (
+                      <Table.Summary.Cell key={item.code}>
+                        {Helper.getPrice(summary)}
+                      </Table.Summary.Cell>
+                    );
+                  })}
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.kpiBonus, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otTax, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otNoTax, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + toNumber(item.unpaidLeave), 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + toNumber(item.totalWork), 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.totalIncomeMonth, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsuranceEmployee, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.healthInsuranceEmployee, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.unemploymentInsuranceEmployee,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.socialInsuranceAdjustedEmployee,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsuranceCompany, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.healthInsuranceCompany, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.unemploymentInsuranceCompany,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.socialInsuranceAdjustedCompany,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.unionDues, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + item.dependentPerson, 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.eeduce, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.charity, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalReduce, 0))}{' '}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {' '}
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.rentalIncome, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.personalIncomeTax, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsurancePayment, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.advance, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell />
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.actuallyReceived, 0),
+                    )}
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              )}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '55vh' }}
             />
