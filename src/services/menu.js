@@ -1370,7 +1370,10 @@ export async function getLeftMenuPhysical() {
       title: 'Tất cả học sinh',
       key: 'students',
       icon: 'icon icon-list',
-      url: ['/phat-trien-the-chat/tat-ca-hoc-sinh'],
+      url: [
+        '/phat-trien-the-chat/tat-ca-hoc-sinh',
+        '/phat-trien-the-chat/tao-the-chat'
+      ],
       permission: [],
     },
     {

@@ -1924,6 +1924,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/phat-trien-the-chat/tao-the-chat',
+            component: './physical/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       //PHYSICAL
