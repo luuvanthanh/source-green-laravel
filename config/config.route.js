@@ -1936,6 +1936,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
+          {
+            path: '/phat-trien-the-chat/:id/chi-tiet/nhap-the-chat',
+            component: './physical/details/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
         ],
       },
       //PHYSICAL

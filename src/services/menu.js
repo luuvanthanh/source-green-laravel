@@ -1373,7 +1373,8 @@ export async function getLeftMenuPhysical() {
       url: [
         '/phat-trien-the-chat/tat-ca-hoc-sinh',
         '/phat-trien-the-chat/tao-the-chat',
-        '/phat-trien-the-chat/:id/chi-tiet'
+        '/phat-trien-the-chat/:id/chi-tiet',
+        '/phat-trien-the-chat/:id/chi-tiet/nhap-the-chat'
       ],
       permission: [],
     },

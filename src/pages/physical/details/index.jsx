@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { history } from 'umi';
+import { history, useLocation } from 'umi';
 import { useSelector } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -21,6 +21,7 @@ const Index = memo(() => {
     physicalCreate,
     effects,
   ]);
+  const location = useLocation();
 
   const mounted = useRef(false);
   const dataHeight = {
@@ -94,7 +95,7 @@ const Index = memo(() => {
               <Button
                 color="success"
                 icon="plus"
-                onClick={() => history.push('/chi-tiet/nhap-the-chat')}
+                onClick={() => history.push(`${location?.pathname}/nhap-the-chat`)}
               >
                 Nhập thể chất
               </Button>
