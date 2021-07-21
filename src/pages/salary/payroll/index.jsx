@@ -352,11 +352,13 @@ class Index extends PureComponent {
           }
           if (record.id === 'TINH_LUONG') {
             return (
-              <Switch
-                checked={data.isSalary}
-                disabled={!data.isTimesheet || !data.isBonus || !data.isOther || data.isSalary}
-                onChange={() => this.updateSalary(data)}
-              />
+              <Button
+                color="primary"
+                disabled={!data.isTimesheet || !data.isBonus || !data.isOther}
+                onClick={() => this.updateSalary(data)}
+              >
+                Tính lương
+              </Button>
             );
           }
           return null;
