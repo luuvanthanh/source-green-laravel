@@ -223,8 +223,15 @@ const Index = memo(() => {
     <>
       <Helmet title="Tất cả học sinh" />
       <Pane className="p20">
-        <Pane className="d-flex mb20">
+        <Pane className="d-flex justify-content-between align-items-center mb20">
           <Heading type="page-title">Tất cả học sinh</Heading>
+          <Button
+            color="success"
+            icon="plus"
+            onClick={() => history.push('/phat-trien-the-chat/tao-the-chat')}
+          >
+            Tạo nhập thể chất
+          </Button>
         </Pane>
 
         <Pane className="card">
