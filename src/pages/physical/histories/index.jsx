@@ -170,6 +170,7 @@ const Index = memo(() => {
             </Form>
 
             <Table
+              bordered
               columns={columns}
               dataSource={data}
               loading={loading['physicalHistory/GET_DATA']}

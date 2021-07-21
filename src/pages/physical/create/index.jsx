@@ -414,6 +414,7 @@ const Index = memo(() => {
               </Pane>
               <Pane className="p20">
                 <Table
+                  bordered
                   columns={columns}
                   dataSource={[{ id: 1 }]}
                   loading={loading['physicalStudents/GET_DATA']}

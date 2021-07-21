@@ -285,6 +285,7 @@ const Index = memo(() => {
             </Form>
 
             <Table
+              bordered
               columns={columns}
               dataSource={data}
               loading={loading['physicalStudentsUnderweight/GET_DATA']}
