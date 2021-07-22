@@ -3,23 +3,23 @@ import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/posts', {
+  return request('/student-criterias/physical/history', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      creationTimeFrom: Helper.getDateTime({
+      fromDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.creationTimeFrom,
+          originValue: params.fromDate,
           targetValue: '00:00:00',
         }),
         isUTC: true,
       }),
-      creationTimeTo: Helper.getDateTime({
+      toDate: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.creationTimeTo,
+          originValue: params.toDate,
           targetValue: '23:59:59',
         }),
         isUTC: false,

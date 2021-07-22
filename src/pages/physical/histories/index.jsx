@@ -1,23 +1,20 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Typography } from 'antd';
+import { Form, Spin } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce } from 'lodash';
+import { debounce, isEmpty, map } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
-
 import { variables, Helper } from '@/utils';
 
-const { Paragraph } = Typography;
-
 const Index = memo(() => {
-
   const dispatch = useDispatch();
   const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalHistory }) => [
     physicalHistory,
@@ -31,10 +28,11 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    key: query?.key,
-    from: query?.from || '',
-    to: query?.to || '',
+    employeeId: query?.employeeId,
+    fromDate: query?.fromDate || '',
+    toDate: query?.toDate || '',
   });
+  const [employee, setEmployee] = useState([]);
 
   const columns = [
     {
@@ -44,36 +42,32 @@ const Index = memo(() => {
       with: 200,
       render: (record) => (
         <Text size="normal">
-          {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
+          {Helper.getDate(record?.logTime, variables.DATE_FORMAT.TIME_DATE_VI)}
         </Text>
       ),
     },
     {
-      title: 'Nguyễn Ngọc Bích',
-      key: 'branch',
+      title: 'Tên tài khoản',
+      key: 'name',
       className: 'min-width-200',
       with: 200,
       render: (record) => (
-        <Text size="normal">{record?.studentMaster?.student?.class?.branch?.name}</Text>
+        <Text size="normal">{record?.editor?.name || ''}</Text>
       ),
     },
     {
       title: 'Nội dung',
-      key: 'status',
+      key: 'content',
       className: 'min-width-400',
-      render: (record) => (
-        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-          {record.content}
-        </Paragraph>
-      ),
+      render: (record) => !isEmpty(record?.editedStudentPhysicals) ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(', ')}` : '',
     },
   ];
 
   /**
- * Function set pagination
- * @param {integer} page page of pagination
- * @param {integer} size size of pagination
- */
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+  */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -104,13 +98,31 @@ const Index = memo(() => {
   const changeFilterDate = debounce((values) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
-      from: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
-      to: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+      fromDate: values ? values[0].format(variables.DATE_FORMAT.DATE_AFTER) : null,
+      toDate: values ? values[1].format(variables.DATE_FORMAT.DATE_AFTER) : null,
     }));
   }, 300);
 
+  const getEmployees = (fullName) => {
+    dispatch({
+      type: 'categories/GET_TEACHERS',
+      payload: {
+        fullName,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        include: Helper.convertIncludes(['positionLevel']),
+      },
+      callback: (res) => {
+        if (res) {
+          setEmployee(res?.parsePayload);
+        }
+      },
+    });
+  };
+
   useEffect(() => {
     mounted.current = true;
+    getEmployees('');
     return mounted.current;
   }, []);
 
@@ -126,6 +138,10 @@ const Index = memo(() => {
       query: Helper.convertParamSearch(search),
     });
   }, [search]);
+
+  const onSearch = debounce((val) => {
+    getEmployees(val);
+  }, 300);
 
   return (
     <>
@@ -143,8 +159,8 @@ const Index = memo(() => {
               initialValues={{
                 ...search,
                 rangeTime: [
-                  search?.from ? moment(search?.from) : null,
-                  search?.to ? moment(search?.to) : null,
+                  search?.fromDate ? moment(search?.fromDate) : null,
+                  search?.toDate ? moment(search?.toDate) : null,
                 ],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
@@ -153,10 +169,14 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    name="key"
-                    type={variables.INPUT_SEARCH}
-                    onChange={({ target: { value } }) => changeFilter('key', value)}
-                    placeholder="Nhập từ khóa tìm kiếm"
+                    name="employeeId"
+                    data={loading['categories/GET_TEACHERS'] ? [] : employee.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                    type={variables.SELECT}
+                    onChange={(value) => changeFilter('employeeId', value)}
+                    onSearch={onSearch}
+                    notFoundContent={loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null}
+                    filterOption
+                    placeholder="Tất cả nhân viên"
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -176,7 +196,7 @@ const Index = memo(() => {
               loading={loading['physicalHistory/GET_DATA']}
               isError={error.isError}
               pagination={paginationTable(pagination)}
-              rowKey={(record) => record.id}
+              rowKey={() => uuidv4()}
               scroll={{ x: '100%' }}
             />
           </Pane>
