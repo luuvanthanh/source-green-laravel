@@ -81,8 +81,10 @@ const Index = memo(() => {
         },
         callback: (res) => {
           if (res?.id) {
+            const rangeDate = `${moment(res?.yearSchool?.startDate).format(variables.DATE_FORMAT.YEAR_MONTH_DAY)} - ${moment(res?.yearSchool?.endDate).format(variables.DATE_FORMAT.YEAR_MONTH_DAY)}`;
             formRef.current.setFieldsValue({
               ...res,
+              rangeDate,
               dateOfBirth: moment(res.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
               dayAdmission: moment(res.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
               type: 'newStudent'
@@ -161,10 +163,45 @@ const Index = memo(() => {
     }
   };
 
+  const getMoney = (schoolYearId, classTypeId, dayAdmission, tuition) => {
+    if (_.isEmpty(tuition)) {
+      return;
+    }
+    const newTuition = [...tuition].filter(obj => obj?.paymentFormId && obj?.feeId).map(item => ({
+      id: item.id,
+      money: item.money,
+      feeId: item.feeId,
+      paymentFormId: item.paymentFormId
+    }));
+    dispatch({
+      type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
+      payload: {
+        details: JSON.stringify(newTuition),
+        classTypeId,
+        schoolYearId,
+        dayAdmission: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue:dayAdmission,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+        student: 'new'
+      },
+      callback: (res) => {
+        if (!_.isEmpty(res)) {
+          setTuition(res);
+        }
+      },
+    });
+  };
+
   const loadTableFees = (value, name) => {
     const { getFieldsValue, setFieldsValue } = formRef?.current;
     const { schoolYearId, classTypeId, dayAdmission } = getFieldsValue();
     if (schoolYearId && classTypeId && dayAdmission) {
+      getMoney(schoolYearId, classTypeId, dayAdmission, tuition);
       setAddFees(true);
     } else {
       setAddFees(false);
@@ -176,9 +213,9 @@ const Index = memo(() => {
         startDate: yearSchool.startDate || null,
         endDate: yearSchool.endDate || null,
       }));
-      setFieldsValue({ dayAdmission: '' });
+      const rangeDate = `${moment(yearSchool.startDate).format(variables.DATE_FORMAT.DATE_VI)} - ${moment(yearSchool.endDate).format(variables.DATE_FORMAT.DATE_VI)}`;
+      setFieldsValue({ dayAdmission: '',  rangeDate});
     }
-    setTuition([]);
   };
 
   const  getClassByAge = (age = 0) => {
@@ -237,8 +274,10 @@ const Index = memo(() => {
     }
     const response = students.find(item => item.id === value);
     if (response?.id) {
+      const rangeDate = `${moment(response?.yearSchool?.startDate).format(variables.DATE_FORMAT.YEAR_MONTH_DAY)} - ${moment(response?.yearSchool?.endDate).format(variables.DATE_FORMAT.YEAR_MONTH_DAY)}`;
       formRef.current.setFieldsValue({
         ...response,
+        rangeDate,
         dateOfBirth: moment(response.dateOfBirth, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         dayAdmission: moment(response.dayAdmission, variables.DATE_FORMAT.YEAR_MONTH_DAY),
         type,
@@ -301,7 +340,6 @@ const Index = memo(() => {
                         onChange={selectStudent}
                       />
                     )}
-
                   </div>
                   <div className="col-lg-3">
                     <FormItem
@@ -336,6 +374,16 @@ const Index = memo(() => {
                       rules={[variables.RULES.EMPTY]}
                       type={variables.INPUT}
                       placeholder="Tháng tuổi"
+                    />
+                  </div>
+                  <div className="col-lg-3">
+                    <FormItem
+                      className="input-noborder"
+                      label="Thời gian hiệu lực"
+                      name="rangeDate"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.INPUT}
+                      placeholder="Từ ngày - Đến ngày"
                     />
                   </div>
                   <div className="col-lg-3">
