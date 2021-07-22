@@ -22,8 +22,8 @@ const Index = memo(() => {
   const mountedSet = (f) => (v) => mounted?.current && f(v);
 
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalStudentsUnderweight }) => [
-    physicalStudentsUnderweight,
+  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalStudents }) => [
+    physicalStudents,
     effects,
   ]);
 
@@ -48,11 +48,12 @@ const Index = memo(() => {
     {
       title: 'Học sinh',
       key: 'student',
-      className: 'min-width-140',
+      className: 'min-width-300',
+      width: 300,
       render: (record) => (
         <AvatarTable
-          fileImage={Helper.getPathAvatarJson(record?.fileImage)}
-          fullName={record?.fullName || ''}
+          fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+          fullName={record?.student?.fullName || ''}
         />
       )
     },
@@ -60,36 +61,40 @@ const Index = memo(() => {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
+      align: 'center',
       render: (record) => (
-        <Text size="normal">{record?.age || 0} tháng</Text>
+        <Text size="normal">{record?.student?.age || 0} tháng</Text>
       ),
     },
     {
       title: 'Giới tính',
       key: 'gender',
       className: 'min-width-120',
-      render: (record) => record?.gender || ''
+      align: 'center',
+      render: (record) => variables.GENDERS[record?.student?.sex] || ''
     },
     {
       title: 'Cơ sở',
       key: 'branch',
-      className: 'min-width-120',
-      render: (record) => record?.branch || ''
+      className: 'min-width-200',
+      with: 200,
+      render: (record) => record?.student?.class?.branch?.name || ''
     },
     {
       title: 'Lớp',
       key: 'class',
-      className: 'min-width-120',
-      render: (record) => record?.class || ''
+      className: 'min-width-200',
+      render: (record) => record?.student?.class?.name || ''
     },
     {
       title: 'Chiều cao (cm)',
       key: 'height',
-      className: 'min-width-150',
-      render: (record) => record?.height ? (
+      className: 'min-width-120',
+      align: 'center',
+      render: (record) => record?.height?.value ? (
         <>
-          <span className="font-weight-bold mr5">{record?.height}</span>
-          <span>(01/06)</span>
+          <span className="font-weight-bold mr5">{record?.height?.value}</span>
+          <span>({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})</span>
         </>
       ) : ''
     },
@@ -101,8 +106,8 @@ const Index = memo(() => {
           key: 'present',
           className: 'min-width-120',
           align: 'center',
-          render: (record) => !record?.present ? (
-            <span className="font-weight-bold text-danger">{record?.present || 30}</span>
+          render: (record) => record?.weight?.value ? (
+            <span className="font-weight-bold text-danger">{record?.weight?.value || 0}</span>
           ) : ''
         },
         {
@@ -110,9 +115,9 @@ const Index = memo(() => {
           key: 'Finish',
           className: 'min-width-120',
           align: 'center',
-          render: (record) => !record?.present ? (
-            <span className="font-weight-bold text-success">{record?.present || 30}</span>
-          ) : ''
+          render: (record) => (
+            <span className="font-weight-bold text-success">{record?.recommendWeight ? record?.recommendWeight.toFixed(1) : 0}</span>
+          )
         },
       ]
     },
@@ -135,10 +140,10 @@ const Index = memo(() => {
   ];
 
   /**
- * Function set pagination
- * @param {integer} page page of pagination
- * @param {integer} size size of pagination
- */
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -174,7 +179,7 @@ const Index = memo(() => {
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: branchId,
+        branchId,
       },
       callback: (res) => {
         if (res) {
@@ -187,10 +192,15 @@ const Index = memo(() => {
     });
   };
 
-  const changeFilterBranch = (name) => (value) => {
-    changeFilterDebouce(name, value);
-    fetchClasses(name);
-  };
+  const changeFilterBranch = debounce((name, value) => {
+    filterRef?.current?.setFieldsValue({ classId: undefined });
+    fetchClasses(value);
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+      classId: undefined
+    }));
+  }, 300);
 
   const fetchBranches = () => {
     if (search.branchId) {
@@ -216,9 +226,10 @@ const Index = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'physicalStudentsUnderweight/GET_DATA',
+      type: 'physicalStudents/GET_DATA',
       payload: {
         ...search,
+        isOverWeight: 'true',
       },
     });
     history.push({
@@ -233,10 +244,17 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Học sinh thiếu cân" />
+      <Helmet title="Học sinh thừa cân" />
       <Pane className="p20">
-        <Pane className="d-flex mb20">
-          <Heading type="page-title">Học sinh thiếu cân</Heading>
+        <Pane className="d-flex justify-content-between align-items-center mb20">
+          <Heading type="page-title">Học sinh thừa cân</Heading>
+          <Button
+            color="success"
+            icon="plus"
+            onClick={() => history.push('/phat-trien-the-chat/tao-the-chat')}
+          >
+            Tạo nhập thể chất
+          </Button>
         </Pane>
 
         <Pane className="card">
@@ -268,7 +286,7 @@ const Index = memo(() => {
                     name="branchId"
                     type={variables.SELECT}
                     data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
-                    onChange={(value) => changeFilterBranch('branchId')(value)}
+                    onChange={(value) => changeFilterBranch('branchId', value)}
                     allowClear={false}
                   />
                 </Pane>
@@ -288,10 +306,10 @@ const Index = memo(() => {
               bordered
               columns={columns}
               dataSource={data}
-              loading={loading['physicalStudentsUnderweight/GET_DATA']}
+              loading={loading['physicalStudents/GET_DATA']}
               isError={error.isError}
               pagination={paginationTable(pagination)}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record?.student?.id}
               scroll={{ x: '100%' }}
             />
           </Pane>

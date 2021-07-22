@@ -305,7 +305,7 @@ const Index = memo(() => {
                         <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
                       </div>
                       <div className="col-lg-3">
-                        <label htmlFor="" className={`mb5 font-size-13 ${!details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
+                        <label htmlFor="" className={`mb5 font-size-13 ${details?.code && !details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
                         <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
                       </div>
                       <div className="col-lg-3">

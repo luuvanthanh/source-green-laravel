@@ -1926,13 +1926,13 @@ export default [
           },
           {
             path: '/phat-trien-the-chat/hoc-sinh-thua-can',
-            component: './physical/overweight',
+            component: './physical/students/overweight',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
           {
             path: '/phat-trien-the-chat/hoc-sinh-thieu-can',
-            component: './physical/underweight',
+            component: './physical/students/underweight',
             wrappers: ['@/wrappers/auth'],
             authority: [],
           },
