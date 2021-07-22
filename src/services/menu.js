@@ -627,6 +627,14 @@ export async function getLeftMenuChildren() {
       permission: [permissions.BEP],
       pro: true,
     },
+    {
+      title: 'Danh mục món ăn',
+      key: 'food-commons',
+      url: ['/thuc-don/mon-an', '/thuc-don/mon-an/tao-moi', '/thuc-don/mon-an/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [permissions.BEP],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuAllocation() {

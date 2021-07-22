@@ -27,7 +27,7 @@ export function update(data = {}) {
 }
 
 export function updateOrderIndex(data = {}) {
-  return request(`/api/meals/update-orderIndex`, {
+  return request(`/meals/update-orderIndex`, {
     method: 'PUT',
     data,
   });
