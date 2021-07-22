@@ -24,7 +24,7 @@ class Student extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'Source', 'ParentWish', 'ParentWith', 'FullName', 'Note', 'LaborNumber', 'Sex', 'DayOFBirth', 'Age', 'Address', 'Health', 'ClassId',
+        'Source', 'ParentWish', 'ParentWith', 'FullName', 'Note', 'LaborNumber', 'Sex', 'DayOfBirth', 'Age', 'Address', 'Health', 'ClassId',
         'FartherId', 'MotherId', 'CreatorId', 'LastModifierId', 'ConcurrencyStamp', 'DeleterId', 'DeletionTime', 'ExtraProperties', 'IsDeleted',
         'CardNumber', 'Code', 'Comments', 'StudentId', 'RegisterDate', 'StartDate', 'Status', 'FileImage', 'City', 'District', 'Street', 'Ward',
     ];

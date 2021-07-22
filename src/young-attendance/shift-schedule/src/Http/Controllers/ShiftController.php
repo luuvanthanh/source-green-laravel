@@ -60,7 +60,7 @@ class ShiftController extends Controller
      */
     public function index(Request $request)
     {
-        $shift = $this->shiftRepository->getShift($limit);
+        $shift = $this->shiftRepository->getShift($request->all());
 
         return $this->success($shift, trans('lang::messages.common.getListSuccess'));
     }
@@ -104,6 +104,7 @@ class ShiftController extends Controller
      */
     public function activeStatusShift(ActiveStatusShiftRequest $request, $id)
     {
+        dd(1);
         $shifts = $this->shiftRepository->activeStatusShift($request->all(), $id);
 
         return $this->success($shifts, trans('lang::messages.common.getListSuccess'));

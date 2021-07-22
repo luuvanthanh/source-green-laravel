@@ -24,8 +24,8 @@ class TrainingSchoolCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "code" => 'required|string',
-            "name" => 'required|string',
+            'name' => 'required|string|unique:TrainingSchools,Name',
+            'code' => 'required|string|unique:TrainingSchools,Code',
             "address" => 'string',
         ];
     }

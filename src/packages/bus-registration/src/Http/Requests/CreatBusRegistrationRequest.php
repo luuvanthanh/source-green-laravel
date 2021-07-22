@@ -43,7 +43,14 @@ class CreatBusRegistrationRequest extends FormRequest
                     }
                 },
             ],
-            'hourNumber' => 'required',
+            'hourNumber' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value < 0) {
+                        return $fail("Trường dữ liệu phải lớn hơn 0.");
+                    }
+                },
+            ],
         ];
     }
 

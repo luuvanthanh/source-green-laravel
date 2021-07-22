@@ -31,6 +31,13 @@ class CreatWorkHourRequest extends FormRequest
             'hours' => [
                 'required',
                 function ($attribute, $value, $fail) {
+
+                    foreach ($value as $valueItem) {
+                        if ($valueItem['out'] <= $valueItem['in']) {
+                            return $fail('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');
+                        }
+                    }
+
                     $employeeId = request()->employeeId;
                     $date = request()->date;
                     $shifts = ScheduleRepositoryEloquent::getUserTimeWorkShift($employeeId, $date, $date);
@@ -50,6 +57,7 @@ class CreatWorkHourRequest extends FormRequest
                             }
                         }
                     }
+
                 },
             ],
         ];

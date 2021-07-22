@@ -21,6 +21,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 {
     protected $fieldSearchable = [
         'Id',
+        'Type',
         'CreationTime',
     ];
 
@@ -114,6 +115,10 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     $q2->whereLike('FullName', $attributes['fullName']);
                 });
             });
+        }
+
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->where('Type', $attributes['type']);
         }
 
         if (!empty($attributes['limit'])) {

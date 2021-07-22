@@ -24,6 +24,26 @@ class ParamaterValueUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $paramaterValue = \GGPHP\Category\Models\ParamaterValue::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($paramaterValue)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $paramaterValue = \GGPHP\Category\Models\ParamaterValue::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($paramaterValue)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

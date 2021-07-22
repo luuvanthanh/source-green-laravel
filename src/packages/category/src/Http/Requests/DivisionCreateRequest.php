@@ -24,7 +24,8 @@ class DivisionCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'name' => 'required|string|unique:Divisions,Name',
+            'code' => 'required|string|unique:Divisions,Code',
         ];
     }
 }

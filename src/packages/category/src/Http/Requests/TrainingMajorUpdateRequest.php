@@ -24,6 +24,26 @@ class TrainingMajorUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($trainingMajor)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($trainingMajor)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

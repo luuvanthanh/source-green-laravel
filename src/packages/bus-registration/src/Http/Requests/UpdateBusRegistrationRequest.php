@@ -24,6 +24,14 @@ class UpdateBusRegistrationRequest extends FormRequest
     public function rules()
     {
         return [
+            'hourNumber' => [
+                function ($attribute, $value, $fail) {
+
+                    if ($value < 0) {
+                        return $fail("Trường dữ liệu phải lớn hơn 0.");
+                    }
+                },
+            ],
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\Division;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DivisionUpdateRequest extends FormRequest
@@ -24,8 +25,26 @@ class DivisionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'positionId' => 'array',
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $division = Division::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($division)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $division = Division::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($division)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

@@ -69,6 +69,10 @@ class OtherDeclarationRepositoryEloquent extends CoreRepositoryEloquent implemen
             });
         }
 
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where('Time', '>=', $attributes['startDate'])->where('Time', '<=', $attributes['endDate']);
+        }
+
         if (!empty($attributes['limit'])) {
             $otherDeclaration = $this->paginate($attributes['limit']);
         } else {

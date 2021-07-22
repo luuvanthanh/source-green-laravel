@@ -83,11 +83,10 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
     public function index($request)
     {
 
-        $this->whereHas('employee', function ($query) use ($request) {
-
+        $this->model = $this->model->whereHas('employee', function ($query) use ($request) {
             if ($request->has('employeeId')) {
                 $employeeId = explode(',', $request->employeeId);
-                $this->model = $this->model->whereIn('employeeId', $employeeId);
+                $query->whereIn('Id', $employeeId);
             }
 
             $query->tranferHistory($request->all());
@@ -99,12 +98,12 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
 
         if ($request->has('startMonth')) {
             $startDate = Carbon::now()->subMonths($request->startMonth)->format('Y-m-d');
-            $this->whereDate('Birthday', '<=', $startDate);
+            $this->model = $this->model->whereDate('Birthday', '<=', $startDate);
         }
 
         if ($request->has('endMonth')) {
             $endDate = Carbon::now()->subMonths($request->endMonth)->format('Y-m-d');
-            $this->whereDate('Birthday', '>=', $endDate);
+            $this->model = $this->model->whereDate('Birthday', '>=', $endDate);
         }
 
         if ($request->has('limit')) {
@@ -114,5 +113,14 @@ class ChildrenRepositoryEloquent extends CoreRepositoryEloquent implements Child
         }
 
         return $results;
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $children = Children::findOrFail($id);
+
+        $children->update($attributes['data'][0]);
+
+        return $this->parserResult($children);
     }
 }

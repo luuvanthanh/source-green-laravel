@@ -24,8 +24,8 @@ class DegreeCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "code" => 'required|string',
-            "name" => 'required|string',
+            'name' => 'required|unique:Degrees,Name',
+            'code' => 'required|unique:Degrees,Code',
         ];
     }
 }

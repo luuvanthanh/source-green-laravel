@@ -202,6 +202,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
         $data = [];
         $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schoolYearId'])->first();
         $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
+
         foreach ($details as $key => $detail) {
 
             $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail->feeId);
@@ -237,7 +238,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
                 $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
-
                 if (!is_null($feePolicie)) {
                     switch ($fee->Type) {
                         case 'HP':
@@ -301,10 +301,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
 
                             if (!is_null($feeDetail)) {
-
                                 $money = $feeDetail->Money;
                                 switch ($paymentForm->Code) {
                                     case 'HOCKY1':
+
                                         // tháng còn lại học kỳ 1
                                         $monthsemesterLeft1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) use ($endMonth) {
@@ -397,10 +397,11 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         }
 
                                         if ($money > 0 && $totalSchoolDay > 0) {
-                                            $result = $money / $totalSchoolDay * ($daysLeftInMonth - $totalDayWeekend + $totalSchoolDayLeft);
+                                            $result = ($money / $totalSchoolDay) * ($daysLeftInMonth - $totalDayWeekend + $totalSchoolDayLeft);
                                         }
-
+                                        break;
                                     case 'THANG':
+
                                         $result = ($daysLeftInMonth - $totalDayWeekend) * $money;
                                         break;
                                 }
@@ -411,7 +412,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 ->where('ClassTypeId', $attributes['classTypeId'])
                                 ->where('FeeId', $detail->feeId)
                                 ->where('PaymentFormId', $detail->paymentFormId)->first();
-
                             if (!is_null($feeDetail)) {
                                 $money = $feeDetail->Money;
                                 $result = $money;

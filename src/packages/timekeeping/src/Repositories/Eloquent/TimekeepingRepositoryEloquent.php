@@ -1050,7 +1050,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
                 $sheet->mergeCells($merge);
 
-                $sheet->getRowDimension($currentRow)->setRowHeight(60);
+                $sheet->getRowDimension($currentRow)->setRowHeight(80);
             },
             '{work}' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;

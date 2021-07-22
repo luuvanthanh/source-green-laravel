@@ -260,6 +260,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['nameStudent']);
         }
 
+        if (!empty($attributes['fullName'])) {
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
+        }
+
         if (!empty($attributes['classId'])) {
             $classId = explode(',', $attributes['classId']);
             $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->whereHas('classStudent', function ($query) use ($classId) {
