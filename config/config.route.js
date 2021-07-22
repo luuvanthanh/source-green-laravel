@@ -196,6 +196,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
+          {
+            path: '/thuc-don/bua-an',
+            component: './menu/meals',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/bua-an/tao-moi',
+            component: './menu/meals/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/bua-an/:id/chi-tiet',
+            component: './menu/meals/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
         ],
       },
       {
