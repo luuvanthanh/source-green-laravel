@@ -1,9 +1,9 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, Upload, message } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import { head, isEmpty } from 'lodash';
+import { head, isEmpty, last } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -11,6 +11,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
+import CustomListUpload from '@/components/CommonComponent/CustomListUpload';
 
 const Index = memo(() => {
   const [
@@ -26,13 +27,15 @@ const Index = memo(() => {
   const history = useHistory();
   const formRef = useRef();
   const mounted = useRef(false);
+  const [pathImage, setPathImage] = useState([]);
 
   const onFinish = (values) => {
     dispatch({
-      type: params.id ? 'mealsCreate/UPDATE' : 'mealsCreate/ADD',
+      type: params.id ? 'foodCommonsCreate/UPDATE' : 'foodCommonsCreate/ADD',
       payload: {
         ...values,
         ...params,
+        pathImage: JSON.stringify(pathImage),
       },
       callback: (response, error) => {
         if (response) {
@@ -58,7 +61,7 @@ const Index = memo(() => {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'mealsCreate/REMOVE',
+          type: 'foodCommonsCreate/REMOVE',
           payload: {
             ...params,
           },
@@ -75,7 +78,7 @@ const Index = memo(() => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'mealsCreate/GET_DATA',
+        type: 'foodCommonsCreate/GET_DATA',
         payload: {
           ...params,
         },
@@ -83,7 +86,11 @@ const Index = memo(() => {
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
+              measureUnit: response?.measureUnit?.name,
             });
+            if (Helper.isJSON(response.pathImage)) {
+              setPathImage(JSON.parse(response.pathImage));
+            }
           }
         },
       });
@@ -95,10 +102,44 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  const onUpload = (files) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          setPathImage((prevState) => [...prevState, head(response.results)?.fileInfo]);
+        }
+      },
+    });
+  };
+
+  const onRemoFile = (record) => {
+    setPathImage((prevState) => prevState.filter((item) => item.id !== record.id));
+  };
+
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const allowTypes = ['jpeg', 'jpg', 'png'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Định dạng hỗ trợ:  .jpeg, .jpg, .png. Tổng dung lượng không vượt quá 20MB');
+        return;
+      }
+      onUpload(file);
+    },
+    showUploadList: false,
+    fileList: [],
+  };
+
   return (
     <Pane style={{ paddingTop: 20 }}>
-      <Helmet title="Tạo bữa ăn" />
-      <Breadcrumbs className="pb30 pt0" last="Tạo bữa ăn" menu={menuData} />
+      <Helmet title="Tạo món ăn" />
+      <Breadcrumbs className="pb30 pt0" last="Tạo món ăn" menu={menuData} />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Pane className="row justify-content-center">
           <Pane className="col-lg-6">
@@ -110,7 +151,7 @@ const Index = memo(() => {
                 <Pane className="row">
                   <Pane className="col-6">
                     <FormItem
-                      label="Mã bữa ăn"
+                      label="Mã món ăn"
                       name="code"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
@@ -118,7 +159,7 @@ const Index = memo(() => {
                   </Pane>
                   <Pane className="col-6">
                     <FormItem
-                      label="Tên bữa ăn"
+                      label="Tên món ăn"
                       name="name"
                       type={variables.INPUT}
                       rules={[variables.RULES.EMPTY]}
@@ -128,13 +169,28 @@ const Index = memo(() => {
                 <Pane className="row">
                   <Pane className="col-6">
                     <FormItem
-                      label="Sử dụng"
-                      name="isUsed"
-                      type={variables.SWITCH}
-                      valuePropName="checked"
+                      label="Đvt"
+                      name="measureUnit"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
                 </Pane>
+                <Pane className="row">
+                  <Pane className="col-12">
+                    <label className="ant-col ant-form-item-label d-block">
+                      <span>Hình ảnh món </span>
+                    </label>
+                    <Upload {...props}>
+                      <Button color="primary" icon="upload1">
+                        Tải lên
+                      </Button>
+                    </Upload>
+                  </Pane>
+                </Pane>
+                {!isEmpty(pathImage) && (
+                  <CustomListUpload data={pathImage} remove={(item) => onRemoFile(item)} />
+                )}
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
@@ -149,9 +205,9 @@ const Index = memo(() => {
                   htmlType="submit"
                   size="large"
                   loading={
-                    loading['mealsCreate/ADD'] ||
-                    loading['mealsCreate/UPDATE'] ||
-                    loading['mealsCreate/GET_DATA']
+                    loading['foodCommonsCreate/ADD'] ||
+                    loading['foodCommonsCreate/UPDATE'] ||
+                    loading['foodCommonsCreate/GET_DATA']
                   }
                 >
                   Lưu

@@ -214,6 +214,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
+          {
+            path: '/thuc-don/mon-an',
+            component: './menu/food-commons',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/mon-an/tao-moi',
+            component: './menu/food-commons/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/mon-an/:id/chi-tiet',
+            component: './menu/food-commons/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
         ],
       },
       {
