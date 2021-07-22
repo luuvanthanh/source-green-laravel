@@ -4,6 +4,7 @@ import { Form, Spin } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import _ from 'lodash';
+import moment from 'moment';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -86,9 +87,9 @@ const Index = memo(() => {
               schoolYearId: res?.schoolYearId || '',
               code: res?.student?.code || '',
               branchName: res?.student?.classStudent?.class?.branch?.name || '',
-              classType: res?.classType || '',
+              classType: res?.student?.classStudent?.class?.classType?.name || '',
               className: res?.student?.classStudent?.class?.name || '',
-              classTypeId: res?.student?.classStudent?.class?.id || '',
+              classTypeId: res?.student?.classStudent?.class?.classType?.id || '',
             }));
             formRef.current.setFieldsValue({
               ...res,
@@ -125,15 +126,14 @@ const Index = memo(() => {
     if (_.isEmpty(tuition)) {
       return;
     }
-    const newTuition = tuition.map(item => ({
+    const newTuition = [...tuition].filter(obj => obj?.paymentFormId && obj?.feeId).map(item => ({
       id: item.id,
       money: item.money,
       feeId: item.feeId,
       paymentFormId: item.paymentFormId
     }));
-
     dispatch({
-      type: 'oldStudentAdd/GET_ALL_MONEY',
+      type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
       payload: {
         details: JSON.stringify(newTuition),
         classTypeId: details?.classTypeId,
@@ -141,7 +141,7 @@ const Index = memo(() => {
         dayAdmission: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: details?.startDate,
+            originValue: moment(details?.startDate, variables.DATE_FORMAT.DATE_VI),
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
@@ -149,7 +149,7 @@ const Index = memo(() => {
         student: 'old'
       },
       callback: (res) => {
-        if (res) {
+        if (!_.isEmpty(res)) {
           setTuition(res);
         }
       },
@@ -206,7 +206,7 @@ const Index = memo(() => {
         classTypeId: student?.class?.classType?.id || '',
       };
       setDetails(newDetails);
-      if (newDetails?.schoolYearId) {
+      if (newDetails?.schoolYearId && newDetails?.classTypeId) {
         getMoney(newDetails);
       }
     }
@@ -305,7 +305,7 @@ const Index = memo(() => {
                         <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.branchName || ''}</p>
                       </div>
                       <div className="col-lg-3">
-                        <label htmlFor="" className="mb5 font-size-13" >Khối lớp</label>
+                        <label htmlFor="" className={`mb5 font-size-13 ${!details?.classTypeId ? 'text-danger' : ''}`} >Khối lớp</label>
                         <p className="mb0 font-size-13 mt10 font-weight-bold">{details?.classType || ''}</p>
                       </div>
                       <div className="col-lg-3">
@@ -336,6 +336,7 @@ const Index = memo(() => {
                 htmlType="submit"
                 size="large"
                 loading={loading['oldStudentAdd/ADD'] || loading['oldStudentAdd/UPDATE']}
+                disabled={!details?.classTypeId || !details?.schoolYearId}
               >
                 Lưu
               </Button>
