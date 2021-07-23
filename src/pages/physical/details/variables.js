@@ -3,6 +3,7 @@ export const variables = {
     UNDERWEIGHT: 'Thiếu cân',
     OVERWEIGHT: 'Thiếu cân',
     OBESITY : 'Thừa cân',
+    NORMAL : 'Bình thường',
   }
 };
 
