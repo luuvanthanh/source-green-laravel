@@ -1,21 +1,22 @@
 import request from '@/utils/request';
+import { omit } from 'lodash';
+import { Helper } from '@/utils';
 
-export function add(data = {}) {
-  return request('/news', {
-    method: 'POST',
-    data,
+export function get(params = {}) {
+  return request('/student-criterias/physical', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
   });
 }
 
-export function update(data = {}) {
-  return request(`/news/${data.id}`, {
+export function add(data = {}) {
+  return request('/student-criterias/physical', {
     method: 'PUT',
     data,
   });
 }
 
-export function get(data = {}) {
-  return request(`/news/${data.id}`, {
-    method: 'GET',
-  });
-}
+export default get;
