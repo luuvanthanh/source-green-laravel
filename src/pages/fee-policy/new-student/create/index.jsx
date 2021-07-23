@@ -241,7 +241,7 @@ const Index = memo(() => {
     if (!date) {
       return;
     }
-    const age = (Math.round( moment().diff(date, 'months', true) * 100 ) / 100).toFixed(0);
+    const age = moment().diff(date, 'months');
     getClassByAge(age);
     formRef.current.setFieldsValue({
       age,
