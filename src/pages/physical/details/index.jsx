@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { history, useLocation } from 'umi';
 import { useSelector, useParams, useDispatch } from 'dva';
 import C3Chart from 'react-c3js';
-import { isEmpty, map } from 'lodash';
+import { isEmpty, map, get } from 'lodash';
 import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -57,9 +57,20 @@ const Index = memo(() => {
       type: 'spline',
       order: 'asc',
     },
+    grid: {
+      y: {
+        show: true
+      },
+    },
+    legend: {
+      show: false
+    },
     axis: {
       x : {
-        label: 'Thời gian (tháng)',
+        label: {
+          text: 'Thời gian (tháng)',
+          position: 'outer-center',
+        },
         type : 'timeseries',
         tick: {
           format (x) {
@@ -68,7 +79,9 @@ const Index = memo(() => {
         }
       },
       y: {
-        label: 'cm',
+        label: {
+          text: 'cm',
+        }
       },
     },
     color: {
@@ -88,7 +101,9 @@ const Index = memo(() => {
     axis: {
       ...dataHeight.axis,
       y: {
-        label: 'kg',
+        label: {
+          text: 'kg',
+        }
       },
     },
     color: {
@@ -120,17 +135,26 @@ const Index = memo(() => {
     return '';
   };
 
-  const getStatus = (status) => {
+  const getStatus = (status, text = '') => {
+    const nameStatus = variablesModule.STATUS_NAME[status];
     if (status !== 'NORMAL') {
-      return <span className="text-danger ml5">{variablesModule.STATUS_NAME[status]}</span>;
+      return (
+        <span className="text-danger ml5">
+          {`${text ? `${text} ` : ''} ${text ? String(nameStatus).toLowerCase() : nameStatus}`}
+        </span>
+      );
     }
-    return null;
+    return (
+      <span className="text-success ml5">
+        {`${text ? `${text} ` : ''} ${text ? String(nameStatus).toLowerCase() : nameStatus}`}
+      </span>
+    );
   };
 
   return (
     <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: '/phat-trien-the-chat/tat-ca-hoc-sinh' }}>
       <Helmet title="Chi tiết phát triển thể chất học sinh" />
-      <Breadcrumbs last="Chi tiết phát triển thể chất học sinh" menu={menuData} />
+      <Breadcrumbs last={details?.student?.fullName || ''} menu={menuData} />
       <Pane className="p20">
         <div className={styles['container-information-student']}>
           <div
@@ -178,7 +202,7 @@ const Index = memo(() => {
           <div className="col-lg-6">
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CHIỀU CAO</Heading>
-              <Heading type="page-title">{height?.value || 0} cm - Nhập ngày {Helper.getDate((height?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Heading>
+              <Text>{height?.value || 0} cm - Nhập ngày {Helper.getDate((height?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Text>
               <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
               <C3Chart {...dataHeight} />
             </div>
@@ -186,9 +210,21 @@ const Index = memo(() => {
           <div className="col-lg-6">
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CÂN NẶNG</Heading>
-              <Heading type="page-title">{weight?.value || 0} kg - Nhập ngày {Helper.getDate((weight?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Heading>
+              <Text>{weight?.value || 0} kg - Nhập ngày {Helper.getDate((weight?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Text>
               <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
               <C3Chart {...dataWeight} />
+            </div>
+          </div>
+          <div className="col-lg-6">
+            <div className={styles.block}>
+              <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
+              <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
+              <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
+              <C3Chart {...dataWeight} />
+              <div className={styles['result-bmi']}>
+                <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, 'Học sinh')}</p>
+                <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight || 0}</span>kg</p>
+              </div>
             </div>
           </div>
         </div>
