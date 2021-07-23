@@ -59,7 +59,7 @@ const General = memo(
      * @param {object} values values of form
      */
     const onFinish = (values) => {
-      const age = moment().endOf('month').diff(moment(values.dayOfBirth).startOf('month'), 'month');
+      const age = moment().diff(moment(values.dayOfBirth), 'month');
       dispatch({
         type: params.id ? 'OPchildrenAdd/UPDATE' : 'OPchildrenAdd/ADD',
         payload: params.id
@@ -225,7 +225,7 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <Form.Item label="Tuổi(tháng)">
                     {dayOfBirth &&
-                      moment().endOf('month').diff(moment(dayOfBirth).startOf('month'), 'month')}
+                      moment().diff(moment(dayOfBirth), 'month')}
                   </Form.Item>
                 </Pane>
                 <Pane className="col-lg-4">
