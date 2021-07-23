@@ -3,10 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'physicalDetails',
   state: {
-    data: [],
-    pagination: {
-      total: 0,
-    },
+    details: {},
     error: {
       isError: false,
       data: {},
@@ -16,8 +13,7 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -30,16 +26,13 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DETAILS({ payload }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getDetails, payload);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
-            parsePayload: response.items,
-            pagination: {
-              total: response.totalCount,
-            },
+            parsePayload: response,
           },
         });
       } catch (error) {
@@ -47,6 +40,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },
