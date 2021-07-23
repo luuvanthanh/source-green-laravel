@@ -1,21 +1,14 @@
 import request from '@/utils/request';
 
-export function add(data = {}) {
-  return request('/news', {
-    method: 'POST',
-    data,
+export function getDetails(data = {}) {
+  return request(`/student-criterias/statistic-by-physical/${data.id}`, {
+    method: 'GET',
   });
 }
 
 export function update(data = {}) {
-  return request(`/news/${data.id}`, {
+  return request('/student-criterias/physical', {
     method: 'PUT',
     data,
-  });
-}
-
-export function get(data = {}) {
-  return request(`/news/${data.id}`, {
-    method: 'GET',
   });
 }

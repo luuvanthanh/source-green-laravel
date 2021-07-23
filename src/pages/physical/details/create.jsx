@@ -1,6 +1,9 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'dva';
+import { useSelector, useParams, useDispatch, useLocation, useHistory } from 'dva';
+import { isEmpty, findIndex } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
@@ -11,26 +14,80 @@ import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
+import Loading from '@/components/CommonComponent/Loading';
 
 const Index = memo(() => {
   const [
     menuData,
-  ] = useSelector(({ menu, physicalCreate, loading: { effects } }) => [
+    { details, error },
+    loading
+  ] = useSelector(({ menu, physicalDetails, loading: { effects } }) => [
     menu.menuLeftPhysical,
-    physicalCreate,
+    physicalDetails,
     effects,
   ]);
 
+
+  const location = useLocation();
+  const params = useParams();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const mounted = useRef(false);
-  const [error] = useState({
-    height: '',
-    weight: ''
-  });
+  const [data, setData] = useState([]);
+  const [errorTable, setErrorTable] = useState(false);
+
+  // console.log(data, height?.value, weight?.value);
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
+
+  useEffect(() => {
+    if (params?.id) {
+      dispatch({
+        type: 'physicalDetails/GET_DETAILS',
+        payload: {
+          id: params?.id
+        },
+      });
+    }
+  }, [params?.id]);
+
+  useEffect(() => {
+    if (!isEmpty(details?.studentCriterias)) {
+      const weight = details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Cân nặng");
+      const height = details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Chiều cao");
+      setData([{
+        id: uuidv4(),
+        weight: {
+          ...weight,
+          old: weight?.value || 0,
+          value: '',
+        },
+        height: {
+          ...height,
+          old: height?.value,
+          value: '',
+        }
+      }]);
+    }
+  }, [details]);
+
+
+  const onChange = (value, record, name) => {
+    const index = findIndex([...data], (item) => item?.id === record?.id);
+    const newData = [...data];
+    newData[index] = {
+      ...record,
+      [name]: {
+        ...record[name],
+        value
+      }
+    };
+    setData(newData);
+  };
 
   const columns = [
     {
@@ -39,14 +96,14 @@ const Index = memo(() => {
         {
           title: 'Cũ',
           key: 'old',
-          className: 'min-width-120',
+          className: 'min-width-100',
           align: 'center',
-          render: (record) => record?.heightOld || 30
+          render: (record) => record?.height.old || 0
         },
         {
           title: 'Mới',
-          key: 'heightNew',
-          className: 'min-width-120',
+          key: 'new',
+          className: 'min-width-100',
           align: 'center',
           render: (record) => (
             <>
@@ -54,10 +111,10 @@ const Index = memo(() => {
                 className="mb-0"
                 type={variables.INPUT_COUNT}
                 rules={[variables.RULES.EMPTY]}
-                value={record?.height || ''}
-                // onChange={(e) => onChange(e, record, 'heightNew')}
+                value={record?.height?.value || ''}
+                onChange={(e) => onChange(e, record, 'height')}
               />
-              {error?.height && (
+              {errorTable && !record?.height?.value && (
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )}
             </>
@@ -70,15 +127,15 @@ const Index = memo(() => {
       children: [
         {
           title: 'Cũ',
-          key: 'weightOld',
-          className: 'min-width-120',
+          key: 'old',
+          className: 'min-width-100',
           align: 'center',
-          render: (record) =>  record?.weightOld || 30
+          render: (record) =>  record?.weight?.old || 30
         },
         {
           title: 'Mới',
           key: 'weight',
-          className: 'min-width-120',
+          className: 'min-width-100',
           align: 'center',
           render: (record) => (
             <>
@@ -86,10 +143,10 @@ const Index = memo(() => {
                 className="mb-0"
                 type={variables.INPUT_COUNT}
                 rules={[variables.RULES.EMPTY]}
-                value={record?.weight || ''}
-                // onChange={(e) => onChange(e, record, 'weightNew')}
+                value={record?.weight?.value || ''}
+                onChange={(e) => onChange(e, record, 'weight')}
               />
-              {error?.weight && (
+              {errorTable && !record?.weight?.value && (
                 <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
               )}
             </>
@@ -99,8 +156,66 @@ const Index = memo(() => {
     },
   ];
 
+  const onFinish = () => {
+    const checkErrorTable = !isEmpty(data) ?
+      !!(data.find(item => !item?.height?.value || !item?.weight?.value ))
+      : true;
+    setErrorTable(checkErrorTable);
+    if(checkErrorTable) {
+      return true;
+    }
+    const payload = [];
+    [...data].forEach(item => {
+      if (item?.weight?.value) {
+        payload.push({
+          id: item?.weight?.id,
+          studentCriteriaRequest: {
+            reportDate: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: moment(),
+              }),
+              isUTC: false,
+            }),
+            criteriaGroupPropertyId: item?.weight?.criteriaGroupProperty?.id || '',
+            studentId: params?.id || '',
+            value: String(item?.weight?.value || 0),
+            note: ""
+          }
+        });
+      }
+      if (item?.height?.value) {
+        payload.push({
+          id: item?.height?.id,
+          studentCriteriaRequest: {
+            reportDate: Helper.getDateTime({
+              value: Helper.setDate({
+                ...variables.setDateData,
+                originValue: moment(),
+              }),
+              isUTC: false,
+            }),
+            criteriaGroupPropertyId: item?.height?.criteriaGroupProperty?.id || '',
+            studentId: params?.id || '',
+            value: String(item?.height?.value || 0),
+            note: ""
+          }
+        });
+      }
+    });
+    return dispatch({
+      type: 'physicalDetails/UPDATE',
+      payload,
+      callback: (response) => {
+        if (response) {
+          history.push(location?.pathname.replace('/nhap-the-chat', ''));
+        }
+      },
+    });
+  };
+
   return (
-    <>
+    <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: location?.pathname.replace('/nhap-the-chat', '') }}>
       <Helmet title="Nhập thể chất" />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Breadcrumbs last="Nhập thể chất" menu={menuData} />
@@ -109,23 +224,23 @@ const Index = memo(() => {
             <Pane className="p20">
               <Heading type="page-title">Học sinh</Heading>
               <AvatarTable
-                fileImage={Helper.getPathAvatarJson('')}
-                fullName="Bé Zia"
-                description={`${31} tháng tuổi`}
+                fileImage={Helper.getPathAvatarJson(details?.student?.fileImage)}
+                fullName={details?.student?.fullName || ''}
+                description={`${details?.student?.age || 0} tháng tuổi`}
               />
               <Pane className="row">
                 <Pane className="col-lg-6 mt15">
-                  <Text size="normal">Cơ sở: <span className="font-weight-bold">Lake View</span></Text>
+                  <Text size="normal">Cơ sở: <span className="font-weight-bold">{details?.student?.class?.branch?.name || ''}</span></Text>
                 </Pane>
                 <Pane className="col-lg-6 mt15">
-                  <Text size="normal">Lớp: <span className="font-weight-bold">Preschool 1</span></Text>
+                  <Text size="normal">Lớp: <span className="font-weight-bold">{details?.student?.class?.name || ''}</span></Text>
                 </Pane>
               </Pane>
               <Pane className="py20">
                 <Table
                   bordered
                   columns={columns}
-                  dataSource={[{ id: 1 }]}
+                  dataSource={data}
                   loading={false}
                   isError={error?.isError}
                   pagination={false}
@@ -137,10 +252,10 @@ const Index = memo(() => {
                 <p className="mb0 font-size-14 underline">Hủy</p>
                 <Button
                   icon="save"
-                  htmlType="submit"
                   size="large"
                   color="success"
-                  loading={false}
+                  onClick={onFinish}
+                  loading={loading['physicalDetails/GET_DETAILS'] || loading['physicalDetails/UPDATE']}
                 >
                   LƯU
                 </Button>
@@ -149,7 +264,7 @@ const Index = memo(() => {
           </Pane>
         </Pane>
       </Pane>
-    </>
+    </Loading>
   );
 });
 

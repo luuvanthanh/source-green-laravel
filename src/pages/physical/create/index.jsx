@@ -360,7 +360,7 @@ const Index = memo(() => {
             }),
             criteriaGroupPropertyId: item?.weight?.criteriaGroupProperty?.id || '',
             studentId: item?.student?.id || '',
-            value: item?.weight?.new,
+            value: String(item?.weight?.new || 0),
             note: ""
           }
         });
@@ -378,7 +378,7 @@ const Index = memo(() => {
             }),
             criteriaGroupPropertyId: item?.height?.criteriaGroupProperty?.id || '',
             studentId: item?.student?.id || '',
-            value: item?.height?.new,
+            value: String(item?.height?.new || 0),
             note: ""
           }
         });

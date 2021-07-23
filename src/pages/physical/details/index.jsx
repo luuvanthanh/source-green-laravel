@@ -1,41 +1,65 @@
 import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { history, useLocation } from 'umi';
-import { useSelector } from 'dva';
+import { useSelector, useParams, useDispatch } from 'dva';
+import C3Chart from 'react-c3js';
+import { isEmpty, map } from 'lodash';
+import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Text from '@/components/CommonComponent/Text';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import C3Chart from 'react-c3js';
+import Loading from '@/components/CommonComponent/Loading';
+import { Helper, variables } from '@/utils';
 
 import styles from './index.scss';
-
+import variablesModule from './variables';
 
 const Index = memo(() => {
   const [
     menuData,
-  ] = useSelector(({ menu, physicalCreate, loading: { effects } }) => [
+    { details, error },
+    loading
+  ] = useSelector(({ menu, physicalDetails, loading: { effects } }) => [
     menu.menuLeftPhysical,
-    physicalCreate,
+    physicalDetails,
     effects,
   ]);
+  const weight = !isEmpty(details?.studentCriterias) ? details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Cân nặng") : {};
+  const height = !isEmpty(details?.studentCriterias) ? details?.studentCriterias.find(item => item?.criteriaGroupProperty?.property === "Chiều cao") : {};
+
   const location = useLocation();
+  const params = useParams();
+  const dispatch = useDispatch();
 
   const mounted = useRef(false);
+
+  const convertData = (data, name, columnName) => {
+    const result = [`${columnName}`];
+    if (!isEmpty(data)) {
+      if (name === 'date') {
+        return result.concat(data.map(item => item.date ? moment(item.date, 'MM/YYYY').format(variables.DATE_FORMAT.DATE_AFTER) : ''));
+      }
+      return result.concat(map(data, name));
+    }
+    return [];
+  };
+
   const dataHeight = {
     data: {
       x: 'x',
       columns: [
-        ['x', '2021-06-01', '2021-07-01', '2021-08-01', '2021-09-01', '2021-10-01','2021-11-01', '2021-12-01', '2022-01-01', '2022-02-01', '2022-03-01', '2022-04-01', '2022-05-01', '2022-06-01'],
-        ['Chiều cao', 30, 30, 35, 35, 40, 45, 50, 70, 80, 80, 80, 90, 100],
+        convertData(details?.heightReport, 'date', 'x'),
+        convertData(details?.heightReport, 'value', 'Chiều cao'),
       ],
       type: 'spline',
       order: 'asc',
     },
     axis: {
       x : {
+        label: 'Thời gian (tháng)',
         type : 'timeseries',
         tick: {
           format (x) {
@@ -57,8 +81,8 @@ const Index = memo(() => {
     data: {
       ...dataHeight.data,
       columns: [
-        ['x', '2021-06-01', '2021-07-01', '2021-08-01', '2021-09-01', '2021-10-01','2021-11-01', '2021-12-01', '2022-01-01', '2022-02-01', '2022-03-01', '2022-04-01', '2022-05-01', '2022-06-01'],
-        ['Cân nặng', 5, 5, 5, 5, 5, 7, 7, 7, 10, 10, 7, 8, 10],
+        convertData(details?.weightReport, 'date', 'x'),
+        convertData(details?.weightReport, 'value', 'Cân nặng'),
       ],
     },
     axis: {
@@ -77,21 +101,45 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  useEffect(() => {
+    if (params?.id) {
+      dispatch({
+        type: 'physicalDetails/GET_DETAILS',
+        payload: {
+          id: params?.id
+        },
+      });
+    }
+  }, [params?.id]);
+
+  const getAvatar = (images) => {
+    const avatar = images ? JSON.parse(images) : [];
+    if (!isEmpty(avatar)) {
+      return avatar[0];
+    }
+    return '';
+  };
+
+  const getStatus = (status) => {
+    if (status !== 'NORMAL') {
+      return <span className="text-danger ml5">{variablesModule.STATUS_NAME[status]}</span>;
+    }
+    return null;
+  };
+
   return (
-    <>
+    <Loading loading={loading['physicalDetails/GET_DETAILS']} isError={error.isError} params={{ error, goBack: '/phat-trien-the-chat/tat-ca-hoc-sinh' }}>
       <Helmet title="Chi tiết phát triển thể chất học sinh" />
       <Breadcrumbs last="Chi tiết phát triển thể chất học sinh" menu={menuData} />
       <Pane className="p20">
         <div className={styles['container-information-student']}>
           <div
             className={styles['avatar-student']}
-            style={{
-              backgroundImage: `url('/images/image-default.png')`,
-            }}
+            style={{ backgroundImage: `url(${API_UPLOAD}${getAvatar(details?.student?.fileImage)})` }}
           />
           <div className={styles['information-student']}>
             <div className="d-flex justify-content-between align-items-center flex-wrap mb20">
-              <Heading className={styles.title} type="page-title">Bé Zia</Heading>
+              <Heading className={styles.title} type="page-title">{details?.student?.fullName || ''}</Heading>
               <Button
                 color="success"
                 icon="plus"
@@ -103,24 +151,24 @@ const Index = memo(() => {
             <div className={styles['detail-information-student']}>
               <div className={styles['group-attribute']}>
                 <p className={styles['name-attribute']}>Tuổi (tháng)</p>
-                <p className={styles['value-attribute']}>31</p>
+                <p className={styles['value-attribute']}>{details?.student?.age || 0}</p>
               </div>
               <div className={styles['group-attribute']}>
                 <p className={styles['name-attribute']}>Cơ sở</p>
-                <p className={styles['value-attribute']}>Lake View</p>
+                <p className={styles['value-attribute']}>{details?.student?.class?.branch?.name || ''}</p>
               </div>
               <div className={styles['group-attribute']}>
                 <p className={styles['name-attribute']}>Lớp</p>
-                <p className={styles['value-attribute']}>Presschool 1</p>
+                <p className={styles['value-attribute']}>{details?.student?.class?.name || ''}</p>
               </div>
               <div className={styles['group-attribute']}>
                 <p className={styles['name-attribute']}>Chiều cao (cm)</p>
-                <p className={styles['value-attribute']}>78</p>
+                <p className={styles['value-attribute']}>{height?.value || 0}</p>
               </div>
               <div className={styles['group-attribute']}>
                 <p className={styles['name-attribute']}>Cân nặng (kg)</p>
                 <p className={styles['value-attribute']}>
-                  9.0<span className="text-danger ml5">(Thiếu cân)</span>
+                  {weight?.value || 0} {getStatus(details?.bmiConclusion?.status)}
                 </p>
               </div>
             </div>
@@ -130,22 +178,22 @@ const Index = memo(() => {
           <div className="col-lg-6">
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CHIỀU CAO</Heading>
-              <Heading type="page-title">78 cm - Nhập ngày 01/06</Heading>
-              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng 6/2020 - Tháng 06/2021</Text>
+              <Heading type="page-title">{height?.value || 0} cm - Nhập ngày {Helper.getDate((height?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Heading>
+              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
               <C3Chart {...dataHeight} />
             </div>
           </div>
           <div className="col-lg-6">
             <div className={styles.block}>
               <Heading className="text-success mb10" type="page-title">BÁO CÁO CÂN NẶNG</Heading>
-              <Heading type="page-title">7.8 kg - Nhập ngày 01/06</Heading>
-              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng 6/2020 - Tháng 06/2021</Text>
+              <Heading type="page-title">{weight?.value || 0} kg - Nhập ngày {Helper.getDate((weight?.reportDate || moment()), variables.DATE_FORMAT.DATE_MONTH)}</Heading>
+              <Text size="normal" className="mb20 font-size-14">Biểu đồ báo cáo Tháng {Helper.getDate(details?.fromDate, variables.DATE_FORMAT.MONTH_YEAR)} - Tháng {Helper.getDate(details?.toDate, variables.DATE_FORMAT.MONTH_YEAR)}</Text>
               <C3Chart {...dataWeight} />
             </div>
           </div>
         </div>
       </Pane>
-    </>
+    </Loading>
   );
 });
 
