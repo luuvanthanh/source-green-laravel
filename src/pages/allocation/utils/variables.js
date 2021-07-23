@@ -28,14 +28,6 @@ export const variables = {
       id: 'TRANSFERCLASS',
       name: 'Điều chuyển lớp',
     },
-    {
-      id: 'ARRAGEDEPARTMENT',
-      name: 'Xếp phòng ban',
-    },
-    {
-      id: 'TRANSFERDEPARTMENT',
-      name: 'Điều chuyển phòng ban',
-    },
   ],
   ACTION_TYPE: {
     ARRAGECLASS: 'Xếp lớp',
