@@ -27,10 +27,6 @@ export default {
       ...state,
       classes: payload,
     }),
-    SET_DETAILS: (state, { payload }) => ({
-      ...state,
-      details: payload,
-    }),
   },
   effects: {
     *GET_DETAILS({ payload, callback }, saga) {
@@ -65,7 +61,7 @@ export default {
     },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(categories.getStudents, payload);
+        const response = yield saga.call(services.get, payload);
         callback(response);
       } catch (error) {
         callback(null, error);
@@ -74,14 +70,6 @@ export default {
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error?.data?.error);
-      }
-    },
-    *UPDATE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
