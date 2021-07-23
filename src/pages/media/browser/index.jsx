@@ -105,7 +105,11 @@ const Index = memo(() => {
 
   const onOk = useCallback(() => {
     setVisibleUpload(false);
-    fetchMedia();
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      uploadDate: moment()
+    }));
+    filterRef?.current?.setFieldsValue({ uploadDate: moment() });
   }, []);
 
   const changeFilter = (name) => (value) => {
