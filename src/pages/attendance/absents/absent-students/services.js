@@ -28,7 +28,7 @@ export function get(data = {}) {
       }),
       fullName: data.fullName,
       include: Helper.convertIncludes([
-        'student',
+        'student.classStudent.class',
         'parent',
         'absentType',
         'absentReason',

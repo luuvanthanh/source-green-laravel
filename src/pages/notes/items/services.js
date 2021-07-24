@@ -10,8 +10,8 @@ export function get(params = {}) {
       ...Helper.getPagination(params.page, params.limit),
       from: Helper.getDateTime({
         value: Helper.setDate({
-          ...variables.from,
-          originValue: params.fromDate,
+          ...variables.setDateData,
+          originValue: params.from,
           targetValue: '00:00:00',
         }),
         isUTC: true,

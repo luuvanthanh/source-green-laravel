@@ -32,6 +32,7 @@ const mapStateToProps = ({ attendanceLogs, loading }) => ({
   data: attendanceLogs.data,
   employees: attendanceLogs.employees,
   branches: attendanceLogs.branches,
+  classes: attendanceLogs.classes,
   pagination: attendanceLogs.pagination,
 });
 @connect(mapStateToProps)
@@ -45,6 +46,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        classId: query?.classId,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
@@ -78,10 +81,19 @@ class Index extends PureComponent {
   };
 
   loadCategories = () => {
+    const { search } = this.state;
     this.props.dispatch({
       type: 'attendanceLogs/GET_EMPLOYEES',
       payload: {},
     });
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'attendanceLogs/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
     this.props.dispatch({
       type: 'attendanceLogs/GET_BRANCHES',
       payload: {},
@@ -134,6 +146,24 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((startDate, endDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate,
+          endDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -161,6 +191,18 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
+  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -178,6 +220,21 @@ class Index extends PureComponent {
         this.onLoad();
       },
     );
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'attendanceLogs/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -208,7 +265,7 @@ class Index extends PureComponent {
       key: 'branch',
       className: 'min-width-180',
       width: 180,
-      render: (record) => record?.employee?.positionLevelNow?.branch?.name,
+      render: (record) => record?.employee?.classTeacher?.class?.branch?.name,
     },
     {
       title: 'Lớp',
@@ -247,6 +304,7 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      classes,
     } = this.props;
     const { search } = this.state;
     const loading = effects['attendanceLogs/GET_DATA'];
@@ -262,10 +320,11 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate && moment(search.startDate),
-                endDate: search.endDate && moment(search.endDate),
+                date: search.startDate &&
+                  search.endDate && [moment(search.startDate), moment(search.endDate)],
                 employeeId: search.employeeId || null,
                 branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -286,30 +345,27 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     name="branchId"
-                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
-
                 <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
-                    allowClear={false}
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>
@@ -343,6 +399,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -354,6 +411,7 @@ Index.defaultProps = {
   location: {},
   employees: [],
   branches: [],
+  classes: [],
 };
 
 export default Index;
