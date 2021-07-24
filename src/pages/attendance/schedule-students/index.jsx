@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Modal, Form, Tooltip } from 'antd';
+import { Modal, Form, Tooltip, Input } from 'antd';
 import classnames from 'classnames';
 import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -39,6 +39,8 @@ const mapStateToProps = ({ scheduleStudents, loading }) => ({
   data: scheduleStudents.data,
   category: scheduleStudents.category,
   pagination: scheduleStudents.pagination,
+  branches: scheduleStudents.branches,
+  classes: scheduleStudents.branches,
   loading,
 });
 @connect(mapStateToProps)
@@ -54,6 +56,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        classId: query?.classId,
         type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -89,6 +93,22 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'scheduleStudents/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'scheduleStudents/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   loadCategories = () => {
@@ -200,6 +220,21 @@ class Index extends PureComponent {
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'scheduleStudents/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
   };
 
   /**
@@ -323,7 +358,7 @@ class Index extends PureComponent {
             [stylesChildren[`cell-heading-weekend`]]: moment(item).isoWeekday() >= 6,
           })}
         >
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
+          {HelperModules.getDayOfWeek(moment(item).format('d'))} {moment(item).format('DD-MM')}
         </div>
       );
     }
@@ -461,9 +496,15 @@ class Index extends PureComponent {
     const { search } = this.state;
     const arrayHeader = [
       {
-        title: 'Họ và Tên',
+        title: (
+          <Input
+            value={search.fullName}
+            onChange={(event) => this.onChange(event, 'fullName')}
+            placeholder="Từ khóa"
+          />
+        ),
         key: 'fullName',
-        className: 'pl10 min-width-200',
+        className: 'pl10 pr10 min-width-200',
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
@@ -586,6 +627,8 @@ class Index extends PureComponent {
 
   render() {
     const {
+      classes,
+      branches,
       data,
       category,
       pagination,
@@ -669,12 +712,10 @@ class Index extends PureComponent {
           </Form>
         </Modal>
         {/* MODAL CHOOSE SHIFT */}
-        <div
-          className={classnames(styles['content-form'], styles['content-form-scheduleStudents'])}
-        >
+        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Lịch làm việc</Text>
+            <Text color="dark">Lịch học trẻ</Text>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -684,6 +725,8 @@ class Index extends PureComponent {
                 type: search.type || 'DATE',
                 startDate: search.startDate && moment(search.startDate),
                 endDate: search.endDate && moment(search.endDate),
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -691,10 +734,20 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-3">
                   <FormItem
-                    name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -727,7 +780,8 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
-              className={stylesChildren.table}
+              className={classnames(stylesChildren.table, 'table-edit')}
+              isEmpty
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -752,6 +806,8 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   category: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -762,6 +818,8 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   category: {},
+  classes: [],
+  branches: [],
 };
 
 export default Index;

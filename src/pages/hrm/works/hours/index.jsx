@@ -238,7 +238,7 @@ class Index extends PureComponent {
     if (index !== null && item) {
       return (
         <div>
-          {HelperModules.getDayOfWeek(moment(item).format('ddd'))} {moment(item).format('DD-MM')}
+          {HelperModules.getDayOfWeek(moment(item).format('d'))} {moment(item).format('DD-MM')}
         </div>
       );
     }

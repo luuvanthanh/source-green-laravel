@@ -105,25 +105,17 @@ const Index = memo(({ classId }) => {
       key: 'parents',
       className: 'min-width-250',
       width: 250,
-       render: (record) => (
+      render: (record) => (
         <AvatarTable
           size={40}
           fileImage={_.head(
-            (Helper.isJSON(
-              _.get(record, 'parent[0].fileImage'),
-            ) ||
-              Helper.isJSON(
-                _.get(record, 'parent[1].fileImage'),
-              )) &&
+            (Helper.isJSON(_.get(record, 'parent[0].fileImage')) ||
+              Helper.isJSON(_.get(record, 'parent[1].fileImage'))) &&
               JSON.parse(
-                _.get(record, 'parent[0].fileImage') ||
-                  _.get(record, 'parent[1].fileImage'),
+                _.get(record, 'parent[0].fileImage') || _.get(record, 'parent[1].fileImage'),
               ),
           )}
-          fullName={
-            _.get(record, 'parent[0].fullName') ||
-            _.get(record, 'parent[1].fullName')
-          }
+          fullName={_.get(record, 'parent[0].fullName') || _.get(record, 'parent[1].fullName')}
         />
       ),
     },
@@ -132,11 +124,10 @@ const Index = memo(({ classId }) => {
       key: 'teacher',
       className: 'min-width-200',
       width: 200,
-      render: (record) => (
+      render: (record) =>
         !_.isEmpty(record?.classStudent?.class?.teacher)
           ? _.map(record?.classStudent?.class?.teacher, 'fullName').join(', ')
-          : ''
-      )
+          : '',
     },
   ];
 
@@ -148,9 +139,15 @@ const Index = memo(({ classId }) => {
       width: 120,
       render: (record) => {
         const date = record?.absent[0];
-        return `${ date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''}
-        ${ date?.startDate ? `- ${Helper.getDate(date?.endDate, variables.DATE_FORMAT.DATE_MONTH)}` : ''}`;
-      }
+        return `${
+          date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''
+        }
+        ${
+          date?.startDate
+            ? `- ${Helper.getDate(date?.endDate, variables.DATE_FORMAT.DATE_MONTH)}`
+            : ''
+        }`;
+      },
     },
     {
       title: 'Số lượng ngày nghỉ',
@@ -160,17 +157,17 @@ const Index = memo(({ classId }) => {
       render: (record) => {
         const date = record?.absent[0];
         return moment(date?.startDate).diff(moment(date?.endDate), 'days') + 1;
-      }
+      },
     },
   ];
 
   const switchHeader = () => {
-    switch(details?.status) {
+    switch (details?.status) {
       case 'UNPAID_LEAVE':
       case 'ANNUAL_LEAVE': {
         const newHeader = [...header()];
         const teacher = newHeader.pop();
-        return [ ...newHeader , ...absent(), teacher ];
+        return [...newHeader, ...absent(), teacher];
       }
       default:
         return header();
@@ -205,6 +202,8 @@ const Index = memo(({ classId }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       [name]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
     }));
   }, 300);
 
