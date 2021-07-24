@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Typography, Avatar } from 'antd';
+import { Form, Avatar } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, head } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -12,9 +12,9 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Paragraph from '@/components/CommonComponent/Paragraph';
 import HelperModules from '../utils/Helper';
 
-const { Paragraph } = Typography;
 let isMounted = true;
 /**
  * Set isMounted
@@ -258,7 +258,7 @@ class Index extends PureComponent {
         (item) => `${Helper.getDateLocal(item.attendedAt, variables.DATE_FORMAT.DATE_TIME)}`,
       );
       return (
-        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'Xem thêm' }}>
+        <Paragraph>
           {inOutHistories.map((item, index) => (
             <div key={index}>
               {item}
@@ -361,6 +361,8 @@ class Index extends PureComponent {
                 ...search,
                 date: search.startDate &&
                   search.endDate && [moment(search.startDate), moment(search.endDate)],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -376,25 +378,27 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

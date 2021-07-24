@@ -52,6 +52,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        classId: query?.classId,
         nameStudent: query?.nameStudent,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -452,6 +454,8 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 date: search.date ? moment(search.date) : null,
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}

@@ -1,12 +1,11 @@
 import request from '@/utils/requestLavarel';
-import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
   return request('/v1/attendances', {
     method: 'GET',
     params: {
-      ...omit(data, 'branchId'),
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',

@@ -5,8 +5,7 @@ export function get(data = {}) {
   return request('/v1/attendances', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
@@ -27,7 +26,6 @@ export function get(data = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes(['class', 'attendance', 'classStudent.class']),
-      fullName: data.fullName,
     },
   });
 }
