@@ -8,6 +8,7 @@ export default {
     pagination: {},
     employees: [],
     branches: [],
+    classes: []
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -23,6 +24,10 @@ export default {
     SET_BRANCHES: (state, { payload }) => ({
       ...state,
       branches: payload.parsePayload,
+    }),
+    SET_CLASSES: (state, { payload }) => ({
+      ...state,
+      classes: payload.items,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -41,6 +46,20 @@ export default {
     }),
   },
   effects: {
+    *GET_CLASSES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getClasses, payload);
+        yield saga.put({
+          type: 'SET_CLASSES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_BRANCHES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getBranches, payload);

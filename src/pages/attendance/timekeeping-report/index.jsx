@@ -332,15 +332,6 @@ class Index extends PureComponent {
         render: (record) => record?.classStudent?.class?.name,
       },
       {
-        title: 'Định mức học',
-        key: 'allowances',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        fixed: 'right',
-        render: (record) => record?.class?.name,
-      },
-      {
         title: 'Phép',
         key: 'absents',
         align: 'center',
@@ -430,6 +421,7 @@ class Index extends PureComponent {
                         name="startDate"
                         onChange={(event) => this.onChangeDate(event, 'startDate')}
                         type={variables.DATE_PICKER}
+                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                       />
                     </div>
                     <div className="col-lg-3">
@@ -437,6 +429,7 @@ class Index extends PureComponent {
                         name="endDate"
                         onChange={(event) => this.onChangeDate(event, 'endDate')}
                         type={variables.DATE_PICKER}
+                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                       />
                     </div>
                   </>
