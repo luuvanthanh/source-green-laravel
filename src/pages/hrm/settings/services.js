@@ -5,16 +5,11 @@ export function get(data = {}) {
   return request('/v1/shifts', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes(['shiftDetail']),
-      search: Helper.convertParamSearchConvert({
-        StoreId: data.storeId,
-        ShiftCode: data.shiftCode,
-      }),
     },
   });
 }

@@ -364,6 +364,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                type: search.type || null,
                 startDate: search.startDate ? moment(search.startDate) : null,
                 endDate: search.endDate ? moment(search.endDate) : null,
               }}
@@ -382,9 +383,11 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     data={[
+                      { id: null, name: 'Chọn tất cả' },
                       { id: 'REWARD', name: 'Khen thưởng' },
                       { id: 'DISCIPLINE', name: 'Kỷ luật' },
                     ]}
+                    allowClear={false}
                     name="type"
                     type={variables.SELECT}
                     onChange={(event) => this.onChangeSelect(event, 'type')}

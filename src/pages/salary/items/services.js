@@ -17,6 +17,7 @@ export function get(data = {}) {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
+      employeeId: data.employeeId && data.employeeId.join(','),
       include: Helper.convertIncludes(['payrollDetail.employee']),
     },
   });

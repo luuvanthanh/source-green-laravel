@@ -18,6 +18,7 @@ export default {
       data: {},
     },
     shiftUsers: [],
+    absentTypes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -38,7 +39,6 @@ export default {
     SET_CATEGORIES: (state, { payload }) => ({
       ...state,
       categories: {
-        absentTypes: payload.absentTypes.parsePayload,
         users: payload.users.parsePayload,
       },
     }),
@@ -46,12 +46,29 @@ export default {
       ...state,
       shiftUsers: !isEmpty(payload.payload) ? payload.payload : {},
     }),
+    SET_ABSENT_TYPES: (state, { payload }) => ({
+      ...state,
+      absentTypes: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_ABSENT_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getAbsentTypes, payload);
+        yield saga.put({
+          type: 'SET_ABSENT_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
-          absentTypes: saga.call(services.getAbsentTypes),
           users: saga.call(categories.getUsers),
         });
         yield saga.put({
