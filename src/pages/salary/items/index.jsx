@@ -31,6 +31,9 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ salary, loading }) => ({
   data: salary.data,
   error: salary.error,
+  branches: salary.branches,
+  divisions: salary.divisions,
+  employees: salary.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,6 +47,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        divisionId: query?.divisionId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
     };
@@ -52,6 +58,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -70,6 +77,21 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'salary/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'salary/GET_DIVISIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'salary/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -161,6 +183,15 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
   /**
@@ -601,6 +632,9 @@ class Index extends PureComponent {
       error,
       match: { params },
       loading: { effects },
+      divisions,
+      branches,
+      employees,
     } = this.props;
     const { search } = this.state;
     const loading = effects['salary/GET_DATA'];
@@ -616,17 +650,44 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 month: search.month && moment(search.month),
+                divisionId: search.divisionId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="month"
                     onChange={(event) => this.onChangeDate(event, 'month')}
                     type={variables.MONTH_PICKER}
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -813,6 +874,9 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -822,6 +886,9 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  divisions: [],
+  branches: [],
+  employees: [],
 };
 
 export default Index;

@@ -77,6 +77,7 @@ class Index extends PureComponent {
         timeApply:
           head(details.decisionRewardDetails)?.timeApply &&
           moment(head(details.decisionRewardDetails)?.timeApply),
+        type: details.type,
       });
     }
   }
@@ -245,11 +246,11 @@ class Index extends PureComponent {
                     rules={[variables.RULES.EMPTY]}
                   />
                 </div>
-                <div className="col-lg-6">
+                <div className="col-lg-12">
                   <FormItem
                     label="Ghi chú"
                     name="note"
-                    type={variables.INPUT}
+                    type={variables.TEXTAREA}
                     rules={[variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </div>
