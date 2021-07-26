@@ -111,6 +111,28 @@ const Index = memo(() => {
     },
   };
 
+  const dataBMI = {
+    ...dataHeight,
+    data: {
+      ...dataHeight.data,
+      columns: [
+        convertData(details?.weightReport, 'date', 'x'),
+        convertData(details?.weightReport, 'value', 'Tuổi (tháng)'),
+      ],
+    },
+    axis: {
+      ...dataHeight.axis,
+      y: {
+        label: {
+          text: 'BMI',
+        }
+      },
+    },
+    color: {
+      pattern: ['#FF8300'],
+    },
+  };
+
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
@@ -137,7 +159,7 @@ const Index = memo(() => {
 
   const getStatus = (status, text = '') => {
     const nameStatus = variablesModule.STATUS_NAME[status];
-    if (status !== 'NORMAL') {
+    if (status && status !== 'NORMAL') {
       return (
         <span className="text-danger ml5">
           {`${text ? `${text} ` : ''} ${text ? String(nameStatus).toLowerCase() : nameStatus}`}
@@ -146,7 +168,7 @@ const Index = memo(() => {
     }
     return (
       <span className="text-success ml5">
-        {`${text ? `${text} ` : ''} ${text ? String(nameStatus).toLowerCase() : nameStatus}`}
+        {nameStatus || variablesModule.STATUS_NAME.NORMAL}
       </span>
     );
   };
@@ -220,10 +242,14 @@ const Index = memo(() => {
               <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
-              <C3Chart {...dataWeight} />
+              <C3Chart {...dataBMI} />
               <div className={styles['result-bmi']}>
                 <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, 'Học sinh')}</p>
-                <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight || 0}</span>kg</p>
+                {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
+                  <p className="font-size-15 mb0">Cân nặng cần đạt được: <span className="text-danger mx5">{details?.bmiConclusion?.ideaWeight || 0}</span>kg</p>
+                ) : (
+                  <p className="font-size-15 mb0">Cần giữ chế độ ăn uống hiện tại của trẻ</p>
+                )}
               </div>
             </div>
           </div>
