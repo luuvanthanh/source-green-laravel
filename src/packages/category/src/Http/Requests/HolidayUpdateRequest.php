@@ -24,6 +24,16 @@ class HolidayUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $educationalLevel = \GGPHP\Category\Models\Holiday::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($educationalLevel)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 

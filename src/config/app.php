@@ -219,6 +219,7 @@ return [
         GGPHP\MaternityLeave\Providers\MaternityLeaveServiceProvider::class,
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\Facebook\Providers\FacebookServiceProvider::class,
+        GGPHP\Zalo\Providers\ZaloServiceProvider::class,
     ],
 
     /*

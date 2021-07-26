@@ -72,7 +72,21 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function filterPayroll(array $attributes)
     {
-        $payroll = Payroll::where('Month', $attributes['month'])->with('payrollDetail')->first();
+        $payroll = Payroll::where('Month', $attributes['month'])->with(['payrollDetail' => function ($query) use ($attributes) {
+            $query->whereHas('employee', function ($q2) use ($attributes) {
+                $q2->tranferHistory($attributes);
+
+                if (!empty($attributes['fullName'])) {
+                    $q2->whereLike('FullName', $attributes['fullName']);
+                }
+
+                if (!empty($attributes['employeeId'])) {
+                    $employeeId = explode(',', $attributes['employeeId']);
+                    $q2->whereIn('Id', $employeeId);
+                }
+
+            });
+        }])->first();
 
         if (is_null($payroll)) {
             $payroll = Payroll::create($attributes);
@@ -99,7 +113,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         if (!is_null($otherDeclaration)) {
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
-            dd($employees);
             foreach ($employees as &$employee) {
                 $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
             }
@@ -122,6 +135,13 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
     public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
     {
 
+        $parameter = [];
+        $dependentPerson = $employee->children->count();
+        $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+
+        $unionDues = ParamaterValue::where('Code', 'TI_LE_PHI_CONG_DOAN')->first();
+
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
@@ -130,20 +150,52 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $incurredAllowance = [];
 
+        $socialInsuranceAdjustedEmployee = 0;
+        $socialInsuranceAdjustedCompany = 0;
+        $charity = 0;
+        $socialInsurancePayment = 0;
+        $advance = 0;
+        $isMaternity = false;
+
+        $maternityLeave = $employee->maternityLeave()->where(function ($q2) use ($startDate, $endDate) {
+            $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                ->orWhere([['StartDate', '>', $startDate], ['StartDate', '<=', $endDate]])
+                ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<', $endDate]]);
+        })->first();
+
+        if (!is_null($otherDeclarationDetail)) {
+            $isMaternity = true;
+        }
+
         if (!is_null($otherDeclarationDetail)) {
             if (!is_null($otherDeclarationDetail->Detail)) {
                 $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
                 foreach ($incurredAllowance as $itemIncurredAllowance) {
-                    if (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
+                    if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
+                        $parameter['DIEU_CHINH_BHXH_NLD'] = $itemIncurredAllowance->value;
+                        $socialInsuranceAdjustedEmployee = $itemIncurredAllowance->value;
+                    } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
+                        $parameter['DIEU_CHINH_BHXH_CTT'] = $itemIncurredAllowance->value;
+                        $socialInsuranceAdjustedCompany = $itemIncurredAllowance->value;
+                    } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
+                        $parameter['DONG_GOP_TU_THIEN'] = $itemIncurredAllowance->value;
+                        $charity = $itemIncurredAllowance->value;
+                    } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
+                        $parameter['THANH_TOAN_TU_BHXH'] = $itemIncurredAllowance->value;
+                        $socialInsurancePayment = $itemIncurredAllowance->value;
+                    } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
+                        $parameter['SO_TIEN_TAM_UNG'] = $itemIncurredAllowance->value;
+                        $advance = $itemIncurredAllowance->value;
+                    } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
                         $columnIncurredAllowance[$itemIncurredAllowance->code] = [
                             'code' => $itemIncurredAllowance->code,
                             'name' => $itemIncurredAllowance->name,
                         ];
                     }
                 }
-
             }
         }
+
         $incurredAllowance = json_encode($incurredAllowance);
 
         $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
@@ -151,21 +203,24 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             'endDate' => $endDate,
         ])->totalBusRegistration;
 
+        $isProbation = false;
         $contract = $employee->labourContract()->orderBy('CreationTime')->first();
 
         if (is_null($contract)) {
             $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
-
+            if (!is_null($contract)) {
+                $isProbation = true;
+            }
         }
 
+        $dateStartWork = null;
         if (!is_null($contract) && $totalWorks > 0) {
+            $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
-            $parameter = [];
 
             $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
             $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
             $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
-            $parameter['DIEU_CHINH_BHXH_NLD'] = 0; // chua làm
 
             //tổng thu nhập
             $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THU_NHAP')->first();
@@ -266,11 +321,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
             $parameter['BHTN_CTT'] = $unemploymentInsuranceCompany;
 
-            // giảm trừ bản thân và người phụ thuộc
+            // tổng giảm trừ bản thân và người phụ thuộc
             $formularDependentPerson = ParamaterFormula::where('Code', 'GIAM_TRU_BAN_THAN_PHU_THUOC')->first();
-            $dependentPerson = $this->getFormular(json_decode($formularDependentPerson->Recipe), $contract, $parameter);
-            $dependentPerson = eval('return ' . $dependentPerson . ';');
-            $parameter['GIAM_TRU_BAN_THAN_PHU_THUOC'] = $dependentPerson;
+            $eeduce = $this->getFormular(json_decode($formularDependentPerson->Recipe), $contract, $parameter);
+            $eeduce = eval('return ' . $eeduce . ';');
+            $parameter['GIAM_TRU_BAN_THAN_PHU_THUOC'] = $eeduce;
 
             //tổng giảm trừ
             $formularDependentTotal = ParamaterFormula::where('Code', 'TONG_GIAM_TRU')->first();
@@ -298,9 +353,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'Id' => \Webpatser\Uuid\Uuid::generate(4)->string,
                 'PayrollId' => $payroll->Id,
                 'EmployeeId' => $employee->Id,
-                'DateStartWork' => null, // ngày bắt đầu làm việc
-                'IsProbation' => false, //thử việc
-                'IsMaternity' => false, //Nghỉ không lương/Thai sản
+                'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
+                'IsProbation' => $isProbation, //thử việc
+                'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
                 'IsSocialInsurance' => false, //Không tham gia BHXH
                 'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                 'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
@@ -312,22 +367,22 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'TotalWork' => (int) $totalWorks, //Ngày công thực tế trong tháng
                 'TotalIncomeMonth' => (int) $totalIncomeMonth, //TỔNG THU NHẬP TRONG THÁNG
                 'SocialInsuranceEmployee' => (int) $socialInsuranceEmployee, //BHXH nld
-                'SocialInsuranceAdjustedEmployee' => null, //Điều chỉnh BHXH nld
+                'SocialInsuranceAdjustedEmployee' => $socialInsuranceAdjustedEmployee, //Điều chỉnh BHXH nld
                 'SocialInsuranceCompany' => (int) $socialInsuranceEmployee, //BHXH cty
-                'SocialInsuranceAdjustedCompany' => null, //Điều chỉnh BHXH cty
+                'SocialInsuranceAdjustedCompany' => $socialInsuranceAdjustedCompany, //Điều chỉnh BHXH cty
                 'HealthInsuranceEmployee' => (int) $healthInsuranceEmployee, //BHYT  nld
                 'HealthInsuranceCompany' => (int) $healthInsuranceCompany, //BHYT  cty
                 'UnemploymentInsuranceEmployee' => (int) $unemploymentInsuranceEmployee, //BHTN nld
                 'UnemploymentInsuranceCompany' => (int) $unemploymentInsuranceCompany, //BHTN cty
-                'UnionDues' => null, //Phí công đoàn
-                'DependentPerson' => null, //Số người phụ thuộc
-                'Eeduce' => $dependentPerson, //Tổng giảm trừ bản thân và người phụ thuộc
-                'Charity' => null, //Đóng góp từ thiện
+                'UnionDues' => !is_null($unionDues) ? $unionDues->Value : null, //Phí công đoàn
+                'DependentPerson' => $dependentPerson, //Số người phụ thuộc
+                'Eeduce' => $eeduce, //Tổng giảm trừ bản thân và người phụ thuộc
+                'Charity' => $charity, //Đóng góp từ thiện
                 'TotalReduce' => (int) $dependentTotal, //Tổng các khoản giảm trừ
                 'RentalIncome' => (int) $rentalIncome, //Thu nhập tính thuế
                 'PersonalIncomeTax' => (int) $personalIncomeTax, //Thuế TNCN
-                'SocialInsurancePayment' => null, //Thanh toán từ BHXH
-                'Advance' => null, // tạm ứng
+                'SocialInsurancePayment' => $socialInsurancePayment, //Thanh toán từ BHXH
+                'Advance' => $advance, // tạm ứng
                 'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
                 'Note' => null, // ghi chú
             ];

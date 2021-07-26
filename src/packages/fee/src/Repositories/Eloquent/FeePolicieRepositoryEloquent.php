@@ -197,160 +197,237 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
     public function moneyFeePolicies(array $attributes)
     {
-        $data = [];
 
+        $details = json_decode($attributes['details']);
+        $data = [];
         $feePolicie = FeePolicie::where('SchoolYearId', $attributes['schoolYearId'])->first();
         $schooleYear = \GGPHP\Fee\Models\SchoolYear::findOrFail($attributes['schoolYearId']);
-        foreach ($attributes['details'] as $key => $detail) {
 
-            $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail['feeId']);
-            $paymentForm = \GGPHP\Fee\Models\PaymentForm::findOrFail($detail['paymentFormId']);
+        foreach ($details as $key => $detail) {
+
+            $fee = \GGPHP\Fee\Models\Fee::findOrFail($detail->feeId);
+            $paymentForm = \GGPHP\Fee\Models\PaymentForm::findOrFail($detail->paymentFormId);
 
             $dayAdmission = $attributes['dayAdmission'];
             $totalMonth = $schooleYear->TotalMonth;
             $weekDayAdmission = $schooleYear->timetable->where('StartDate', '<=', $dayAdmission)->where('EndDate', '>=', $dayAdmission)->first();
-
-            $endMonth = Carbon::parse($weekDayAdmission->EndDate)->endOfMonth();
-
-            $timetable = $schooleYear->timetable->where('Month', $weekDayAdmission->Month);
-
-            $month = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                ->where('StartDate', '<=', $dayAdmission)->where('EndDate', '>=', $dayAdmission)->first();
-
-            $totalMonthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                ->whereHas('paymentForm', function ($query) {
-                    $query->where('Code', 'HOCKY1');
-                })->count();
-
-            $totalMonthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                ->whereHas('paymentForm', function ($query) {
-                    $query->where('Code', 'HOCKY2');
-                })->count();
-
-            $totalWeekStudyInMonth = count($timetable);
-
-            if (!is_null($weekDayAdmission)) {
-                $remainingWeek = $totalWeekStudyInMonth - $weekDayAdmission->Week + 1;
-            } else {
-                $remainingWeek = 1;
-            }
-
-            $monthAdmission = Carbon::parse($dayAdmission)->setDay(1);
-            $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
-
-            $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
-            // $totalDayWeekend = $this->countWeekend();
-            $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
-
             $money = 0;
             $result = 0;
-            if (!is_null($feePolicie)) {
-                switch ($fee->Type) {
-                    case 'HP':
-                        $feeDetail = $feePolicie->feeDetail()
-                            ->where('ClassTypeId', $attributes['classTypeId'])
-                            ->where('PaymentFormId', $detail['paymentFormId'])->first();
 
-                        if (!is_null($feeDetail)) {
-                            switch ($attributes['student']) {
-                                case 'new':
-                                    $money = $feeDetail->NewStudent;
-                                    break;
-                                case 'old':
-                                    $money = $feeDetail->OldStudent;
-                                    break;
+            if (!is_null($weekDayAdmission)) {
+                $endMonth = Carbon::parse($weekDayAdmission->EndDate)->endOfMonth();
+
+                $timetable = $schooleYear->timetable->where('Month', $weekDayAdmission->Month);
+
+                $month = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                    ->where('StartDate', '<=', $dayAdmission)->where('EndDate', '>=', $dayAdmission)->first();
+
+                $totalWeekStudyInMonth = count($timetable);
+
+                if (!is_null($weekDayAdmission)) {
+                    $remainingWeek = $totalWeekStudyInMonth - $weekDayAdmission->Week + 1;
+                } else {
+                    $remainingWeek = 1;
+                }
+
+                $monthAdmission = Carbon::parse($dayAdmission)->setDay(1);
+                $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
+
+                $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
+
+                $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
+
+                $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
+                if (!is_null($feePolicie)) {
+                    switch ($fee->Type) {
+                        case 'HP':
+                            $feeDetail = $feePolicie->feeDetail()
+                                ->where('ClassTypeId', $attributes['classTypeId'])
+                                ->where('PaymentFormId', $detail->paymentFormId)->first();
+
+                            if (!is_null($feeDetail)) {
+                                switch ($attributes['student']) {
+                                    case 'new':
+                                        $money = $feeDetail->NewStudent;
+                                        break;
+                                    case 'old':
+                                        $money = $feeDetail->OldStudent;
+                                        break;
+                                }
+
+                                switch ($paymentForm->Code) {
+                                    case 'HOCKY1':
+                                        // tháng học kỳ 1
+                                        $monthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) {
+                                                $query->where('Code', 'HOCKY1');
+                                            })->get();
+
+                                        $totalMonthsemester1 = count($monthsemester1);
+
+                                        if ($totalMonthsemester1 > 0 && $totalWeekStudyInMonth > 0) {
+                                            $result = $money / $totalMonthsemester1 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester1 - $monthStudied);
+                                        }
+                                        break;
+                                    case 'HOCKY2':
+                                        // tháng học kỳ 2
+                                        $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) {
+                                                $query->where('Code', 'HOCKY2');
+                                            })->get();
+
+                                        $totalMonthsemester2 = count($monthsemester2);
+
+                                        if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
+                                            $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
+                                        }
+                                        break;
+                                    case 'NAM':
+                                        if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
+                                            $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
+                                        }
+                                        break;
+                                    case 'THANG':
+                                        if ($totalWeekStudyInMonth > 0) {
+                                            $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
+                                        }
+                                        break;
+                                }
                             }
+                            break;
+                        case 'TIENAN':
+                            $feeDetail = $feePolicie->moneyMeal()
+                                ->where('ClassTypeId', $attributes['classTypeId'])
+                                ->where('PaymentFormId', $detail->paymentFormId)->first();
 
-                            switch ($paymentForm->Code) {
-                                case 'HOCKY1':
-                                    if ($totalMonthsemester1 > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = $money / $totalMonthsemester1 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester1 - $monthStudied);
-                                    }
-                                    break;
-                                case 'HOCKY2':
-                                    if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
+                            if (!is_null($feeDetail)) {
+                                $money = $feeDetail->Money;
+                                switch ($paymentForm->Code) {
+                                    case 'HOCKY1':
 
-                                        $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
-                                    }
-                                    break;
-                                case 'NAM':
-                                    if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
-                                    }
-                                    break;
-                                case 'THANG':
-                                    if ($totalWeekStudyInMonth > 0) {
-                                        $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
-                                    }
-                                    break;
+                                        // tháng còn lại học kỳ 1
+                                        $monthsemesterLeft1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
+                                                $query->where('Code', 'HOCKY1');
+                                                $query->where('StartDate', '>', $endMonth);
+                                            })->get();
+
+                                        // tháng học kỳ 1
+                                        $monthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) {
+                                                $query->where('Code', 'HOCKY1');
+                                            })->get();
+
+                                        $totalSchoolDay = 0;
+                                        if (count($monthsemester1) > 0) {
+                                            foreach ($monthsemester1 as $value) {
+                                                $totalSchoolDay += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        $totalSchoolDayLeft = 0;
+                                        if (count($monthsemesterLeft1) > 0) {
+                                            foreach ($monthsemesterLeft1 as $value) {
+
+                                                $totalSchoolDayLeft += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        if ($money > 0 && $totalSchoolDay > 0) {
+
+                                            $result = $money / $totalSchoolDay * ($daysLeftInMonth - $totalDayWeekend + $totalSchoolDayLeft);
+                                        }
+                                        break;
+                                    case 'HOCKY2':
+                                        // tháng còn lại học kỳ 2
+                                        $monthsemesterLeft2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
+                                                $query->where('Code', 'HOCKY2');
+                                                $query->where('StartDate', '>', $endMonth);
+                                            })->get();
+
+                                        // tháng học kỳ 2
+                                        $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) {
+                                                $query->where('Code', 'HOCKY2');
+                                            })->get();
+
+                                        $totalSchoolDay = 0;
+                                        if (count($monthsemester2) > 0) {
+                                            foreach ($monthsemester2 as $value) {
+                                                $totalSchoolDay += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        $totalSchoolDayLeft = 0;
+                                        if (count($monthsemesterLeft1) > 0) {
+                                            foreach ($monthsemesterLeft1 as $value) {
+
+                                                $totalSchoolDayLeft += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        if ($money > 0 && $totalSchoolDay > 0) {
+                                            $result = $money / $totalSchoolDay * ($daysLeftInMonth - $totalDayWeekend + $totalSchoolDayLeft);
+                                        }
+                                        break;
+                                    case 'NAM':
+                                        // tháng còn lại năm học
+                                        $monthLeft = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
+                                                $query->where('StartDate', '>', $endMonth);
+                                            })->get();
+
+                                        // tháng năm học
+                                        $monthYear = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)->get();
+
+                                        $totalSchoolDay = 0;
+                                        if (count($monthYear) > 0) {
+                                            foreach ($monthYear as $value) {
+                                                $totalSchoolDay += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        $totalSchoolDayLeft = 0;
+                                        if (count($monthLeft) > 0) {
+                                            foreach ($monthLeft as $value) {
+
+                                                $totalSchoolDayLeft += $value->SchoolDay;
+                                            }
+                                        }
+
+                                        if ($money > 0 && $totalSchoolDay > 0) {
+                                            $result = ($money / $totalSchoolDay) * ($daysLeftInMonth - $totalDayWeekend + $totalSchoolDayLeft);
+                                        }
+                                        break;
+                                    case 'THANG':
+
+                                        $result = ($daysLeftInMonth - $totalDayWeekend) * $money;
+                                        break;
+                                }
                             }
-                        }
-                        break;
-                    case 'TIENAN':
-                        $feeDetail = $feePolicie->moneyMeal()
-                            ->where('ClassTypeId', $attributes['classTypeId'])
-                            ->where('PaymentFormId', $detail['paymentFormId'])->first();
-
-                        if (!is_null($feeDetail)) {
-
-                            $money = $feeDetail->Money;
-                            switch ($paymentForm->Code) {
-                                case 'HOCKY1':
-                                    if ($totalMonthsemester1 > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = $money / $totalMonthsemester1 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester1 - $monthStudied);
-                                    }
-                                    break;
-                                case 'HOCKY2':
-                                    if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
-
-                                        $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
-                                    }
-                                    break;
-                                case 'NAM':
-                                    if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
-                                        $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
-                                    }
-                                    break;
-                                case 'THANG':
-                                    if ($totalWeekStudyInMonth > 0) {
-                                        $result = $money * ($remainingWeek / $totalWeekStudyInMonth);
-                                    }
-                                    break;
+                            break;
+                        case 'KHAC':
+                            $feeDetail = $feePolicie->otherMoneyDetail()
+                                ->where('ClassTypeId', $attributes['classTypeId'])
+                                ->where('FeeId', $detail->feeId)
+                                ->where('PaymentFormId', $detail->paymentFormId)->first();
+                            if (!is_null($feeDetail)) {
+                                $money = $feeDetail->Money;
+                                $result = $money;
                             }
-                        }
-                        break;
-                    case 'KHAC':
-                        $feeDetail = $feePolicie->otherMoneyDetail()
-                            ->where('ClassTypeId', $attributes['classTypeId'])
-                            ->where('FeeId', $detail['feeId'])
-                            ->where('PaymentFormId', $detail['paymentFormId'])->first();
-
-                        if (!is_null($feeDetail)) {
-                            $money = $feeDetail->Money;
-                            $result = $money;
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
 
             $data[] = [
-                "id" => $detail['id'],
-                "money" => $detail['money'],
-                "feeId" => $detail['feeId'],
-                "paymentFormId" => $detail['paymentFormId'],
-                'dayAdmission' => $attributes['dayAdmission'],
-                'paymentForm' => $paymentForm->Name,
-                'totalMonth' => $totalMonth,
-                'totalMonthsemester1' => $totalMonthsemester1,
-                'totalMonthsemester2' => $totalMonthsemester2,
-                'remainingWeek' => $remainingWeek,
-                'totalWeekStudyInMonth' => $totalWeekStudyInMonth,
-                'monthStudied' => $monthStudied,
+                "id" => $detail->id,
+                "feeId" => $detail->feeId,
+                "paymentFormId" => $detail->paymentFormId,
                 'money' => $result,
-                'totalMoney' => $money,
             ];
         }
-
         return [
             'data' => $data,
         ];
@@ -358,6 +435,20 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
     public function countWeekend($startDate, $endDate)
     {
-        # code...
+
+        $start = new \DateTime($startDate);
+        $end = new \DateTime($endDate . '23:59');
+        $interval = new \DateInterval('P1D');
+        $dateRange = new \DatePeriod($start, $interval, $end);
+
+        $totalWeekend = 0;
+        foreach ($dateRange as $date) {
+            $check = $date->format('l');
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $totalWeekend += 1;
+            }
+        }
+
+        return $totalWeekend;
     }
 }

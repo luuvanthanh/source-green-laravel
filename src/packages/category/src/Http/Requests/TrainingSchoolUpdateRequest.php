@@ -24,6 +24,26 @@ class TrainingSchoolUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($trainingSchool)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $trainingSchool = \GGPHP\Category\Models\TrainingSchool::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($trainingSchool)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

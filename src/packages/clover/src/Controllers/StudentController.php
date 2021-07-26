@@ -3,10 +3,12 @@
 namespace GGPHP\Clover\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Clover\Imports\StudentImport;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Contracts\StudentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -54,5 +56,15 @@ class StudentController extends Controller
         $employee = $this->studentRepository->find($id);
 
         return $this->success($employee, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function import()
+    {
+        Excel::import(new StudentImport, request()->file('file'));
+
+        return back();
     }
 }

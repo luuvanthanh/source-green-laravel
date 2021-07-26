@@ -24,6 +24,26 @@ class ParamaterFormulaUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $paramaterFormula = ParamaterFormula::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($paramaterFormula)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $paramaterFormula = ParamaterFormula::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($paramaterFormula)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

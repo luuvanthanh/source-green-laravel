@@ -24,7 +24,26 @@ class PositionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
+            'name' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $position = \GGPHP\Category\Models\Position::where('Name', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($position)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $position = \GGPHP\Category\Models\Position::where('Code', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($position)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

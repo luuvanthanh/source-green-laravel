@@ -1,13 +1,12 @@
 <?php
 
-namespace GGPHP\WorkHour\Providers;
+namespace GGPHP\Zalo\Providers;
 
-use GGPHP\WorkHour\Repositories\Contracts\WorkHourRepository;
-use GGPHP\WorkHour\Repositories\Eloquent\WorkHourRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
-class WorkHourServiceProvider extends ServiceProvider
+class ZaloServiceProvider extends ServiceProvider
 {
+
     /**
      * Bootstrap services.
      *
@@ -28,6 +27,6 @@ class WorkHourServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(WorkHourRepository::class, WorkHourRepositoryEloquent::class);
+
     }
 }

@@ -24,6 +24,16 @@ class UpdateFeePolicieRequest extends FormRequest
     public function rules()
     {
         return [
+            'SchoolYearId' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $feePolicie = FeePolicie::where('SchoolYearId', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($feePolicie)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }

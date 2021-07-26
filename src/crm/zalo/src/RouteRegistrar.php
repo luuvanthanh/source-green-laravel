@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\WorkHour;
+namespace GGPHP\Zalo;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 
@@ -9,7 +9,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * The namespace implementation.
      */
-    protected static $namespace = '\GGPHP\WorkHour\Http\Controllers';
+    protected static $namespace = '\GGPHP\Zalo\Http\Controllers';
 
     /**
      * Register routes for bread.
@@ -29,55 +29,16 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            //work-hours
-            \Route::get('work-hours', [
-                'comment' => 'Danh sách công bù giờ',
-                'uses' => 'WorkHourController@index',
-                'as' => 'work-hours.index',
-                'group' => 'Công bù giờ',
-            ]);
+            \Route::group(['prefix' => 'zalo'], function () {
+                \Route::get('zalo-login', 'ZaloController@zalo');
+                \Route::get('zalo-callback', 'ZaloController@zaloCallBack');
 
-            \Route::post('work-hours', [
-                'comment' => 'Tạo mới công bù giờ',
-                'uses' => 'WorkHourController@store',
-                'as' => 'work-hours.store',
-                'group' => 'Công bù giờ',
-            ]);
+                \Route::post('webhook-zalo', 'ZaloController@webhookZalo');
 
-            \Route::put('work-hours/{id}', [
-                'comment' => 'Chỉnh sửa công bù giờ',
-                'uses' => 'WorkHourController@update',
-                'as' => 'work-hours.update',
-                'group' => 'Công bù giờ',
-            ]);
+                \Route::get('zalo-redirect', 'ZaloController@zaloRedirect');
 
-            \Route::get('work-hours/{id}', [
-                'comment' => 'Thông tin công bù giờ',
-                'uses' => 'WorkHourController@show',
-                'as' => 'work-hours.show',
-                'group' => 'Công bù giờ',
-            ]);
-
-            \Route::delete('work-hours/{id}', [
-                'comment' => 'Xóa công bù giờ',
-                'uses' => 'WorkHourController@destroy',
-                'as' => 'work-hours.destroy',
-                'group' => 'Công bù giờ',
-            ]);
-
-            \Route::get('work-hours-summary', [
-                'comment' => 'Tổng hợp công ngoài giờ',
-                'uses' => 'WorkHourController@workHourSummary',
-                'as' => 'timekeeping.invalid.summary',
-                'group' => 'Công',
-            ]);
-
-            \Route::get('work-hours-summary-export', [
-                'comment' => 'Tổng hợp công ngoài giờ',
-                'uses' => 'WorkHourController@exportWorkHourReport',
-                'as' => 'timekeeping.invalid.summary',
-                'group' => 'Công',
-            ]);
+                \Route::get('zalo-test', 'ZaloController@zaloTest');
+            });
         });
     }
 }

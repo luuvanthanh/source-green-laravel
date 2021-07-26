@@ -60,7 +60,11 @@ class ChargeOldStudentRepositoryEloquent extends CoreRepositoryEloquent implemen
 
         if (!empty($attributes['from']) && !empty($attributes['to'])) {
             $this->model = $this->model->whereHas('schoolYear', function ($query) use ($attributes) {
-                $query->where('YearFrom', $attributes['from'])->where('YearTo', $attributes['to']);
+                $query->where(function ($q) use ($attributes) {
+                    $q->where([['YearFrom', '<=', $attributes['from']], ['YearTo', '>=', $attributes['to']]])
+                        ->orWhere([['YearFrom', '>', $attributes['from']], ['YearFrom', '<=', $attributes['to']]])
+                        ->orWhere([['YearTo', '>=', $attributes['from']], ['YearTo', '<', $attributes['to']]]);
+                });
             });
         }
 

@@ -60,16 +60,7 @@ class ShiftController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
-        if ($request->has('limit')) {
-            $limit = $request->limit;
-        }
-
-        if ($limit == config('constants.SEARCH_VALUES_DEFAULT.LIMIT_ZERO')) {
-            $shift = $this->shiftRepository->all();
-        } else {
-            $shift = $this->shiftRepository->paginate($limit);
-        }
+        $shift = $this->shiftRepository->getShift($request->all());
 
         return $this->success($shift, trans('lang::messages.common.getListSuccess'));
     }
@@ -113,6 +104,7 @@ class ShiftController extends Controller
      */
     public function activeStatusShift(ActiveStatusShiftRequest $request, $id)
     {
+        dd(1);
         $shifts = $this->shiftRepository->activeStatusShift($request->all(), $id);
 
         return $this->success($shifts, trans('lang::messages.common.getListSuccess'));
