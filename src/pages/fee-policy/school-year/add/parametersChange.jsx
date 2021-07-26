@@ -1,8 +1,8 @@
 import { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import _ from 'lodash';
-import { useParams, useHistory } from 'umi';
+import _, { isEmpty } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
@@ -14,10 +14,6 @@ import { variables, Helper } from '@/utils';
 import variablesModules from '../variables';
 
 const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, checkValidate }) => {
-  const params = useParams();
-  const history = useHistory();
-  const isCopy = !!(history?.location?.query?.type === 'ban-sao');
-
   const { getFieldsValue } = formRef?.current;
   const { rangeDate } = getFieldsValue();
 
@@ -29,7 +25,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
       const startMonth = moment(rangeDate[0]).add(i - 1, 'month').set('date', values?.duaDate);
       const endMonth = moment(rangeDate[0]).add(i, 'month').set('date', 1);
       datasTable.push({
-        id: i,
+        id: uuidv4(),
         fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
         date: moment(rangeDate[0]).add(i, 'month').set('date', 1).format(variables.DATE_FORMAT.DATE_AFTER),
         duaDate: moment(startMonth).diff(endMonth, 'days') < 0 ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER) : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
@@ -46,8 +42,9 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   const handleApply = () => {
     const { getFieldsValue } = formRef?.current;
     const values = getFieldsValue();
-    if (isCopy) {
-      const data = [...paramChanges].map(item => {
+    let data = [];
+    if (!isEmpty(paramChanges)) {
+      data = [...paramChanges].map(item => {
         const endMonth = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).endOf('month');
         const valueDuaDate = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).set('date', values?.duaDate);
         return {
@@ -61,7 +58,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
       const endDate = moment(rangeDate[1]).endOf('month');
       const result = moment(endDate).diff(moment(startDate), 'month') + 1;
       if (result) {
-        const data = renderData(result, values);
+        data = renderData(result, values);
         setParamChanges(data);
       }
     }
@@ -212,9 +209,6 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   };
 
   const changeForm = () => {
-    if (!isCopy) {
-      setParamChanges([]);
-    }
     const values = getFieldsValue();
     if (values?.fee && values?.duaDate) {
       setDiableApply(false);
@@ -237,7 +231,6 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
             name='paymentFormId'
             type={variables.SELECT}
             onChange={changeForm}
-            disabled={params?.id}
           />
         </div>
         <div className="col-lg-3">
@@ -246,11 +239,10 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               name="duaDate"
               type={variables.INPUT_COUNT}
               onChange={changeForm}
-              disabled={(params?.id && !isCopy)}
               rules={[
                 () => ({
                   validator(_, value) {
-                    if (value && value > 31) {
+                    if (value === 0 || value && (value > 31 || value < 1)) {
                       setDiableApply(true);
                       return Promise.reject(new Error(variables.RULES.INVALID_DATE));
                     }
@@ -267,7 +259,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
             color="success"
             size="large"
             onClick={handleApply}
-            disabled={disableApply || (params?.id && !isCopy)}
+            disabled={disableApply}
           >
             Áp dụng
           </Button>

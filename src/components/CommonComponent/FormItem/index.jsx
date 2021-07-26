@@ -179,6 +179,7 @@ const renderChildren = (
   ),
   rangePicker: (
     <DatePicker.RangePicker
+      disabledDate={disabledDate}
       disabled={disabled}
       format={picker === 'year' ? ['YYYY', 'YYYY'] : ['DD-MM-YYYY', 'DD-MM-YYYY']}
       onChange={onChange}
