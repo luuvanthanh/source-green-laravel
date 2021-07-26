@@ -216,6 +216,8 @@ export const variables = {
       },
     },
   },
+  "NO_GET_IN_BUS": 'NO_GET_IN_BUS',
+  NO_GET_IN_BUS_TITLE: 'Không đăng ký xe Bus'
 };
 
 export default variables;

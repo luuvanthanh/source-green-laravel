@@ -22,7 +22,7 @@ export function getBusByStudent(params) {
   return request(`/bus-place-log/student/${params.id}/${params.from}/${params.to}`, {
     method: 'GET',
     params: {
-      status: params?.status || ''
+      status: params?.status || '',
     }
   });
 }

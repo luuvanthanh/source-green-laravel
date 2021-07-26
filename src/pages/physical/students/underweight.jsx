@@ -179,7 +179,7 @@ const Index = memo(() => {
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branchId,
+        branch: branchId,
       },
       callback: (res) => {
         if (res) {

@@ -138,7 +138,7 @@ const Index = memo(({ classId }) => {
       className: 'min-width-120',
       width: 120,
       render: (record) => {
-        const date = record?.absent[0];
+        const date = record?.absent?.[0];
         return `${
           date?.startDate ? Helper.getDate(date?.startDate, variables.DATE_FORMAT.DATE_MONTH) : ''
         }
@@ -155,7 +155,7 @@ const Index = memo(({ classId }) => {
       className: 'min-width-120',
       width: 120,
       render: (record) => {
-        const date = record?.absent[0];
+        const date = record?.absent?.[0];
         return moment(date?.startDate).diff(moment(date?.endDate), 'days') + 1;
       },
     },
@@ -163,8 +163,7 @@ const Index = memo(({ classId }) => {
 
   const switchHeader = () => {
     switch (details?.status) {
-      case 'UNPAID_LEAVE':
-      case 'ANNUAL_LEAVE': {
+      case 'UNPAID_LEAVE': {
         const newHeader = [...header()];
         const teacher = newHeader.pop();
         return [...newHeader, ...absent(), teacher];
