@@ -720,6 +720,46 @@ export default class Helpers {
     return null;
   };
 
+  static disabledYear = (current, formRef, { key = '', value = '', format = 'YYYY', compare = '>='} ) => {
+    if (formRef.current && key) {
+      const data = formRef.current.getFieldsValue();
+      let getValue = '';
+
+      if (value) {
+        getValue = moment(value, format);
+      }
+      if (data[key]) {
+        if (key !== 'yearFrom' || key !== 'yearTo') {
+          getValue = moment(formRef?.current?.getFieldValue(key), format);
+        }
+        if (key === 'yearFrom') {
+          getValue = moment(formRef?.current?.getFieldValue('yearFrom'), format).startOf('year');
+        }
+        if (key === 'yearTo') {
+          getValue = moment(formRef?.current?.getFieldValue('yearTo'), format).endOf('year');
+        }
+      }
+
+      if (getValue) {
+        if (compare === '=') {
+          return current && current === moment(getValue);
+        }
+        if (compare === '>') {
+          return current && current >= moment(getValue);
+        }
+        if (compare === '<=') {
+          return current && current <= moment(getValue);
+        }
+        if (compare === '<') {
+          return current && current < moment(getValue);
+        }
+        return current && current >= moment(getValue);
+      }
+      return null;
+    }
+    return null;
+  };
+
   static centerLatLng = (items) => {
     let lat = 0;
     let lng = 0;
