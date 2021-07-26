@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import * as categories from '@/services/categories';
 import * as services from './services';
 
@@ -81,17 +82,15 @@ export default {
         callback(null, error?.data?.error);
       }
     },
-    *REMOVE({ payload }, saga) {
+    *REMOVE({ payload, callback }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
+        callback(payload);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
+        callback(null, error);
+        notification.error({
+          message: 'Thông báo',
+          description: 'Lỗi hệ thống vui lòng kiểm tra lại',
         });
       }
     },
