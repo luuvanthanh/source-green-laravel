@@ -24,7 +24,7 @@ class UpdateFeePolicieRequest extends FormRequest
     public function rules()
     {
         return [
-            'SchoolYearId' => [
+            'schoolYearId' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $feePolicie = FeePolicie::where('SchoolYearId', $value)->where('Id', '!=', request()->id)->first();

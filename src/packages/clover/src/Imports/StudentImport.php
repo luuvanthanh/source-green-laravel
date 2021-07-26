@@ -48,7 +48,9 @@ class StudentImport implements ToModel
             ];
             $mama = Parents::create($dataMama);
 
-            $class = Classes::where('Code', $row[5])->first();
+            $class = Classes::where('Code', $row[5])->whereHas('branch', function ($query) use ($row) {
+                $query->where('Code', $row[6]);
+            })->first();
 
             $dataStudent = [
                 'FullName' => $row[0],
@@ -65,7 +67,7 @@ class StudentImport implements ToModel
                 'Id' => Uuid::generate(4)->string,
                 'StudentId' => $student->Id,
                 'ParentId' => $papa->Id,
-                'RelationType' => 1,
+                'RelationType' => 0,
                 'CreationTime' => Carbon::now()->format('Y-m-d'),
             ]);
 
@@ -73,7 +75,7 @@ class StudentImport implements ToModel
                 'Id' => Uuid::generate(4)->string,
                 'StudentId' => $student->Id,
                 'ParentId' => $mama->Id,
-                'RelationType' => 0,
+                'RelationType' => 1,
                 'CreationTime' => Carbon::now()->format('Y-m-d'),
             ]);
         }
