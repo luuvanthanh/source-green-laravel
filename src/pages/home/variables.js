@@ -216,8 +216,10 @@ export const variables = {
       },
     },
   },
-  "NO_GET_IN_BUS": 'NO_GET_IN_BUS',
-  NO_GET_IN_BUS_TITLE: 'Không đăng ký xe Bus'
+  NO_GET_IN_BUS: 'Không đăng ký xe Bus',
+  NO_BUS_ROUTE: 'Chưa có lộ trình',
+  ABSENT_WITHOUT_PERMISSION: 'Vắng không phép',
+  ABSENT_WITH_PERMISSION: 'Vắng không phép',
 };
 
 export default variables;

@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Skeleton, Timeline } from 'antd';
 import { useSelector, useDispatch } from 'dva';
@@ -14,20 +14,19 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '../../../index.scss';
 
 const { Item: TimelineItem } = Timeline;
-const Index = memo(({ classId }) => {
+const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
   const [{ studentCriterias }, loading] = useSelector(({ loading: { effects }, activity }) => [
     activity,
     effects,
   ]);
 
-  const [search] = useState({});
-
   const fetchData = () => {
     dispatch({
       type: 'activity/GET_STUDENT_CRITERIAS',
       payload: {
-        ...search,
+        classId,
+        branchId,
         activityDate: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -42,7 +41,7 @@ const Index = memo(({ classId }) => {
 
   useEffect(() => {
     fetchData();
-  }, [search.status, classId]);
+  }, [classId]);
 
   return (
     <>
@@ -125,10 +124,12 @@ const Index = memo(({ classId }) => {
 
 Index.propTypes = {
   classId: PropTypes.string,
+  branchId: PropTypes.string,
 };
 
 Index.defaultProps = {
   classId: '',
+  branchId: '',
 };
 
 export default Index;

@@ -13,7 +13,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 
 import styles from '../../../index.scss';
 
-const Index = memo(({ classId, classObject }) => {
+const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
   const [{ medicals }, loading] = useSelector(({ loading: { effects }, warning }) => [
     warning,
@@ -27,8 +27,8 @@ const Index = memo(({ classId, classObject }) => {
       type: 'warning/GET_DATA_MEDICAL',
       payload: {
         ...search,
-        branchId: classObject?.branchId,
-        classId: classObject?.id,
+        branchId,
+        classId,
         currentTime: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -119,12 +119,12 @@ const Index = memo(({ classId, classObject }) => {
 
 Index.propTypes = {
   classId: PropTypes.string,
-  classObject: PropTypes.objectOf(PropTypes.any),
+  branchId: PropTypes.string,
 };
 
 Index.defaultProps = {
   classId: '',
-  classObject: {},
+  branchId: ''
 };
 
 export default Index;

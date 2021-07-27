@@ -84,14 +84,11 @@ const Index = memo(({ studentId }) => {
             variables.DATE_FORMAT.TIME_FULL
           ),
           props: {
-            colSpan: record?.status === variablesModules.NO_GET_IN_BUS ? 3 : 1
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 3 : 1
           }
         };
-        if (record?.status === variablesModules.NO_GET_IN_BUS) {
-          obj.children =  variablesModules.NO_GET_IN_BUS_TITLE;
-        }
-        if (record?.absentStudent) {
-          obj.children =  variables.STATUS_ABSENT_NAME[record?.absentStudent];
+        if (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE' || record?.absentStudent) {
+          obj.children =  variablesModules[record?.status] || '';
         }
         return obj;
       }
@@ -104,15 +101,15 @@ const Index = memo(({ studentId }) => {
       render: (record) => {
         const obj = {
           children:  Helper.getDate(
-            record?.busPlaceLog?.[`${tab === variablesModules.TABS_BUS[0] ? 'homewardGetOff' : 'schoolwardGetOff'}`],
+            record?.busPlaceLog?.[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetOff' : 'schoolwardGetOff'}`],
             variables.DATE_FORMAT.TIME_FULL
           ),
           props: {
-            colSpan: record?.status === variablesModules.NO_GET_IN_BUS ? 0 : 1
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 0 : 1
           }
         };
         if (record?.absentStudent) {
-          obj.children =  variables.STATUS_ABSENT_NAME[record?.absentStudent] || '';
+          obj.children =  variablesModules[record?.status] || '';
         }
         return obj;
       }
@@ -126,7 +123,7 @@ const Index = memo(({ studentId }) => {
         const obj = {
           children: record?.nanny?.fullName || '',
           props: {
-            colSpan: record?.status === variablesModules.NO_GET_IN_BUS ? 0 : 1
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 0 : 1
           }
         };
         return obj;

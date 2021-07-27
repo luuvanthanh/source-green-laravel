@@ -4,6 +4,7 @@ import { Form, Modal, Skeleton } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classnames from 'classnames';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import { variables, Helper } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -17,7 +18,7 @@ import HealthComponent from './health';
 import NoteComponent from './note';
 import MedicalComponent from './medical';
 
-const Index = memo(() => {
+const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
   const [ { students, detailsStudent }, loading] = useSelector(({ loading: { effects }, studentHomePage }) => [
     studentHomePage,
@@ -39,14 +40,16 @@ const Index = memo(() => {
     dispatch({
       type: 'studentHomePage/GET_DATA_STUDENT',
       payload: {
-        ...search
+        ...search,
+        class: classId,
+        branchId,
       },
     });
   };
 
   useEffect(() => {
     fetchDataStudent();
-  }, [search.keyWord]);
+  }, [search.keyWord, classId]);
 
 
   const onChange = _.debounce((e) => {
@@ -218,5 +221,15 @@ const Index = memo(() => {
     </div>
   );
 });
+
+Index.propTypes = {
+  classId: PropTypes.string,
+  branchId: PropTypes.string,
+};
+
+Index.defaultProps = {
+  classId: '',
+  branchId: ''
+};
 
 export default Index;
