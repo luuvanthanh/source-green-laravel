@@ -14,6 +14,10 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       details: payload.parsePayload,
+      error: {
+        isError: false,
+        data: {},
+      },
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

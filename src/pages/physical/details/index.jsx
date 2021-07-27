@@ -16,6 +16,7 @@ import { Helper, variables } from '@/utils';
 
 import styles from './index.scss';
 import variablesModule from './variables';
+import ChartBMI from './chartBMI';
 
 const Index = memo(() => {
   const [
@@ -103,28 +104,6 @@ const Index = memo(() => {
       y: {
         label: {
           text: 'kg',
-        }
-      },
-    },
-    color: {
-      pattern: ['#FF8300'],
-    },
-  };
-
-  const dataBMI = {
-    ...dataHeight,
-    data: {
-      ...dataHeight.data,
-      columns: [
-        convertData(details?.weightReport, 'date', 'x'),
-        convertData(details?.weightReport, 'value', 'Tuổi (tháng)'),
-      ],
-    },
-    axis: {
-      ...dataHeight.axis,
-      y: {
-        label: {
-          text: 'BMI',
         }
       },
     },
@@ -242,7 +221,7 @@ const Index = memo(() => {
               <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
-              <C3Chart {...dataBMI} />
+              <ChartBMI />
               <div className={styles['result-bmi']}>
                 <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, 'Học sinh')}</p>
                 {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
