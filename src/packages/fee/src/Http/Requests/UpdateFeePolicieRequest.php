@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\FeePolicie;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFeePolicieRequest extends FormRequest

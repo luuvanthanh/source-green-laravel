@@ -101,7 +101,18 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 'Reason' => $reason ? $reason : $attendanceReason,
             ]);
 
-            $parentId = $attendance->student->parent->pluck('Id')->toArray();
+            $parents = $attendance->student->parent;
+            $userId = [];
+
+            if (!empty($parents)) {
+                foreach ($parents as $parent) {
+                    if (!is_null($parent->account)) {
+                        $userId[] = $parent->account->AppUserId;
+                    }
+                }
+            }
+
+
             $nameStudent = $attendance->student->FullName;
             $message = '';
             switch ($attendance->Status) {
@@ -122,9 +133,9 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
 
             $urlNoti = env('NOTI_URL') . '/api/notification';
-            if (!empty($parentId)) {
+            if (!empty($userId)) {
                 Http::post("$urlNoti", [
-                    'users' => $parentId,
+                    'users' => $userId,
                     'title' => 'Clover',
                     'imageURL' => 'string',
                     'message' => $message,
@@ -177,6 +188,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             }
 
             $urlNoti = env('NOTI_URL') . '/api/notification';
+
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
@@ -206,7 +218,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
-
             }
 
             if (!empty($attributes['status'])) {
@@ -222,20 +233,17 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                 if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                     $query->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
-
                 }
 
                 if (!empty($attributes['status'])) {
                     $query->whereIn('Status', $attributes['status']);
                 }
             });
-
         }
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['date'])) {
                 $query->where([['StartDate', '>=', $attributes['date']], ['EndDate', '<=', $attributes['date']]]);
-
             }
             if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
 
@@ -562,6 +570,5 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 'unpaidLeave' => $attendanceUnpaidLeave,
             ],
         ];
-
     }
 }

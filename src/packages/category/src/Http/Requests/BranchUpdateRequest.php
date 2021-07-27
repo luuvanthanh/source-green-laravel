@@ -28,7 +28,7 @@ class BranchUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $branch = Branch::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $branch = Branch::where('Name', $value)->where('Id', '!=', request()->branch)->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -38,7 +38,7 @@ class BranchUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $branch = Branch::where('Code', $value)->where('Id', '!=', request()->id)->first();
+                    $branch = Branch::where('Code', $value)->where('Id', '!=', request()->branch)->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

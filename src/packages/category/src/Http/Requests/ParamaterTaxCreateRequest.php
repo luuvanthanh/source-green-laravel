@@ -25,6 +25,7 @@ class ParameterTaxCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|unique:ParameterTaxs,Name',
+            'code' => 'required|string|unique:ParameterTaxs,Code',
         ];
     }
 }

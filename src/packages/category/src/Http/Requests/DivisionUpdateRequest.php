@@ -28,7 +28,7 @@ class DivisionUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $division = Division::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $division = Division::where('Name', $value)->where('Id', '!=', request()->division)->first();
 
                     if (!is_null($division)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -38,7 +38,7 @@ class DivisionUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $division = Division::where('Code', $value)->where('Id', '!=', request()->id)->first();
+                    $division = Division::where('Code', $value)->where('Id', '!=', request()->division)->first();
 
                     if (!is_null($division)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

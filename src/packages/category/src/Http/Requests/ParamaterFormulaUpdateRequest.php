@@ -27,7 +27,7 @@ class ParamaterFormulaUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $paramaterFormula = ParamaterFormula::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $paramaterFormula = ParamaterFormula::where('Name', $value)->where('Id', '!=', request()->paramater_formula)->first();
 
                     if (!is_null($paramaterFormula)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -37,7 +37,7 @@ class ParamaterFormulaUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $paramaterFormula = ParamaterFormula::where('Code', $value)->where('Id', '!=', request()->id)->first();
+                    $paramaterFormula = ParamaterFormula::where('Code', $value)->where('Id', '!=', request()->paramater_formula)->first();
 
                     if (!is_null($paramaterFormula)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

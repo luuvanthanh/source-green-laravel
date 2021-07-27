@@ -27,7 +27,7 @@ class TrainingMajorUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Name', $value)->where('Id', '!=', request()->training_major)->first();
 
                     if (!is_null($trainingMajor)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -37,7 +37,7 @@ class TrainingMajorUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Code', $value)->where('Id', '!=', request()->id)->first();
+                    $trainingMajor = \GGPHP\Category\Models\TrainingMajor::where('Code', $value)->where('Id', '!=', request()->training_major)->first();
 
                     if (!is_null($trainingMajor)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
