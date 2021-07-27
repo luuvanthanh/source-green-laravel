@@ -17,7 +17,7 @@ import styles from '../index.scss';
 import variablesModules from '../variables';
 
 const { TabPane } = Tabs;
-const Index = memo(({ classId }) => {
+const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
   const [ { medicals, detailsMedical, medicalsStudent }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
@@ -35,7 +35,8 @@ const Index = memo(({ classId }) => {
     dispatch({
       type: 'overView/GET_DATA_MEDICAL',
       payload: {
-        ClassId: classId || undefined,
+        classId,
+        branchId,
         ...search,
         AppliedDateFrom: Helper.getDateTime({
           value: Helper.setDate({
@@ -396,10 +397,12 @@ const Index = memo(({ classId }) => {
 
 Index.propTypes = {
   classId: PropTypes.string,
+  branchId: PropTypes.string,
 };
 
 Index.defaultProps = {
   classId: '',
+  branchId: '',
 };
 
 export default Index;

@@ -104,28 +104,32 @@ class HomePage extends PureComponent {
 
   renderComponent = (tab, classId) => {
     const { classObject } = this.state;
+    const { user } = this.props;
+    const branchId = user?.user?.objectInfo?.positionLevel?.branch?.id || null;
+
     switch (tab) {
       case 'overview':
-        return <Overview classId={classId} classObject={classObject} />;
+        return <Overview classId={classId} classObject={classObject} branchId={branchId} />;
       case 'application':
-        return <Application classId={classId} classObject={classObject} />;
+        return <Application classId={classId} classObject={classObject} branchId={branchId} />;
       case 'student':
-        return <Student classId={classId} classObject={classObject} />;
+        return <Student classId={classId} classObject={classObject} branchId={branchId} />;
       case 'activity':
-        return <Activity classId={classId} classObject={classObject} />;
+        return <Activity classId={classId} classObject={classObject} branchId={branchId} />;
       case 'warning':
-        return <Warning classId={classId} classObject={classObject} />;
+        return <Warning classId={classId} classObject={classObject} branchId={branchId} />;
       default:
-        return <Overview classId={classId} classObject={classObject} />;
+        return <Overview classId={classId} classObject={classObject} branchId={branchId} />;
     }
   };
 
   render() {
     const { classes, classId, tab } = this.state;
+    const { user } = this.props;
 
     return (
       <div className={styles.container}>
-        <div className={styles.title}>Lake View</div>
+        <div className={styles.title}>{ user?.user?.objectInfo?.positionLevel?.branch?.name || 'Lake View' }</div>
         <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
             <div className={styles['date-header']}>
