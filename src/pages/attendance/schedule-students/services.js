@@ -6,6 +6,8 @@ export function get(data = {}) {
   return request('/v1/schedule-students', {
     method: 'GET',
     params: {
+      branchId: data.branchId,
+      classId: data.classId,
       searchJoin: 'and',
       page: data.page,
       limit: data.limit,

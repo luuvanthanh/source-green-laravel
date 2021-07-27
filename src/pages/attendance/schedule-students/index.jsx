@@ -40,7 +40,7 @@ const mapStateToProps = ({ scheduleStudents, loading }) => ({
   category: scheduleStudents.category,
   pagination: scheduleStudents.pagination,
   branches: scheduleStudents.branches,
-  classes: scheduleStudents.branches,
+  classes: scheduleStudents.classes,
   loading,
 });
 @connect(mapStateToProps)
@@ -97,22 +97,19 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     const { search } = this.state;
+    const { dispatch } = this.props;
     if (search.branchId) {
-      this.props.dispatch({
+      dispatch({
         type: 'scheduleStudents/GET_CLASSES',
         payload: {
           branch: search.branchId,
         },
       });
     }
-    this.props.dispatch({
+    dispatch({
       type: 'scheduleStudents/GET_BRANCHES',
       payload: {},
     });
-  };
-
-  loadCategories = () => {
-    const { dispatch } = this.props;
     dispatch({
       type: 'scheduleStudents/GET_CATEGORY',
       callback: () => {},
@@ -227,15 +224,28 @@ class Index extends PureComponent {
    * @param {object} e value of select
    * @param {string} type key of object search
    */
-  onChangeSelectBranch = (e, type) => {
-    this.debouncedSearch(e, type);
+
+  onChangeSelectBranch = debounce((e, type) => {
+    this.formRef?.current?.setFieldsValue({ 'classId': null });
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: e,
+          classId: '',
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
     this.props.dispatch({
       type: 'scheduleStudents/GET_CLASSES',
       payload: {
         branch: e,
       },
     });
-  };
+  }, 300);
 
   /**
    * Function change type
