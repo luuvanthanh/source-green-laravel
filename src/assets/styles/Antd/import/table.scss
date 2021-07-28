@@ -204,21 +204,18 @@
   }
   .ant-table-thead {
     .ant-table-cell {
-      border: 1px solid rgba($color: $border-dark, $alpha: 0.35);
+      // border: 1px solid rgba($color: $border-dark, $alpha: 0.35);
     }
     th {
-      border-bottom: 1px solid rgba($color: $border-dark, $alpha: 0.35);
+      // border-bottom: 1px solid rgba($color: $border-dark, $alpha: 0.35);
     }
   }
 }
 
-.table-work {
-  .ant-table-container {
-    &:after {
-      background-color: $background-white;
-    }
-  }
-}
+// .table-work {
+//   .ant-table-container {
+//   }
+// }
 
 .table-salary {
   font-family: 'Roboto', sans-serif;

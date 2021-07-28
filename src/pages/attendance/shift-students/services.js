@@ -5,8 +5,7 @@ export function get(data = {}) {
   return request('/v1/shift-students', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
@@ -29,8 +28,11 @@ export function remove(id) {
 }
 
 export function activeStatus(data) {
-  return request(`/v1/active-status-shift/${data.id}`, {
+  return request(`/v1/active-status-shift-students/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      status: data.status,
+      shiftCode: data.shiftCode,
+    },
   });
 }

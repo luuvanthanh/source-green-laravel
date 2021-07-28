@@ -101,7 +101,11 @@ const renderChildren = (
     <Select
       allowClear={allowClear}
       dataSet={data}
-      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      filterOption={
+        filterOption
+          ? false
+          : (input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
+      }
       notFoundContent={notFoundContent}
       onChange={onChange}
       onPopupScroll={handleScroll}
@@ -119,7 +123,11 @@ const renderChildren = (
       allowClear
       dataSet={data}
       dropdownRender={dropdownRender}
-      filterOption={filterOption ? false : ((input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0)}
+      filterOption={
+        filterOption
+          ? false
+          : (input, option) => Helper.slugify(option?.children).indexOf(Helper.slugify(input)) >= 0
+      }
       notFoundContent={notFoundContent}
       onBlur={onBlur}
       onChange={onChange}

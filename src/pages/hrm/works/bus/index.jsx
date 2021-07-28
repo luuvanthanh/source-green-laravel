@@ -431,7 +431,6 @@ class Index extends PureComponent {
         key: 'date_work',
         align: 'center',
         width: 100,
-        fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
         render: (record) => Helper.toFixed(record.totalBusRegistration),
       },
@@ -463,12 +462,9 @@ class Index extends PureComponent {
 
     const arrayMonth = Helper.treeDate(
       Helper.convertArrayDays(search.startDate, search.endDate),
-    ).map((itemMonth, index) => ({
+    ).map((itemMonth) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
-      className:
-        index === 0 ? 'min-width-300 min-parent-width-300' : 'min-width-300 min-parent-width-700',
-      width: 300,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: item,
