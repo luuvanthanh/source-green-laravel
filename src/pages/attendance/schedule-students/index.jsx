@@ -615,8 +615,8 @@ class Index extends PureComponent {
     });
   };
 
-  convertTreeSelect = (items = [], keyValue = 'id', keyLabel = 'name') =>
-    items.map((item) => {
+  convertTreeSelect = (items = [], branchId, keyValue = 'id', keyLabel = 'name') =>
+    items?.filter(obj => branchId ? obj.branchId === branchId : true)?.map((item) => {
       let details = [];
       if (!isEmpty(item.shiftDetail)) {
         details = item.shiftDetail.map((item) => {
@@ -650,6 +650,7 @@ class Index extends PureComponent {
     const loadingSubmit = effects['scheduleStudents/ADD'];
     const loadingRemoveAll = effects['scheduleStudents/REMOVE'];
     const loadingRemoveOnly = effects['scheduleStudents/REMOVE_ONLY'];
+
     return (
       <>
         <Helmet title="Lịch học trẻ" />
@@ -705,7 +706,7 @@ class Index extends PureComponent {
         >
           <Form layout="vertical" ref={this.formRefShift} initialValues={{ repeatBy: null }}>
             <FormItem
-              data={this.convertTreeSelect(category.shifts)}
+              data={this.convertTreeSelect(category.shifts, search?.branchId)}
               label="Thời gian"
               name="shiftId"
               type={variables.SELECT}

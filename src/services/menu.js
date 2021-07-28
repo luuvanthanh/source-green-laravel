@@ -317,7 +317,10 @@ export async function getLeftMenuSchedules() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [permissions.DD],
-              url: ['/diem-danh/cau-hinh/loai-cong'],
+              url: [
+                '/diem-danh/cau-hinh/loai-cong',
+                '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet',
+              ],
             },
             {
               title: 'Lý do nghỉ phép',
