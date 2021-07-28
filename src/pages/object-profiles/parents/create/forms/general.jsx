@@ -96,7 +96,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
         ...details,
-        boD: moment(details.boD),
+        dayOfBirth: moment(details.dayOfBirth),
       });
       if (Helper.isJSON(details?.fileImage)) {
         setFiles(JSON.parse(details?.fileImage));
@@ -143,7 +143,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
               </Pane>
               <Pane className="col-lg-4">
                 <FormItem
-                  name="boD"
+                  name="dayOfBirth"
                   label="Ngày sinh"
                   type={variables.DATE_PICKER}
                   rules={[variables.RULES.EMPTY]}

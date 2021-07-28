@@ -70,128 +70,123 @@ const Parents = memo(
       [switchType],
     );
 
-    const detailForm = useMemo(
-      () => (key) => {
-        switch (formType[key]) {
-          case infomationTypes.create:
-            return (
-              <>
-                <Pane className="row">
+    const detailForm = (key) => {
+      switch (formType[key]) {
+        case infomationTypes.create:
+          return (
+            <>
+              <Pane className="row">
+                <Pane className="col-lg-4">
+                  <Form.Item name={[key, 'avatar']} label="Hình ảnh">
+                    <ImageUpload
+                      callback={(res) => {
+                        mountedSet(setFileImage, {
+                          ...fileImage,
+                          [`${key}`]: res.fileInfo.url,
+                        });
+                      }}
+                      fileImage={fileImage[`${key}`]}
+                    />
+                  </Form.Item>
+                </Pane>
+              </Pane>
+
+              <Pane className="row">
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'fullName']}
+                    label="Họ và tên"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'dayOfBirth']}
+                    label="Ngày sinh"
+                    type={variables.DATE_PICKER}
+                    rules={[]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'jobTile']}
+                    label="Nghề nghiệp"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'phone']}
+                    label="Số điện thoại"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.PHONE]}
+                  />
+                </Pane>
+
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'email']}
+                    label="Email"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMAIL]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name={[key, 'faceBook']}
+                    label="Link facebook"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
+
+                <Pane className="col-lg-12">
+                  <FormItem
+                    name={[key, 'hobby']}
+                    label="Tính cách và sở thích"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.MAX_LENGTH_255]}
+                  />
+                </Pane>
+              </Pane>
+            </>
+          );
+        case infomationTypes.select:
+          return (
+            <>
+              <Pane className="row">
+                <Pane className="col-lg-6">
+                  <FormItem
+                    data={Helper.convertSelectParent(parents)}
+                    name={`${key}Id`}
+                    label="Tên phụ huynh"
+                    type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                {details[`${key}Id`] && (
                   <Pane className="col-lg-4">
-                    <Form.Item name={[key, 'avatar']} label="Hình ảnh">
-                      <ImageUpload
-                        callback={(res) => {
-                          mountedSet(setFileImage, {
-                            ...fileImage,
-                            [`${key}`]: res.fileInfo.url,
-                          });
-                        }}
-                        fileImage={fileImage[`${key}`]}
-                      />
+                    <Form.Item label={<span />}>
+                      <Button
+                        color="success"
+                        onClick={() =>
+                          history.push(`/ho-so-doi-tuong/phu-huynh/${details[`${key}Id`]}/chi-tiet`)
+                        }
+                      >
+                        Chi tiết
+                      </Button>
                     </Form.Item>
                   </Pane>
-                </Pane>
-
-                <Pane className="row">
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'fullName']}
-                      label="Họ và tên"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.MAX_LENGTH_INPUT]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'dayOfBirth']}
-                      label="Ngày sinh"
-                      type={variables.DATE_PICKER}
-                      rules={[]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'jobTile']}
-                      label="Nghề nghiệp"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.MAX_LENGTH_255]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'phone']}
-                      label="Số điện thoại"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.PHONE]}
-                    />
-                  </Pane>
-
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'email']}
-                      label="Email"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMAIL]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name={[key, 'faceBook']}
-                      label="Link facebook"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.MAX_LENGTH_255]}
-                    />
-                  </Pane>
-
-                  <Pane className="col-lg-12">
-                    <FormItem
-                      name={[key, 'hobby']}
-                      label="Tính cách và sở thích"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.MAX_LENGTH_255]}
-                    />
-                  </Pane>
-                </Pane>
-              </>
-            );
-          case infomationTypes.select:
-            return (
-              <>
-                <Pane className="row">
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      data={Helper.convertSelectUsers(parents)}
-                      name={`${key}Id`}
-                      label="Tên phụ huynh"
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  {details[`${key}Id`] && (
-                    <Pane className="col-lg-4">
-                      <Form.Item label={<span />}>
-                        <Button
-                          color="success"
-                          onClick={() =>
-                            history.push(
-                              `/ho-so-doi-tuong/phu-huynh/${details[`${key}Id`]}/chi-tiet`,
-                            )
-                          }
-                        >
-                          Chi tiết
-                        </Button>
-                      </Form.Item>
-                    </Pane>
-                  )}
-                </Pane>
-              </>
-            );
-          default:
-            return null;
-        }
-      },
-      [formType],
-    );
+                )}
+              </Pane>
+            </>
+          );
+        default:
+          return null;
+      }
+    };
 
     const onFinish = (values) => {
       const payload = {
@@ -281,7 +276,11 @@ const Parents = memo(
         }}
       >
         <Pane className="card">
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/ho-so-doi-tuong/hoc-sinh' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/ho-so-doi-tuong/hoc-sinh' }}
+          >
             <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
                 Phụ huynh

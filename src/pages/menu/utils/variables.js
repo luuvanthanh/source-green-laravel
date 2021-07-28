@@ -119,13 +119,11 @@ export const variables = {
     Sunday: 'su',
   },
   DAYS: [
-    { id: 'Monday', name: 'Thứ hai' },
-    { id: 'Tuesday', name: 'Thứ ba' },
-    { id: 'Wednesday', name: 'Thứ tư' },
-    { id: 'Thursday', name: 'Thứ năm' },
-    { id: 'Friday', name: 'Thứ sáu' },
-    { id: 'Saturday', name: 'Thứ bảy' },
-    { id: 'Sunday', name: 'Chủ nhật' },
+    { id: 'Monday', name: 'Thứ 2' },
+    { id: 'Tuesday', name: 'Thứ 3' },
+    { id: 'Wednesday', name: 'Thứ 4' },
+    { id: 'Thursday', name: 'Thứ 5' },
+    { id: 'Friday', name: 'Thứ 6' },
   ],
   WEEKLY: 'WEEKLY',
 };

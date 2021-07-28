@@ -683,6 +683,20 @@ export default class Helpers {
     return [];
   };
 
+  static convertSelectParent = (items) => {
+    if (!isEmpty(items)) {
+      return items.map((item) => ({
+        id: item.id,
+        name: `${item.fullName}  ${
+          getLodash(item, 'phone')
+            ? `(${getLodash(item, 'phone')})`
+            : ''
+        }`,
+      }));
+    }
+    return [];
+  };
+
   static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {
       if (sort === 'asc') {
