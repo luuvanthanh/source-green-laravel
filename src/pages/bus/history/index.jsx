@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'dva';
 import { useLocation, useHistory } from 'umi';
 import csx from 'classnames';
 import moment from 'moment';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -68,111 +68,126 @@ const Index = memo(() => {
     mountedSet(setRoute, {});
   };
 
-  const columns = useMemo(
-    () => [
-      {
-        title: 'STT',
-        key: 'index',
-        className: 'min-width-60',
-        width: 60,
-        align: 'center',
-        render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
-      },
-      {
-        title: 'Trẻ',
-        key: 'student',
-        width: 200,
-        className: 'min-width-200',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
-            fullName={record?.student?.fullName}
-          />
-        ),
-      },
-      {
-        title: 'Địa điểm',
-        key: 'location',
-        width: 200,
-        className: 'min-width-200',
-        render: (record) => <Text size="normal">{record?.busPlace?.address}</Text>,
-      },
-      {
-        title: 'Lên xe',
-        key: 'start',
-        width: 120,
-        className: 'min-width-120',
-        render: (record) => {
-          if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
-            return (
-              <Text size="normal">
-                {Helper.getDate(record.busPlaceLog?.homewardGetIn, variables.DATE_FORMAT.TIME_FULL)}
-              </Text>
-            );
-          }
+  const header = () => [
+    {
+      title: 'STT',
+      key: 'index',
+      className: 'min-width-60',
+      width: 60,
+      align: 'center',
+      render: (text, record, index) => Helper.serialOrder(search?.page, index, search?.limit),
+    },
+    {
+      title: 'Trẻ',
+      key: 'student',
+      width: 200,
+      className: 'min-width-200',
+      render: (record) => (
+        <AvatarTable
+          fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
+          fullName={record?.student?.fullName}
+        />
+      ),
+    },
+    {
+      title: 'Địa điểm',
+      key: 'location',
+      width: 200,
+      className: 'min-width-200',
+      render: (record) => <Text size="normal">{record?.busPlace?.address}</Text>,
+    },
+    {
+      title: 'Lên xe',
+      key: 'start',
+      width: 120,
+      className: 'min-width-120',
+      render: (record) => {
+        const { absentStudents } = record?.student;
+        const absent = !isEmpty(absentStudents) ? absentStudents.find(item => Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date) : {};
+        if (absent?.id) {
           return (
             <Text size="normal">
-              {Helper.getDate(record.busPlaceLog?.schoolwardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+              Đã xin nghỉ phép
             </Text>
           );
-        },
+        }
+        if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
+          return (
+            <Text size="normal">
+              {Helper.getDate(record.busPlaceLog?.homewardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+            </Text>
+          );
+        }
+        return (
+          <Text size="normal">
+            {Helper.getDate(record.busPlaceLog?.schoolwardGetIn, variables.DATE_FORMAT.TIME_FULL)}
+          </Text>
+        );
       },
-      {
-        title: 'Xuống xe',
-        key: 'end',
-        width: 120,
-        className: 'min-width-120',
-        render: (record) => {
-          if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
-            return (
-              <Text size="normal">
-                {Helper.getDate(
-                  record.busPlaceLog?.homewardGetOff,
-                  variables.DATE_FORMAT.TIME_FULL,
-                )}
-              </Text>
-            );
-          }
+    },
+    {
+      title: 'Xuống xe',
+      key: 'end',
+      width: 120,
+      className: 'min-width-120',
+      render: (record) => {
+        const { absentStudents } = record?.student;
+        const absent = !isEmpty(absentStudents) ? absentStudents.find(item => Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date) : {};
+        if (absent?.id) {
+          return (
+            <Text size="normal">
+              Đã xin nghỉ phép
+            </Text>
+          );
+        }
+        if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
           return (
             <Text size="normal">
               {Helper.getDate(
-                record.busPlaceLog?.schoolwardGetOff,
+                record.busPlaceLog?.homewardGetOff,
                 variables.DATE_FORMAT.TIME_FULL,
               )}
             </Text>
           );
-        },
+        }
+        return (
+          <Text size="normal">
+            {Helper.getDate(
+              record.busPlaceLog?.schoolwardGetOff,
+              variables.DATE_FORMAT.TIME_FULL,
+            )}
+          </Text>
+        );
       },
-      {
-        title: 'Bảo mẫu',
-        key: 'shuttler',
-        width: 200,
-        className: 'min-width-200',
-        render: (record) => (
-          <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-            {record?.busPlace?.busRoute?.busRouteNannies
-              ?.map((item) => item?.nanny?.fullName)
-              .join(',')}
-          </Paragraph>
-        ),
-      },
-      {
-        key: 'action',
-        className: 'min-width-130',
-        width: 130,
-        align: 'center',
-        fixed: 'right',
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button color="success" ghost onClick={() => showRoute(record)}>
-              Xem lộ trình
-            </Button>
-          </div>
-        ),
-      },
-    ],
-    [],
-  );
+    },
+    {
+      title: 'Bảo mẫu',
+      key: 'shuttler',
+      width: 200,
+      className: 'min-width-200',
+      render: (record) => (
+        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
+          {record?.busPlace?.busRoute?.busRouteNannies
+            ?.map((item) => item?.nanny?.fullName)
+            .join(',')}
+        </Paragraph>
+      ),
+    },
+    {
+      key: 'action',
+      className: 'min-width-130',
+      width: 130,
+      align: 'center',
+      fixed: 'right',
+      render: (record) => (
+        <div className={styles['list-button']}>
+          <Button color="success" ghost onClick={() => showRoute(record)}>
+            Xem lộ trình
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   const pagination = useMemo(
     () => ({
@@ -296,7 +311,7 @@ const Index = memo(() => {
             </Form>
 
             <Table
-              columns={columns}
+              columns={header()}
               dataSource={data}
               loading={loading}
               pagination={pagination}
