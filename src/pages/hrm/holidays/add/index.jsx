@@ -40,7 +40,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      disabledDate: true,
+    };
     setIsMounted(true);
   }
 
@@ -106,12 +108,12 @@ class Index extends PureComponent {
     let payload = {};
     if (params.id) {
       payload = {
-        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.year).format(variables.DATE_FORMAT.YEAR),
         updateRows: [{ ...values, id: params.id }],
       };
     } else {
       payload = {
-        name: moment(values.startDate).format(variables.DATE_FORMAT.YEAR),
+        name: moment(values.year).format(variables.DATE_FORMAT.YEAR),
         createRows: [{ ...values }],
       };
     }
@@ -138,12 +140,18 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeYear = (values) => {
+    this.formRef?.current?.setFieldsValue({ startDate: null, endDate: null });
+    this.setStateData({ disabledDate: !values });
+  }
+
   render() {
     const {
       menuData,
       match: { params },
       loading: { effects },
     } = this.props;
+    const { disabledDate } = this.state;
     const loadingSubmit = effects['holidaysAdd/ADD'] || effects['holidaysAdd/UPDATE'];
     return (
       <>
@@ -162,11 +170,22 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-6">
                   <FormItem
+                    label="Năm"
+                    name="year"
+                    onChange={this.onChangeYear}
+                    type={variables.YEAR_PICKER}
+                    allowClear={false}
+                    placeholder="Năm"
+                  />
+                </div>
+                <div className="col-lg-6">
+                  <FormItem
                     label="Từ ngày"
                     name="startDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    disabled={disabledDate}
+                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef, 'endDate', { yearKey: 'year'})}
                   />
                 </div>
                 <div className="col-lg-6">
@@ -175,11 +194,10 @@ class Index extends PureComponent {
                     name="endDate"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    disabled={disabledDate}
+                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef, 'startDate', { yearKey: 'year'})}
                   />
                 </div>
-              </div>
-              <div className="row">
                 <div className="col-lg-6">
                   <FormItem
                     label="Tên ngày lễ"

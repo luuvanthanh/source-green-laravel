@@ -298,6 +298,7 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
+        title: 'Thao tác',
         className: 'min-width-80',
         width: 80,
         fixed: 'right',
