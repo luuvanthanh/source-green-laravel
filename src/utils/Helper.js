@@ -723,36 +723,36 @@ export default class Helpers {
     return null;
   }
 
-  static disabledDateTo = (current, formRef, key = 'startDate', { month, yearKey }) => {
+  static disabledDateTo = (current, formRef, key = 'startDate', values) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (yearKey) {
+      if (values?.yearKey) {
         if (!data[key]) {
-          return this.checkdisabledYear(current, data, yearKey);
+          return this.checkdisabledYear(current, data, values?.yearKey);
         }
-        return current && current <= moment(data[key]).startOf('day') || current > moment(data[yearKey]).endOf('year');
+        return current && current <= moment(data[key]).startOf('day') || current > moment(data[values?.yearKey]).endOf('year');
       }
-      if (data[key] && !yearKey) {
+      if (data[key] && !values?.yearKey) {
         return current && current < moment(data[key]).startOf('day')
-        || (month ? current > moment(data[key]).add(month, 'month') : true);
+        || (values?.month ? current > moment(data[key]).add(values?.month, 'month') : null);
       };
       return null;
     }
     return null;
   };
 
-  static disabledDateFrom = (current, formRef, key = 'endDate', { month, yearKey }) => {
+  static disabledDateFrom = (current, formRef, key = 'endDate', values) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (yearKey) {
+      if (values?.yearKey) {
         if (!data[key]) {
-          return this.checkdisabledYear(current, data, yearKey);
+          return this.checkdisabledYear(current, data, values?.yearKey);
         }
-        return current && current >= moment(data[key]).endOf('day') || current < moment(data[yearKey]).startOf('year');
+        return current && current >= moment(data[key]).endOf('day') || current < moment(data[values?.yearKey]).startOf('year');
       }
-      if (data[key] && !yearKey) {
+      if (data[key] && !values?.yearKey) {
         return current && current >= moment(data[key]).startOf('day')
-          || (month ? current < moment(data[key]).add(-month, 'month') : true);
+          || (values?.month ? current < moment(data[key]).add(-(values?.month), 'month') : null);
       };
       return null;
     }

@@ -349,8 +349,11 @@ class Index extends PureComponent {
   };
 
   enableButton = (items) => {
+    const {
+      match: { params },
+    } = this.props;
     const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
-    return !!enable;
+    return !params?.id ? !!enable : false;
   };
 
   render() {
