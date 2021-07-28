@@ -241,7 +241,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.debouncedSearch(e ? moment(e).format(variables.DATE_FORMAT.DATE_AFTER) : null, type);
   };
 
   onChangeMonth = (e) => {
@@ -912,8 +912,7 @@ class Index extends PureComponent {
                         name="startDate"
                         onChange={(event) => this.onChangeDate(event, 'startDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
-                        allowClear={false}
+                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef, 'endDate', { month: 1 })}
                       />
                     </div>
                     <div className="col-lg-3">
@@ -921,8 +920,7 @@ class Index extends PureComponent {
                         name="endDate"
                         onChange={(event) => this.onChangeDate(event, 'endDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
-                        allowClear={false}
+                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef, 'startDate', { month: 1 })}
                       />
                     </div>
                   </>

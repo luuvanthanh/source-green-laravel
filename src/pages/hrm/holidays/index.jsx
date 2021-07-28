@@ -260,6 +260,7 @@ class Index extends PureComponent {
       dataIndex: 'startDate',
       editable: true,
       type: variables.DATE_PICKER,
+      disabledDate: true,
       render: (values, record) => Helper.getDate(record.startDate),
     },
     {
@@ -270,6 +271,7 @@ class Index extends PureComponent {
       dataIndex: 'endDate',
       editable: true,
       type: variables.DATE_PICKER,
+      disabledDate: true,
       render: (values, record) => Helper.getDate(record.endDate),
     },
     {
@@ -302,6 +304,16 @@ class Index extends PureComponent {
         return col;
       }
 
+      const getDate = (key, record) => {
+        if (key === 'startDate') {
+          return record?.endDate ? moment(record?.endDate) : '';
+        }
+        if (key === 'endDate') {
+          return record?.startDate ? moment(record?.startDate) : '';
+        }
+        return '';
+      };
+
       return {
         ...col,
         onCell: (record) => ({
@@ -311,6 +323,11 @@ class Index extends PureComponent {
           title: col.title,
           type: col.type,
           prefix: col.prefix,
+          disabledDate: col?.disabledDate ? {
+            type: col?.key,
+            date: getDate(col?.key, record),
+            year: record?.startDate ? moment(record?.startDate) : '',
+          } : null,
           handleSave: this.handleSave,
         }),
       };

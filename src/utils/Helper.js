@@ -716,23 +716,65 @@ export default class Helpers {
   static disabledDateWeekeend = (current) =>
     moment(current).day() === 0 || moment(current).day() === 6;
 
-  static disabledDateTo = (current, formRef, key = 'startDate') => {
+  static checkdisabledYear = (current, data, yearKey) => {
+    if (data[yearKey]) {
+      return current < moment(data[yearKey]).startOf('year') || current > moment(data[yearKey]).endOf('year');
+    }
+    return null;
+  }
+
+  static disabledDateTo = (current, formRef, key = 'startDate', { month, yearKey }) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current < moment(data[key]).startOf('day');
+      if (yearKey) {
+        if (!data[key]) {
+          return this.checkdisabledYear(current, data, yearKey);
+        }
+        return current && current <= moment(data[key]).startOf('day') || current > moment(data[yearKey]).endOf('year');
+      }
+      if (data[key] && !yearKey) {
+        return current && current < moment(data[key]).startOf('day')
+        || (month ? current > moment(data[key]).add(month, 'month') : true);
+      };
       return null;
     }
     return null;
   };
 
-  static disabledDateFrom = (current, formRef, key = 'endDate') => {
+  static disabledDateFrom = (current, formRef, key = 'endDate', { month, yearKey }) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current >= moment(data[key]).startOf('day');
+      if (yearKey) {
+        if (!data[key]) {
+          return this.checkdisabledYear(current, data, yearKey);
+        }
+        return current && current >= moment(data[key]).endOf('day') || current < moment(data[yearKey]).startOf('year');
+      }
+      if (data[key] && !yearKey) {
+        return current && current >= moment(data[key]).startOf('day')
+          || (month ? current < moment(data[key]).add(-month, 'month') : true);
+      };
       return null;
     }
     return null;
   };
+
+  static disabledDatebyValue = (current, { date, year, type}) => {
+    if (year && !date) {
+      return current < moment(year).startOf('year') || current > moment(year).endOf('year');
+    }
+    if (date) {
+      if (type === 'startDate') {
+        return current && current > moment(date) || (year ? current < moment(year).startOf('year') : null);
+      }
+      if (type === 'endDate') {
+        return current && current < moment(date) || (year ? current > moment(year).endOf('year') : null);
+      }
+      return null;
+    }
+
+    return false;
+  }
 
   static disabledYear = (current, formRef, { key = '', value = '', format = 'YYYY', compare = '>='} ) => {
     if (formRef.current && key) {
