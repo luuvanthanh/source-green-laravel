@@ -209,6 +209,12 @@ export default [
             authority: [permissions.BEP],
           },
           {
+            path: '/thuc-don/thuc-don-1/:id/chi-tiet',
+            component: './menu/kitchen-menus/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
             path: '/thuc-don/bua-an',
             component: './menu/meals',
             wrappers: ['@/wrappers/auth'],

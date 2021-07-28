@@ -12,7 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
@@ -39,8 +39,7 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) =>
-        `GGC${Helper.serialOrder(search?.page, index, search?.limit)}`,
+      render: (record) => record.code,
     },
     {
       title: 'Tên góc giáo cụ',
