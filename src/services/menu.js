@@ -317,10 +317,7 @@ export async function getLeftMenuSchedules() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [permissions.DD],
-              url: [
-                '/diem-danh/cau-hinh/loai-cong',
-                '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet',
-              ],
+              url: ['/diem-danh/cau-hinh/loai-cong', '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet'],
             },
             {
               title: 'Lý do nghỉ phép',
@@ -625,7 +622,11 @@ export async function getLeftMenuChildren() {
     {
       title: 'Thực đơn 1',
       key: 'menu1',
-      url: ['/thuc-don/thuc-don-1', '/thuc-don/thuc-don-1/tao-moi'],
+      url: [
+        '/thuc-don/thuc-don-1',
+        '/thuc-don/thuc-don-1/tao-moi',
+        '/thuc-don/thuc-don-1/:id/chi-tiet',
+      ],
       icon: 'icon icon-list',
       permission: [permissions.BEP],
       pro: true,

@@ -34,7 +34,7 @@ const mapStateToProps = ({ timekeepingReport, loading }) => ({
   data: timekeepingReport.data,
   pagination: timekeepingReport.pagination,
   branches: timekeepingReport.branches,
-  classes: timekeepingReport.branches,
+  classes: timekeepingReport.classes,
   loading,
 });
 @connect(mapStateToProps)
@@ -502,6 +502,7 @@ class Index extends PureComponent {
                     name="date"
                     onChange={(event) => this.onChangeDateRank(event, 'date')}
                     type={variables.RANGE_PICKER}
+                    disabledDate={Helper.disabledDateRank}
                   />
                 </div>
               </div>

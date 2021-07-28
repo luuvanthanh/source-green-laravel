@@ -2,12 +2,14 @@ import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, List, Timeline, Image } from 'antd';
 import { useHistory, useLocation, useDispatch, useSelector } from 'dva';
+import { useParams } from 'umi';
 import { EyeOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { debounce } from 'lodash';
 
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
@@ -20,11 +22,17 @@ const { Item: ListItem } = List;
 const { Item: TimelineItem } = Timeline;
 
 const Index = memo(() => {
-  const [loadingReducer, { data, branches, classes }] = useSelector(({ loading, kitchenMenusDetails }) => [
+  const [
+    menuData,
+    loadingReducer,
+    { data, branches, classes },
+  ] = useSelector(({ menu: { menuLeftChildren }, loading, kitchenMenusDetails }) => [
+    menuLeftChildren,
     loading,
     kitchenMenusDetails,
   ]);
   const loading = loadingReducer?.effects['kitchenMenusDetails/GET_DATA'];
+  const params = useParams();
   const dispatch = useDispatch();
   const mounted = useRef(false);
   // const mountedSet = (action, value) => mounted?.current && action(value);
@@ -32,88 +40,12 @@ const Index = memo(() => {
   const history = useHistory();
   const { query, pathname } = useLocation();
 
-  const filterRef = useRef();
-
-  const [search, setSearch] = useState({
-    branchId: query?.branchId,
-    classId: query?.classId,
-    rangeTime:
-      query.fromDate && query.toDate
-        ? [moment(query.fromDate), moment(query.toDate)]
-        : [moment().startOf('weeks'), moment().endOf('weeks')],
-  });
-
   useEffect(() => {
     dispatch({
       type: 'kitchenMenusDetails/GET_DATA',
-      payload: {
-        branchId: search?.branchId,
-        classId: search?.classId,
-        fromDate: search.rangeTime[0],
-        toDate: search.rangeTime[1],
-      },
+      payload: { ...params },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({
-        branchId: search?.branchId,
-        classId: search?.classId,
-        fromDate: Helper.getDate(search.rangeTime[0], variables.DATE_FORMAT.DATE_AFTER),
-        toDate: Helper.getDate(search.rangeTime[1], variables.DATE_FORMAT.DATE_AFTER),
-      }),
-    });
-  }, [search]);
-
-  const changeFilterDebouce = debounce((value, name) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      [name]: value,
-    }));
-  }, 300);
-
-  const changeFilterDateDebouce = debounce((value) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      rangeTime: value,
-    }));
-  }, 300);
-
-  const changeFilter = (value, name) => {
-    changeFilterDebouce(value, name);
-  };
-
-  const fetchClasses = (branchId) => {
-    dispatch({
-      type: 'kitchenMenusDetails/GET_CLASSES',
-      payload: {
-        branch: branchId,
-      },
-    });
-  };
-
-  const changeFilterBranch = (value, name) => {
-    changeFilterDebouce(value, name);
-    fetchClasses(value);
-  };
-
-  const changeFilterDate = (value) => {
-    changeFilterDateDebouce(value);
-  };
-
-  useEffect(() => {
-    if (search.branchId) {
-      dispatch({
-        type: 'kitchenMenusDetails/GET_CLASSES',
-        payload: {
-          branch: search.branchId,
-        },
-      });
-    }
-    dispatch({
-      type: 'kitchenMenusDetails/GET_BRANCHES',
-      payload: {},
-    });
-  }, []);
+  }, [params.id]);
 
   useEffect(() => {
     mounted.current = true;
@@ -123,53 +55,13 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Danh sách thực đơn" />
+      <Breadcrumbs last="Thực đơn" menu={menuData} />
       <Pane className="p20">
-        <Pane className="d-flex mb20">
-          <Heading type="page-title">Thực đơn</Heading>
-          <Button
-            className="ml-auto"
-            color="success"
-            icon="plus"
-            onClick={() => history.push(`/thuc-don/tao-moi`)}
-            permission="BEP"
-          >
-            Tạo thực đơn
-          </Button>
-        </Pane>
-
         <Pane className="card mb20">
-          <Pane className="pb-0" style={{ padding: 20 }}>
-            <Form layout="vertical" ref={filterRef} initialValues={search}>
-              <Pane className="row">
-                <Pane className="col-lg-4">
-                  <FormItem
-                    name="branchId"
-                    type={variables.SELECT}
-                    data={branches}
-                    onChange={(event) => changeFilterBranch(event, 'branchId')}
-                  />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem
-                    name="classId"
-                    type={variables.SELECT}
-                    data={classes}
-                    onChange={(event) => changeFilter(event, 'classId')}
-                  />
-                </Pane>
-                <Pane className="col-lg-4">
-                  <FormItem
-                    name="rangeTime"
-                    type={variables.RANGE_PICKER}
-                    onChange={changeFilterDate}
-                  />
-                </Pane>
-              </Pane>
-            </Form>
-          </Pane>
+          <Pane className="pb-0" style={{ padding: 20 }} />
         </Pane>
 
-        <Pane className="row justify-content-center">
+        {/* <Pane className="row justify-content-center">
           <Pane className="col-lg-6 card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
               <List
@@ -223,7 +115,7 @@ const Index = memo(() => {
               />
             </Scrollbars>
           </Pane>
-        </Pane>
+        </Pane> */}
       </Pane>
     </>
   );

@@ -79,11 +79,10 @@ const Index = memo(() => {
       toDate: moment(values.month).endOf('months'),
       menuType: 'STUDENT',
       menuMeals: menuMeals
-        .map((item) => omit(item, 'timeline'))
         .map((item) => ({
-          ...item,
-          menuMealDetails: item.menuMealDetails || [],
-          name: item.menuMealDetails ? item.name : null,
+          ...omit(item, 'timeline', 'id'),
+          menuMealDetails: item.menuMealDetails || undefined,
+          name: item.menuMealDetails ? item.name : undefined,
         })),
     };
     dispatch({
@@ -136,9 +135,9 @@ const Index = memo(() => {
       });
       setWeeksKitchen(
         weeks.map((item, index) => ({
-          weekIndex: index,
+          weekIndex: index + 1,
           menuMeals: meals.map((itemMeal) => ({
-            weekIndex: index,
+            weekIndex: index + 1,
             mealId: itemMeal.id,
             name: itemMeal.name,
             timeline: [],
@@ -470,7 +469,7 @@ const Index = memo(() => {
         </Form>
       </Modal>
       <Helmet title="Tạo thực đơn" />
-      <Breadcrumbs className="pt0" last="Tạo hực đơn" menu={menuData} />
+      <Breadcrumbs className="pt0" last="Tạo thực đơn" menu={menuData} />
       <Pane style={{ padding: 20, paddingBottom: 0 }} className={styles.wrapper}>
         <Pane className="row">
           <Pane className="col-lg-12">

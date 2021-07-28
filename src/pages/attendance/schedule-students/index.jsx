@@ -226,7 +226,7 @@ class Index extends PureComponent {
    */
 
   onChangeSelectBranch = debounce((e, type) => {
-    this.formRef?.current?.setFieldsValue({ 'classId': null });
+    this.formRef?.current?.setFieldsValue({ classId: null });
     this.setStateData(
       (prevState) => ({
         search: {
@@ -616,24 +616,26 @@ class Index extends PureComponent {
   };
 
   convertTreeSelect = (items = [], branchId, keyValue = 'id', keyLabel = 'name') =>
-    items?.filter(obj => branchId ? obj.branchId === branchId : true)?.map((item) => {
-      let details = [];
-      if (!isEmpty(item.shiftDetail)) {
-        details = item.shiftDetail.map((item) => {
-          const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL).format(
-            variables.DATE_FORMAT.HOUR,
-          );
-          const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL).format(
-            variables.DATE_FORMAT.HOUR,
-          );
-          return `${startTime} - ${endTime}`;
-        });
-      }
-      return {
-        [`${keyValue}`]: item.id,
-        [`${keyLabel}`]: `${item.shiftCode} (${details.join(', ')})`,
-      };
-    });
+    items
+      ?.filter((obj) => (branchId ? obj.branchId === branchId : true))
+      ?.map((item) => {
+        let details = [];
+        if (!isEmpty(item.shiftDetail)) {
+          details = item.shiftDetail.map((item) => {
+            const startTime = moment(item.startTime, variables.DATE_FORMAT.TIME_FULL).format(
+              variables.DATE_FORMAT.HOUR,
+            );
+            const endTime = moment(item.endTime, variables.DATE_FORMAT.TIME_FULL).format(
+              variables.DATE_FORMAT.HOUR,
+            );
+            return `${startTime} - ${endTime}`;
+          });
+        }
+        return {
+          [`${keyValue}`]: item.id,
+          [`${keyLabel}`]: `${item.shiftCode} (${details.join(', ')})`,
+        };
+      });
 
   render() {
     const {
@@ -645,7 +647,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, visible, showConfirm } = this.state;
+    const { search, visible, showConfirm, user } = this.state;
     const loading = effects['scheduleStudents/GET_DATA'];
     const loadingSubmit = effects['scheduleStudents/ADD'];
     const loadingRemoveAll = effects['scheduleStudents/REMOVE'];
@@ -706,7 +708,10 @@ class Index extends PureComponent {
         >
           <Form layout="vertical" ref={this.formRefShift} initialValues={{ repeatBy: null }}>
             <FormItem
-              data={this.convertTreeSelect(category.shifts, search?.branchId)}
+              data={this.convertTreeSelect(
+                category.shifts,
+                user?.classStudent?.class?.branchId || search?.branchId,
+              )}
               label="Thời gian"
               name="shiftId"
               type={variables.SELECT}
