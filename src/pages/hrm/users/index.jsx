@@ -335,16 +335,16 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả' }, ...positions]}
-                    name="positionId"
-                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả' }, ...divisions]}
+                    data={[{ id: null, name: 'Chọn tất cả bộ phận' }, ...divisions]}
                     name="divisionId"
                     onChange={(event) => this.onChangeSelect(event, 'divisionId')}
                     type={variables.SELECT}
@@ -353,9 +353,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    data={[{ id: null, name: 'Chọn tất cả chức vụ' }, ...positions]}
+                    name="positionId"
+                    onChange={(event) => this.onChangeSelect(event, 'positionId')}
                     type={variables.SELECT}
                     allowClear={false}
                   />

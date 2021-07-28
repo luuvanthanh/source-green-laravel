@@ -49,18 +49,31 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
+        key: query?.key,
+        branchId: query?.branchId,
+        classId: query?.classId,
         action: query?.action,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
       waterBottles: [],
       student: {},
+      branches: [],
+      classes: [],
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
     this.onLoad();
+    this.fetchBranches();
+    const {
+      location: { query },
+    } = this.props;
+
+    if (query?.branchId) {
+      this.fetchClasses(query?.branchId);
+    }
   }
 
   componentWillUnmount() {
@@ -79,6 +92,20 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  fetchBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_BRANCHES',
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            branches: !isEmpty(res?.parsePayload) ? [{id: '', name: 'Tất cả lớp'}, ...res?.parsePayload] :[],
+          });
+        }
+      },
+    });
   };
 
   /**
@@ -124,25 +151,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
-  };
-
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
-  };
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
   };
 
   /**
@@ -296,6 +305,40 @@ class Index extends PureComponent {
     });
   };
 
+  changeBranch = debounce((branchId) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          branchId,
+          classId: '',
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+    this.formRef?.current?.setFieldsValue({ classId: undefined });
+    this.fetchClasses(branchId);
+  }, 300);
+
+  fetchClasses = (branchId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'categories/GET_CLASSES',
+      payload: {
+        branch: branchId,
+      },
+      callback: (res) => {
+        if (res) {
+          this.setStateData({
+            classes: !isEmpty(res?.items) ? [{id: '', name: 'Tất cả lớp'}, ...res?.items] :[],
+          });
+        }
+      },
+    });
+  }
+
   render() {
     const {
       data,
@@ -303,7 +346,7 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, visible, waterBottles } = this.state;
+    const { search, visible, waterBottles, classes, branches } = this.state;
     const loading = effects['waterBottles/GET_DATA'];
     const loadingSubmit = effects['waterBottles/WATER_BOTTLES'];
     return (
@@ -445,19 +488,32 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+              <div className="col-lg-4 mt-3">
+                <FormItem
+                  name="key"
+                  onChange={(event) => this.onChange(event?.target?.value, 'key')}
+                  placeholder="Nhập từ khóa tìm kiếm"
+                  type={variables.INPUT_SEARCH}
+                />
+              </div>
+                <div className="col-lg-4 mt-3">
                   <FormItem
-                    name="user_id"
-                    data={[]}
-                    onChange={(event) => this.onChangeSelect(event, 'user_id')}
+                    allowClear={false}
+                    name="branchId"
                     type={variables.SELECT}
+                    placeholder="Chọn cơ sở"
+                    onChange={this.changeBranch}
+                    data={branches}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-4 mt-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeSelect(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    name="classId"
+                    onChange={(event) => this.onChange(event, 'classId')}
+                    allowClear={false}
+                    placeholder="Chọn lớp"
+                    type={variables.SELECT}
+                    data={classes}
                   />
                 </div>
               </div>

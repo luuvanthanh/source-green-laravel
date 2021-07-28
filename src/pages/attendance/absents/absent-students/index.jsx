@@ -35,6 +35,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ absentStudents, loading }) => ({
   data: absentStudents.data,
   pagination: absentStudents.pagination,
+  branches: absentStudents.branches,
+  classes: absentStudents.classes,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,6 +50,8 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        classId: query?.classId,
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -60,6 +64,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -78,6 +83,22 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'absentStudents/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'absentStudents/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -127,6 +148,39 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((startDate, endDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate,
+          endDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'absentStudents/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -154,6 +208,18 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
+  };
+
+  /**
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
@@ -172,8 +238,6 @@ class Index extends PureComponent {
       },
     );
   };
-
-  changePagination;
 
   renderDescription = (record) => {
     if (!isEmpty(record)) {
@@ -221,21 +285,43 @@ class Index extends PureComponent {
     } = this.props;
     return [
       {
-        title: 'STT',
+        title: 'MÃ ID',
         key: 'text',
-        width: 50,
+        width: 80,
         align: 'center',
         render: (text, record, index) =>
-          Helper.sttList(
+          `XP${Helper.sttList(
             this.props.pagination?.current_page,
             index,
             this.props.pagination?.per_page,
-          ),
+          )}`,
+      },
+      {
+        title: 'Thời gian',
+        key: 'creationTime',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
+        title: 'Cơ sở',
+        key: 'branch',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => record?.student?.classStudent?.class?.branch?.name,
+      },
+      {
+        title: 'Lớp',
+        key: 'class',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => record?.student?.classStudent?.class?.name,
       },
       {
         title: 'Bé',
         key: 'name',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'student.fileImage'))}
@@ -244,9 +330,18 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Nhân viên',
+        title: 'Thời gian xin phép',
+        key: 'count',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
+      },
+      {
+        title: 'Người gửi',
         key: 'employee',
         className: 'min-width-200',
+        width: 200,
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(get(record, 'employee.fileImage'))}
@@ -255,24 +350,10 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'Ngày',
-        key: 'count',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) =>
-          `${Helper.getDate(record.startDate)} / ${Helper.getDate(record.endDate)}`,
-      },
-      {
-        title: 'Loại',
-        key: 'absentType',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => record?.absentType?.name,
-      },
-      {
         title: 'Lý do',
         key: 'absentReason',
         className: 'min-width-200',
+        width: 200,
         render: (record) => record?.absentReason?.name,
       },
       {
@@ -284,17 +365,18 @@ class Index extends PureComponent {
       },
       {
         key: 'actions',
-        className: 'min-width-80',
-        width: 80,
+        className: 'min-width-130',
+        width: 130,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             {record.status === variablesModules.STATUS.PENDING && (
               <Button
-                color="primary"
-                icon="edit"
+                color="success"
                 onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-              />
+              >
+                Chi tiết
+              </Button>
             )}
           </div>
         ),
@@ -309,6 +391,8 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
       location: { pathname },
+      classes,
+      branches,
     } = this.props;
     const { search } = this.state;
     const loading = effects['absentStudents/GET_DATA'];
@@ -320,21 +404,23 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Đơn xin phép cho bé</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo xin phép
+              Tạo đơn xin phép
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate ? moment(search.startDate) : null,
-                endDate: search.endDate ? moment(search.endDate) : null,
+                date: search.startDate &&
+                  search.endDate && [moment(search.startDate), moment(search.endDate)],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="fullName"
                     onChange={(event) => this.onChange(event, 'fullName')}
@@ -342,22 +428,29 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                    type={variables.SELECT}
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>
@@ -373,7 +466,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: '65vh' }}
             />
           </div>
         </div>
@@ -389,6 +482,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -398,6 +493,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  classes: [],
+  branches: [],
 };
 
 export default Index;

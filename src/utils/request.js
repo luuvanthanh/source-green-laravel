@@ -49,7 +49,7 @@ request.interceptors.response.use(
         status: response.status,
       };
     }
-    if (optionsRoot?.parse === true) {
+    if (optionsRoot?.parse === true && response.status >= 200 && response.status <= 300) {
       notification.success({
         message: 'Thông báo',
         description: 'Bạn đã cập nhật thành công dữ liệu',

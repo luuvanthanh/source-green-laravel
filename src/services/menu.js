@@ -619,6 +619,30 @@ export async function getLeftMenuChildren() {
       permission: [permissions.BEP],
       pro: true,
     },
+    {
+      title: 'Thực đơn 1',
+      key: 'menu1',
+      url: ['/thuc-don/thuc-don-1', '/thuc-don/thuc-don-1/tao-moi'],
+      icon: 'icon icon-list',
+      permission: [permissions.BEP],
+      pro: true,
+    },
+    {
+      title: 'Danh mục bữa ăn',
+      key: 'meals',
+      url: ['/thuc-don/bua-an', '/thuc-don/bua-an/tao-moi', '/thuc-don/bua-an/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [permissions.BEP],
+      pro: true,
+    },
+    {
+      title: 'Danh mục món ăn',
+      key: 'food-commons',
+      url: ['/thuc-don/mon-an', '/thuc-don/mon-an/tao-moi', '/thuc-don/mon-an/:id/chi-tiet'],
+      icon: 'icon icon-list',
+      permission: [permissions.BEP],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuAllocation() {
@@ -1360,6 +1384,45 @@ export async function getLeftMenuSalary() {
           pro: true,
         },
       ],
+    },
+  ];
+}
+
+export async function getLeftMenuPhysical() {
+  return [
+    {
+      title: 'Tất cả học sinh',
+      key: 'students',
+      icon: 'icon icon-list',
+      url: [
+        '/phat-trien-the-chat/tat-ca-hoc-sinh',
+        '/phat-trien-the-chat/tao-the-chat',
+        '/phat-trien-the-chat/:id/chi-tiet',
+        '/phat-trien-the-chat/:id/chi-tiet/nhap-the-chat',
+      ],
+      permission: [],
+    },
+    {
+      title: 'Học sinh thừa cân',
+      key: 'overweight-students',
+      icon: 'icon icon-list',
+      url: ['/phat-trien-the-chat/hoc-sinh-thua-can'],
+      permission: [],
+    },
+    {
+      title: 'Học sinh thiếu cân',
+      key: 'underweight-students',
+      icon: 'icon icon-list',
+      url: ['/phat-trien-the-chat/hoc-sinh-thieu-can'],
+      permission: [],
+    },
+    {
+      title: 'Lịch sử',
+      key: 'history',
+      url: ['/phat-trien-the-chat/lich-su'],
+      icon: 'icon icon-clock',
+      permission: [],
+      pro: true,
     },
   ];
 }

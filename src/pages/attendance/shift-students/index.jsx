@@ -45,6 +45,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        key: query?.key,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -369,7 +370,7 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
             <Text color="dark">Cấu hình lịch học</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Tạo ca
+              Tạo lịch học
             </Button>
           </div>
           <div className={classnames(styles['block-table'])}>
@@ -383,8 +384,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="shiftCode"
-                    onChange={(event) => this.onChange(event, 'shiftCode')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

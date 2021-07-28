@@ -3,7 +3,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useLocation } from 'umi';
 import { Helmet } from 'react-helmet';
-import { size, isEmpty } from 'lodash';
+import { size, isEmpty, includes } from 'lodash';
 import csx from 'classnames';
 import moment from 'moment';
 import { Form, Checkbox, Menu, Dropdown, Button as ButtonAnt } from 'antd';
@@ -43,6 +43,7 @@ const Index = memo(() => {
     creationTimeTo: query?.creationTimeTo ? moment(query?.creationTimeTo) : moment().endOf('weeks'),
   });
   const [groupIds, setGroupIds] = useState([]);
+  const [validateDescription, setValidateDescription] = useState(false);
 
   const changeFilterDate = (values) => {
     setSearch((prevSearch) => ({
@@ -54,6 +55,14 @@ const Index = memo(() => {
 
   const groupSelect = (id) => ({ target: { checked } }) => {
     setGroupIds((prev) => (checked ? [...prev, id] : prev.filter((selectId) => selectId !== id)));
+    const index = classifyData.findIndex(item => item.id === id);
+    formRef?.current?.setFields([
+      {
+        name: ['description', index],
+        errors: '',
+      },
+    ]);
+
   };
 
   const fetchMedia = useCallback(() => {
@@ -211,6 +220,10 @@ const Index = memo(() => {
     });
   };
 
+  const sendPostChoose = async () => {
+    setValidateDescription(true);
+  };
+
   const postAll = async () => {
     const { errorFields } = await formRef.current?.validateFields();
     if (size(errorFields)) {
@@ -230,6 +243,30 @@ const Index = memo(() => {
       },
     });
   };
+
+  useEffect(async () => {
+    if (validateDescription) {
+      formRef.current.validateFields().then(() => {
+        const payload = [...classifyData].filter(item => includes(groupIds, item?.id))?.map((item) => ({
+          id: item?.id,
+          description: item?.description,
+          removeFiles: item?.removeFiles,
+        }));
+        return dispatch({
+          type: 'mediaResult/VALIDATE_ALL',
+          payload,
+          callback: (response) => {
+            if (response) {
+              fetchMedia();
+            }
+          },
+        });
+      }).finally(() => {
+        setValidateDescription(false);
+      });
+    }
+    return true;
+  }, [validateDescription]);
 
   useEffect(() => {
     fetchMedia();
@@ -253,16 +290,20 @@ const Index = memo(() => {
     if (e.key === 'REMOVE_CHOOSE') {
       removePostChoose();
     }
+    if (e.key === 'SEND_CHOOSE') {
+      sendPostChoose();
+    }
   };
 
   const menu = (
     <Menu onClick={handleMenuClick}>
       {isEmpty(groupIds) ||
+        (groupIds.length >= 1 && <Menu.Item key="SEND_CHOOSE">Gửi ghi nhận đã chọn</Menu.Item>)}
+      {isEmpty(groupIds) ||
         (groupIds.length <= 2 && <Menu.Item key="MERGE_CHOOSE">Gộp ghi nhận đã chọn</Menu.Item>)}
       {isEmpty(groupIds) ||
-        (groupIds.length <= 1 && <Menu.Item key="REMOVE_CHOOSE">Xóa ghi nhận đã chọn</Menu.Item>)}
-      {isEmpty(groupIds) ||
-        (groupIds.length <= 1 && <Menu.Item key="REMOVE_ALL">Xóa tất cả ghi nhận</Menu.Item>)}
+        (groupIds.length >= 1 && <Menu.Item key="REMOVE_CHOOSE">Xóa ghi nhận đã chọn</Menu.Item>)}
+      <Menu.Item key="REMOVE_ALL">Xóa tất cả ghi nhận</Menu.Item>
     </Menu>
   );
 
@@ -296,7 +337,7 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="col-lg-9 d-flex justify-content-end">
-                <Dropdown overlay={menu} trigger={['click']}>
+                <Dropdown overlay={menu} trigger={['click']} disabled={loading['mediaResult/VALIDATE_ALL'] || loading['mediaResult/GET_DATA']}>
                   <ButtonAnt>
                     Thao tác <DownOutlined />
                   </ButtonAnt>
@@ -379,7 +420,12 @@ const Index = memo(() => {
                       label="Mô tả"
                       onChange={changeDesctiption(post?.id)}
                       type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
+                      rules={[
+                        {
+                          ...variables.RULES.EMPTY,
+                          required: validateDescription ? includes(groupIds, post?.id) : true,
+                        }
+                      ]}
                       placeholder="Nhập mô tả"
                       name={['description', index]}
                     />

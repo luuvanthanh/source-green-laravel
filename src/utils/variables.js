@@ -166,6 +166,10 @@ export const variables = {
   method: ['put', 'post', 'delete', 'patch'],
   SEMESTER_1: 'HOCKY1',
   SEMESTER_2: 'HOCKY2',
+  GENDERS: {
+    MALE: 'Nam',
+    FEMALE: 'Nữ'
+  }
 };
 
 export default variables;

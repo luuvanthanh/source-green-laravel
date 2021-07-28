@@ -683,6 +683,20 @@ export default class Helpers {
     return [];
   };
 
+  static convertSelectParent = (items) => {
+    if (!isEmpty(items)) {
+      return items.map((item) => ({
+        id: item.id,
+        name: `${item.fullName}  ${
+          getLodash(item, 'phone')
+            ? `(${getLodash(item, 'phone')})`
+            : ''
+        }`,
+      }));
+    }
+    return [];
+  };
+
   static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {
       if (sort === 'asc') {
@@ -715,6 +729,46 @@ export default class Helpers {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
       if (data[key]) return current && current >= moment(data[key]).startOf('day');
+      return null;
+    }
+    return null;
+  };
+
+  static disabledYear = (current, formRef, { key = '', value = '', format = 'YYYY', compare = '>='} ) => {
+    if (formRef.current && key) {
+      const data = formRef.current.getFieldsValue();
+      let getValue = '';
+
+      if (value) {
+        getValue = moment(value, format);
+      }
+      if (data[key]) {
+        if (key !== 'yearFrom' || key !== 'yearTo') {
+          getValue = moment(formRef?.current?.getFieldValue(key), format);
+        }
+        if (key === 'yearFrom') {
+          getValue = moment(formRef?.current?.getFieldValue('yearFrom'), format).startOf('year');
+        }
+        if (key === 'yearTo') {
+          getValue = moment(formRef?.current?.getFieldValue('yearTo'), format).endOf('year');
+        }
+      }
+
+      if (getValue) {
+        if (compare === '=') {
+          return current && current === moment(getValue);
+        }
+        if (compare === '>') {
+          return current && current >= moment(getValue);
+        }
+        if (compare === '<=') {
+          return current && current <= moment(getValue);
+        }
+        if (compare === '<') {
+          return current && current < moment(getValue);
+        }
+        return current && current >= moment(getValue);
+      }
       return null;
     }
     return null;

@@ -45,6 +45,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
     const newTuition = [...tuition];
 
     if (value && (name === 'feeId' && paymentFormId || name === 'paymentFormId' && feeId) ) {
+      const details = [
+        {
+          ...newTuition[index],
+          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
+          feeId: name === 'feeId' ? value : feeId,
+        }
+      ];
       return dispatch({
         type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
         payload: {
@@ -58,16 +65,19 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
           }),
-          paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
-          feeId: name === 'feeId' ? value : feeId,
+          details: JSON.stringify(details),
           student: 'new'
         },
         callback: (res) => {
-          newTuition[index] = {
-            ...newTuition[index],
-            [name]: value,
-            money: res?.money || 0,
-          };
+          if (!_.isEmpty(res)) {
+            newTuition[index] = {...res[0]};
+          } else {
+            newTuition[index] = {
+              ...newTuition[index],
+              [name]: value,
+              money: 0,
+            };
+          }
           if (error) {
             checkValidate(newTuition, 'tuition');
           }

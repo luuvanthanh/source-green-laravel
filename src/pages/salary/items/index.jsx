@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Table } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty, toNumber } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -31,6 +31,9 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ salary, loading }) => ({
   data: salary.data,
   error: salary.error,
+  branches: salary.branches,
+  divisions: salary.divisions,
+  employees: salary.employees,
   loading,
 });
 @connect(mapStateToProps)
@@ -44,6 +47,9 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        divisionId: query?.divisionId,
+        employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
     };
@@ -52,6 +58,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -70,6 +77,21 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'salary/GET_BRANCHES',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'salary/GET_DIVISIONS',
+      payload: {},
+    });
+    this.props.dispatch({
+      type: 'salary/GET_EMPLOYEES',
+      payload: {},
+    });
   };
 
   /**
@@ -161,6 +183,15 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
   };
 
   /**
@@ -516,7 +547,7 @@ class Index extends PureComponent {
             key: 'name',
             className: 'min-width-150 thead-green',
             width: 150,
-            render: (record) => record.DependentPerson,
+            render: (record) => record.dependentPerson,
           },
           {
             title: 'Tổng giảm trừ bản thân và người phụ thuộc',
@@ -565,7 +596,7 @@ class Index extends PureComponent {
             key: 'name',
             className: 'min-width-150 thead-yellow',
             width: 150,
-            render: (record) => Helper.getPrice(record.SocialInsurancePayment),
+            render: (record) => Helper.getPrice(record.socialInsurancePayment),
           },
           {
             title: 'Trừ các khoản đã chi tạm ứng',
@@ -601,6 +632,9 @@ class Index extends PureComponent {
       error,
       match: { params },
       loading: { effects },
+      divisions,
+      branches,
+      employees,
     } = this.props;
     const { search } = this.state;
     const loading = effects['salary/GET_DATA'];
@@ -616,17 +650,44 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 month: search.month && moment(search.month),
+                divisionId: search.divisionId || null,
+                branchId: search.branchId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="month"
                     onChange={(event) => this.onChangeDate(event, 'month')}
                     type={variables.MONTH_PICKER}
                     allowClear={false}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả bộ phận' }, ...divisions]}
+                    name="divisionId"
+                    onChange={(event) => this.onChangeSelect(event, 'divisionId')}
+                    type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-12">
+                  <FormItem
+                    data={Helper.convertSelectUsers(employees)}
+                    name="employeeId"
+                    onChange={(event) => this.onChangeSelect(event, 'employeeId')}
+                    type={variables.SELECT_MUTILPLE}
+                    placeholder="Chọn tất cả"
                   />
                 </div>
               </div>
@@ -644,6 +705,158 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
+              summary={(pageData) => (
+                <Table.Summary.Row>
+                  <Table.Summary.Cell colSpan={5} />
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalIncome, 0))}
+                  </Table.Summary.Cell>
+                  {data.columnBasicSalaryAndAllowance.map((item) => {
+                    let summary = 0;
+                    pageData.forEach((itemPage) => {
+                      if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
+                        const basic = itemPage.basicSalaryAndAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
+                        );
+                        if (basic) summary += toNumber(basic.value);
+                      }
+                    });
+                    return (
+                      <Table.Summary.Cell key={item.code}>
+                        {Helper.getPrice(summary)}
+                      </Table.Summary.Cell>
+                    );
+                  })}
+                  {data.columnIncurredAllowance.map((item) => {
+                    let summary = 0;
+                    pageData.forEach((itemPage) => {
+                      if (!isEmpty(itemPage.incurredAllowance)) {
+                        const basic = itemPage.incurredAllowance.find(
+                          (itemBasic) => itemBasic.code === item.code,
+                        );
+                        if (basic) summary += toNumber(basic.value);
+                      }
+                    });
+                    return (
+                      <Table.Summary.Cell key={item.code}>
+                        {Helper.getPrice(summary)}
+                      </Table.Summary.Cell>
+                    );
+                  })}
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.kpiBonus, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otTax, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otNoTax, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + toNumber(item.unpaidLeave), 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + toNumber(item.totalWork), 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.totalIncomeMonth, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsuranceEmployee, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.healthInsuranceEmployee, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.unemploymentInsuranceEmployee,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.socialInsuranceAdjustedEmployee,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsuranceCompany, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.healthInsuranceCompany, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.unemploymentInsuranceCompany,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce(
+                        (total, item) => total + item.socialInsuranceAdjustedCompany,
+                        0,
+                      ),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.unionDues, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {pageData.reduce((total, item) => total + item.dependentPerson, 0)}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.eeduce, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.charity, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalReduce, 0))}{' '}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {' '}
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.rentalIncome, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.personalIncomeTax, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.socialInsurancePayment, 0),
+                    )}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(pageData.reduce((total, item) => total + item.advance, 0))}
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell />
+                  <Table.Summary.Cell>
+                    {Helper.getPrice(
+                      pageData.reduce((total, item) => total + item.actuallyReceived, 0),
+                    )}
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              )}
               rowKey={(record) => record.id}
               scroll={{ x: '100%', y: '55vh' }}
             />
@@ -661,6 +874,9 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  divisions: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -670,6 +886,9 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  divisions: [],
+  branches: [],
+  employees: [],
 };
 
 export default Index;

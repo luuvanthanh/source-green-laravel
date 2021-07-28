@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -53,6 +54,8 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         isEnd: query?.isEnd || false,
+        toDate: query?.toDate ? moment(query?.toDate) : moment().endOf('months'),
+        fromDate: query?.fromDate ? moment(query?.fromDate) : moment().startOf('months'),
       },
     };
     setIsMounted(true);
@@ -98,6 +101,8 @@ class Index extends PureComponent {
       pathname,
       query: Helper.convertParamSearch({
         ...search,
+        toDate: Helper.getDate(search.toDate, variables.DATE_FORMAT.DATE_AFTER),
+        fromDate: Helper.getDate(search.fromDate, variables.DATE_FORMAT.DATE_AFTER),
       }),
     });
   };
@@ -134,6 +139,24 @@ class Index extends PureComponent {
           [`${type}`]: value,
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((fromDate, toDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          fromDate,
+          toDate,
         },
       }),
       () => this.onLoad(),
@@ -180,6 +203,18 @@ class Index extends PureComponent {
    */
   onChangeSelectStatus = (e, type) => {
     this.debouncedSearchStatus(e, type);
+  };
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -325,6 +360,8 @@ class Index extends PureComponent {
               initialValues={{
                 ...search,
                 programType: search.programType || null,
+                date: search.fromDate &&
+                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
               }}
               layout="vertical"
               ref={this.formRef}
@@ -354,6 +391,13 @@ class Index extends PureComponent {
                     allowClear={false}
                     type={variables.SELECT}
                     onChange={(event) => this.onChangeSelect(event, 'programType')}
+                  />
+                </div>
+                <div className="col-lg-4">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
                   />
                 </div>
               </div>

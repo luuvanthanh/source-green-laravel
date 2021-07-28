@@ -5,8 +5,7 @@ export function get(data = {}) {
   return request('/v1/decision-rewards', {
     method: 'GET',
     params: {
-      limit: data.limit,
-      page: data.page,
+      ...data,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
@@ -28,9 +27,6 @@ export function get(data = {}) {
       }),
       include: Helper.convertIncludes(['employee']),
       fullName: data.fullName,
-      search: Helper.convertParamSearchConvert({
-        type: data.type,
-      }),
     },
   });
 }

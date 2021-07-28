@@ -6,7 +6,6 @@ import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
-import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -185,9 +184,6 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
     const columns = [
       {
         title: 'STT',
@@ -242,21 +238,6 @@ class Index extends PureComponent {
           return <Tag color="danger">Không</Tag>;
         },
       },
-      {
-        key: 'action',
-        className: 'min-width-80',
-        width: 80,
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="edit"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-          </div>
-        ),
-      },
     ];
     return columns;
   };
@@ -268,7 +249,6 @@ class Index extends PureComponent {
       match: { params },
       pagination,
       loading: { effects },
-      location: { pathname },
     } = this.props;
     const { search } = this.state;
     const loading = effects['criteriaDatatypes/GET_DATA'];
@@ -278,9 +258,6 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">DANH SÁCH KIỂU DỮ LIỆU</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
           </div>
           <div className={styles['block-table']}>
             <Form

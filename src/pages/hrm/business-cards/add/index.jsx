@@ -37,6 +37,7 @@ const mapStateToProps = ({ menu, businessCardsAdd, loading }) => ({
   error: businessCardsAdd.error,
   categories: businessCardsAdd.categories,
   shiftUsers: businessCardsAdd.shiftUsers,
+  absentTypes: businessCardsAdd.absentTypes,
   menuLeftSchedules: menu.menuLeftHRM,
 });
 
@@ -113,9 +114,20 @@ class Index extends PureComponent {
       type: 'businessCardsAdd/GET_CATEGORIES',
       payload: {},
     });
+    dispatch({
+      type: 'businessCardsAdd/GET_ABSENT_TYPES',
+      payload: {},
+    });
   };
 
   onChangeType = (type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'businessCardsAdd/GET_ABSENT_TYPES',
+      payload: {
+        type,
+      },
+    });
     this.setStateData({
       type,
     });
@@ -565,6 +577,7 @@ class Index extends PureComponent {
       categories,
       loading: { effects },
       match: { params },
+      absentTypes,
     } = this.props;
     const { detail, type } = this.state;
     const loading =
@@ -588,7 +601,11 @@ class Index extends PureComponent {
           onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
-            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}>
+            <Loading
+              loading={loading}
+              isError={error.isError}
+              params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}
+            >
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -643,7 +660,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      data={categories?.absentTypes || []}
+                      data={absentTypes || []}
                       label="Loại công"
                       name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
@@ -713,6 +730,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   menuLeftSchedules: PropTypes.arrayOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
+  absentTypes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -723,6 +741,7 @@ Index.defaultProps = {
   error: {},
   menuLeftSchedules: [],
   loading: {},
+  absentTypes: [],
 };
 
 export default Index;

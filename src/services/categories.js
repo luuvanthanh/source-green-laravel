@@ -173,14 +173,9 @@ export function getAbsentTypes(data = {}) {
     method: 'GET',
     params: {
       ...data,
-      limit: data.limit,
-      page: data.page,
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      search: Helper.convertParamSearchConvert({
-        name: data.name,
-      }),
     },
   });
 }
@@ -199,6 +194,33 @@ export function getCurriculumTemplates() {
   return request('/curriculum-templates', {
     method: 'GET',
     params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getClassTypes() {
+  return requestLaravel('/v1/class-types', {
+    method: 'GET',
+    params: {},
+  });
+}
+
+export function getFoodCommons(params) {
+  return request('/food-commons', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getMeals(params) {
+  return request('/meals', {
+    method: 'GET',
+    params: {
+      ...params,
       ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });

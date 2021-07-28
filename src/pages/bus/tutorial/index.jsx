@@ -231,6 +231,30 @@ class Index extends PureComponent {
   };
 
   /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+   onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    return Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'tutorial/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
+  /**
    * Function header table
    */
   header = () => {
@@ -293,6 +317,7 @@ class Index extends PureComponent {
               onClick={() => history.push(`${pathname}/${record?.busRoute?.id}/chi-tiet`)}
               permission="BUS"
             />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record?.busRoute?.id)} />
           </div>
         ),
       },

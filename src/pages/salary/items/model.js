@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -8,6 +9,9 @@ export default {
       isError: false,
       data: {},
     },
+    divisions: [],
+    branches: [],
+    employees: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -24,8 +28,62 @@ export default {
         },
       },
     }),
+    SET_DIVISIONS: (state, { payload }) => ({
+      ...state,
+      divisions: payload.parsePayload,
+    }),
+    SET_BRANCHES: (state, { payload }) => ({
+      ...state,
+      branches: payload.parsePayload,
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
   },
   effects: {
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DIVISIONS({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getDivisions, payload);
+        yield saga.put({
+          type: 'SET_DIVISIONS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);

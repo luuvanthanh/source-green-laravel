@@ -33,6 +33,8 @@ const getIsMounted = () => isMounted;
 const mapStateToProps = ({ timekeepingReport, loading }) => ({
   data: timekeepingReport.data,
   pagination: timekeepingReport.pagination,
+  branches: timekeepingReport.branches,
+  classes: timekeepingReport.branches,
   loading,
 });
 @connect(mapStateToProps)
@@ -46,12 +48,13 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       search: {
+        branchId: query?.branchId,
+        classId: query?.classId,
         fullName: query?.fullName,
-        type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
+        startDate: query?.startDate ? moment(query?.startDate) : moment().startOf('months'),
       },
     };
     setIsMounted(true);
@@ -59,6 +62,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -77,6 +81,22 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  loadCategories = () => {
+    const { search } = this.state;
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'timekeepingReport/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+    this.props.dispatch({
+      type: 'timekeepingReport/GET_BRANCHES',
+      payload: {},
+    });
   };
 
   /**
@@ -180,6 +200,39 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchDateRank = debounce((startDate, endDate) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate,
+          endDate,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectBranch = (e, type) => {
+    this.debouncedSearch(e, type);
+    this.props.dispatch({
+      type: 'timekeepingReport/GET_CLASSES',
+      payload: {
+        branch: e,
+      },
+    });
+  };
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
@@ -216,6 +269,18 @@ class Index extends PureComponent {
    */
   onChangeType = (e) => {
     this.debouncedSearchType(e);
+  };
+
+  /**
+   * Function change input
+   * @param {object} e event of input
+   * @param {string} type key of object search
+   */
+  onChangeDateRank = (e) => {
+    this.debouncedSearchDateRank(
+      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
+      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
+    );
   };
 
   /**
@@ -332,15 +397,6 @@ class Index extends PureComponent {
         render: (record) => record?.classStudent?.class?.name,
       },
       {
-        title: 'Định mức học',
-        key: 'allowances',
-        align: 'center',
-        className: 'min-width-100',
-        width: 100,
-        fixed: 'right',
-        render: (record) => record?.class?.name,
-      },
-      {
         title: 'Phép',
         key: 'absents',
         align: 'center',
@@ -376,6 +432,8 @@ class Index extends PureComponent {
 
   render() {
     const {
+      classes,
+      branches,
       data,
       pagination,
       match: { params },
@@ -397,10 +455,10 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                date: search.date ? moment(search.date) : null,
-                type: search.type || 'DATE',
-                startDate: search.startDate && moment(search.startDate),
-                endDate: search.endDate && moment(search.endDate),
+                date: search.startDate &&
+                  search.endDate && [moment(search.startDate), moment(search.endDate)],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -416,42 +474,30 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={variables.CHOOSE}
-                    name="type"
-                    allowClear={false}
-                    onChange={this.onChangeType}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    name="branchId"
+                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
-                {search.type === 'DATE' && (
-                  <>
-                    <div className="col-lg-3">
-                      <FormItem
-                        name="startDate"
-                        onChange={(event) => this.onChangeDate(event, 'startDate')}
-                        type={variables.DATE_PICKER}
-                      />
-                    </div>
-                    <div className="col-lg-3">
-                      <FormItem
-                        name="endDate"
-                        onChange={(event) => this.onChangeDate(event, 'endDate')}
-                        type={variables.DATE_PICKER}
-                      />
-                    </div>
-                  </>
-                )}
-                {search.type === 'MONTH' && (
-                  <>
-                    <div className="col-lg-3">
-                      <FormItem
-                        name="startDate"
-                        onChange={this.onChangeMonth}
-                        type={variables.MONTH_PICKER}
-                      />
-                    </div>
-                  </>
-                )}
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
+                    name="classId"
+                    onChange={(event) => this.onChangeSelect(event, 'classId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDateRank(event, 'date')}
+                    type={variables.RANGE_PICKER}
+                  />
+                </div>
               </div>
             </Form>
             <Table
@@ -481,6 +527,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -490,6 +538,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  branches: [],
+  classes: [],
 };
 
 export default Index;

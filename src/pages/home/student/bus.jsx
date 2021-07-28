@@ -1,9 +1,10 @@
 import { memo, useEffect, useState } from 'react';
-import { Form, Typography, Tabs } from 'antd';
+import { Form, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
@@ -12,7 +13,6 @@ import Table from '@/components/CommonComponent/Table';
 import styles from '../index.scss';
 import variablesModules  from '../variables';
 
-const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const Index = memo(({ studentId }) => {
@@ -58,7 +58,7 @@ const Index = memo(({ studentId }) => {
 
   useEffect(() => {
     fetchDataBus();
-  }, [search.rangeTime, studentId]);
+  }, [search.rangeTime, studentId, tab]);
 
 
   /**
@@ -70,40 +70,64 @@ const Index = memo(({ studentId }) => {
       key: 'time',
       align: 'center',
       className: 'min-width-100',
-      render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_MONTH)
+      render: (record) => Helper.getDate(record?.date, variables.DATE_FORMAT.DATE_MONTH)
     },
     {
       title: 'Lên xe',
       key: 'getOnBus',
       align: 'center',
       className: 'min-width-100',
-      render: (record) => Helper.getDate(
-        record[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetIn' : 'schoolwardGetIn'}`],
-        variables.DATE_FORMAT.TIME_FULL
-      )
+      render: (record) => {
+        const obj = {
+          children: Helper.getDate(
+            record?.busPlaceLog?.[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetIn' : 'schoolwardGetIn'}`],
+            variables.DATE_FORMAT.TIME_FULL
+          ),
+          props: {
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 3 : 1
+          }
+        };
+        if (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE' || record?.absentStudent) {
+          obj.children =  variablesModules[record?.status] || '';
+        }
+        return obj;
+      }
     },
     {
       title: 'Xuống xe',
       key: 'getOffBus',
       align: 'center',
       className: 'min-width-100',
-      render: (record) => Helper.getDate(
-        record[`${tab === variablesModules.TABS_BUS[0] ? 'homewardGetOff' : 'schoolwardGetOff'}`],
-        variables.DATE_FORMAT.TIME_FULL
-      )
+      render: (record) => {
+        const obj = {
+          children:  Helper.getDate(
+            record?.busPlaceLog?.[`${tab === variablesModules.TABS_BUS[0].id ? 'homewardGetOff' : 'schoolwardGetOff'}`],
+            variables.DATE_FORMAT.TIME_FULL
+          ),
+          props: {
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 0 : 1
+          }
+        };
+        if (record?.absentStudent) {
+          obj.children =  variablesModules[record?.status] || '';
+        }
+        return obj;
+      }
     },
     {
       title: 'Bảo mẫu',
       key: 'shuttler',
       width: 200,
       className: 'min-width-200',
-      render: (record) => (
-        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-          {record?.busPlace?.busRoute?.busRouteNannies
-            ?.map((item) => item?.nanny?.fullName)
-            .join(',')}
-        </Paragraph>
-      ),
+      render: (record) => {
+        const obj = {
+          children: record?.nanny?.fullName || '',
+          props: {
+            colSpan: (record?.status === 'NO_GET_IN_BUS' || record?.status === 'NO_BUS_ROUTE') ? 0 : 1
+          }
+        };
+        return obj;
+      }
     },
   ];
 
@@ -161,7 +185,7 @@ const Index = memo(({ studentId }) => {
           header: header(),
           type: 'table',
         }}
-        rowKey={(record) => record.id}
+        rowKey={() => uuidv4()}
         scroll={{ x: '100%' }}
       />
     </div>

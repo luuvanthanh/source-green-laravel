@@ -99,7 +99,7 @@ export const feature = {
       title: 'Bảng lương',
       src: '/images/home/drive.svg',
       animation: animationImage.salary,
-      url: '/',
+      url: '/bang-luong',
       permission: [permissions.BANGLUONG],
     },
     {
@@ -137,6 +137,13 @@ export const feature = {
       url: URL_AI,
       target: true,
       permission: [permissions.CAMERAAI],
+    },
+    {
+      title: 'Phát triển thể chất',
+      src: '/images/home/physical.svg',
+      animation: animationImage.setting,
+      url: '/phat-trien-the-chat',
+      permission: [],
     },
   ],
 };

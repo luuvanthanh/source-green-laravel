@@ -128,8 +128,20 @@ const Index = memo(() => {
       ...values,
       feeDetail: !_.isEmpty(feeDetail) ? feeDetail.map(item => ({
         ...item,
-        applyStartTime: item?.rangeDate[0],
-        applyEndTime: item?.rangeDate[1]
+        applyStartTime: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: item?.rangeDate[0],
+          }),
+          isUTC: false,
+        }),
+        applyEndTime: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: item?.rangeDate[1],
+          }),
+          isUTC: false,
+        }),
       })) : [],
       moneyMeal,
       otherMoneyDetail,

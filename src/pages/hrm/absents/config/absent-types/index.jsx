@@ -47,7 +47,7 @@ class Index extends PureComponent {
       search: {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        name: query?.name,
+        key: query?.key,
       },
     };
     setIsMounted(true);
@@ -298,8 +298,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
-                    name="name"
-                    onChange={(event) => this.onChange(event, 'name')}
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

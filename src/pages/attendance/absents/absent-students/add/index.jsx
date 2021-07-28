@@ -206,7 +206,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      user,
       students,
       error,
       menuLeftSchedules,
@@ -234,38 +233,37 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/diem-danh/don-xin-phep-cho-be' }}>
+            <Loading
+              loading={loading}
+              isError={error.isError}
+              params={{ error, goBack: '/diem-danh/don-xin-phep-cho-be' }}
+            >
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
                 </Text>
 
                 <div className="row mt-3">
-                  {user.role?.toUpperCase() !== variables.ROLES.PARENT && !user?.objectInfo?.id && (
-                    <>
-                      <div className="col-lg-4">
-                        <FormItem
-                          data={branches}
-                          label="Cơ sở"
-                          name="branchId"
-                          rules={[variables.RULES.EMPTY]}
-                          type={variables.SELECT}
-                          onChange={this.onChangeBranch}
-                        />
-                      </div>
-                      <div className="col-lg-4">
-                        <FormItem
-                          data={classes}
-                          label="Lớp"
-                          name="classId"
-                          rules={[variables.RULES.EMPTY]}
-                          type={variables.SELECT}
-                          onChange={this.onChangeClass}
-                        />
-                      </div>
-                    </>
-                  )}
-
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={branches}
+                      label="Cơ sở"
+                      name="branchId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                      onChange={this.onChangeBranch}
+                    />
+                  </div>
+                  <div className="col-lg-4">
+                    <FormItem
+                      data={classes}
+                      label="Lớp"
+                      name="classId"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.SELECT}
+                      onChange={this.onChangeClass}
+                    />
+                  </div>
                   <div className="col-lg-4">
                     <FormItem
                       data={Helper.convertSelectUsers(students)}

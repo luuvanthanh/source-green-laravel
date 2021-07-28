@@ -27,7 +27,7 @@ const Index = memo(() => {
   const history = useHistory();
   const { query, pathname } = useLocation();
 
-  const [{ data, progess }, loading] = useSelector(({ mediaBrowser, loading: { effects } }) => [
+  const [{ data }, loading] = useSelector(({ mediaBrowser, loading: { effects } }) => [
     mediaBrowser,
     effects,
   ]);
@@ -41,6 +41,7 @@ const Index = memo(() => {
     uploadDate: query?.uploadDate || moment(),
   });
   const [images, setImages] = useState([]);
+  const [progress, setProgress] = useState(0);
 
   const removeImage = (removeId) => {
     Helper.confirmAction({
@@ -104,7 +105,11 @@ const Index = memo(() => {
 
   const onOk = useCallback(() => {
     setVisibleUpload(false);
-    fetchMedia();
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      uploadDate: moment()
+    }));
+    filterRef?.current?.setFieldsValue({ uploadDate: moment() });
   }, []);
 
   const changeFilter = (name) => (value) => {
@@ -115,12 +120,11 @@ const Index = memo(() => {
   };
 
   const classify = () => {
+    setVisibleProgress(true);
     dispatch({
       type: 'mediaBrowser/CLASSIFY',
       payload: images.filter((item) => item.status === localVariables.CLASSIFY_STATUS.PENDING),
-      callback: () => {
-        fetchMedia();
-      },
+      callback: () => {},
     });
   };
 
@@ -134,10 +138,6 @@ const Index = memo(() => {
 
   const hiddenProgress = () => {
     setVisibleProgress(false);
-  };
-
-  const onNotifReceived = () => {
-    getProgress();
   };
 
   const setUpSignalRConnection = async () => {
@@ -158,7 +158,12 @@ const Index = memo(() => {
 
     connection.on('ProgressImage', (message) => {
       if (message) {
-        onNotifReceived();
+        setProgress(message?.data?.progress || 0);
+        if (message?.data?.status === 'finished') {
+          setInProgessSuccess(true);
+          setVisibleProgress(false);
+          setProgress(0);
+        }
       }
     });
 
@@ -210,7 +215,7 @@ const Index = memo(() => {
                 Hủy
               </p>
             </div>
-            <Progress strokeLinecap="square" percent={progess?.progress || 0} />
+            <Progress strokeLinecap="square" percent={progress || 0} />
           </div>
         )}
 
@@ -316,7 +321,7 @@ const Index = memo(() => {
         </Pane>
 
         <Pane>
-          {!isEmpty(images) && (
+          {!isEmpty(images) && !inProgessSuccess && (
             <Button
               disabled={
                 !size(images) ||

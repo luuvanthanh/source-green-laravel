@@ -277,9 +277,12 @@ class Index extends PureComponent {
         render: (record) => record?.reason,
       },
       {
+        title: 'Thao tác',
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        align: 'center',
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button

@@ -53,6 +53,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
+        reportDate: query?.reportDate,
       },
     };
     setIsMounted(true);
@@ -95,10 +96,15 @@ class Index extends PureComponent {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+          reportDate: Helper.getDate(search.reportDate, variables.DATE_FORMAT.DATE_AFTER),
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -323,7 +329,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     name="keyWord"
                     onChange={(event) => this.onChange(event, 'keyWord')}
@@ -331,7 +337,7 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     name="branchId"
@@ -339,12 +345,19 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    name="date"
+                    onChange={(event) => this.onChangeDate(event, 'reportDate')}
+                    type={variables.DATE_PICKER}
                   />
                 </div>
               </div>

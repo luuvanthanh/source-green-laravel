@@ -17,7 +17,7 @@ import variablesModule from '../variables';
 
 const { Paragraph } = Typography;
 
-const Index = memo(({ classId }) => {
+const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
 
   const {
@@ -46,7 +46,8 @@ const Index = memo(({ classId }) => {
     dispatch({
       type: 'overView/GET_DATA_BUS',
       payload: {
-        ClassId: classId || undefined,
+        classId,
+        branchId,
         date: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
@@ -608,10 +609,12 @@ const Index = memo(({ classId }) => {
 
 Index.propTypes = {
   classId: PropTypes.string,
+  branchId: PropTypes.string,
 };
 
 Index.defaultProps = {
   classId: '',
+  branchId: ''
 };
 
 export default Index;

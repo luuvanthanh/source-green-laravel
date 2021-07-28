@@ -96,7 +96,7 @@ export default {
         yield saga.put({
           type: 'SET_DATA_BUS',
           payload: {
-            parsePayload: response.items,
+            parsePayload: response,
           },
         });
       } catch (error) {

@@ -196,6 +196,54 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
+          {
+            path: '/thuc-don/thuc-don-1',
+            component: './menu/kitchen-menus/index',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/thuc-don-1/tao-moi',
+            component: './menu/kitchen-menus/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/bua-an',
+            component: './menu/meals',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/bua-an/tao-moi',
+            component: './menu/meals/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/bua-an/:id/chi-tiet',
+            component: './menu/meals/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/mon-an',
+            component: './menu/food-commons',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/mon-an/tao-moi',
+            component: './menu/food-commons/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/mon-an/:id/chi-tiet',
+            component: './menu/food-commons/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
         ],
       },
       {
@@ -1891,6 +1939,60 @@ export default [
         ],
       },
       // MEDIA
+      //PHYSICAL
+      {
+        path: '/phat-trien-the-chat',
+        component: './physical/layout',
+        routes: [
+          {
+            path: '/phat-trien-the-chat',
+            redirect: '/phat-trien-the-chat/tat-ca-hoc-sinh',
+          },
+          {
+            path: '/phat-trien-the-chat/tat-ca-hoc-sinh',
+            component: './physical/students',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/hoc-sinh-thua-can',
+            component: './physical/students/overweight',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/hoc-sinh-thieu-can',
+            component: './physical/students/underweight',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/lich-su',
+            component: './physical/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/tao-the-chat',
+            component: './physical/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/:id/chi-tiet',
+            component: './physical/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/phat-trien-the-chat/:id/chi-tiet/nhap-the-chat',
+            component: './physical/details/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+      //PHYSICAL
       {
         path: '/404',
         component: './404',

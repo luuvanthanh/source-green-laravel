@@ -13,7 +13,6 @@ export function get(data = {}) {
       include: Helper.convertIncludes(['shiftDetail', 'branch']),
       search: Helper.convertParamSearchConvert({
         StoreId: data.storeId,
-        ShiftCode: data.shiftCode,
       }),
     },
   });

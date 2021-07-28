@@ -154,20 +154,26 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    let payload = {
+      ...omit(values, 'startedPlaceLatLng', 'endedPlaceLatLng'),
+      busRouteSchedules: values.busRouteSchedules.map((item) => ({
+        dayOfWeek: item,
+      })),
+      startedPlaceLat: toNumber(head(values.startedPlaceLatLng.split(','))),
+      startedPlaceLong: toNumber(last(values.startedPlaceLatLng.split(','))),
+      endedPlaceLat: toNumber(head(values.endedPlaceLatLng.split(','))),
+      endedPlaceLong: toNumber(last(values.endedPlaceLatLng.split(','))),
+      id: params?.id,
+    };
+    if (params?.id) {
+      payload = {
+        ...details,
+        ...payload,
+      };
+    }
     dispatch({
       type: params?.id ? 'tutorialAddV2/UPDATE' : 'tutorialAddV2/ADD',
-      payload: {
-        ...details,
-        ...omit(values, 'startedPlaceLatLng', 'endedPlaceLatLng'),
-        busRouteSchedules: values.busRouteSchedules.map((item) => ({
-          dayOfWeek: item,
-        })),
-        startedPlaceLat: toNumber(head(values.startedPlaceLatLng.split(','))),
-        startedPlaceLong: toNumber(last(values.startedPlaceLatLng.split(','))),
-        endedPlaceLat: toNumber(head(values.endedPlaceLatLng.split(','))),
-        endedPlaceLong: toNumber(last(values.endedPlaceLatLng.split(','))),
-        id: params?.id,
-      },
+      payload,
       callback: (response, error) => {
         if (response) {
           history.goBack();

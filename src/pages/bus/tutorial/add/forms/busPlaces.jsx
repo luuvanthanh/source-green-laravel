@@ -230,7 +230,6 @@ class Index extends PureComponent {
       visible: false,
       listId: null,
       studentBusPlaces: [],
-      students: [],
     });
   };
 

@@ -9,8 +9,8 @@ export const variables = {
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
-    VERIFIED: 'Đã xác nhận',
-    PENDING: 'Chờ xử lý',
+    VERIFIED: 'Đã nhận',
+    PENDING: 'Chờ xác nhận',
     CANCEL: 'Từ chối',
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
