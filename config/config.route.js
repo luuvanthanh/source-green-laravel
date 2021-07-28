@@ -197,6 +197,18 @@ export default [
             authority: [permissions.BEP],
           },
           {
+            path: '/thuc-don/thuc-don-1',
+            component: './menu/kitchen-menus/index',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/thuc-don-1/tao-moi',
+            component: './menu/kitchen-menus/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
             path: '/thuc-don/bua-an',
             component: './menu/meals',
             wrappers: ['@/wrappers/auth'],

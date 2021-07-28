@@ -620,6 +620,14 @@ export async function getLeftMenuChildren() {
       pro: true,
     },
     {
+      title: 'Thực đơn 1',
+      key: 'menu1',
+      url: ['/thuc-don/thuc-don-1', '/thuc-don/thuc-don-1/tao-moi'],
+      icon: 'icon icon-list',
+      permission: [permissions.BEP],
+      pro: true,
+    },
+    {
       title: 'Danh mục bữa ăn',
       key: 'meals',
       url: ['/thuc-don/bua-an', '/thuc-don/bua-an/tao-moi', '/thuc-don/bua-an/:id/chi-tiet'],

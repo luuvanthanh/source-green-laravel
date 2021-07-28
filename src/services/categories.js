@@ -198,3 +198,30 @@ export function getCurriculumTemplates() {
     },
   });
 }
+
+export function getClassTypes() {
+  return requestLaravel('/v1/class-types', {
+    method: 'GET',
+    params: {},
+  });
+}
+
+export function getFoodCommons(params) {
+  return request('/food-commons', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getMeals(params) {
+  return request('/meals', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
