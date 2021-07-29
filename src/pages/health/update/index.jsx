@@ -19,6 +19,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import { isEmpty, head, get, toString } from 'lodash';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import InputNumber from '@/components/CommonComponent/InputNumber';
 import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
@@ -475,15 +476,17 @@ const Index = memo(() => {
                                     </Pane>
                                   </Pane>
                                 )}
-                                {criteria.criteriaDataType.type === 'number' && (
+                                 {criteria.criteriaDataType.type === 'number' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
-                                      <FormItem
-                                        name={[key, 'value']}
-                                        label={criteria.property}
-                                        type={variables.INPUT_COUNT}
-                                        rules={[variables.RULES.EMPTY]}
-                                      />
+                                      <Form.Item name={[key, 'value']} label={criteria.property}>
+                                        <InputNumber
+                                          className={csx(
+                                            'input-number',
+                                            styles['input-number-container'],
+                                          )}
+                                        />
+                                      </Form.Item>
                                     </Pane>
                                   </Pane>
                                 )}
