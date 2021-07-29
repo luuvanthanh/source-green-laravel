@@ -61,9 +61,6 @@ class AbsentCreateRequest extends FormRequest
     private function checkDuplicateAbsent($value)
     {
         $employeeId = request()->employeeId;
-        $startDate = request()->startDate;
-        $endDate = request()->endDate;
-        $result = [];
         foreach ($value as $item) {
             $absentDetails = AbsentDetail::where('Date', $item['date'])->whereHas('absent', function ($query) use ($employeeId) {
                 $query->where('EmployeeId', $employeeId);
