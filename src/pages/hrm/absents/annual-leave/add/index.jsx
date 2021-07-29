@@ -362,7 +362,7 @@ class Index extends PureComponent {
           return response;
         }
         return {
-          date: item, index: uuidv4()
+          date: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER), index: uuidv4()
         };
       });
       this.setStateData({
@@ -380,7 +380,7 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
-    return !params?.id ? !!enable : false;
+    return params?.id ? !!enable : false;
   };
 
   render() {
