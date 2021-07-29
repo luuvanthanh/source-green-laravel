@@ -11,9 +11,10 @@ export function getUsers(params = {}) {
   });
 }
 
-export function getParamaterValues() {
+export function getParamaterValues(params = {}) {
   return request(`/v1/paramater-values`, {
     method: 'GET',
+    params
   });
 }
 

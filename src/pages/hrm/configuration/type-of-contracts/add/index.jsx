@@ -8,8 +8,9 @@ import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -32,7 +33,6 @@ const mapStateToProps = ({ menu, loading, typeOfContractsAdd }) => ({
   details: typeOfContractsAdd.details,
   error: typeOfContractsAdd.error,
   paramaterValues: typeOfContractsAdd.paramaterValues,
-  paramaterFormulas: typeOfContractsAdd.paramaterFormulas,
 });
 
 @connect(mapStateToProps)
@@ -58,7 +58,10 @@ class Index extends PureComponent {
     }
     dispatch({
       type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
-      payload: params,
+      payload: {
+        ...params,
+        type: 'CONTRACT'
+      },
     });
   }
 
@@ -133,7 +136,6 @@ class Index extends PureComponent {
       menuData,
       loading: { effects },
       paramaterValues,
-      paramaterFormulas,
       match: { params },
     } = this.props;
     const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
@@ -215,8 +217,6 @@ class Index extends PureComponent {
                       type={variables.INPUT}
                     />
                   </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={paramaterValues}
@@ -257,6 +257,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  paramaterValues: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  menuData: [],
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  paramaterValues: [],
+};
 
 export default Index;

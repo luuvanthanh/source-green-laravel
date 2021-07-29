@@ -13,6 +13,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
+import PropTypes from 'prop-types';
 
 const { TabPane } = Tabs;
 let isMounted = true;
@@ -75,7 +76,6 @@ class Index extends PureComponent {
     const {
       details,
       match: { params },
-      contractTypes,
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
@@ -118,7 +118,9 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'probationaryContractsAdd/GET_CATEGORIES',
-      payload: {},
+      payload: {
+
+      },
     });
     dispatch({
       type: 'probationaryContractsAdd/GET_TYPE_CONTRACTS',
@@ -545,6 +547,26 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+  contractTypes: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  menuData: [],
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  categories: {},
+  contractTypes: []
+};
 
 export default Index;

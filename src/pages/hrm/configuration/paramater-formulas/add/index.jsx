@@ -236,6 +236,7 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                       onChange={this.onChangeCode}
+                      disabled={!!params?.id}
                     />
                   </div>
                   <div className="col-lg-6">
