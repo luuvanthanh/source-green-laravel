@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Form, Modal } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import { head, isEmpty, last, omit } from 'lodash';
+import { head, isEmpty, last, omit, size } from 'lodash';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -63,7 +63,7 @@ const Index = memo(() => {
                 weekIndex: itemMenu.weekIndex,
                 ...itemTimeline,
                 menuMealDetails,
-                mealId: itemMenu.mealId
+                mealId: itemMenu.mealId,
               };
             }),
           ];
@@ -78,12 +78,11 @@ const Index = memo(() => {
       fromDate: moment(values.month).startOf('months'),
       toDate: moment(values.month).endOf('months'),
       menuType: 'STUDENT',
-      menuMeals: menuMeals
-        .map((item) => ({
-          ...omit(item, 'timeline', 'id'),
-          menuMealDetails: item.menuMealDetails || undefined,
-          name: item.menuMealDetails ? item.name : undefined,
-        })),
+      menuMeals: menuMeals.map((item) => ({
+        ...omit(item, 'timeline', 'id'),
+        menuMealDetails: item.menuMealDetails || undefined,
+        name: item.menuMealDetails ? item.name : undefined,
+      })),
     };
     dispatch({
       type: params.id ? 'kitchenMenusCreate/UPDATE' : 'kitchenMenusCreate/ADD',
@@ -111,39 +110,29 @@ const Index = memo(() => {
     });
   };
 
-  const getRange = (startDate, endDate, type) => {
-    const fromDate = moment(startDate);
-    const toDate = moment(endDate);
-    const diff = toDate.diff(fromDate, type);
-    const range = [];
-    for (let i = 0; i < diff; i += 1) {
-      range.push(moment(startDate).add(i, type));
-    }
-    return range;
-  };
-
   const onApply = () => {
     formRef.current.validateFields().then((values) => {
-      let weeks = [];
-      const firstDay = moment(values.month).startOf('month');
-      const endDay = moment(values.month).endOf('month');
-      const monthRange = getRange(firstDay, endDay, 'days');
-      monthRange.forEach((item) => {
-        if (!weeks.includes(item.week())) {
-          weeks = [...weeks, item.week()];
-        }
+      dispatch({
+        type: 'kitchenMenusCreate/GET_TIMETABLE_FEES',
+        payload: {
+          month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+          year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+        },
+        callback: (response) => {
+          if (response) {
+            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
+              weekIndex: item.week,
+              menuMeals: meals.map((itemMeal) => ({
+                weekIndex: item.week,
+                mealId: itemMeal.id,
+                name: itemMeal.name,
+                timeline: [],
+              })),
+            }));
+            setWeeksKitchen(weeks);
+          }
+        },
       });
-      setWeeksKitchen(
-        weeks.map((item, index) => ({
-          weekIndex: index + 1,
-          menuMeals: meals.map((itemMeal) => ({
-            weekIndex: index + 1,
-            mealId: itemMeal.id,
-            name: itemMeal.name,
-            timeline: [],
-          })),
-        })),
-      );
     });
   };
 
@@ -174,9 +163,20 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            formRef.current.setFieldsValue({
-              ...response,
-            });
+            setWeeksKitchen(
+              response.map((item) => ({
+                weekIndex: item.weekIndex,
+                menuMeals: meals.map((itemMeal) => ({
+                  weekIndex: item.weekIndex,
+                  mealId: itemMeal.id,
+                  name: itemMeal.name,
+                  timeline: [],
+                })),
+              })),
+            );
+            // formRef.current.setFieldsValue({
+            //   ...response,
+            // });
           }
         },
       });
@@ -429,16 +429,42 @@ const Index = memo(() => {
     );
   };
 
+  const enableButton = (items) => {
+    let listEnable = [];
+    items.forEach((item) => {
+      item?.menuMeals?.forEach((item) => {
+        item?.timeline?.forEach((item) => {
+          item?.menuMealDetails?.forEach((item) => {
+            listEnable = [...listEnable, ...item.week.filter((item) => !item.foodId)];
+          });
+        });
+      });
+    });
+    return size(listEnable);
+  };
+
   return (
     <Pane style={{ paddingTop: 20 }}>
       <Modal
         centered
         footer={[
           <div className={classnames('d-flex', 'justify-content-end')} key="action">
-            <Button color="white" icon="cross" size="medium" onClick={handleCancel}>
+            <Button
+              color="white"
+              icon="cross"
+              size="medium"
+              onClick={handleCancel}
+              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+            >
               HỦY
             </Button>
-            <Button color="green" icon="save" size="medium" onClick={onSaveTimeline}>
+            <Button
+              color="green"
+              icon="save"
+              size="medium"
+              onClick={onSaveTimeline}
+              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+            >
               LƯU
             </Button>
           </div>,
@@ -474,49 +500,52 @@ const Index = memo(() => {
         <Pane className="row">
           <Pane className="col-lg-12">
             <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
-              <Pane className="p20 pt20 card">
-                <Heading type="form-title" className="mb20">
-                  Thông tin chung
-                </Heading>
-                <Pane className="row align-items-center">
-                  <Pane className="col-3">
-                    <FormItem
-                      label="Thời gian"
-                      name="month"
-                      type={variables.MONTH_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  <Pane className="col-3">
-                    <FormItem
-                      data={branches}
-                      label="Cơ sở"
-                      name="branchId"
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  <Pane className="col-3">
-                    <FormItem
-                      data={classTypes}
-                      label="Loại lớp"
-                      name="classTypeId"
-                      type={variables.SELECT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
-                  <Pane className="col-3">
-                    <Button color="success" onClick={onApply}>
-                      Tạo mới thực đơn
-                    </Button>
+              {!params.id && (
+                <Pane className="p20 pt20 card">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin chung
+                  </Heading>
+                  <Pane className="row align-items-center">
+                    <Pane className="col-3">
+                      <FormItem
+                        label="Thời gian"
+                        name="month"
+                        type={variables.MONTH_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Pane>
+                    <Pane className="col-3">
+                      <FormItem
+                        data={branches}
+                        label="Cơ sở"
+                        name="branchId"
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Pane>
+                    <Pane className="col-3">
+                      <FormItem
+                        data={classTypes}
+                        label="Loại lớp"
+                        name="classTypeId"
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Pane>
+                    <Pane className="col-3">
+                      <Button color="success" onClick={onApply}>
+                        Tạo mới thực đơn
+                      </Button>
+                    </Pane>
                   </Pane>
                 </Pane>
-              </Pane>
+              )}
+
               {!isEmpty(weeksKitchen) &&
                 weeksKitchen.map((item) => (
                   <div className={styles['menu-container']} key={item.weekIndex}>
                     <div className={styles['menu-header']}>
-                      <h3 className={styles.title}>Tuần {item.weekIndex + 1}</h3>
+                      <h3 className={styles.title}>Tuần {item.weekIndex}</h3>
                       <div className={styles.icon}>
                         <span className="icon-up" />
                       </div>
@@ -691,6 +720,7 @@ const Index = memo(() => {
                     color="success"
                     htmlType="submit"
                     size="large"
+                    disabled={enableButton(weeksKitchen)}
                     loading={
                       loading['kitchenMenusCreate/ADD'] ||
                       loading['kitchenMenusCreate/UPDATE'] ||

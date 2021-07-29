@@ -116,6 +116,14 @@ export default {
         });
       }
     },
+    *GET_TIMETABLE_FEES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getTimeTableFees, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);

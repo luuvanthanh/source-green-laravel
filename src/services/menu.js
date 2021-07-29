@@ -626,6 +626,7 @@ export async function getLeftMenuChildren() {
         '/thuc-don/thuc-don-1',
         '/thuc-don/thuc-don-1/tao-moi',
         '/thuc-don/thuc-don-1/:id/chi-tiet',
+        '/thuc-don/thuc-don-1/:id/chinh-sua'
       ],
       icon: 'icon icon-list',
       permission: [permissions.BEP],

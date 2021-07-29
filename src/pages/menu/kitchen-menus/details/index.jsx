@@ -1,20 +1,18 @@
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, List, Timeline, Image } from 'antd';
+import { List, Timeline, Image } from 'antd';
 import { useHistory, useLocation, useDispatch, useSelector } from 'dva';
 import { useParams } from 'umi';
 import { EyeOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars';
-import moment from 'moment';
 import 'moment/locale/vi';
-import { debounce } from 'lodash';
+import { isEmpty, head } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Text from '@/components/CommonComponent/Text';
+import Button from '@/components/CommonComponent/Button';
 
 import { variables, Helper } from '@/utils';
 
@@ -25,7 +23,7 @@ const Index = memo(() => {
   const [
     menuData,
     loadingReducer,
-    { data, branches, classes },
+    { data },
   ] = useSelector(({ menu: { menuLeftChildren }, loading, kitchenMenusDetails }) => [
     menuLeftChildren,
     loading,
@@ -35,10 +33,8 @@ const Index = memo(() => {
   const params = useParams();
   const dispatch = useDispatch();
   const mounted = useRef(false);
-  // const mountedSet = (action, value) => mounted?.current && action(value);
-
   const history = useHistory();
-  const { query, pathname } = useLocation();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     dispatch({
@@ -52,62 +48,70 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
+  const mergeMenuMeal = (items) => {
+    let menuMeal = [];
+    if (!isEmpty(items)) {
+      items.forEach((item) => {
+        menuMeal = [...menuMeal, ...item.menuMealGroupByDay];
+      });
+    }
+    return menuMeal;
+  };
+
   return (
     <>
       <Helmet title="Danh sách thực đơn" />
       <Breadcrumbs last="Thực đơn" menu={menuData} />
       <Pane className="p20">
-        <Pane className="card mb20">
-          <Pane className="pb-0" style={{ padding: 20 }} />
-        </Pane>
-
-        {/* <Pane className="row justify-content-center">
+        <Pane className="row justify-content-center">
           <Pane className="col-lg-6 card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
               <List
                 loading={loading}
-                dataSource={data}
-                renderItem={({ date, menuDetails = [] }, index) => (
+                dataSource={mergeMenuMeal(data)}
+                renderItem={({ date, menuMealGroupByMenuTypes = [] }, index) => (
                   <ListItem key={index}>
                     <Pane className="w-100">
                       <Pane className="mb10">
                         <Heading type="form-block-title">
-                          {Helper.getDate(date, 'dddd - DD/MM/YYYY')}
+                          {Helper.getDate(date, variables.DATE_FORMAT.SHOW_FULL_DATE)}
                         </Heading>
                       </Pane>
                       <Timeline>
-                        {menuDetails?.map(({ fromTime, toTime, foods }, index) => (
-                          <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
-                            <Pane>
-                              <b>
-                                {Helper.getDate(fromTime, variables.DATE_FORMAT.TIME_FULL)} -{' '}
-                                {Helper.getDate(toTime, variables.DATE_FORMAT.TIME_FULL)}
-                              </b>
-                            </Pane>
-                            {foods?.map(({ name, imageUrl }, index) => (
-                              <Pane key={index} className="mb5">
-                                <Text size="normal">{name}</Text>
-                                {Helper.isJSON(imageUrl) && (
-                                  <Image.PreviewGroup>
-                                    {Helper.isJSON(imageUrl) &&
-                                      JSON.parse(imageUrl).map((item, index) => (
-                                        <Image
-                                          width={80}
-                                          height={80}
-                                          src={`${API_UPLOAD}${item}`}
-                                          key={index}
-                                          preview={{
-                                            maskClassName: 'customize-mask',
-                                            mask: <EyeOutlined className="mr5" />,
-                                          }}
-                                        />
-                                      ))}
-                                  </Image.PreviewGroup>
-                                )}
+                        {head(menuMealGroupByMenuTypes)?.menuMealInfors?.map(
+                          ({ fromTime, toTime, menuMealDetails }, index) => (
+                            <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
+                              <Pane>
+                                <b>
+                                  {Helper.getDate(fromTime, variables.DATE_FORMAT.HOUR)} -{' '}
+                                  {Helper.getDate(toTime, variables.DATE_FORMAT.HOUR)}
+                                </b>
                               </Pane>
-                            ))}
-                          </TimelineItem>
-                        ))}
+                              {menuMealDetails?.map((item, index) => (
+                                <Pane key={index} className="mb5">
+                                  <Text size="normal">{item?.food?.name}</Text>
+                                  {Helper.isJSON(item?.food?.pathImage) && (
+                                    <Image.PreviewGroup>
+                                      {Helper.isJSON(item?.food?.pathImage) &&
+                                        JSON.parse(item?.food?.pathImage).map((item, index) => (
+                                          <Image
+                                            width={80}
+                                            height={80}
+                                            src={`${API_UPLOAD}${item?.url}`}
+                                            key={index}
+                                            preview={{
+                                              maskClassName: 'customize-mask',
+                                              mask: <EyeOutlined className="mr5" />,
+                                            }}
+                                          />
+                                        ))}
+                                    </Image.PreviewGroup>
+                                  )}
+                                </Pane>
+                              ))}
+                            </TimelineItem>
+                          ),
+                        )}
                       </Timeline>
                     </Pane>
                   </ListItem>
@@ -115,7 +119,21 @@ const Index = memo(() => {
               />
             </Scrollbars>
           </Pane>
-        </Pane> */}
+        </Pane>
+        <Pane className="row justify-content-center">
+          <Pane className="col-lg-6 ">
+            <Pane className="d-flex justify-content-end align-items-center">
+              <Button
+                color="success"
+                className="mr10"
+                onClick={() => history.push(pathname.replace('chi-tiet', 'chinh-sua'))}
+              >
+                Sửa
+              </Button>
+              <Button color="success">Thêm bản sao</Button>
+            </Pane>
+          </Pane>
+        </Pane>
       </Pane>
     </>
   );

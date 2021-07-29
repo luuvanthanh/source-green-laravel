@@ -74,6 +74,7 @@ export const variables = {
     TIME_DATE: 'HH:mm, DD-MM-YYYY',
     TIME_DATE_MONTH: 'HH:mm, DD/MM',
     YEAR: 'YYYY',
+    MONTH: 'MM',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
     TIME_FULL: 'HH:mm:ss',

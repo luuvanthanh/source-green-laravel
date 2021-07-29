@@ -969,4 +969,15 @@ export default class Helpers {
 
   static disabledDateRank = (current) =>
     current < moment().subtract(1, 'months') || current > moment().add(1, 'months');
+
+  static getRange = (startDate, endDate, type) => {
+    const fromDate = moment(startDate);
+    const toDate = moment(endDate);
+    const diff = toDate.diff(fromDate, type);
+    const range = [];
+    for (let i = 0; i < diff; i += 1) {
+      range.push(moment(startDate).add(i, type));
+    }
+    return range;
+  };
 }
