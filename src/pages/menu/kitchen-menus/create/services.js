@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export function get(params = {}) {
-  return request(`/kitchen-menus/${params.id}`, {
+  return request(`/kitchen-menus/group-by-day/${params.id}`, {
     method: 'GET',
   });
 }
@@ -24,5 +24,12 @@ export function remove(id) {
   return request(`/kitchen-menus/${id}`, {
     method: 'DELETE',
     parse: true,
+  });
+}
+
+export function getTimeTableFees(params = {}) {
+  return request(`/kitchen-menus/timetable-fees`, {
+    method: 'GET',
+    params,
   });
 }

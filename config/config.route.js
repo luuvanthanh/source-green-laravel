@@ -209,6 +209,12 @@ export default [
             authority: [permissions.BEP],
           },
           {
+            path: '/thuc-don/thuc-don-1/:id/chinh-sua',
+            component: './menu/kitchen-menus/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
             path: '/thuc-don/thuc-don-1/:id/chi-tiet',
             component: './menu/kitchen-menus/details',
             wrappers: ['@/wrappers/auth'],
