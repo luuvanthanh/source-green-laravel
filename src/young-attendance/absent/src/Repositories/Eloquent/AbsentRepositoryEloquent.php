@@ -163,14 +163,22 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $imageUrl = $absent->student->FileImage;
+                $images =  $absent->student->FileImage;
+                $urlImage = '';
+
+                if (!is_null($images)) {
+                    $images = json_decode($images);
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
+
                 if (!empty($userId)) {
                     Http::post("$urlNoti", [
                         'users' => $userId,
-                        'title' => 'Clover',
-                        'imageURL' => "string",
+                        'title' => $nameStudent,
+                        'imageURL' => $urlImage,
                         'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
                         'moduleType' => 9,
                         'refId' => $absent->Id,
@@ -190,7 +198,13 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $imageUrl = $absent->student->FileImage;
+                $images =  $absent->student->FileImage;
+                $urlImage = '';
+
+                if (!is_null($images)) {
+                    $images = json_decode($images);
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
 
@@ -198,7 +212,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     $response = Http::post("$urlNoti", [
                         'users' => $userId,
                         'title' => $nameStudent,
-                        'imageURL' => "string",
+                        'imageURL' => $urlImage,
                         'message' => "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
                         'moduleType' => 9,
                         'refId' => $absent->Id,
@@ -228,7 +242,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             $periodDateOld = new \DatePeriod($beginOld, $intervalDateOld, $endOld);
 
             foreach ($periodDateOld as $date) {
-                $attendanceOld = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))
+                Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))
                     ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->delete();
             }
 
@@ -268,14 +282,22 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $imageUrl = $absent->student->FileImage;
+            $images =  $absent->student->FileImage;
+            $urlImage = '';
+
+            if (!is_null($images)) {
+                $images = json_decode($images);
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
+
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
-                    'title' => 'Clover',
-                    'imageURL' => "string",
+                    'title' => $nameStudent,
+                    'imageURL' => $urlImage,
                     'message' => "Bé $nameStudent xin nghỉ phép được thay đổi ngày $startDate - $endDate",
                     'moduleType' => 9,
                     'refId' => $absent->Id,
@@ -295,14 +317,21 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $imageUrl = $absent->student->FileImage;
+            $images =  $absent->student->FileImage;
+            $urlImage = '';
+
+            if (!is_null($images)) {
+                $images = json_decode($images);
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
                     'title' => $nameStudent,
-                    'imageURL' => "string",
+                    'imageURL' => $urlImage,
                     'message' => "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
                     'moduleType' => 9,
                     'refId' => $absent->Id,
@@ -356,14 +385,22 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         $nameStudent = $absent->student->FullName;
-        $imageUrl = $absent->student->FileImage;
+        $images =  $absent->student->FileImage;
+        $urlImage = '';
+
+        if (!is_null($images)) {
+            $images = json_decode($images);
+            $urlImage = env('IMAGE_URL') . $images[0];
+        }
+
         $startDate = $absent->StartDate->format('d-m');
         $endDate = $absent->EndDate->format('d-m');
+
         if (!empty($userId)) {
             Http::post("$urlNoti", [
                 'users' => $userId,
-                'title' => 'Clover',
-                'imageURL' => "string",
+                'title' => $nameStudent,
+                'imageURL' => $urlImage,
                 'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
                 'moduleType' => 9,
                 'refId' => $absent->Id,

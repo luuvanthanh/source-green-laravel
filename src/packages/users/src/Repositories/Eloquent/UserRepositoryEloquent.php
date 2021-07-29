@@ -80,6 +80,8 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
         if (!empty($attributes['status'])) {
             $this->model = $this->model->where('Status', $attributes['status']);
+        } else {
+            $this->model = $this->model->status(User::STATUS['WORKING']);
         }
 
         $this->model = $this->model->tranferHistory($attributes);

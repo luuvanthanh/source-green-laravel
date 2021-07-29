@@ -12,6 +12,7 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -78,11 +79,13 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
-        if (!empty($attributes['fullName'])) {
-            $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+        $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
+            if (!empty($attributes['fullName'])) {
                 $query->whereLike('FullName', $attributes['fullName']);
-            });
-        }
+            }
+
+            $query->status(User::STATUS['WORKING']);
+        });
 
         if (!empty($attributes['limit'])) {
             $busRegistration = $this->paginate($attributes['limit']);
@@ -107,6 +110,7 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
         }
 
         $employees->tranferHistory($attributes);
+        $employees->status(User::STATUS['WORKING']);
 
         $employees->where(function ($query) use ($attributes) {
             $query->where('DateOff', '>=', $attributes['startDate'])
@@ -311,7 +315,6 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;
@@ -349,7 +352,6 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
                     $sheet->mergeCells($item);
                 }
                 $sheet->mergeCells('A1:AJ2');
-
             },
 
         ];

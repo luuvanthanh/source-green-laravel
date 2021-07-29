@@ -2,6 +2,7 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+use GGPHP\Category\Models\ParamaterFormula;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ParamaterFormulaUpdateRequest extends FormRequest

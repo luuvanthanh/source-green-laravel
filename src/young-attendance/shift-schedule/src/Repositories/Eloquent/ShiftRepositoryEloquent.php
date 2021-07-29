@@ -69,7 +69,6 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
             ShiftDetailServices::add($shift->Id, $attributes['time']);
 
             \DB::commit();
-
         } catch (\Throwable $th) {
             \DB::rollback();
         }
@@ -102,7 +101,6 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
     public function activeStatusShift(array $attributes, $id)
     {
         $shift = $this->model::find($id);
-        dd($shift);
         $shift = $shift->update(['Status' => $attributes['status']]);
 
         return parent::find($id);
@@ -124,8 +122,8 @@ class ShiftRepositoryEloquent extends CoreRepositoryEloquent implements ShiftRep
     public function getShift(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->orWhereLike('Name', $attributes['key']);
             $this->model = $this->model->orWhereLike('ShiftCode', $attributes['key']);
+            $this->model = $this->model->orWhereLike('Description', $attributes['key']);
         }
 
         if (!empty($attributes['branchId'])) {

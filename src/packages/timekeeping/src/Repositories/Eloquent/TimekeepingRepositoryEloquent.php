@@ -69,7 +69,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
     public function filterTimekeeping(array $attribute)
     {
-
         $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
             if (!empty($attribute['type'])) {
                 $query->where('Type', $attribute['type']);
@@ -78,6 +77,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             if (!empty($attribute['deviceId'])) {
                 $query->where('DeviceId', $attribute['deviceId']);
             }
+
             if (!empty($attribute['startDate']) && !empty($attribute['endDate'])) {
                 $query->whereDate('AttendedAt', '>=', Carbon::parse($attribute['startDate'])->format('Y-m-d'))
                     ->whereDate('AttendedAt', '<=', Carbon::parse($attribute['endDate'])->format('Y-m-d'));
@@ -98,9 +98,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }]);
 
         if (!empty($attribute['fullName'])) {
-
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attribute['fullName']);
         }
+
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->status(User::STATUS['WORKING']);
 
         if (!empty($attribute['employeeId'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereHas('timekeeping', function ($query) use ($attribute) {
@@ -158,6 +159,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeesByStore->tranferHistory($attributes);
+        $employeesByStore->status(User::STATUS['WORKING']);
 
         $employeesByStore->where(function ($query) use ($attributes) {
             $query->where('DateOff', '>=', $attributes['startDate'])
@@ -196,13 +198,21 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $now = Carbon::now();
 
         $this->employee = $employee;
-        $employeeTimekeeping = [];
         $result = [];
         $responseTimeKeepingUser = [];
         $timeKeepingByDate = [];
         $workDeclarationByDate = [];
         $dateOff = $employee->DateOff ? $employee->DateOff->format('Y-m-d') : null;
+        $dateStartWork = null;
+        $contract = $employee->labourContract()->orderBy('CreationTime')->first();
 
+        if (is_null($contract)) {
+            $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
+        }
+
+        if (!is_null($contract)) {
+            $dateStartWork = $contract->ContractFrom->format('Y-m-d');
+        }
         // thoi gian cham cong
         $employeeHasTimekeeping = $employee->timekeeping;
 
@@ -229,7 +239,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     "timekeepingReport" => 0,
                     "type" => "NV",
                 ];
-            } else if (!array_key_exists($date->format('Y-m-d'), $employeeTimeWorkShift)) {
+            } else if (!array_key_exists($date->format('Y-m-d'), (array) $employeeTimeWorkShift)) {
                 $responseTimeKeepingUser[] = [
                     "date" => $date->format('Y-m-d'),
                     "timekeepingReport" => 0,
@@ -345,7 +355,12 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         foreach ($responseTimeKeepingUser as $key => &$item) {
             $check = Carbon::parse($item['date'])->setTimezone('GMT+7')->format('l');
 
+            if (!is_null($dateStartWork) && $item['date'] == $dateStartWork) {
+                $responseTimeKeepingUser[$key]['type'] = 'ST';
+            }
+
             if ($check === 'Saturday' || $check === 'Sunday') {
+
                 if ($responseTimeKeepingUser[$key]['type'] != 'TS') {
                     $responseTimeKeepingUser[$key]['timekeepingReport'] = 0;
                     $responseTimeKeepingUser[$key]['type'] = 'WK';
@@ -677,6 +692,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeesByStore->tranferHistory($attributes);
+        $employeesByStore->status(User::STATUS['WORKING']);
 
         $employeesByStore->where(function ($query) use ($attributes) {
             $query->where('DateOff', '>=', $attributes['startDate'])
@@ -709,7 +725,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $startDate = $attributes['startDate'];
         $endDate = $attributes['endDate'];
         $type = !empty($attributes['type']) ? $attributes['type'] : null;
-        $employeeTimekeeping = [];
         $result = [];
         $responseInvalid = [];
         $timeKeepingByDate = [];

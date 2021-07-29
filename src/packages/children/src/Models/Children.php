@@ -15,7 +15,7 @@ class Children extends UuidModel
     /**
      * Declare the table name
      */
-    protected $table = 'Children';
+    protected $table = 'Childrens';
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,7 @@ class Children extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'FullName', 'Gender', 'Birthday', 'Status',
+        'EmployeeId', 'FullName', 'Gender', 'Birthday', 'Status', 'Relationship', 'IsDependentPerson'
     ];
 
     /**

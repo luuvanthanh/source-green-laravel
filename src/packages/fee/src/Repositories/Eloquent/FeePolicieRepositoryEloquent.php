@@ -231,13 +231,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                 }
 
                 $monthAdmission = Carbon::parse($dayAdmission)->setDay(1);
-                $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
-
                 $daysLeftInMonth = $endMonth->diffInDays($dayAdmission) + 1;
-
                 $totalDayWeekend = $this->countWeekend($dayAdmission, $endMonth->format('Y-m-d'));
 
-                $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
                 if (!is_null($feePolicie)) {
                     switch ($fee->Type) {
                         case 'HP':
@@ -257,32 +253,51 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
 
                                 switch ($paymentForm->Code) {
                                     case 'HOCKY1':
+                                        $monthStart = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
+                                        $monthStudied = $monthAdmission->diffInMonths($monthStart->StartDate) + 1;
+
                                         // tháng học kỳ 1
                                         $monthsemester1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) {
                                                 $query->where('Code', 'HOCKY1');
                                             })->get();
 
-                                        $totalMonthsemester1 = count($monthsemester1);
+                                        $totalMonthsemester1 = 0;
+
+                                        foreach ($monthsemester1 as $value) {
+                                            $totalMonthsemester1 += $value->FullMonth;
+                                        }
 
                                         if ($totalMonthsemester1 > 0 && $totalWeekStudyInMonth > 0) {
                                             $result = $money / $totalMonthsemester1 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester1 - $monthStudied);
                                         }
                                         break;
                                     case 'HOCKY2':
+                                        $monthStart = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
+                                            ->where('PaymentFormId', $detail->paymentFormId)->orderBy('StartDate')->first();
+                                        $monthStudied = $monthAdmission->diffInMonths($monthStart->StartDate) + 1;
+
+
                                         // tháng học kỳ 2
                                         $monthsemester2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
                                             ->whereHas('paymentForm', function ($query) {
                                                 $query->where('Code', 'HOCKY2');
                                             })->get();
+                                        $totalMonthsemester2 = 0;
 
-                                        $totalMonthsemester2 = count($monthsemester2);
+                                        foreach ($monthsemester2 as $value) {
+                                            $totalMonthsemester2 += $value->FullMonth;
+                                        }
 
                                         if ($totalMonthsemester2 > 0 && $totalWeekStudyInMonth > 0) {
                                             $result = $money / $totalMonthsemester2 * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonthsemester2 - $monthStudied);
                                         }
                                         break;
                                     case 'NAM':
+                                        $monthStart = Carbon::parse($schooleYear->StartDate)->setDay(1);
+                                        $monthStudied = $monthAdmission->diffInMonths($monthStart) + 1;
+
                                         if ($totalMonth > 0 && $totalWeekStudyInMonth > 0) {
                                             $result = $money / $totalMonth * (($remainingWeek / $totalWeekStudyInMonth) + $totalMonth - $monthStudied);
                                         }
