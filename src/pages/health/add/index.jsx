@@ -19,6 +19,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import InputNumber from '@/components/CommonComponent/InputNumber';
 
 const { Item: ListItem } = List;
 const Index = memo(() => {
@@ -334,12 +335,14 @@ const Index = memo(() => {
                                 {criteria.criteriaDataType.type === 'number' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
-                                      <FormItem
-                                        name={[key, 'value']}
-                                        label={criteria.property}
-                                        type={variables.INPUT_COUNT}
-                                        rules={[variables.RULES.EMPTY]}
-                                      />
+                                      <Form.Item name={[key, 'value']} label={criteria.property}>
+                                        <InputNumber
+                                          className={csx(
+                                            'input-number',
+                                            styles['input-number-container'],
+                                          )}
+                                        />
+                                      </Form.Item>
                                     </Pane>
                                   </Pane>
                                 )}
