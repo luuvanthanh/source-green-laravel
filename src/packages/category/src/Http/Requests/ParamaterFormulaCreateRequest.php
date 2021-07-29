@@ -24,8 +24,8 @@ class ParamaterFormulaCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:ParamaterFormulas,Name',
-            'code' => 'required|string|unique:ParamaterFormulas,Code',
+            'name' => 'required|string|unique:ParameterFormulas,Name',
+            'code' => 'required|string|unique:ParameterFormulas,Code',
             "applyDate" => 'required',
             "recipe" => 'required',
         ];

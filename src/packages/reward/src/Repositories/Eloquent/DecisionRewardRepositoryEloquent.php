@@ -75,7 +75,6 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
         }
 
         return parent::find($decisionReward->Id);
-
     }
 
     public function update(array $attributes, $id)
@@ -140,7 +139,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
 
         if (is_int($number) && $number < abs($max_size)) {
             switch ($number) {
-                // set up some rules for converting digits to words
+                    // set up some rules for converting digits to words
                 case $number < 0:
                     $prefix = "negative";
                     $suffix = $this->translateToWords(-1 * $number);
@@ -185,12 +184,18 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                 case 13:
                     $string = "mười ba";
                     break;
-                // fourteen handled later
+                    // fourteen handled later
                 case 15:
                     $string = "mười năm";
                     break;
                 case $number < 20:
                     $string = $this->translateToWords($number % 10);
+                    // eighteen only has one "t"
+                    if ($number == 18) {
+                        $suffix = "een";
+                    } else {
+                        $suffix = "teen";
+                    }
                     $string .= $suffix;
                     break;
                 case 20:
@@ -222,7 +227,7 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     $suffix = $this->translateToWords($number % 10);
                     $string = $prefix . " " . $suffix;
                     break;
-                // handles all number 100 to 999
+                    // handles all number 100 to 999
                 case $number < pow(10, 3):
 
                     // floor return a float not an integer
@@ -296,8 +301,8 @@ class DecisionRewardRepositoryEloquent extends CoreRepositoryEloquent implements
                     }
 
                     break;
-                // Be careful not to pass default formatted numbers in the quadrillions+ into this function
-                // Default formatting is float and causes errors
+                    // Be careful not to pass default formatted numbers in the quadrillions+ into this function
+                    // Default formatting is float and causes errors
                 case $number < pow(10, 18):
                     // floor return a float not an integer
                     $prefix = $this->translateToWords(intval(floor($number / pow(10, 15)))) . " triệu tỷ";

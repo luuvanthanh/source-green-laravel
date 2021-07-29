@@ -27,7 +27,17 @@ class ParameterTaxUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $parameterTax = \GGPHP\Category\Models\ParameterTax::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $parameterTax = \GGPHP\Category\Models\ParameterTax::where('Name', $value)->where('Id', '!=', request()->parameter_tax)->first();
+
+                    if (!is_null($parameterTax)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
+            'code' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $parameterTax = \GGPHP\Category\Models\ParameterTax::where('Code', $value)->where('Id', '!=', request()->parameter_tax)->first();
 
                     if (!is_null($parameterTax)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

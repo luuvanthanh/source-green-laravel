@@ -56,6 +56,7 @@ class ParameterTaxRepositoryEloquent extends CoreRepositoryEloquent implements P
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {
                 $query->orWhereLike('Name', $attributes['key']);
+                $query->orWhereLike('Code', $attributes['key']);
             });
         }
 

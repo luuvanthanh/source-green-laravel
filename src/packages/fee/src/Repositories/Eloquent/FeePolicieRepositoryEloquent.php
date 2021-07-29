@@ -304,12 +304,12 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                 $money = $feeDetail->Money;
                                 switch ($paymentForm->Code) {
                                     case 'HOCKY1':
-
                                         // tháng còn lại học kỳ 1
                                         $monthsemesterLeft1 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
+                                            ->whereHas('paymentForm', function ($query) use ($month) {
                                                 $query->where('Code', 'HOCKY1');
-                                                $query->where('StartDate', '>', $endMonth);
+                                                $query->where('Date', '!=', $month->Date);
+                                                $query->where('StartDate', '>',  $month->EndDate);
                                             })->get();
 
                                         // tháng học kỳ 1
@@ -341,9 +341,10 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     case 'HOCKY2':
                                         // tháng còn lại học kỳ 2
                                         $monthsemesterLeft2 = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
+                                            ->whereHas('paymentForm', function ($query) use ($month) {
                                                 $query->where('Code', 'HOCKY2');
-                                                $query->where('StartDate', '>', $endMonth);
+                                                $query->where('Date', '!=', $month->Date);
+                                                $query->where('StartDate', '>',  $month->EndDate);
                                             })->get();
 
                                         // tháng học kỳ 2
@@ -360,8 +361,8 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         }
 
                                         $totalSchoolDayLeft = 0;
-                                        if (count($monthsemesterLeft1) > 0) {
-                                            foreach ($monthsemesterLeft1 as $value) {
+                                        if (count($monthsemesterLeft2) > 0) {
+                                            foreach ($monthsemesterLeft2 as $value) {
 
                                                 $totalSchoolDayLeft += $value->SchoolDay;
                                             }
@@ -374,8 +375,9 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                     case 'NAM':
                                         // tháng còn lại năm học
                                         $monthLeft = \GGPHP\Fee\Models\ChangeParameterDetail::where('ChangeParameterId', $schooleYear->changeParameter->Id)
-                                            ->whereHas('paymentForm', function ($query) use ($endMonth) {
-                                                $query->where('StartDate', '>', $endMonth);
+                                            ->whereHas('paymentForm', function ($query) use ($month) {
+                                                $query->where('StartDate', '>', $month->EndDate);
+                                                $query->where('Date', '!=', $month->Date);
                                             })->get();
 
                                         // tháng năm học
@@ -401,7 +403,6 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
                                         }
                                         break;
                                     case 'THANG':
-
                                         $result = ($daysLeftInMonth - $totalDayWeekend) * $money;
                                         break;
                                 }
@@ -422,7 +423,7 @@ class FeePolicieRepositoryEloquent extends CoreRepositoryEloquent implements Fee
             }
 
             $data[] = [
-                "id" => $detail->id,
+                "id" => isset($detail->id) ? $detail->id : null,
                 "feeId" => $detail->feeId,
                 "paymentFormId" => $detail->paymentFormId,
                 'money' => $result,

@@ -2,12 +2,14 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+
+use GGPHP\Users\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class HolidayUpdateRequest extends FormRequest
+class TrainingSchoolDeleteRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the employee is authorized to make this request.
      *
      * @return bool
      */
@@ -24,13 +26,13 @@ class HolidayUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => [
-                'string',
+            'id' => [
+                'required',
                 function ($attribute, $value, $fail) {
-                    $educationalLevel = \GGPHP\Category\Models\Holiday::where('Name', $value)->where('Id', '!=', request()->holiday)->first();
+                    $employees = User::where('TrainingSchoolId', $value)->first();
 
-                    if (!is_null($educationalLevel)) {
-                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    if (!is_null($employees)) {
+                        return $fail('Dữ liệu đang được sử dụng!');
                     }
                 },
             ],

@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Http\Requests;
 
+use GGPHP\Fee\Models\FeePolicie;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFeePolicieRequest extends FormRequest
@@ -24,7 +25,7 @@ class UpdateFeePolicieRequest extends FormRequest
     public function rules()
     {
         return [
-            'SchoolYearId' => [
+            'schoolYearId' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $feePolicie = FeePolicie::where('SchoolYearId', $value)->where('Id', '!=', request()->id)->first();

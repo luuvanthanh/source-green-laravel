@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\TrainingSchoolCreateRequest;
+use GGPHP\Category\Http\Requests\TrainingSchoolDeleteRequest;
 use GGPHP\Category\Http\Requests\TrainingSchoolUpdateRequest;
 use GGPHP\Category\Repositories\Contracts\TrainingSchoolRepository;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -83,7 +84,7 @@ class TrainingSchoolController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TrainingSchoolDeleteRequest $request, $id)
     {
         $this->trainingSchoolRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

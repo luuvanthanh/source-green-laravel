@@ -28,7 +28,7 @@ class DegreeUpdateRequest extends FormRequest
             'name' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $branch = Degree::where('Name', $value)->where('Id', '!=', request()->id)->first();
+                    $branch = Degree::where('Name', $value)->where('Id', '!=', request()->degree)->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');
@@ -38,7 +38,7 @@ class DegreeUpdateRequest extends FormRequest
             'code' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $branch = Degree::where('Code', $value)->where('Id', '!=', request()->id)->first();
+                    $branch = Degree::where('Code', $value)->where('Id', '!=', request()->degree)->first();
 
                     if (!is_null($branch)) {
                         return $fail('Trường đã có trong cơ sở dữ liệu.');

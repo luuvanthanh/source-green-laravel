@@ -2,9 +2,11 @@
 
 namespace GGPHP\Category\Http\Requests;
 
+
+use GGPHP\Users\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ParameterTaxCreateRequest extends FormRequest
+class DegreeDeleteRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -24,8 +26,16 @@ class ParameterTaxCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:ParameterTaxs,Name',
-            'code' => 'required|string|unique:ParameterTaxs,Code',
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $employees = User::where('DegreeId', $value)->first();
+
+                    if (!is_null($employees)) {
+                        return $fail('Dữ liệu đang được sử dụng!');
+                    }
+                },
+            ],
         ];
     }
 }

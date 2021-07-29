@@ -48,7 +48,7 @@ class EducationalLevelRepositoryEloquent extends CoreRepositoryEloquent implemen
         return EducationalLevelPresenter::class;
     }
 
-    public function getDivision(array $attributes)
+    public function getEducationalLevel(array $attributes)
     {
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where(function ($query) use ($attributes) {

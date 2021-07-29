@@ -14,7 +14,7 @@ class ParameterTax extends UuidModel
     protected $table = 'ParameterTaxs';
 
     protected $fillable = [
-        'Name', 'From', 'To', 'Fax', 'ApplyDate',
+        'Code', 'Name', 'From', 'To', 'Fax', 'ApplyDate',
     ];
 
     /**

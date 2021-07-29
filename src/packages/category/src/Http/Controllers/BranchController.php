@@ -4,6 +4,7 @@ namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\BranchCreateRequest;
 use GGPHP\Category\Http\Requests\BranchUpdateRequest;
+use GGPHP\Category\Http\Requests\BranchDeleteRequest;
 use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -85,11 +86,10 @@ class BranchController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(BranchDeleteRequest $request, $id)
     {
         $this->branchRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
-
 }

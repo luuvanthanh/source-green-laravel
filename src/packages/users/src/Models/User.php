@@ -206,7 +206,7 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
 
     public function scopeTranferHistory($query, $attributes)
     {
-        if (!empty($attributes['branchId']) || !empty($attributes['divisionId']) || !empty($attributes['positionId'])) {
+        if (!empty($attributes['branchId']) || !empty($attributes['divisionId']) || !empty($attributes['positionId']) || (!empty($attributes['startDate']) && !empty($attributes['endDate']))) {
             $query->whereHas('positionLevel', function ($q) use ($attributes) {
                 if (!empty($attributes['branchId'])) {
                     $q->where('BranchId', $attributes['branchId']);
@@ -268,5 +268,4 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     {
         return $this->hasOne(\GGPHP\Clover\Models\EmployeeAccount::class, 'EmployeeId');
     }
-
 }
