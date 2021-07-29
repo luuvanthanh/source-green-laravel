@@ -4,6 +4,7 @@ namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\EducationalLevelCreateRequest;
 use GGPHP\Category\Http\Requests\EducationalLevelUpdateRequest;
+use GGPHP\Category\Http\Requests\EducationalLevelDeleteRequest;
 use GGPHP\Category\Repositories\Contracts\EducationalLevelRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -83,7 +84,7 @@ class EducationalLevelController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(EducationalLevelDeleteRequest $request, $id)
     {
         $this->educationalLevelRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

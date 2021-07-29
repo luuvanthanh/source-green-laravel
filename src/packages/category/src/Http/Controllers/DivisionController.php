@@ -4,6 +4,7 @@ namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\DivisionCreateRequest;
 use GGPHP\Category\Http\Requests\DivisionUpdateRequest;
+use GGPHP\Category\Http\Requests\DivisionDeleteRequest;
 use GGPHP\Category\Repositories\Contracts\DivisionRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -86,11 +87,10 @@ class DivisionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DivisionDeleteRequest $request, $id)
     {
         $this->divisionRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
-
 }

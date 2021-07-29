@@ -3,6 +3,7 @@
 namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\DegreeCreateRequest;
+use GGPHP\Category\Http\Requests\DegreeDeleteRequest;
 use GGPHP\Category\Http\Requests\DegreeUpdateRequest;
 use GGPHP\Category\Repositories\Contracts\DegreeRepository;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -83,7 +84,7 @@ class DegreeController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DegreeDeleteRequest $request, $id)
     {
         $this->degreeRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

@@ -4,6 +4,7 @@ namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\ParamaterValueCreateRequest;
 use GGPHP\Category\Http\Requests\ParamaterValueUpdateRequest;
+use GGPHP\Category\Http\Requests\ParamaterValueDeleteRequest;
 use GGPHP\Category\Repositories\Contracts\ParamaterValueRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class ParamaterValueController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(ParamaterValueDeleteRequest $request, $id)
     {
         $this->paramaterValueRepository->delete($id);
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);

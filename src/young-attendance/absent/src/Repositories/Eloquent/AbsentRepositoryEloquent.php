@@ -197,7 +197,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 if (!empty($userId)) {
                     $response = Http::post("$urlNoti", [
                         'users' => $userId,
-                        'title' => 'Clover',
+                        'title' => $nameStudent,
                         'imageURL' => "string",
                         'message' => "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
                         'moduleType' => 9,
@@ -301,7 +301,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
-                    'title' => 'Clover',
+                    'title' => $nameStudent,
                     'imageURL' => "string",
                     'message' => "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
                     'moduleType' => 9,

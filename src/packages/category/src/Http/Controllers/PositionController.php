@@ -4,6 +4,7 @@ namespace GGPHP\Category\Http\Controllers;
 
 use GGPHP\Category\Http\Requests\PositionCreateRequest;
 use GGPHP\Category\Http\Requests\PositionUpdateRequest;
+use GGPHP\Category\Http\Requests\PositionDeleteRequest;
 use GGPHP\Category\Repositories\Contracts\PositionRepository;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -86,11 +87,10 @@ class PositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(PositionDeleteRequest $request, $id)
     {
         $this->positionRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
-
 }
