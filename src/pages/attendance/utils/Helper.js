@@ -40,6 +40,13 @@ export default class Helpers {
     return moment().endOf(choose || 'isoWeek');
   };
 
+  static getDateSearch = (date, type = 'startDate') => {
+    if (date) {
+      return moment(date);
+    }
+    return type === 'startDate' ? moment.utc().local().startOf('month') : moment.utc().local().endOf('month');
+  }
+
   static getDayOfWeek = (date = 0) => {
     switch (toNumber(date)) {
       case 1:

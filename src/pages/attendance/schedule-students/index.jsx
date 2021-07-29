@@ -61,8 +61,8 @@ class Index extends PureComponent {
         type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        startDate: HelperModules.getDateSearch(query?.startDate),
+        endDate: HelperModules.getDateSearch(query?.endDate, 'endDate'),
       },
       user: {},
       dayOfWeek: moment(),
@@ -251,8 +251,31 @@ class Index extends PureComponent {
    * Function change type
    * @param {object} e value of select
    */
-  onChangeType = (e) => {
-    this.debouncedSearchType(e);
+  onChangeType = (type) => {
+    const startDate = moment.utc().local().startOf('month');
+    const endDate = moment.utc().local().endOf('month');
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          type,
+          startDate,
+          endDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }), () => {
+        if (type === 'MONTH') {
+          this.formRef?.current?.setFieldsValue({ month: moment(startDate) });
+        } else {
+          this.formRef.current.setFieldsValue({
+            rageDate: [moment(startDate), moment(endDate)],
+          });
+        }
+
+        this.debouncedLoadData();
+      }
+    );
   };
 
   /**
@@ -261,8 +284,34 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    let startDate = '';
+    let endDate = '';
+    if (type === 'month' && e) {
+      startDate = moment.utc(e).local().startOf('month');
+      endDate = moment.utc(e).local().endOf('month');
+    }
+    if (type === 'rangeDate' && e) {
+      startDate = moment.utc(e[0]).local().startOf('day');
+      endDate = moment.utc(e[1]).local().endOf('day');
+    }
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          startDate,
+          endDate,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }), () => {
+        this.debouncedLoadData();
+      }
+    );
   };
+
+  debouncedLoadData = debounce(() => {
+    this.onLoad();
+  }, 300);
 
   /**
    * Function set pagination
@@ -652,7 +701,6 @@ class Index extends PureComponent {
     const loadingSubmit = effects['scheduleStudents/ADD'];
     const loadingRemoveAll = effects['scheduleStudents/REMOVE'];
     const loadingRemoveOnly = effects['scheduleStudents/REMOVE_ONLY'];
-
     return (
       <>
         <Helmet title="Lịch học trẻ" />
@@ -739,10 +787,10 @@ class Index extends PureComponent {
                 ...search,
                 productType: search.productType || null,
                 type: search.type || 'DATE',
-                startDate: search.startDate && moment(search.startDate),
-                endDate: search.endDate && moment(search.endDate),
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                rageDate: search?.type === 'DATE' ? [moment(search.startDate), moment(search.endDate)] : null,
+                month: search?.type === 'MONTH' ? moment(search.startDate) : null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -775,21 +823,25 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="startDate"
-                    onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
-
-                <div className="col-lg-3">
-                  <FormItem
-                    name="endDate"
-                    onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
-                  />
-                </div>
+                {search?.type === 'DATE' ? (
+                  <div className="col-lg-3">
+                    <FormItem
+                      name="rageDate"
+                      onChange={(event) => this.onChangeDate(event, 'rangeDate')}
+                      type={variables.RANGE_PICKER}
+                      allowClear={false}
+                    />
+                  </div>
+                ) : (
+                  <div className="col-lg-3">
+                    <FormItem
+                      name="month"
+                      onChange={(event) => this.onChangeDate(event, 'month')}
+                      type={variables.MONTH_PICKER}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
               </div>
             </Form>
             <Table
