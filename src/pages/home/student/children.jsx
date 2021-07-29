@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react';
-import { Form, Typography } from 'antd';
+import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import _ from 'lodash';
 import classnames from 'classnames';
@@ -11,8 +11,6 @@ import { variables, Helper } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 
 import styles from '../index.scss';
-
-const { Paragraph } = Typography;
 
 const Index = memo(({ studentId }) => {
   const dispatch = useDispatch();
@@ -30,14 +28,14 @@ const Index = memo(({ studentId }) => {
     ]
   });
 
-
-  const fetchDataBus = () => {
+  const fetchStudents = () => {
     dispatch({
       type: 'studentHomePage/GET_DATA_CHILD_IN_CLASS',
       payload: {
-        id: studentId,
+        studentId,
         ...search,
-        from: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
+        rangeTime: undefined,
+        startDate: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: search.rangeTime[0],
@@ -45,7 +43,7 @@ const Index = memo(({ studentId }) => {
           }),
           isUTC: false,
         }) : null,
-        to: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
+        endDate: !_.isEmpty(search.rangeTime) ? Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: search.rangeTime[1],
@@ -58,7 +56,7 @@ const Index = memo(({ studentId }) => {
   };
 
   useEffect(() => {
-    fetchDataBus();
+    fetchStudents();
   }, [search.rangeTime, studentId]);
 
 
@@ -72,7 +70,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       className: 'min-width-100',
       width: 200,
-      render: () => '16/05',
+      render: (record) => Helper.getDate(record?.date, variables.DATE_FORMAT.DATE_MONTH),
     },
     {
       title: 'Vào lớp',
@@ -80,15 +78,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       width: 200,
       className: 'min-width-200',
-      render: (value, row, index) => {
-        const obj = {
-          children: index === 1 ? 'Không đăng ký xe Bus' : value,
-          props: {
-            colSpan: index === 1 ? 2 : 1
-          }
-        };
-        return obj;
-      }
+      render: (record) => (record.status === "HAVE_IN" || record.status === "HAVE_OUT") ? record.checkIn : 'Vắng'
     },
     {
       title: 'Ra về',
@@ -96,28 +86,7 @@ const Index = memo(({ studentId }) => {
       align: 'center',
       width: 200,
       className: 'min-width-200',
-      render: (value, row, index) => {
-        const obj = {
-          children: '07:21:17',
-          props: {
-            colSpan: index === 1 ? 0 : 1
-          }
-        };
-        return obj;
-      }
-    },
-    {
-      title: 'Bảo mẫu',
-      key: 'shuttler',
-      width: 200,
-      className: 'min-width-200',
-      render: (record) => (
-        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: 'Xem thêm' }}>
-          {record?.busPlace?.busRoute?.busRouteNannies
-            ?.map((item) => item?.nanny?.fullName)
-            .join(',')}
-        </Paragraph>
-      ),
+      render: (record) => (record.status === "HAVE_IN" || record.status === "HAVE_OUT") ? record.checkOut : 'Vắng'
     },
   ];
 
