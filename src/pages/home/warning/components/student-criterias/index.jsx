@@ -34,7 +34,7 @@ const Index = memo(({ classId, branchId }) => {
             ...variables.setDateData,
             originValue: moment(),
           }),
-          isUTC: false,
+          isUTC: true,
         }),
       },
     });

@@ -33,7 +33,6 @@ const Index = memo(({ classId, branchId }) => {
           value: Helper.setDate({
             ...variables.setDateData,
             originValue: moment(),
-            targetValue: '23:59:59',
           }),
           isUTC: true,
         }),
