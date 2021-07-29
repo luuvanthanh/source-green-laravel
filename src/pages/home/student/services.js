@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import requestLavarel from '@/utils/requestLavarel';
 import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
@@ -27,12 +28,22 @@ export function getBusByStudent(params) {
   });
 }
 
-export function getChildInClass(params) {
-  return request(`/bus-place-log/student/${params.id}/${params.from}/${params.to}`, {
+export function getChildInClass(data = {}) {
+  return requestLavarel('/v1/attendances', {
     method: 'GET',
     params: {
-      status: params?.status || ''
-    }
+      ...data,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes([
+        'timekeeping',
+        'class',
+        'attendance',
+        'absent',
+        'classStudent.class',
+      ]),
+    },
   });
 }
 

@@ -109,7 +109,7 @@ export default {
         yield saga.put({
           type: 'SET_DATA_CHILD_IN_CLASS',
           payload: {
-            parsePayload: response.items,
+            parsePayload: response?.parsePayload?.[0]?.attendance || [],
           },
         });
       } catch (error) {
