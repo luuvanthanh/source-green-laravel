@@ -9,8 +9,9 @@ import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 import variablesModules from '../../../utils/variables';
 
 let isMounted = true;
@@ -156,6 +157,7 @@ class Index extends PureComponent {
                       name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                      disabled={!!params?.id}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -234,6 +236,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  menuData: {},
+  dispatch: {},
+  loading: {},
+  error: {},
+};
 
 export default Index;

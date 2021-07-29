@@ -31,7 +31,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, loading, salaryParamaterFormulasAdd }) => ({
-  menuData: menu.menuLeftHRM,
+  menuData: menu.menuLeftSalary,
   loading,
   details: salaryParamaterFormulasAdd.details,
   error: salaryParamaterFormulasAdd.error,
@@ -236,6 +236,7 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
                       onChange={this.onChangeCode}
+                      disabled={params?.id}
                     />
                   </div>
                   <div className="col-lg-6">

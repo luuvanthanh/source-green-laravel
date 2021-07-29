@@ -46,7 +46,7 @@ export default {
       try {
         const response = yield saga.all({
           users: saga.call(services.getUsers),
-          paramaterValues: saga.call(services.getParamaterValues),
+          paramaterValues: saga.call(services.getParamaterValues, { type: 'CONTRACT' }),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

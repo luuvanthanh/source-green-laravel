@@ -284,7 +284,7 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            {/* <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} /> */}
           </div>
         ),
       },
