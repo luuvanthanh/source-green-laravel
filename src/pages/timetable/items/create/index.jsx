@@ -6,6 +6,7 @@ import csx from 'classnames';
 import { connect, history, withRouter } from 'umi';
 import { head, isEmpty, omit } from 'lodash';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -25,9 +26,11 @@ const mapStateToProps = ({ timeTablesAdd, loading, menu }) => ({
   error: timeTablesAdd.error,
   menuLeft: menu.menuLeftTimeTable,
 });
+
 const Index = memo(
-  ({ dispatch, loading: { effects }, match: { params }, branches, error, menuLeft, classes }) => {
+  ({ loading: { effects }, match: { params }, branches, error, menuLeft, classes }) => {
     const mounted = useRef(false);
+    const dispatch = useDispatch();
 
     const loadingSubmit = effects[`timeTablesAdd/ADD`] || effects[`timeTablesAdd/UPDATE`];
     const loading = effects[`timeTablesAdd/GET_DETAILS`] || effects[`timeTablesAdd/GET_BRANCHES`];
@@ -266,7 +269,6 @@ const Index = memo(
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   menuLeft: PropTypes.arrayOf(PropTypes.any),
@@ -276,7 +278,6 @@ Index.propTypes = {
 Index.defaultProps = {
   match: {},
   loading: {},
-  dispatch: {},
   classes: [],
   branches: [],
   menuLeft: [],
