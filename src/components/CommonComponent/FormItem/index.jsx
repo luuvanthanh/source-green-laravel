@@ -55,9 +55,12 @@ const renderChildren = (
       onChange={onChange}
       placeholder={placeholder || 'Nhập'}
       value={value}
+      autoComplete="new-input"
     />
   ),
-  inputPassword: <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} />,
+  inputPassword: (
+    <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} autoComplete="new-password" />
+  ),
   inputSearch: (
     <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
   ),
