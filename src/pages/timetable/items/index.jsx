@@ -179,42 +179,12 @@ class Index extends PureComponent {
   }, 500);
 
   /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchDateRank = debounce((fromDate, toDate) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          fromDate,
-          toDate,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
    * Function change select
    * @param {object} e value of select
    * @param {string} type key of object search
    */
   onChangeSelect = (e, type) => {
     this.debouncedSearch(e, type);
-  };
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChangeDateRank = (e) => {
-    this.debouncedSearchDateRank(
-      moment(e[0]).format(variables.DATE_FORMAT.DATE_AFTER),
-      moment(e[1]).format(variables.DATE_FORMAT.DATE_AFTER),
-    );
   };
 
   /**
@@ -297,8 +267,19 @@ class Index extends PureComponent {
       <>
         <Helmet title="Thời khóa biểu" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Text color="dark">Thời khóa biểu</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              permission="TKB"
+            >
+              Thêm mới
+            </Button>
+          </div>
           {/* FORM SEARCH */}
-          <div className={styles.search}>
+          <div className={classnames(styles.search, 'pt20')}>
             <Form
               initialValues={{
                 ...search,
@@ -311,6 +292,7 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4">
                   <FormItem
+                    className="ant-form-item-row"
                     data={branches}
                     label="CƠ SỞ"
                     name="branchId"
@@ -320,6 +302,7 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-4">
                   <FormItem
+                    className="ant-form-item-row"
                     data={classes}
                     label="LỚP"
                     name="classId"
@@ -327,30 +310,11 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    label="THỜI GIAN"
-                    name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
-                  />
-                </div>
               </div>
             </Form>
           </div>
           {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Thời khóa biểu</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`${pathname}/tao-moi`)}
-              permission="TKB"
-            >
-              Thêm mới
-            </Button>
-          </div>
-          <div className={classnames(styles['block-table'], 'schedules-custom')}>
+          <div className={classnames(styles['block-table'], 'schedules-custom', 'mt20')}>
             <FullCalendar
               schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
               plugins={[
@@ -402,7 +366,7 @@ class Index extends PureComponent {
                         this.debouncedSearchDate(
                           moment(search.fromDate).add(1, 'days'),
                           moment(search.toDate).add(1, 'days'),
-                          'timeGridWeek',
+                          'timeGridDay',
                         );
                         calendarApi.gotoDate(
                           moment(search.toDate)
@@ -447,7 +411,7 @@ class Index extends PureComponent {
                         this.debouncedSearchDate(
                           moment(search.fromDate).subtract(1, 'days'),
                           moment(search.toDate).subtract(1, 'days'),
-                          'timeGridWeek',
+                          'timeGridDay',
                         );
                         calendarApi.gotoDate(
                           moment(search.toDate)
@@ -479,14 +443,13 @@ class Index extends PureComponent {
                       const calendarApi = this.calendarComponentRef.current.getApi();
                       calendarApi.changeView('timeGridWeek');
                       this.debouncedSearchDate(
-                        moment().startOf('weeks').add(1, 'days'),
-                        moment().endOf('weeks').add(1, 'days'),
+                        moment().startOf('weeks'),
+                        moment().endOf('weeks'),
                         'timeGridWeek',
                       );
                       calendarApi.gotoDate(
                         moment()
                           .endOf('weeks')
-                          .add(1, 'days')
                           .format(variables.DATE_FORMAT.DATE_AFTER),
                       );
                     }
@@ -563,7 +526,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   data: PropTypes.arrayOf(PropTypes.any),
-  dispatch: PropTypes.any,
+  dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
@@ -571,7 +534,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   data: [],
-  dispatch: null,
+  dispatch: {},
   location: {},
   branches: [],
   classes: [],
