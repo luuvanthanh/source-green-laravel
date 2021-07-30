@@ -33,13 +33,13 @@ const Index = memo(() => {
 
   const getBusByStatus = (record) => {
     if (record?.startDate || record?.endDate) {
-      const numberStartDate = moment().diff(moment(record?.startDate, variables.DATE_FORMAT.DATE_AFTER), 'days');
-      const numberEndDate = moment().diff(moment(record?.endDate, variables.DATE_FORMAT.DATE_AFTER), 'days');
+      const numberStartDate = moment(record?.startDate, variables.DATE_FORMAT.DATE_AFTER).diff(moment(), 'days');
+      const numberEndDate = moment(record?.endDate, variables.DATE_FORMAT.DATE_AFTER).diff(moment(), 'days');
       if (record?.endDate) {
         if (numberEndDate < 0) {
           return Helper.tagStatus(variables.STATUS.EXPIRE, 'Hết hiệu lực');
         }
-        if (numberStartDate < 0 && numberEndDate >= 0) {
+        if (numberStartDate <= 0 && numberEndDate >= 0) {
           return Helper.tagStatus('', 'Đang hiệu lực');
         }
       }
