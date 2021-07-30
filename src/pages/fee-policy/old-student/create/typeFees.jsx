@@ -40,11 +40,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
   }, []);
 
   const getMoney = async (details, tuition, name, value , index) => {
-    const { schoolYearId, classTypeId, startDate } = details;
+    const { schoolYearId, classTypeId, dayAdmission } = details;
     const { feeId, paymentFormId } = tuition[index];
     const newTuition = [...tuition];
 
-    if (value && (name === 'feeId' && paymentFormId || name === 'paymentFormId' && feeId) ) {
+    if (value && (name === 'feeId' && paymentFormId || name === 'paymentFormId' && feeId) && schoolYearId && classTypeId && dayAdmission ) {
       const details = [
         {
           ...newTuition[index],
@@ -60,7 +60,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           dayAdmission: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
-              originValue: moment(startDate, variables.DATE_FORMAT.DATE_VI),
+              originValue: moment(dayAdmission, variables.DATE_FORMAT.DATE_VI),
             }),
             format: variables.DATE_FORMAT.DATE_AFTER,
             isUTC: false,
@@ -214,7 +214,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
         rowKey="id"
         scroll={{ x: '100%' }}
       />
-      {!!(details?.schoolYearId && details?.classTypeId) && (
+      {!!(details?.schoolYearId && details?.classTypeId && details?.dayAdmission) && (
         <Pane className="px20">
           <Button
             className="btn-create"
