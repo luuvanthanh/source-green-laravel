@@ -17,6 +17,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesAllocation from '@/assets/styles/Modules/Allocation/styles.module.scss';
+import { isEmpty } from 'lodash';
 
 let isMounted = true;
 /**
@@ -146,7 +147,7 @@ class Index extends PureComponent {
         ...searchTeachers,
         hasClass: 'false',
         branchId,
-        positionId,
+        positionId: !isEmpty(positionId) ? positionId.join(',') : '',
         include: Helper.convertIncludes(['positionLevelNow']),
       },
       callback: (res) => {
@@ -389,11 +390,12 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-6">
                       <FormItem
+                        className="mb-0"
                         data={positions}
                         onChange={this.selectPosition}
                         label="Chức vụ"
                         name="positionId"
-                        type={variables.SELECT}
+                        type={variables.SELECT_MUTILPLE}
                       />
                     </div>
                   </div>
