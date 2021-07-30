@@ -395,9 +395,9 @@ const Index = memo(() => {
                       rules={[variables.RULES.EMPTY]}
                       allowClear={false}
                       onChange={loadTableFees}
-                      disabledDate={(current) => disableDayAdmission?.startDate ?
-                        current < moment(disableDayAdmission?.startDate) || current >= moment(disableDayAdmission.endDate)
-                      : false }
+                      disabledDate={(current) => disableDayAdmission?.startDate && current < moment(disableDayAdmission?.startDate).startOf('day')
+                        || disableDayAdmission?.endDate && current >= moment(disableDayAdmission.endDate).endOf('day')
+                      }
                     />
                   </div>
                   <div className="col-lg-3">
