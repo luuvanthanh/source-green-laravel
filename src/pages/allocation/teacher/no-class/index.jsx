@@ -48,8 +48,10 @@ class Index extends PureComponent {
         teachers: [],
         branches: [],
         classes: [],
+        positions: []
       },
       branchId: '',
+      positionId: '',
       selectedTeachers: [],
       loadingTeacher: false,
       hasMore: true,
@@ -65,6 +67,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.fetchBranches();
+    this.fetchPositions();
   }
 
   componentWillUnmount() {
@@ -95,7 +98,7 @@ class Index extends PureComponent {
   };
 
   selectBranch = async (value) => {
-    await this.setStateData((prev) => ({
+    this.setStateData((prev) => ({
       categories: {
         ...prev?.categories,
         classes: [],
@@ -110,23 +113,41 @@ class Index extends PureComponent {
       hasMore: true,
       loadingLoadMore: false,
       branchId: value,
-    }));
+    }), () => {
+      this.fetchTeachers();
+    });
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
-    this.fetchTeachers(value);
   };
 
-  fetchTeachers = (branchId) => {
+  selectPosition = (value) => {
+    this.setStateData((prev) => ({
+      ...prev,
+      searchTeachers: {
+        totalCount: 0,
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+      },
+      hasMore: true,
+      loadingLoadMore: false,
+      positionId: value,
+    }), () => {
+      this.fetchTeachers();
+    });
+  }
+
+  fetchTeachers = () => {
     this.setStateData({ loadingTeacher: true });
     const { dispatch } = this.props;
-    const { searchTeachers } = this.state;
+    const { searchTeachers, branchId, positionId } = this.state;
     dispatch({
       type: 'categories/GET_TEACHERS',
       payload: {
         ...searchTeachers,
         hasClass: 'false',
         branchId,
-        include: Helper.convertIncludes(['positionLevel']),
+        positionId,
+        include: Helper.convertIncludes(['positionLevelNow']),
       },
       callback: (res) => {
         if (res) {
@@ -146,7 +167,7 @@ class Index extends PureComponent {
     });
   };
 
-  fetchBranches = () => {
+  fetchPositions = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'categories/GET_BRANCHES',
@@ -156,6 +177,23 @@ class Index extends PureComponent {
             categories: {
               ...categories,
               branches: res?.parsePayload || [],
+            },
+          }));
+        }
+      },
+    });
+  };
+
+  fetchBranches = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'allocationTeacherNoClass/GET_POSITIONS',
+      callback: (res) => {
+        if (res) {
+          this.setStateData(({ categories }) => ({
+            categories: {
+              ...categories,
+              positions: res?.parsePayload || [],
             },
           }));
         }
@@ -185,7 +223,7 @@ class Index extends PureComponent {
   };
 
   finishForm = ({ classId, startDate }) => {
-    const { selectedTeachers, branchId } = this.state;
+    const { selectedTeachers } = this.state;
     const { dispatch } = this.props;
     const requestData = selectedTeachers.map((employeeId) => ({
       employeeId,
@@ -221,7 +259,7 @@ class Index extends PureComponent {
           loadingLoadMore: false,
         }));
         // gọi lại danh sách giáo viên từ API
-        this.fetchTeachers(branchId);
+        this.fetchTeachers();
       },
     });
   };
@@ -282,7 +320,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const {
-      categories: { teachers, branches, classes },
+      categories: { teachers, branches, classes, positions },
       selectedTeachers,
       loadingTeacher,
       loadingLoadMore,
@@ -343,11 +381,19 @@ class Index extends PureComponent {
                         className="mb-0"
                         label="Cơ sở"
                         name="branch"
-                        rules={[variables.RULES.EMPTY]}
                         type={variables.SELECT}
                         data={branches}
                         onChange={this.selectBranch}
                         allowClear={false}
+                      />
+                    </div>
+                    <div className="col-lg-6">
+                      <FormItem
+                        data={positions}
+                        onChange={this.selectPosition}
+                        label="Chức vụ"
+                        name="positionId"
+                        type={variables.SELECT}
                       />
                     </div>
                   </div>
@@ -368,7 +414,7 @@ class Index extends PureComponent {
                       <List
                         className={stylesAllocation.list}
                         dataSource={teachers}
-                        renderItem={({ id, fullName, fileImage, positionLevel }) => (
+                        renderItem={({ id, fullName, fileImage, positionLevelNow }) => (
                           <List.Item key={id}>
                             <Checkbox
                               className={stylesAllocation.checkbox}
@@ -381,11 +427,7 @@ class Index extends PureComponent {
                               <AvatarTable
                                 fileImage={Helper.getPathAvatarJson(fileImage)}
                                 fullName={fullName}
-                                description={
-                                  !_.isEmpty(positionLevel)
-                                    ? _.map(positionLevel, 'position.name').join(', ')
-                                    : ''
-                                }
+                                description={positionLevelNow?.position?.name || ''}
                               />
                             </div>
                           </List.Item>
