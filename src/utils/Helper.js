@@ -26,9 +26,6 @@ export default class Helpers {
     if (type === variables.STATUS.VERIFIED) {
       return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
     }
-    if (type === variables.STATUS.PENDING) {
-      return <Tag color="primary">{statusName || variables.STATUS_NAME.PENDING}</Tag>;
-    }
     if (type === variables.STATUS.EXPIRE) {
       return <Tag color="danger">{statusName || variables.STATUS_NAME.EXPIRE}</Tag>;
     }
@@ -37,6 +34,9 @@ export default class Helpers {
     }
     if (type === variables.STATUS.CONFIRMING) {
       return <Tag color="warning">{statusName || variables.STATUS_NAME.CONFIRMING}</Tag>;
+    }
+    if (type === variables.STATUS.PROCESSED) {
+      return <Tag color="primary">{statusName}</Tag>;
     }
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
