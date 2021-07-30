@@ -1673,6 +1673,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },
+          {
+            path: '/thoi-khoa-bieu/lich-su',
+            component: './timetable/histories',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
         ],
       },
       // MEDICAL
