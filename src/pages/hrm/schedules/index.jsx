@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Modal, Form, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { CloseOutlined } from '@ant-design/icons';
-import { isEmpty, debounce, get } from 'lodash';
+import { isEmpty, debounce, get, includes } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -648,6 +648,16 @@ class Index extends PureComponent {
     );
   };
 
+  getDivisions = (record) => {
+    const reuslt = [];
+    record?.positionLevel?.forEach(item => {
+      if (!includes(reuslt, item?.division?.name)) {
+        reuslt.push(item?.division?.name);
+      }
+    });
+    return reuslt.join(', ');
+  }
+
   /**
    * Function header table
    */
@@ -661,11 +671,7 @@ class Index extends PureComponent {
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={
-              record?.positionLevelNow
-                ? `${record.fullName} (${record?.positionLevelNow?.division?.name})`
-                : record.fullName
-            }
+            fullName={ !isEmpty(record.positionLevel) ? `${record.fullName} ( ${this.getDivisions(record)} )` : record.fullName }
           />
         ),
       },

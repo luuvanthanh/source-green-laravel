@@ -227,6 +227,14 @@ const Index = memo(() => {
       studentId: values?.studentId || undefined,
       tuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
+      dayAdmission: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(details?.dayAdmission, variables.DATE_FORMAT.DATE_VI),
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     };
     dispatch({
       type: (params?.id && !isCopy ) ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
