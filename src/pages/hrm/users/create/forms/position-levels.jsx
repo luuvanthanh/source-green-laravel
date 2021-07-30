@@ -39,7 +39,7 @@ const Index = memo(() => {
         if (numberEndDate < 0) {
           return Helper.tagStatus(variables.STATUS.EXPIRE, 'Hết hiệu lực');
         }
-        if (numberStartDate < 0 && numberEndDate >= 0) {
+        if (numberStartDate <= 0 && numberEndDate >= 0) {
           return Helper.tagStatus('', 'Đang hiệu lực');
         }
       }
