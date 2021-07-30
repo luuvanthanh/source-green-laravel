@@ -9,7 +9,7 @@ export function get(params = {}) {
       orderBy: 'CreationTime',
       sortedBy: 'desc',
       searchJoin: 'and',
-      include: Helper.convertIncludes(['positionLevel']),
+      include: Helper.convertIncludes(['positionLevel', 'positionLevelNow']),
       fullName: params.fullName,
       employeeId: params.employeeId && params.employeeId.join(','),
     },
