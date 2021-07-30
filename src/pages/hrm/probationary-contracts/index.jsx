@@ -287,7 +287,7 @@ class Index extends PureComponent {
         key: 'salary',
         className: 'min-width-150',
         render: (record) => {
-          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG');
+          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG_CO_BAN');
           return Helper.getPrice(parameterValues?.pivot?.value);
         },
       },
