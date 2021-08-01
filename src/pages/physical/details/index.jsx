@@ -221,7 +221,7 @@ const Index = memo(() => {
               <Heading className="text-success mb10" type="page-title">Báo cáo BMI</Heading>
               <Text>Chỉ số BMI: {get(details, 'bmiConclusion.bmi', 0).toFixed(2)}</Text>
               <p className="mb20 font-size-16 font-weight-bold">Biểu đồ BMI</p>
-              <ChartBMI />
+              <ChartBMI details={details}/>
               <div className={styles['result-bmi']}>
                 <p className="font-weight-bold font-size-15 mb0">Kết Luận: {getStatus(details?.bmiConclusion?.status, 'Học sinh')}</p>
                 {details?.bmiConclusion?.status && details?.bmiConclusion?.status !== 'NORMAL' ? (
