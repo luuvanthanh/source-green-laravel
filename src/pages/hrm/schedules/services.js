@@ -33,6 +33,7 @@ export function get(data = {}) {
         'positionLevel',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
+        'businessCard'
       ]),
     },
   });
