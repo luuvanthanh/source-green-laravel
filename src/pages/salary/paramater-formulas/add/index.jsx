@@ -73,6 +73,7 @@ class Index extends PureComponent {
         ...details,
         applyDate: details.applyDate && moment(details.applyDate),
       });
+      this.onSetRecipeCode(details);
       this.onSetRecipe(details.recipe);
     }
   }
@@ -93,6 +94,12 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  onSetRecipeCode = (detail) => {
+    this.setStateData({
+      code: detail?.code,
+    });
   };
 
   reverseData = (items, parentId = null, level = 1) =>
