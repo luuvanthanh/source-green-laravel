@@ -444,6 +444,16 @@ class Index extends PureComponent {
       isHolidays = false;
     }
 
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
+      return (
+        <div
+          className={classnames(stylesChildren['cell-content'], {
+            [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        />
+      );
+    }
+
     if (isHolidays) {
       return (
         <Tooltip
@@ -462,6 +472,15 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-holidays'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/ngay-nghi-le?date=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}`,
+              )
+            }
           >
             L
           </div>
@@ -501,6 +520,18 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-business'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/don-di-cong-tac?endDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&startDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&fullName=${user.fullName}`,
+              )
+            }
           >
             Đi công tác
           </div>
@@ -542,6 +573,18 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-weekend'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/don-xin-phep?endDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&startDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&fullName=${user.fullName}`,
+              )
+            }
           >
             {absentType}
           </div>
