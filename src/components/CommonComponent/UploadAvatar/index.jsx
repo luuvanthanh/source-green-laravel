@@ -1,19 +1,21 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { Upload, Image } from 'antd';
+import { Upload, Image, Spin } from 'antd';
 import { CloudUploadOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useDispatch } from 'dva';
+import { useDispatch, useSelector } from 'dva';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 import { imageUploadProps } from '@/utils/upload';
 import { Helper } from '@/utils';
+import styles from './styles.module.scss';
 
-const { beforeUpload, ...otherProps } = imageUploadProps;
+const { ...otherProps } = imageUploadProps;
 
 const ImageUpload = memo(({ callback, removeFiles, files }) => {
-  const _mounted = useRef(false);
+  const mounted = useRef(false);
+  const { loading } = useSelector(({ loading }) => ({ loading }));
 
-  const _mountedSet = (setFunction, value) => !!_mounted?.current && setFunction(value);
+  const mountedSet = (setFunction, value) => !!mounted?.current && setFunction(value);
 
   const dispatch = useDispatch();
   const [images, setImages] = useState(files || []);
@@ -24,7 +26,7 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
       payload: file,
       callback: (res) => {
         if (res) {
-          _mountedSet(setImages, (prev) => [...prev, get(res, 'results[0].fileInfo.url')]);
+          mountedSet(setImages, (prev) => [...prev, get(res, 'results[0].fileInfo.url')]);
           callback(get(res, 'results[0].fileInfo.url'));
         }
       },
@@ -56,12 +58,12 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
   );
 
   useEffect(() => {
-    _mounted.current = true;
-    return _mounted.current;
+    mounted.current = true;
+    return mounted.current;
   }, []);
 
   useEffect(() => {
-    _mountedSet(setImages, files);
+    mountedSet(setImages, files);
   }, [files]);
 
   return (
@@ -128,7 +130,10 @@ const ImageUpload = memo(({ callback, removeFiles, files }) => {
         </div>
 
         <div className="col d-flex align-items-center">
-          <Upload {...uploadProps} listType="picture-card">
+          <Upload {...uploadProps} listType="picture-card" className={loading?.effects['upload/UPLOAD'] ? styles['loading-upload'] : ''}>
+            <div className={styles['icon-loading']}>
+              <Spin />
+            </div>
             <CloudUploadOutlined />
           </Upload>
         </div>
