@@ -721,6 +721,14 @@ export async function getLeftMenuTimeTable() {
       pro: true,
     },
     {
+      title: 'Thời khóa biểu làm việc / sự kiện',
+      key: 'schedule',
+      url: ['/thoi-khoa-bieu/lam-viec', '/thoi-khoa-bieu/lam-viec/tao-moi', '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
       title: 'Lịch sử',
       key: 'timetableHistory',
       url: ['/thoi-khoa-bieu/lich-su'],
