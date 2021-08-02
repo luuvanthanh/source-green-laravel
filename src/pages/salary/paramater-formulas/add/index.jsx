@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Mentions } from 'antd';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
@@ -35,6 +35,7 @@ const mapStateToProps = ({ menu, loading, salaryParamaterFormulasAdd }) => ({
   loading,
   details: salaryParamaterFormulasAdd.details,
   error: salaryParamaterFormulasAdd.error,
+  paramaterValues: salaryParamaterFormulasAdd.paramaterValues,
 });
 
 @connect(mapStateToProps)
@@ -45,7 +46,6 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       dataRecipe: [],
-      code: '',
     };
     setIsMounted(true);
   }
@@ -61,6 +61,7 @@ class Index extends PureComponent {
         payload: params,
       });
     }
+    this.loadCategories();
   }
 
   componentDidUpdate(prevProps) {
@@ -73,7 +74,6 @@ class Index extends PureComponent {
         ...details,
         applyDate: details.applyDate && moment(details.applyDate),
       });
-      this.onSetRecipeCode(details);
       this.onSetRecipe(details.recipe);
     }
   }
@@ -96,9 +96,10 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  onSetRecipeCode = (detail) => {
-    this.setStateData({
-      code: detail?.code,
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'salaryParamaterFormulasAdd/GET_PARAMTER_VAUES',
+      payload: {},
     });
   };
 
@@ -201,17 +202,79 @@ class Index extends PureComponent {
       })
       .join(' ');
 
+  stringToSplit = (value) => {
+    if (!/^\S*$/.test(value.trim())) {
+      const keywords = value.match(/\\?.|^$/g).reduce(
+        (p, c) => {
+          console.log(p, c);
+          if (c === '(' || c === ')') {
+            p.quote ^= 1;
+          } else if (!p.quote && c === ' ') {
+            p.a.push('');
+          } else {
+            p.a[p.a.length - 1] += c.replace(/\\(.)/, '$1');
+          }
+          return p;
+        },
+        { a: [''] },
+      ).a;
+      return keywords.filter(Boolean);
+    }
+    return [];
+  };
+
+  covertTreeString = (value) => {
+    const items = this.stringToSplit(value);
+    return items.map((item) => {
+      if (!/^\S*$/.test(item.trim())) {
+        return { code: item, children: this.covertTreeString(item) };
+      }
+      return { code: item };
+    });
+  };
+
+  onChangMentions = (value) => {
+    const splitters = ['+', '-', '*', '/'];
+    const values = splitters.reduce((old, c) => old.map((v) => v.split(c)).flat(), [value]);
+    console.log(value, values);
+    // let items = [];
+    // let splitter = null;
+    // values.filter(Boolean).forEach((item) => {
+    //   if (['+', '-', '/', '*'].includes(item)) {
+    //     splitter = item;
+    //   } else {
+    //     items = [
+    //       ...items,
+    //       {
+    //         variable: item.replace('@', ''),
+    //         type: 'variable',
+    //         value: null,
+    //         operator: splitter,
+    //         formular: [],
+    //       },
+    //     ];
+    //     splitter = null;
+    //   }
+    // });
+    // console.log('items', items);
+  };
+
   render() {
     const {
       error,
       menuData,
       loading: { effects },
       match: { params },
+      paramaterValues,
     } = this.props;
-    const { dataRecipe, code } = this.state;
+    const { dataRecipe } = this.state;
     const loadingSubmit =
       effects['salaryParamaterFormulasAdd/ADD'] || effects['salaryParamaterFormulasAdd/UPDATE'];
     const loading = effects['salaryParamaterFormulasAdd/GET_DETAILS'];
+    const MOCK_DATA = {
+      '@': paramaterValues.map((item) => item.code),
+    };
+
     return (
       <>
         <Breadcrumbs
@@ -242,7 +305,6 @@ class Index extends PureComponent {
                       name="code"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
-                      onChange={this.onChangeCode}
                       disabled={params?.id}
                     />
                   </div>
@@ -265,7 +327,26 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
-                <Text color="dark" size="large-medium">
+                <div className="row">
+                  <div className="col-lg-12">
+                    <Form.Item label="CÔNG THỨC" name="dataRecipe" rules={[variables.RULES.EMPTY]}>
+                      <Mentions
+                        rows={3}
+                        style={{ width: '100%' }}
+                        placeholder="input @ to mention people, # to mention tag"
+                        prefix={['@', '#']}
+                        onChange={this.onChangMentions}
+                      >
+                        {(MOCK_DATA['@'] || []).map((value) => (
+                          <Mentions.Option key={value} value={value}>
+                            {value}
+                          </Mentions.Option>
+                        ))}
+                      </Mentions>
+                    </Form.Item>
+                  </div>
+                </div>
+                {/* <Text color="dark" size="large-medium">
                   CÔNG THỨC
                 </Text>
                 {code && (
@@ -275,7 +356,7 @@ class Index extends PureComponent {
                     </Text>
                   </div>
                 )}
-                <RecipeComponent data={dataRecipe} onSaveData={this.onSaveData} />
+                <RecipeComponent data={dataRecipe} onSaveData={this.onSaveData} /> */}
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -314,6 +395,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
+  paramaterValues: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -323,6 +405,7 @@ Index.defaultProps = {
   error: {},
   menuData: [],
   details: {},
+  paramaterValues: [],
 };
 
 export default Index;
