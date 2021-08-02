@@ -39,7 +39,6 @@ const mapStateToProps = ({ schedulesChildren, loading }) => ({
   data: schedulesChildren.data,
   category: schedulesChildren.category,
   holidays: schedulesChildren.holidays,
-  businessCards: schedulesChildren.businessCards,
   pagination: schedulesChildren.pagination,
   loading,
 });
@@ -116,12 +115,6 @@ class Index extends PureComponent {
     const { search } = this.state;
     this.props.dispatch({
       type: 'schedulesChildren/GET_HOLIDAYS',
-      payload: {
-        ...search,
-      },
-    });
-    this.props.dispatch({
-      type: 'schedulesChildren/GET_BUSINESS_CARDS',
       payload: {
         ...search,
       },
@@ -430,7 +423,7 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
-    const { holidays, businessCards } = this.props;
+    const { holidays } = this.props;
     let checkBetween = false;
     let absentType = '';
     let absent = {};
@@ -475,6 +468,8 @@ class Index extends PureComponent {
         </Tooltip>
       );
     }
+
+    const businessCards = Helper.getArrayHolidays(user?.businessCard || []);
 
     const itemBusiness = businessCards?.find(
       (item) =>
@@ -650,13 +645,13 @@ class Index extends PureComponent {
 
   getDivisions = (record) => {
     const reuslt = [];
-    record?.positionLevel?.forEach(item => {
+    record?.positionLevel?.forEach((item) => {
       if (!includes(reuslt, item?.division?.name)) {
         reuslt.push(item?.division?.name);
       }
     });
     return reuslt.join(', ');
-  }
+  };
 
   /**
    * Function header table
@@ -671,7 +666,11 @@ class Index extends PureComponent {
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
-            fullName={ !isEmpty(record.positionLevel) ? `${record.fullName} ( ${this.getDivisions(record)} )` : record.fullName }
+            fullName={
+              !isEmpty(record.positionLevel)
+                ? `${record.fullName} ( ${this.getDivisions(record)} )`
+                : record.fullName
+            }
           />
         ),
       },
@@ -918,7 +917,9 @@ class Index extends PureComponent {
                         name="startDate"
                         onChange={(event) => this.onChangeDate(event, 'startDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef, 'endDate', { month: 1 })}
+                        disabledDate={(current) =>
+                          Helper.disabledDateFrom(current, this.formRef, 'endDate', { month: 1 })
+                        }
                       />
                     </div>
                     <div className="col-lg-3">
@@ -926,7 +927,9 @@ class Index extends PureComponent {
                         name="endDate"
                         onChange={(event) => this.onChangeDate(event, 'endDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef, 'startDate', { month: 1 })}
+                        disabledDate={(current) =>
+                          Helper.disabledDateTo(current, this.formRef, 'startDate', { month: 1 })
+                        }
                       />
                     </div>
                   </>
@@ -973,7 +976,6 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   category: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
-  businessCards: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -985,7 +987,6 @@ Index.defaultProps = {
   location: {},
   category: {},
   holidays: [],
-  businessCards: [],
 };
 
 export default Index;
