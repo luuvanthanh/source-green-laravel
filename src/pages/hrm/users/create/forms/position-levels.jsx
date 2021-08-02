@@ -33,8 +33,9 @@ const Index = memo(() => {
 
   const getBusByStatus = (record) => {
     if (record?.startDate || record?.endDate) {
-      const numberStartDate = moment(record?.startDate, variables.DATE_FORMAT.DATE_AFTER).diff(moment(), 'days');
-      const numberEndDate = moment(record?.endDate, variables.DATE_FORMAT.DATE_AFTER).diff(moment(), 'days');
+      const now = moment().set({'hour': 0, 'minute': 0, 'second': 0});
+      const numberStartDate = record?.startDate ? moment(record?.startDate, variables.DATE_FORMAT.DATE_AFTER).diff(now, 'days', true).toFixed(0) : '';
+      const numberEndDate = record?.endDate ? moment(record?.endDate, variables.DATE_FORMAT.DATE_AFTER).diff(now, 'days', true).toFixed(0) : '';
       if (record?.endDate) {
         if (numberEndDate < 0) {
           return Helper.tagStatus(variables.STATUS.EXPIRE, 'Hết hiệu lực');
