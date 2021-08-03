@@ -9,6 +9,13 @@ export function add(data = {}) {
   });
 }
 
+export function update(data = {}) {
+  return request(`/time-tables/events/${data?.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
 export function getStudents(params = {}) {
   return request('/students', {
     method: 'GET',

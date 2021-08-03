@@ -1686,6 +1686,12 @@ export default [
             authority: [permissions.TKB],
           },
           {
+            path: '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
+            component: './timetable/schedules/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
             path: '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
             component: './timetable/schedules/details',
             wrappers: ['@/wrappers/auth'],

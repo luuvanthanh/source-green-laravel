@@ -723,7 +723,12 @@ export async function getLeftMenuTimeTable() {
     {
       title: 'Thời khóa biểu làm việc / sự kiện',
       key: 'schedule',
-      url: ['/thoi-khoa-bieu/lam-viec', '/thoi-khoa-bieu/lam-viec/tao-moi', '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'],
+      url: [
+        '/thoi-khoa-bieu/lam-viec',
+        '/thoi-khoa-bieu/lam-viec/tao-moi',
+        '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
+        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'
+      ],
       icon: 'icon icon-calendar1',
       permission: [permissions.TKB],
       pro: true,
