@@ -13,8 +13,10 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
+import classnames from 'classnames';
 
 import { variables, Helper } from '@/utils';
+import styles from './style.module.scss';
 
 const { Item: ListItem } = List;
 const { Item: TimelineItem } = Timeline;
@@ -63,6 +65,40 @@ const Index = memo(() => {
       <Helmet title="Danh sách thực đơn" />
       <Breadcrumbs last="Thực đơn" menu={menuData} />
       <Pane className="p20">
+        <Pane className="row justify-content-center">
+          <Pane className={classnames('col-lg-6 card', styles['card-container'])}>
+            <Heading type="form-title">Thông tin chung</Heading>
+            <div className={classnames(styles['list-info'], 'mt10')}>
+              <div className={styles['info-item']}>
+                <div className={styles['info-image']}>
+                  <span className="icon-clock" />
+                </div>
+                <div className={styles['info-content']}>
+                  <p className={styles['info-norm']}>Thời gian</p>
+                  <p className={styles['info-title']}>Tháng 06/2021</p>
+                </div>
+              </div>
+              <div className={styles['info-item']}>
+                <div className={styles['info-image']}>
+                  <span className="icon-school" />
+                </div>
+                <div className={styles['info-content']}>
+                  <p className={styles['info-norm']}>Cơ sở</p>
+                  <p className={styles['info-title']}>Lake view</p>
+                </div>
+              </div>
+              <div className={styles['info-item']}>
+                <div className={styles['info-image']}>
+                  <span className="icon-open-book" />
+                </div>
+                <div className={styles['info-content']}>
+                  <p className={styles['info-norm']}>Lớp</p>
+                  <p className={styles['info-title']}>Preschool</p>
+                </div>
+              </div>
+            </div>
+          </Pane>
+        </Pane>
         <Pane className="row justify-content-center">
           <Pane className="col-lg-6 card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
