@@ -4,7 +4,7 @@ import { Form, Mentions } from 'antd';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, isInteger } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -13,7 +13,6 @@ import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import RecipeComponent from './components/Recipe';
 
 let isMounted = true;
 /**
@@ -44,9 +43,7 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      dataRecipe: [],
-    };
+    this.state = {};
     setIsMounted(true);
   }
 
@@ -73,8 +70,8 @@ class Index extends PureComponent {
       this.formRef.current.setFieldsValue({
         ...details,
         applyDate: details.applyDate && moment(details.applyDate),
+        recipe: this.renderCalulator(details.recipe),
       });
-      this.onSetRecipe(details.recipe);
     }
   }
 
@@ -103,6 +100,23 @@ class Index extends PureComponent {
     });
   };
 
+  getVariable = (value) => {
+    if (value) return `@${value}`;
+    return null;
+  };
+
+  renderCalulator = (items) =>
+    items
+      .map((item) => {
+        if (!isEmpty(item.formular)) {
+          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
+        }
+        return `${item.operator || ''} ${item.value || this.getVariable(item.variable) || ''}${this.renderCalulator(
+          item.formular,
+        )}`;
+      })
+      .join(' ');
+
   reverseData = (items, parentId = null, level = 1) =>
     items.map((item) => {
       const uID = uuidv4();
@@ -115,14 +129,6 @@ class Index extends PureComponent {
         children: this.reverseData(item.formular, uID, level + 1),
       };
     });
-
-  onSetRecipe = (recipe) => {
-    if (!isEmpty(recipe)) {
-      this.setStateData({
-        dataRecipe: Helper.flatten(this.reverseData(recipe)),
-      });
-    }
-  };
 
   onChangeCode = (e) => {
     this.setStateData({
@@ -150,19 +156,56 @@ class Index extends PureComponent {
       };
     });
 
+  addSpaceString = (string) => {
+    const stringNotSpace = string.replace(/\s/g, '');
+    return stringNotSpace
+      .replaceAll('+', ' + ')
+      .replaceAll('-', ' - ')
+      .replaceAll('/', ' / ')
+      .replaceAll('*', ' * ')
+      .replaceAll(')', ')')
+      .replaceAll('(', '(');
+  };
+
+  removeItemRedundant = (items) =>
+    items
+      .filter((item) => item.enum)
+      .map((item) => ({ ...item, children: item?.children?.filter((item) => item.enum) }));
+
+  recipeRecursive = (items) =>
+    items.map((item) => {
+      if (isInteger(item.enum)) {
+        return {
+          variable: null,
+          type: item.recipe ? 'formular' : 'variable',
+          value: item.enum,
+          operator: item.recipe,
+          formular: item.children ? this.recipeRecursive(item.children) : [],
+        };
+      }
+      return {
+        variable:
+          !isEmpty(item.children) && item.recipe ? 'formular' : item.enum.replaceAll('@', ''),
+        type: item.recipe ? 'formular' : 'variable',
+        value: null,
+        operator: item.recipe,
+        formular: item.children ? this.recipeRecursive(item.children) : [],
+      };
+    });
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
-    const { dataRecipe } = this.state;
-    const recipe = this.covertDataRecipe(Helper.nest(dataRecipe));
     dispatch({
       type: params.id ? 'salaryParamaterFormulasAdd/UPDATE' : 'salaryParamaterFormulasAdd/ADD',
       payload: {
         ...values,
         id: params.id,
-        recipe,
+        recipe: this.recipeRecursive(
+          this.removeItemRedundant(Helper.splitString(this.addSpaceString(values.recipe))),
+        ),
       },
       callback: (response, error) => {
         if (response) {
@@ -190,75 +233,6 @@ class Index extends PureComponent {
     });
   };
 
-  renderCalulator = (items) =>
-    items
-      .map((item) => {
-        if (!isEmpty(item.children)) {
-          return `${item.operator || ''} (${this.renderCalulator(item.children)})`;
-        }
-        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
-          item.children,
-        )})`;
-      })
-      .join(' ');
-
-  stringToSplit = (value) => {
-    if (!/^\S*$/.test(value.trim())) {
-      const keywords = value.match(/\\?.|^$/g).reduce(
-        (p, c) => {
-          console.log(p, c);
-          if (c === '(' || c === ')') {
-            p.quote ^= 1;
-          } else if (!p.quote && c === ' ') {
-            p.a.push('');
-          } else {
-            p.a[p.a.length - 1] += c.replace(/\\(.)/, '$1');
-          }
-          return p;
-        },
-        { a: [''] },
-      ).a;
-      return keywords.filter(Boolean);
-    }
-    return [];
-  };
-
-  covertTreeString = (value) => {
-    const items = this.stringToSplit(value);
-    return items.map((item) => {
-      if (!/^\S*$/.test(item.trim())) {
-        return { code: item, children: this.covertTreeString(item) };
-      }
-      return { code: item };
-    });
-  };
-
-  onChangMentions = (value) => {
-    const splitters = ['+', '-', '*', '/'];
-    const values = splitters.reduce((old, c) => old.map((v) => v.split(c)).flat(), [value]);
-    console.log(value, values);
-    // let items = [];
-    // let splitter = null;
-    // values.filter(Boolean).forEach((item) => {
-    //   if (['+', '-', '/', '*'].includes(item)) {
-    //     splitter = item;
-    //   } else {
-    //     items = [
-    //       ...items,
-    //       {
-    //         variable: item.replace('@', ''),
-    //         type: 'variable',
-    //         value: null,
-    //         operator: splitter,
-    //         formular: [],
-    //       },
-    //     ];
-    //     splitter = null;
-    //   }
-    // });
-    // console.log('items', items);
-  };
-
   render() {
     const {
       error,
@@ -267,7 +241,6 @@ class Index extends PureComponent {
       match: { params },
       paramaterValues,
     } = this.props;
-    const { dataRecipe } = this.state;
     const loadingSubmit =
       effects['salaryParamaterFormulasAdd/ADD'] || effects['salaryParamaterFormulasAdd/UPDATE'];
     const loading = effects['salaryParamaterFormulasAdd/GET_DETAILS'];
@@ -329,13 +302,12 @@ class Index extends PureComponent {
                 </div>
                 <div className="row">
                   <div className="col-lg-12">
-                    <Form.Item label="CÔNG THỨC" name="dataRecipe" rules={[variables.RULES.EMPTY]}>
+                    <Form.Item label="CÔNG THỨC" name="recipe" rules={[variables.RULES.EMPTY]}>
                       <Mentions
-                        rows={3}
+                        rows={5}
                         style={{ width: '100%' }}
-                        placeholder="input @ to mention people, # to mention tag"
-                        prefix={['@', '#']}
-                        onChange={this.onChangMentions}
+                        placeholder="Nhập công thức, @ là mã giá trị tham số"
+                        prefix={['@']}
                       >
                         {(MOCK_DATA['@'] || []).map((value) => (
                           <Mentions.Option key={value} value={value}>
@@ -346,17 +318,6 @@ class Index extends PureComponent {
                     </Form.Item>
                   </div>
                 </div>
-                {/* <Text color="dark" size="large-medium">
-                  CÔNG THỨC
-                </Text>
-                {code && (
-                  <div className="mt10">
-                    <Text color="dark" size="large-medium">
-                      {code} = {this.renderCalulator(Helper.nest(dataRecipe))}
-                    </Text>
-                  </div>
-                )}
-                <RecipeComponent data={dataRecipe} onSaveData={this.onSaveData} /> */}
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -375,7 +336,6 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
-                  disabled={isEmpty(dataRecipe)}
                 >
                   LƯU
                 </Button>
