@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Mentions } from 'antd';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, isInteger } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -13,7 +13,6 @@ import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import RecipeComponent from './components/Recipe';
 
 let isMounted = true;
 /**
@@ -35,6 +34,7 @@ const mapStateToProps = ({ menu, loading, salaryParamaterFormulasAdd }) => ({
   loading,
   details: salaryParamaterFormulasAdd.details,
   error: salaryParamaterFormulasAdd.error,
+  paramaterValues: salaryParamaterFormulasAdd.paramaterValues,
 });
 
 @connect(mapStateToProps)
@@ -43,10 +43,7 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      dataRecipe: [],
-      code: '',
-    };
+    this.state = {};
     setIsMounted(true);
   }
 
@@ -61,6 +58,7 @@ class Index extends PureComponent {
         payload: params,
       });
     }
+    this.loadCategories();
   }
 
   componentDidUpdate(prevProps) {
@@ -72,9 +70,8 @@ class Index extends PureComponent {
       this.formRef.current.setFieldsValue({
         ...details,
         applyDate: details.applyDate && moment(details.applyDate),
+        recipe: this.renderCalulator(details.recipe),
       });
-      this.onSetRecipeCode(details);
-      this.onSetRecipe(details.recipe);
     }
   }
 
@@ -96,11 +93,29 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  onSetRecipeCode = (detail) => {
-    this.setStateData({
-      code: detail?.code,
+  loadCategories = () => {
+    this.props.dispatch({
+      type: 'salaryParamaterFormulasAdd/GET_PARAMTER_VAUES',
+      payload: {},
     });
   };
+
+  getVariable = (value) => {
+    if (value) return `@${value}`;
+    return null;
+  };
+
+  renderCalulator = (items) =>
+    items
+      .map((item) => {
+        if (!isEmpty(item.formular)) {
+          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
+        }
+        return `${item.operator || ''} ${item.value || this.getVariable(item.variable) || ''}${this.renderCalulator(
+          item.formular,
+        )}`;
+      })
+      .join(' ');
 
   reverseData = (items, parentId = null, level = 1) =>
     items.map((item) => {
@@ -114,14 +129,6 @@ class Index extends PureComponent {
         children: this.reverseData(item.formular, uID, level + 1),
       };
     });
-
-  onSetRecipe = (recipe) => {
-    if (!isEmpty(recipe)) {
-      this.setStateData({
-        dataRecipe: Helper.flatten(this.reverseData(recipe)),
-      });
-    }
-  };
 
   onChangeCode = (e) => {
     this.setStateData({
@@ -149,19 +156,56 @@ class Index extends PureComponent {
       };
     });
 
+  addSpaceString = (string) => {
+    const stringNotSpace = string.replace(/\s/g, '');
+    return stringNotSpace
+      .replaceAll('+', ' + ')
+      .replaceAll('-', ' - ')
+      .replaceAll('/', ' / ')
+      .replaceAll('*', ' * ')
+      .replaceAll(')', ')')
+      .replaceAll('(', '(');
+  };
+
+  removeItemRedundant = (items) =>
+    items
+      .filter((item) => item.enum)
+      .map((item) => ({ ...item, children: item?.children?.filter((item) => item.enum) }));
+
+  recipeRecursive = (items) =>
+    items.map((item) => {
+      if (isInteger(item.enum)) {
+        return {
+          variable: null,
+          type: item.recipe ? 'formular' : 'variable',
+          value: item.enum,
+          operator: item.recipe,
+          formular: item.children ? this.recipeRecursive(item.children) : [],
+        };
+      }
+      return {
+        variable:
+          !isEmpty(item.children) && item.recipe ? 'formular' : item.enum.replaceAll('@', ''),
+        type: item.recipe ? 'formular' : 'variable',
+        value: null,
+        operator: item.recipe,
+        formular: item.children ? this.recipeRecursive(item.children) : [],
+      };
+    });
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
-    const { dataRecipe } = this.state;
-    const recipe = this.covertDataRecipe(Helper.nest(dataRecipe));
     dispatch({
       type: params.id ? 'salaryParamaterFormulasAdd/UPDATE' : 'salaryParamaterFormulasAdd/ADD',
       payload: {
         ...values,
         id: params.id,
-        recipe,
+        recipe: this.recipeRecursive(
+          this.removeItemRedundant(Helper.splitString(this.addSpaceString(values.recipe))),
+        ),
       },
       callback: (response, error) => {
         if (response) {
@@ -189,29 +233,21 @@ class Index extends PureComponent {
     });
   };
 
-  renderCalulator = (items) =>
-    items
-      .map((item) => {
-        if (!isEmpty(item.children)) {
-          return `${item.operator || ''} (${this.renderCalulator(item.children)})`;
-        }
-        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
-          item.children,
-        )})`;
-      })
-      .join(' ');
-
   render() {
     const {
       error,
       menuData,
       loading: { effects },
       match: { params },
+      paramaterValues,
     } = this.props;
-    const { dataRecipe, code } = this.state;
     const loadingSubmit =
       effects['salaryParamaterFormulasAdd/ADD'] || effects['salaryParamaterFormulasAdd/UPDATE'];
     const loading = effects['salaryParamaterFormulasAdd/GET_DETAILS'];
+    const MOCK_DATA = {
+      '@': paramaterValues.map((item) => item.code),
+    };
+
     return (
       <>
         <Breadcrumbs
@@ -242,7 +278,6 @@ class Index extends PureComponent {
                       name="code"
                       rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
-                      onChange={this.onChangeCode}
                       disabled={params?.id}
                     />
                   </div>
@@ -265,17 +300,24 @@ class Index extends PureComponent {
                     />
                   </div>
                 </div>
-                <Text color="dark" size="large-medium">
-                  CÔNG THỨC
-                </Text>
-                {code && (
-                  <div className="mt10">
-                    <Text color="dark" size="large-medium">
-                      {code} = {this.renderCalulator(Helper.nest(dataRecipe))}
-                    </Text>
+                <div className="row">
+                  <div className="col-lg-12">
+                    <Form.Item label="CÔNG THỨC" name="recipe" rules={[variables.RULES.EMPTY]}>
+                      <Mentions
+                        rows={5}
+                        style={{ width: '100%' }}
+                        placeholder="Nhập công thức, @ là mã giá trị tham số"
+                        prefix={['@']}
+                      >
+                        {(MOCK_DATA['@'] || []).map((value) => (
+                          <Mentions.Option key={value} value={value}>
+                            {value}
+                          </Mentions.Option>
+                        ))}
+                      </Mentions>
+                    </Form.Item>
                   </div>
-                )}
-                <RecipeComponent data={dataRecipe} onSaveData={this.onSaveData} />
+                </div>
               </div>
               <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
                 <Button
@@ -294,7 +336,6 @@ class Index extends PureComponent {
                   icon="save"
                   size="large"
                   loading={loadingSubmit}
-                  disabled={isEmpty(dataRecipe)}
                 >
                   LƯU
                 </Button>
@@ -314,6 +355,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
+  paramaterValues: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -323,6 +365,7 @@ Index.defaultProps = {
   error: {},
   menuData: [],
   details: {},
+  paramaterValues: [],
 };
 
 export default Index;

@@ -985,4 +985,62 @@ export default class Helpers {
     }
     return range;
   };
+
+  static charCounter = (src = '', char) => src.split(char).length - 1;
+
+  static splitString = (str) => {
+    const tmp = [];
+    if (!str) return tmp;
+
+    const src = str.split(' ');
+
+    let brackCounter = 0;
+    let currentChildren = [];
+
+    const src2 = src.reduce((result, item) => {
+      if (brackCounter === 0 && !(item.includes('(') || item.includes(')'))) {
+        return [...result, item];
+      }
+
+      const startBrackCounter = this.charCounter(item, '(');
+      const endBrackCounter = this.charCounter(item, ')');
+      brackCounter = brackCounter + startBrackCounter - endBrackCounter;
+
+      if (brackCounter > 0) {
+        currentChildren = [...currentChildren, item];
+        return result;
+      }
+      const tmpChildren = [...currentChildren, item];
+      currentChildren = [];
+      return [...result, tmpChildren.join(' ')];
+    }, []);
+
+    let currentRecipe = null;
+
+    src2.forEach((item) => {
+      if (['+', '-', '*', '/'].includes(item)) {
+        // eslint-disable-next-line no-return-assign
+        return (currentRecipe = item);
+      }
+
+      if (item.includes('(')) {
+        tmp.push({
+          recipe: currentRecipe,
+          enum: item,
+          children: this.splitString(item.substring(1, item.length - 1)),
+        });
+        // eslint-disable-next-line no-return-assign
+        return (currentRecipe = null);
+      }
+
+      tmp.push({
+        recipe: currentRecipe,
+        enum: +item ? +item : item,
+      });
+      // eslint-disable-next-line no-return-assign
+      return (currentRecipe = null);
+    });
+
+    return tmp;
+  };
 }
