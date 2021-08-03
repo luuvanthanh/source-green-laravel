@@ -1674,6 +1674,24 @@ export default [
             authority: [permissions.TKB],
           },
           {
+            path: '/thoi-khoa-bieu/lam-viec',
+            component: './timetable/schedules',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec/tao-moi',
+            component: './timetable/schedules/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
+            component: './timetable/schedules/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
             path: '/thoi-khoa-bieu/lich-su',
             component: './timetable/histories',
             wrappers: ['@/wrappers/auth'],

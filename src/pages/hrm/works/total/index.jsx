@@ -312,6 +312,26 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`;
     }
+    if (type === 'NV') {
+      return `/quan-ly-nhan-su/thoi-viec?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'CT') {
+      return `/quan-ly-nhan-su/don-di-cong-tac?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
     if (type === 'KC') {
       return `/quan-ly-nhan-su/lich-lam-viec?${Helper.convertParamSearchConvert(
         {
