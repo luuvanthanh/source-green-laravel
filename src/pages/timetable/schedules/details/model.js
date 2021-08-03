@@ -3,7 +3,7 @@ import * as services from './services';
 export default {
   namespace: 'timeTablesScheduleDetails',
   state: {
-    details: [],
+    details: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, details: [] }),
@@ -22,13 +22,13 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
-            parsePayload: response.items,
+            parsePayload: response,
           },
         });
       } catch (error) {

@@ -3,6 +3,7 @@ import csx from 'classnames';
 import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
+import { isEmpty } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -10,26 +11,29 @@ import Loading from '@/components/CommonComponent/Loading';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/information.module.scss';
+import { Helper, variables } from '@/utils';
 
-const mapStateToProps = ({ timeTablesScheduleAdd, loading, menu }) => ({
+import variablesModules from '../variables';
+
+const mapStateToProps = ({ timeTablesScheduleDetails, loading, menu }) => ({
   loading,
-  branches: timeTablesScheduleAdd.branches,
-  classes: timeTablesScheduleAdd.classes,
-  error: timeTablesScheduleAdd.error,
+  details: timeTablesScheduleDetails.details,
   menuLeft: menu.menuLeftTimeTable,
 });
 
 const Index = memo(
-  ({ loading: { effects }, match: { params }, error, menuLeft }) => {
+  ({ loading: { effects }, match: { params }, error, menuLeft, details }) => {
     const mounted = useRef(false);
     const dispatch = useDispatch();
 
-    const loading = effects[`timeTablesScheduleAdd/GET_DETAILS`] || effects[`timeTablesScheduleAdd/GET_BRANCHES`];
+    const loading = effects[`timeTablesScheduleDetails/GET_DETAILS`];
 
     useEffect(() => {
       dispatch({
-        type: 'timeTablesScheduleAdd/GET_BRANCHES',
-        payload: params,
+        type: 'timeTablesScheduleDetails/GET_DETAILS',
+        payload: {
+          id: params?.id
+        },
       });
     }, []);
 
@@ -57,7 +61,7 @@ const Index = memo(
                           <span>Loại lịch</span>
                         </label>
                       </Pane>
-                      <p className="font-weight-bold">Sự kiện cho trẻ</p>
+                      <p className="font-weight-bold">{details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}</p>
                     </Pane>
                   </Pane>
                   <Pane className={csx('row', 'border-bottom', 'mb20')}>
@@ -67,7 +71,9 @@ const Index = memo(
                           <span>Thời gian diễn ra</span>
                         </label>
                       </Pane>
-                      <p className="font-weight-bold">02/03/2021, 08:00 - 10:00</p>
+                      <p className="font-weight-bold">
+                        {`${Helper.getDate(details.startTime, variables.DATE_FORMAT.DATE_TIME)} - ${Helper.getDate(details.endTime, variables.DATE_FORMAT.HOUR)}`}
+                      </p>
                     </Pane>
                     <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
@@ -75,7 +81,7 @@ const Index = memo(
                           <span>Nhắc trước</span>
                         </label>
                       </Pane>
-                      <p className="font-weight-bold">24 giờ</p>
+                      <p className="font-weight-bold">{details?.remindBefore || 0} giờ</p>
                     </Pane>
                     <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
@@ -83,26 +89,30 @@ const Index = memo(
                           <span>Nội dung</span>
                         </label>
                       </Pane>
-                      <p className="font-weight-bold">Ba mẹ nhớ chuẩn bị cho trẻ tham gia sự kiện nhé</p>
+                      <p className="font-weight-bold">{details?.note || ''}</p>
                     </Pane>
                   </Pane>
                   <Pane className={csx('row', 'border-bottom', 'mb20')}>
                     <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Đối tượng</span>
-                        </label>
+                        <span>Đối tượng</span>
                       </Pane>
-                      <p className="font-weight-bold">Lớp</p>
+                      <p className="font-weight-bold">{details?.forClass ? 'Lớp' : 'Cá nhân'}</p>
                     </Pane>
-                    <Pane className="col-lg-12">
+                    <Pane className="col-lg-6">
                       <Pane className="ant-col ant-form-item-label">
-                        <label>
-                          <span>Cơ sở</span>
-                        </label>
+                        <span>Cơ sở</span>
                       </Pane>
-                      <p className="font-weight-bold">Lake view</p>
+                      <p className="font-weight-bold">{details?.branch?.name || ''}</p>
                     </Pane>
+                    {details?.forPerson && (
+                      <Pane className="col-lg-6">
+                        <Pane className="ant-col ant-form-item-label">
+                          <span>Lớp</span>
+                        </Pane>
+                        <p className="font-weight-bold">{details?.class?.name || ''}</p>
+                      </Pane>
+                    )}
                   </Pane>
                   <Pane className={csx('row', 'border-bottom', 'mb20')}>
                     <Pane className="col-lg-12">
@@ -111,24 +121,28 @@ const Index = memo(
                           <span className="mb0">Gửi đến phụ huynh</span>
                         </label>
                       </Pane>
-                      <div className="mb20">
-                        <div className="d-flex align-items-center mt15">
-                          <span className={styles.circleIcon}>
-                            <span className="icon-open-book" />
-                          </span>
-                          <div className="ml10">
-                            <p className="font-weight-bold font-size-14 mb0">Preschool 1</p>
+                      {details?.forClass && !isEmpty(details?.classTimetables) && details?.classTimetables?.map((item, index) => (
+                        <div className="mb20" key={index}>
+                          <div className="d-flex align-items-center mt15">
+                            <span className={styles.circleIcon}>
+                              <span className="icon-open-book" />
+                            </span>
+                            <div className="ml10">
+                              <p className="font-weight-bold font-size-14 mb0">{item?.class?.name || ''}</p>
+                            </div>
                           </div>
                         </div>
-                        <div className="d-flex align-items-center mt15">
-                          <span className={styles.circleIcon}>
-                            <span className="icon-open-book" />
-                          </span>
-                          <div className="ml10">
-                            <p className="font-weight-bold font-size-14 mb0">Preschool 2</p>
-                          </div>
+                      ))}
+                      {details?.forPerson && !isEmpty(details?.parentTimetables) && details?.parentTimetables?.map((item, index) => (
+                        <div className="mb20" key={index}>
+                          <AvatarTable
+                            className="mt10"
+                            fullName={item?.student?.fullName || ''}
+                            fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                            size={40}
+                          />
                         </div>
-                      </div>
+                      ))}
                     </Pane>
                   </Pane>
                   <Pane className={csx('row')}>
@@ -140,11 +154,14 @@ const Index = memo(
                       </Pane>
                       <div className="mb20 mt15">
                         <AvatarTable
-                          fullName="Nguyễn Ngọc Bích"
-                          description="Admin"
+                          fullName={details?.sender?.name || ''}
+                          description={details?.sender?.role || ''}
+                          fileImage={Helper.getPathAvatarJson(details?.sender?.fileImage)}
                           size={50}
                         />
-                        <p className="mt10 mb0">Thời gian gửi: <span className="font-weight-bold">10:30, 15/3/2021</span></p>
+                        <p className="mt10 mb0">
+                          Thời gian gửi: <span className="font-weight-bold">{Helper.getDate(details.creationTime, variables.DATE_FORMAT.TIME_DATE_VI)}</span>
+                        </p>
                       </div>
                     </Pane>
                   </Pane>
@@ -164,7 +181,7 @@ const Index = memo(
                             <span className="font-weight-bold">Tiêu đề</span>
                           </label>
                         </Pane>
-                        <p className="mb0">Họp phụ huynh cuối kỳ năm học 2020 - 2021</p>
+                        <p className="mb0">{details?.title || ''}</p>
                       </Pane>
                     </Pane>
                     <Pane className={csx('row', 'border-bottom', 'py15')}>
@@ -174,7 +191,7 @@ const Index = memo(
                             <span className="font-weight-bold">Địa điểm</span>
                           </label>
                         </Pane>
-                        <p className="mb0">Họp phụ huynh cuối kỳ năm học 2020 - 2021</p>
+                        <p className="mb0">{details?.location || ''}</p>
                       </Pane>
                     </Pane>
                     <Pane className={csx('row', 'py15')}>
@@ -184,10 +201,7 @@ const Index = memo(
                             <span className="font-weight-bold">Nội dung</span>
                           </label>
                         </Pane>
-                        <p className="mb0">
-                          Kính gửi Qúy phụ huynh trường mầm non
-                          Trước tiên, Ban Giám hiệu trường mầm non xin được gửi lời cảm ơn sâu sắc nhất tới Quý phụ huynh vì đã dành trọn niềm tin yêu khi gửi gắm con em mình vào trường và sự phối hợp đồng hành của Quý vị trong thời gian vừa qua. Để giúp Quý vị nắm được các hoạt động giáo dục trong năm học và phối hợp cùng nhà trường một cách hiệu quả, chúng tôi trân trọng kính mời Quý vị tới tham dự buổi Họp phụ huynh đầu năm học.
-                        </p>
+                        <div className="mb0" dangerouslySetInnerHTML={{ __html: details?.content }} />
                       </Pane>
                     </Pane>
                   </Pane>
@@ -206,6 +220,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   menuLeft: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -213,6 +228,7 @@ Index.defaultProps = {
   loading: {},
   menuLeft: [],
   error: {},
+  details: {}
 };
 
 export default withRouter(connect(mapStateToProps)(Index));

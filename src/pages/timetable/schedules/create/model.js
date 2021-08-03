@@ -33,32 +33,18 @@ export default {
   },
   effects: {
     *GET_CLASSES({ payload }, saga) {
-      try {
-        const response = yield saga.call(categories.getClasses, payload);
-        yield saga.put({
-          type: 'SET_CLASSES',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
+      const response = yield saga.call(categories.getClasses, payload);
+      yield saga.put({
+        type: 'SET_CLASSES',
+        payload: response,
+      });
     },
     *GET_BRANCHES({ payload }, saga) {
-      try {
-        const response = yield saga.call(categories.getBranches, payload);
-        yield saga.put({
-          type: 'SET_BRANCHES',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
+      const response = yield saga.call(categories.getBranches, payload);
+      yield saga.put({
+        type: 'SET_BRANCHES',
+        payload: response,
+      });
     },
     *ADD({ payload, callback }, saga) {
       try {
@@ -68,26 +54,12 @@ export default {
         callback(null, error?.data?.error);
       }
     },
-    *UPDATE({ payload, callback }, saga) {
+    *GET_STUDENTS({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload);
-        callback(payload);
+        const response = yield saga.call(services.getStudents, payload);
+        callback(response);
       } catch (error) {
         callback(null, error?.data?.error);
-      }
-    },
-    *REMOVE({ payload }, saga) {
-      try {
-        yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
       }
     },
   },
