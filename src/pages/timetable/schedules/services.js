@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/time-tables', {
+  return request('/time-tables/events', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),

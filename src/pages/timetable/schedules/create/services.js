@@ -1,45 +1,20 @@
 import request from '@/utils/request';
-import { Helper, variables } from '@/utils';
-
-export function get(params = {}) {
-  return request('/api/product-types', {
-    method: 'GET',
-    params: {
-      ...params,
-      ...Helper.getPagination(params.page, params.limit),
-    },
-  });
-}
-
-export function getBranches(params = {}) {
-  return request('/branches', {
-    method: 'GET',
-    params: {
-      ...params,
-      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
-    },
-  });
-}
+import { omit } from 'lodash';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/time-tables', {
+  return request('/time-tables/events', {
     method: 'POST',
     data,
   });
 }
 
-export function update(data = {}) {
-  return request(`/time-tables/${data.id}`, {
-    method: 'PUT',
-    data,
+export function getStudents(params = {}) {
+  return request('/students', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
   });
 }
-
-export function remove(id) {
-  return request(`/time-tables/${id}`, {
-    method: 'DELETE',
-    parse: true,
-  });
-}
-
-export default get;

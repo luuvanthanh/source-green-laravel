@@ -1,26 +1,39 @@
 export const variables = {
   TYPE_CALENDAR: [
     {
-      id: 1,
+      id: "SEMINOR ",
       name: 'Hội thảo',
     },
     {
-      id: 2,
+      id: "PARENT_MEETING",
       name: 'Họp phụ huynh',
     },
     {
-      id: 3,
+      id: "APPOINTMENT",
       name: 'Lịch hẹn',
     },
     {
-      id: 4,
+      id: "FIELD_TRIP",
       name: 'FieldTrip',
     },
     {
-      id: 5,
+      id: "STUDENT_EVENT",
       name: 'Sự kiện cho trẻ',
     },
   ],
+  DAY_OF_WEEK: {
+    Monday: 'mo',
+    Tuesday: 'tu',
+    Wednesday: 'we',
+    Thursday: 'th',
+    Friday: 'fr',
+    Saturday: 'sa',
+    Sunday: 'su',
+  },
+  OBJECTS: [
+    { value: 'forClass', label: 'Lớp' },
+    {value: 'forPerson', label: 'Cá nhân'}
+  ]
 };
 
 export default variables;

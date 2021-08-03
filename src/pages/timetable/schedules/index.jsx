@@ -20,7 +20,7 @@ import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClic
 import { sliceEvents } from '@fullcalendar/core';
 import listPlugin from '@fullcalendar/list';
 import rrulePlugin from '@fullcalendar/rrule';
-import variablesModules from '../utils/variables';
+import variablesModules from './variables';
 
 
 let isMounted = true;
@@ -63,7 +63,7 @@ class Index extends PureComponent {
           ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
           : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
         type: query.type || 'dayGridMonth',
-        typeSchedule: query.typeSchedule || '',
+        eventType: query.eventType || '',
       },
       isOpen: false,
       details: {}
@@ -174,21 +174,18 @@ class Index extends PureComponent {
     if (!isEmpty(items)) {
       let array = [];
       items.forEach((item) => {
-        item.timetableDetails.forEach((itemTime) => {
-          const durations = moment(itemTime.toTime).diff(moment(itemTime.fromTime), 'seconds');
+        item.eventTimetables.forEach((itemTime) => {
+          const durations = moment(itemTime.endTime).diff(moment(itemTime.startTime), 'seconds');
           array = [
             ...array,
             {
-              ...item,
-              title: itemTime.content,
+              ...itemTime,
+              title: itemTime.title,
               rrule: {
                 freq: 'weekly',
                 interval: 1,
-                byweekday: item.timetableWeeks.map(
-                  (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
-                ),
-                dtstart: Helper.joinDateTime(item.fromDate, itemTime.toTime),
-                until: Helper.joinDateTime(item.toDate, itemTime.toTime),
+                dtstart: Helper.joinDateTime(itemTime.startTime, itemTime.startTime),
+                until: Helper.joinDateTime(itemTime.endTime, itemTime.endTime),
               },
               duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
             },
@@ -202,7 +199,13 @@ class Index extends PureComponent {
 
   handleEventClick = (values) => {
     this.setStateData({ isOpen: true });
-    this.setStateData({ details: _.get(values, 'event') });
+    const valuesDetail = {
+      ..._.get(values, 'event._def.extendedProps'),
+      ..._.get(values, 'event._def'),
+      startDate: values?.event?.startStr || '',
+      ẹndDate: values?.event?.endStr || '',
+    };
+    this.setStateData({ details: valuesDetail });
   }
 
   cancelModal = () => {
@@ -211,10 +214,10 @@ class Index extends PureComponent {
 
   redirectDetails = (pathname) => {
     const { details } = this.state;
-    if (!details?.id) {
+    if (!details?.publicId) {
       return;
     }
-    history.push(`${pathname}/${details?.id}/chi-tiet`);
+    history.push(`${pathname}/${details?.publicId}/chi-tiet`);
   }
 
   render() {
@@ -241,7 +244,7 @@ class Index extends PureComponent {
       <>
         <Helmet title="Thời khóa biểu làm việc / sự kiện" />
         <Modal
-          title={details?.title}
+          title={details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}
           visible={isOpen}
           width={500}
           onCancel={this.cancelModal}
@@ -256,19 +259,21 @@ class Index extends PureComponent {
               <div className="ant-col ant-form-item-label">
                 <span>Tiêu đề</span>
               </div>
-              <p className="mb0 font-weight-bold">Lịch hội thảo</p>
+              <p className="mb0 font-weight-bold">{details?.title || ''}</p>
             </div>
             <div className="col-lg-6 mb15">
               <div className="ant-col ant-form-item-label">
                 <span>Thời gian diễn ra</span>
               </div>
-              <p className="mb0 font-weight-bold">02/03/2021, 08:00 - 10:00</p>
+              <p className="mb0 font-weight-bold">
+                {`${Helper.getDate(details.startDate, variables.DATE_FORMAT.DATE_TIME)} - ${Helper.getDate(details.ẹndDate, variables.DATE_FORMAT.HOUR)}`}
+              </p>
             </div>
             <div className="col-lg-12">
               <div className="ant-col ant-form-item-label">
                 <span>Địa điểm</span>
               </div>
-              <p className="mb0 font-weight-bold">Hội trường cơ sở Lake View</p>
+              <p className="mb0 font-weight-bold">{details?.location || ''}</p>
             </div>
           </div>
         </Modal>
@@ -299,10 +304,10 @@ class Index extends PureComponent {
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
-                    data={[{ id: '', name: 'Tất cả loại lịch'}]}
+                    data={[{ id: '', name: 'Tất cả loại lịch'}, ...variablesModules.TYPE_CALENDAR]}
                     label="LOẠI LỊCH"
-                    name="typeSchedule"
-                    onChange={(event) => this.onChangeSelect(event, 'typeSchedule')}
+                    name="eventType"
+                    onChange={(event) => this.onChangeSelect(event, 'eventType')}
                     type={variables.SELECT}
                   />
                 </div>

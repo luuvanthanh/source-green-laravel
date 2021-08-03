@@ -659,6 +659,11 @@ export default class Helpers {
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
 
+  static joinDateTimeLocal = (date, time) =>
+    `${moment.utc(date).local().format(variables.DATE_FORMAT.DATE_AFTER)} ${moment.utc(time).local().format(
+      variables.DATE_FORMAT.TIME_FULL,
+    )}`;
+
   static getPathAvatarJson = (fileImage) => {
     const allowTypes = ['jpeg', 'jpg', 'png'];
     if (this.isJSON(fileImage)) {
