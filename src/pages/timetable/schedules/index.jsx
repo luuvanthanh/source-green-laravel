@@ -198,27 +198,50 @@ class Index extends PureComponent {
   };
 
   handleEventClick = (values) => {
-    this.setStateData({ isOpen: true });
     const valuesDetail = {
       ..._.get(values, 'event._def.extendedProps'),
       ..._.get(values, 'event._def'),
       startDate: values?.event?.startStr || '',
       ẹndDate: values?.event?.endStr || '',
     };
-    this.setStateData({ details: valuesDetail });
+    this.setStateData({ isOpen: true, details: valuesDetail });
   }
 
   cancelModal = () => {
-    this.setStateData({ isOpen: false });
+    this.setStateData({ isOpen: false, details: {} });
   }
 
-  redirectDetails = (pathname) => {
+  redirectDetails = (pathname, key) => {
     const { details } = this.state;
     if (!details?.publicId) {
       return;
     }
-    history.push(`${pathname}/${details?.publicId}/chi-tiet`);
+    history.push(`${pathname}/${details?.publicId}/${key}`);
   }
+
+  remove = () => {
+    const { details } = this.state;
+    if (!details?.publicId) {
+      return;
+    }
+    Helper.confirmAction({
+      callback: () => {
+        this.props.dispatch({
+          type: 'timeTablesSchedule/REMOVE',
+          payload: {
+            id: details?.publicId
+          },
+          callback: (response) => {
+            if (response) {
+              this.setStateData({ isOpen:  false});
+              this.onLoad();
+              this.setStateData({ details: {} });
+            }
+          },
+        });
+      },
+    });
+  };
 
   render() {
     const {
@@ -248,11 +271,36 @@ class Index extends PureComponent {
           visible={isOpen}
           width={500}
           onCancel={this.cancelModal}
-          footer={
-            <div className="text-center">
-              <p className="mb0 p10 pointer d-inline-block" aria-hidden onClick={() => this.redirectDetails(pathname)}>Chi tiết</p>
+          footer={[
+            <div className="d-flex justify-content-between" key="action">
+              <Button
+                key="remove"
+                color="danger"
+                icon="remove"
+                ghost
+                onClick={this.remove}
+              >
+                Xóa
+              </Button>
+              <Button
+                key="details"
+                color="success"
+                ghost
+                onClick={() => this.redirectDetails(pathname, 'chi-tiet')}
+              >
+                Chi tiết
+              </Button>
+              <Button
+                key="edit"
+                color="success"
+                icon="edit"
+                ghost
+                onClick={() => this.redirectDetails(pathname, 'chinh-sua')}
+              >
+                Chỉnh sửa
+              </Button>
             </div>
-          }
+          ]}
         >
           <div className="row">
             <div className="col-lg-6 mb15">

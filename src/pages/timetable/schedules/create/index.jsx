@@ -118,9 +118,10 @@ const Index = memo(
         }),
         rangeTime: undefined,
         object: undefined,
+        id: params?.id || undefined,
       };
       dispatch({
-        type: 'timeTablesScheduleAdd/ADD',
+        type: params?.id ? 'timeTablesScheduleAdd/UPDATE' : 'timeTablesScheduleAdd/ADD',
         payload,
         callback: (response, err) => {
           if (response) {
@@ -141,13 +142,6 @@ const Index = memo(
         },
       });
     };
-
-    useEffect(() => {
-      dispatch({
-        type: 'timeTablesScheduleAdd/GET_BRANCHES',
-        payload: params,
-      });
-    }, []);
 
     useEffect(() => {
       mounted.current = true;
@@ -176,7 +170,7 @@ const Index = memo(
       );
     };
 
-    const getStudents = (search) => {
+    const getStudents = (search, studentOld = []) => {
       mountedSet(setSearchStudents, { ...search, loading: true });
       dispatch({
         type: 'timeTablesScheduleAdd/GET_STUDENTS',
@@ -185,7 +179,20 @@ const Index = memo(
         },
         callback: (response) => {
           if (response) {
-            mountedSet(setStudents, response.items);
+            let newStudent = response.items || [];
+            if (!isEmpty(studentOld) && !isEmpty(response.items)) {
+              newStudent = response.items.map(item => {
+                const reuslt = studentOld.find(obj => obj?.student?.id === item?.id);
+                if (reuslt) {
+                  return {
+                    ...item,
+                    checked: true,
+                  };
+                }
+                return item;
+              });
+            }
+            mountedSet(setStudents, newStudent);
             mountedSet(setSearchStudents, {
               ...search,
               total: response.totalCount,
@@ -227,13 +234,17 @@ const Index = memo(
       });
     };
 
-    const onChangeBranch = (branch) => {
+    const getClasses = (branch) => {
       dispatch({
         type: 'timeTablesScheduleAdd/GET_CLASSES',
         payload: {
           branch,
         },
       });
+    };
+
+    const onChangeBranch = (branch) => {
+      getClasses(branch);
       if (type === 'forPerson') {
         formRef?.current?.setFieldsValue({ classId: undefined });
         getStudents({...searchStudents, branchId: branch, classId: '' });
@@ -273,9 +284,49 @@ const Index = memo(
       formRef?.current?.setFieldsValue({ classes: undefined });
     };
 
+    useEffect(() => {
+      if (params?.id) {
+        dispatch({
+          type: 'timeTablesScheduleDetails/GET_DETAILS',
+          payload: {
+            id: params?.id
+          },
+          callback: (res) => {
+            if (res) {
+              const classes = !isEmpty(res?.classTimetables) ? res?.classTimetables?.map(item => item?.class?.id) : [];
+              formRef?.current?.setFieldsValue({
+                ...res,
+                applyDate: res?.applyDate ? moment(res?.applyDate) : null,
+                rangeTime: res?.startTime && res?.endTime ? [moment(res?.startTime), moment(res?.endTime)] : null,
+                object: res?.forClass ? 'forClass' : 'forPerson',
+                branchId: res?.branch?.id || null,
+                classId: res?.class?.id || null,
+                classes,
+              });
+              setContent(res?.content || '');
+              setIsReminded(res?.isReminded || false);
+              setType(res?.forClass ? 'forClass' : 'forPerson');
+              setIsAllStudent(res?.isAllStudent);
+              setIsAllClass(res?.isAllClass);
+              if (res?.branch?.id) {
+                getClasses(res?.branch?.id);
+              }
+              if (res?.class?.id) {
+                getStudents({...searchStudents, branchId: res?.branch?.id, class: res?.class?.id }, res?.parentTimetables);
+              }
+            }
+          }
+        });
+      }
+      dispatch({
+        type: 'timeTablesScheduleAdd/GET_BRANCHES',
+        payload: params,
+      });
+    }, []);
+
     return (
       <>
-        <Breadcrumbs last="Tạo thời khóa biểu" menu={menuLeft} />
+        <Breadcrumbs last={params?.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'} menu={menuLeft} />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
           <Loading loading={false} isError={error.isError} params={{ error }}>
             <Form
@@ -319,7 +370,6 @@ const Index = memo(
                         <FormItem
                           className="no-label"
                           name="rangeTime"
-                          label=""
                           type={variables.TIME_RANGE}
                           rules={[variables.RULES.EMPTY]}
                         />

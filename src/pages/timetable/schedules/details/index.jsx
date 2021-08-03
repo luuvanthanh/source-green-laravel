@@ -34,6 +34,7 @@ const Index = memo(
         payload: {
           id: params?.id
         },
+        callback: () => {}
       });
     }, []);
 
