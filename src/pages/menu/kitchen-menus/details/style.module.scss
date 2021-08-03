@@ -1,0 +1,47 @@
+@import '@/assets/styles/mixins.scss';
+
+.card-container {
+  padding: 20px;
+}
+
+.list-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+}
+
+.info-image {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(0deg, #f1f3f8, #f1f3f8);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span[class*='icon'] {
+    font-size: 16px;
+  }
+}
+
+.info-content {
+  padding-left: 10px;
+  .info-norm {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: $text-form-label;
+  }
+  .info-title {
+    margin-bottom: 0;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: $text-form-label;
+  }
+}
