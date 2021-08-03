@@ -332,6 +332,16 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`;
     }
+    if (type === 'BS') {
+      return `/quan-ly-nhan-su/cong-bo-sung?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
     if (type === 'KC') {
       return `/quan-ly-nhan-su/lich-lam-viec?${Helper.convertParamSearchConvert(
         {
