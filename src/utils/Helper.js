@@ -1043,4 +1043,25 @@ export default class Helpers {
 
     return tmp;
   };
+
+  static getStatusContracts = (contractFrom, contractTo) => {
+    const diffSignDate = moment(moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE)).diff(
+      moment().format(variables.DATE_FORMAT.DATE_BEFORE),
+      'days',
+    );
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return <Tag color="yellow">Gần hết hạn</Tag>;
+    }
+    if (diffExpirationDate < 0) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    return '';
+  };
 }

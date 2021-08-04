@@ -319,6 +319,17 @@ class Index extends PureComponent {
         render: (value) => value?.name,
       },
       {
+        title: 'Trạng thái',
+        key: 'status',
+        width: 150,
+        className: 'min-width-150',
+        render: record =>
+          Helper.getStatusContracts(
+            moment(record?.contractFrom),
+            moment(record?.contractTo),
+          ),
+      },
+      {
         title: 'Thao tác',
         key: 'actions',
         width: 180,
