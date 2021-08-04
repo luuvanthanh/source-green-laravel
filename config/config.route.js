@@ -184,38 +184,38 @@ export default [
         path: '/thuc-don',
         component: './menu/layout',
         routes: [
+          // {
+          //   path: '/thuc-don',
+          //   component: './menu/index',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.BEP],
+          // },
+          // {
+          //   path: '/thuc-don/tao-moi',
+          //   component: './menu/create',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.BEP],
+          // },
           {
             path: '/thuc-don',
-            component: './menu/index',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BEP],
-          },
-          {
-            path: '/thuc-don/tao-moi',
-            component: './menu/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BEP],
-          },
-          {
-            path: '/thuc-don/thuc-don-1',
             component: './menu/kitchen-menus/index',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
           {
-            path: '/thuc-don/thuc-don-1/tao-moi',
+            path: '/thuc-don/tao-moi',
             component: './menu/kitchen-menus/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
           {
-            path: '/thuc-don/thuc-don-1/:id/chinh-sua',
+            path: '/thuc-don/:id/chinh-sua',
             component: './menu/kitchen-menus/create',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
           {
-            path: '/thuc-don/thuc-don-1/:id/chi-tiet',
+            path: '/thuc-don/:id/chi-tiet',
             component: './menu/kitchen-menus/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],

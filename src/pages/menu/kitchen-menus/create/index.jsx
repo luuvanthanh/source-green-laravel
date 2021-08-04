@@ -15,6 +15,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import Select from '@/components/CommonComponent/Select';
 import classnames from 'classnames';
+import Loading from '@/components/CommonComponent/Loading';
 import styles from './style.module.scss';
 import variablesModules from '../../utils/variables';
 
@@ -22,7 +23,7 @@ const Index = memo(() => {
   const [
     menuData,
     loading,
-    { branches, classTypes, foodCommons, meals },
+    { branches, classTypes, foodCommons, meals, error },
   ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, kitchenMenusCreate }) => [
     menuLeftChildren,
     effects,
@@ -154,6 +155,58 @@ const Index = memo(() => {
     });
   };
 
+  const convertMenuMeal = (items) => {
+    const o = {};
+    return items?.reduce((r, el) => {
+      if (!o[el.weekIndex]) {
+        o[el.weekIndex] = {
+          weekIndex: el.weekIndex,
+          menuMeals: [],
+        };
+        r.push(o[el.weekIndex]);
+      }
+      o[el.weekIndex].menuMeals.push(el);
+      return r;
+    }, []);
+  };
+
+  const covertTimeline = (items) => {
+    const o = {};
+    return items.reduce((r, el) => {
+      if (!o[el.mealId]) {
+        o[el.mealId] = {
+          mealId: el.mealId,
+          name: el?.meal?.name,
+          timeline: [],
+        };
+        r.push(o[el.mealId]);
+      }
+      if (!isEmpty(el.menuMealDetails)) {
+        o[el.mealId].timeline.push(el);
+      }
+      return r;
+    }, []);
+  };
+
+  const covertWeek = (items) => {
+    const o = {};
+    return items.reduce((r, el) => {
+      if (!o[el.foodOrderIndex]) {
+        o[el.foodOrderIndex] = {
+          foodOrderIndex: el.foodOrderIndex,
+          id: uuidv4(),
+          week: [],
+        };
+        r.push(o[el.foodOrderIndex]);
+      }
+      o[el.foodOrderIndex].week.push({
+        dayOfWeek: el.dayOfWeek,
+        foodId: el.foodId,
+      });
+      return r;
+    }, []);
+  };
+
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -163,20 +216,25 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
-            setWeeksKitchen(
-              response.map((item) => ({
-                weekIndex: item.weekIndex,
-                menuMeals: meals.map((itemMeal) => ({
+            const result = convertMenuMeal(response?.menuMeals)
+              .sort((a, b) => a.weekIndex - b.weekIndex)
+              .map((item) => ({
+                ...item,
+                menuMeals: covertTimeline(item?.menuMeals).map((itemMenuMeals) => ({
+                  ...itemMenuMeals,
                   weekIndex: item.weekIndex,
-                  mealId: itemMeal.id,
-                  name: itemMeal.name,
-                  timeline: [],
+                  timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
+                    ...itemTimeline,
+                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                  })),
                 })),
-              })),
-            );
-            // formRef.current.setFieldsValue({
-            //   ...response,
-            // });
+              }));
+            setWeeksKitchen(result);
+            formRef.current.setFieldsValue({
+              ...response,
+              branchId: response?.branch?.id,
+              month: response.fromDate && moment(response.fromDate),
+            });
           }
         },
       });
@@ -373,34 +431,61 @@ const Index = memo(() => {
         }),
         isUTC: true,
       });
-      setWeeksKitchen((prevState) =>
-        prevState.map((item) => {
-          if (item.weekIndex === object?.item?.weekIndex) {
-            return {
-              ...item,
-              menuMeals: item?.menuMeals?.map((itemMeal) => {
-                if (itemMeal.mealId === object?.itemMenu?.mealId) {
-                  return {
-                    ...itemMeal,
-                    timeline: [
-                      ...itemMeal?.timeline,
-                      {
-                        id: uuidv4(),
-                        name: values.name,
-                        fromTime,
-                        toTime,
-                        menuMealDetails: [],
-                      },
-                    ],
-                  };
-                }
-                return itemMeal;
-              }),
-            };
-          }
-          return item;
-        }),
-      );
+      if (object.timeline) {
+        setWeeksKitchen((prevState) =>
+          prevState.map((item) => {
+            if (item.weekIndex === object?.item?.weekIndex) {
+              return {
+                ...item,
+                menuMeals: item?.menuMeals?.map((itemMeal) => {
+                  if (itemMeal.mealId === object?.itemMenu?.mealId) {
+                    return {
+                      ...itemMeal,
+                      timeline: itemMeal?.timeline?.map((itemTimeline) =>
+                        itemTimeline?.id === object?.timeline?.id
+                          ? { ...itemTimeline, name: values.name, fromTime, toTime }
+                          : itemTimeline,
+                      ),
+                    };
+                  }
+                  return itemMeal;
+                }),
+              };
+            }
+            return item;
+          }),
+        );
+      } else {
+        setWeeksKitchen((prevState) =>
+          prevState.map((item) => {
+            if (item.weekIndex === object?.item?.weekIndex) {
+              return {
+                ...item,
+                menuMeals: item?.menuMeals?.map((itemMeal) => {
+                  if (itemMeal.mealId === object?.itemMenu?.mealId) {
+                    return {
+                      ...itemMeal,
+                      timeline: [
+                        ...itemMeal?.timeline,
+                        {
+                          id: uuidv4(),
+                          name: values.name,
+                          fromTime,
+                          toTime,
+                          menuMealDetails: [],
+                        },
+                      ],
+                    };
+                  }
+                  return itemMeal;
+                }),
+              };
+            }
+            return item;
+          }),
+        );
+      }
+
       handleCancel();
     });
   };
@@ -429,18 +514,33 @@ const Index = memo(() => {
     );
   };
 
+  const editTimeline = (item, itemMenu, timeline) => {
+    setVisible(true);
+    setObect({ item, itemMenu, timeline });
+  };
+
   const enableButton = (items) => {
     let listEnable = [];
     items.forEach((item) => {
       item?.menuMeals?.forEach((item) => {
         item?.timeline?.forEach((item) => {
           item?.menuMealDetails?.forEach((item) => {
-            listEnable = [...listEnable, ...item.week.filter((item) => !item.foodId)];
+            if (item.week) {
+              listEnable = [...listEnable, ...item.week.filter((item) => !item.foodId)];
+            }
           });
         });
       });
     });
     return size(listEnable);
+  };
+
+  const onCollapsed = (record) => {
+    setWeeksKitchen((prevState) =>
+      prevState.map((item) =>
+        item.weekIndex === record.weekIndex ? { ...item, collapsed: !record.collapsed } : item,
+      ),
+    );
   };
 
   return (
@@ -473,7 +573,17 @@ const Index = memo(() => {
         title="THÊM MỐC"
         visible={visible}
       >
-        <Form layout="vertical" ref={formRefModal}>
+        <Form
+          layout="vertical"
+          ref={formRefModal}
+          initialValues={{
+            name: object?.timeline?.name,
+            time:
+              object?.timeline?.fromTime && object?.timeline?.toTime
+                ? [moment(object?.timeline?.fromTime), moment(object?.timeline?.toTime)]
+                : undefined,
+          }}
+        >
           <div className="row">
             <div className="col-lg-6">
               <FormItem
@@ -494,243 +604,280 @@ const Index = memo(() => {
           </div>
         </Form>
       </Modal>
-      <Helmet title="Tạo thực đơn" />
-      <Breadcrumbs className="pt0" last="Tạo thực đơn" menu={menuData} />
+      <Helmet title={params.id ? 'Chỉnh sửa thực đơn' : 'Tạo thực đơn'} />
+      <Breadcrumbs
+        className="pt0"
+        last={params.id ? 'Chỉnh sửa thực đơn' : 'Tạo thực đơn'}
+        menu={menuData}
+      />
       <Pane style={{ padding: 20, paddingBottom: 0 }} className={styles.wrapper}>
         <Pane className="row">
           <Pane className="col-lg-12">
             <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
-              {!params.id && (
-                <Pane className="p20 pt20 card">
-                  <Heading type="form-title" className="mb20">
-                    Thông tin chung
-                  </Heading>
-                  <Pane className="row align-items-center">
-                    <Pane className="col-3">
-                      <FormItem
-                        label="Thời gian"
-                        name="month"
-                        type={variables.MONTH_PICKER}
-                        rules={[variables.RULES.EMPTY]}
-                      />
-                    </Pane>
-                    <Pane className="col-3">
-                      <FormItem
-                        data={branches}
-                        label="Cơ sở"
-                        name="branchId"
-                        type={variables.SELECT}
-                        rules={[variables.RULES.EMPTY]}
-                      />
-                    </Pane>
-                    <Pane className="col-3">
-                      <FormItem
-                        data={classTypes}
-                        label="Loại lớp"
-                        name="classTypeId"
-                        type={variables.SELECT}
-                        rules={[variables.RULES.EMPTY]}
-                      />
-                    </Pane>
-                    <Pane className="col-3">
-                      <Button color="success" onClick={onApply}>
-                        Tạo mới thực đơn
-                      </Button>
+              <Loading
+                loading={
+                  loading['kitchenMenusCreate/GET_DATA'] ||
+                  loading['kitchenMenusCreate/GET_BRANCHES'] ||
+                  loading['kitchenMenusCreate/GET_CLASS_TYPES'] ||
+                  loading['kitchenMenusCreate/GET_FOOD_COMMONS'] ||
+                  loading['kitchenMenusCreate/GET_MEALS']
+                }
+                isError={error.isError}
+                params={{ error, goBack: '/thuc-don' }}
+              >
+                <Pane>
+                  <Pane className="p20 pt20 card">
+                    <Heading type="form-title" className="mb20">
+                      Thông tin chung
+                    </Heading>
+                    <Pane className="row align-items-center">
+                      <Pane className="col-3">
+                        <FormItem
+                          label="Thời gian"
+                          name="month"
+                          type={variables.MONTH_PICKER}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </Pane>
+                      <Pane className="col-3">
+                        <FormItem
+                          data={branches}
+                          label="Cơ sở"
+                          name="branchId"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </Pane>
+                      <Pane className="col-3">
+                        <FormItem
+                          data={classTypes}
+                          label="Loại lớp"
+                          name="classTypeId"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </Pane>
+                      <Pane className="col-3">
+                        <Button color="success" onClick={onApply}>
+                          {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
+                        </Button>
+                      </Pane>
                     </Pane>
                   </Pane>
-                </Pane>
-              )}
-
-              {!isEmpty(weeksKitchen) &&
-                weeksKitchen.map((item) => (
-                  <div className={styles['menu-container']} key={item.weekIndex}>
-                    <div className={styles['menu-header']}>
-                      <h3 className={styles.title}>Tuần {item.weekIndex}</h3>
-                      <div className={styles.icon}>
-                        <span className="icon-up" />
-                      </div>
-                    </div>
-                    <div className={styles['menu-content']}>
-                      <div className={styles['list-container']}>
-                        <div className={styles['list-header']}>
+                  {!isEmpty(weeksKitchen) &&
+                    weeksKitchen.map((item) => (
+                      <div className={styles['menu-container']} key={item.weekIndex}>
+                        <div className={styles['menu-header']}>
+                          <h3 className={styles.title}>Tuần {item.weekIndex}</h3>
                           <div
-                            className={classnames(
-                              styles.col,
-                              styles.first,
-                              'min-width-100',
-                              'text-center',
-                            )}
+                            className={styles.icon}
+                            role="presentation"
+                            onClick={() => onCollapsed(item)}
                           >
-                            Bữa ăn
-                          </div>
-                          <div className={classnames(styles.col, 'min-width-150')}>Mốc</div>
-                          <div className={classnames(styles.col, styles['col-group'])}>
-                            {variablesModules.DAYS.map((item) => (
-                              <div
-                                className={classnames(styles.col, 'min-width-150')}
-                                key={item.id}
-                              >
-                                {item.name}
-                              </div>
-                            ))}
-                            <div className={classnames(styles.col, 'min-width-50')} />
+                            {item.collapsed && <span className="icon-up" />}
+                            {!item.collapsed && <span className="icon-down" />}
                           </div>
                         </div>
-                        <div className={styles['list-content']}>
-                          {item?.menuMeals?.map((itemMenu) => (
-                            <div className={styles['list-item']} key={itemMenu.mealId}>
+                        <div
+                          className={classnames(styles['menu-content'], {
+                            [`${styles.collapsed}`]: item.collapsed,
+                          })}
+                        >
+                          <div className={styles['list-container']}>
+                            <div className={styles['list-header']}>
                               <div
-                                className={classnames(styles.col, styles.first, 'min-width-100')}
+                                className={classnames(
+                                  styles.col,
+                                  styles.first,
+                                  'min-width-100',
+                                  'text-center',
+                                )}
                               >
-                                <h4 className={styles.title}>{itemMenu.name}</h4>
+                                Bữa ăn
                               </div>
-                              <div className={styles['col-parent']}>
-                                {itemMenu?.timeline?.map((itemTimeline, indexTimeline) => (
-                                  <div className={styles['col-children']} key={indexTimeline}>
-                                    <div
-                                      className={classnames(
-                                        styles.col,
-                                        'min-width-150',
-                                        'max-width-150',
-                                      )}
-                                    >
-                                      <p className={styles.norm}>
-                                        {itemTimeline.name}
-                                        {itemTimeline.fromTime &&
-                                          itemTimeline.toTime &&
-                                          `(${Helper.getDate(
-                                            itemTimeline.fromTime,
-                                            variables.DATE_FORMAT.HOUR,
-                                          )} - ${Helper.getDate(
-                                            itemTimeline.toTime,
-                                            variables.DATE_FORMAT.HOUR,
-                                          )})`}
-                                      </p>
-                                      <div className={styles.action}>
-                                        <div className={classnames(styles.icon, styles.edit)}>
-                                          <span className="icon-edit" />
+                              <div className={classnames(styles.col, 'min-width-150')}>Mốc</div>
+                              <div className={classnames(styles.col, styles['col-group'])}>
+                                {variablesModules.DAYS.map((item) => (
+                                  <div
+                                    className={classnames(styles.col, 'min-width-150')}
+                                    key={item.id}
+                                  >
+                                    {item.name}
+                                  </div>
+                                ))}
+                                <div className={classnames(styles.col, 'min-width-50')} />
+                              </div>
+                            </div>
+                            <div className={styles['list-content']}>
+                              {item?.menuMeals?.map((itemMenu) => (
+                                <div className={styles['list-item']} key={itemMenu.mealId}>
+                                  <div
+                                    className={classnames(
+                                      styles.col,
+                                      styles.first,
+                                      'min-width-100',
+                                    )}
+                                  >
+                                    <h4 className={styles.title}>{itemMenu.name}</h4>
+                                  </div>
+                                  <div className={styles['col-parent']}>
+                                    {itemMenu?.timeline?.map((itemTimeline, indexTimeline) => (
+                                      <div className={styles['col-children']} key={indexTimeline}>
+                                        <div
+                                          className={classnames(
+                                            styles.col,
+                                            'min-width-150',
+                                            'max-width-150',
+                                          )}
+                                        >
+                                          <p className={styles.norm}>
+                                            {itemTimeline.name}
+                                            {itemTimeline.fromTime &&
+                                              itemTimeline.toTime &&
+                                              `(${Helper.getDate(
+                                                itemTimeline.fromTime,
+                                                variables.DATE_FORMAT.HOUR,
+                                              )} - ${Helper.getDate(
+                                                itemTimeline.toTime,
+                                                variables.DATE_FORMAT.HOUR,
+                                              )})`}
+                                          </p>
+                                          <div className={styles.action}>
+                                            <div className={classnames(styles.icon, styles.edit)}>
+                                              <span
+                                                className="icon-edit"
+                                                role="presentation"
+                                                onClick={() =>
+                                                  editTimeline(item, itemMenu, itemTimeline)
+                                                }
+                                              />
+                                            </div>
+                                            <div className={styles.icon}>
+                                              <span
+                                                className="icon-remove"
+                                                role="presentation"
+                                                onClick={() =>
+                                                  removeTimeline(item, itemMenu, itemTimeline)
+                                                }
+                                              />
+                                            </div>
+                                          </div>
                                         </div>
-                                        <div className={styles.icon}>
-                                          <span
-                                            className="icon-remove"
-                                            role="presentation"
-                                            onClick={() =>
-                                              removeTimeline(item, itemMenu, itemTimeline)
-                                            }
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className={classnames(styles.col, styles['col-groups'])}>
-                                      {itemTimeline?.menuMealDetails?.map(
-                                        (itemMenuMeal, indexMenuMeal) => (
-                                          <div className={styles.item} key={indexMenuMeal}>
-                                            {variablesModules.DAYS.map((itemDay) => {
-                                              const itemMenuOfDay = itemMenuMeal?.week?.find(
-                                                (item) => item.dayOfWeek === itemDay.id,
-                                              );
-                                              return (
+                                        <div
+                                          className={classnames(styles.col, styles['col-groups'])}
+                                        >
+                                          {itemTimeline?.menuMealDetails?.map(
+                                            (itemMenuMeal, indexMenuMeal) => (
+                                              <div className={styles.item} key={indexMenuMeal}>
+                                                {variablesModules.DAYS.map((itemDay) => {
+                                                  const itemMenuOfDay = itemMenuMeal?.week?.find(
+                                                    (item) => item.dayOfWeek === itemDay.id,
+                                                  );
+                                                  return (
+                                                    <div
+                                                      className={classnames(
+                                                        styles['col-item'],
+                                                        'min-width-150',
+                                                      )}
+                                                      key={itemDay.id}
+                                                    >
+                                                      <Select
+                                                        dataSet={foodCommons}
+                                                        placeholder="Chọn"
+                                                        value={itemMenuOfDay?.foodId || null}
+                                                        onChange={(e) =>
+                                                          onChangeFood(
+                                                            e,
+                                                            item,
+                                                            itemMenu,
+                                                            itemTimeline,
+                                                            itemMenuMeal,
+                                                            itemDay,
+                                                          )
+                                                        }
+                                                      />
+                                                    </div>
+                                                  );
+                                                })}
                                                 <div
                                                   className={classnames(
                                                     styles['col-item'],
-                                                    'min-width-150',
+                                                    'min-width-50',
                                                   )}
-                                                  key={itemDay.id}
+                                                  role="presentation"
+                                                  onClick={() =>
+                                                    onRemoveMenuMeal(
+                                                      item,
+                                                      itemMenu,
+                                                      itemTimeline,
+                                                      itemMenuMeal,
+                                                    )
+                                                  }
                                                 >
-                                                  <Select
-                                                    dataSet={foodCommons}
-                                                    placeholder="Chọn"
-                                                    value={itemMenuOfDay?.foodId || null}
-                                                    onChange={(e) =>
-                                                      onChangeFood(
-                                                        e,
-                                                        item,
-                                                        itemMenu,
-                                                        itemTimeline,
-                                                        itemMenuMeal,
-                                                        itemDay,
-                                                      )
-                                                    }
-                                                  />
+                                                  <div className={styles.icon}>
+                                                    <span className="icon-remove" />
+                                                  </div>
                                                 </div>
-                                              );
-                                            })}
-                                            <div
-                                              className={classnames(
-                                                styles['col-item'],
-                                                'min-width-50',
-                                              )}
-                                              role="presentation"
+                                              </div>
+                                            ),
+                                          )}
+
+                                          <div className={styles.item}>
+                                            <Button
+                                              icon="plus"
+                                              color="dash-success"
                                               onClick={() =>
-                                                onRemoveMenuMeal(
-                                                  item,
-                                                  itemMenu,
-                                                  itemTimeline,
-                                                  itemMenuMeal,
-                                                )
+                                                onMenuMeal(item, itemMenu, itemTimeline)
                                               }
                                             >
-                                              <div className={styles.icon}>
-                                                <span className="icon-remove" />
-                                              </div>
-                                            </div>
+                                              Thêm món
+                                            </Button>
                                           </div>
-                                        ),
-                                      )}
-
-                                      <div className={styles.item}>
-                                        <Button
-                                          icon="plus"
-                                          color="dash-success"
-                                          onClick={() => onMenuMeal(item, itemMenu, itemTimeline)}
-                                        >
-                                          Thêm món
-                                        </Button>
+                                        </div>
                                       </div>
+                                    ))}
+                                    <div className={styles['col-children']}>
+                                      <Button
+                                        icon="plus"
+                                        color="dash-success"
+                                        onClick={() => addTimeline(item, itemMenu)}
+                                      >
+                                        Thêm mốc
+                                      </Button>
                                     </div>
                                   </div>
-                                ))}
-                                <div className={styles['col-children']}>
-                                  <Button
-                                    icon="plus"
-                                    color="dash-success"
-                                    onClick={() => addTimeline(item, itemMenu)}
-                                  >
-                                    Thêm mốc
-                                  </Button>
                                 </div>
-                              </div>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
-
-              <Pane className="py20 d-flex justify-content-between align-items-center">
-                {params.id && (
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Xóa
-                  </p>
-                )}
-                {!isEmpty(weeksKitchen) && (
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    disabled={enableButton(weeksKitchen)}
-                    loading={
-                      loading['kitchenMenusCreate/ADD'] ||
-                      loading['kitchenMenusCreate/UPDATE'] ||
-                      loading['kitchenMenusCreate/GET_DATA']
-                    }
-                  >
-                    Lưu
-                  </Button>
-                )}
-              </Pane>
+                    ))}
+                  <Pane className="py20 d-flex justify-content-between align-items-center">
+                    {params.id && (
+                      <p className="btn-delete" role="presentation" onClick={remove}>
+                        Xóa
+                      </p>
+                    )}
+                    {!isEmpty(weeksKitchen) && (
+                      <Button
+                        className="ml-auto px25"
+                        color="success"
+                        htmlType="submit"
+                        size="large"
+                        disabled={enableButton(weeksKitchen)}
+                        loading={
+                          loading['kitchenMenusCreate/ADD'] ||
+                          loading['kitchenMenusCreate/UPDATE'] ||
+                          loading['kitchenMenusCreate/GET_DATA']
+                        }
+                      >
+                        Lưu
+                      </Button>
+                    )}
+                  </Pane>
+                </Pane>
+              </Loading>
             </Form>
           </Pane>
         </Pane>

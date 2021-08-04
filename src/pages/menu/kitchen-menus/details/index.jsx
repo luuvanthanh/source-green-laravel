@@ -75,7 +75,9 @@ const Index = memo(() => {
                 </div>
                 <div className={styles['info-content']}>
                   <p className={styles['info-norm']}>Thời gian</p>
-                  <p className={styles['info-title']}>Tháng 06/2021</p>
+                  <p className={styles['info-title']}>
+                    {Helper.getDate(data?.fromDate, variables.DATE_FORMAT.MONTH_FULL)}
+                  </p>
                 </div>
               </div>
               <div className={styles['info-item']}>
@@ -84,7 +86,7 @@ const Index = memo(() => {
                 </div>
                 <div className={styles['info-content']}>
                   <p className={styles['info-norm']}>Cơ sở</p>
-                  <p className={styles['info-title']}>Lake view</p>
+                  <p className={styles['info-title']}>{data?.branch?.name}</p>
                 </div>
               </div>
               <div className={styles['info-item']}>
@@ -92,8 +94,8 @@ const Index = memo(() => {
                   <span className="icon-open-book" />
                 </div>
                 <div className={styles['info-content']}>
-                  <p className={styles['info-norm']}>Lớp</p>
-                  <p className={styles['info-title']}>Preschool</p>
+                  <p className={styles['info-norm']}>Loại lớp</p>
+                  <p className={styles['info-title']}>{data?.classType?.name}</p>
                 </div>
               </div>
             </div>
@@ -101,10 +103,10 @@ const Index = memo(() => {
         </Pane>
         <Pane className="row justify-content-center">
           <Pane className="col-lg-6 card">
-            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 278}>
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 400}>
               <List
                 loading={loading}
-                dataSource={mergeMenuMeal(data)}
+                dataSource={mergeMenuMeal(data.menuMealGroupByWeekAndDayIndex)}
                 renderItem={({ date, menuMealGroupByMenuTypes = [] }, index) => (
                   <ListItem key={index}>
                     <Pane className="w-100">

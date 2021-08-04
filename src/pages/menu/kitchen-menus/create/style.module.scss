@@ -40,6 +40,9 @@
 }
 
 .menu-content {
+  &.collapsed {
+    display: none;
+  }
 }
 
 .list-container {
