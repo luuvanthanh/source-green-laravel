@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export function get(params = {}) {
-  return request(`/kitchen-menus/group-by-day/${params.id}`, {
+  return request(`/kitchen-menus/${params.id}`, {
     method: 'GET',
   });
 }

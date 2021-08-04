@@ -4,7 +4,7 @@ import * as services from './services';
 export default {
   namespace: 'kitchenMenusDetails',
   state: {
-    data: [],
+    data: {},
     pagination: {
       total: 0,
     },

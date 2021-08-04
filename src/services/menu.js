@@ -614,19 +614,11 @@ export async function getLeftMenuChildren() {
     {
       title: 'Thực đơn',
       key: 'menu',
-      url: ['/thuc-don', '/thuc-don/tao-moi'],
-      icon: 'icon icon-list',
-      permission: [permissions.BEP],
-      pro: true,
-    },
-    {
-      title: 'Thực đơn 1',
-      key: 'menu1',
       url: [
-        '/thuc-don/thuc-don-1',
-        '/thuc-don/thuc-don-1/tao-moi',
-        '/thuc-don/thuc-don-1/:id/chi-tiet',
-        '/thuc-don/thuc-don-1/:id/chinh-sua'
+        '/thuc-don',
+        '/thuc-don/tao-moi',
+        '/thuc-don/:id/chi-tiet',
+        '/thuc-don/:id/chinh-sua'
       ],
       icon: 'icon icon-list',
       permission: [permissions.BEP],
