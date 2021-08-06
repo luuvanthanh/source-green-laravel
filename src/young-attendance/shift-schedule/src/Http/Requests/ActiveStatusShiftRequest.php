@@ -5,7 +5,6 @@ namespace GGPHP\YoungAttendance\ShiftSchedule\Http\Requests;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ActiveStatusShiftRequest extends FormRequest
 {
@@ -26,16 +25,20 @@ class ActiveStatusShiftRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        $checkUnique = [];
 
-        if ($request->status === Shift::ON) {
-            $checkUnique = Rule::unique('Shifts')->where(function ($query) use ($request) {
-                $query->where(['shiftCode' => $request->shift_code, 'Status' => Shift::ON]);
-            });
-        }
         return [
             'shiftCode' => [
-                'required', $checkUnique,
+                'required',
+                function ($attribute, $value, $fail) {
+
+                    if (request()->status === Shift::ON) {
+                        $shift = Shift::where(['ShiftCode' => $value, 'Status' => Shift::ON])->first();
+
+                        if (!is_null($shift)) {
+                            return $fail("Không hợp lệ, trùng mã ca!");
+                        }
+                    }
+                },
             ],
         ];
     }

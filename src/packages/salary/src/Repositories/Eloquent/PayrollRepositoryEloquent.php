@@ -114,9 +114,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
             foreach ($employees as &$employee) {
-                // if ($employee->Id == "2fcd7c4d-dcf3-44e9-ad00-6387013f1ac8") {
                 $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
-                // }
             }
 
             $payroll->payrollDetail()->delete();
@@ -207,6 +205,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         ])->totalBusRegistration;
 
         $isProbation = false;
+
         $contract = $employee->labourContract()->orderBy('CreationTime')->first();
 
         if (is_null($contract)) {

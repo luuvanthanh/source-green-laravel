@@ -9,6 +9,7 @@ use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use GGPHP\WorkHour\Models\WorkHour;
 use GGPHP\WorkHour\Presenters\WorkHourPresenter;
@@ -127,6 +128,7 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         }
 
         $employees->tranferHistory($attributes);
+        $employees->status(User::STATUS['WORKING']);
 
         if (!empty($attributes['fullName'])) {
             $employees->whereLike('FullName', $attributes['fullName']);
@@ -335,7 +337,6 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                 $merge = $cell_coordinate . ":" . $mergeCol;
 
                 $listMerge[] = $merge;
-
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
                 $sheet = $param->sheet;
@@ -373,7 +374,6 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                     $sheet->mergeCells($item);
                 }
                 $sheet->mergeCells('A1:AJ2');
-
             },
 
         ];

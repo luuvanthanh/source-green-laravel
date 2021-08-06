@@ -64,6 +64,14 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
             });
         }
 
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where(function ($q2) use ($attributes) {
+                $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            });
+        }
+
         if (!empty($attributes['limit'])) {
             $businessCard = $this->paginate($attributes['limit']);
         } else {
@@ -105,5 +113,4 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
         return parent::find($id);
     }
-
 }

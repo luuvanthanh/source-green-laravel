@@ -112,7 +112,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 }
             }
 
-
             $nameStudent = $attendance->student->FullName;
             $message = '';
             switch ($attendance->Status) {
@@ -132,18 +131,27 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
             }
 
+            $images =  $attendance->student->FileImage;
+            $urlImage = '';
+
+            if (!is_null($images)) {
+                $images = json_decode($images);
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $urlNoti = env('NOTI_URL') . '/api/notification';
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
-                    'title' => 'Clover',
-                    'imageURL' => 'string',
+                    'title' => $nameStudent,
+                    'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
                     'refId' => $attributes['studentId'],
                 ]);
             }
         } else {
+
             $attendance->update($attributes);
 
             $reason = $attendance->reason;
@@ -187,13 +195,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
             }
 
+            $images =  $attendance->student->FileImage;
+            $urlImage = '';
+
+            if (!is_null($images)) {
+                $images = json_decode($images);
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $urlNoti = env('NOTI_URL') . '/api/notification';
 
             if (!empty($userId)) {
                 Http::post("$urlNoti", [
                     'users' => $userId,
-                    'title' => 'Clover',
-                    'imageURL' => 'string',
+                    'title' => $nameStudent,
+                    'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
                     'refId' => $attributes['studentId'],
@@ -320,12 +336,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 $shift = Shift::findOrFail($studentTimeWorkShift[$date][0]['ShiftId']);
 
                 foreach ($studentTimeWorkShift[$date] as $key => $value) {
-
                     $timeAllow = $this->checkTimeAllow($date, $value);
-
-                    $formatStartTime = Carbon::parse($date . '' . $value['StartTime'])->format('Y-m-d H:i:s');
-                    $formatEndTime = Carbon::parse($date . '' . $value['EndTime'])->format('Y-m-d H:i:s');
-                    $startTime = Carbon::parse($date . '' . $value['StartTime'])->format('H:i:s');
 
                     // Vào lớp
                     if ($nowHours > Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
@@ -370,12 +381,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
+                                $images =  $student->FileImage;
+                                $urlImage = '';
+
+                                if (!is_null($images)) {
+                                    $images = json_decode($images);
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
+
                                 $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
+
                                 if (!empty($userId)) {
                                     Http::post("$urlNoti", [
                                         'users' => $userId,
-                                        'title' => 'Clover',
-                                        'imageURL' => 'string',
+                                        'title' => $nameStudent,
+                                        'imageURL' => $urlImage,
                                         'message' => "Bé $nameStudent đã vào lớp lúc $timeCheckIn",
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
@@ -425,12 +445,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
+                                $images =  $student->FileImage;
+                                $urlImage = '';
+
+                                if (!is_null($images)) {
+                                    $images = json_decode($images);
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
+
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+
                                 if (!empty($userId)) {
                                     Http::post("$urlNoti", [
                                         'users' => $userId,
-                                        'title' => 'Clover',
-                                        'imageURL' => 'string',
+                                        'title' => $nameStudent,
+                                        'imageURL' => $urlImage,
                                         'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
@@ -456,12 +485,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
+                                $images =  $student->FileImage;
+                                $urlImage = '';
+
+                                if (!is_null($images)) {
+                                    $images = json_decode($images);
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
+
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+
                                 if (!empty($userId)) {
                                     Http::post("$urlNoti", [
                                         'users' => $userId,
-                                        'title' => 'Clover',
-                                        'imageURL' => 'string',
+                                        'title' => $nameStudent,
+                                        'imageURL' => $urlImage,
                                         'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
@@ -504,11 +542,19 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             }
 
                             $nameStudent = $student->FullName;
+                            $images =  $student->FileImage;
+                            $urlImage = '';
+
+                            if (!is_null($images)) {
+                                $images = json_decode($images);
+                                $urlImage = env('IMAGE_URL') . $images[0];
+                            }
+
                             if (!empty($userId)) {
                                 Http::post("$urlNoti", [
                                     'users' => $userId,
-                                    'title' => 'Clover',
-                                    'imageURL' => 'string',
+                                    'title' => $nameStudent,
+                                    'imageURL' => $urlImage,
                                     'message' => "Bé $nameStudent vắng không phép ngày $date",
                                     'moduleType' => 6,
                                     'refId' => $student->Id,

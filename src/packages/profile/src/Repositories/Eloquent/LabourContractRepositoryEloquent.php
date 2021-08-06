@@ -45,7 +45,6 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
         $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
-
     }
 
     /**

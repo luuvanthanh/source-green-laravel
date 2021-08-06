@@ -34,6 +34,7 @@ class Dismissed extends UuidModel
      */
     protected $casts = [
         'DecisionDate' => 'datetime',
+        'TimeApply' => 'datetime',
     ];
 
     /**
@@ -52,5 +53,4 @@ class Dismissed extends UuidModel
     {
         return $this->hasMany(DismissedDetail::class, 'DismissedId');
     }
-
 }

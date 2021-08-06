@@ -38,12 +38,23 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forCronJob();
     });
 
-    \GGPHP\Fingerprint\RouteRegistrar::routes();
-    \GGPHP\Timekeeping\RouteRegistrar::routes();
-    \GGPHP\Absent\RouteRegistrar::routes();
-
+    // Route::group(['middleware' => 'auth_sso'], function () {
     \GGPHP\Users\RouteRegistrar::routes(function ($router) {
         $router->forUser();
+    });
+
+    \GGPHP\Fingerprint\RouteRegistrar::routes();
+
+    \GGPHP\Timekeeping\RouteRegistrar::routes();
+
+    \GGPHP\Absent\RouteRegistrar::routes();
+
+    \GGPHP\Category\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    \GGPHP\WorkHour\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
     });
 
     \GGPHP\ShiftSchedule\RouteRegistrar::routes(function ($router) {
@@ -54,31 +65,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
-    \GGPHP\LateEarly\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\AddSubTime\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\Config\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\RevokeShift\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
     \GGPHP\WorkDeclaration\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\WorkHour\RouteRegistrar::routes(function ($router) {
-        $router->forBread();
-    });
-
-    \GGPHP\Category\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
 
@@ -180,4 +167,5 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Zalo\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+    // });
 });

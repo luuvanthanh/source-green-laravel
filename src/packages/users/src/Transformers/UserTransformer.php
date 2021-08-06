@@ -4,6 +4,7 @@ namespace GGPHP\Users\Transformers;
 
 use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Transformers\AbsentTransformer;
+use GGPHP\BusinessCard\Transformers\BusinessCardTransformer;
 use GGPHP\Clover\Transformers\ClassTeacherTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\LateEarly\Transformers\LateEarlyTransformer;
@@ -37,7 +38,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow',
+        'timekeeping', 'absent', 'schedules', 'lateEarly', 'positionLevel', 'classTeacher', 'positionLevelNow', 'businessCard'
     ];
 
     /**
@@ -72,7 +73,7 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include Store
+     * Include timekeeping
      * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
@@ -82,7 +83,7 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include RankPositionInformation
+     * Include Absent
      * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
@@ -92,7 +93,17 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include RankPositionInformation
+     * Include BusinessCard
+     * @param User $employee
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeBusinessCard(User $employee)
+    {
+        return $this->collection($employee->businessCard, new BusinessCardTransformer, 'BusinessCard');
+    }
+
+    /**
+     * Include ClassTeacher
      * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
@@ -106,7 +117,7 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include RankPositionInformation
+     * Include PositionLevelNow
      * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
@@ -120,7 +131,7 @@ class UserTransformer extends BaseTransformer
     }
 
     /**
-     * Include schedules
+     * Include Schedules
      * @param User $employee
      * @return \League\Fractal\Resource\Collection
      */
@@ -146,5 +157,4 @@ class UserTransformer extends BaseTransformer
     {
         return $this->collection(empty($employee->positionLevel) ? [] : $employee->positionLevel, new PositionLevelTransformer, 'PositionLevel');
     }
-
 }

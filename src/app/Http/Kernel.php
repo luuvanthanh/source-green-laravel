@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'check_validation_absent' => \GGPHP\Absent\Middlewares\CheckAbsentValidation::class,
         'permission_position' => \GGPHP\RolePermission\Middlewares\PermissionPositionMiddleware::class,
         'verify_bot' => \App\Http\Middleware\VerifyBot::class,
+        'auth_sso' => \GGPHP\Core\Http\Middleware\AuthenticateSSO::class,
     ];
 }
