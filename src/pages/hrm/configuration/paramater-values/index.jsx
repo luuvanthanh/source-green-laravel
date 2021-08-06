@@ -270,6 +270,7 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
@@ -277,7 +278,6 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            {/* <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} /> */}
           </div>
         ),
       },
