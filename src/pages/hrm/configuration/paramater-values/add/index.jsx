@@ -9,7 +9,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import variablesModules from '../../../utils/variables';
@@ -98,6 +98,7 @@ class Index extends PureComponent {
     const payload = {
       ...values,
       id: params.id,
+      applyDate: Helper.getDate(values.applyDate, variables.DATE_FORMAT.DATE_AFTER),
     };
     dispatch({
       type: params.id ? 'paramaterValuesAdd/UPDATE' : 'paramaterValuesAdd/ADD',
@@ -144,7 +145,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
