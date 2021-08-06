@@ -9,6 +9,7 @@ export function getStudent(params = {}) {
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
+      classStatus: params.class ? 'HAS_CLASS': 'ALL',
     },
   });
 }
@@ -24,7 +25,7 @@ export function getBusByStudent(params) {
     method: 'GET',
     params: {
       status: params?.status || '',
-    }
+    },
   });
 }
 
