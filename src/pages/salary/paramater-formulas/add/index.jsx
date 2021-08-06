@@ -206,6 +206,7 @@ class Index extends PureComponent {
         recipe: this.recipeRecursive(
           this.removeItemRedundant(Helper.splitString(this.addSpaceString(values.recipe))),
         ),
+        applyDate: Helper.getDate(values.applyDate, variables.DATE_FORMAT.DATE_AFTER),
       },
       callback: (response, error) => {
         if (response) {
