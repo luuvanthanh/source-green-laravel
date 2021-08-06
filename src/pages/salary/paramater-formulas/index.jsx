@@ -214,9 +214,9 @@ class Index extends PureComponent {
         if (!isEmpty(item.formular)) {
           return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
         }
-        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
+        return `${item.operator || ''} ${item.value || item.variable || ''}${this.renderCalulator(
           item.formular,
-        )})`;
+        )}`;
       })
       .join(' ');
 
@@ -284,7 +284,7 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            {/* <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} /> */}
           </div>
         ),
       },

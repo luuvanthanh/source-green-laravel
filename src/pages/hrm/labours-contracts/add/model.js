@@ -79,7 +79,7 @@ export default {
           divisions: saga.call(categories.getDivisions),
           positions: saga.call(categories.getPositions),
           branches: saga.call(categories.getBranches),
-          paramaterValues: saga.call(categories.getParamaterValues),
+          paramaterValues: saga.call(categories.getParamaterValues, { type: 'CONTRACT' }),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

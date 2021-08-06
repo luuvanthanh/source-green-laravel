@@ -39,7 +39,7 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    key: query?.key,
+    keyWord: query?.keyWord,
     branchId: query?.branchId,
     classId: query?.classId,
   });
@@ -263,9 +263,9 @@ const Index = memo(() => {
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
-                    name="key"
+                    name="keyWord"
                     type={variables.INPUT_SEARCH}
-                    onChange={({ target: { value } }) => changeFilter('key')(value)}
+                    onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
                     placeholder="Nhập từ khóa tìm kiếm"
                   />
                 </Pane>

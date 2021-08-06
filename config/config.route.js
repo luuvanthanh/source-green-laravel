@@ -184,27 +184,39 @@ export default [
         path: '/thuc-don',
         component: './menu/layout',
         routes: [
+          // {
+          //   path: '/thuc-don',
+          //   component: './menu/index',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.BEP],
+          // },
+          // {
+          //   path: '/thuc-don/tao-moi',
+          //   component: './menu/create',
+          //   wrappers: ['@/wrappers/auth'],
+          //   authority: [permissions.BEP],
+          // },
           {
             path: '/thuc-don',
-            component: './menu/index',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BEP],
-          },
-          {
-            path: '/thuc-don/tao-moi',
-            component: './menu/create',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.BEP],
-          },
-          {
-            path: '/thuc-don/thuc-don-1',
             component: './menu/kitchen-menus/index',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
           {
-            path: '/thuc-don/thuc-don-1/tao-moi',
+            path: '/thuc-don/tao-moi',
             component: './menu/kitchen-menus/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/:id/chinh-sua',
+            component: './menu/kitchen-menus/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.BEP],
+          },
+          {
+            path: '/thuc-don/:id/chi-tiet',
+            component: './menu/kitchen-menus/details',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.BEP],
           },
@@ -528,6 +540,18 @@ export default [
           {
             path: '/diem-danh/cau-hinh/loai-cong',
             component: './attendance/absents/config/absent-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.DD],
+          },
+          {
+            path: '/diem-danh/cau-hinh/loai-cong/tao-moi',
+            component: './attendance/absents/config/absent-types/form',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.DD],
+          },
+          {
+            path: '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet',
+            component: './attendance/absents/config/absent-types/form',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.DD],
           },
@@ -1646,6 +1670,36 @@ export default [
           {
             path: '/thoi-khoa-bieu/tao-moi',
             component: './timetable/items/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec',
+            component: './timetable/schedules',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec/tao-moi',
+            component: './timetable/schedules/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
+            component: './timetable/schedules/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
+            component: './timetable/schedules/details',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
+            path: '/thoi-khoa-bieu/lich-su',
+            component: './timetable/histories',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.TKB],
           },

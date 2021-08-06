@@ -11,6 +11,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import Button from '@/components/CommonComponent/Button';
 
 let isMounted = true;
 /**
@@ -172,22 +173,45 @@ class Index extends PureComponent {
   /**
    * Function header table
    */
-  header = () => [
-    {
-      title: 'STT',
-      key: 'text',
-      width: 60,
-      className: 'min-width-60',
-      align: 'center',
-      render: (text, record, index) =>
-        Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
-    },
-    {
-      title: 'LOẠI PHÉP',
-      key: 'typeAbsent',
-      render: (record) => record.name,
-    },
-  ];
+  header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
+    const columns = [
+      {
+        title: 'STT',
+        key: 'text',
+        width: 60,
+        className: 'min-width-60',
+        align: 'center',
+        render: (text, record, index) =>
+          Helper.sttList(this.props.pagination?.current_page, index, this.props.pagination?.per_page),
+      },
+      {
+        title: 'LOẠI PHÉP',
+        key: 'typeAbsent',
+        render: (record) => record.name,
+      },
+      {
+        key: 'action',
+        className: 'min-width-80',
+        width: 80,
+        fixed: 'right',
+        render: (record) => (
+          <div className={styles['list-button']}>
+            <Button
+              color="success"
+              ghost
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  }
 
   render() {
     const {

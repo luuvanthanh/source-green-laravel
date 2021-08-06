@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
 import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, debounce, get, isInteger, omit } from 'lodash';
+import { isEmpty, debounce, get, isInteger, omit, includes } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -420,6 +420,22 @@ class Index extends PureComponent {
     );
   };
 
+  getDivisions = (data, divisionId) => {
+    if (isEmpty(data)) {
+      return '';
+    }
+    if (!divisionId) {
+      const reuslt = [];
+      data.forEach(item => {
+        if (!includes(reuslt, item?.division?.name)) {
+          reuslt.push(item?.division?.name);
+        }
+      });
+      return reuslt.join(', ');
+    }
+    return data?.find(item => item.division.id === divisionId)?.division?.name || '';
+  }
+
   /**
    * Function header table
    */
@@ -431,7 +447,6 @@ class Index extends PureComponent {
         key: 'date_work',
         align: 'center',
         width: 100,
-        fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
         render: (record) => Helper.toFixed(record.totalBusRegistration),
       },
@@ -457,18 +472,15 @@ class Index extends PureComponent {
         width: 120,
         fixed: 'left',
         className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
-        render: (record) => record?.positionLevelNow?.division?.name,
+        render: (record) => this.getDivisions(record?.positionLevel, search?.divisionId),
       },
     ];
 
     const arrayMonth = Helper.treeDate(
       Helper.convertArrayDays(search.startDate, search.endDate),
-    ).map((itemMonth, index) => ({
+    ).map((itemMonth) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
-      className:
-        index === 0 ? 'min-width-300 min-parent-width-300' : 'min-width-300 min-parent-width-700',
-      width: 300,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: item,

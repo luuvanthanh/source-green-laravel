@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Modal, Form, Tooltip } from 'antd';
 import classnames from 'classnames';
 import { CloseOutlined } from '@ant-design/icons';
-import { isEmpty, debounce, get } from 'lodash';
+import { isEmpty, debounce, get, includes } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -39,7 +39,6 @@ const mapStateToProps = ({ schedulesChildren, loading }) => ({
   data: schedulesChildren.data,
   category: schedulesChildren.category,
   holidays: schedulesChildren.holidays,
-  businessCards: schedulesChildren.businessCards,
   pagination: schedulesChildren.pagination,
   loading,
 });
@@ -116,12 +115,6 @@ class Index extends PureComponent {
     const { search } = this.state;
     this.props.dispatch({
       type: 'schedulesChildren/GET_HOLIDAYS',
-      payload: {
-        ...search,
-      },
-    });
-    this.props.dispatch({
-      type: 'schedulesChildren/GET_BUSINESS_CARDS',
       payload: {
         ...search,
       },
@@ -241,7 +234,7 @@ class Index extends PureComponent {
    * @param {string} type key of object search
    */
   onChangeDate = (e, type) => {
-    this.debouncedSearch(moment(e).format(variables.DATE_FORMAT.DATE_AFTER), type);
+    this.debouncedSearch(e ? moment(e).format(variables.DATE_FORMAT.DATE_AFTER) : null, type);
   };
 
   onChangeMonth = (e) => {
@@ -430,7 +423,7 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
-    const { holidays, businessCards } = this.props;
+    const { holidays } = this.props;
     let checkBetween = false;
     let absentType = '';
     let absent = {};
@@ -451,6 +444,16 @@ class Index extends PureComponent {
       isHolidays = false;
     }
 
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
+      return (
+        <div
+          className={classnames(stylesChildren['cell-content'], {
+            [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+        />
+      );
+    }
+
     if (isHolidays) {
       return (
         <Tooltip
@@ -469,12 +472,23 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-holidays'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/ngay-nghi-le?date=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}`,
+              )
+            }
           >
             L
           </div>
         </Tooltip>
       );
     }
+
+    const businessCards = Helper.getArrayHolidays(user?.businessCard || []);
 
     const itemBusiness = businessCards?.find(
       (item) =>
@@ -506,6 +520,18 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-business'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/don-di-cong-tac?endDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&startDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&fullName=${user.fullName}`,
+              )
+            }
           >
             Đi công tác
           </div>
@@ -547,6 +573,18 @@ class Index extends PureComponent {
               stylesChildren['cell-content-code'],
               stylesChildren['cell-heading-weekend'],
             )}
+            role="presentation"
+            onClick={() =>
+              history.push(
+                `/quan-ly-nhan-su/don-xin-phep?endDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&startDate=${Helper.getDate(
+                  dayOfWeek,
+                  variables.DATE_FORMAT.DATE_AFTER,
+                )}&fullName=${user.fullName}`,
+              )
+            }
           >
             {absentType}
           </div>
@@ -648,6 +686,16 @@ class Index extends PureComponent {
     );
   };
 
+  getDivisions = (record) => {
+    const reuslt = [];
+    record?.positionLevel?.forEach((item) => {
+      if (!includes(reuslt, item?.division?.name)) {
+        reuslt.push(item?.division?.name);
+      }
+    });
+    return reuslt.join(', ');
+  };
+
   /**
    * Function header table
    */
@@ -662,8 +710,8 @@ class Index extends PureComponent {
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
             fullName={
-              record?.positionLevelNow
-                ? `${record.fullName} (${record?.positionLevelNow?.division?.name})`
+              !isEmpty(record.positionLevel)
+                ? `${record.fullName} ( ${this.getDivisions(record)} )`
                 : record.fullName
             }
           />
@@ -912,8 +960,9 @@ class Index extends PureComponent {
                         name="startDate"
                         onChange={(event) => this.onChangeDate(event, 'startDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
-                        allowClear={false}
+                        disabledDate={(current) =>
+                          Helper.disabledDateFrom(current, this.formRef, 'endDate', { month: 1 })
+                        }
                       />
                     </div>
                     <div className="col-lg-3">
@@ -921,8 +970,9 @@ class Index extends PureComponent {
                         name="endDate"
                         onChange={(event) => this.onChangeDate(event, 'endDate')}
                         type={variables.DATE_PICKER}
-                        disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
-                        allowClear={false}
+                        disabledDate={(current) =>
+                          Helper.disabledDateTo(current, this.formRef, 'startDate', { month: 1 })
+                        }
                       />
                     </div>
                   </>
@@ -969,7 +1019,6 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   category: PropTypes.objectOf(PropTypes.any),
   holidays: PropTypes.arrayOf(PropTypes.any),
-  businessCards: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -981,7 +1030,6 @@ Index.defaultProps = {
   location: {},
   category: {},
   holidays: [],
-  businessCards: [],
 };
 
 export default Index;

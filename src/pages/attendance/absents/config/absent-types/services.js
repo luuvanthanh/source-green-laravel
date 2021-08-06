@@ -12,9 +12,24 @@ export function get(data = {}) {
   });
 }
 
-export function remove(id) {
-  return request(`/v1/absent-type-students/${id}`, {
-    method: 'DELETE',
+export function add(data = {}) {
+  return request('/v1/absent-type-students', {
+    method: 'POST',
+    data,
     parse: true,
+  });
+}
+
+export function update(data = {}) {
+  return request(`/v1/absent-type-students/${data.id}`, {
+    method: 'PUT',
+    data,
+    parse: true,
+  });
+}
+
+export function details(data = {}) {
+  return request(`/v1/absent-type-students/${data.id}`, {
+    method: 'GET',
   });
 }

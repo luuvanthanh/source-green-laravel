@@ -43,6 +43,7 @@ const Index = memo(() => {
     schoolYearId: '',
     startDate: '',
     endDate: '',
+    dayAdmission: '',
     code: '',
     branchName: '',
     classType: '',
@@ -85,6 +86,7 @@ const Index = memo(() => {
               startDate: res?.schoolYear?.startDate ? Helper.getDate(res?.schoolYear?.startDate, variables.DATE_FORMAT.DATE_VI) : '',
               endDate: res?.schoolYear?.endDate ? Helper.getDate(res?.schoolYear?.endDate, variables.DATE_FORMAT.DATE_VI) : '',
               schoolYearId: res?.schoolYearId || '',
+              dayAdmission: res?.dayAdmission ? Helper.getDate(res?.dayAdmission, variables.DATE_FORMAT.DATE_VI) : '',
               code: res?.student?.code || '',
               branchName: res?.student?.classStudent?.class?.branch?.name || '',
               classType: res?.student?.classStudent?.class?.classType?.name || '',
@@ -95,6 +97,7 @@ const Index = memo(() => {
               ...res,
               studentId: res?.studentId || undefined,
               schoolYearId: res?.schoolYearId || undefined,
+              dayAdmission: res?.dayAdmission ? moment(res?.dayAdmission, variables.DATE_FORMAT.DATE_AFTER) : undefined,
             });
           }
         },
@@ -141,7 +144,7 @@ const Index = memo(() => {
         dayAdmission: Helper.getDateTime({
           value: Helper.setDate({
             ...variables.setDateData,
-            originValue: moment(details?.startDate, variables.DATE_FORMAT.DATE_VI),
+            originValue: moment(details?.dayAdmission, variables.DATE_FORMAT.DATE_VI),
           }),
           format: variables.DATE_FORMAT.DATE_AFTER,
           isUTC: false,
@@ -163,6 +166,7 @@ const Index = memo(() => {
         startDate: '',
         endDate: '',
         schoolYearId: '',
+        dayAdmission: '',
       }));
       return;
     }
@@ -174,9 +178,10 @@ const Index = memo(() => {
         startDate: response.startDate ? Helper.getDate(response.startDate, variables.DATE_FORMAT.DATE_VI) : '',
         endDate: response.endDate ? Helper.getDate(response.endDate, variables.DATE_FORMAT.DATE_VI) : '',
         schoolYearId: value,
+        dayAdmission: '',
       };
       setDetails(newDetails);
-      if (details?.classTypeId) {
+      if (newDetails?.classTypeId && newDetails?.dayAdmission) {
         getMoney(newDetails);
       }
     }
@@ -206,7 +211,7 @@ const Index = memo(() => {
         classTypeId: student?.class?.classType?.id || '',
       };
       setDetails(newDetails);
-      if (newDetails?.schoolYearId && newDetails?.classTypeId) {
+      if (newDetails?.schoolYearId && newDetails?.dayAdmission && newDetails?.classTypeId) {
         getMoney(newDetails);
       }
     }
@@ -222,6 +227,14 @@ const Index = memo(() => {
       studentId: values?.studentId || undefined,
       tuition,
       id: (params?.id && !isCopy) ? params?.id : undefined,
+      dayAdmission: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: moment(details?.dayAdmission, variables.DATE_FORMAT.DATE_VI),
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     };
     dispatch({
       type: (params?.id && !isCopy ) ? 'oldStudentAdd/UPDATE' : 'oldStudentAdd/ADD',
@@ -243,6 +256,17 @@ const Index = memo(() => {
   const onSearch = _.debounce((val) => {
     getStudents(val);
   }, 300);
+
+  const chgangeDayAdmission = (value) => {
+    const newDetails = {
+      ...details,
+      dayAdmission: value ? Helper.getDate(value, variables.DATE_FORMAT.DATE_VI) : ''
+    };
+    setDetails(newDetails);
+    if (newDetails?.classTypeId && newDetails?.schoolYearId && value) {
+      getMoney(newDetails);
+    }
+  };
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
@@ -278,6 +302,19 @@ const Index = memo(() => {
                   <div className="col-lg-3">
                     <label htmlFor="" className="mb5 font-size-13" >Thời gian hiệu lực</label>
                     <p className="mb0 font-size-13 mt10 font-weight-bold"> {details?.startDate ? `${details?.startDate} - ${details?.endDate}` : ''}</p>
+                  </div>
+                  <div className="col-lg-3">
+                    <FormItem
+                      label="Ngày nhập học"
+                      name="dayAdmission"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                      allowClear={false}
+                      onChange={chgangeDayAdmission}
+                      disabledDate={(current) => details?.startDate && current < moment(details?.startDate, variables.DATE_FORMAT.DATE_VI).startOf('day')
+                        || details?.endDate && current >= moment(details.endDate, variables.DATE_FORMAT.DATE_VI).endOf('day')
+                      }
+                    />
                   </div>
                 </div>
                 <div className="row">

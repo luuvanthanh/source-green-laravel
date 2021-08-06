@@ -139,3 +139,17 @@
     }
   }
 }
+
+.radio-group-row {
+  .radio-custom {
+    display: flex;
+    flex-wrap: wrap;
+    .ant-radio-wrapper {
+      margin: 0;
+      margin-right: 50px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

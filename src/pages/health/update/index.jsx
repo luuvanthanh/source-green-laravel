@@ -19,6 +19,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { Helper } from '@/utils';
 import { isEmpty, head, get, toString } from 'lodash';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import InputNumber from '@/components/CommonComponent/InputNumber';
 import variablesModules from '../utils/variables';
 
 const { Item: ListItem } = List;
@@ -279,7 +280,11 @@ const Index = memo(() => {
         <Breadcrumbs last="Chỉnh sửa sức khỏe" menu={menuData} />
         <Pane style={{ padding: '0 20px' }}>
           <Helmet title="Chi tiết" />
-          <Loading loading={loading} isError={error.isError} params={{ error, type: 'container', goBack: '/suc-khoe/hom-nay' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, type: 'container', goBack: '/suc-khoe/hom-nay' }}
+          >
             <Pane className="row">
               <Pane className="col-lg-5">
                 <Pane className="card">
@@ -292,16 +297,39 @@ const Index = memo(() => {
                     </Heading>
                   </Pane>
 
-                  <Pane className="border-bottom" style={{ padding: 20 }}>
-                    <label className={styles.infoLabel}>Phụ huynh</label>
-                    <Pane className={styles.userInformation}>
-                      <AvatarTable fileImage={details?.parent?.fileImage} />
-                      <Pane>
-                        <h3>{details?.parent?.fullName || 'Nguyễn Anh'}</h3>
+                  {get(head(details.studentCriterias), 'student.studentParents[0].fileImage') && (
+                    <Pane className="border-bottom" style={{ padding: 20 }}>
+                      <label className={styles.infoLabel}>Phụ huynh</label>
+                      <Pane className={styles.userInformation}>
+                        <AvatarTable
+                          fileImage={
+                            Helper.isJSON(
+                              get(
+                                head(details.studentCriterias),
+                                'student.studentParents[0].fileImage',
+                              ),
+                            ) &&
+                            head(
+                              JSON.parse(
+                                get(
+                                  head(details.studentCriterias),
+                                  'student.studentParents[0].fileImage',
+                                ),
+                              ),
+                            )
+                          }
+                        />
+                        <Pane>
+                          <h3>
+                            {get(
+                              head(details.studentCriterias),
+                              'student.studentParents[0].fullName',
+                            )}
+                          </h3>
+                        </Pane>
                       </Pane>
                     </Pane>
-                  </Pane>
-
+                  )}
                   <Pane className="border-bottom" style={{ padding: 20 }}>
                     <label className={styles.infoLabel}>Trẻ</label>
                     <Pane className={styles.userInformation}>
@@ -312,9 +340,7 @@ const Index = memo(() => {
                         }
                       />
                       <Pane>
-                        <h3>
-                          {get(head(details.studentCriterias), 'student.fullName') || 'Subeo'}
-                        </h3>
+                        <h3>{get(head(details.studentCriterias), 'student.fullName')}</h3>
                       </Pane>
                     </Pane>
                   </Pane>
@@ -380,10 +406,7 @@ const Index = memo(() => {
                           >
                             <Pane className="col-md-5">
                               <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
-                                {Helper.getDate(
-                                  item.changeTime,
-                                  variables.DATE_FORMAT.DATE_TIME,
-                                )}
+                                {Helper.getDate(item.changeTime, variables.DATE_FORMAT.DATE_TIME)}
                               </Heading>
                             </Pane>
                             <Pane className="col-md-7">
@@ -453,15 +476,17 @@ const Index = memo(() => {
                                     </Pane>
                                   </Pane>
                                 )}
-                                {criteria.criteriaDataType.type === 'number' && (
+                                 {criteria.criteriaDataType.type === 'number' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
-                                      <FormItem
-                                        name={[key, 'value']}
-                                        label={criteria.property}
-                                        type={variables.INPUT_COUNT}
-                                        rules={[variables.RULES.EMPTY]}
-                                      />
+                                      <Form.Item name={[key, 'value']} label={criteria.property}>
+                                        <InputNumber
+                                          className={csx(
+                                            'input-number',
+                                            styles['input-number-container'],
+                                          )}
+                                        />
+                                      </Form.Item>
                                     </Pane>
                                   </Pane>
                                 )}

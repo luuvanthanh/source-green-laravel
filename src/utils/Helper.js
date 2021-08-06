@@ -26,9 +26,6 @@ export default class Helpers {
     if (type === variables.STATUS.VERIFIED) {
       return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
     }
-    if (type === variables.STATUS.PENDING) {
-      return <Tag color="primary">{statusName || variables.STATUS_NAME.PENDING}</Tag>;
-    }
     if (type === variables.STATUS.EXPIRE) {
       return <Tag color="danger">{statusName || variables.STATUS_NAME.EXPIRE}</Tag>;
     }
@@ -38,12 +35,17 @@ export default class Helpers {
     if (type === variables.STATUS.CONFIRMING) {
       return <Tag color="warning">{statusName || variables.STATUS_NAME.CONFIRMING}</Tag>;
     }
+    if (type === variables.STATUS.PROCESSED) {
+      return <Tag color="primary">{statusName}</Tag>;
+    }
     return <Tag color="success">{statusName || variables.STATUS_NAME.VERIFIED}</Tag>;
   };
 
   static getPrice = (value, number = 0, unit = false) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${unit ? '' : ` đ`}`;
+      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
+        unit ? '' : ` đ`
+      }`;
     }
     return null;
   };
@@ -657,6 +659,11 @@ export default class Helpers {
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
 
+  static joinDateTimeLocal = (date, time) =>
+    `${moment.utc(date).local().format(variables.DATE_FORMAT.DATE_AFTER)} ${moment.utc(time).local().format(
+      variables.DATE_FORMAT.TIME_FULL,
+    )}`;
+
   static getPathAvatarJson = (fileImage) => {
     const allowTypes = ['jpeg', 'jpg', 'png'];
     if (this.isJSON(fileImage)) {
@@ -688,9 +695,7 @@ export default class Helpers {
       return items.map((item) => ({
         id: item.id,
         name: `${item.fullName}  ${
-          getLodash(item, 'phone')
-            ? `(${getLodash(item, 'phone')})`
-            : ''
+          getLodash(item, 'phone') ? `(${getLodash(item, 'phone')})` : ''
         }`,
       }));
     }
@@ -716,25 +721,90 @@ export default class Helpers {
   static disabledDateWeekeend = (current) =>
     moment(current).day() === 0 || moment(current).day() === 6;
 
-  static disabledDateTo = (current, formRef, key = 'startDate') => {
+  static checkdisabledYear = (current, data, yearKey) => {
+    if (data[yearKey]) {
+      return (
+        current < moment(data[yearKey]).startOf('year') ||
+        current > moment(data[yearKey]).endOf('year')
+      );
+    }
+    return null;
+  };
+
+  static disabledDateTo = (current, formRef, key = 'startDate', values) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current < moment(data[key]).startOf('day');
+      if (values?.yearKey) {
+        if (!data[key]) {
+          return this.checkdisabledYear(current, data, values?.yearKey);
+        }
+        return (
+          (current && current <= moment(data[key]).startOf('day')) ||
+          current > moment(data[values?.yearKey]).endOf('year')
+        );
+      }
+      if (data[key] && !values?.yearKey) {
+        return (
+          (current && current < moment(data[key]).startOf('day')) ||
+          (values?.month ? current > moment(data[key]).add(values?.month, 'month') : null)
+        );
+      }
       return null;
     }
     return null;
   };
 
-  static disabledDateFrom = (current, formRef, key = 'endDate') => {
+  static disabledDateFrom = (current, formRef, key = 'endDate', values) => {
     if (formRef.current) {
       const data = formRef.current.getFieldsValue();
-      if (data[key]) return current && current >= moment(data[key]).startOf('day');
+      if (values?.yearKey) {
+        if (!data[key]) {
+          return this.checkdisabledYear(current, data, values?.yearKey);
+        }
+        return (
+          (current && current >= moment(data[key]).endOf('day')) ||
+          current < moment(data[values?.yearKey]).startOf('year')
+        );
+      }
+      if (data[key] && !values?.yearKey) {
+        return (
+          (current && current >= moment(data[key]).startOf('day')) ||
+          (values?.month ? current < moment(data[key]).add(-values?.month, 'month') : null)
+        );
+      }
       return null;
     }
     return null;
   };
 
-  static disabledYear = (current, formRef, { key = '', value = '', format = 'YYYY', compare = '>='} ) => {
+  static disabledDatebyValue = (current, { date, year, type }) => {
+    if (year && !date) {
+      return current < moment(year).startOf('year') || current > moment(year).endOf('year');
+    }
+    if (date) {
+      if (type === 'startDate') {
+        return (
+          (current && current > moment(date)) ||
+          (year ? current < moment(year).startOf('year') : null)
+        );
+      }
+      if (type === 'endDate') {
+        return (
+          (current && current < moment(date)) ||
+          (year ? current > moment(year).endOf('year') : null)
+        );
+      }
+      return null;
+    }
+
+    return false;
+  };
+
+  static disabledYear = (
+    current,
+    formRef,
+    { key = '', value = '', format = 'YYYY', compare = '>=' },
+  ) => {
     if (formRef.current && key) {
       const data = formRef.current.getFieldsValue();
       let getValue = '';
@@ -900,5 +970,98 @@ export default class Helpers {
       return moment(date);
     }
     return moment().endOf(choose || 'isoWeek');
+  };
+
+  static disabledDateRank = (current) =>
+    current < moment().subtract(1, 'months') || current > moment().add(1, 'months');
+
+  static getRange = (startDate, endDate, type) => {
+    const fromDate = moment(startDate);
+    const toDate = moment(endDate);
+    const diff = toDate.diff(fromDate, type);
+    const range = [];
+    for (let i = 0; i < diff; i += 1) {
+      range.push(moment(startDate).add(i, type));
+    }
+    return range;
+  };
+
+  static charCounter = (src = '', char) => src.split(char).length - 1;
+
+  static splitString = (str) => {
+    const tmp = [];
+    if (!str) return tmp;
+
+    const src = str.split(' ');
+
+    let brackCounter = 0;
+    let currentChildren = [];
+
+    const src2 = src.reduce((result, item) => {
+      if (brackCounter === 0 && !(item.includes('(') || item.includes(')'))) {
+        return [...result, item];
+      }
+
+      const startBrackCounter = this.charCounter(item, '(');
+      const endBrackCounter = this.charCounter(item, ')');
+      brackCounter = brackCounter + startBrackCounter - endBrackCounter;
+
+      if (brackCounter > 0) {
+        currentChildren = [...currentChildren, item];
+        return result;
+      }
+      const tmpChildren = [...currentChildren, item];
+      currentChildren = [];
+      return [...result, tmpChildren.join(' ')];
+    }, []);
+
+    let currentRecipe = null;
+
+    src2.forEach((item) => {
+      if (['+', '-', '*', '/'].includes(item)) {
+        // eslint-disable-next-line no-return-assign
+        return (currentRecipe = item);
+      }
+
+      if (item.includes('(')) {
+        tmp.push({
+          recipe: currentRecipe,
+          enum: item,
+          children: this.splitString(item.substring(1, item.length - 1)),
+        });
+        // eslint-disable-next-line no-return-assign
+        return (currentRecipe = null);
+      }
+
+      tmp.push({
+        recipe: currentRecipe,
+        enum: +item ? +item : item,
+      });
+      // eslint-disable-next-line no-return-assign
+      return (currentRecipe = null);
+    });
+
+    return tmp;
+  };
+
+  static getStatusContracts = (contractFrom, contractTo) => {
+    const diffSignDate = moment(moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE)).diff(
+      moment().format(variables.DATE_FORMAT.DATE_BEFORE),
+      'days',
+    );
+    const diffExpirationDate = moment(
+      moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
+    const diffExpirationDateMonth = moment(contractTo).diff(moment(), 'month');
+    if (diffSignDate <= 0 && diffExpirationDateMonth > 0) {
+      return <Tag color="success">Đang hiệu lực</Tag>;
+    }
+    if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
+      return <Tag color="yellow">Gần hết hạn</Tag>;
+    }
+    if (diffExpirationDate < 0) {
+      return <Tag color="danger">Đã hết hạn</Tag>;
+    }
+    return '';
   };
 }

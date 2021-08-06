@@ -30,9 +30,10 @@ export function get(data = {}) {
       include: Helper.convertIncludes([
         'absent',
         'schedules.shift',
-        'positionLevelNow',
+        'positionLevel',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
+        'businessCard'
       ]),
     },
   });

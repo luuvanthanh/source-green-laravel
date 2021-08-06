@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history, Link } from 'umi';
 import { Form, Tooltip } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, debounce, get, isInteger, omit } from 'lodash';
+import { isEmpty, debounce, get, isInteger, omit, includes } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -312,6 +312,36 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`;
     }
+    if (type === 'NV') {
+      return `/quan-ly-nhan-su/thoi-viec?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'CT') {
+      return `/quan-ly-nhan-su/don-di-cong-tac?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
+    if (type === 'BS') {
+      return `/quan-ly-nhan-su/cong-bo-sung?${Helper.convertParamSearchConvert(
+        {
+          startDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER),
+          fullName: user.fullName,
+        },
+        variables.QUERY_STRING,
+      )}`;
+    }
     if (type === 'KC') {
       return `/quan-ly-nhan-su/lich-lam-viec?${Helper.convertParamSearchConvert(
         {
@@ -475,6 +505,22 @@ class Index extends PureComponent {
     );
   };
 
+  getDivisions = (data, divisionId) => {
+    if (isEmpty(data)) {
+      return '';
+    }
+    if (!divisionId) {
+      const reuslt = [];
+      data.forEach(item => {
+        if (!includes(reuslt, item?.division?.name)) {
+          reuslt.push(item?.division?.name);
+        }
+      });
+      return reuslt.join(', ');
+    }
+    return data?.find(item => item.division.id === divisionId)?.division?.name || '';
+  }
+
   /**
    * Function header table
    */
@@ -483,10 +529,9 @@ class Index extends PureComponent {
     const headerWork = [
       {
         title: 'Thực công',
-        key: 'date_work',
+        key: 'totalWorks',
         align: 'center',
         width: 100,
-        fixed: 'right',
         className: classnames('max-width-100', 'min-width-100', 'col-fixed-100'),
         render: (record) => Helper.toFixed(record.totalWorks),
       },
@@ -512,22 +557,28 @@ class Index extends PureComponent {
         width: 120,
         fixed: 'left',
         className: classnames('max-width-120', 'min-width-120', 'col-fixed-120'),
-        render: (record) => record?.positionLevelNow?.division?.name,
+        render: (record) => this.getDivisions(record?.positionLevel, search?.divisionId),
       },
     ];
 
     const arrayMonth = Helper.treeDate(
       Helper.convertArrayDays(search.startDate, search.endDate),
-    ).map((itemMonth, index) => ({
+    ).map((itemMonth) => ({
       title: Helper.getDate(itemMonth.month, variables.DATE_FORMAT.MONTH_NAME),
       key: itemMonth.month,
-      className:
-        index === 0 ? 'min-width-500 min-parent-width-500' : 'min-width-500 min-parent-width-700',
       width: 500,
       children: itemMonth.data.map((item, index) => ({
         title: this.renderTitleHeader(index, item),
         key: Helper.convertArrayDays(search.startDate, search.endDate)[index],
-        className: classnames('min-width-50', 'max-width-50', 'pt-0', 'pb-0', 'pl-0', 'pr-0'),
+        className: classnames(
+          'min-width-50',
+          'max-width-50',
+          'width-50',
+          'pt-0',
+          'pb-0',
+          'pl-0',
+          'pr-0',
+        ),
         width: 50,
         align: 'center',
         render: (record) => this.renderWorkShift(record.timeKeepingReport, item, record),

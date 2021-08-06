@@ -7,7 +7,8 @@ import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
+import moment from 'moment';
 
 const Index = memo(() => {
   const {
@@ -29,6 +30,30 @@ const Index = memo(() => {
       mounted.current = false;
     };
   }, []);
+
+  const getBusByStatus = (record) => {
+    if (record?.startDate || record?.endDate) {
+      const now = moment().set({'hour': 0, 'minute': 0, 'second': 0});
+      const numberStartDate = record?.startDate ? moment(record?.startDate, variables.DATE_FORMAT.DATE_AFTER).diff(now, 'days', true).toFixed(0) : '';
+      const numberEndDate = record?.endDate ? moment(record?.endDate, variables.DATE_FORMAT.DATE_AFTER).diff(now, 'days', true).toFixed(0) : '';
+      if (record?.endDate) {
+        if (numberEndDate < 0) {
+          return Helper.tagStatus(variables.STATUS.EXPIRE, 'Hết hiệu lực');
+        }
+        if (numberStartDate <= 0 && numberEndDate >= 0) {
+          return Helper.tagStatus('', 'Đang hiệu lực');
+        }
+      }
+      if (!record?.endDate && numberStartDate <= 0) {
+        return Helper.tagStatus('', 'Đang hiệu lực');
+      }
+      if (numberStartDate > 0) {
+        return Helper.tagStatus(variables.STATUS.PROCESSED, 'Chưa hiệu  lực');
+      }
+      return '';
+    }
+    return '';
+  };
 
   /**
    * Function header table
@@ -81,6 +106,13 @@ const Index = memo(() => {
         className: 'min-width-150',
         width: 150,
         render: (record) => get(record, 'position.name'),
+      },
+      {
+        title: 'Trạng thái',
+        key: 'position',
+        className: 'min-width-150',
+        width: 150,
+        render: (record) => getBusByStatus(record)
       },
     ];
     return columns;

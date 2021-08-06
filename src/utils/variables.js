@@ -71,9 +71,11 @@ export const variables = {
   DATE_FORMAT: {
     DATE: 'DD-MM-YYYY',
     DATE_TIME: 'DD-MM-YYYY, HH:mm',
+    FULL_DATE_TIME: 'DD-MM-YYYY HH:mm',
     TIME_DATE: 'HH:mm, DD-MM-YYYY',
     TIME_DATE_MONTH: 'HH:mm, DD/MM',
     YEAR: 'YYYY',
+    MONTH: 'MM',
     DATE_AFTER: 'YYYY-MM-DD',
     HOUR: 'HH:mm',
     TIME_FULL: 'HH:mm:ss',

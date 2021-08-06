@@ -26,3 +26,10 @@ export function remove(id) {
     parse: true,
   });
 }
+
+export function getTimeTableFees(params = {}) {
+  return request(`/kitchen-menus/timetable-fees`, {
+    method: 'GET',
+    params,
+  });
+}

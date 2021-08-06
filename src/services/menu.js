@@ -317,7 +317,7 @@ export async function getLeftMenuSchedules() {
               title: 'Loại nghỉ phép',
               key: 'AbsentTypes',
               permission: [permissions.DD],
-              url: ['/diem-danh/cau-hinh/loai-cong'],
+              url: ['/diem-danh/cau-hinh/loai-cong', '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet'],
             },
             {
               title: 'Lý do nghỉ phép',
@@ -614,15 +614,12 @@ export async function getLeftMenuChildren() {
     {
       title: 'Thực đơn',
       key: 'menu',
-      url: ['/thuc-don', '/thuc-don/tao-moi'],
-      icon: 'icon icon-list',
-      permission: [permissions.BEP],
-      pro: true,
-    },
-    {
-      title: 'Thực đơn 1',
-      key: 'menu1',
-      url: ['/thuc-don/thuc-don-1', '/thuc-don/thuc-don-1/tao-moi'],
+      url: [
+        '/thuc-don',
+        '/thuc-don/tao-moi',
+        '/thuc-don/:id/chi-tiet',
+        '/thuc-don/:id/chinh-sua'
+      ],
       icon: 'icon icon-list',
       permission: [permissions.BEP],
       pro: true,
@@ -711,7 +708,28 @@ export async function getLeftMenuTimeTable() {
       title: 'Thời khóa biểu',
       key: 'timetable',
       url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
-      icon: 'icon icon-checkmark',
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Thời khóa biểu làm việc / sự kiện',
+      key: 'schedule',
+      url: [
+        '/thoi-khoa-bieu/lam-viec',
+        '/thoi-khoa-bieu/lam-viec/tao-moi',
+        '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
+        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'
+      ],
+      icon: 'icon icon-calendar1',
+      permission: [permissions.TKB],
+      pro: true,
+    },
+    {
+      title: 'Lịch sử',
+      key: 'timetableHistory',
+      url: ['/thoi-khoa-bieu/lich-su'],
+      icon: 'icon icon-clock',
       permission: [permissions.TKB],
       pro: true,
     },

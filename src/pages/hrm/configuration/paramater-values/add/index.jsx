@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 import variablesModules from '../../../utils/variables';
 
 let isMounted = true;
@@ -97,6 +98,7 @@ class Index extends PureComponent {
     const payload = {
       ...values,
       id: params.id,
+      applyDate: Helper.getDate(values.applyDate, variables.DATE_FORMAT.DATE_AFTER),
     };
     dispatch({
       type: params.id ? 'paramaterValuesAdd/UPDATE' : 'paramaterValuesAdd/ADD',
@@ -143,7 +145,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -156,6 +162,7 @@ class Index extends PureComponent {
                       name="code"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                      disabled={!!params?.id}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -234,6 +241,22 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  details: {},
+  menuData: {},
+  dispatch: {},
+  loading: {},
+  error: {},
+};
 
 export default Index;

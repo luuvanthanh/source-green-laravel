@@ -239,7 +239,7 @@ const Index = memo(() => {
         key: 'salary',
         className: 'min-width-150',
         render: (record) => {
-          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG');
+          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG_CO_BAN');
           return Helper.getPrice(parameterValues?.pivot?.value);
         },
       },
@@ -269,6 +269,17 @@ const Index = memo(() => {
         dataIndex: 'position',
         className: 'min-width-150',
         render: (value) => value?.name,
+      },
+      {
+        title: 'Trạng thái',
+        key: 'status',
+        width: 150,
+        className: 'min-width-150',
+        render: record =>
+          Helper.getStatusContracts(
+            moment(record?.contractFrom),
+            moment(record?.contractTo),
+          ),
       },
       {
         title: 'Thao tác',

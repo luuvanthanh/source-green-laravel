@@ -242,7 +242,7 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (record) => (
-          <Text size="normal">{get(record, 'positionLevel[0].branch.name')}</Text>
+          <Text size="normal">{get(record, 'positionLevelNow.branch.name')}</Text>
         ),
       },
       {
@@ -251,7 +251,7 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (record) => (
-          <Text size="normal">{get(record, 'positionLevel[0].division.name')}</Text>
+          <Text size="normal">{get(record, 'positionLevelNow.division.name')}</Text>
         ),
       },
       {
@@ -260,7 +260,7 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (record) => (
-          <Text size="normal">{get(record, 'positionLevel[0].position.name')}</Text>
+          <Text size="normal">{get(record, 'positionLevelNow.position.name')}</Text>
         ),
       },
       {

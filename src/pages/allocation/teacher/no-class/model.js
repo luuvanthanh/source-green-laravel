@@ -18,6 +18,14 @@ export default {
         callback(null, error);
       }
     },
+    *GET_POSITIONS({ payload, callback }, saga) {
+      try {
+        const res = yield saga.call(services.getPositions, payload);
+        callback(res);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

@@ -1,17 +1,18 @@
 import request from '@/utils/requestLavarel';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
 
 export function getParamaterValues(data = {}) {
   return request('/v1/paramater-values', {
     method: 'GET',
     params: {
+      ...data,
       limit: variables.PAGINATION.SIZEMAX,
       page: variables.PAGINATION.PAGE,
     },
   });
 }
 
-export function getParamaterFormulas(data = {}) {
+export function getParamaterFormulas() {
   return request('/v1/paramater-formulas', {
     method: 'GET',
     params: {

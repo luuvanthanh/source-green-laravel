@@ -5,6 +5,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
 import { get, isEmpty, last, head } from 'lodash';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -49,6 +50,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       detail: [],
+      errorTable: false,
     };
     setIsMounted(true);
   }
@@ -120,6 +122,11 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const { detail } = this.state;
+    const pass = detail.find(item => !item?.isFullDate || (item?.isFullDate === 0.5 && !item?.shiftId));
+    if (pass?.date) {
+      this.setStateData({ errorTable: true });
+      return;
+    }
     dispatch({
       type: params.id ? 'absentsAdd/UPDATE' : 'absentsAdd/ADD',
       payload: {
@@ -250,6 +257,7 @@ class Index extends PureComponent {
    */
   header = () => {
     const { shiftUsers } = this.props;
+    const { errorTable } = this.state;
     return [
       {
         title: 'Thời gian',
@@ -264,15 +272,20 @@ class Index extends PureComponent {
         className: 'min-width-150',
         width: 150,
         render: (record) => (
-          <InputNumber
-            value={record.isFullDate}
-            min="0.5"
-            max="1"
-            step="0.5"
-            placeholder="Nhập"
-            style={{ width: '100%' }}
-            onChange={(event) => this.onChangeFullDate(event, record)}
-          />
+          <>
+            <InputNumber
+              value={record.isFullDate}
+              min="0.5"
+              max="1"
+              step="0.5"
+              placeholder="Nhập"
+              style={{ width: '100%' }}
+              onChange={(event) => this.onChangeFullDate(event, record)}
+            />
+            {errorTable && !record.isFullDate && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
         ),
       },
       {
@@ -280,21 +293,26 @@ class Index extends PureComponent {
         key: 'shiftCode',
         className: 'min-width-200',
         render: (record) => (
-          <Select
-            dataSet={
-              shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
-                (item) => ({
-                  id: item.id,
-                  name: item.name,
-                }),
-              ) || []
-            }
-            disabled={record.isFullDate === 1}
-            value={record?.shiftId}
-            style={{ width: '100%' }}
-            placeholder="Chọn"
-            onChange={(event) => this.onChangeShiftCode(event, record)}
-          />
+          <>
+            <Select
+              dataSet={
+                shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                  (item) => ({
+                    id: item.id,
+                    name: item.name,
+                  }),
+                ) || []
+              }
+              disabled={record.isFullDate === 1}
+              value={record?.shiftId}
+              style={{ width: '100%' }}
+              placeholder="Chọn"
+              onChange={(event) => this.onChangeShiftCode(event, record)}
+            />
+            {errorTable && record.isFullDate === 0.5 && !record?.shiftId && (
+              <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
+            )}
+          </>
         ),
       },
       {
@@ -338,8 +356,17 @@ class Index extends PureComponent {
       values.type
     ) {
       const dates = Helper.convertArrayDaysNotWeekends(values.startDate, values.endDate);
+      const detail = dates.map((item) => {
+        const response = [...this.state.detail].find(obj => obj.date === Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER));
+        if (response) {
+          return response;
+        }
+        return {
+          date: Helper.getDate(item, variables.DATE_FORMAT.DATE_AFTER), index: uuidv4()
+        };
+      });
       this.setStateData({
-        detail: dates.map((item, index) => ({ date: item, index })),
+        detail,
       });
       dispatch({
         type: 'absentsAdd/GET_SHIFT_USERS',
@@ -349,8 +376,11 @@ class Index extends PureComponent {
   };
 
   enableButton = (items) => {
+    const {
+      match: { params },
+    } = this.props;
     const enable = items.find((item) => !item.startTime || !item.endTime || !item.isFullDate);
-    return !!enable;
+    return params?.id ? !!enable : false;
   };
 
   render() {

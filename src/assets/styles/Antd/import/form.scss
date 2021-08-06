@@ -273,6 +273,25 @@ form .ant-cascader-picker:only-child {
   }
 }
 
+.checkbox-small {
+  margin-bottom: 15px;
+  .ant-form-item-control {
+    margin-right: 0;
+  }
+  .ant-form-item-control-input {
+    min-height: 24px;
+  }
+  .ant-checkbox-wrapper {
+    transform: scale(1);
+  }
+  .ant-form-item-label {
+    margin-left: 0;
+    label {
+      font-size: 14px;
+    }
+  }
+}
+
 .btn-delete {
   font-weight: 600;
   font-size: 14px;
@@ -418,4 +437,15 @@ form .ant-cascader-picker:only-child {
 
 .underline {
   text-decoration: underline;
+}
+
+.ant-form-vertical {
+  .ant-form-item-row {
+    flex-direction: row;
+    align-items: center;
+    .ant-form-item-label {
+      margin-right: 10px;
+      padding: 0;
+    }
+  }
 }

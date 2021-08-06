@@ -34,7 +34,7 @@ const mapStateToProps = ({ timekeepingReport, loading }) => ({
   data: timekeepingReport.data,
   pagination: timekeepingReport.pagination,
   branches: timekeepingReport.branches,
-  classes: timekeepingReport.branches,
+  classes: timekeepingReport.classes,
   loading,
 });
 @connect(mapStateToProps)
@@ -342,21 +342,17 @@ class Index extends PureComponent {
   renderReality = (items) => {
     if (!isEmpty(items.attendance)) {
       const attendance = items.attendance.filter(
-        (item) =>
-          item.stauts === variablesModules.STATUS_ABSENT.HAVE_IN ||
-          variablesModules.STATUS_ABSENT.HAVE_OUT,
+        (item) => item.status === variablesModules.STATUS_ABSENT.HAVE_IN || item?.status === variablesModules.STATUS_ABSENT.HAVE_OUT
       );
       return size(attendance);
     }
     return null;
   };
 
-  renderAbsents = (items) => {
+  renderAbsents = (items, status) => {
     if (!isEmpty(items.attendance)) {
       const attendance = items.attendance.filter(
-        (item) =>
-          item.stauts === variablesModules.STATUS_ABSENT.ANNUAL_LEAVE ||
-          variablesModules.STATUS_ABSENT.UNPAID_LEAVE,
+        (item) => item.status === status
       );
       return size(attendance);
     }
@@ -403,7 +399,16 @@ class Index extends PureComponent {
         className: 'min-width-100',
         width: 100,
         fixed: 'right',
-        render: (record) => this.renderAbsents(record),
+        render: (record) => this.renderAbsents(record, variablesModules.STATUS_ABSENT.ANNUAL_LEAVE),
+      },
+      {
+        title: 'Không phép',
+        key: 'unpaidLeave',
+        align: 'center',
+        className: 'min-width-100',
+        width: 100,
+        fixed: 'right',
+        render: (record) => this.renderAbsents(record, variablesModules.STATUS_ABSENT.UNPAID_LEAVE),
       },
       {
         title: 'Học thực tế',
@@ -441,6 +446,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search } = this.state;
     const loading = effects['timekeepingReport/GET_DATA'];
+
     return (
       <>
         <Helmet title="Tổng hợp điểm danh" />
@@ -496,6 +502,7 @@ class Index extends PureComponent {
                     name="date"
                     onChange={(event) => this.onChangeDateRank(event, 'date')}
                     type={variables.RANGE_PICKER}
+                    disabledDate={Helper.disabledDateRank}
                   />
                 </div>
               </div>

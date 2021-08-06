@@ -1,0 +1,43 @@
+@import '@/assets/styles/mixins.scss';
+
+.input-container {
+  :global(.ant-input-number) {
+    width: 60px;
+    border: 1px solid #C4CDD4;
+    box-shadow: none;
+    &:focus {
+      outline: none;
+      border: 1px solid #C4CDD4;
+    }
+  }
+  :global(.ant-input-number) {
+    :global(.ant-input-number-handler-wrap) {
+      display: none;
+    }
+  }
+  input {
+    outline: none;
+    padding: unset;
+    border-radius: 0;
+    height: 38px;
+    text-align: center;
+  }
+}
+
+.shape {
+  width: 40px;
+  height: 40px;
+  background-color: $background-success;
+  border-radius: 3px 0px 0px 3px;
+  color: $text-white;
+  font-size: 22px;
+  line-height: 28px;
+  cursor: pointer;
+  &::selection {
+    background-color: $background-success;
+    color: $text-white;
+  }
+  &.shape-right {
+    border-radius: 0px 3px 3px 0px;
+  }
+}

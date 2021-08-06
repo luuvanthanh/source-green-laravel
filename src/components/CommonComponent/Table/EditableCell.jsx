@@ -38,6 +38,7 @@ const EditableCell = ({
   dataSelect,
   prefix,
   disabledDateFuture,
+  disabledDate,
   ...restProps
 }) => {
   const mounted = useRef(false);
@@ -230,7 +231,7 @@ const EditableCell = ({
       return (
         <Form.Item name={dataIndex} rules={[]}>
           <DatePicker
-            disabledDate={disabledDateFuture && Helper.disabledDateFuture}
+            disabledDate={(current) => (disabledDateFuture && Helper.disabledDateFuture(current)) || (disabledDate && Helper.disabledDatebyValue(current, disabledDate)) }
             format={variables.DATE_FORMAT.DATE}
             onBlur={saveDatePicker}
             onChange={onChangeDatePicker}
@@ -275,6 +276,7 @@ EditableCell.propTypes = {
   dataSelect: PropTypes.arrayOf(PropTypes.any),
   prefix: PropTypes.string,
   disabledDateFuture: PropTypes.bool,
+  disabledDate: PropTypes.any,
 };
 
 EditableCell.defaultProps = {
@@ -288,6 +290,7 @@ EditableCell.defaultProps = {
   dataSelect: [],
   prefix: '',
   disabledDateFuture: false,
+  disabledDate: null
 };
 
 const SortableItem = sortableElement((props) => {

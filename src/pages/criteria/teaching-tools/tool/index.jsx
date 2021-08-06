@@ -39,8 +39,7 @@ const Index = memo(() => {
       title: 'Mã ID',
       key: 'id',
       className: 'min-width-70',
-      render: (text, record, index) =>
-        `GC${Helper.serialOrder(search?.page, index, search?.limit)}`,
+      render: (record) => record.code,
     },
     {
       title: 'Hình ảnh',
@@ -62,7 +61,7 @@ const Index = memo(() => {
                     fallback="/default-upload.png"
                   />
                 </div>
-            ))}
+              ))}
           </Image.PreviewGroup>
         </div>
       ),

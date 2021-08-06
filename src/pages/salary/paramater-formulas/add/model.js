@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -8,6 +9,7 @@ export default {
       isError: false,
       data: {},
     },
+    paramaterValues: []
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -24,8 +26,28 @@ export default {
       ...state,
       details: payload,
     }),
+    SET_PARAMTER_VAUES: (state, { payload }) => ({
+      ...state,
+      paramaterValues: payload,
+    }),
   },
   effects: {
+    *GET_PARAMTER_VAUES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getParamaterValues, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_PARAMTER_VAUES',
+            payload: response.parsePayload,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
