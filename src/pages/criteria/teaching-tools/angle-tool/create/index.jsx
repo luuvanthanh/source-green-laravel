@@ -147,6 +147,12 @@ const Index = memo(() => {
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
                 />
+                <FormItem
+                  className="mt20"
+                  label="Ý nghĩa trong cuộc sống"
+                  name="description"
+                  type={variables.TEXTAREA}
+                />
               </Pane>
 
               <Pane className="mt20 mb0 card">

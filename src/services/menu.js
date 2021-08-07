@@ -565,6 +565,17 @@ export async function getLeftMenuCriteria() {
               permission: [permissions.CTH],
               pro: true,
             },
+            {
+              title: 'Thời kỳ nhạy cảm',
+              key: 'sensitivePeriod',
+              url: [
+                '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam',
+                '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
+                '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
+              ],
+              permission: [permissions.CTH],
+              pro: true,
+            },
           ],
         },
       ],

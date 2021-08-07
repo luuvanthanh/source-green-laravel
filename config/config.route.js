@@ -172,6 +172,25 @@ export default [
             authority: [permissions.CTH],
           },
           {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam',
+            component: './criteria/teaching-tools/sensitive-period',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
+            component: './criteria/teaching-tools/sensitive-period/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
+            component: './criteria/teaching-tools/sensitive-period/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          
+          {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
             wrappers: ['@/wrappers/auth'],

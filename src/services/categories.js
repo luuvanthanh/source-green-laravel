@@ -225,3 +225,10 @@ export function getMeals(params) {
     },
   });
 }
+
+export function getParamaterFormulas(params = {}) {
+  return requestLaravel('/v1/paramater-formulas', {
+    method: 'GET',
+    params,
+  });
+}
