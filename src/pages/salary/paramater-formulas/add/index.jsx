@@ -111,9 +111,9 @@ class Index extends PureComponent {
         if (!isEmpty(item.formular)) {
           return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
         }
-        return `${item.operator || ''} ${item.value || this.getVariable(item.variable) || ''}${this.renderCalulator(
-          item.formular,
-        )}`;
+        return `${item.operator || ''} ${
+          item.value || this.getVariable(item.variable) || ''
+        }${this.renderCalulator(item.formular)}`;
       })
       .join(' ');
 
@@ -246,7 +246,7 @@ class Index extends PureComponent {
       effects['salaryParamaterFormulasAdd/ADD'] || effects['salaryParamaterFormulasAdd/UPDATE'];
     const loading = effects['salaryParamaterFormulasAdd/GET_DETAILS'];
     const MOCK_DATA = {
-      '@': paramaterValues.map((item) => item.code),
+      '@': [...new Set(paramaterValues.map((item) => item.code))],
     };
 
     return (

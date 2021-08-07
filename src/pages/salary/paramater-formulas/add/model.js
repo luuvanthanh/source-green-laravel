@@ -9,7 +9,7 @@ export default {
       isError: false,
       data: {},
     },
-    paramaterValues: []
+    paramaterValues: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -34,11 +34,17 @@ export default {
   effects: {
     *GET_PARAMTER_VAUES({ payload }, saga) {
       try {
-        const response = yield saga.call(categories.getParamaterValues, payload);
+        // const response = yield saga.call(categories.getParamaterValues, payload);
+        const response = yield saga.all({
+          paramaterValues: saga.call(categories.getParamaterValues, payload),
+          paramaterFormulas: saga.call(categories.getParamaterFormulas, payload),
+        });
         if (response) {
           yield saga.put({
             type: 'SET_PARAMTER_VAUES',
-            payload: response.parsePayload,
+            payload: response.paramaterValues.parsePayload.concat(
+              response.paramaterFormulas.parsePayload,
+            ),
           });
         }
       } catch (error) {
