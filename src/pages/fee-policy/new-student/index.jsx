@@ -171,7 +171,8 @@ class Index extends PureComponent {
         title: 'Năm học',
         key: 'schoolYear',
         className: 'min-width-150',
-        render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
+        render: (record) =>
+          `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`,
       },
       {
         title: 'Tên học sinh',
@@ -183,7 +184,10 @@ class Index extends PureComponent {
         title: 'Sinh ngày',
         key: 'dateOfBirth',
         className: 'min-width-200',
-        render: (record) => record?.dateOfBirth ? Helper.getDate(record?.dateOfBirth, variables.DATE_FORMAT.DATE_VI) : '',
+        render: (record) =>
+          record?.dateOfBirth
+            ? Helper.getDate(record?.dateOfBirth, variables.DATE_FORMAT.DATE_VI)
+            : '',
       },
       {
         title: 'Tháng tuổi',
@@ -195,7 +199,10 @@ class Index extends PureComponent {
         title: 'Ngày nhập học',
         key: 'dayAdmission',
         className: 'min-width-150',
-        render: (record) => record?.dayAdmission ? Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI) : '',
+        render: (record) =>
+          record?.dayAdmission
+            ? Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
+            : '',
       },
       {
         title: 'Họ tên cha',
@@ -225,17 +232,20 @@ class Index extends PureComponent {
         title: 'Tổng học phí đóng đ',
         key: 'totalMoney',
         className: 'min-width-200',
-        render: (record) => Helper.getPrice(record.totalMoney) || 0
+        render: (record) => Helper.getPrice(record.totalMoney) || 0,
       },
       {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="success"
-              onClick={() => history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-moi/${record?.id}/chi-tiet`)}
+              onClick={() =>
+                history.push(`/chinh-sach-phi/tinh-phi-hoc-sinh-moi/${record?.id}/chi-tiet`)
+              }
             >
               Chi tiết
             </Button>
