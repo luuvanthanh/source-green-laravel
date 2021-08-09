@@ -204,10 +204,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
   return (
     <>
       <Table
-        className="content-vertical-top mb20"
+        className="table-edit content-vertical-top mb20"
         columns={columns}
         dataSource={tuition}
         loading={false}
+        isEmpty
         error={{}}
         isError={false}
         pagination={false}
