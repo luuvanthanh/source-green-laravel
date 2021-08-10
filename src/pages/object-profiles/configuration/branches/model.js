@@ -46,18 +46,12 @@ export default {
         });
       }
     },
-    *REMOVE({ payload }, saga) {
+    *REMOVE({ payload, callback }, saga) {
       try {
         yield saga.call(services.remove, payload.id);
-        yield saga.put({
-          type: 'GET_DATA',
-          payload: payload.pagination,
-        });
+        callback(payload);
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error);
       }
     },
   },

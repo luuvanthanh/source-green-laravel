@@ -57,7 +57,8 @@ const Index = memo(() => {
     {
       title: 'Thời gian',
       key: 'creationTime',
-      className: 'min-width-140',
+      className: 'min-width-180',
+      width: 180,
       render: (record) => (
         <Text size="normal">
           {Helper.getDate(record.creationTime, variables.DATE_FORMAT.DATE_TIME)}
@@ -104,6 +105,7 @@ const Index = memo(() => {
       key: 'action',
       className: 'min-width-80',
       width: 80,
+      fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
           <Button
@@ -119,10 +121,10 @@ const Index = memo(() => {
   ];
 
   /**
- * Function set pagination
- * @param {integer} page page of pagination
- * @param {integer} size size of pagination
- */
+   * Function set pagination
+   * @param {integer} page page of pagination
+   * @param {integer} size size of pagination
+   */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -135,13 +137,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -194,7 +197,11 @@ const Index = memo(() => {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        sentDateFrom: Helper.getDate(search.sentDateFrom, variables.DATE_FORMAT.DATE_AFTER),
+        sentDateTo: Helper.getDate(search.sentDateTo, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   }, [search]);
 

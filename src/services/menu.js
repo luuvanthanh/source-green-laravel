@@ -623,7 +623,7 @@ export async function getLeftMenuCriteria() {
 export async function getLeftMenuChildren() {
   return [
     {
-      title: 'Thực đơn',
+      title: 'Danh sách thực đơn',
       key: 'menu',
       url: [
         '/thuc-don',

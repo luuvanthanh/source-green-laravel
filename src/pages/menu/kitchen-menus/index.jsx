@@ -14,6 +14,7 @@ import Text from '@/components/CommonComponent/Text';
 
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
+import moment from 'moment';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const Index = memo(() => {
     ...query,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
+    date: query?.date || moment(),
   });
 
   const columns = [
@@ -134,6 +136,7 @@ const Index = memo(() => {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
+          date: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -181,6 +184,7 @@ const Index = memo(() => {
                 ...search,
                 branchId: search?.branchId || null,
                 classTypeId: search?.classTypeId || null,
+                date: moment(search.date),
               }}
             >
               <Pane className="row">
@@ -199,6 +203,14 @@ const Index = memo(() => {
                     name="classTypeId"
                     onChange={(e) => changeFilter('classTypeId')(e)}
                     data={[{ id: null, name: 'Chọn tất loại lớp' }, ...classTypes]}
+                    allowClear={false}
+                  />
+                </Pane>
+                <Pane className="col-lg-3">
+                  <FormItem
+                    type={variables.DATE_PICKER}
+                    name="date"
+                    onChange={(e) => changeFilter('date')(e)}
                     allowClear={false}
                   />
                 </Pane>
