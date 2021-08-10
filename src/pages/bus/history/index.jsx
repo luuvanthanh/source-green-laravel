@@ -103,13 +103,14 @@ const Index = memo(() => {
       className: 'min-width-120',
       render: (record) => {
         const { absentStudents } = record?.student;
-        const absent = !isEmpty(absentStudents) ? absentStudents.find(item => Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date) : {};
+        const absent = !isEmpty(absentStudents)
+          ? absentStudents.find(
+              (item) =>
+                Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
+            )
+          : {};
         if (absent?.id) {
-          return (
-            <Text size="normal">
-              Đã xin nghỉ phép
-            </Text>
-          );
+          return <Text size="normal">Đã xin nghỉ phép</Text>;
         }
         if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
           return (
@@ -132,30 +133,25 @@ const Index = memo(() => {
       className: 'min-width-120',
       render: (record) => {
         const { absentStudents } = record?.student;
-        const absent = !isEmpty(absentStudents) ? absentStudents.find(item => Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date) : {};
+        const absent = !isEmpty(absentStudents)
+          ? absentStudents.find(
+              (item) =>
+                Helper.getDate(item.startDate, variables.DATE_FORMAT.DATE_AFTER) === query?.date,
+            )
+          : {};
         if (absent?.id) {
-          return (
-            <Text size="normal">
-              Đã xin nghỉ phép
-            </Text>
-          );
+          return <Text size="normal">Đã xin nghỉ phép</Text>;
         }
         if (search.status === variablesModules.STATUS_TABS.HOMEAWARD) {
           return (
             <Text size="normal">
-              {Helper.getDate(
-                record.busPlaceLog?.homewardGetOff,
-                variables.DATE_FORMAT.TIME_FULL,
-              )}
+              {Helper.getDate(record.busPlaceLog?.homewardGetOff, variables.DATE_FORMAT.TIME_FULL)}
             </Text>
           );
         }
         return (
           <Text size="normal">
-            {Helper.getDate(
-              record.busPlaceLog?.schoolwardGetOff,
-              variables.DATE_FORMAT.TIME_FULL,
-            )}
+            {Helper.getDate(record.busPlaceLog?.schoolwardGetOff, variables.DATE_FORMAT.TIME_FULL)}
           </Text>
         );
       },

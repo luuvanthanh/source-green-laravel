@@ -167,7 +167,7 @@ class Index extends PureComponent {
    */
   onRemove = (id) => {
     const { dispatch } = this.props;
-    const { search } = this.state;
+    const self = this;
     confirm({
       title: 'Khi xóa thì dữ liệu trước thời điểm xóa vẫn giữ nguyên?',
       icon: <ExclamationCircleOutlined />,
@@ -180,10 +180,11 @@ class Index extends PureComponent {
           type: 'branches/REMOVE',
           payload: {
             id,
-            pagination: {
-              limit: search.limit,
-              page: search.page,
-            },
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
           },
         });
       },
