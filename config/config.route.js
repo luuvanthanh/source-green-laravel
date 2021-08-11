@@ -1202,19 +1202,19 @@ export default [
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
-            component: './hrm/configuration/paramater-formulas',
+            component: './hrm/paramater-formulas',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
-            component: './hrm/configuration/paramater-formulas/add',
+            component: './hrm/paramater-formulas/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
-            component: './hrm/configuration/paramater-formulas/add',
+            component: './hrm/paramater-formulas/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
@@ -1563,6 +1563,18 @@ export default [
           {
             path: '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
             component: './hrm/fingerprint-timekeepers/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/tinh-luong',
+            component: './hrm/payroll',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong',
+            component: './hrm/salary',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
