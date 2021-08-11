@@ -9,6 +9,7 @@ import {
   size,
   head,
   last,
+  toNumber
 } from 'lodash';
 import { notification, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -1070,5 +1071,12 @@ export default class Helpers {
       return <Tag color="danger">Đã hết hạn</Tag>;
     }
     return '';
+  };
+
+  static summary = (items, key = 'amount') => {
+    if (!isEmpty(items)) {
+      return items.reduce((result, item) => result + toNumber(item[`${key}`]) || 0, 0);
+    }
+    return null;
   };
 }
