@@ -38,12 +38,7 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
-        isFeedback: !!values.isFeedback,
-        toolLevels: values.toolLevels.map((item, index) => ({
-          ...item,
-          level: index + 1,
-          evaluates: item.evaluates.map((item) => item.name),
-        })),
+        criterias: values.criterias.map((item) => item.name),
       },
       callback: (response, error) => {
         if (response) {
@@ -94,9 +89,8 @@ const Index = memo(() => {
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
-              toolLevels: response.toolLevels.map((item) => ({
-                ...item,
-                evaluates: item.evaluates.map((item) => ({ ...item, name: item.evaluate })),
+              criterias: response.criterias.map((item) => ({
+                name: item,
               })),
             });
           }
@@ -122,7 +116,7 @@ const Index = memo(() => {
               ref={formRef}
               onFinish={onFinish}
               initialValues={{
-                toolLevels: [{ evaluates: [{}] }],
+                criterias: [{}],
               }}
             >
               <Pane className="my20 mb0 card">
@@ -139,12 +133,10 @@ const Index = memo(() => {
                     <Heading type="form-title" className="mb20">
                       Thông tin chung
                     </Heading>
-                    <FormItem
-                      label="Mã"
-                      name="code"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
+                    {params.id && (
+                      <FormItem label="Mã" name="code" disabled type={variables.INPUT} />
+                    )}
+
                     <FormItem
                       label="Tên thời kỳ nhạy cảm"
                       name="name"
@@ -153,7 +145,7 @@ const Index = memo(() => {
                     />
                     <FormItem
                       label="Ghi chú"
-                      name="description"
+                      name="note"
                       rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
                       type={variables.TEXTAREA}
                     />
@@ -162,7 +154,7 @@ const Index = memo(() => {
                     <Heading type="form-title" className="mb10">
                       Tiêu chí đánh giá của giáo viên
                     </Heading>
-                    <Form.List name="toolLevels">
+                    <Form.List name="criterias">
                       {(fields, { add, remove }) => (
                         <Pane>
                           {fields.map((field, index) => (
