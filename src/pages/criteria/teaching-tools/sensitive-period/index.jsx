@@ -12,7 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
@@ -51,7 +51,7 @@ const Index = memo(() => {
       title: 'Ghi chú',
       key: 'description',
       className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.description} </Text>,
+      render: (record) => <Text size="normal">{record.note} </Text>,
     },
     {
       key: 'action',
@@ -107,6 +107,12 @@ const Index = memo(() => {
     dispatch({
       type: 'sensitivePeriod/GET_DATA',
       payload: { ...search },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        ...search,
+      }),
     });
   }, [search]);
 

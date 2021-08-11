@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/tool-details', {
+  return request('/sensitive-periods', {
     method: 'GET',
     params: {
       ...params,
@@ -12,7 +12,7 @@ export function get(params = {}) {
 }
 
 export function remove(id) {
-  return request(`/tool-details/${id}`, {
+  return request(`/sensitive-periods/${id}`, {
     method: 'DELETE',
     parse: true,
   });
