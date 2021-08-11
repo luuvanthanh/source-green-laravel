@@ -232,3 +232,13 @@ export function getParamaterFormulas(params = {}) {
     params,
   });
 }
+
+export function getSensitivePeriods(params = {}) {
+  return request('/sensitive-periods', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
