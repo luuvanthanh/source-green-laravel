@@ -625,12 +625,7 @@ export async function getLeftMenuChildren() {
     {
       title: 'Danh sách thực đơn',
       key: 'menu',
-      url: [
-        '/thuc-don',
-        '/thuc-don/tao-moi',
-        '/thuc-don/:id/chi-tiet',
-        '/thuc-don/:id/chinh-sua'
-      ],
+      url: ['/thuc-don', '/thuc-don/tao-moi', '/thuc-don/:id/chi-tiet', '/thuc-don/:id/chinh-sua'],
       icon: 'icon icon-list',
       permission: [permissions.BEP],
       pro: true,
@@ -730,7 +725,7 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/lam-viec',
         '/thoi-khoa-bieu/lam-viec/tao-moi',
         '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
-        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'
+        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
       permission: [permissions.TKB],
@@ -1067,7 +1062,7 @@ export async function getLeftMenuHRM() {
     {
       title: 'Chấm công',
       key: 'schedules',
-      icon: 'icon icon-clock',
+      icon: 'icon icon-schedules',
       permission: [permissions.HRM],
       pro: true,
       children: [
@@ -1243,6 +1238,28 @@ export async function getLeftMenuHRM() {
       ],
     },
     {
+      title: 'Lương',
+      key: 'salary',
+      icon: 'icon icon-cash',
+      permission: [permissions.HRM],
+      children: [
+        {
+          title: 'Tính lương',
+          key: 'salary-payroll',
+          url: ['/quan-ly-nhan-su/tinh-luong'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Bảng lương',
+          key: 'salary-items',
+          url: ['/quan-ly-nhan-su/bang-luong'],
+          permission: [permissions.BANGLUONG],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Cấu hình',
       key: 'categoriesParamater',
       icon: 'icon icon-setting',
@@ -1257,6 +1274,17 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [permissions.BANGLUONG],
           pro: true,
         },
         {

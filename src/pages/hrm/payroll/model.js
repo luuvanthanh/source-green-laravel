@@ -1,9 +1,9 @@
 import * as services from './services';
 
 export default {
-  namespace: 'paramaterFormulasAdd',
+  namespace: 'hrmPayroll',
   state: {
-    details: {},
+    data: {},
     error: {
       isError: false,
       data: {},
@@ -11,6 +11,10 @@ export default {
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DATA: (state, { payload }) => ({
+      ...state,
+      data: payload.parsePayload,
+    }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -20,19 +24,15 @@ export default {
         },
       },
     }),
-    SET_DETAILS: (state, { payload }) => ({
-      ...state,
-      details: payload,
-    }),
   },
   effects: {
-    *GET_DETAILS({ payload }, saga) {
+    *GET_DATA({ payload }, saga) {
       try {
-        const response = yield saga.call(services.details, payload);
+        const response = yield saga.call(services.get, payload);
         if (response) {
           yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response.parsePayload,
+            type: 'SET_DATA',
+            payload: response,
           });
         }
       } catch (error) {
@@ -42,17 +42,17 @@ export default {
         });
       }
     },
-    *ADD({ payload, callback }, saga) {
+    *UPDATE({ payload, callback }, saga) {
       try {
-        yield saga.call(services.add, payload);
+        yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
       }
     },
-    *UPDATE({ payload, callback }, saga) {
+    *UPDATE_SALARY({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload);
+        yield saga.call(services.updateSalary, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
