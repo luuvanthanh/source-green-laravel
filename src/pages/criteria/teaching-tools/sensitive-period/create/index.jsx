@@ -106,7 +106,7 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ paddingTop: 20 }}>
-      <Helmet title="Tạo giáo cụ" />
+      <Helmet title="Tạo thời kỳ nhạy cảm" />
       <Breadcrumbs className="pb30 pt0" last="Tạo giáo cụ" menu={menuLeftCriteria} />
       <Pane style={{ padding: 20, paddingBottom: 0, paddingTop: 0 }}>
         <Pane className="row justify-content-center">

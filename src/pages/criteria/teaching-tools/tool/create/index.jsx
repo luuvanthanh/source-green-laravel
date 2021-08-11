@@ -22,7 +22,7 @@ const Index = memo(() => {
   const [
     { menuLeftCriteria },
     loading,
-    { error },
+    { error, classTypes, sensitivePeriods },
   ] = useSelector(({ menu, loading: { effects }, criteriaToolCreate }) => [
     menu,
     effects,
@@ -31,10 +31,9 @@ const Index = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
   const [files, setFiles] = useState([]);
-  const [dataSource, setDataSource] = useState([
+  const [toolDetailSensitives, setToolDetailSensitives] = useState([
     {
       id: uuidv4(),
-      note: 'Ngôn ngữ',
     },
   ]);
 
@@ -51,12 +50,10 @@ const Index = memo(() => {
         ...values,
         ...params,
         fileUrl: JSON.stringify(files),
-        isFeedback: !!values.isFeedback,
-        toolLevels: values.toolLevels.map((item, index) => ({
-          ...item,
-          level: index + 1,
-          evaluates: item.evaluates.map((item) => item.name),
+        toolDetailClassTypes: values.toolDetailClassTypes.map((item) => ({
+          classTypeId: item,
         })),
+        toolDetailSensitives,
       },
       callback: (response, error) => {
         if (response) {
@@ -110,11 +107,16 @@ const Index = memo(() => {
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
-              toolLevels: response.toolLevels.map((item) => ({
-                ...item,
-                evaluates: item.evaluates.map((item) => ({ ...item, name: item.evaluate })),
-              })),
+              toolDetailClassTypes: response?.toolDetailClassTypes?.map(
+                (item) => item?.classType?.id,
+              ),
             });
+            setToolDetailSensitives(
+              response?.toolDetailSensitives.map((item) => ({
+                ...item,
+                sensitivePeriodId: item?.sensitivePeriod?.id,
+              })),
+            );
           }
         },
       });
@@ -124,6 +126,17 @@ const Index = memo(() => {
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
+  }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'criteriaToolCreate/GET_CLASS_TYPES',
+      payload: {},
+    });
+    dispatch({
+      type: 'criteriaToolCreate/GET_SENSITIVE_PERIODS',
+      payload: {},
+    });
   }, []);
 
   const onUpload = (files) => {
@@ -161,14 +174,16 @@ const Index = memo(() => {
   };
 
   const handleSave = (record) => {
-    setDataSource((prevState) => prevState.map((item) => (item.id === record.id ? record : item)));
+    setToolDetailSensitives((prevState) =>
+      prevState.map((item) => (item.id === record.id ? record : item)),
+    );
   };
 
   const onAdd = async () => {
     const objects = {
       id: uuidv4(),
     };
-    await setDataSource((prevState) => [...prevState, objects]);
+    await setToolDetailSensitives((prevState) => [...prevState, objects]);
 
     const itemsRow = document.querySelectorAll(
       `.ant-table-tbody tr[data-row-key='${objects.id}'] .editable-cell-value-wrap`,
@@ -179,24 +194,29 @@ const Index = memo(() => {
   };
 
   const onRemove = (record) => {
-    setDataSource((prevState) => prevState.filter((item) => item.id !== record.id));
+    setToolDetailSensitives((prevState) => prevState.filter((item) => item.id !== record.id));
   };
 
   const header = () => {
     const columns = [
       {
         title: 'Thời kỳ nhạy cảm',
-        key: 'date',
-        dataIndex: 'note',
+        key: 'sensitivePeriodId',
+        dataIndex: 'sensitivePeriodId',
         className: 'min-width-200',
         width: 200,
         editable: true,
-        type: variables.INPUT,
+        type: variables.SELECT,
+        dataSelect: sensitivePeriods.map((item) => ({ value: item.id, label: item.name })),
+        render: (value) => {
+          const sensitivePeriod = sensitivePeriods?.find((item) => item.id === value);
+          return sensitivePeriod?.name;
+        },
       },
       {
         title: 'Diễn giải',
-        key: 'description',
-        dataIndex: 'description',
+        key: 'explaination',
+        dataIndex: 'explaination',
         className: 'min-width-200',
         width: 200,
         editable: true,
@@ -204,8 +224,8 @@ const Index = memo(() => {
       },
       {
         title: 'Tham gia phụ huynh',
-        key: 'join',
-        dataIndex: 'Tham gia phụ huynh',
+        key: 'parentInvolvement',
+        dataIndex: 'parentInvolvement',
         className: 'min-width-200',
         width: 200,
         editable: true,
@@ -292,27 +312,27 @@ const Index = memo(() => {
                     </Pane>
                     <Pane className="col-lg-6">
                       <FormItem
-                        data={[]}
+                        data={classTypes}
                         label="Loại lớp áp dụng"
-                        name="classTypeId"
-                        type={variables.SELECT}
+                        name="toolDetailClassTypes"
+                        type={variables.SELECT_MUTILPLE}
                         rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>
                   </Pane>
                   <Pane className="row">
                     <Pane className="col-lg-6">
-                      <FormItem label="Nội dung" name="description" type={variables.TEXTAREA} />
+                      <FormItem label="Nội dung" name="content" type={variables.TEXTAREA} />
                     </Pane>
                     <Pane className="col-lg-6">
-                      <FormItem label="Ý nghĩa" name="content" type={variables.TEXTAREA} />
+                      <FormItem label="Ý nghĩa" name="meanOfLife" type={variables.TEXTAREA} />
                     </Pane>
                   </Pane>
                   <Pane className="row">
                     <Pane className="col-lg-6">
                       <FormItem
                         label="Kỹ năng trẻ đạt được"
-                        name="skill"
+                        name="skillGained"
                         type={variables.TEXTAREA}
                       />
                     </Pane>
@@ -345,7 +365,7 @@ const Index = memo(() => {
                       cell: EditableCell,
                     },
                   }}
-                  dataSource={dataSource}
+                  dataSource={toolDetailSensitives}
                   pagination={false}
                   rowKey={(record) => record.id}
                   scroll={{ x: '100%' }}
@@ -369,6 +389,7 @@ const Index = memo(() => {
                 htmlType="submit"
                 size="large"
                 loading={loading['criteriaToolCreate/ADD'] || loading['criteriaToolCreate/UPDATE']}
+                disabled={!!toolDetailSensitives.find((item) => !item.sensitivePeriodId)}
               >
                 Lưu
               </Button>

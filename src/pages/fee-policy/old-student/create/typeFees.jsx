@@ -221,7 +221,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           <Table.Summary.Row>
             <Table.Summary.Cell colSpan={2} />
             <Table.Summary.Cell align="right">
-              {Helper.getPrice(Helper.summary(pageData, 'money'))}
+              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'), 0, true)}</strong>
             </Table.Summary.Cell>
             <Table.Summary.Cell />
           </Table.Summary.Row>

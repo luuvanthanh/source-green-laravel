@@ -223,7 +223,7 @@ const Index = memo(() => {
   const enableToolDetails = (items) => {
     const toolGroup = items.find((item) => item.id === tab && item.isChoosed);
     if (toolGroup) {
-      return toolGroup.toolDetails.map((item) => ({ ...item, parentId: toolGroup.id }));
+      return toolGroup?.toolDetails?.map((item) => ({ ...item, parentId: toolGroup.id }));
     }
     return [];
   };

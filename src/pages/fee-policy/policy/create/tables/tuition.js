@@ -146,7 +146,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
     {
       title: 'Học sinh cũ (đ)',
       key: 'oldStudent',
-      className: 'min-width-120',
+      className: 'min-width-150',
       render: (record) => (
         <>
           <FormItem
@@ -165,7 +165,7 @@ const Index = memo(({ feeDetail, setFeeDetail, error, checkValidate }) => {
     {
       title: 'Học sinh mới (đ)',
       key: 'newStudent',
-      className: 'min-width-120',
+      className: 'min-width-150',
       render: (record) => (
         <>
           <FormItem
