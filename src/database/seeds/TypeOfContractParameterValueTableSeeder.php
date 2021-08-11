@@ -33,6 +33,5 @@ class TypeOfContractParameterValueTableSeeder extends Seeder
                 'ParameterValueId' => '17d8c9cf-49a2-4813-bafc-228a56dc4105',
             ),
         ));
-
     }
 }
