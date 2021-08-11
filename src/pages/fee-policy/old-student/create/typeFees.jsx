@@ -3,21 +3,19 @@ import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'dva';
+import { Table } from 'antd';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
-import Table from '@/components/CommonComponent/Table';
+import TableCus from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import moment from 'moment';
 
 const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
   const dispatch = useDispatch();
-  const {
-    fees,
-    paymentForm,
-  } = useSelector(({ fees, paymentMethod }) => ({
+  const { fees, paymentForm } = useSelector(({ fees, paymentMethod }) => ({
     fees: fees.data,
     paymentForm: paymentMethod.data,
   }));
@@ -39,18 +37,24 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
     });
   }, []);
 
-  const getMoney = async (details, tuition, name, value , index) => {
+  const getMoney = async (details, tuition, name, value, index) => {
     const { schoolYearId, classTypeId, dayAdmission } = details;
     const { feeId, paymentFormId } = tuition[index];
     const newTuition = [...tuition];
 
-    if (value && (name === 'feeId' && paymentFormId || name === 'paymentFormId' && feeId) && schoolYearId && classTypeId && dayAdmission ) {
+    if (
+      value &&
+      ((name === 'feeId' && paymentFormId) || (name === 'paymentFormId' && feeId)) &&
+      schoolYearId &&
+      classTypeId &&
+      dayAdmission
+    ) {
       const details = [
         {
           ...newTuition[index],
           paymentFormId: name === 'paymentFormId' ? value : paymentFormId,
           feeId: name === 'feeId' ? value : feeId,
-        }
+        },
       ];
       return dispatch({
         type: 'newStudentAdd/GET_MONEY_FEE_POLICIES',
@@ -66,11 +70,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
             isUTC: false,
           }),
           details: JSON.stringify(details),
-          student: 'old'
+          student: 'old',
         },
         callback: (res) => {
           if (!_.isEmpty(res)) {
-            newTuition[index] = {...res[0]};
+            newTuition[index] = { ...res[0] };
           } else {
             newTuition[index] = {
               ...newTuition[index],
@@ -83,11 +87,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           }
           return setTuition(newTuition);
         },
-      });;
-    };
+      });
+    }
     newTuition[index] = {
       ...newTuition[index],
-      [name]: value
+      [name]: value,
     };
     if (error) {
       checkValidate(newTuition, 'tuition');
@@ -101,11 +105,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
       value = event.target.value;
     }
     const index = _.findIndex(tuition, (item) => item.id === record?.id);
-    getMoney(details, tuition, name, value , index);
+    getMoney(details, tuition, name, value, index);
   };
 
   const removeLine = (record) => {
-    const newTuition = [...tuition].filter(item => item.id !== record.id);
+    const newTuition = [...tuition].filter((item) => item.id !== record.id);
     setTuition(newTuition);
   };
 
@@ -126,11 +130,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
             value={record?.feeId}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !(record?.feeId) && (
+          {error && !record?.feeId && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: 'Hình thức',
@@ -148,11 +152,11 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
             value={record?.paymentFormId}
             rules={[variables.RULES.EMPTY]}
           />
-          {error && !(record?.paymentFormId) && (
+          {error && !record?.paymentFormId && (
             <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
           )}
         </>
-      )
+      ),
     },
     {
       title: () => (
@@ -172,7 +176,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           value={record?.money ? Helper.getPrice(record?.money, 0, true) : 0}
           onChange={(e) => onChange(e, record, 'money')}
         />
-      )
+      ),
     },
     {
       title: '',
@@ -185,8 +189,8 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
             removeLine(record);
           }}
         />
-      )
-    }
+      ),
+    },
   ]);
 
   const addLine = () => {
@@ -197,13 +201,13 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
         feeId: null,
         paymentFormId: null,
         money: 0,
-      }
+      },
     ]);
   };
 
   return (
     <>
-      <Table
+      <TableCus
         className="content-vertical-top mb20"
         columns={columns}
         dataSource={tuition}
@@ -213,15 +217,19 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
         pagination={false}
         rowKey="id"
         scroll={{ x: '100%' }}
+        summary={(pageData) => (
+          <Table.Summary.Row>
+            <Table.Summary.Cell colSpan={2} />
+            <Table.Summary.Cell align="right">
+              {Helper.getPrice(Helper.summary(pageData, 'money'))}
+            </Table.Summary.Cell>
+            <Table.Summary.Cell />
+          </Table.Summary.Row>
+        )}
       />
       {!!(details?.schoolYearId && details?.classTypeId && details?.dayAdmission) && (
         <Pane className="px20">
-          <Button
-            className="btn-create"
-            color="success"
-            icon="plus"
-            onClick={addLine}
-          >
+          <Button className="btn-create" color="success" icon="plus" onClick={addLine}>
             Thêm dòng
           </Button>
         </Pane>
@@ -246,7 +254,7 @@ Index.defaultProps = {
   setTuition: () => {},
   error: false,
   checkValidate: () => {},
-  details: {}
+  details: {},
 };
 
 export default Index;
