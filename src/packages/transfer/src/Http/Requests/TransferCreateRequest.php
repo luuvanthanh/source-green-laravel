@@ -51,7 +51,7 @@ class TransferCreateRequest extends FormRequest
                         return true;
                     }
 
-                    return $fail('Dữ liệu cơ sở mới, bộ phận mới, chức vụ mới đã có trong hệ thống! vui lòng thay đổi 1 hoặc 2 trong 3 dữ liệu ');
+                    return $fail('Dữ liệu cơ sở mới, bộ phận mới, chức vụ mới đã có trong hệ thống ! vui lòng thay đổi 1 hoặc 2 trong 3 dữ liệu ');
                 }
             ],
             'data.*.employeeId' => 'required',
