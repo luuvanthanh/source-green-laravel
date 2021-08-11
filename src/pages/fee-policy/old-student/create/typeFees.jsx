@@ -168,15 +168,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
       key: 'money',
       className: 'min-width-120',
       align: 'right',
-      render: (record) => (
-        <FormItem
-          className="mb-0 input-noborder text-right"
-          type={variables.INPUT}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.money ? Helper.getPrice(record?.money, 0, true) : 0}
-          onChange={(e) => onChange(e, record, 'money')}
-        />
-      ),
+      render: (record) => Helper.getPrice(record?.money, 0, true),
     },
     {
       title: '',
@@ -221,7 +213,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, details }) => {
           <Table.Summary.Row>
             <Table.Summary.Cell colSpan={2} />
             <Table.Summary.Cell align="right">
-              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'), 0, true)}</strong>
+              <strong>{Helper.getPrice(Helper.summary(pageData, 'money'))}</strong>
             </Table.Summary.Cell>
             <Table.Summary.Cell />
           </Table.Summary.Row>

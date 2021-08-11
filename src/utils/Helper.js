@@ -9,7 +9,7 @@ import {
   size,
   head,
   last,
-  toNumber
+  toNumber,
 } from 'lodash';
 import { notification, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -1073,9 +1073,12 @@ export default class Helpers {
     return '';
   };
 
-  static summary = (items, key = 'amount') => {
+  static summary = (items, key = 'amount', number = 0) => {
     if (!isEmpty(items)) {
-      return items.reduce((result, item) => result + toNumber(item[`${key}`]) || 0, 0);
+      return items.reduce(
+        (result, item) => result + toNumber(parseFloat(item[`${key}`]).toFixed(number)) || 0,
+        0,
+      );
     }
     return null;
   };

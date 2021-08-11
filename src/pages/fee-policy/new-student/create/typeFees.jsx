@@ -162,15 +162,7 @@ const Index = memo(({ tuition, setTuition, error, checkValidate, addFees, formRe
       key: 'money',
       className: 'min-width-120',
       align: 'right',
-      render: (record) => (
-        <FormItem
-          className="mb-0 input-noborder text-right"
-          type={variables.INPUT}
-          rules={[variables.RULES.EMPTY]}
-          value={record?.money ? Helper.getPrice(record?.money, 0, true) : 0}
-          onChange={(e) => onChange(e, record, 'money')}
-        />
-      ),
+      render: (record) => Helper.getPrice(record?.money, 0, true),
     },
     {
       title: '',
