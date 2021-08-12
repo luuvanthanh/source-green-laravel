@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Checkbox } from 'antd';
 import classnames from 'classnames';
 import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -201,6 +201,23 @@ class Index extends PureComponent {
     });
   };
 
+  onChange = (e, record) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'childrenHRM/UPDATE',
+      payload: {
+        id: record.id,
+        data: [
+          {
+            ...record,
+            isDependentPerson: e.target.checked,
+          },
+        ],
+      },
+      callback: () => {},
+    });
+  };
+
   /**
    * Function header table
    */
@@ -254,9 +271,30 @@ class Index extends PureComponent {
         render: (record) => record.gender,
       },
       {
+        title: 'Mối quan hệ',
+        key: 'relationship',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => record.relationship,
+      },
+      {
+        title: 'Phụ thuộc',
+        key: 'isDependentPerson',
+        className: 'min-width-130',
+        width: 130,
+        align: 'center',
+        render: (record) => (
+          <Checkbox
+            defaultChecked={record.isDependentPerson}
+            onChange={(e) => this.onChange(e, record)}
+          />
+        ),
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button

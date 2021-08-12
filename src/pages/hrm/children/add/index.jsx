@@ -76,9 +76,8 @@ class Index extends PureComponent {
         ...details,
         data: [
           {
+            ...details,
             birthday: details.birthday && moment(details.birthday),
-            fullName: details.fullName,
-            gender: details.gender,
           },
         ],
       });
@@ -171,7 +170,11 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
         >
           <div className={styles['content-form']}>
-            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien' }}>
+            <Loading
+              loading={loading}
+              isError={error.isError}
+              params={{ error, goBack: '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien' }}
+            >
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -230,6 +233,25 @@ class Index extends PureComponent {
                                   type={variables.INPUT}
                                 />
                               </div>
+                              <div className="col-lg-6">
+                                <FormItem
+                                  label="MỐI QUAN HỆ"
+                                  name={[field.name, 'relationship']}
+                                  fieldKey={[field.fieldKey, 'relationship']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.INPUT}
+                                />
+                              </div>
+                              <div className="col-lg-6">
+                                <FormItem
+                                  className="checkbox-row checkbox-small"
+                                  label="NGƯỜI PHỤ THUỘC"
+                                  name={[field.name, 'isDependentPerson']}
+                                  fieldKey={[field.fieldKey, 'isDependentPerson']}
+                                  type={variables.CHECKBOX_FORM}
+                                  valuePropName="checked"
+                                />
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -274,7 +296,7 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   categories: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
-  error: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {

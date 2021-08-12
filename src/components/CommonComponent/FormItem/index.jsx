@@ -59,7 +59,11 @@ const renderChildren = (
     />
   ),
   inputPassword: (
-    <Input.Password onChange={onChange} placeholder={placeholder || 'Nhập'} autoComplete="new-password" />
+    <Input.Password
+      onChange={onChange}
+      placeholder={placeholder || 'Nhập'}
+      autoComplete="new-password"
+    />
   ),
   inputSearch: (
     <Input onChange={onChange} placeholder={placeholder || 'Nhập'} prefix={<SearchOutlined />} />
@@ -315,6 +319,7 @@ const renderChildren = (
   checkboxSingle: (
     <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
   ),
+  checkboxform: <Checkbox className={styles['checkbox--large']} />,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (
