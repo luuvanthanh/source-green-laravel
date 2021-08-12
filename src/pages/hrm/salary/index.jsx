@@ -707,7 +707,7 @@ class Index extends PureComponent {
               }}
               summary={(pageData) => (
                 <Table.Summary.Row>
-                  <Table.Summary.Cell colSpan={5} />
+                  <Table.Summary.Cell fixed="left" colSpan={5} />
                   <Table.Summary.Cell>
                     {Helper.getPrice(pageData.reduce((total, item) => total + item.totalIncome, 0))}
                   </Table.Summary.Cell>
