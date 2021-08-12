@@ -1,5 +1,5 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Checkbox } from 'antd';
 import { get, isEmpty } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -62,8 +62,7 @@ const Index = memo(() => {
         ...record,
         data: [
           {
-            fullName: record.fullName,
-            gender: record.gender,
+            ...record,
             birthday: record.birthday && moment(record.birthday),
           },
         ],
@@ -126,6 +125,22 @@ const Index = memo(() => {
     });
   };
 
+  const onChange = (e, record) => {
+    dispatch({
+      type: 'HRMusersAdd/UPDATE_CHILDREN',
+      payload: {
+        id: record.id,
+        data: [
+          {
+            ...record,
+            isDependentPerson: e.target.checked,
+          },
+        ],
+      },
+      callback: () => {},
+    });
+  };
+
   /**
    * Function header table
    */
@@ -159,6 +174,26 @@ const Index = memo(() => {
         className: 'min-width-130',
         width: 130,
         render: (record) => record.gender,
+      },
+      {
+        title: 'Mối quan hệ',
+        key: 'relationship',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => record.relationship,
+      },
+      {
+        title: 'Phụ thuộc',
+        key: 'isDependentPerson',
+        className: 'min-width-130',
+        width: 130,
+        align: 'center',
+        render: (record) => (
+          <Checkbox
+            defaultChecked={record.isDependentPerson}
+            onChange={(e) => onChange(e, record)}
+          />
+        ),
       },
       {
         title: 'Thao tác',
@@ -235,8 +270,7 @@ const Index = memo(() => {
           initialValues={{
             data: [
               {
-                fullName: objects.fullName,
-                gender: objects.gender,
+                ...objects,
                 birthday: objects.birthday && moment(objects.birthday),
               },
             ],
@@ -281,6 +315,25 @@ const Index = memo(() => {
                             fieldKey={[field.fieldKey, 'gender']}
                             rules={[variables.RULES.EMPTY]}
                             type={variables.INPUT}
+                          />
+                        </div>
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="MỐI QUAN HỆ"
+                            name={[field.name, 'relationship']}
+                            fieldKey={[field.fieldKey, 'relationship']}
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.INPUT}
+                          />
+                        </div>
+                        <div className="col-lg-6">
+                          <FormItem
+                            className="checkbox-row checkbox-small"
+                            label="NGƯỜI PHỤ THUỘC"
+                            name={[field.name, 'isDependentPerson']}
+                            fieldKey={[field.fieldKey, 'isDependentPerson']}
+                            type={variables.CHECKBOX_FORM}
+                            valuePropName="checked"
                           />
                         </div>
                       </div>

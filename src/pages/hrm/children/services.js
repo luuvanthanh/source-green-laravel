@@ -41,3 +41,11 @@ export function remove(id) {
     parse: true,
   });
 }
+
+
+export function update(data = {}) {
+  return request(`/v1/children/${data.id}`, {
+    method: 'PUT',
+    data,
+  });
+}
