@@ -7,6 +7,7 @@ use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Attendance\Presenters\AttendancePresenter;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
@@ -619,6 +620,55 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 'annualLeave' => $attendanceAnnualLeave,
                 'unpaidLeave' => $attendanceUnpaidLeave,
             ],
+        ];
+    }
+
+    public function attendanceSummaryByClass(array $attributes)
+    {
+        $queryClass = Classes::query();
+
+        if (!empty($attributes['classId'])) {
+            $queryClass->whereIn('Id', explode(',', $attributes['classId']));
+        }
+
+        $class = $queryClass->get();
+
+        $class->map(function ($item) use ($attributes) {
+            $student = Student::where('ClassId', $item->Id)->get();
+
+            $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+                $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
+            })->count();
+
+            $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
+            $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
+
+            $item->report = [
+                "totalStudent" => count($student),
+                "haveIn" => $attendanceHaveIn,
+                "annualLeave" => $attendanceAnnualLeave,
+                "unpaidLeave" => $attendanceUnpaidLeave
+            ];
+        });
+
+        $result = $class->toArray();
+
+        foreach ($result as $key => $value) {
+            foreach ($value as $keyItem => $item) {
+
+                $newkeyItem = dashesToCamelCase($keyItem, false);
+
+                if ($keyItem != $newkeyItem) {
+                    $value[$newkeyItem] = $value[$keyItem];
+
+                    unset($value[$keyItem]);
+                }
+            }
+            $result[$key] = $value;
+        }
+
+        return [
+            'data' => $result
         ];
     }
 }
