@@ -53,6 +53,12 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
     public function filterBusinessCard(array $attributes)
     {
 
+
+        if (!empty($attributes['absentTypeId'])) {
+            $this->model = $this->model->where('AbsentTypeId', $attributes['absentTypeId']);
+        }
+
+
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
