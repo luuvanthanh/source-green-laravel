@@ -62,9 +62,9 @@ class AttendanceCreateRequest extends FormRequest
                             }
                         }
 
-                        if ($status == Attendance::STATUS['ANNUAL_LEAVE']) {
-                            return $fail('Học sinh xin nghỉ phép không được cập nhật dữ liệu!');
-                        }
+                        // if ($status == Attendance::STATUS['ANNUAL_LEAVE']) {
+                        //     return $fail('Học sinh xin nghỉ phép không được cập nhật dữ liệu!');
+                        // }
 
                         if ($status == Attendance::STATUS['HAVE_OUT']) {
                             return $fail('Học sinh đã ra về không được cập nhật dữ liệu!');
