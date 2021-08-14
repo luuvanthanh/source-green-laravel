@@ -2,10 +2,12 @@
 
 namespace GGPHP\YoungAttendance\Absent\Providers;
 
+use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentConfigTimeRepository;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentReasonRepository;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentTypeRepository;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\RevokeShiftRepository;
+use GGPHP\YoungAttendance\Absent\Repositories\Eloquent\AbsentConfigTimeRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Repositories\Eloquent\AbsentReasonRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Repositories\Eloquent\AbsentRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Repositories\Eloquent\AbsentTypeRepositoryEloquent;
@@ -22,7 +24,8 @@ class AbsentServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/config.php', 'constants-absent'
+            __DIR__ . '/../../config/config.php',
+            'constants-absent'
         );
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang-absent');
         if ($this->app->runningInConsole()) {
@@ -41,5 +44,6 @@ class AbsentServiceProvider extends ServiceProvider
         $this->app->bind(AbsentTypeRepository::class, AbsentTypeRepositoryEloquent::class);
         $this->app->bind(AbsentReasonRepository::class, AbsentReasonRepositoryEloquent::class);
         $this->app->bind(RevokeShiftRepository::class, RevokeShiftRepositoryEloquent::class);
+        $this->app->bind(AbsentConfigTimeRepository::class, AbsentConfigTimeRepositoryEloquent::class);
     }
 }

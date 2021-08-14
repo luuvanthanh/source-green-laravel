@@ -33,6 +33,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         'AbsentTypeId',
         'AbsentReasonId',
     ];
+
     /**
      * Specify Model class name
      *
