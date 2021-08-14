@@ -260,10 +260,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['date'])) {
-                $query->where([['StartDate', '>=', $attributes['date']], ['EndDate', '<=', $attributes['date']]]);
+                $query->where([['StartDate', '<=', $attributes['date']], ['EndDate', '>=', $attributes['date']]]);
             }
-            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
 
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
                     ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
