@@ -2,6 +2,7 @@
 
 namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentConfigTimeCreateRequest;
 use GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime;
@@ -78,5 +79,22 @@ class AbsentConfigTimeRepositoryEloquent extends CoreRepositoryEloquent implemen
         $result = AbsentConfigTime::orderBy('From')->get();
 
         return parent::parserResult($result);
+    }
+
+    public function getStartDateByExpectedDate(array $attributes)
+    {
+        $now = Carbon::now()->setTimezone('GMT+7');
+        $absentConfigTime = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $attributes['expectedDate'])->where('To', '>=', $attributes['expectedDate'])->first();
+        $startDate = null;
+
+        if (!is_null($absentConfigTime)) {
+            $startDate = $now->addDays($absentConfigTime->AdvanceNotice - 1);
+        };
+
+        return [
+            "data" => [
+                "startDate" => !is_null($startDate) ? $startDate->format('Y-m-d') : $startDate,
+            ]
+        ];
     }
 }

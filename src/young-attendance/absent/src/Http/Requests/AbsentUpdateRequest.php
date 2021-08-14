@@ -104,16 +104,12 @@ class AbsentUpdateRequest extends FormRequest
 
     private function checkStartDate($value)
     {
-        $startDate = $this->startDate;
-        $expectedDate = request('expectedDate');
+        $startDate = request()->startDate;
+        $expectedDate = request()->expectedDate;
         $advanceNotice = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $expectedDate)->where('To', '>=', $expectedDate)->first();
-        $now = Carbon::now()->addDays($advanceNotice->AdvanceNotice);
+        $now = Carbon::now()->setTimezone('GMT+7')->addDays($advanceNotice->AdvanceNotice);
 
-        if (is_null($advanceNotice)) {
-            return null;
-        }
-
-        if ($startDate >= $now->format('Y-m-d')) {
+        if (is_null($advanceNotice) || $startDate >= $now->format('Y-m-d')) {
             return null;
         }
 

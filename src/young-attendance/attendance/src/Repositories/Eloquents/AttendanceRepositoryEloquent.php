@@ -631,13 +631,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $queryClass->whereIn('Id', explode(',', $attributes['classId']));
         }
 
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $queryClass->whereIn('BranchId', $branchId);
+        }
+
         $class = $queryClass->get();
 
         $class->map(function ($item) use ($attributes) {
             $student = Student::where('ClassId', $item->Id)->get();
 
             $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
-                $query->where('Status', Attendance::STATUS['HAVE_IN'])->orWhere('Status', Attendance::STATUS['HAVE_OUT']);
+                $query->where('Status', Attendance::STATUS['HAVE_IN']);
+            })->count();
+            $attendanceHaveOut = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+                $query->where('Status', Attendance::STATUS['HAVE_OUT']);
             })->count();
 
             $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
@@ -646,6 +654,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $item->report = [
                 "totalStudent" => count($student),
                 "haveIn" => $attendanceHaveIn,
+                "haveOut" => $attendanceHaveOut,
                 "annualLeave" => $attendanceAnnualLeave,
                 "unpaidLeave" => $attendanceUnpaidLeave
             ];
