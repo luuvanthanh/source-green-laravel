@@ -167,6 +167,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('absent-config-times', [
                 'uses' => 'AbsentConfigTimeController@store',
             ]);
+
+            \Route::get('start-date-by-expected-date', [
+                'uses' => 'AbsentConfigTimeController@getStartDateByExpectedDate',
+            ]);
         });
     }
 }

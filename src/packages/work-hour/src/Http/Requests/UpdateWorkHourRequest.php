@@ -4,7 +4,7 @@ namespace GGPHP\WorkHour\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WorkHourUpdateRequest extends FormRequest
+class UpdateWorkHourRequest extends FormRequest
 {
     /**
      * Determine if the employee is authorized to make this request.
@@ -23,7 +23,6 @@ class WorkHourUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-        ];
+        return [];
     }
 }
