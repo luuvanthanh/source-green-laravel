@@ -1,10 +1,10 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 @for $i from 0 through 100 {
   $value: $i * 5;
-  $unit: "";
+  $unit: '';
   @if $i != 0 {
-    $unit: "px";
+    $unit: 'px';
   }
   .max-width-#{$i*5} {
     max-width: #{$value}#{$unit};
@@ -12,9 +12,9 @@
 }
 @for $i from 0 through 100 {
   $value: $i * 5;
-  $unit: "";
+  $unit: '';
   @if $i != 0 {
-    $unit: "px";
+    $unit: 'px';
   }
   .col-fixed-#{$i*5} {
     width: #{$value}#{$unit};
@@ -22,9 +22,9 @@
 }
 @for $i from 0 through 300 {
   $value: $i * 5;
-  $unit: "";
+  $unit: '';
   @if $i != 0 {
-    $unit: "px";
+    $unit: 'px';
   }
   .min-width-#{$i*5} {
     min-width: #{$value}#{$unit};
@@ -95,7 +95,7 @@
 
 .ant-rate-star {
   margin-right: 5px;
-  > div[aria-checked="true"] {
+  > div[aria-checked='true'] {
     .anticon-star {
       color: $background-success;
     }
@@ -244,7 +244,7 @@
     font-weight: bold;
     color: #000000;
   }
-  th.text-primary{
+  th.text-primary {
     color: #0000cc;
     font-weight: bold;
   }
@@ -252,5 +252,28 @@
     color: #ff0000;
     font-weight: bold;
   }
- 
+}
+
+.table-attendances {
+  .ant-table-thead {
+    th {
+      background-color: #3b5cad;
+      color: $text-white;
+      border-right: 1px solid #e1e5ef !important;
+      &:first-child {
+        border-top-left-radius: 10px !important;
+      }
+      &:last-child {
+        border-top-right-radius: 10px !important;
+      }
+    }
+  }
+  th,
+  td {
+    padding: 9px 8px !important;
+    font-size: 13px;
+  }
+  .ant-table-measure-row {
+    display: none;
+  }
 }
