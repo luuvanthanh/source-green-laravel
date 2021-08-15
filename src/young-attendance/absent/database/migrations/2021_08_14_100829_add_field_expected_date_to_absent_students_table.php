@@ -13,7 +13,7 @@ class AddFieldExpectedDateToAbsentStudentsTable extends Migration
      */
     public function up()
     {
-        Schema::table('AbsentStudsents', function (Blueprint $table) {
+        Schema::table('AbsentStudents', function (Blueprint $table) {
             $table->integer('ExpectedDate')->nullable();
         });
     }
