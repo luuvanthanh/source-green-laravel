@@ -329,6 +329,12 @@ export async function getLeftMenuSchedules() {
                 '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
               ],
             },
+            {
+              title: 'Thời gian xin phép',
+              key: 'AbsentTimeline',
+              permission: [permissions.DD],
+              url: ['/diem-danh/cau-hinh/thoi-gian-xin-phep'],
+            },
           ],
         },
       ],
@@ -336,6 +342,7 @@ export async function getLeftMenuSchedules() {
     {
       title: 'Lịch sử điểm danh',
       key: 'attendanceLogs',
+      icon: 'icon icon-clock',
       url: ['/diem-danh/lich-su-diem-danh'],
       permission: [permissions.DD],
       pro: true,

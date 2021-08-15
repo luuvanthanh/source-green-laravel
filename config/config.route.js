@@ -593,6 +593,12 @@ export default [
             authority: [permissions.DD],
           },
           {
+            path: '/diem-danh/cau-hinh/thoi-gian-xin-phep',
+            component: './attendance/timeline',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.DD],
+          },
+          {
             path: '/diem-danh/don-xin-phep-cho-be',
             component: './attendance/absents/absent-students',
             wrappers: ['@/wrappers/auth'],
