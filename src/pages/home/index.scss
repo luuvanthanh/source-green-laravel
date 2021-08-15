@@ -479,3 +479,47 @@
     border-color: $border-success;
   }
 }
+
+.modal-container {
+  .info-contaner {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    .icon {
+      background: linear-gradient(0deg, #f1f3f8, #f1f3f8);
+      height: 40px;
+      width: 40px;
+      border-radius: 100%;
+      border-radius: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .label {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 18px;
+      color: #6d7177;
+      margin-bottom: 0;
+    }
+    .title {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      color: #1f1f1f;
+      margin-bottom: 0;
+    }
+  }
+  .tabs {
+    border-top: 1px solid #eaeaea;
+    padding: 0 20px;
+    :global(.ant-tabs-nav) {
+      &::before {
+        border-bottom: unset;
+      }
+    }
+  }
+  .list-container {
+    padding: 0 20px;
+  }
+}

@@ -58,7 +58,7 @@ request.interceptors.response.use(
     }
     const dataRoot = await response.clone().json();
     if (variables.method.includes(optionsRoot?.method?.toLowerCase())) {
-      if (response.status >= 400 && response.status <= 500) {
+      if (response.status >= 400 && response.status <= 500 && dataRoot.error !== 'invalid_grant') {
         notification.error({
           message: 'Thông báo',
           description:

@@ -105,6 +105,32 @@ export function getAttendanceByStatus(params = {}) {
         isUTC: false,
       }),
       include: Helper.convertIncludes([
+        'parent',
+        'class',
+        'absent',
+        'attendance',
+        'timekeepßing',
+        'classStudent.class',
+        'classStudent.class.teacher',
+      ]),
+    },
+  });
+}
+
+export function getClassAttendanceSummary(params = {}) {
+  return requestLavarel('/v1/class-attendance-summary', {
+    method: 'GET',
+    params: {
+      ...params,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      include: Helper.convertIncludes([
         'timekeeping',
         'class',
         'attendance',
@@ -114,5 +140,12 @@ export function getAttendanceByStatus(params = {}) {
         'classStudent.class.teacher',
       ]),
     },
+  });
+}
+
+export function getClassDetails(params = {}) {
+  return request(`/classes/${params.id}`, {
+    method: 'GET',
+    params: {},
   });
 }
