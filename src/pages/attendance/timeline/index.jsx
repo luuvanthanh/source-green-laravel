@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, InputNumber } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty } from 'lodash';
@@ -14,9 +14,10 @@ import { variables, Helper } from '@/utils';
 import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/EditableCell';
 import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
+import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
-  const [menuLeftSchedules, loading] = useSelector(({ menu, loading: { effects } }) => [
+  const [{ menuLeftSchedules }, loading] = useSelector(({ menu, loading: { effects } }) => [
     menu,
     effects,
   ]);
@@ -162,27 +163,54 @@ const Index = memo(() => {
         dataIndex: 'fromDate',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
-        type: variables.INPUT_NUMBER,
-        render: (value) => `${value || ''} ngày`,
-        prefix: 'Ngày',
+        type: variables.INPUT_DATE,
+        render: (value) => (
+          <InputNumber
+            className={classnames(
+              'input-number',
+              styles['input-number-container'],
+              styles['input-number-date'],
+            )}
+            value={value}
+            placeholder="Nhập"
+          />
+        ),
       },
       {
         title: 'Đến',
         dataIndex: 'toDate',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
-        type: variables.INPUT_NUMBER,
-        render: (value) => `${value || ''} ngày`,
-        prefix: 'Ngày',
+        type: variables.INPUT_DATE,
+        render: (value) => (
+          <InputNumber
+            className={classnames(
+              'input-number',
+              styles['input-number-container'],
+              styles['input-number-date'],
+            )}
+            value={value}
+            placeholder="Nhập"
+          />
+        ),
       },
       {
         title: 'Thì xin trước',
         dataIndex: 'date',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
-        type: variables.INPUT_NUMBER,
-        render: (value) => `${value || ''} ngày`,
-        prefix: 'Ngày',
+        type: variables.INPUT_DATE,
+        render: (value) => (
+          <InputNumber
+            className={classnames(
+              'input-number',
+              styles['input-number-container'],
+              styles['input-number-date'],
+            )}
+            value={value}
+            placeholder="Nhập"
+          />
+        ),
       },
       {
         key: 'action',
@@ -225,60 +253,57 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Thời gian xin phép" />
-      <Pane style={{ paddingTop: 20 }}>
-        <Breadcrumbs last="Tạo giáo cụ" menu={menuLeftSchedules} />
-        <Pane style={{ padding: 20, paddingTop: 0 }}>
-          <Pane className="row">
-            <Pane className="col-lg-8 offset-lg-2">
-              <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
-                <Pane className="my20 mb0 card">
-                  <Pane className="border-bottom p20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin cấu hình
-                    </Heading>
-                    <TableCus
-                      bordered
-                      className="table-edit table-edit-wrapper mt20"
-                      columns={columnsTable}
-                      components={{
-                        body: {
-                          row: EditableRow,
-                          cell: EditableCell,
-                        },
-                      }}
-                      dataSource={toolDetailSensitives}
-                      pagination={false}
-                      rowKey={(record) => record.id}
-                      scroll={{ x: '100%' }}
-                      footer={() => (
-                        <Button color="success" icon="plus" onClick={onAdd}>
-                          Thêm
-                        </Button>
-                      )}
-                    />
-                  </Pane>
+      <Breadcrumbs menu={menuLeftSchedules} />
+      <Pane style={{ padding: 20, paddingTop: 0 }}>
+        <Pane className="row">
+          <Pane className="col-lg-8 offset-lg-2">
+            <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{}}>
+              <Pane className="my20 mb0 card">
+                <Pane className="border-bottom p20">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin cấu hình
+                  </Heading>
+                  <TableCus
+                    bordered
+                    className="table-edit mt20"
+                    columns={columnsTable}
+                    components={{
+                      body: {
+                        row: EditableRow,
+                        cell: EditableCell,
+                      },
+                    }}
+                    dataSource={toolDetailSensitives}
+                    pagination={false}
+                    rowKey={(record) => record.id}
+                    scroll={{ x: '100%' }}
+                    footer={() => (
+                      <Button color="success" icon="plus" onClick={onAdd}>
+                        Thêm
+                      </Button>
+                    )}
+                  />
                 </Pane>
-                <Pane className="d-flex justify-content-between align-items-center mb20">
-                  {params.id && (
-                    <p className="btn-delete" role="presentation" onClick={remove}>
-                      Xóa
-                    </p>
-                  )}
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    loading={
-                      loading['attendanceTimeline/ADD'] || loading['attendanceTimeline/UPDATE']
-                    }
-                    disabled={!!toolDetailSensitives.find((item) => !item.sensitivePeriodId)}
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
-              </Form>
-            </Pane>
+              </Pane>
+              <Pane className="d-flex justify-content-between align-items-center mb20">
+                {params.id && (
+                  <p className="btn-delete" role="presentation" onClick={remove}>
+                    Xóa
+                  </p>
+                )}
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={
+                    loading['attendanceTimeline/ADD'] || loading['attendanceTimeline/UPDATE']
+                  }
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Form>
           </Pane>
         </Pane>
       </Pane>
