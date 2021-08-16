@@ -1669,6 +1669,12 @@ export default [
             authority: [permissions.YTE],
           },
           {
+            path: '/y-te/theo-doi-uong-thuoc',
+            component: './medical/follow',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
             path: '/y-te/thong-ke',
             component: './medical/items',
             wrappers: ['@/wrappers/auth'],

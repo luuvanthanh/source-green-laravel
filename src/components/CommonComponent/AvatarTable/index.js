@@ -61,7 +61,20 @@ class AvatarTable extends Component {
             `${className ? styles[`${className}`] : ''}`,
           )}
         >
-          <Avatar size={size || 40} shape={shape} icon={<UserOutlined />} />
+          <div className="container-image">
+            <div
+              className="background-avatar"
+              style={{
+                borderRadius: shape === 'circle' ? '50%' : '4px',
+              }}
+            />
+            <Avatar size={size || 40} shape={shape} icon={<UserOutlined />} />
+            {isActive && (
+              <div className={styles.notification}>
+                <span className="icon-checkmark" />
+              </div>
+            )}
+          </div>
           {fullName && description && (
             <div className={styles.info}>
               <p className={styles.title}>{fullName}</p>
@@ -71,11 +84,6 @@ class AvatarTable extends Component {
           {fullName && !description && (
             <div className={styles.info}>
               <p className={styles.name}>{fullName}</p>
-            </div>
-          )}
-          {isActive && (
-            <div className={styles.notification}>
-              <span className="icon-checkmark" />
             </div>
           )}
         </div>

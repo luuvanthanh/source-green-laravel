@@ -1020,6 +1020,10 @@
     width: 200px;
     margin: 6px 0;
   }
+  .item-avatar-signal {
+    width: 50px;
+    margin: 6px 0;
+  }
 }
 
 .modal-detail-container {
@@ -1105,6 +1109,22 @@
       color: #7a7e84 !important;
       padding: 0 !important;
       top: unset !important;
+    }
+  }
+  .list {
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .image-container {
+      display: flex;
+      align-items: center;
+      .thumb {
+        width: 92px;
+        height: 85px;
+        object-fit: cover;
+      }
     }
   }
 }

@@ -709,7 +709,7 @@ export async function getLeftMenuMedical() {
     {
       title: 'Theo dõi uống thuốc',
       key: 'clock',
-      url: ['/y-te/lich-su'],
+      url: ['/y-te/theo-doi-uong-thuoc'],
       icon: 'icon icon-heart',
       permission: [permissions.YTE],
       pro: true,
