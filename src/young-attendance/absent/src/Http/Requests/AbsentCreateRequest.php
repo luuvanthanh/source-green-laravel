@@ -108,12 +108,17 @@ class AbsentCreateRequest extends FormRequest
         $startDate = request()->startDate;
         $expectedDate = request()->expectedDate;
         $advanceNotice = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $expectedDate)->where('To', '>=', $expectedDate)->first();
-        $now = Carbon::now()->setTimezone('GMT+7')->addDays($advanceNotice->AdvanceNotice);
 
-        if (is_null($advanceNotice) || $startDate >= $now->format('Y-m-d')) {
+        if (is_null($advanceNotice)) {
             return null;
-        }
+        } else {
+            $now = Carbon::now()->setTimezone('GMT+7')->addDays($advanceNotice->AdvanceNotice);
 
-        return $advanceNotice->AdvanceNotice;
+            if ($startDate >= $now->format('Y-m-d')) {
+                return null;
+            }
+
+            return $advanceNotice->AdvanceNotice;
+        }
     }
 }
