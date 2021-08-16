@@ -277,3 +277,20 @@
     display: none;
   }
 }
+
+.table-color {
+  thead {
+    .yellow {
+      background-color: #ffe7cb;
+    }
+    .gold {
+      background-color: #fff4cb;
+    }
+    .primary {
+      background-color: #d3e9f2;
+    }
+    .parent {
+      font-family: 'ProximaNovaSemibold';
+    }
+  }
+}

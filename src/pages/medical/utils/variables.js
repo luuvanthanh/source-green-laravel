@@ -26,11 +26,11 @@ export const variables = {
     },
     {
       value: 'BEFORE_SECOND_BREAKFAST',
-      label: 'Trước xế sáng'
+      label: 'Trước xế sáng',
     },
     {
       value: 'AFTER_SECOND_BREAKFAST',
-      label: 'Sau xế sáng'
+      label: 'Sau xế sáng',
     },
     {
       value: 'BEFORE_LUNCH',
@@ -67,8 +67,71 @@ export const variables = {
     BEFORE_SECOND_LUNCH: 'Trước xế trưa',
     AFTER_SECOND_LUNCH: 'Sau xế trưa',
     BEFORE_TEA_TIME: 'Trước xế chiều',
-    AFTER_TEA_TIME: 'Sau xế chiều'
+    AFTER_TEA_TIME: 'Sau xế chiều',
   },
+  TREE_MEDICAL: [
+    {
+      value: 'BREAKFAST',
+      label: 'Sáng',
+      color: 'yellow',
+      children: [
+        {
+          value: 'BEFORE_BREAKFAST',
+          label: 'Trước ăn sáng',
+        },
+        {
+          value: 'AFTER_BREAKFAST',
+          label: 'Sau ăn sáng',
+        },
+        {
+          value: 'BEFORE_SECOND_BREAKFAST',
+          label: 'Trước xế sáng',
+        },
+        {
+          value: 'AFTER_SECOND_BREAKFAST',
+          label: 'Sau xế sáng',
+        },
+      ],
+    },
+    {
+      value: 'LUNCH',
+      label: 'Trưa',
+      color: 'gold',
+      children: [
+        {
+          value: 'BEFORE_LUNCH',
+          label: 'Trước ăn trưa',
+        },
+        {
+          value: 'AFTER_LUNCH',
+          label: 'Sau ăn trưa',
+        },
+        {
+          value: 'BEFORE_SECOND_LUNCH',
+          label: 'Trước xế trưa',
+        },
+        {
+          value: 'AFTER_SECOND_LUNCH',
+          label: 'Sau xế trưa',
+        },
+      ],
+    },
+    {
+      value: 'TEA_TIME',
+      label: 'Chiều',
+      color: 'primary',
+      children: [
+        {
+          value: 'BEFORE_TEA_TIME',
+          label: 'Trước xế chiều',
+        },
+        {
+          value: 'AFTER_TEA_TIME',
+          label: 'Sau xế chiều',
+        },
+      ],
+    },
+  ],
   STATUS_TABS: [
     {
       id: 'PENDING',
