@@ -741,7 +741,7 @@
     position: relative;
     margin-top: 32px;
     margin-bottom: 15px;
-    border: 1px solid  $gray-darken;
+    border: 1px solid $gray-darken;
     border-radius: 50%;
     padding: 7px;
     color: $gray-darken;
@@ -1004,11 +1004,107 @@
 // CARD ITEM
 .card-item {
   padding: 20px;
-  &:not(:first-child){
-    border-top: 1px solid #EAEAEA;
+  &:not(:first-child) {
+    border-top: 1px solid #eaeaea;
   }
   .label {
     white-space: nowrap;
   }
 }
 // CARD ITEM
+
+.list-avatar {
+  display: flex;
+  flex-wrap: wrap;
+  .item-avatar {
+    width: 200px;
+    margin: 6px 0;
+  }
+}
+
+.modal-detail-container {
+  :global(.ant-modal-close-x) {
+    position: absolute;
+    right: -30px;
+    top: -20px;
+    width: 30px;
+    height: 30px;
+    background-color: $background-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+  }
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+  }
+  :global(.ant-modal-body) {
+    padding: 0;
+    border-radius: 12px;
+  }
+  .modal-header {
+    border-bottom: 1px solid #dfe6ea;
+    padding: 20px;
+  }
+  .modal-footer {
+    border-top: 1px solid #dfe6ea;
+    padding: 20px;
+  }
+  .modal-content {
+    padding: 20px;
+    .title {
+      font-weight: bold;
+      font-size: 13px;
+      line-height: 20px;
+      color: $text-success;
+      font-family: 'ProximaNovaSemibold';
+    }
+    .label {
+      font-family: 'ProximaNovaSemibold';
+      font-size: 13px;
+      line-height: 18px;
+      color: #6d7177;
+      margin-bottom: 0;
+    }
+    .norm {
+      font-family: 'ProximaNovaSemibold';
+      font-size: 14px;
+      line-height: 20px;
+      color: #1f1f1f;
+      margin-bottom: 0;
+    }
+  }
+  .timeline {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #1f1f1f;
+    display: flex;
+    align-items: center;
+    :global(.icon-checkmark) {
+      color: $text-success;
+      padding-right: 10px;
+    }
+  }
+  .collapse-container {
+    :global(.ant-collapse-header) {
+      display: flex;
+      align-items: center;
+      background-color: $background-primary;
+      color: $text-white !important;
+      border-radius: 2px;
+    }
+    :global(.ant-collapse-arrow) {
+      width: 24px;
+      height: 24px;
+      background-color: $background-white;
+      border-radius: 100%;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      color: #7a7e84 !important;
+      padding: 0 !important;
+      top: unset !important;
+    }
+  }
+}

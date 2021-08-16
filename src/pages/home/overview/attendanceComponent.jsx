@@ -191,9 +191,11 @@ const Index = memo(({ classId, branchId }) => {
             <div className="d-flex align-items-center">
               {classDetails.classTeachers && !isEmpty(classDetails.classTeachers) && (
                 <AvatarTable
-                  fileImage={Helper.getPathAvatarJson(head(classDetails.classTeachers)?.fileImage)}
-                  fullName={head(classDetails.classTeachers)?.fullName}
-                  description={head(classDetails.classTeachers)?.position?.name}
+                  fileImage={Helper.getPathAvatarJson(
+                    head(classDetails.classTeachers)?.employee?.fileImage,
+                  )}
+                  fullName="Giáo viên chủ nhiệm"
+                  description={head(classDetails.classTeachers)?.employee?.fullName}
                 />
               )}
             </div>

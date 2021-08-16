@@ -2,15 +2,15 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, InputNumber } from 'antd';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useParams } from 'umi';
-import { head, isEmpty } from 'lodash';
+import { useParams } from 'umi';
+import { head, isEmpty, omit } from 'lodash';
 import classnames from 'classnames';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import { variables, Helper } from '@/utils';
+import { variables } from '@/utils';
 import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/EditableCell';
 import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,35 +23,33 @@ const Index = memo(() => {
   ]);
   const dispatch = useDispatch();
   const params = useParams();
-  const [files, setFiles] = useState([]);
-  const [toolDetailSensitives, setToolDetailSensitives] = useState([
+  const [dataSource, setDataSource] = useState([
     {
       id: uuidv4(),
+      isAdd: true,
     },
   ]);
+  const [deleteRows, setDeleteRows] = useState([]);
 
-  const history = useHistory();
   const formRef = useRef();
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) =>
-    !!mounted?.current && setFunction && setFunction(value);
 
-  const onFinish = (values) => {
+  const onFinish = () => {
+    const createRows = dataSource
+      .filter((item) => item.isAdd)
+      .map((item) => ({ ...omit(item, 'isAdd') }));
+    const updateRows = dataSource
+      .filter((item) => !item.isAdd)
+      .map((item) => ({ ...omit(item, 'isAdd') }));
+    const payload = {
+      createRows,
+      updateRows,
+      deleteRows,
+    };
     dispatch({
-      type: params.id ? 'attendanceTimeline/UPDATE' : 'attendanceTimeline/ADD',
-      payload: {
-        ...values,
-        ...params,
-        fileUrl: JSON.stringify(files),
-        toolDetailClassTypes: values.toolDetailClassTypes.map((item) => ({
-          classTypeId: item,
-        })),
-        toolDetailSensitives,
-      },
+      type: 'absentConfigTimes/ADD',
+      payload,
       callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
@@ -68,52 +66,22 @@ const Index = memo(() => {
     });
   };
 
-  const remove = () => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'attendanceTimeline/REMOVE',
-          payload: {
-            ...params,
-          },
-          callback: (response) => {
-            if (response) {
-              history.goBack();
-            }
-          },
-        });
+  useEffect(() => {
+    dispatch({
+      type: 'absentConfigTimes/GET_DATA',
+      payload: {
+        ...params,
+      },
+      callback: (response) => {
+        if (response) {
+          setDataSource(
+            response?.parsePayload.map((item) => ({
+              ...item,
+            })),
+          );
+        }
       },
     });
-  };
-
-  useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'attendanceTimeline/GET_DATA',
-        payload: {
-          ...params,
-        },
-        callback: (response) => {
-          if (Helper.isJSON(response?.fileUrl)) {
-            mountedSet(setFiles, JSON.parse(response?.fileUrl));
-          }
-          if (response) {
-            formRef.current.setFieldsValue({
-              ...response,
-              toolDetailClassTypes: response?.toolDetailClassTypes?.map(
-                (item) => item?.classType?.id,
-              ),
-            });
-            setToolDetailSensitives(
-              response?.toolDetailSensitives.map((item) => ({
-                ...item,
-                sensitivePeriodId: item?.sensitivePeriod?.id,
-              })),
-            );
-          }
-        },
-      });
-    }
   }, [params.id]);
 
   useEffect(() => {
@@ -121,28 +89,16 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
-  useEffect(() => {
-    dispatch({
-      type: 'attendanceTimeline/GET_CLASS_TYPES',
-      payload: {},
-    });
-    dispatch({
-      type: 'attendanceTimeline/GET_SENSITIVE_PERIODS',
-      payload: {},
-    });
-  }, []);
-
   const handleSave = (record) => {
-    setToolDetailSensitives((prevState) =>
-      prevState.map((item) => (item.id === record.id ? record : item)),
-    );
+    setDataSource((prevState) => prevState.map((item) => (item.id === record.id ? record : item)));
   };
 
   const onAdd = async () => {
     const objects = {
       id: uuidv4(),
+      isAdd: true,
     };
-    await setToolDetailSensitives((prevState) => [...prevState, objects]);
+    await setDataSource((prevState) => [...prevState, objects]);
 
     const itemsRow = document.querySelectorAll(
       `.ant-table-tbody tr[data-row-key='${objects.id}'] .editable-cell-value-wrap`,
@@ -153,14 +109,15 @@ const Index = memo(() => {
   };
 
   const onRemove = (record) => {
-    setToolDetailSensitives((prevState) => prevState.filter((item) => item.id !== record.id));
+    setDataSource((prevState) => prevState.filter((item) => item.id !== record.id));
+    setDeleteRows((prevState) => [...prevState, record.id]);
   };
 
   const header = () => {
     const columns = [
       {
         title: 'Nghỉ từ',
-        dataIndex: 'fromDate',
+        dataIndex: 'from',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
         type: variables.INPUT_DATE,
@@ -178,7 +135,7 @@ const Index = memo(() => {
       },
       {
         title: 'Đến',
-        dataIndex: 'toDate',
+        dataIndex: 'to',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
         type: variables.INPUT_DATE,
@@ -196,7 +153,7 @@ const Index = memo(() => {
       },
       {
         title: 'Thì xin trước',
-        dataIndex: 'date',
+        dataIndex: 'advanceNotice',
         editable: true,
         className: classnames('min-width-130', 'max-width-130'),
         type: variables.INPUT_DATE,
@@ -273,7 +230,7 @@ const Index = memo(() => {
                         cell: EditableCell,
                       },
                     }}
-                    dataSource={toolDetailSensitives}
+                    dataSource={dataSource}
                     pagination={false}
                     rowKey={(record) => record.id}
                     scroll={{ x: '100%' }}
@@ -286,19 +243,12 @@ const Index = memo(() => {
                 </Pane>
               </Pane>
               <Pane className="d-flex justify-content-between align-items-center mb20">
-                {params.id && (
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Xóa
-                  </p>
-                )}
                 <Button
                   className="ml-auto px25"
                   color="success"
                   htmlType="submit"
                   size="large"
-                  loading={
-                    loading['attendanceTimeline/ADD'] || loading['attendanceTimeline/UPDATE']
-                  }
+                  loading={loading['absentConfigTimes/ADD'] || loading['absentConfigTimes/UPDATE']}
                 >
                   Lưu
                 </Button>
