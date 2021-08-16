@@ -22,6 +22,7 @@ export const variables = {
   TYPE: {
     EMPLOYEE: 'EMPLOYEE',
     PARENT: 'PARENT',
+    BRANCH: 'BRANCH'
   },
   ACTION_TYPE: {
     POST: 'gửi thông báo',
