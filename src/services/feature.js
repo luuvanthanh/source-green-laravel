@@ -141,7 +141,7 @@ export const feature = {
     {
       title: 'Phát triển thể chất',
       src: '/images/home/physical.svg',
-      animation: animationImage.setting,
+      animation: animationImage.physical,
       url: '/phat-trien-the-chat',
       permission: [],
     },
