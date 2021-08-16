@@ -24,15 +24,15 @@ class AbsentConfigTimeCreateOrUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'create_rows' => 'array',
-            'update_rows' => 'array',
-            'delete_rows' => 'array',
-            'update_rows.*.from' => 'required|integer|gt:0',
-            'update_rows.*.to' => 'required|integer|gt:0|gt:update_rows.*.from',
-            'update_rows.*.advanceNotice' => 'required|integer|gt:0',
-            'create_rows.*.from' => 'required|integer|gt:0',
-            'create_rows.*.to' => 'required|integer|gt:0|gt:create_rows.*.from',
-            'create_rows.*.advanceNotice' => 'required|integer|gt:0',
+            'createRows' => 'array',
+            'updateRows' => 'array',
+            'deleteRows' => 'array',
+            'updateRows.*.from' => 'required|integer|gt:0',
+            'updateRows.*.to' => 'required|integer|gt:0|gt:updateRows.*.from',
+            'updateRows.*.advanceNotice' => 'required|integer|gt:0',
+            'createRows.*.from' => 'required|integer|gt:0',
+            'createRows.*.to' => 'required|integer|gt:0|gt:createRows.*.from',
+            'createRows.*.advanceNotice' => 'required|integer|gt:0',
         ];
     }
 }
