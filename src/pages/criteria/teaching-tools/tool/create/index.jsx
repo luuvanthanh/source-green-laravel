@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Upload, message } from 'antd';
+import { Form, Upload, message, Input } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import { head, isEmpty, last } from 'lodash';
@@ -17,6 +17,7 @@ import { CloudUploadOutlined } from '@ant-design/icons';
 import { EditableCell, EditableRow } from '@/components/CommonComponent/Table/EditableCell';
 import TableCus from '@/components/CommonComponent/Table';
 import { v4 as uuidv4 } from 'uuid';
+import Select from '@/components/CommonComponent/Select';
 
 const Index = memo(() => {
   const [
@@ -208,10 +209,14 @@ const Index = memo(() => {
         editable: true,
         type: variables.SELECT,
         dataSelect: sensitivePeriods.map((item) => ({ value: item.id, label: item.name })),
-        render: (value) => {
-          const sensitivePeriod = sensitivePeriods?.find((item) => item.id === value);
-          return sensitivePeriod?.name;
-        },
+        render: (value) => (
+          <Select
+            value={value}
+            dataSet={sensitivePeriods}
+            style={{ width: '100%' }}
+            placeholder="Chọn"
+          />
+        ),
       },
       {
         title: 'Diễn giải',
@@ -221,6 +226,7 @@ const Index = memo(() => {
         width: 200,
         editable: true,
         type: variables.INPUT,
+        render: (value) => <Input value={value} placeholder="Nhập" />,
       },
       {
         title: 'Tham gia phụ huynh',
@@ -230,6 +236,7 @@ const Index = memo(() => {
         width: 200,
         editable: true,
         type: variables.INPUT,
+        render: (value) => <Input value={value} placeholder="Nhập" />,
       },
       {
         key: 'action',
@@ -357,7 +364,7 @@ const Index = memo(() => {
                 </Heading>
                 <TableCus
                   bordered
-                  className="table-edit table-edit-wrapper mt20"
+                  className="table-edit mt20"
                   columns={columnsTable}
                   components={{
                     body: {

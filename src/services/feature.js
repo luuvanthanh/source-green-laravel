@@ -57,7 +57,7 @@ export const feature = {
       title: 'Chương trình học',
       src: '/images/home/spreadsheet.svg',
       animation: animationImage.programStudy,
-      url: '/chuong-trinh-hoc/danh-gia-hoc-tap',
+      url: '/chuong-trinh-hoc/cau-hinh/goc-giao-cu',
       permission: [permissions.CTH],
     },
     {
