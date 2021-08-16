@@ -699,26 +699,26 @@ export async function getLeftMenuAllocation() {
 export async function getLeftMenuMedical() {
   return [
     {
-      title: 'Thống kê',
+      title: 'Danh sách nhận thuốc',
       key: 'children',
-      url: ['/y-te/thong-ke', '/y-te/thong-ke/tao-moi', '/y-te/thong-ke/:id/chi-tiet'],
+      url: ['/y-te/danh-sach-nhan-thuoc'],
       icon: 'icon icon-checkmark',
+      permission: [permissions.YTE],
+      pro: true,
+    },
+    {
+      title: 'Theo dõi uống thuốc',
+      key: 'clock',
+      url: ['/y-te/lich-su'],
+      icon: 'icon icon-heart',
       permission: [permissions.YTE],
       pro: true,
     },
     {
       title: 'Lịch sử',
-      key: 'clock',
-      url: ['/y-te/lich-su'],
-      icon: 'icon icon-alarm',
-      permission: [permissions.YTE],
-      pro: true,
-    },
-    {
-      title: 'Sổ theo dõi',
       key: 'logbook',
       url: ['/y-te/so-theo-doi'],
-      icon: 'icon icon-checkmark',
+      icon: 'icon icon-notification',
       permission: [permissions.YTE],
       pro: true,
     },

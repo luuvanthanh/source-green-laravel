@@ -12,8 +12,8 @@ class Overview extends PureComponent {
       <Scrollbars autoHeight autoHeightMax="100%" autoHeightMin={window.innerHeight - 230}>
         <div className="d-flex my30">
           <AttendanceComponent {...this.props} />
-          <NoteComponent {...this.props} />
           <MecicalComponent {...this.props} />
+          <NoteComponent {...this.props} />
           <BusComponent {...this.props} />
         </div>
       </Scrollbars>

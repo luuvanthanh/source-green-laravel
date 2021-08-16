@@ -594,7 +594,7 @@ export default [
           },
           {
             path: '/diem-danh/cau-hinh/thoi-gian-xin-phep',
-            component: './attendance/timeline',
+            component: './attendance/absent-config-times',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.DD],
           },
@@ -1661,6 +1661,12 @@ export default [
           {
             path: '/y-te',
             redirect: '/y-te/thong-ke',
+          },
+          {
+            path: '/y-te/danh-sach-nhan-thuoc',
+            component: './medical/received',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
           },
           {
             path: '/y-te/thong-ke',
