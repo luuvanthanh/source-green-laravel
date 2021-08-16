@@ -58,7 +58,7 @@ class AbsentConfigTimeRepositoryEloquent extends CoreRepositoryEloquent implemen
     public function createOrUpdate(array $attributes)
     {
         if (!empty($attributes['deleteRows'])) {
-            AbsentConfigTime::whereIn('id', $attributes['deleteRows'])->delete();
+            AbsentConfigTime::whereIn('Id', $attributes['deleteRows'])->delete();
         }
 
         if (!empty($attributes['updateRows'])) {
