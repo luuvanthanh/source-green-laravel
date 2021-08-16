@@ -71,7 +71,7 @@ export const feature = {
       title: 'Y tế',
       src: '/images/home/balloons.svg',
       animation: animationImage.medical,
-      url: '/y-te',
+      url: '/y-te/danh-sach-nhan-thuoc',
       permission: [permissions.YTE],
     },
     {

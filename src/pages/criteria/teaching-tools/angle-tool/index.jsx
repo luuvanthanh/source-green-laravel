@@ -52,7 +52,7 @@ const Index = memo(() => {
       key: 'description',
       align: 'center',
       className: 'min-width-100',
-      render: (record) => <Text size="normal">{size(record.toolDetails)}</Text>,
+      render: (record) => <Text size="normal">{size(record.toolDetailGroups)}</Text>,
     },
     {
       key: 'action',
