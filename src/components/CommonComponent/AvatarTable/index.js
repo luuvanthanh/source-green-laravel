@@ -104,7 +104,22 @@ class AvatarTable extends Component {
         </div>
       );
     }
-    return <Avatar size={size || 40} shape={shape} icon={<UserOutlined />} />;
+    return (
+      <div className="container-image">
+        <div
+          className="background-avatar"
+          style={{
+            borderRadius: shape === 'circle' ? '50%' : '4px',
+          }}
+        />
+        <Avatar size={size || 40} shape={shape} icon={<UserOutlined />} />
+        {isActive && (
+          <div className={styles.notification}>
+            <span className="icon-checkmark" />
+          </div>
+        )}
+      </div>
+    );
   }
 }
 
