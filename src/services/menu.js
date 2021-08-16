@@ -717,7 +717,7 @@ export async function getLeftMenuMedical() {
     {
       title: 'Lịch sử',
       key: 'logbook',
-      url: ['/y-te/so-theo-doi'],
+      url: ['/y-te/lich-su'],
       icon: 'icon icon-notification',
       permission: [permissions.YTE],
       pro: true,
