@@ -20,11 +20,8 @@ const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const mounted = useRef(false);
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
   const formRefModal = useRef();
 
   const dispatch = useDispatch();
@@ -38,7 +35,6 @@ const Index = memo(() => {
   } = useRouteMatch();
 
   const [visible, setVisible] = useState(false);
-  const [setContractDetails] = useState({});
   const [parameterValuesDetails, setParameterValuesDetails] = useState([]);
   const [details, setDetails] = useState({});
 
@@ -51,7 +47,6 @@ const Index = memo(() => {
 
   const changeContract = (value) => {
     const currentType = find(contractTypes, { id: value });
-    mountedSet(setContractDetails, currentType || {});
     mountedSet(
       setParameterValuesDetails,
       currentType.parameterValues.map((item, index) => ({ index, ...item })) || {},
@@ -239,7 +234,9 @@ const Index = memo(() => {
         key: 'salary',
         className: 'min-width-150',
         render: (record) => {
-          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG_CO_BAN');
+          const parameterValues = record?.parameterValues?.find(
+            (item) => item.code === 'LUONG_CO_BAN',
+          );
           return Helper.getPrice(parameterValues?.pivot?.value);
         },
       },
@@ -275,11 +272,8 @@ const Index = memo(() => {
         key: 'status',
         width: 150,
         className: 'min-width-150',
-        render: record =>
-          Helper.getStatusContracts(
-            moment(record?.contractFrom),
-            moment(record?.contractTo),
-          ),
+        render: (record) =>
+          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
       },
       {
         title: 'Thao tác',
@@ -341,7 +335,6 @@ const Index = memo(() => {
       callback: (res, err) => {
         if (res) {
           formValues?.current?.resetFields();
-          mountedSet(setContractDetails, {});
           mountedSet(setVisible, false);
           fetchProbationaryContracts();
           mountedSet(setDetails, {});

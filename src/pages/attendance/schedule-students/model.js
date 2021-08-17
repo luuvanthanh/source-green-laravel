@@ -1,4 +1,5 @@
 import * as categories from '@/services/categories';
+import { Helper } from '@/utils';
 import * as services from './services';
 
 export default {
@@ -21,7 +22,10 @@ export default {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
+      data: payload.parsePayload.map((item) => ({
+        ...item,
+        absent: item?.absent ? Helper.getArrayHolidays(item?.absent) : [],
+      })),
       pagination: payload.pagination,
       error: {
         isError: false,

@@ -264,7 +264,8 @@ class Index extends PureComponent {
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
-      }), () => {
+      }),
+      () => {
         if (type === 'MONTH') {
           this.formRef?.current?.setFieldsValue({ month: moment(startDate) });
         } else {
@@ -274,7 +275,7 @@ class Index extends PureComponent {
         }
 
         this.debouncedLoadData();
-      }
+      },
     );
   };
 
@@ -303,9 +304,10 @@ class Index extends PureComponent {
           page: variables.PAGINATION.PAGE,
           limit: variables.PAGINATION.PAGE_SIZE,
         },
-      }), () => {
+      }),
+      () => {
         this.debouncedLoadData();
-      }
+      },
     );
   };
 
@@ -453,6 +455,28 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
+    const absent = user?.absent?.find(
+      (item) =>
+        Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
+        Helper.getDate(dayOfWeek, variables.DATE_FORMAT.DATE_AFTER),
+    );
+    if (absent) {
+      return (
+        <div
+          className={classnames(
+            stylesChildren['cell-content'],
+            stylesChildren['cell-content'],
+            stylesChildren['cell-content-code'],
+            stylesChildren['cell-content-absent'],
+            {
+              [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+            },
+          )}
+        >
+          P
+        </div>
+      );
+    }
     if (!isEmpty(record)) {
       let dataRRule = [];
       record.forEach((item) => {
@@ -789,7 +813,10 @@ class Index extends PureComponent {
                 type: search.type || 'DATE',
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                rageDate: search?.type === 'DATE' ? [moment(search.startDate), moment(search.endDate)] : null,
+                rageDate:
+                  search?.type === 'DATE'
+                    ? [moment(search.startDate), moment(search.endDate)]
+                    : null,
                 month: search?.type === 'MONTH' ? moment(search.startDate) : null,
               }}
               layout="vertical"

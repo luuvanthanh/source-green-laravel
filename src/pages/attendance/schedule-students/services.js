@@ -29,6 +29,7 @@ export function get(data = {}) {
       }),
       fullName: data.fullName,
       include: Helper.convertIncludes([
+        'absent',
         'schedules.shift',
         'schedules.scheduleRepeat',
         'schedules.scheduleException',
