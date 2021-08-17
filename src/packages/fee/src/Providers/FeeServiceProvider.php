@@ -2,6 +2,7 @@
 
 namespace GGPHP\Fee\Providers;
 
+use GGPHP\Fee\Repositories\Contracts\ChangeParameterDetailRepository;
 use GGPHP\Fee\Repositories\Contracts\ChargeOldStudentRepository;
 use GGPHP\Fee\Repositories\Contracts\ChargeStudentRepository;
 use GGPHP\Fee\Repositories\Contracts\ClassTypeRepository;
@@ -12,6 +13,7 @@ use GGPHP\Fee\Repositories\Contracts\PotentialStudentRepository;
 use GGPHP\Fee\Repositories\Contracts\SchoolYearRepository;
 use GGPHP\Fee\Repositories\Contracts\StudentObjectRepository;
 use GGPHP\Fee\Repositories\Contracts\TuitionRepository;
+use GGPHP\Fee\Repositories\Eloquent\ChangeParameterDetailRepositoryEloquent;
 use GGPHP\Fee\Repositories\Eloquent\ChargeOldStudentRepositoryEloquent;
 use GGPHP\Fee\Repositories\Eloquent\ChargeStudentRepositoryEloquent;
 use GGPHP\Fee\Repositories\Eloquent\ClassTypeRepositoryEloquent;
@@ -55,5 +57,6 @@ class FeeServiceProvider extends ServiceProvider
         $this->app->bind(ChargeOldStudentRepository::class, ChargeOldStudentRepositoryEloquent::class);
         $this->app->bind(PotentialStudentRepository::class, PotentialStudentRepositoryEloquent::class);
         $this->app->bind(TuitionRepository::class, TuitionRepositoryEloquent::class);
+        $this->app->bind(ChangeParameterDetailRepository::class, ChangeParameterDetailRepositoryEloquent::class);
     }
 }
