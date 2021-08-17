@@ -639,7 +639,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
         $class = $queryClass->get();
 
         $class->map(function ($item) use ($attributes) {
-            $student = Student::where('ClassId', $item->Id)->get();
+            $student = Student::where('ClassId', $item->Id)->where('Status', '!=', Student::STORE)->get();
 
             $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
                 $query->where('Status', Attendance::STATUS['HAVE_IN']);
