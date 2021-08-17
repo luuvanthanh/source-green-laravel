@@ -636,7 +636,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $queryClass->whereIn('BranchId', $branchId);
         }
 
-        $class = $queryClass->get();
+        $class = $queryClass->where('IsDeleted', false)->get();
 
         $class->map(function ($item) use ($attributes) {
             $student = Student::where('ClassId', $item->Id)->where('Status', '!=', Student::STORE)->get();
