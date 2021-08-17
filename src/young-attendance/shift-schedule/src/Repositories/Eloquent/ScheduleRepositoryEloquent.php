@@ -170,7 +170,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                 if (!empty($dateException)) {
                     ScheduleExceptionService::add($value, $dateException);
                 }
-
             }
         }
 
@@ -193,6 +192,11 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             }]);
 
+            $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            }]);
         }
 
         if (!empty($attributes['fullName'])) {
@@ -457,7 +461,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             default:
                 break;
         }
-
     }
 
     /**
