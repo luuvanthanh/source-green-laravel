@@ -43,6 +43,7 @@ const Index = memo(() => {
   const [content, setContent] = useState('');
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [isAllParents, setIsAllParents] = useState(false);
+  const [isAllBranch, setIsAllBranch] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -254,6 +255,8 @@ const Index = memo(() => {
   const changeAll = (type, event) => {
     if (type === variablesModules.TYPE.EMPLOYEE) {
       mountedSet(setIsAllEmployees, event.target.checked);
+    } else if (type === variablesModules.TYPE.BRANCH) {
+      mountedSet(setIsAllBranch, event.target.checked);
     } else {
       mountedSet(setIsAllParents, event.target.checked);
     }
@@ -265,10 +268,11 @@ const Index = memo(() => {
       id: params.id,
       content,
       sentDate: moment(),
-      isAllEmployees,
+      isAllEmployees: isAllBranch || isAllEmployees,
       isAllParents,
+      branchId: isAllBranch ? null : values.branchId,
       employeeNews:
-        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
+        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees && !isAllBranch
           ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
           : [],
       parentNews:
@@ -330,8 +334,12 @@ const Index = memo(() => {
                 };
               }),
             );
-            mountedSet(setIsAllEmployees, response.isAllEmployees);
+            mountedSet(
+              setIsAllEmployees,
+              response.isAllEmployees && !response.branch ? false : response.isAllParents,
+            );
             mountedSet(setIsAllParents, response.isAllParents);
+            mountedSet(setIsAllBranch, response.isAllEmployees && !response.branch);
             mountedSet(
               setEmployees,
               employees.map((item) => {
@@ -380,6 +388,16 @@ const Index = memo(() => {
 
               {type === variablesModules.TYPE.EMPLOYEE && (
                 <>
+                  <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
+                    <FormItemAntd className="mb5">
+                      <Checkbox
+                        checked={isAllBranch}
+                        onChange={(event) => changeAll(variablesModules.TYPE.BRANCH, event)}
+                      >
+                        Tất cả chi nhánh
+                      </Checkbox>
+                    </FormItemAntd>
+                  </Pane>
                   <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                     <Pane className="row">
                       <Pane className="col-lg-6">
@@ -412,9 +430,9 @@ const Index = memo(() => {
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
-                  {!isAllEmployees && (
+                  {!isAllEmployees && !isAllBranch && (
                     <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                      <Scrollbars autoHeight autoHeightMax="calc(40vh)">
                         <InfiniteScroll
                           hasMore={!searchEmployee.loading && searchEmployee.hasMore}
                           initialLoad={searchEmployee.loading}
@@ -450,7 +468,7 @@ const Index = memo(() => {
                   )}
 
                   <Pane className="p20">
-                    {!isAllEmployees && (
+                    {!isAllEmployees && !isAllBranch && (
                       <Text color="dark" size="normal">
                         Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
                       </Text>
@@ -581,7 +599,8 @@ const Index = memo(() => {
                     !employees.find((item) => item.checked) &&
                     !parents.find((item) => item.checked) &&
                     !isAllEmployees &&
-                    !isAllParents
+                    !isAllParents &&
+                    !isAllBranch
                   }
                 >
                   Lưu

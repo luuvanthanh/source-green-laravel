@@ -231,8 +231,8 @@ class Index extends PureComponent {
                   <Text color="dark" size="large-medium">
                     Danh sách giáo viên
                   </Text>
-                  <div className="row">
-                    <div className="col-lg-4 mt-3">
+                  <div className="row mt-3">
+                    <div className="col-lg-6">
                       <FormItem
                         className="mb-0"
                         label="Cơ sở"
@@ -244,7 +244,7 @@ class Index extends PureComponent {
                         data={branches}
                       />
                     </div>
-                    <div className="col-lg-4 mt-3">
+                    <div className="col-lg-6">
                       <FormItem
                         className="mb-0"
                         label="Lớp"

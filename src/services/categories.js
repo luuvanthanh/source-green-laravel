@@ -225,3 +225,20 @@ export function getMeals(params) {
     },
   });
 }
+
+export function getParamaterFormulas(params = {}) {
+  return requestLaravel('/v1/paramater-formulas', {
+    method: 'GET',
+    params,
+  });
+}
+
+export function getSensitivePeriods(params = {}) {
+  return request('/sensitive-periods', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}

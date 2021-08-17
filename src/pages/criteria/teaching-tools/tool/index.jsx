@@ -54,9 +54,9 @@ const Index = memo(() => {
                 <div key={index} className="group-image">
                   <Image
                     key={index}
-                    width={42}
-                    height={42}
-                    src={`${API_UPLOAD}${item}`}
+                    width={60}
+                    height={60}
+                    src={`${API_UPLOAD}${item.url}`}
                     data-viewmore={`+${JSON.parse(record?.fileUrl)?.length - 1}`}
                     fallback="/default-upload.png"
                   />

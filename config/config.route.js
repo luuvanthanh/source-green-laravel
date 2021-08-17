@@ -172,6 +172,25 @@ export default [
             authority: [permissions.CTH],
           },
           {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam',
+            component: './criteria/teaching-tools/sensitive-period',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
+            component: './criteria/teaching-tools/sensitive-period/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          {
+            path: '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
+            component: './criteria/teaching-tools/sensitive-period/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CTH],
+          },
+          
+          {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
             wrappers: ['@/wrappers/auth'],
@@ -570,6 +589,12 @@ export default [
           {
             path: '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
             component: './attendance/absents/config/absent-reasons/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.DD],
+          },
+          {
+            path: '/diem-danh/cau-hinh/thoi-gian-xin-phep',
+            component: './attendance/absent-config-times',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.DD],
           },
@@ -1183,19 +1208,19 @@ export default [
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
-            component: './hrm/configuration/paramater-formulas',
+            component: './hrm/paramater-formulas',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
-            component: './hrm/configuration/paramater-formulas/add',
+            component: './hrm/paramater-formulas/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
           {
             path: '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
-            component: './hrm/configuration/paramater-formulas/add',
+            component: './hrm/paramater-formulas/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
@@ -1547,6 +1572,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HRM],
           },
+          {
+            path: '/quan-ly-nhan-su/tinh-luong',
+            component: './hrm/payroll',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/bang-luong',
+            component: './hrm/salary',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
         ],
       },
       // HRM
@@ -1624,6 +1661,18 @@ export default [
           {
             path: '/y-te',
             redirect: '/y-te/thong-ke',
+          },
+          {
+            path: '/y-te/danh-sach-nhan-thuoc',
+            component: './medical/received',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/theo-doi-uong-thuoc',
+            component: './medical/follow',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
           },
           {
             path: '/y-te/thong-ke',

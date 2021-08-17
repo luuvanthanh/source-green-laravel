@@ -9,6 +9,7 @@ import {
   size,
   head,
   last,
+  toNumber,
 } from 'lodash';
 import { notification, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -654,15 +655,23 @@ export default class Helpers {
     return dateArray;
   }
 
+  static getDateRank = (startTime, endTime, format = variables.DATE_FORMAT.DATE_AFTER) => {
+    if (startTime && endTime) {
+      return `${moment(startTime).format(format)} - ${moment(endTime).format(format)}`;
+    }
+    return null;
+  };
+
   static joinDateTime = (date, time) =>
     `${moment(date).format(variables.DATE_FORMAT.DATE_AFTER)} ${moment(time).format(
       variables.DATE_FORMAT.TIME_FULL,
     )}`;
 
   static joinDateTimeLocal = (date, time) =>
-    `${moment.utc(date).local().format(variables.DATE_FORMAT.DATE_AFTER)} ${moment.utc(time).local().format(
-      variables.DATE_FORMAT.TIME_FULL,
-    )}`;
+    `${moment.utc(date).local().format(variables.DATE_FORMAT.DATE_AFTER)} ${moment
+      .utc(time)
+      .local()
+      .format(variables.DATE_FORMAT.TIME_FULL)}`;
 
   static getPathAvatarJson = (fileImage) => {
     const allowTypes = ['jpeg', 'jpg', 'png'];
@@ -1045,10 +1054,9 @@ export default class Helpers {
   };
 
   static getStatusContracts = (contractFrom, contractTo) => {
-    const diffSignDate = moment(moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE)).diff(
-      moment().format(variables.DATE_FORMAT.DATE_BEFORE),
-      'days',
-    );
+    const diffSignDate = moment(
+      moment(contractFrom).format(variables.DATE_FORMAT.DATE_BEFORE),
+    ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
     const diffExpirationDate = moment(
       moment(contractTo).format(variables.DATE_FORMAT.DATE_BEFORE),
     ).diff(moment().format(variables.DATE_FORMAT.DATE_BEFORE), 'days');
@@ -1063,5 +1071,15 @@ export default class Helpers {
       return <Tag color="danger">Đã hết hạn</Tag>;
     }
     return '';
+  };
+
+  static summary = (items, key = 'amount', number = 0) => {
+    if (!isEmpty(items)) {
+      return items.reduce(
+        (result, item) => result + toNumber(parseFloat(item[`${key}`]).toFixed(number)) || 0,
+        0,
+      );
+    }
+    return null;
   };
 }

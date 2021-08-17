@@ -35,6 +35,8 @@ const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [object, setObect] = useState({});
   const [weeksKitchen, setWeeksKitchen] = useState([]);
+  const [fromDate, setFromDate] = useState([]);
+  const [toDate, setToDate] = useState([]);
 
   const history = useHistory();
   const formRef = useRef();
@@ -76,8 +78,8 @@ const Index = memo(() => {
     });
     const payload = {
       ...omit(values, 'month'),
-      fromDate: moment(values.month).startOf('months'),
-      toDate: moment(values.month).endOf('months'),
+      fromDate: Helper.getDate(fromDate, variables.DATE_FORMAT.DATE_AFTER),
+      toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
         ...omit(item, 'timeline', 'id'),
@@ -130,6 +132,8 @@ const Index = memo(() => {
                 timeline: [],
               })),
             }));
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
             setWeeksKitchen(weeks);
           }
         },
@@ -216,6 +220,8 @@ const Index = memo(() => {
         },
         callback: (response) => {
           if (response) {
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
             const result = convertMenuMeal(response?.menuMeals)
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({

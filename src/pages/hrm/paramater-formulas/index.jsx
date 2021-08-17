@@ -214,9 +214,9 @@ class Index extends PureComponent {
         if (!isEmpty(item.formular)) {
           return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
         }
-        return `${item.operator || ''} (${item.value || item.variable || ''}${this.renderCalulator(
+        return `${item.operator || ''} ${item.value || item.variable || ''}${this.renderCalulator(
           item.formular,
-        )})`;
+        )}`;
       })
       .join(' ');
 
@@ -251,14 +251,16 @@ class Index extends PureComponent {
       },
       {
         title: 'NGÀY ÁP DỤNG',
-        key: 'apply_date',
-        className: 'min-width-150',
+        key: 'applyDate',
+        width: 120,
+        className: 'min-width-120',
         render: (record) => <Text size="normal">{Helper.getDate(record.applyDate)}</Text>,
       },
       {
         title: 'CÔNG THỨC',
         key: 'recipe',
-        className: 'min-width-150',
+        width: 300,
+        className: 'min-width-300',
         render: (record) => {
           if (!isEmpty(record.recipe)) {
             return (
@@ -282,7 +284,7 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
+            {/* <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} /> */}
           </div>
         ),
       },
@@ -343,7 +345,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '65vh' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>

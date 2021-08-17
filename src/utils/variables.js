@@ -26,6 +26,7 @@ export const variables = {
   DATE_TIME_PICKER: 'dateTimePicker',
   CHECKBOX: 'checkbox',
   CHECKBOX_SINGLE: 'checkboxSingle',
+  CHECKBOX_FORM: 'checkboxform',
   RADIO: 'radio',
   INPUT_NUMBER: 'inputNumber',
   INPUT_NOTE: 'inputNote',

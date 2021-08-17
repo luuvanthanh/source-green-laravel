@@ -19,12 +19,18 @@ export default {
       data: [],
       pagination: {},
     },
+    classAttendanceSummary: [],
+    classDetails: {},
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA_NOTE: (state, { payload }) => ({
       ...state,
       notes: payload.parsePayload,
+    }),
+    SET_CLASS_ATTENDANCE_SUMMARY: (state, { payload }) => ({
+      ...state,
+      classAttendanceSummary: payload.payload || [],
     }),
     SET_DATA_DETAILS_NOTE: (state, { payload }) => ({
       ...state,
@@ -42,11 +48,15 @@ export default {
       ...state,
       medicalsStudent: payload,
     }),
+    SET_CLASS_DETAILS: (state, { payload }) => ({
+      ...state,
+      classDetails: payload,
+    }),
     SET_DATA_BUS: (state, { payload }) => ({
       ...state,
       bus: {
         ...state.bus,
-        ...payload
+        ...payload,
       },
     }),
     SET_DATA_BUS_BY_STATUS: (state, { payload }) => ({
@@ -135,35 +145,38 @@ export default {
     *GET_DATA_BUS({ payload }, saga) {
       try {
         let response = null;
-        if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status || payload.Status === variablesModules.TITLE_BUS.HOME.status) {
+        if (
+          payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status ||
+          payload.Status === variablesModules.TITLE_BUS.HOME.status
+        ) {
           response = yield saga.call(services.getBusByStatusHomeWardSchoolWard, payload);
           if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status) {
             response = {
               schoolGetInStatusTotal: response?.summary?.schoolGetInStatusTotal || 0,
-              schoolGetOffStatusTotal: response?.summary?.schoolGetOffStatusTotal || 0
+              schoolGetOffStatusTotal: response?.summary?.schoolGetOffStatusTotal || 0,
             };
           } else {
             response = {
               homeGetInStatusTotal: response?.summary?.homeGetInStatusTotal || 0,
-              homeGetOffStatusTotal: response?.summary?.homeGetOffStatusTotal || 0
+              homeGetOffStatusTotal: response?.summary?.homeGetOffStatusTotal || 0,
             };
           }
         } else {
           response = yield saga.call(services.getBusByStatus, payload);
           if (!payload?.Status) {
             response = {
-              studentTotal: response?.totalCount || 0
+              studentTotal: response?.totalCount || 0,
             };
           } else {
             response = {
-              absentStudentTotal: response?.totalCount || 0
+              absentStudentTotal: response?.totalCount || 0,
             };
           }
         }
         if (response) {
           yield saga.put({
             type: 'SET_DATA_BUS',
-            payload: response
+            payload: response,
           });
         }
       } catch (error) {
@@ -173,7 +186,10 @@ export default {
     *GET_DATA_BUS_BY_STATUS({ payload }, saga) {
       try {
         let response = null;
-        if (payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status || payload.Status === variablesModules.TITLE_BUS.HOME.status) {
+        if (
+          payload?.Status === variablesModules.TITLE_BUS.SCHOOL.status ||
+          payload.Status === variablesModules.TITLE_BUS.HOME.status
+        ) {
           response = yield saga.call(services.getBusByStatusHomeWardSchoolWard, payload);
         } else {
           response = yield saga.call(services.getBusByStatus, payload);
@@ -209,6 +225,28 @@ export default {
         const response = yield saga.call(services.getAttendanceByStatus, payload);
         yield saga.put({
           type: 'SET_DATA_ATTENDANCE_BY_STATUS',
+          payload: response,
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_CLASS_ATTENDANCE_SUMMARY({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getClassAttendanceSummary, payload);
+        yield saga.put({
+          type: 'SET_CLASS_ATTENDANCE_SUMMARY',
+          payload: response,
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_CLASS_DETAILS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getClassDetails, payload);
+        yield saga.put({
+          type: 'SET_CLASS_DETAILS',
           payload: response,
         });
       } catch (error) {

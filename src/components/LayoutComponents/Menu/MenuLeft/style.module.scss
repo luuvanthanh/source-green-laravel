@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 
 :global(.ant-menu-submenu-popup .ant-menu-item-selected) {
   background-color: $background-white !important;
@@ -72,6 +72,19 @@
   &:global(.ant-layout-sider-dark) {
     :global(.ant-layout-sider-children) {
       background-color: $background-white;
+    }
+  }
+  :global(.ant-menu-submenu-selected) {
+    :global(.ant-menu-submenu-title) {
+      .title {
+        color: $text-success;
+      }
+      span[class*='icon'] {
+        color: $text-success;
+      }
+      :global(.ant-menu-submenu-arrow) {
+        color: $text-success;
+      }
     }
   }
 }
@@ -210,9 +223,9 @@
     :global(.ant-menu-submenu) {
       &:hover {
         :global(.ant-menu-submenu-arrow) {
-          color: $text-success;
+          color:  $text-success;
         }
-        span[class*="icon"] {
+        span[class*='icon'] {
           color: $text-success !important;
         }
       }
@@ -290,7 +303,7 @@
         :global(.ant-menu-submenu-arrow) {
           color: $text-success !important;
         }
-        span[class*="icon"] {
+        span[class*='icon'] {
           color: $text-success !important;
         }
       }

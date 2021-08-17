@@ -1,5 +1,4 @@
 import request from '@/utils/requestLavarel';
-import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
   return request('/v1/paramater-formulas', {

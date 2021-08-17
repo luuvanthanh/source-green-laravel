@@ -42,6 +42,9 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
+        toolDetailGroups: values.toolDetails.map((item) => ({
+          toolDetailId: item,
+        })),
       },
       callback: (response, error) => {
         if (response) {
@@ -99,11 +102,11 @@ const Index = memo(() => {
           if (response) {
             formRef.current.setFieldsValue({
               ...response,
-              toolDetails: response.toolDetails.map((item) => item.id),
+              toolDetails: response.toolDetailGroups.map((item) => item?.toolDetail?.id),
             });
             mountedSet(
               setItemsSelected,
-              response.toolDetails.map((item) => item.id),
+              response.toolDetailGroups.map((item) => item?.toolDetail?.id),
             );
           }
         },
@@ -146,6 +149,12 @@ const Index = memo(() => {
                   name="name"
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY]}
+                />
+                <FormItem
+                  className="mt20"
+                  label="Ý nghĩa trong cuộc sống"
+                  name="meanOfLife"
+                  type={variables.TEXTAREA}
                 />
               </Pane>
 

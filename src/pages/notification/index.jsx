@@ -303,7 +303,7 @@ class Index extends PureComponent {
       {
         title: 'Tiêu đề',
         key: 'title',
-        className: 'min-width-150',
+        className: 'min-width-200',
         render: (record) => <Text size="normal">{record.title}</Text>,
       },
       {
@@ -321,6 +321,7 @@ class Index extends PureComponent {
         key: 'actions',
         className: 'min-width-80',
         width: 80,
+        fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button

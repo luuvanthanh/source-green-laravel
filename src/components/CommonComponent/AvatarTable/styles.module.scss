@@ -1,4 +1,4 @@
-@import "@/assets/styles/mixins.scss";
+@import '@/assets/styles/mixins.scss';
 .table-icon {
   .norm {
     padding-left: 8px;
@@ -6,4 +6,69 @@
   .table-link {
     color: rgba(14, 11, 32, 0.85);
   }
+}
+
+.avatar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  .info {
+    margin-left: 10px;
+    &.active {
+      .name {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+      }
+      .title {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+      }
+      .norm {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 500;
+      }
+    }
+  }
+  .name {
+    font-family: $base__font-family;
+    font-style: normal;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
+    color: $text;
+    margin-bottom: 0;
+  }
+  .title {
+    font-style: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: $text;
+    margin-bottom: 0;
+    font-family: $bold__font-family;
+  }
+  .norm {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 20px;
+    color: #7a7e84;
+    margin-bottom: 0;
+  }
+}
+
+.notification {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  z-index: 9;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  border: 2px solid $border-white;
+  background-color: $background-success;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-white;
+  font-size: 8px;
 }

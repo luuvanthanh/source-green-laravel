@@ -57,7 +57,7 @@ export const feature = {
       title: 'Chương trình học',
       src: '/images/home/spreadsheet.svg',
       animation: animationImage.programStudy,
-      url: '/chuong-trinh-hoc/danh-gia-hoc-tap',
+      url: '/chuong-trinh-hoc/cau-hinh/goc-giao-cu',
       permission: [permissions.CTH],
     },
     {
@@ -71,7 +71,7 @@ export const feature = {
       title: 'Y tế',
       src: '/images/home/balloons.svg',
       animation: animationImage.medical,
-      url: '/y-te',
+      url: '/y-te/danh-sach-nhan-thuoc',
       permission: [permissions.YTE],
     },
     {
@@ -141,7 +141,7 @@ export const feature = {
     {
       title: 'Phát triển thể chất',
       src: '/images/home/physical.svg',
-      animation: animationImage.setting,
+      animation: animationImage.physical,
       url: '/phat-trien-the-chat',
       permission: [],
     },

@@ -329,6 +329,12 @@ export async function getLeftMenuSchedules() {
                 '/diem-danh/cau-hinh/ly-do-nghi-phep/:id/chi-tiet',
               ],
             },
+            {
+              title: 'Thời gian xin phép',
+              key: 'AbsentTimeline',
+              permission: [permissions.DD],
+              url: ['/diem-danh/cau-hinh/thoi-gian-xin-phep'],
+            },
           ],
         },
       ],
@@ -336,6 +342,7 @@ export async function getLeftMenuSchedules() {
     {
       title: 'Lịch sử điểm danh',
       key: 'attendanceLogs',
+      icon: 'icon icon-clock',
       url: ['/diem-danh/lich-su-diem-danh'],
       permission: [permissions.DD],
       pro: true,
@@ -502,10 +509,10 @@ export async function getLeftMenuVehicel() {
 export async function getLeftMenuCriteria() {
   return [
     {
-      title: 'Báo cáo tổng quát trẻ',
+      title: 'Thống kê',
       key: 'report',
       url: ['/chuong-trinh-hoc/bao-cao-tong-quat-tre'],
-      icon: 'icon icon-dashboard',
+      icon: 'icon icon-report',
       permission: [permissions.CTH],
       pro: true,
     },
@@ -516,58 +523,78 @@ export async function getLeftMenuCriteria() {
       permission: [permissions.CTH],
       pro: true,
       children: [
+        // {
+        //   title: 'DS chương trình',
+        //   key: 'study-program',
+        //   url: [
+        //     '/chuong-trinh-hoc',
+        //     '/chuong-trinh-hoc/them-moi',
+        //     '/chuong-trinh-hoc/:id/chi-tiet',
+        //   ],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
+        // {
+        //   title: 'DS template',
+        //   key: 'curriculum-templates',
+        //   url: [
+        //     '/chuong-trinh-hoc/templates',
+        //     '/chuong-trinh-hoc/templates/them-moi',
+        //     '/chuong-trinh-hoc/templates/:id/chi-tiet',
+        //   ],
+        //   permission: [permissions.CTH],
+        //   pro: true,
+        // },
         {
-          title: 'DS chương trình',
-          key: 'study-program',
+          title: 'Góc giáo cụ',
+          key: 'angle-tools',
           url: [
-            '/chuong-trinh-hoc',
-            '/chuong-trinh-hoc/them-moi',
-            '/chuong-trinh-hoc/:id/chi-tiet',
+            '/chuong-trinh-hoc/cau-hinh/goc-giao-cu',
+            '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/them-moi',
+            '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/:id/chi-tiet',
           ],
           permission: [permissions.CTH],
           pro: true,
         },
         {
-          title: 'DS template',
-          key: 'curriculum-templates',
+          title: 'Giáo cụ',
+          key: 'tools',
           url: [
-            '/chuong-trinh-hoc/templates',
-            '/chuong-trinh-hoc/templates/them-moi',
-            '/chuong-trinh-hoc/templates/:id/chi-tiet',
+            '/chuong-trinh-hoc/cau-hinh/giao-cu',
+            '/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi',
+            '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
           ],
           permission: [permissions.CTH],
           pro: true,
         },
         {
-          title: 'Cấu hình',
-          key: 'categories-teaching-tools',
-          permission: [permissions.CTH],
-          children: [
-            {
-              title: 'Góc giáo cụ',
-              key: 'angle-tools',
-              url: [
-                '/chuong-trinh-hoc/cau-hinh/goc-giao-cu',
-                '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/them-moi',
-                '/chuong-trinh-hoc/cau-hinh/goc-giao-cu/:id/chi-tiet',
-              ],
-              permission: [permissions.CTH],
-              pro: true,
-            },
-            {
-              title: 'Giáo cụ',
-              key: 'tools',
-              url: [
-                '/chuong-trinh-hoc/cau-hinh/giao-cu',
-                '/chuong-trinh-hoc/cau-hinh/giao-cu/them-moi',
-                '/chuong-trinh-hoc/cau-hinh/giao-cu/:id/chi-tiet',
-              ],
-              permission: [permissions.CTH],
-              pro: true,
-            },
+          title: 'Thời kỳ nhạy cảm',
+          key: 'sensitivePeriod',
+          url: [
+            '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam',
+            '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/them-moi',
+            '/chuong-trinh-hoc/cau-hinh/thoi-ky-nhay-cam/:id/chi-tiet',
           ],
+          permission: [permissions.CTH],
+          pro: true,
         },
       ],
+    },
+    {
+      title: 'Tiếng Anh',
+      key: 'dictionary',
+      url: ['/chuong-trinh-hoc/tieng-anh'],
+      icon: 'icon icon-dictionary',
+      permission: [permissions.CTH],
+      pro: true,
+    },
+    {
+      title: 'Thể chất',
+      key: 'biceps',
+      url: ['/chuong-trinh-hoc/the-chat'],
+      icon: 'icon icon-biceps',
+      permission: [permissions.CTH],
+      pro: true,
     },
     {
       title: 'Lịch sử',
@@ -612,14 +639,9 @@ export async function getLeftMenuCriteria() {
 export async function getLeftMenuChildren() {
   return [
     {
-      title: 'Thực đơn',
+      title: 'Danh sách thực đơn',
       key: 'menu',
-      url: [
-        '/thuc-don',
-        '/thuc-don/tao-moi',
-        '/thuc-don/:id/chi-tiet',
-        '/thuc-don/:id/chinh-sua'
-      ],
+      url: ['/thuc-don', '/thuc-don/tao-moi', '/thuc-don/:id/chi-tiet', '/thuc-don/:id/chinh-sua'],
       icon: 'icon icon-list',
       permission: [permissions.BEP],
       pro: true,
@@ -677,26 +699,26 @@ export async function getLeftMenuAllocation() {
 export async function getLeftMenuMedical() {
   return [
     {
-      title: 'Thống kê',
+      title: 'Danh sách nhận thuốc',
       key: 'children',
-      url: ['/y-te/thong-ke', '/y-te/thong-ke/tao-moi', '/y-te/thong-ke/:id/chi-tiet'],
+      url: ['/y-te/danh-sach-nhan-thuoc'],
       icon: 'icon icon-checkmark',
+      permission: [permissions.YTE],
+      pro: true,
+    },
+    {
+      title: 'Theo dõi uống thuốc',
+      key: 'clock',
+      url: ['/y-te/theo-doi-uong-thuoc'],
+      icon: 'icon icon-heart',
       permission: [permissions.YTE],
       pro: true,
     },
     {
       title: 'Lịch sử',
-      key: 'clock',
-      url: ['/y-te/lich-su'],
-      icon: 'icon icon-alarm',
-      permission: [permissions.YTE],
-      pro: true,
-    },
-    {
-      title: 'Sổ theo dõi',
       key: 'logbook',
-      url: ['/y-te/so-theo-doi'],
-      icon: 'icon icon-checkmark',
+      url: ['/y-te/lich-su'],
+      icon: 'icon icon-notification',
       permission: [permissions.YTE],
       pro: true,
     },
@@ -719,7 +741,7 @@ export async function getLeftMenuTimeTable() {
         '/thoi-khoa-bieu/lam-viec',
         '/thoi-khoa-bieu/lam-viec/tao-moi',
         '/thoi-khoa-bieu/lam-viec/:id/chinh-sua',
-        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet'
+        '/thoi-khoa-bieu/lam-viec/:id/chi-tiet',
       ],
       icon: 'icon icon-calendar1',
       permission: [permissions.TKB],
@@ -1056,7 +1078,7 @@ export async function getLeftMenuHRM() {
     {
       title: 'Chấm công',
       key: 'schedules',
-      icon: 'icon icon-clock',
+      icon: 'icon icon-schedules',
       permission: [permissions.HRM],
       pro: true,
       children: [
@@ -1232,6 +1254,28 @@ export async function getLeftMenuHRM() {
       ],
     },
     {
+      title: 'Lương',
+      key: 'salary',
+      icon: 'icon icon-cash',
+      permission: [permissions.HRM],
+      children: [
+        {
+          title: 'Tính lương',
+          key: 'salary-payroll',
+          url: ['/quan-ly-nhan-su/tinh-luong'],
+          permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Bảng lương',
+          key: 'salary-items',
+          url: ['/quan-ly-nhan-su/bang-luong'],
+          permission: [permissions.BANGLUONG],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Cấu hình',
       key: 'categoriesParamater',
       icon: 'icon icon-setting',
@@ -1246,6 +1290,17 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
+        },
+        {
+          title: 'Tham số công thức',
+          key: 'paramater-formulas',
+          url: [
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/tao-moi',
+            '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
+          ],
+          permission: [permissions.BANGLUONG],
           pro: true,
         },
         {

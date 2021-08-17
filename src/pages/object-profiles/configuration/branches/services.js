@@ -17,6 +17,9 @@ export function get(data = {}) {
 export function remove(id) {
   return request(`/v1/branches/${id}`, {
     method: 'DELETE',
+    data: {
+      id,
+    },
     parse: true,
   });
 }
