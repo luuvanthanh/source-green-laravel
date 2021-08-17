@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use GGPHP\BusRegistration\Repositories\Eloquent\BusRegistrationRepositoryEloquent;
 use GGPHP\Category\Models\ParamaterFormula;
 use GGPHP\Category\Models\ParamaterValue;
-use GGPHP\Category\Models\ParameterTax;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
@@ -244,145 +243,233 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $basicSalaryAndAllowance = json_encode($basicSalaryAndAllowance);
 
             //Luong theo giờ
+            $salaryByHour = 0;
             $formularSalaryByHour = ParamaterFormula::where('Code', 'LUONG_THEO_GIO')->first();
-            $salaryByHour = $this->getFormular(json_decode($formularSalaryByHour->Recipe), $contract, $parameter);
-            $salaryByHour = eval('return ' . $salaryByHour . ';');
+
+            if (!is_null($formularSalaryByHour)) {
+                $salaryByHour = $this->getFormular(json_decode($formularSalaryByHour->Recipe), $contract, $parameter);
+                $salaryByHour = eval('return ' . $salaryByHour . ';');
+            }
             $parameter['LUONG_THEO_GIO'] = $salaryByHour;
 
             // Lương làm thêm không tính thuế
+            $totalOtNoFax = 0;
             $formularTotalOtNoFax = ParamaterFormula::where('Code', 'OT_KHONG_TINH_THUE')->first();
-            $totalOtNoFax = $this->getFormular(json_decode($formularTotalOtNoFax->Recipe), $contract, $parameter);
-            $totalOtNoFax = eval('return ' . $totalOtNoFax . ';');
+
+            if (!is_null($formularTotalOtNoFax)) {
+                $totalOtNoFax = $this->getFormular(json_decode($formularTotalOtNoFax->Recipe), $contract, $parameter);
+                $totalOtNoFax = eval('return ' . $totalOtNoFax . ';');
+            }
             $parameter['OT_KHONG_TINH_THUE'] = $totalOtNoFax;
 
             //Tổng lương làm thêm
+            $totalOt = 0;
             $formularTotalOt = ParamaterFormula::where('Code', 'TOTAL_OT')->first();
-            $totalOt = $this->getFormular(json_decode($formularTotalOt->Recipe), $contract, $parameter);
-            $totalOt = eval('return ' . $totalOt . ';');
+
+            if (!is_null($formularTotalOt)) {
+                $totalOt = $this->getFormular(json_decode($formularTotalOt->Recipe), $contract, $parameter);
+                $totalOt = eval('return ' . $totalOt . ';');
+            }
             $parameter['TOTAL_OT'] = $totalOt;
 
             // Lương làm thêm tính thuế
+            $totalOtFax = 0;
             $formularTotalOtFax = ParamaterFormula::where('Code', 'OT_TINH_THUE')->first();
-            $totalOtFax = $this->getFormular(json_decode($formularTotalOtFax->Recipe), $contract, $parameter);
-            $totalOtFax = eval('return ' . $totalOtFax . ';');
+
+            if (!is_null($formularTotalOtFax)) {
+                $totalOtFax = $this->getFormular(json_decode($formularTotalOtFax->Recipe), $contract, $parameter);
+                $totalOtFax = eval('return ' . $totalOtFax . ';');
+            }
+
             $parameter['OT_TINH_THUE'] = $totalOtFax;
 
             //bhxh nld
+            $socialInsuranceEmployee = 0;
             $formularSocialInsuranceEmployee = ParamaterFormula::where('Code', 'BHXH_NLD')->first();
-            $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
-            $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+
+            if (!is_null($formularSocialInsuranceEmployee)) {
+                $socialInsuranceEmployee = $this->getFormular(json_decode($formularSocialInsuranceEmployee->Recipe), $contract, $parameter);
+                $socialInsuranceEmployee = eval('return ' . $socialInsuranceEmployee . ';');
+            }
             $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
 
             //bhyt nld
+            $healthInsuranceEmployee = 0;
             $formularHealthInsuranceEmployee = ParamaterFormula::where('Code', 'BHYT_NLD')->first();
-            $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
-            $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+
+            if (!is_null($formularHealthInsuranceEmployee)) {
+                $healthInsuranceEmployee = $this->getFormular(json_decode($formularHealthInsuranceEmployee->Recipe), $contract, $parameter);
+                $healthInsuranceEmployee = eval('return ' . $healthInsuranceEmployee . ';');
+            }
             $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
 
             //bhtn nld
+            $unemploymentInsuranceEmployee = 0;
             $formularUnemploymentInsuranceEmployee = ParamaterFormula::where('Code', 'BHTN_NLD')->first();
-            $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
-            $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+
+            if (!is_null($formularUnemploymentInsuranceEmployee)) {
+                $unemploymentInsuranceEmployee = $this->getFormular(json_decode($formularUnemploymentInsuranceEmployee->Recipe), $contract, $parameter);
+                $unemploymentInsuranceEmployee = eval('return ' . $unemploymentInsuranceEmployee . ';');
+            }
             $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
 
             //Tổng bh nld
+            $totalEmployeeInsurance = 0;
             $formularTotalEmployeeInsurance = ParamaterFormula::where('Code', 'TONG_BH_NLD')->first();
-            $totalEmployeeInsurance = $this->getFormular(json_decode($formularTotalEmployeeInsurance->Recipe), $contract, $parameter);
-            $totalEmployeeInsurance = eval('return ' . $totalEmployeeInsurance . ';');
+
+            if (!is_null($formularTotalEmployeeInsurance)) {
+                $totalEmployeeInsurance = $this->getFormular(json_decode($formularTotalEmployeeInsurance->Recipe), $contract, $parameter);
+                $totalEmployeeInsurance = eval('return ' . $totalEmployeeInsurance . ';');
+            }
             $parameter['TONG_BH_NLD'] = $totalEmployeeInsurance;
 
             //bhxh cty
+            $socialInsuranceCompany = 0;
             $formularSocialInsuranceCompany = ParamaterFormula::where('Code', 'BHXH_CTT')->first();
-            $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
-            $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+
+            if (!is_null($formularSocialInsuranceCompany)) {
+                $socialInsuranceCompany = $this->getFormular(json_decode($formularSocialInsuranceCompany->Recipe), $contract, $parameter);
+                $socialInsuranceCompany = eval('return ' . $socialInsuranceCompany . ';');
+            }
             $parameter['BHXH_CTT'] = $socialInsuranceCompany;
 
             //bhyt cty
+            $healthInsuranceCompany = 0;
             $formularHealthInsuranceCompany = ParamaterFormula::where('Code', 'BHYT_CTT')->first();
-            $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
-            $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+
+            if (!is_null($formularHealthInsuranceCompany)) {
+                $healthInsuranceCompany = $this->getFormular(json_decode($formularHealthInsuranceCompany->Recipe), $contract, $parameter);
+                $healthInsuranceCompany = eval('return ' . $healthInsuranceCompany . ';');
+            }
             $parameter['BHYT_CTT'] = $healthInsuranceCompany;
 
             //bhtn cty
+            $unemploymentInsuranceCompany = 0;
             $formularUnemploymentInsuranceCompany = ParamaterFormula::where('Code', 'BHTN_CTT')->first();
-            $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
-            $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+
+            if (!is_null($formularUnemploymentInsuranceCompany)) {
+                $unemploymentInsuranceCompany = $this->getFormular(json_decode($formularUnemploymentInsuranceCompany->Recipe), $contract, $parameter);
+                $unemploymentInsuranceCompany = eval('return ' . $unemploymentInsuranceCompany . ';');
+            }
             $parameter['BHTN_CTT'] = $unemploymentInsuranceCompany;
 
             //Tổng bh cty
+            $totalCompanyInsurance = 0;
             $formularTotalCompanyInsurance = ParamaterFormula::where('Code', 'TONG_BH_CTT')->first();
-            $totalCompanyInsurance = $this->getFormular(json_decode($formularTotalCompanyInsurance->Recipe), $contract, $parameter);
-            $totalCompanyInsurance = eval('return ' . $totalCompanyInsurance . ';');
+
+            if (!is_null($formularTotalCompanyInsurance)) {
+                $totalCompanyInsurance = $this->getFormular(json_decode($formularTotalCompanyInsurance->Recipe), $contract, $parameter);
+                $totalCompanyInsurance = eval('return ' . $totalCompanyInsurance . ';');
+            }
             $parameter['TONG_BH_CTT'] = $totalCompanyInsurance;
 
             // phụ cấp xe bus
+            $busAllowance = 0;
             $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
-            $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
-            $busAllowance = eval('return ' . $busAllowance . ';');
+
+            if (!is_null($formularBusAllowance)) {
+                $busAllowance = $this->getFormular(json_decode($formularBusAllowance->Recipe), $contract, $parameter);
+                $busAllowance = eval('return ' . $busAllowance . ';');
+            }
             $parameter['PC_BUS'] = $busAllowance;
 
             //tổng phụ cấp
+            $totalAllowance = 0;
             $formularTotalAllowance = ParamaterFormula::where('Code', 'TONG_PC')->first();
-            $totalAllowance = $this->getFormular(json_decode($formularTotalAllowance->Recipe), $contract, $parameter);
-            $totalAllowance = eval('return ' . $totalAllowance . ';');
+
+            if (!is_null($formularTotalAllowance)) {
+                $totalAllowance = $this->getFormular(json_decode($formularTotalAllowance->Recipe), $contract, $parameter);
+                $totalAllowance = eval('return ' . $totalAllowance . ';');
+            }
             $parameter['TONG_PC'] = $totalAllowance;
 
             //tổng thu nhập
+            $totalIncome = 0;
             $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP_NV_CHINH_THUC')->first();
 
             if ($isProbation) {
                 $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP_NV_THU_VIEC')->first();
             }
 
-            $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
-            $totalIncome = eval('return ' . $totalIncome . ';');
+            if (!is_null($formularTotalIncome)) {
+                $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
+                $totalIncome = eval('return ' . $totalIncome . ';');
+            }
             $parameter['TONG_THUNHAP'] = $totalIncome;
 
             //Tổng các khoản đc miễn thế
+            $totalTaxFree = 0;
             $formularTotalTaxFree = ParamaterFormula::where('Code', 'TONG_MIENTHUE')->first();
-            $totalTaxFree = $this->getFormular(json_decode($formularTotalTaxFree->Recipe), $contract, $parameter);
-            $totalTaxFree = eval('return ' . $totalTaxFree . ';');
+
+            if (!is_null($formularTotalTaxFree)) {
+                $totalTaxFree = $this->getFormular(json_decode($formularTotalTaxFree->Recipe), $contract, $parameter);
+                $totalTaxFree = eval('return ' . $totalTaxFree . ';');
+            }
             $parameter['TONG_MIENTHUE'] = $totalTaxFree;
 
             //thu nhập chịu thuế
+            $incomeTaxes = 0;
             $formularIncomeTaxes = ParamaterFormula::where('Code', 'THUNHAP_CHIUTHUE')->first();
-            $incomeTaxes = $this->getFormular(json_decode($formularIncomeTaxes->Recipe), $contract, $parameter);
-            $incomeTaxes = eval('return ' . $incomeTaxes . ';');
+
+            if (!is_null($formularIncomeTaxes)) {
+                $incomeTaxes = $this->getFormular(json_decode($formularIncomeTaxes->Recipe), $contract, $parameter);
+                $incomeTaxes = eval('return ' . $incomeTaxes . ';');
+            }
             $parameter['THUNHAP_CHIUTHUE'] = $incomeTaxes;
 
             //tổng giảm trừ
+            $dependentTotal = 0;
             $formularDependentTotal = ParamaterFormula::where('Code', 'TONG_GIAMTRU')->first();
-            $dependentTotal = $this->getFormular(json_decode($formularDependentTotal->Recipe), $contract, $parameter);
-            $dependentTotal = eval('return ' . $dependentTotal . ';');
+
+            if (!is_null($formularDependentTotal)) {
+                $dependentTotal = $this->getFormular(json_decode($formularDependentTotal->Recipe), $contract, $parameter);
+                $dependentTotal = eval('return ' . $dependentTotal . ';');
+            }
             $parameter['TONG_GIAMTRU'] = $dependentTotal;
 
             // thu nhập tính thuế
+            $rentalIncome = 0;
             $formularRentalIncome = ParamaterFormula::where('Code', 'THUNHAP_TINHTHUE')->first();
-            $rentalIncome = $this->getFormular(json_decode($formularRentalIncome->Recipe), $contract, $parameter);
-            $rentalIncome = eval('return ' . $rentalIncome . ';');
-            $rentalIncome = $rentalIncome > 0 ? $rentalIncome : 0;
+
+            if (!is_null($formularRentalIncome)) {
+                $rentalIncome = $this->getFormular(json_decode($formularRentalIncome->Recipe), $contract, $parameter);
+                $rentalIncome = eval('return ' . $rentalIncome . ';');
+                $rentalIncome = $rentalIncome > 0 ? $rentalIncome : 0;
+            }
             $parameter['THUNHAP_TINHTHUE'] = $rentalIncome;
 
             //phí công đoàn
+            $unionDues = 0;
             $formularUnionDues = ParamaterFormula::where('Code', 'PHI_CONG_DOAN')->first();
-            $unionDues = $this->getFormular(json_decode($formularUnionDues->Recipe), $contract, $parameter);
-            $unionDues = eval('return ' . $unionDues . ';');
+
+            if (!is_null($formularUnionDues)) {
+                $unionDues = $this->getFormular(json_decode($formularUnionDues->Recipe), $contract, $parameter);
+                $unionDues = eval('return ' . $unionDues . ';');
+            }
             $parameter['PHI_CONG_DOAN'] = $unionDues;
 
 
             //tổng thu nhập trong tháng
+            $totalIncomeMonth = 0;
             $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG')->first();
-            $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
-            $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
+
+            if (!is_null($formularTotalIncomeMonth)) {
+                $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
+                $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
+            }
             $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
 
 
 
 
             // tổng giảm trừ bản thân và người phụ thuộc
+            $eeduce = 0;
             $formularDependentPerson = ParamaterFormula::where('Code', 'GIAM_TRU_BAN_THAN_PHU_THUOC')->first();
-            $eeduce = $this->getFormular(json_decode($formularDependentPerson->Recipe), $contract, $parameter);
-            $eeduce = eval('return ' . $eeduce . ';');
+
+            if (!is_null($formularDependentPerson)) {
+                $eeduce = $this->getFormular(json_decode($formularDependentPerson->Recipe), $contract, $parameter);
+                $eeduce = eval('return ' . $eeduce . ';');
+            }
             $parameter['GIAM_TRU_BAN_THAN_PHU_THUOC'] = $eeduce;
 
 
@@ -428,9 +515,13 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $parameter['THUE_TNCN'] = $personalIncomeTax;
 
             //lương thực nhận
+            $actuallyReceived = 0;
             $formularActuallyReceived = ParamaterFormula::where('Code', 'LUONG_THUC_NHAN')->first();
-            $actuallyReceived = $this->getFormular(json_decode($formularActuallyReceived->Recipe), $contract, $parameter);
-            $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+
+            if (!is_null($formularActuallyReceived)) {
+                $actuallyReceived = $this->getFormular(json_decode($formularActuallyReceived->Recipe), $contract, $parameter);
+                $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+            }
             $parameter['LUONG_THUC_NHAN'] = $actuallyReceived;
 
 

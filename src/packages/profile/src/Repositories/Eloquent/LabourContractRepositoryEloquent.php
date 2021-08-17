@@ -169,7 +169,6 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             }
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
