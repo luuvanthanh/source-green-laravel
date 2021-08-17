@@ -7,6 +7,7 @@ use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Models\AttendanceLog;
 use GGPHP\Attendance\Presenters\AttendancePresenter;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
+use GGPHP\Clover\Models\Classes;
 use GGPHP\Clover\Models\Student;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
@@ -259,10 +260,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         $this->studentRepositoryEloquent->model = $this->studentRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
             if (!empty($attributes['date'])) {
-                $query->where([['StartDate', '>=', $attributes['date']], ['EndDate', '<=', $attributes['date']]]);
+                $query->where([['StartDate', '<=', $attributes['date']], ['EndDate', '>=', $attributes['date']]]);
             }
-            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
 
+            if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
                 $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
                     ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
@@ -598,7 +599,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         if (!empty($attributes['branchId'])) {
             $branchId = explode(',', $attributes['branchId']);
-            $student->whereIn('BranchId', $branchId);
+            $student->whereHas('classStudent', function ($query) use ($branchId) {
+                $query->whereHas('classes', function ($query2) use ($branchId) {
+                    $query2->whereIn('BranchId', $branchId);
+                });
+            });
         }
 
         $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
@@ -615,6 +620,64 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 'annualLeave' => $attendanceAnnualLeave,
                 'unpaidLeave' => $attendanceUnpaidLeave,
             ],
+        ];
+    }
+
+    public function attendanceSummaryByClass(array $attributes)
+    {
+        $queryClass = Classes::query();
+
+        if (!empty($attributes['classId'])) {
+            $queryClass->whereIn('Id', explode(',', $attributes['classId']));
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $queryClass->whereIn('BranchId', $branchId);
+        }
+
+        $class = $queryClass->get();
+
+        $class->map(function ($item) use ($attributes) {
+            $student = Student::where('ClassId', $item->Id)->where('Status', '!=', Student::STORE)->get();
+
+            $attendanceHaveIn = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+                $query->where('Status', Attendance::STATUS['HAVE_IN']);
+            })->count();
+            $attendanceHaveOut = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where(function ($query) {
+                $query->where('Status', Attendance::STATUS['HAVE_OUT']);
+            })->count();
+
+            $attendanceAnnualLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->count();
+            $attendanceUnpaidLeave = Attendance::where('Date', $attributes['date'])->whereIn('StudentId', $student->pluck('Id')->toArray())->where('Status', Attendance::STATUS['UNPAID_LEAVE'])->count();
+
+            $item->report = [
+                "totalStudent" => count($student),
+                "haveIn" => $attendanceHaveIn,
+                "haveOut" => $attendanceHaveOut,
+                "annualLeave" => $attendanceAnnualLeave,
+                "unpaidLeave" => $attendanceUnpaidLeave
+            ];
+        });
+
+        $result = $class->toArray();
+
+        foreach ($result as $key => $value) {
+            foreach ($value as $keyItem => $item) {
+
+                $newkeyItem = dashesToCamelCase($keyItem, false);
+
+                if ($keyItem != $newkeyItem) {
+                    $value[$newkeyItem] = $value[$keyItem];
+
+                    unset($value[$keyItem]);
+                }
+            }
+            $result[$key] = $value;
+        }
+
+        return [
+            'data' => $result
         ];
     }
 }

@@ -75,7 +75,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
-            $this->model = $this->model->whereIn('EmployeeId', $attributes['employeeId']);
+            $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
         if (!empty($attributes['fullName'])) {
@@ -118,7 +118,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             if (!empty($attributes['absentTypeId'])) {
                 $query->where('AbsentTypeId', $attributes['absentTypeId']);
             }
-
         }]);
 
         if (!empty($attributes['employeeId'])) {
@@ -166,5 +165,4 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         return parent::find($id);
     }
-
 }

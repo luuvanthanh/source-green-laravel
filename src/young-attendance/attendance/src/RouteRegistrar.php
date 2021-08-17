@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('attendance-logs', 'AttendanceLogController');
             \Route::resource('attendances-reasons', 'AttendanceReasonController');
             \Route::get('attendance-summary', 'AttendanceController@attendanceSummary');
+            \Route::get('class-attendance-summary', 'AttendanceController@attendanceSummaryByClass');
 
             \Route::get('attendances-cron-tab', 'AttendanceController@attendanceCrontab');
         });

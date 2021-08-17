@@ -25,7 +25,7 @@ class TransferCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'decisionNumber' => 'unique:Transfers,DecisionNumber',
+            'decisionNumber' => 'required|unique:Transfers,DecisionNumber',
             'decisionDate' => 'required|after_or_equal:today',
             'timeApply' => [
                 'required',
@@ -33,7 +33,6 @@ class TransferCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $value = Carbon::parse($value)->format('Y-m-d');
                     $data = request()->data;
-
                     $tranfer = \GGPHP\PositionLevel\Models\PositionLevel::where('EmployeeId', $data[0]['employeeId'])->where('StartDate', '>=', $value)->first();
 
                     if (!is_null($tranfer)) {
@@ -42,7 +41,19 @@ class TransferCreateRequest extends FormRequest
                     }
                 },
             ],
-            'data' => 'required|array',
+            'data' => [
+                'required',
+                'array',
+                function ($attribute, $value, $fail) {
+                    $positionLevel = \GGPHP\PositionLevel\Models\PositionLevel::where('EmployeeId', $value[0]['employeeId'])->where('BranchId', $value[0]['branchId'])->where('DivisionId', $value[0]['divisionId'])->where('PositionId', $value[0]['positionId'])->first();
+
+                    if (is_null($positionLevel)) {
+                        return true;
+                    }
+
+                    return $fail('Dữ liệu cơ sở mới, bộ phận mới, chức vụ mới đã có trong hệ thống ! vui lòng thay đổi 1 hoặc 2 trong 3 dữ liệu ');
+                }
+            ],
             'data.*.employeeId' => 'required',
             'data.*.branchId' => 'required',
             'data.*.divisionId' => 'required',
@@ -58,7 +69,7 @@ class TransferCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'decisionDate.after_or_equal' => "Trường phải là một ngày sau ngày hiện tại.",
+            'decisionDate.after_or_equal' => "Trường phải là ngày hiện tại hoặc sau ngày hiện tại.",
         ];
     }
 }

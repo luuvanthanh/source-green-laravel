@@ -4,6 +4,7 @@ namespace GGPHP\Attendance\Http\Controllers;
 
 use GGPHP\Attendance\Http\Requests\AttendanceCreateRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceSummaryRequest;
+use GGPHP\Attendance\Http\Requests\AttendanceSummaryByClassRequest;
 use GGPHP\Attendance\Http\Requests\AttendanceUpdateRequest;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
@@ -129,6 +130,18 @@ class AttendanceController extends Controller
     public function attendanceSummary(AttendanceSummaryRequest $request)
     {
         $attendance = $this->attendanceRepository->attendanceSummary($request->all());
+
+        return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function attendanceSummaryByClass(AttendanceSummaryByClassRequest $request)
+    {
+        $attendance = $this->attendanceRepository->attendanceSummaryByClass($request->all());
 
         return $this->success($attendance, trans('lang-program::messages.attendance.getListSuccess'));
     }
