@@ -603,7 +603,7 @@ const Index = memo(() => {
                     !isAllBranch
                   }
                 >
-                  Lưu
+                  Gửi
                 </Button>
               </Pane>
             </Pane>
