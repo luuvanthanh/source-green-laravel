@@ -35,7 +35,25 @@ export function getTrainingSchools(_params = {}) {
 export function add(data = {}) {
   return requestLavarel('/v1/employees', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+      dateOfBirth: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfBirth,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      dateOfIssueIdCard: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfIssueIdCard,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 
@@ -49,7 +67,25 @@ export function addPositionLevels(data = {}) {
 export function update(data = {}) {
   return requestLavarel(`/v1/employees/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+      dateOfBirth: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfBirth,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      dateOfIssueIdCard: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfIssueIdCard,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
   });
 }
 
