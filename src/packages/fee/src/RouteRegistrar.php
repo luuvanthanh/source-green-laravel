@@ -51,6 +51,8 @@ class RouteRegistrar extends CoreRegistrar
 
             Route::get('money-fee-policies', 'FeePolicieController@moneyFeePolicies');
 
+            Route::get('change-parameter-details', 'ChangeParameterDetailController@index');
+
             //charge-old-students
             Route::resource('charge-old-students', 'ChargeOldStudentController');
         });
