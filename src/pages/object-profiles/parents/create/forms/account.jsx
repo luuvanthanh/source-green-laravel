@@ -7,7 +7,7 @@ import classnames from 'classnames';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import { head, isEmpty, get } from 'lodash';
+import { head, isEmpty } from 'lodash';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
@@ -47,7 +47,7 @@ const Index = memo(
      */
     const onFinish = (values) => {
       dispatch({
-        type: 'OPParentsAdd/ADD_ACCOUNT',
+        type: details?.user?.id ? 'OPParentsAdd/UPDATE_ACCOUNT' : 'OPParentsAdd/ADD_ACCOUNT',
         payload: { ...details, ...values, id: params.id },
         callback: (response, error) => {
           if (error) {
@@ -268,7 +268,6 @@ const Index = memo(
                   htmlType="submit"
                   style={{ marginLeft: 'auto' }}
                   loading={loadingSubmit}
-                  disabled={get(details, 'userName')}
                 >
                   Lưu
                 </Button>
