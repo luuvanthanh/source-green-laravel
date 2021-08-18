@@ -6,7 +6,6 @@ import { useParams } from 'umi';
 import { EyeOutlined } from '@ant-design/icons';
 import { Scrollbars } from 'react-custom-scrollbars';
 import 'moment/locale/vi';
-import { isEmpty, head } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -50,15 +49,8 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
-  const mergeMenuMeal = (items) => {
-    let menuMeal = [];
-    if (!isEmpty(items)) {
-      items.forEach((item) => {
-        menuMeal = [...menuMeal, ...item.menuMealGroupByDay];
-      });
-    }
-    return menuMeal;
-  };
+  const mergeMenuMeal = (items) =>
+    items.reduce((result, entry) => result.concat([...entry.menuMealGroupByDay]), []);
 
   return (
     <>
@@ -115,42 +107,44 @@ const Index = memo(() => {
                           {Helper.getDate(date, variables.DATE_FORMAT.SHOW_FULL_DATE)}
                         </Heading>
                       </Pane>
-                      <Timeline>
-                        {head(menuMealGroupByMenuTypes)?.menuMealInfors?.map(
-                          ({ fromTime, toTime, menuMealDetails }, index) => (
-                            <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
-                              <Pane>
-                                <b>
-                                  {Helper.getDate(fromTime, variables.DATE_FORMAT.HOUR)} -{' '}
-                                  {Helper.getDate(toTime, variables.DATE_FORMAT.HOUR)}
-                                </b>
-                              </Pane>
-                              {menuMealDetails?.map((item, index) => (
-                                <Pane key={index} className="mb5">
-                                  <Text size="normal">{item?.food?.name}</Text>
-                                  {Helper.isJSON(item?.food?.pathImage) && (
-                                    <Image.PreviewGroup>
-                                      {Helper.isJSON(item?.food?.pathImage) &&
-                                        JSON.parse(item?.food?.pathImage).map((item, index) => (
-                                          <Image
-                                            width={80}
-                                            height={80}
-                                            src={`${API_UPLOAD}${item?.url}`}
-                                            key={index}
-                                            preview={{
-                                              maskClassName: 'customize-mask',
-                                              mask: <EyeOutlined className="mr5" />,
-                                            }}
-                                          />
-                                        ))}
-                                    </Image.PreviewGroup>
-                                  )}
+                      {menuMealGroupByMenuTypes.map((item, index) => (
+                        <Timeline key={index}>
+                          {item?.menuMealInfors?.map(
+                            ({ fromTime, toTime, menuMealDetails }, index) => (
+                              <TimelineItem color="red" key={index} style={{ paddingBottom: 10 }}>
+                                <Pane>
+                                  <b>
+                                    {Helper.getDate(fromTime, variables.DATE_FORMAT.HOUR)} -{' '}
+                                    {Helper.getDate(toTime, variables.DATE_FORMAT.HOUR)}
+                                  </b>
                                 </Pane>
-                              ))}
-                            </TimelineItem>
-                          ),
-                        )}
-                      </Timeline>
+                                {menuMealDetails?.map((item, index) => (
+                                  <Pane key={index} className="mb5">
+                                    <Text size="normal">{item?.food?.name}</Text>
+                                    {Helper.isJSON(item?.food?.pathImage) && (
+                                      <Image.PreviewGroup>
+                                        {Helper.isJSON(item?.food?.pathImage) &&
+                                          JSON.parse(item?.food?.pathImage).map((item, index) => (
+                                            <Image
+                                              width={80}
+                                              height={80}
+                                              src={`${API_UPLOAD}${item?.url}`}
+                                              key={index}
+                                              preview={{
+                                                maskClassName: 'customize-mask',
+                                                mask: <EyeOutlined className="mr5" />,
+                                              }}
+                                            />
+                                          ))}
+                                      </Image.PreviewGroup>
+                                    )}
+                                  </Pane>
+                                ))}
+                              </TimelineItem>
+                            ),
+                          )}
+                        </Timeline>
+                      ))}
                     </Pane>
                   </ListItem>
                 )}
