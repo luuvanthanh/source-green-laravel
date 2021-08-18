@@ -182,11 +182,10 @@ const Index = memo(({ classId, branchId }) => {
                   }}
                   rowKey={(record) => record.id}
                   scroll={{ x: '100%' }}
+                  className="mb10"
                 />
-                <div className={styles.timeline}>
-                  <span className="icon-checkmark" />
-                  <strong>Lặp lại: 08/08 - 10/08</strong>
-                </div>
+                <p className={styles.label}>Ngày uống:</p>
+                <p className={styles.label}>08/08 - 10/08</p>
                 <hr />
                 <div>
                   <label className={styles.label}>Hình ảnh:</label>
