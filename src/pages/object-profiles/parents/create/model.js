@@ -75,6 +75,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE_ACCOUNT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateAccount, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);

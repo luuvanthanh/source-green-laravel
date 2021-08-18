@@ -12,6 +12,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Loading from '@/components/CommonComponent/Loading';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
+import Select from '@/components/CommonComponent/Select';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import variablesModules from '../../utils/variables';
@@ -327,6 +328,7 @@ class Index extends PureComponent {
    * Function header table
    */
   header = (type) => {
+    const { shiftUsers } = this.props;
     if (type === variablesModules.TYPE_ABSENTS.GO_OUT) {
       return [
         {
@@ -408,6 +410,28 @@ class Index extends PureComponent {
           ),
         },
         {
+          title: 'Loại ca',
+          key: 'shiftCode',
+          className: 'min-width-200',
+          render: (record) => (
+            <Select
+              dataSet={
+                shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                  (item) => ({
+                    id: item.id,
+                    name: item.name,
+                  }),
+                ) || []
+              }
+              disabled={record.isFullDate === 1}
+              value={record.shiftId}
+              style={{ width: '100%' }}
+              placeholder="Chọn"
+              onChange={(event) => this.onChangeShiftCode(event, record)}
+            />
+          ),
+        },
+        {
           title: 'Thời gian bắt đầu',
           key: 'startTime',
           className: 'min-width-200',
@@ -459,6 +483,28 @@ class Index extends PureComponent {
             placeholder="Nhập"
             style={{ width: '100%' }}
             onChange={(event) => this.onChangeFullDate(event, record)}
+          />
+        ),
+      },
+      {
+        title: 'Loại ca',
+        key: 'shiftCode',
+        className: 'min-width-200',
+        render: (record) => (
+          <Select
+            dataSet={
+              shiftUsers[Helper.getDate(record.date, variables.DATE_FORMAT.DATE_AFTER)]?.map(
+                (item) => ({
+                  id: item.id,
+                  name: item.name,
+                }),
+              ) || []
+            }
+            disabled={record.isFullDate === 1}
+            value={record.shiftCode}
+            style={{ width: '100%' }}
+            placeholder="Chọn"
+            onChange={(event) => this.onChangeShiftCode(event, record)}
           />
         ),
       },
@@ -531,7 +577,7 @@ class Index extends PureComponent {
       categories,
       loading: { effects },
       match: { params },
-      absentTypes,
+      absentTypes
     } = this.props;
     const { detail, type } = this.state;
     const loading =
@@ -555,11 +601,7 @@ class Index extends PureComponent {
           onValuesChange={this.formUpdate}
         >
           <div className={styles['content-form']}>
-            <Loading
-              loading={loading}
-              isError={error.isError}
-              params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}
-            >
+            <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/don-di-cong-tac' }}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
                   THÔNG TIN CHUNG
@@ -614,7 +656,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-6">
                     <FormItem
-                      data={absentTypes || []}
+                     data={absentTypes || []}
                       label="Loại công"
                       name="absentTypeId"
                       rules={[variables.RULES.EMPTY]}
@@ -695,7 +737,7 @@ Index.defaultProps = {
   error: {},
   menuLeftSchedules: [],
   loading: {},
-  absentTypes: [],
+  absentTypes: PropTypes.arrayOf(PropTypes.any),
 };
 
 export default Index;

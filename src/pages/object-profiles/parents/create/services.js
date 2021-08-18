@@ -16,6 +16,13 @@ export function addAccount(data = {}) {
   });
 }
 
+export function updateAccount(data = {}) {
+  return request(`/parents/${data.id}/account`, {
+    method: 'PUT',
+    data: { ...omit(data, 'id') },
+  });
+}
+
 export function update(data = {}) {
   return request(`/parents/${data.id}`, {
     method: 'PUT',

@@ -127,6 +127,16 @@ const Index = memo(() => {
     changeFilterDebouce(name, value);
   };
 
+  const changeMonthFilter = (name) => (value) => {
+    const totalDay = moment(value).daysInMonth();
+    changeFilterDebouce(
+      name,
+      moment(value)
+        .endOf('months')
+        .subtract(totalDay / 2, 'days'),
+    );
+  };
+
   useEffect(() => {
     dispatch({
       type: 'kitchenMenus/GET_DATA',
@@ -171,7 +181,7 @@ const Index = memo(() => {
             icon="plus"
             onClick={() => history.push(`${pathname}/tao-moi`)}
           >
-            Tạo mới
+            Tạo thực đơn
           </Button>
         </Pane>
 
@@ -208,9 +218,9 @@ const Index = memo(() => {
                 </Pane>
                 <Pane className="col-lg-3">
                   <FormItem
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_PICKER}
                     name="date"
-                    onChange={(e) => changeFilter('date')(e)}
+                    onChange={(e) => changeMonthFilter('date')(e)}
                     allowClear={false}
                   />
                 </Pane>

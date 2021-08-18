@@ -2,7 +2,7 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Modal } from 'antd';
 import { useSelector, useDispatch } from 'dva';
-import { useHistory, useParams } from 'umi';
+import { useHistory, useParams, useLocation } from 'umi';
 import { head, isEmpty, last, omit, size } from 'lodash';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
@@ -39,6 +39,7 @@ const Index = memo(() => {
   const [toDate, setToDate] = useState([]);
 
   const history = useHistory();
+  const { query } = useLocation();
   const formRef = useRef();
   const formRefModal = useRef();
   const mounted = useRef(false);
@@ -212,6 +213,39 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
+    if (query.id) {
+      dispatch({
+        type: 'kitchenMenusCreate/GET_DATA',
+        payload: {
+          ...query,
+        },
+        callback: (response) => {
+          if (response) {
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
+            const result = convertMenuMeal(response?.menuMeals)
+              .sort((a, b) => a.weekIndex - b.weekIndex)
+              .map((item) => ({
+                ...item,
+                menuMeals: covertTimeline(item?.menuMeals).map((itemMenuMeals) => ({
+                  ...itemMenuMeals,
+                  weekIndex: item.weekIndex,
+                  timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
+                    ...itemTimeline,
+                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                  })),
+                })),
+              }));
+            setWeeksKitchen(result);
+            formRef.current.setFieldsValue({
+              ...response,
+              branchId: response?.branch?.id,
+              month: response.fromDate && moment(response.fromDate),
+            });
+          }
+        },
+      });
+    }
     if (params.id) {
       dispatch({
         type: 'kitchenMenusCreate/GET_DATA',
@@ -523,6 +557,13 @@ const Index = memo(() => {
   const editTimeline = (item, itemMenu, timeline) => {
     setVisible(true);
     setObect({ item, itemMenu, timeline });
+    formRefModal.current.setFieldsValue({
+      name: timeline?.name,
+      time:
+        timeline?.fromTime && timeline?.toTime
+          ? [moment(timeline?.fromTime), moment(timeline?.toTime)]
+          : undefined,
+    });
   };
 
   const enableButton = (items) => {
@@ -784,6 +825,7 @@ const Index = memo(() => {
                                                       className={classnames(
                                                         styles['col-item'],
                                                         'min-width-150',
+                                                        'max-width-150',
                                                       )}
                                                       key={itemDay.id}
                                                     >
@@ -859,29 +901,56 @@ const Index = memo(() => {
                         </div>
                       </div>
                     ))}
-                  <Pane className="py20 d-flex justify-content-between align-items-center">
-                    {params.id && (
-                      <p className="btn-delete" role="presentation" onClick={remove}>
-                        Xóa
-                      </p>
-                    )}
-                    {!isEmpty(weeksKitchen) && (
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                        disabled={enableButton(weeksKitchen)}
-                        loading={
-                          loading['kitchenMenusCreate/ADD'] ||
-                          loading['kitchenMenusCreate/UPDATE'] ||
-                          loading['kitchenMenusCreate/GET_DATA']
-                        }
+                  {!params.id && (
+                    <Pane className="py20 d-flex justify-content-between align-items-center">
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        onClick={() => history.goBack()}
                       >
-                        Lưu
-                      </Button>
-                    )}
-                  </Pane>
+                        Hủy
+                      </p>
+                      {!isEmpty(weeksKitchen) && (
+                        <Button
+                          className="ml-auto px25"
+                          color="success"
+                          htmlType="submit"
+                          size="large"
+                          disabled={enableButton(weeksKitchen)}
+                          loading={
+                            loading['kitchenMenusCreate/ADD'] ||
+                            loading['kitchenMenusCreate/UPDATE'] ||
+                            loading['kitchenMenusCreate/GET_DATA']
+                          }
+                        >
+                          Lưu
+                        </Button>
+                      )}
+                    </Pane>
+                  )}
+                  {params.id && (
+                    <Pane className="py20 d-flex justify-content-between align-items-center">
+                      <p className="btn-delete" role="presentation" onClick={remove}>
+                        Hủy
+                      </p>
+                      {!isEmpty(weeksKitchen) && (
+                        <Button
+                          className="ml-auto px25"
+                          color="success"
+                          htmlType="submit"
+                          size="large"
+                          disabled={enableButton(weeksKitchen)}
+                          loading={
+                            loading['kitchenMenusCreate/ADD'] ||
+                            loading['kitchenMenusCreate/UPDATE'] ||
+                            loading['kitchenMenusCreate/GET_DATA']
+                          }
+                        >
+                          Lưu
+                        </Button>
+                      )}
+                    </Pane>
+                  )}
                 </Pane>
               </Loading>
             </Form>

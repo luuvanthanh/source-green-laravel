@@ -168,7 +168,12 @@ const Index = memo(() => {
               >
                 Sửa
               </Button>
-              <Button color="success">Thêm bản sao</Button>
+              <Button
+                color="success"
+                onClick={() => history.push(`/thuc-don/tao-moi?id=${params.id}`)}
+              >
+                Thêm bản sao
+              </Button>
             </Pane>
           </Pane>
         </Pane>
