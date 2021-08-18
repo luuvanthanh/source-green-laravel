@@ -13,7 +13,7 @@ import styles from '@/assets/styles/Common/information.module.scss';
 import { useSelector, useDispatch } from 'dva';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { variables, Helper } from '@/utils';
-import { head, size, isEmpty } from 'lodash';
+import { head, size, isEmpty, debounce } from 'lodash';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment';
@@ -43,7 +43,6 @@ const Index = memo(() => {
   const [content, setContent] = useState('');
   const [isAllEmployees, setIsAllEmployees] = useState(false);
   const [isAllParents, setIsAllParents] = useState(false);
-  const [isAllBranch, setIsAllBranch] = useState(false);
   const [type, setType] = useState(variablesModules.TYPE.EMPLOYEE);
   const [searchEmployee, setSearchEmployee] = useState({
     page: variables.PAGINATION.PAGE,
@@ -70,6 +69,38 @@ const Index = memo(() => {
 
   const onChangeType = (event) => {
     mountedSet(setType, event.target.value);
+  };
+
+  /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  const debouncedSearchKeyWork = debounce((value) => {
+    mountedSet(setSearchParent, { ...searchParent, loading: true });
+    dispatch({
+      type: 'notificationAdd/GET_PARENTS',
+      payload: {
+        page: variables.PAGINATION.PAGE,
+        limit: variables.PAGINATION.PAGE_SIZE,
+        KeyWord: value?.trim(),
+      },
+      callback: (response) => {
+        if (response) {
+          mountedSet(setParents, response.items);
+          mountedSet(setSearchParent, {
+            ...searchParent,
+            total: response.totalCount,
+            page: variables.PAGINATION.PAGE,
+            limit: variables.PAGINATION.PAGE_SIZE,
+          });
+        }
+      },
+    });
+  }, 300);
+
+  const onChangeKeywork = (e) => {
+    debouncedSearchKeyWork(e.target.value);
   };
 
   useEffect(() => {
@@ -255,8 +286,6 @@ const Index = memo(() => {
   const changeAll = (type, event) => {
     if (type === variablesModules.TYPE.EMPLOYEE) {
       mountedSet(setIsAllEmployees, event.target.checked);
-    } else if (type === variablesModules.TYPE.BRANCH) {
-      mountedSet(setIsAllBranch, event.target.checked);
     } else {
       mountedSet(setIsAllParents, event.target.checked);
     }
@@ -268,11 +297,10 @@ const Index = memo(() => {
       id: params.id,
       content,
       sentDate: moment(),
-      isAllEmployees: isAllBranch || isAllEmployees,
+      isAllEmployees,
       isAllParents,
-      branchId: isAllBranch ? null : values.branchId,
       employeeNews:
-        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees && !isAllBranch
+        type === variablesModules.TYPE.EMPLOYEE && !isAllEmployees
           ? employees.filter((item) => item.checked).map((item) => ({ employeeId: item.id }))
           : [],
       parentNews:
@@ -326,7 +354,7 @@ const Index = memo(() => {
               setParents,
               parents.map((item) => {
                 const itemParent = response.parentNews.find(
-                  (itemE) => itemE?.employee?.id === item.id,
+                  (itemE) => itemE?.parent?.id === item.id,
                 );
                 return {
                   ...item,
@@ -334,12 +362,8 @@ const Index = memo(() => {
                 };
               }),
             );
-            mountedSet(
-              setIsAllEmployees,
-              response.isAllEmployees && !response.branch ? false : response.isAllParents,
-            );
+            mountedSet(setIsAllEmployees, response.isAllEmployees);
             mountedSet(setIsAllParents, response.isAllParents);
-            mountedSet(setIsAllBranch, response.isAllEmployees && !response.branch);
             mountedSet(
               setEmployees,
               employees.map((item) => {
@@ -377,7 +401,7 @@ const Index = memo(() => {
                   <Heading type="form-title">Thông tin chung</Heading>
                 </Pane>
 
-                <FormItemAntd label="Đối tượng gửi">
+                <FormItemAntd label="Đối tượng nhận">
                   <RadioGroup
                     options={variablesModules.TYPES}
                     value={type}
@@ -388,16 +412,6 @@ const Index = memo(() => {
 
               {type === variablesModules.TYPE.EMPLOYEE && (
                 <>
-                  <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
-                    <FormItemAntd className="mb5">
-                      <Checkbox
-                        checked={isAllBranch}
-                        onChange={(event) => changeAll(variablesModules.TYPE.BRANCH, event)}
-                      >
-                        Tất cả chi nhánh
-                      </Checkbox>
-                    </FormItemAntd>
-                  </Pane>
                   <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
                     <Pane className="row">
                       <Pane className="col-lg-6">
@@ -430,9 +444,9 @@ const Index = memo(() => {
                       </Checkbox>
                     </FormItemAntd>
                   </Pane>
-                  {!isAllEmployees && !isAllBranch && (
+                  {!isAllEmployees && (
                     <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax="calc(40vh)">
+                      <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
                           hasMore={!searchEmployee.loading && searchEmployee.hasMore}
                           initialLoad={searchEmployee.loading}
@@ -468,7 +482,7 @@ const Index = memo(() => {
                   )}
 
                   <Pane className="p20">
-                    {!isAllEmployees && !isAllBranch && (
+                    {!isAllEmployees && (
                       <Text color="dark" size="normal">
                         Đã chọn {size(employees.filter((item) => item.checked))} nhân viên
                       </Text>
@@ -478,6 +492,18 @@ const Index = memo(() => {
               )}
               {type === variablesModules.TYPE.PARENT && (
                 <>
+                  <Pane className="border-bottom" style={{ padding: '20px 20px 0 20px' }}>
+                    <Pane className="row">
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          label="Người nhận"
+                          name="keyWork"
+                          type={variables.INPUT_SEARCH}
+                          onChange={onChangeKeywork}
+                        />
+                      </Pane>
+                    </Pane>
+                  </Pane>
                   <Pane className="border-bottom" style={{ padding: '10px 20px 0 20px' }}>
                     <FormItemAntd label="Người nhận thông báo">
                       <Checkbox
@@ -491,7 +517,7 @@ const Index = memo(() => {
 
                   {!isAllParents && (
                     <Pane className="border-bottom">
-                      <Scrollbars autoHeight autoHeightMax={window.innerHeight - 500}>
+                      <Scrollbars autoHeight autoHeightMax="40vh">
                         <InfiniteScroll
                           hasMore={!searchParent.loading && searchParent.hasMore}
                           initialLoad={searchParent.loading}
@@ -599,11 +625,10 @@ const Index = memo(() => {
                     !employees.find((item) => item.checked) &&
                     !parents.find((item) => item.checked) &&
                     !isAllEmployees &&
-                    !isAllParents &&
-                    !isAllBranch
+                    !isAllParents
                   }
                 >
-                  Gửi
+                  Lưu
                 </Button>
               </Pane>
             </Pane>
