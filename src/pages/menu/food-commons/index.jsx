@@ -72,8 +72,8 @@ const Index = memo(() => {
                 <div key={index} className="group-image">
                   <Image
                     key={index}
-                    width={42}
-                    height={42}
+                    width={80}
+                    height={80}
                     src={`${API_UPLOAD}${item.url}`}
                     data-viewmore={`+${JSON.parse(record?.pathImage)?.length - 1}`}
                     fallback="/default-upload.png"
@@ -158,7 +158,7 @@ const Index = memo(() => {
             icon="plus"
             onClick={() => history.push(`${pathname}/tao-moi`)}
           >
-            Tạo mới
+            Tạo danh mục
           </Button>
         </Pane>
 

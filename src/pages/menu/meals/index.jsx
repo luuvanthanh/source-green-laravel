@@ -1,9 +1,8 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Switch } from 'antd';
+import { Switch } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { debounce } from 'lodash';
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 import { MenuOutlined } from '@ant-design/icons';
@@ -11,7 +10,6 @@ import { MenuOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 
@@ -28,27 +26,15 @@ const Index = memo(() => {
   const history = useHistory();
   const { query, pathname } = useLocation();
 
-  const filterRef = useRef();
   const mounted = useRef(false);
 
-  const [search, setSearch] = useState({
+  const [search] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     keyWord: query?.keyWord,
   });
 
   const [dataSource, setDataSource] = useState([]);
-
-  const changeFilterDebouce = debounce((name, value) => {
-    setSearch((prevSearch) => ({
-      ...prevSearch,
-      [name]: value,
-    }));
-  }, 300);
-
-  const changeFilter = (name) => (value) => {
-    changeFilterDebouce(name, value);
-  };
 
   const onChangeSwitch = (isUsed, record) => {
     dispatch({
@@ -178,48 +164,25 @@ const Index = memo(() => {
             icon="plus"
             onClick={() => history.push(`${pathname}/tao-moi`)}
           >
-            Tạo mới
+            Tạo danh mục
           </Button>
         </Pane>
 
-        <Pane className="card">
-          <Pane className="p20">
-            <Form
-              layout="vertical"
-              ref={filterRef}
-              initialValues={{
-                ...search,
-              }}
-            >
-              <Pane className="row">
-                <Pane className="col-lg-3">
-                  <FormItem
-                    type={variables.INPUT_SEARCH}
-                    name="keyWord"
-                    onChange={({ target: { value } }) => changeFilter('keyWord')(value)}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                  />
-                </Pane>
-              </Pane>
-            </Form>
-
-            <Table
-              columns={columns}
-              dataSource={dataSource}
-              loading={loading['meals/GET_DATA']}
-              isError={error.isError}
-              pagination={false}
-              rowKey="index"
-              scroll={{ x: '100%' }}
-              components={{
-                body: {
-                  wrapper: DraggableContainer,
-                  row: DraggableBodyRow,
-                },
-              }}
-            />
-          </Pane>
-        </Pane>
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          loading={loading['meals/GET_DATA']}
+          isError={error.isError}
+          pagination={false}
+          rowKey="index"
+          scroll={{ x: '100%' }}
+          components={{
+            body: {
+              wrapper: DraggableContainer,
+              row: DraggableBodyRow,
+            },
+          }}
+        />
       </Pane>
     </>
   );
