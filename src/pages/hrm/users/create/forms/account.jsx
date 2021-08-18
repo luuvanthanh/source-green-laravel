@@ -211,14 +211,16 @@ const Index = memo(
                       rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                     />
                   </Pane>
-                  <Pane className="col-lg-4">
-                    <FormItem
-                      name="password"
-                      label="Mật khẩu"
-                      type={variables.INPUT_PASSWORD}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </Pane>
+                  {!details?.userName && (
+                    <Pane className="col-lg-4">
+                      <FormItem
+                        name="password"
+                        label="Mật khẩu"
+                        type={variables.INPUT_PASSWORD}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Pane>
+                  )}
                 </Pane>
                 <hr />
                 <Pane className="row">
