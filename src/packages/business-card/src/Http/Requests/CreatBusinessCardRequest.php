@@ -42,13 +42,14 @@ class CreatBusinessCardRequest extends FormRequest
                         $accessAbsent = $this->checkDuplicateAbsent($value);
 
                         if (!is_null($accessAbsent)) {
-                            return $fail("Bạn đã nghỉ vào ngày " . $accessAbsent);
+                            return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
                         }
                     }
 
                     return true;
                 },
-            ]];
+            ]
+        ];
     }
 
     /**
