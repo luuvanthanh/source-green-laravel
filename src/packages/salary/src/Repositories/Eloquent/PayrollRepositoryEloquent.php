@@ -168,21 +168,23 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
 
                 foreach ($incurredAllowance as $itemIncurredAllowance) {
+                    $value =  isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
+
                     if ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_NLD') {
-                        $parameter['DIEU_CHINH_BHXH_NLD'] = $itemIncurredAllowance->value;
-                        $socialInsuranceAdjustedEmployee = $itemIncurredAllowance->value;
+                        $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
+                        $socialInsuranceAdjustedEmployee =  $value;
                     } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
-                        $parameter['DIEU_CHINH_BHXH_CTT'] = $itemIncurredAllowance->value;
-                        $socialInsuranceAdjustedCompany = $itemIncurredAllowance->value;
+                        $parameter['DIEU_CHINH_BHXH_CTT'] = $value;;
+                        $socialInsuranceAdjustedCompany = $value;;
                     } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
-                        $parameter['DONG_GOP_TU_THIEN'] = $itemIncurredAllowance->value;
-                        $charity = $itemIncurredAllowance->value;
+                        $parameter['DONG_GOP_TU_THIEN'] = $value;;
+                        $charity = $value;;
                     } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
-                        $parameter['THANH_TOAN_TU_BHXH'] = $itemIncurredAllowance->value;
-                        $socialInsurancePayment = $itemIncurredAllowance->value;
+                        $parameter['THANH_TOAN_TU_BHXH'] = $value;;
+                        $socialInsurancePayment = $value;;
                     } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
-                        $parameter['SO_TIEN_TAM_UNG'] = $itemIncurredAllowance->value;
-                        $advance = $itemIncurredAllowance->value;
+                        $parameter['SO_TIEN_TAM_UNG'] = $value;;
+                        $advance = $value;;
                     } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
                         $columnIncurredAllowance[$itemIncurredAllowance->code] = [
                             'code' => $itemIncurredAllowance->code,
