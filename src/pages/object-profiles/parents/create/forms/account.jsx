@@ -28,7 +28,9 @@ const Index = memo(
     const [visible, setVisible] = useState(false);
 
     const loadingSubmit =
-      effects[`OPParentsAdd/ADD_ACCOUNT`] || effects[`OPParentsAdd/CHANGE_PASSWORD`];
+      effects[`OPParentsAdd/ADD_ACCOUNT`] ||
+      effects[`OPParentsAdd/UPDATE_ACCOUNT`] ||
+      effects[`OPParentsAdd/CHANGE_PASSWORD`];
     const loading =
       effects[`OPParentsAdd/GET_DETAILS_ACCOUNT`] || effects[`OPParentsAdd/GET_ROLES`];
 
