@@ -137,7 +137,6 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'StartDate' => $ranges[$i]['start'],
                             'EndDate' => $ranges[$i]['end'],
                         ];
-
                     }
                 }
 
@@ -230,7 +229,6 @@ class SchoolYearRepositoryEloquent extends CoreRepositoryEloquent implements Sch
                             'StartDate' => $ranges[$i]['start'],
                             'EndDate' => $ranges[$i]['end'],
                         ];
-
                     }
                 }
 

@@ -36,12 +36,12 @@ class LabourContractCreateRequest extends FormRequest
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
 
-                    if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
-                        return $fail("Ngày hợp đồng phải lớn hơn ngày hết hiệu lực hợp đồng gần nhất " . $labourContract->ContractDate->format('d-m-Y'));
+                    if (!is_null($labourContract) && $value <= $labourContract->ContractDate->format('Y-m-d')) {
+                        return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $labourContract->ContractDate->format('d-m-Y'));
                     }
 
-                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractTo->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $probationaryContract->ContractTo->format('d-m-Y'));
+                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractDate->format('Y-m-d')) {
+                        return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $probationaryContract->ContractDate->format('d-m-Y'));
                     }
                 },
             ],
@@ -49,19 +49,20 @@ class LabourContractCreateRequest extends FormRequest
             'year' => 'required',
             'month' => 'required',
             'divisionId' => 'required|exists:Divisions,Id',
-            'contractFrom' => ['required', 'date',
+            'contractFrom' => [
+                'required', 'date',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->format('Y-m-d');
 
-                    if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $labourContract->ContractTo->format('d-m-Y'));
+                    if (!is_null($labourContract) && $value <= $labourContract->ContractFrom->format('Y-m-d')) {
+                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $labourContract->ContractFrom->format('d-m-Y'));
                     }
 
-                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractTo->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $probationaryContract->ContractTo->format('d-m-Y'));
+                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractFrom->format('Y-m-d')) {
+                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $probationaryContract->ContractFrom->format('d-m-Y'));
                     }
 
                     $tranfer = \GGPHP\PositionLevel\Models\PositionLevel::where('EmployeeId', $employeeId)->where('StartDate', '>=', $value)->first();
@@ -70,7 +71,6 @@ class LabourContractCreateRequest extends FormRequest
                         $startDate = $tranfer->StartDate->format('d-m-Y');
                         return $fail("Thời hạn từ phải lớn hơn ngày $startDate.");
                     }
-
                 },
             ],
             'contractTo' => 'required|date',
