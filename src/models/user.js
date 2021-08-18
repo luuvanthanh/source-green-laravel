@@ -76,25 +76,8 @@ const UserModel = {
     },
     *SWITCH_ACCOUNT({ payload }, saga) {
       try {
-        const { user } = yield saga.select();
-        const roleCurrent = user?.user?.roles?.find((item) => item.name === payload?.role?.name);
-        if (roleCurrent) {
-          yield saga.put({
-            type: 'SET_USER',
-            payload: {
-              ...user?.user,
-              authorized: true,
-              role: roleCurrent.name,
-              permissions: roleCurrent.permissionGrants,
-            },
-          });
-          const { can, rules } = new AbilityBuilder();
-          roleCurrent.permissionGrants.forEach((item) => {
-            can([item], item);
-          });
-          ability.update(rules);
-        }
-        history.push('/login');
+        yield saga.call(services.switchAccount, payload);
+        window.location.reload();
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',

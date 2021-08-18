@@ -25,7 +25,7 @@ class ProfileMenu extends React.Component {
     dispatch({
       type: 'user/SWITCH_ACCOUNT',
       payload: {
-        role,
+        roleId: role?.id,
       },
     });
   };
