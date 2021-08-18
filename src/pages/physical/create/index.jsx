@@ -479,7 +479,7 @@ const Index = memo(() => {
 
               <Pane className="d-flex justify-content-between align-items-center p20">
                 <Text color="dark" size="normal">
-                  Đã chọn {size(students.filter((item) => item?.checked))} nhân viên
+                  Đã chọn {size(students.filter((item) => item?.checked))} học sinh
                 </Text>
                 <Button
                   color="success"
