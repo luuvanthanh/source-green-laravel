@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Switch } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -317,54 +317,6 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
-        title: 'Chốt và khai báo',
-        key: 'name',
-        width: 120,
-        align: 'center',
-        className: 'min-width-120',
-        render: (record) => {
-          if (record.id === 'CHOT_BANG_LUONG') {
-            return (
-              <Switch
-                checked={data.isTimesheet}
-                disabled={data.isTimesheet}
-                onChange={() => this.update(data, 'CHOT_BANG_LUONG')}
-              />
-            );
-          }
-          if (record.id === 'CHOT_BANG_THUONG_KPI') {
-            return (
-              <Switch
-                checked={data.isBonus}
-                disabled={!data.isTimesheet || data.isBonus}
-                onChange={() => this.update(data, 'CHOT_BANG_THUONG_KPI')}
-              />
-            );
-          }
-          if (record.id === 'KHAI_BAO_KHOAN_KHAC') {
-            return (
-              <Switch
-                checked={data.isOther}
-                disabled={!data.isTimesheet || !data.isBonus || data.isOther}
-                onChange={() => this.update(data, 'KHAI_BAO_KHOAN_KHAC')}
-              />
-            );
-          }
-          if (record.id === 'TINH_LUONG') {
-            return (
-              <Button
-                color="primary"
-                disabled={!data.isTimesheet || !data.isBonus || !data.isOther}
-                onClick={() => this.updateSalary(data)}
-              >
-                Tính lương
-              </Button>
-            );
-          }
-          return null;
-        },
-      },
-      {
         title: 'Thao tác',
         key: 'action',
         className: 'min-width-80',
@@ -374,17 +326,24 @@ class Index extends PureComponent {
             {record.id === 'CHOT_BANG_LUONG' && (
               <Button
                 color="primary"
-                onClick={() =>
-                  history.push(
-                    `/quan-ly-nhan-su/tong-hop-cong?startDate=${Helper.getDate(
-                      moment(search.month).startOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}&endDate=${Helper.getDate(
-                      moment(search.month).endOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}`,
-                  )
-                }
+                onClick={() => {
+                  history.push({
+                    pathname: '/quan-ly-nhan-su/tong-hop-cong',
+                    query: {
+                      startDate: Helper.getDate(
+                        moment(search.month)
+                          .startOf('months')
+                          .subtract(1, 'months')
+                          .add(25, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                      endDate: Helper.getDate(
+                        moment(search.month).startOf('months').add(24, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                    },
+                  });
+                }}
               >
                 Xem bảng công
               </Button>
@@ -393,15 +352,22 @@ class Index extends PureComponent {
               <Button
                 color="primary"
                 onClick={() =>
-                  history.push(
-                    `/quan-ly-nhan-su/tong-hop-cong?startDate=${Helper.getDate(
-                      moment(search.month).startOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}&endDate=${Helper.getDate(
-                      moment(search.month).endOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}`,
-                  )
+                  history.push({
+                    pathname: '/quan-ly-nhan-su/tong-hop-cong',
+                    query: {
+                      startDate: Helper.getDate(
+                        moment(search.month)
+                          .startOf('months')
+                          .subtract(1, 'months')
+                          .add(25, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                      endDate: Helper.getDate(
+                        moment(search.month).startOf('months').add(24, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                    },
+                  })
                 }
               >
                 Xem KPI
@@ -411,15 +377,22 @@ class Index extends PureComponent {
               <Button
                 color="primary"
                 onClick={() =>
-                  history.push(
-                    `/quan-ly-nhan-su/khai-bao-cac-khoan-khac?startDate=${Helper.getDate(
-                      moment(search.month).startOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}&endDate=${Helper.getDate(
-                      moment(search.month).endOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}`,
-                  )
+                  history.push({
+                    pathname: '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
+                    query: {
+                      startDate: Helper.getDate(
+                        moment(search.month)
+                          .startOf('months')
+                          .subtract(1, 'months')
+                          .add(25, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                      endDate: Helper.getDate(
+                        moment(search.month).startOf('months').add(24, 'days'),
+                        variables.DATE_FORMAT.DATE_AFTER,
+                      ),
+                    },
+                  })
                 }
               >
                 Xem Khai báo
@@ -428,16 +401,10 @@ class Index extends PureComponent {
             {record.id === 'TINH_LUONG' && (
               <Button
                 color="primary"
-                onClick={() =>
-                  history.push(
-                    `/bang-luong/danh-sach?month=${Helper.getDate(
-                      moment(search.month).startOf('months'),
-                      variables.DATE_FORMAT.DATE_AFTER,
-                    )}`,
-                  )
-                }
+                disabled={!data.isTimesheet || !data.isBonus || !data.isOther}
+                onClick={() => this.updateSalary(data)}
               >
-                Xem tính lương
+                Tính lương
               </Button>
             )}
           </div>
