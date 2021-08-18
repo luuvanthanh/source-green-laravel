@@ -82,7 +82,8 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
             foreach ($attributes['detail'] as $value) {
                 if (!is_null($labourContract)) {
-                    $labourContract->parameterValues()->sync($value['parameterValueId'], ['Value' => $value['value']], false);
+                    $labourContract->parameterValues()->detach($value['parameterValueId']);
+                    $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
                 };
 
                 $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
@@ -113,7 +114,8 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
 
                     if (is_null($labourContract)) {
                         if (!is_null($labourContract)) {
-                            $labourContract->parameterValues()->sync($value['parameterValueId'], ['Value' => $value['value']], false);
+                            $labourContract->parameterValues()->detach($value['parameterValueId']);
+                            $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']], false);
                         };
                         $labourContract = ProbationaryContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
                     }

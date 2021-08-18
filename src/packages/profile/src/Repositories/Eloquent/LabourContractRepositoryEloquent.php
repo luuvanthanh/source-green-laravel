@@ -175,8 +175,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $labourContract->ContractTo->addYear()->format('Y-m-d'),
-                    'endDate' => $labourContract->ContractFrom->addYear()->format('Y-m-d'),
+                    'startDate' => $labourContract->ContractTo->format('Y-m-d'),
+                    'endDate' => $labourContract->ContractFrom->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
