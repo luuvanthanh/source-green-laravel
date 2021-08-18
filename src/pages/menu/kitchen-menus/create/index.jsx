@@ -740,7 +740,7 @@ const Index = memo(() => {
                                 className={classnames(
                                   styles.col,
                                   styles.first,
-                                  'min-width-130',
+                                  'min-width-150',
                                   'text-center',
                                 )}
                               >
@@ -766,7 +766,7 @@ const Index = memo(() => {
                                     className={classnames(
                                       styles.col,
                                       styles.first,
-                                      'min-width-130',
+                                      'min-width-150',
                                     )}
                                   >
                                     <h4 className={styles.title}>{itemMenu.name}</h4>
