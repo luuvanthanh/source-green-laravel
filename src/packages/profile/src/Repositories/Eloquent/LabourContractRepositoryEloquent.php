@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
@@ -136,11 +137,26 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract = LabourContract::create($attributes);
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
-            $now = Carbon::now();
+            $labourContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
+
             $dataPosition = [
                 'employeeId' => $attributes['employeeId'],
                 'branchId' => $attributes['branchId'],
@@ -182,11 +198,27 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
-
             $labourContract->parameterValues()->detach();
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+            $labourContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
+
 
             \DB::commit();
         } catch (\Exception $e) {

@@ -28,8 +28,7 @@ class SalaryIncreaseCreateRequest extends FormRequest
             'decisionDate' => 'required',
             'reason' => 'required',
             'employeeId' => 'required',
-            'timeApply' => 'required',
-            'note' => 'required',
+            'timeApply' => 'required'
         ];
     }
 }
