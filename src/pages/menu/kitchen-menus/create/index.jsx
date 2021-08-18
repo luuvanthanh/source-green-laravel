@@ -227,7 +227,9 @@ const Index = memo(() => {
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
-                menuMeals: covertTimeline(item?.menuMeals).map((itemMenuMeals) => ({
+                menuMeals: covertTimeline(
+                  item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
+                ).map((itemMenuMeals) => ({
                   ...itemMenuMeals,
                   weekIndex: item.weekIndex,
                   timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
@@ -260,7 +262,9 @@ const Index = memo(() => {
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
-                menuMeals: covertTimeline(item?.menuMeals).map((itemMenuMeals) => ({
+                menuMeals: covertTimeline(
+                  item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
+                ).map((itemMenuMeals) => ({
                   ...itemMenuMeals,
                   weekIndex: item.weekIndex,
                   timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
@@ -736,7 +740,7 @@ const Index = memo(() => {
                                 className={classnames(
                                   styles.col,
                                   styles.first,
-                                  'min-width-130',
+                                  'min-width-150',
                                   'text-center',
                                 )}
                               >
@@ -762,7 +766,7 @@ const Index = memo(() => {
                                     className={classnames(
                                       styles.col,
                                       styles.first,
-                                      'min-width-130',
+                                      'min-width-150',
                                     )}
                                   >
                                     <h4 className={styles.title}>{itemMenu.name}</h4>

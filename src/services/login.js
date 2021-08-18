@@ -25,12 +25,11 @@ export function me(data) {
   });
 }
 
-export async function switchAccount(data) {
-  return request('/user/me', {
-    method: 'GET',
-    headers: {
-      Authorization: `${data.token_type} ${data.access_token}`,
-    },
+export async function switchAccount(params) {
+  return request('/user/switch-role', {
+    method: 'PATCH',
+    params,
+    parse: true,
   });
 }
 
