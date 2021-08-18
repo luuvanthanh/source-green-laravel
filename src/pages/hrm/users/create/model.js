@@ -192,6 +192,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *UPDATE_ACCOUNT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateAccount, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *UPDATE({ payload, callback }, saga) {
       try {
         yield saga.call(services.update, payload);
@@ -800,11 +808,7 @@ export default {
     // maternity-leaves
     *STORAGE({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.storage, payload);
-        yield saga.put({
-          type: 'SET_DETAILS',
-          payload: response,
-        });
+        yield saga.call(services.storage, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);

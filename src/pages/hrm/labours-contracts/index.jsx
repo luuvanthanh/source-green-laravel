@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get } from 'lodash';
+import { debounce, get, toNumber } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -292,7 +292,7 @@ class Index extends PureComponent {
         render: (value) =>
           Helper.getPrice(
             (value || []).reduce(
-              (result, item, index) => (index ? result + item?.pivot?.value : result),
+              (result, item, index) => (index ? result + toNumber(item?.pivot?.value) : result),
               0,
             ),
           ),

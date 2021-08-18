@@ -1,6 +1,7 @@
 import requestLavarel from '@/utils/requestLavarel';
 import request from '@/utils/request';
 import { Helper, variables } from '@/utils';
+import { omit } from 'lodash';
 
 export function getDegrees(_params = {}) {
   return requestLavarel('/v1/degrees', {
@@ -99,9 +100,16 @@ export function details(data = {}) {
 }
 
 export function addAccount(data = {}) {
-  return request(`/employee-accounts`, {
+  return request(`/employees/${data.id}/account`, {
     method: 'POST',
-    data,
+    data: { ...omit(data, 'id') },
+  });
+}
+
+export function updateAccount(data = {}) {
+  return request(`/employees/${data.id}/account`, {
+    method: 'PUT',
+    data: { ...omit(data, 'id') },
   });
 }
 
@@ -504,12 +512,10 @@ export function getMaternityLeaves(params = {}) {
 }
 // maternity-leaves
 
-export function storage(data = {}) {
-  return requestLavarel(`/v1/employee/storage/${data.id}`, {
+export function storage(params = {}) {
+  return request(`/employees/${params.id}/update-status`, {
     method: 'PUT',
-    data,
-    params: {
-      include: Helper.convertIncludes(['positionLevel']),
-    },
+    params,
+    parse: true,
   });
 }

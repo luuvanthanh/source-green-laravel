@@ -241,7 +241,7 @@ class Index extends PureComponent {
                     label="Ghi chú"
                     name="note"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                    rules={[variables.RULES.MAX_LENGTH_INPUT]}
                   />
                 </div>
               </div>

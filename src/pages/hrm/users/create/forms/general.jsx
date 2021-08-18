@@ -106,6 +106,12 @@ const General = memo(() => {
             status: details?.status === 'WORKING' ? 'STORE' : 'WORKING',
           },
           callback: (response, error) => {
+            if (response) {
+              dispatch({
+                type: 'HRMusersAdd/GET_DETAILS',
+                payload: params,
+              });
+            }
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
                 error.data.errors.forEach((item) => {
