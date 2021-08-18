@@ -736,7 +736,7 @@ const Index = memo(() => {
                                 className={classnames(
                                   styles.col,
                                   styles.first,
-                                  'min-width-100',
+                                  'min-width-130',
                                   'text-center',
                                 )}
                               >
@@ -746,7 +746,7 @@ const Index = memo(() => {
                               <div className={classnames(styles.col, styles['col-group'])}>
                                 {variablesModules.DAYS.map((item) => (
                                   <div
-                                    className={classnames(styles.col, 'min-width-150')}
+                                    className={classnames(styles.col, 'min-width-200')}
                                     key={item.id}
                                   >
                                     {item.name}
@@ -762,7 +762,7 @@ const Index = memo(() => {
                                     className={classnames(
                                       styles.col,
                                       styles.first,
-                                      'min-width-100',
+                                      'min-width-130',
                                     )}
                                   >
                                     <h4 className={styles.title}>{itemMenu.name}</h4>
@@ -824,14 +824,15 @@ const Index = memo(() => {
                                                     <div
                                                       className={classnames(
                                                         styles['col-item'],
-                                                        'min-width-150',
-                                                        'max-width-150',
+                                                        'min-width-200',
+                                                        'max-width-200',
                                                       )}
                                                       key={itemDay.id}
                                                     >
                                                       <Select
                                                         dataSet={foodCommons}
                                                         placeholder="Chọn"
+                                                        showSearch
                                                         value={itemMenuOfDay?.foodId || null}
                                                         onChange={(e) =>
                                                           onChangeFood(
