@@ -25,7 +25,8 @@ const Index = memo(
     const formRef = useRef();
     const formRefModal = useRef();
 
-    const loadingSubmit = effects[`HRMusersAdd/ADD_ACCOUNT`];
+    const loadingSubmit =
+      effects[`HRMusersAdd/ADD_ACCOUNT`] || effects[`HRMusersAdd/UPDATE_ACCOUNT`];
     const loading = effects[`HRMusersAdd/GET_DETAILS_ACCOUNT`] || effects[`HRMusersAdd/GET_ROLES`];
 
     const [visible, setVisible] = useState(false);
