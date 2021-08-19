@@ -30,7 +30,7 @@ class LabourContractUpdateRequest extends FormRequest
             'contractNumber' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $shift = LabourContract::where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
+                    $shift = LabourContract::where('ContractNumber', $value)->where('Id', '!=', request()->labours_contract)->where('EmployeeId',  request()->employeeId)->first();
 
                     if (!is_null($shift)) {
                         return $fail('Số hợp đồng đã tồn tại.');
@@ -41,7 +41,7 @@ class LabourContractUpdateRequest extends FormRequest
                 'date',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->labours_contract)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($labourContract) && $value <= $labourContract->ContractFrom->format('Y-m-d')) {
