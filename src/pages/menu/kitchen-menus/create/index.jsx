@@ -152,7 +152,7 @@ const Index = memo(() => {
           },
           callback: (response) => {
             if (response) {
-              history.goBack();
+              history.push('/thuc-don');
             }
           },
         });

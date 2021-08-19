@@ -222,8 +222,14 @@ const EditableCell = ({
     }
     if (type === variables.TEXTAREA) {
       return (
-        <Form.Item name={dataIndex} rules={[variables.RULES.MAX_LENGTH_INPUT]}>
-          <Input onBlur={save} onPressEnter={save} placeholder="Nhập" ref={inputRef} />
+        <Form.Item name={dataIndex} rules={[]}>
+          <Input.TextArea
+            autoSize={{ minRows: 3, maxRows: 3 }}
+            onBlur={save}
+            onPressEnter={save}
+            placeholder="Nhập"
+            ref={inputRef}
+          />
         </Form.Item>
       );
     }
@@ -231,7 +237,10 @@ const EditableCell = ({
       return (
         <Form.Item name={dataIndex} rules={[]}>
           <DatePicker
-            disabledDate={(current) => (disabledDateFuture && Helper.disabledDateFuture(current)) || (disabledDate && Helper.disabledDatebyValue(current, disabledDate)) }
+            disabledDate={(current) =>
+              (disabledDateFuture && Helper.disabledDateFuture(current)) ||
+              (disabledDate && Helper.disabledDatebyValue(current, disabledDate))
+            }
             format={variables.DATE_FORMAT.DATE}
             onBlur={saveDatePicker}
             onChange={onChangeDatePicker}
@@ -290,7 +299,7 @@ EditableCell.defaultProps = {
   dataSelect: [],
   prefix: '',
   disabledDateFuture: false,
-  disabledDate: null
+  disabledDate: null,
 };
 
 const SortableItem = sortableElement((props) => {
