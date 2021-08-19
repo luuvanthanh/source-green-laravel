@@ -28,14 +28,14 @@ class PayslipRequest extends FormRequest
         return [
             'id' => [
                 'required',
-                function ($attribute, $value, $fail) {
-                    $payroll = Payroll::findOrFail($value);
+                // function ($attribute, $value, $fail) {
+                //     $payroll = Payroll::findOrFail($value);
 
-                    if (!$payroll->IsTimesheet || !$payroll->IsBonus || !$payroll->IsOther) {
-                        return $fail('Chưa đủ điều kiện để  tính lương tháng!');
-                    }
+                //     if (!$payroll->IsTimesheet || !$payroll->IsBonus || !$payroll->IsOther) {
+                //         return $fail('Chưa đủ điều kiện để  tính lương tháng!');
+                //     }
 
-                },
+                // },
             ],
         ];
     }

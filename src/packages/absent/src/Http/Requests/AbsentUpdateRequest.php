@@ -64,7 +64,7 @@ class AbsentUpdateRequest extends FormRequest
         foreach ($value as $item) {
             $absentDetails = AbsentDetail::where('Date', $item['date'])->whereHas('absent', function ($query) use ($employeeId) {
                 $query->where('EmployeeId', $employeeId);
-                $query->where('Id', '!=', requaet()->id);
+                $query->where('Id', '!=', request()->id);
             })->get();
 
             $count = count($absentDetails);
