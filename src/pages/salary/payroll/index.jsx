@@ -401,7 +401,6 @@ class Index extends PureComponent {
             {record.id === 'TINH_LUONG' && (
               <Button
                 color="primary"
-                disabled={!data.isTimesheet || !data.isBonus || !data.isOther}
                 onClick={() => this.updateSalary(data)}
               >
                 Tính lương
