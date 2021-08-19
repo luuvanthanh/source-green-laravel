@@ -109,7 +109,7 @@ class AbsentUpdateRequest extends FormRequest
      */
     private function checkSameHoliday($value)
     {
-        $value = Carbon::parse($value)->format('Y-m-d');
+        $value = Carbon::parse($value['date'])->format('Y-m-d');
         $holiday = HolidayDetail::where('StartDate', '<=', $value)->where('EndDate', '>=', $value)->first();
 
         if (!is_null($holiday)) {
