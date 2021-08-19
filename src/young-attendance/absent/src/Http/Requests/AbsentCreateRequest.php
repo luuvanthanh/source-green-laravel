@@ -18,13 +18,13 @@ class AbsentCreateRequest extends FormRequest
     {
 
         return [
+            'expectedDate' => 'gt:0',
             'absentTypeId' => [
                 'required',
                 'exists:AbsentTypeStudents,Id',
             ],
             'absentReasonId' => 'required|exists:AbsentReasonStudents,Id',
             'studentId' => 'required',
-            'expectedDate' => 'required|gt:0',
             'startDate' => [
                 'required',
                 'date',
@@ -36,12 +36,16 @@ class AbsentCreateRequest extends FormRequest
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
+                    $expectedDate = request()->expectedDate;
 
-                    $checkStarDate = $this->checkStartDate($value);
+                    if (!is_null($expectedDate)) {
+                        $checkStarDate = $this->checkStartDate($value);
 
-                    if (!is_null($checkStarDate)) {
-                        return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                        if (!is_null($checkStarDate)) {
+                            return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                        }
                     }
+
 
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
@@ -108,7 +112,6 @@ class AbsentCreateRequest extends FormRequest
         $startDate = request()->startDate;
         $expectedDate = request()->expectedDate;
         $advanceNotice = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $expectedDate)->where('To', '>=', $expectedDate)->first();
-
         if (is_null($advanceNotice)) {
             return null;
         } else {

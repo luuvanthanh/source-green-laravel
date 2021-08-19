@@ -33,10 +33,14 @@ class AbsentUpdateRequest extends FormRequest
                     if ($absent->StartDate->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Đơn đã quá hạn không được sửa");
                     }
-                    $checkStarDate = $this->checkStartDate($value);
 
-                    if (!is_null($checkStarDate)) {
-                        return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                    $expectedDate = request()->expectedDate;
+                    if (!is_null($expectedDate)) {
+                        $checkStarDate = $this->checkStartDate($value);
+
+                        if (!is_null($checkStarDate)) {
+                            return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                        }
                     }
 
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
