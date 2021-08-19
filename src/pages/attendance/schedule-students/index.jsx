@@ -455,6 +455,16 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
+    if (moment(dayOfWeek).isoWeekday() > 6) {
+      return (
+        <div
+          className={classnames(stylesChildren['cell-content'], {
+            [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
+          })}
+         />
+      );
+    }
+
     const absent = user?.absent?.find(
       (item) =>
         Helper.getDate(item.date, variables.DATE_FORMAT.DATE_AFTER) ===
