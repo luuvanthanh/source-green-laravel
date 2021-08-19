@@ -123,7 +123,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
      */
     public function createOrUpdate(array $attributes)
     {
-        dd($attributes);
         $startDate = new Carbon($attributes['startDate']);
         $dateEndYear = isset($attributes['endDate']) ? Carbon::parse($attributes['endDate']) : $startDate->endOfYear();
 
