@@ -171,18 +171,20 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             $this->positionLevelRepository->create($dataPosition);
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $attributes['divisionId'])->where([['StartDate', '<=', $probationaryContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $probationaryContract->ContractFrom->format('Y-m-d')]])->first();
+
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $probationaryContract->ContractTo->format('Y-m-d'),
-                    'endDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
+                    'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
+                    'endDate' => $probationaryContract->ContractTo->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
 
                 $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
             }
+
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -235,8 +237,8 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         $labourContract = ProbationaryContract::findOrFail($id);
         $now = Carbon::now();
 
-        $salary = $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first() ? $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value : 0;
-        $allowance = $labourContract->parameterValues->where('Code', 'PHU_CAP')->first() ? $labourContract->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
+        $salary = $labourContract->BasicSalary;
+        $allowance =  $labourContract->TotalAllowance;
 
         $total = $salary + $allowance;
         $employee = $labourContract->employee;

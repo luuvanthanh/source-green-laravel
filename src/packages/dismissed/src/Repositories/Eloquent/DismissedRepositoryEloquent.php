@@ -159,6 +159,7 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
             'monthNow' => $dismissed->DecisionDate ? $dismissed->DecisionDate->format('m') : '.......',
             'yearNow' => $dismissed->DecisionDate ? $dismissed->DecisionDate->format('Y') : '.......',
             'decisionDate' => $dismissed->DecisionDate->format('d/m/Y'),
+            'timeApply' => $dismissed->TimeApply->format('d/m/Y'),
             'fullName' => $employee->FullName ? $employee->FullName : '........',
             'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '........',
             'branchWord' => $detail->branch ? $detail->branch->Name : '........',
