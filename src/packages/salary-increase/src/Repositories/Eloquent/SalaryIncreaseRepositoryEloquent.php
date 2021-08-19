@@ -4,6 +4,8 @@ namespace GGPHP\SalaryIncrease\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\SalaryIncrease\Models\SalaryIncrease;
 use GGPHP\SalaryIncrease\Presenters\SalaryIncreasePresenter;
 use GGPHP\SalaryIncrease\Repositories\Contracts\SalaryIncreaseRepository;
@@ -72,9 +74,22 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $salaryIncrease = SalaryIncrease::create($attributes);
+            $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+
+            if (is_null($labourContract)) {
+                $labourContract = ProbationaryContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+            }
+
             foreach ($attributes['detail'] as $value) {
+                if (!is_null($labourContract)) {
+                    $labourContract->parameterValues()->detach($value['parameterValueId']);
+                    $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                };
+
                 $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -95,6 +110,16 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
                 $salaryIncrease->parameterValues()->detach();
 
                 foreach ($attributes['detail'] as $value) {
+                    $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+
+                    if (is_null($labourContract)) {
+                        if (!is_null($labourContract)) {
+                            $labourContract->parameterValues()->detach($value['parameterValueId']);
+                            $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']], false);
+                        };
+                        $labourContract = ProbationaryContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+                    }
+
                     $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
                 }
             }
@@ -142,8 +167,8 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         $probationaryContract = $employee->probationaryContract->last();
         $labourContract = $employee->labourContract->last();
         $oldSalary = is_null($labourContract) ?
-        is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value
-        : $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value;
+            is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value
+            : $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value;
 
         $salary = $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first() ? $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value : 0;
         $allowance = $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first() ? $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;

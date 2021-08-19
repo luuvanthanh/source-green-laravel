@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\ProbationaryContract;
@@ -136,11 +137,26 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
         \DB::beginTransaction();
         try {
             $probationaryContract = ProbationaryContract::create($attributes);
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $probationaryContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
-            $now = Carbon::now();
+            $probationaryContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
+
             $dataPosition = [
                 'employeeId' => $attributes['employeeId'],
                 'branchId' => $attributes['branchId'],
@@ -155,19 +171,19 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             $this->positionLevelRepository->create($dataPosition);
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $attributes['divisionId'])->where([['StartDate', '<=', $probationaryContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $probationaryContract->ContractFrom->format('Y-m-d')]])->first();
-
             if (!is_null($divisionShift)) {
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $probationaryContract->ContractTo->addYear()->format('Y-m-d'),
-                    'endDate' => $probationaryContract->ContractFrom->addYear()->format('Y-m-d'),
+                    'startDate' => $probationaryContract->ContractTo->format('Y-m-d'),
+                    'endDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
 
                 $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
             }
+
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -185,9 +201,26 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             $probationaryContract->update($attributes);
 
             $probationaryContract->parameterValues()->detach();
+
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $probationaryContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+            $probationaryContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
 
             \DB::commit();
         } catch (\Exception $e) {

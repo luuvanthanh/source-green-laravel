@@ -24,6 +24,16 @@ class ResignationDecisionUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'decisionNumber' => [
+                'string',
+                function ($attribute, $value, $fail) {
+                    $ResignationDecision = ResignationDecision::where('DecisionNumber', $value)->where('Id', '!=', request()->id)->first();
+
+                    if (!is_null($ResignationDecision)) {
+                        return $fail('Trường đã có trong cơ sở dữ liệu.');
+                    }
+                },
+            ],
         ];
     }
 }
