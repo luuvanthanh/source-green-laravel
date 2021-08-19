@@ -233,25 +233,14 @@ const Index = memo(() => {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',
-        render: (record) => {
-          const parameterValues = record?.parameterValues?.find(
-            (item) => item.code === 'LUONG_CO_BAN',
-          );
-          return Helper.getPrice(parameterValues?.pivot?.value);
-        },
+        render: (record) => Helper.getPrice(record.basicSalary),
       },
       {
         title: 'Tổng phụ cấp',
         key: 'payment',
         dataIndex: 'parameterValues',
         className: 'min-width-150',
-        render: (value) =>
-          Helper.getPrice(
-            (value || []).reduce(
-              (result, item, index) => (index ? result + item?.pivot?.value : result),
-              0,
-            ),
-          ),
+        render: (record) => Helper.getPrice(record.totalAllowance),
       },
       {
         title: 'Nơi làm việc',
