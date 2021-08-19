@@ -77,6 +77,7 @@ const Index = memo(({ rangeDate }) => {
     {
       title: 'Tháng',
       key: 'month',
+      width: 250,
       className: 'min-width-250',
       render: (record) => {
         const obj = {
@@ -91,6 +92,7 @@ const Index = memo(({ rangeDate }) => {
     {
       title: 'Tuần',
       key: 'week',
+      width: 250,
       className: 'min-width-250',
       render: (record) => record?.week || '',
     },
@@ -166,7 +168,7 @@ const Index = memo(({ rangeDate }) => {
           type: 'table',
         }}
         rowKey={(record) => record.id}
-        scroll={{ x: '100%' }}
+        scroll={{ x: '100%', y: '50vh' }}
       />
     </div>
   );

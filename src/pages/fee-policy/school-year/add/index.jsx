@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet';
 import { Form, Tabs } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
-import classnames  from 'classnames';
+import classnames from 'classnames';
 import moment from 'moment';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,14 +24,10 @@ const { TabPane } = Tabs;
 
 const Index = memo(() => {
   const params = useParams();
-  const {
-    loading,
-    menuLeftFeePolicy,
-    fees,
-  } = useSelector(({ loading, menu, paymentMethod }) => ({
+  const { loading, menuLeftFeePolicy, fees } = useSelector(({ loading, menu, paymentMethod }) => ({
     loading: loading.effects,
     menuLeftFeePolicy: menu.menuLeftFeePolicy,
-    fees: paymentMethod.data
+    fees: paymentMethod.data,
   }));
   const dispatch = useDispatch();
 
@@ -51,7 +47,7 @@ const Index = memo(() => {
       type: 'paymentMethod/GET_DATA',
       payload: {
         limit: variables.PAGINATION.SIZEMAX,
-        page: variables.PAGINATION.PAGE
+        page: variables.PAGINATION.PAGE,
       },
     });
   };
@@ -62,33 +58,34 @@ const Index = memo(() => {
       dispatch({
         type: 'schoolyearAdd/GET_DETAILS',
         payload: {
-          id: params?.id
+          id: params?.id,
         },
         callback: (res) => {
-
           if (res) {
             const fixedParameter = !_.isEmpty(res?.fixedParameter)
-              ? res?.fixedParameter.map(item => ({...item, duaDate: moment(item.duaDate)}))
+              ? res?.fixedParameter.map((item) => ({ ...item, duaDate: moment(item.duaDate) }))
               : [];
             const values = {
               ...res,
-              expirationDate: !_.isEmpty(res?.changeParameter) ? res?.changeParameter[0]?.duaDate : '',
+              expirationDate: !_.isEmpty(res?.changeParameter)
+                ? res?.changeParameter[0]?.duaDate
+                : '',
               fee: !_.isEmpty(res?.changeParameter) ? res?.changeParameter[0]?.paymentForm?.id : '',
               fixedParameter,
-              rangeDate: [
-                moment(res.startDate),
-                moment(res.endDate),
-              ],
-              paymentFormId: res?.changeParameter?.paymentFormId,
+              rangeDate: [moment(res.startDate), moment(res.endDate)],
+              feeId: res?.changeParameter?.paymentFormId,
               duaDate: res?.changeParameter?.duaDate,
             };
-            const newChangeParameter = !_.isEmpty(res?.changeParameter?.changeParameterDetail) ? res?.changeParameter?.changeParameterDetail?.map(item => ({
-              ...item,
-              rangeDate: [moment(item.startDate), moment(item.endDate)],
-              fee: res?.changeParameter?.paymentForm?.name || ''
-            })) : [];
+            const newChangeParameter = !_.isEmpty(res?.changeParameter?.changeParameterDetail)
+              ? res?.changeParameter?.changeParameterDetail?.map((item) => ({
+                  ...item,
+                  rangeDate: [moment(item.startDate), moment(item.endDate)],
+                  fee: res?.changeParameter?.paymentForm?.name || '',
+                  feeId: res?.changeParameter?.paymentForm?.id || '',
+                }))
+              : [];
             setParamChanges(newChangeParameter);
-            formRef?.current?.setFieldsValue({...values });
+            formRef?.current?.setFieldsValue({ ...values });
           }
         },
       });
@@ -107,14 +104,13 @@ const Index = memo(() => {
   const checkProperties = (object) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const key in object) {
-      if (object[key] === "" || object[key] === null)
-        return true;
+      if (object[key] === '' || object[key] === null) return true;
     }
     return false;
   };
 
   const checkValidate = (data, name) => {
-    const pass = !_.isEmpty(data) ? data.find(item => !!checkProperties(item)) : true;
+    const pass = !_.isEmpty(data) ? data.find((item) => !!checkProperties(item)) : true;
     setErrorTable((prev) => ({
       ...prev,
       [name]: !!pass,
@@ -128,8 +124,8 @@ const Index = memo(() => {
       fixedParameter: !values?.fixedParameter,
     }));
 
-    const errorParamChanges = checkValidate(paramChanges, 'changeParameter');;
-    if (!!(errorParamChanges) || !(values?.fixedParameter)) {
+    const errorParamChanges = checkValidate(paramChanges, 'changeParameter');
+    if (!!errorParamChanges || !values?.fixedParameter) {
       return;
     }
 
@@ -138,7 +134,7 @@ const Index = memo(() => {
       rangeDate: undefined,
       startDate: values.rangeDate[0],
       endDate: values.rangeDate[1],
-      fixedParameter: values?.fixedParameter.map(item => ({
+      fixedParameter: values?.fixedParameter.map((item) => ({
         paymentFormId: item.paymentFormId,
         duaDate: Helper.getDateTime({
           value: Helper.setDate({
@@ -150,9 +146,11 @@ const Index = memo(() => {
         }),
       })),
       changeParameter: {
-        paymentFormId: _.get(paramChanges[0], 'paymentFormId') || values.paymentFormId,
-        duaDate: _.get(paramChanges[0], 'duaDate')? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD') : values.duaDate,
-        detail: paramChanges.map(item => ({
+        paymentFormId: _.get(paramChanges[0], 'feeId'),
+        duaDate: _.get(paramChanges[0], 'duaDate')
+          ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD')
+          : values.duaDate,
+        detail: paramChanges.map((item) => ({
           actualWeek: item.actualWeek,
           date: Helper.getDateTime({
             value: Helper.setDate({
@@ -188,15 +186,15 @@ const Index = memo(() => {
           }),
           fullMonth: item.fullMonth,
           paymentFormId: item.paymentFormId,
-          schoolDay: item.schoolDay
-        }))
-      }
+          schoolDay: item.schoolDay,
+        })),
+      },
     };
     dispatch({
-      type: (params?.id && !isCopy) ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
+      type: params?.id && !isCopy ? 'schoolyearAdd/UPDATE' : 'schoolyearAdd/ADD',
       payload: {
         ...data,
-        id: (params?.id && !isCopy) ? params?.id : undefined
+        id: params?.id && !isCopy ? params?.id : undefined,
       },
       callback: (res) => {
         if (res) {
@@ -220,17 +218,28 @@ const Index = memo(() => {
   const renderData = (length, values, data = []) => {
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(values?.rangeDate[0]).add(i - 1, 'month').set('date', values?.duaDate);
+      const startMonth = moment(values?.rangeDate[0])
+        .add(i - 1, 'month')
+        .set('date', values?.duaDate);
       const endMonth = moment(values?.rangeDate[0]).add(i, 'month').set('date', 1);
-      const date = moment(values?.rangeDate[0]).add(i, 'month').set('date', 1).format(variables.DATE_FORMAT.DATE_AFTER);
-      const duaDate = moment(startMonth).diff(endMonth, 'days') < 0 ? moment(startMonth).format(variables.DATE_FORMAT.DATE_AFTER) : moment(startMonth).add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER);
-      const response = data.find(item => item.date === date && item.duaDate === duaDate);
+      const date = moment(values?.rangeDate[0])
+        .add(i, 'month')
+        .set('date', 1)
+        .format(variables.DATE_FORMAT.DATE_AFTER);
+      const duaDate =
+        moment(startMonth).diff(endMonth, 'days') < 0
+          ? moment(startMonth).format(variables.DATE_FORMAT.DATE_AFTER)
+          : moment(startMonth)
+              .add(-1, 'month')
+              .endOf('month')
+              .format(variables.DATE_FORMAT.DATE_AFTER);
+      const response = data.find((item) => item.date === date && item.duaDate === duaDate);
       if (response) {
         datasTable.push({ ...response });
       } else {
         datasTable.push({
           id: uuidv4(),
-          fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
+          fee: [...fees].find((item) => item.id === values?.paymentFormId)?.code,
           date,
           duaDate,
           rangeDate: null,
@@ -244,18 +253,24 @@ const Index = memo(() => {
     return datasTable;
   };
 
-  const getDetail  = (e, name) => {
+  const getDetail = (e, name) => {
     const { getFieldsValue } = formRef?.current;
     const { yearFrom, yearTo, rangeDate, duaDate, paymentFormId } = getFieldsValue();
     const newPaymentFormId = _.get(paramChanges[0], 'paymentFormId') || paymentFormId;
-    const newDuaDate = _.get(paramChanges[0], 'duaDate') ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD') : duaDate;
+    const newDuaDate = _.get(paramChanges[0], 'duaDate')
+      ? moment(paramChanges[0]?.duaDate, variables.DATE_FORMAT.YEAR_MONTH_DAY).format('DD')
+      : duaDate;
 
     if (name === 'rangeDate' && newDuaDate && newPaymentFormId) {
       const startDate = moment(rangeDate[0]).startOf('month');
       const endDate = moment(rangeDate[1]).endOf('month');
       const length = moment(endDate).diff(moment(startDate), 'month') + 1;
       if (length) {
-        const data = renderData(length, { duaDate: newDuaDate, paymentFormId: newPaymentFormId, rangeDate }, paramChanges);
+        const data = renderData(
+          length,
+          { duaDate: newDuaDate, paymentFormId: newPaymentFormId, rangeDate },
+          paramChanges,
+        );
         setParamChanges(data);
       }
     }
@@ -268,50 +283,57 @@ const Index = memo(() => {
     {
       id: 'fixedParameter',
       name: 'Tham số cố định',
-      component: <ParametersFixedComponent
-        formRef={formRef}
-        fees={[...fees].filter(item => item.type === 'CD')}
-        error={errorTable.fixedParameter}
-        checkValidate={() => setErrorTable((prev) => ({
-          ...prev,
-          fixedParameter: false,
-        }))}
-      />
+      component: (
+        <ParametersFixedComponent
+          formRef={formRef}
+          fees={[...fees].filter((item) => item.type === 'CD')}
+          error={errorTable.fixedParameter}
+          checkValidate={() =>
+            setErrorTable((prev) => ({
+              ...prev,
+              fixedParameter: false,
+            }))
+          }
+        />
+      ),
     },
     {
       id: 'changeParameter',
       name: 'Tham số thay đổi theo thời điểm',
-      component: <ParametersChangeComponent
-        formRef={formRef}
-        fees={fees}
-        paramChanges={paramChanges}
-        setParamChanges={setParamChanges}
-        error={errorTable.changeParameter}
-        checkValidate={checkValidate}
-      />
+      component: (
+        <ParametersChangeComponent
+          formRef={formRef}
+          fees={fees}
+          paramChanges={paramChanges}
+          setParamChanges={setParamChanges}
+          error={errorTable.changeParameter}
+          checkValidate={checkValidate}
+        />
+      ),
     },
     {
       id: 'schedule',
       name: 'Lịch học',
-      component: <ScheduleComponent
-        formRef={formRef}
-        rangeDate={formRef?.current?.getFieldValue('rangeDate')}
-      />
-    }
+      component: (
+        <ScheduleComponent
+          formRef={formRef}
+          rangeDate={formRef?.current?.getFieldValue('rangeDate')}
+        />
+      ),
+    },
   ];
 
   return (
     <Pane style={{ padding: 20, paddingBottom: 0 }}>
-      <Helmet title={(params?.id && !isCopy) ? 'Chi tiết năm học' : 'Thêm mới năm học'} />
-      <Breadcrumbs className="pb30 pt0" last={`${(params?.id && !isCopy) ? 'Chi tiết' : 'Thêm mới'}`} menu={menuLeftFeePolicy} />
+      <Helmet title={params?.id && !isCopy ? 'Chi tiết năm học' : 'Thêm mới năm học'} />
+      <Breadcrumbs
+        className="pb30 pt0"
+        last={`${params?.id && !isCopy ? 'Chi tiết' : 'Thêm mới'}`}
+        menu={menuLeftFeePolicy}
+      />
       <Pane className="row">
         <Pane className="col-12">
-          <Form
-            layout="vertical"
-            ref={formRef}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-          >
+          <Form layout="vertical" ref={formRef} onFinish={onFinish} onFinishFailed={onFinishFailed}>
             <Pane className="card px20 pt20">
               <Heading type="form-title" className="mb20">
                 Thông tin chung
@@ -326,14 +348,18 @@ const Index = memo(() => {
                     onChange={(e) => getDetail(e, 'yearFrom')}
                     rules={[
                       {
-                        ...variables.RULES.EMPTY
+                        ...variables.RULES.EMPTY,
                       },
                       ({ getFieldValue, setFields }) => ({
                         validator(_, value) {
-                          if (value && getFieldValue('yearTo') && value >= getFieldValue('yearTo')) {
+                          if (
+                            value &&
+                            getFieldValue('yearTo') &&
+                            value >= getFieldValue('yearTo')
+                          ) {
                             return Promise.reject(new Error(variables.RULES.YEAR_FROM));
                           }
-                          setFields([ { name: 'yearTo', errors: '' } ]);
+                          setFields([{ name: 'yearTo', errors: '' }]);
                           return Promise.resolve();
                         },
                       }),
@@ -349,14 +375,18 @@ const Index = memo(() => {
                     onChange={(e) => getDetail(e, 'yearTo')}
                     rules={[
                       {
-                        ...variables.RULES.EMPTY
+                        ...variables.RULES.EMPTY,
                       },
                       ({ getFieldValue, setFields }) => ({
                         validator(_, value) {
-                          if (value && getFieldValue('yearFrom') && getFieldValue('yearFrom') >= value) {
+                          if (
+                            value &&
+                            getFieldValue('yearFrom') &&
+                            getFieldValue('yearFrom') >= value
+                          ) {
                             return Promise.reject(new Error(variables.RULES.YEAR_TO));
                           }
-                          setFields([ { name: 'yearFrom', errors: '' } ]);
+                          setFields([{ name: 'yearFrom', errors: '' }]);
                           return Promise.resolve();
                         },
                       }),
@@ -372,8 +402,8 @@ const Index = memo(() => {
                     rules={[variables.RULES.EMPTY]}
                     onChange={(e) => getDetail(e, 'rangeDate')}
                     disabledDate={(current) =>
-                      Helper.disabledYear(current, formRef, { key: 'yearFrom', compare: '<' })
-                        || Helper.disabledYear(current, formRef, { key: 'yearTo' })
+                      Helper.disabledYear(current, formRef, { key: 'yearFrom', compare: '<' }) ||
+                      Helper.disabledYear(current, formRef, { key: 'yearTo' })
                     }
                   />
                 </Pane>
@@ -384,12 +414,14 @@ const Index = memo(() => {
                 Chi tiết
               </Heading>
 
-              <Tabs onChange={changeTab} activeKey={tab} className={classnames(styles['tab-px20'], styles['tab-uppercase'])}>
-                {(params?.id ? tabs() : _.initial(tabs()) ).map(({ id, name, component }) => (
+              <Tabs
+                onChange={changeTab}
+                activeKey={tab}
+                className={classnames(styles['tab-px20'], styles['tab-uppercase'])}
+              >
+                {(params?.id ? tabs() : _.initial(tabs())).map(({ id, name, component }) => (
                   <TabPane
-                    tab={(
-                      <span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>
-                    )}
+                    tab={<span className={errorTable[id] ? 'text-danger' : ''}>{name}</span>}
                     key={id}
                   >
                     {component}
@@ -403,7 +435,11 @@ const Index = memo(() => {
                 color="success"
                 htmlType="submit"
                 size="large"
-                loading={loading['classTypeAdd/GET_DETAILS']}
+                loading={
+                  loading['classTypeAdd/GET_DETAILS'] ||
+                  loading['schoolyearAdd/UPDATE'] ||
+                  loading['classTypeAdd/ADD']
+                }
               >
                 Lưu
               </Button>

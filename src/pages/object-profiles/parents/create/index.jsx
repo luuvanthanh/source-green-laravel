@@ -2,6 +2,7 @@ import { memo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Menu } from 'antd';
 import PropTypes from 'prop-types';
+import { isEmpty } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -38,6 +39,16 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     }
   }, [params.id]);
 
+  const menuStore = (items) => {
+    if (isEmpty(details)) {
+      return [];
+    }
+    if (details?.status === 'STORE') {
+      return items.filter((item) => item.key === 'general');
+    }
+    return items;
+  };
+
   return (
     <Pane style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ học sinh" />
@@ -54,7 +65,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
           <Pane className="card">
             <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
               {params.id &&
-                menu.map(({ key, label }) => (
+                menuStore(menu).map(({ key, label }) => (
                   <MenuItem key={key}>
                     <Link to={`${pathname}?type=${key}`}>{label}</Link>
                   </MenuItem>
