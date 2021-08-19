@@ -85,10 +85,16 @@ const Index = memo(() => {
   };
 
   const onChange = ({ target: { value } }) => {
-    mountedSet(
-      setItems,
-      toolDetails.filter((item) => Helper.slugify(item.name)?.indexOf(Helper.slugify(value)) >= 0),
-    );
+    if (value) {
+      mountedSet(
+        setItems,
+        toolDetails.filter(
+          (item) => Helper.slugify(item.name)?.indexOf(Helper.slugify(value)) >= 0,
+        ),
+      );
+    } else {
+      mountedSet(setItems, toolDetails);
+    }
   };
 
   useEffect(() => {
@@ -133,8 +139,12 @@ const Index = memo(() => {
 
   return (
     <Pane style={{ paddingTop: 20 }}>
-      <Helmet title="Tạo góc giáo cụ" />
-      <Breadcrumbs className="pb30 pt0" last="Tạo góc giáo cụ" menu={menuData} />
+      <Helmet title={params.id ? 'Chỉnh sửa góc giáo cụ' : 'Tạo góc giáo cụ'} />
+      <Breadcrumbs
+        className="pb30 pt0"
+        last={params.id ? 'Chỉnh sửa góc giáo cụ' : 'Tạo góc giáo cụ'}
+        menu={menuData}
+      />
       <Pane style={{ padding: 20, paddingBottom: 0 }}>
         <Pane className="row justify-content-center">
           <Pane className="col-lg-6">
@@ -172,7 +182,7 @@ const Index = memo(() => {
                       placeholder="Tìm kiếm"
                       onChange={onChange}
                     />
-                    <Scrollbars autoHeight autoHeightMax={window.innerHeight - 600}>
+                    <Scrollbars autoHeight autoHeightMax="calc(50vh)">
                       <FormItem
                         className="checkbox-column mb0"
                         name="toolDetails"
@@ -181,7 +191,9 @@ const Index = memo(() => {
                           value: item.id,
                           label: item.name,
                         }))}
-                        onChange={(values) => setItemsSelected(values)}
+                        onChange={(values) => {
+                          setItemsSelected(values);
+                        }}
                       />
                     </Scrollbars>
                   </Pane>

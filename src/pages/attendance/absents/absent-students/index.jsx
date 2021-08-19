@@ -387,12 +387,12 @@ class Index extends PureComponent {
   render() {
     const {
       data,
+      classes,
+      branches,
       pagination,
       match: { params },
       loading: { effects },
       location: { pathname },
-      classes,
-      branches,
     } = this.props;
     const { search } = this.state;
     const loading = effects['absentStudents/GET_DATA'];
