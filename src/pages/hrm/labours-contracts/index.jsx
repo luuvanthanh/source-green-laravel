@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce, get, toNumber } from 'lodash';
+import { debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -279,23 +279,14 @@ class Index extends PureComponent {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',
-        render: (record) => {
-          const parameterValues = record?.parameterValues?.find((item) => item.code === 'LUONG_CO_BAN');
-          return Helper.getPrice(parameterValues?.pivot?.value);
-        },
+        render: (record) => Helper.getPrice(record.basicSalary),
       },
       {
         title: 'Tổng phụ cấp',
         key: 'payment',
         dataIndex: 'parameterValues',
         className: 'min-width-150',
-        render: (value) =>
-          Helper.getPrice(
-            (value || []).reduce(
-              (result, item, index) => (index ? result + toNumber(item?.pivot?.value) : result),
-              0,
-            ),
-          ),
+        render: (record) => Helper.getPrice(record.totalAllowance),
       },
       {
         title: 'Nơi làm việc',
@@ -316,11 +307,8 @@ class Index extends PureComponent {
         key: 'status',
         width: 150,
         className: 'min-width-150',
-        render: record =>
-          Helper.getStatusContracts(
-            moment(record?.contractFrom),
-            moment(record?.contractTo),
-          ),
+        render: (record) =>
+          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
       },
       {
         title: 'Thao tác',

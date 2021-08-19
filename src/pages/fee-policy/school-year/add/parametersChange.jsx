@@ -22,13 +22,22 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
   const renderData = (length, values) => {
     const datasTable = [];
     for (let i = 0; i < length; i += 1) {
-      const startMonth = moment(rangeDate[0]).add(i - 1, 'month').set('date', values?.duaDate);
+      const startMonth = moment(rangeDate[0])
+        .add(i - 1, 'month')
+        .set('date', values?.duaDate);
       const endMonth = moment(rangeDate[0]).add(i, 'month').set('date', 1);
       datasTable.push({
         id: uuidv4(),
-        fee: [...fees].find(item => item.id === values?.paymentFormId)?.code,
-        date: moment(rangeDate[0]).add(i, 'month').set('date', 1).format(variables.DATE_FORMAT.DATE_AFTER),
-        duaDate: moment(startMonth).diff(endMonth, 'days') < 0 ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER) : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
+        fee: [...fees].find((item) => item.id === values?.feeId)?.code,
+        feeId: [...fees].find((item) => item.id === values?.feeId)?.id,
+        date: moment(rangeDate[0])
+          .add(i, 'month')
+          .set('date', 1)
+          .format(variables.DATE_FORMAT.DATE_AFTER),
+        duaDate:
+          moment(startMonth).diff(endMonth, 'days') < 0
+            ? startMonth.format(variables.DATE_FORMAT.DATE_AFTER)
+            : startMonth.add(-1, 'month').endOf('month').format(variables.DATE_FORMAT.DATE_AFTER),
         rangeDate: null,
         paymentFormId: null,
         schoolDay: '',
@@ -44,12 +53,18 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
     const values = getFieldsValue();
     let data = [];
     if (!isEmpty(paramChanges)) {
-      data = [...paramChanges].map(item => {
+      data = [...paramChanges].map((item) => {
         const endMonth = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).endOf('month');
-        const valueDuaDate = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).set('date', values?.duaDate);
+        const valueDuaDate = moment(item?.duaDate, variables.DATE_FORMAT.DATE_AFTER).set(
+          'date',
+          values?.duaDate,
+        );
         return {
           ...item,
-          duaDate: (moment(valueDuaDate).diff(moment(endMonth), 'days') + 1) <= 0 ? moment(valueDuaDate).format(variables.DATE_FORMAT.DATE_AFTER) : moment(endMonth).format(variables.DATE_FORMAT.DATE_AFTER),
+          duaDate:
+            moment(valueDuaDate).diff(moment(endMonth), 'days') + 1 <= 0
+              ? moment(valueDuaDate).format(variables.DATE_FORMAT.DATE_AFTER)
+              : moment(endMonth).format(variables.DATE_FORMAT.DATE_AFTER),
         };
       });
       setParamChanges(data);
@@ -66,8 +81,8 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
 
   useEffect(() => {
     const { getFieldsValue } = formRef?.current;
-    const { paymentFormId, duaDate } = getFieldsValue();
-    if (paymentFormId && duaDate) {
+    const { feeId, duaDate } = getFieldsValue();
+    if (feeId && duaDate) {
       setDiableApply(false);
     }
   }, []);
@@ -77,7 +92,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
     const newParamChanges = [...paramChanges];
     newParamChanges[index] = {
       ...record,
-      [name]: value
+      [name]: value,
     };
     if (error) {
       checkValidate(newParamChanges, 'changeParameter');
@@ -94,19 +109,27 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
         title: 'Hình thức',
         key: 'form',
         className: 'min-width-150',
-        render: (record) => record?.fee || record?.paymentForm?.name || ''
+        render: (record) => record?.fee || record?.paymentForm?.name || '',
       },
       {
         title: 'Ngày học theo lịch',
         key: 'date',
         className: 'min-width-150',
-        render: (record) =>  Helper.getDate(moment(record?.date, variables.DATE_FORMAT.DATE_AFTER), variables.DATE_FORMAT.MONTH_YEAR) || '',
+        render: (record) =>
+          Helper.getDate(
+            moment(record?.date, variables.DATE_FORMAT.DATE_AFTER),
+            variables.DATE_FORMAT.MONTH_YEAR,
+          ) || '',
       },
       {
         title: 'Ngày đến hạn thanh toán',
         key: 'expired',
         className: 'min-width-200',
-        render: (record) => Helper.getDate(moment(record?.duaDate, variables.DATE_FORMAT.DATE_AFTER), variables.DATE_FORMAT.DATE_VI) || '',
+        render: (record) =>
+          Helper.getDate(
+            moment(record?.duaDate, variables.DATE_FORMAT.DATE_AFTER),
+            variables.DATE_FORMAT.DATE_VI,
+          ) || '',
       },
       {
         title: 'Số tuần thực tế',
@@ -121,11 +144,11 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               rules={[variables.RULES.EMPTY]}
               onChange={(event) => onChange(event, record, 'actualWeek')}
             />
-            {error && !(record?.actualWeek) && (
+            {error && !record?.actualWeek && (
               <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
             )}
           </>
-        )
+        ),
       },
       {
         title: 'Từ ngày đến ngày',
@@ -143,7 +166,7 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
             )}
           </>
-        )
+        ),
       },
       {
         title: 'Học kỳ',
@@ -153,17 +176,17 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
           <>
             <FormItem
               className="mb0"
-              data={[...fees].filter(item => item.isSemester)}
+              data={[...fees].filter((item) => item.isSemester)}
               value={record?.paymentFormId}
               rules={[variables.RULES.EMPTY]}
               type={variables.SELECT}
               onChange={(event) => onChange(event, record, 'paymentFormId')}
             />
-            {error && !(record?.paymentFormId) && (
+            {error && !record?.paymentFormId && (
               <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
             )}
           </>
-        )
+        ),
       },
       {
         title: 'Số ngày học trong tháng',
@@ -178,11 +201,11 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               rules={[variables.RULES.EMPTY]}
               onChange={(event) => onChange(event, record, 'schoolDay')}
             />
-            {error && !(record?.schoolDay) && (
+            {error && !record?.schoolDay && (
               <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
             )}
           </>
-        )
+        ),
       },
       {
         title: 'Tròn tháng',
@@ -198,11 +221,11 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
               type={variables.SELECT}
               onChange={(event) => onChange(event, record, 'fullMonth')}
             />
-            {error && !(record?.fullMonth) && (
+            {error && !record?.fullMonth && (
               <span className="text-danger">{variables.RULES.EMPTY_INPUT.message}</span>
             )}
           </>
-        )
+        ),
       },
     ];
     return columns;
@@ -213,7 +236,17 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
     if (values?.fee && values?.duaDate) {
       setDiableApply(false);
     } else {
+      const feeResult = fees
+        .filter((item) => item.type === 'TD')
+        .find((item) => item.id === values.feeId);
       setDiableApply(true);
+      setParamChanges(
+        paramChanges.map((item) => ({
+          ...item,
+          fee: feeResult.name,
+          feeId: values.feeId,
+        })),
+      );
     }
   };
 
@@ -221,37 +254,43 @@ const Index = memo(({ formRef, fees, paramChanges, setParamChanges, error, check
     <Pane className="p20">
       <div className="row">
         <div className="col-lg-3">
-          <label htmlFor="" className="mb5">Thời điểm</label>
-          <p className="mb0 py10 font-weight-bold">{ !_.isEmpty(rangeDate) ? `${Helper.getDate(rangeDate[0])} - ${Helper.getDate(rangeDate[1])}` : '' }</p>
+          <label htmlFor="" className="mb5">
+            Thời điểm
+          </label>
+          <p className="mb0 py10 font-weight-bold">
+            {!_.isEmpty(rangeDate)
+              ? `${Helper.getDate(rangeDate[0])} - ${Helper.getDate(rangeDate[1])}`
+              : ''}
+          </p>
         </div>
         <div className="col-lg-3">
           <FormItem
-            data={[...fees].filter(item => item.type === 'TD')}
+            data={fees.filter((item) => item.type === 'TD')}
             label="Hình thức"
-            name='paymentFormId'
+            name="feeId"
             type={variables.SELECT}
             onChange={changeForm}
           />
         </div>
         <div className="col-lg-3">
           <FormItem
-              label="Ngày đến hạn mỗi THÁNG"
-              name="duaDate"
-              type={variables.INPUT_COUNT}
-              onChange={changeForm}
-              rules={[
-                () => ({
-                  validator(_, value) {
-                    if (value === 0 || value && (value > 31 || value < 1)) {
-                      setDiableApply(true);
-                      return Promise.reject(new Error(variables.RULES.INVALID_DATE));
-                    }
-                    setDiableApply(false);
-                    return Promise.resolve();
-                  },
-                }),
-              ]}
-            />
+            label="Ngày đến hạn mỗi THÁNG"
+            name="duaDate"
+            type={variables.INPUT_COUNT}
+            onChange={changeForm}
+            rules={[
+              () => ({
+                validator(_, value) {
+                  if (value === 0 || (value && (value > 31 || value < 1))) {
+                    setDiableApply(true);
+                    return Promise.reject(new Error(variables.RULES.INVALID_DATE));
+                  }
+                  setDiableApply(false);
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          />
         </div>
         <div className="col-lg-3">
           <Button
@@ -292,7 +331,7 @@ Index.propTypes = {
   paramChanges: PropTypes.arrayOf(PropTypes.any),
   setParamChanges: PropTypes.func,
   error: PropTypes.bool,
-  checkValidate: PropTypes.func
+  checkValidate: PropTypes.func,
 };
 
 Index.defaultProps = {
@@ -301,7 +340,7 @@ Index.defaultProps = {
   paramChanges: [],
   setParamChanges: () => {},
   error: false,
-  checkValidate: () => {}
+  checkValidate: () => {},
 };
 
 export default Index;
