@@ -17,7 +17,6 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
-import { sliceEvents } from '@fullcalendar/core';
 import listPlugin from '@fullcalendar/list';
 import rrulePlugin from '@fullcalendar/rrule';
 import variablesModules from '../utils/variables';
@@ -240,6 +239,8 @@ class Index extends PureComponent {
     return [];
   };
 
+  eventClick = () => {};
+
   render() {
     const {
       branches,
@@ -248,21 +249,6 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-    const CustomViewConfig = {
-      classnames: ['custom-view'],
-
-      content(props) {
-        const segs = sliceEvents(props, true); // allDay=true
-        const html =
-          `<div class="view-title">${props.dateProfile.currentRange.start.toUTCString()}</div>` +
-          `<div class="view-title">${props.dateProfile.currentRange.start.toUTCString()}</div>` +
-          `<div class="view-events">${segs.length} events` +
-          `</div>`;
-
-        return { html };
-      },
-    };
-
     return (
       <>
         <Helmet title="Thời khóa biểu" />
@@ -448,9 +434,7 @@ class Index extends PureComponent {
                         'timeGridWeek',
                       );
                       calendarApi.gotoDate(
-                        moment()
-                          .endOf('weeks')
-                          .format(variables.DATE_FORMAT.DATE_AFTER),
+                        moment().endOf('weeks').format(variables.DATE_FORMAT.DATE_AFTER),
                       );
                     }
                   },
@@ -491,7 +475,6 @@ class Index extends PureComponent {
                 },
               }}
               views={{
-                custom: CustomViewConfig,
                 dayGrid: {
                   dayMaxEventRows: 3,
                 },
@@ -513,7 +496,7 @@ class Index extends PureComponent {
               locales={allLocales}
               allDaySlot={false}
               height={650}
-              eventClick={() => {}}
+              eventClick={this.eventClick}
               events={this.convertData(data)}
               ref={this.calendarComponentRef}
             />
