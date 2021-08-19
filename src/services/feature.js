@@ -124,6 +124,13 @@ export const feature = {
       permission: [permissions.CHINHSACHPHI],
     },
     {
+      title: 'Phát triển thể chất',
+      src: '/images/home/physical.svg',
+      animation: animationImage.physical,
+      url: '/phat-trien-the-chat',
+      permission: [permissions.THECHAT],
+    },
+    {
       title: 'Cấu hình',
       src: '/images/home/gear.svg',
       animation: animationImage.setting,
@@ -137,13 +144,6 @@ export const feature = {
       url: URL_AI,
       target: true,
       permission: [permissions.CAMERAAI],
-    },
-    {
-      title: 'Phát triển thể chất',
-      src: '/images/home/physical.svg',
-      animation: animationImage.physical,
-      url: '/phat-trien-the-chat',
-      permission: [],
     },
   ],
 };
