@@ -230,6 +230,7 @@ const Index = memo(() => {
                         cell: EditableCell,
                       },
                     }}
+                    isEmpty
                     dataSource={dataSource}
                     pagination={false}
                     rowKey={(record) => record.id}
