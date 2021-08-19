@@ -13,6 +13,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
+import { v4 as uuidv4 } from 'uuid';
 import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
 
@@ -59,6 +60,7 @@ class Index extends PureComponent {
         creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
       },
       visible: false,
+      objects: {},
     };
     setIsMounted(true);
   }
@@ -301,26 +303,25 @@ class Index extends PureComponent {
         key: item.value,
         className: classnames('min-width-140', parent.color),
         width: 140,
-        render: (record) => (
-          <div className={styles['list-avatar']}>
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div
-                className={styles['item-avatar-signal']}
-                key={item}
-                role="presentation"
-                onClick={() => this.setStateData({ visible: true })}
-              >
-                <AvatarTable
-                  fileImage={Helper.getPathAvatarJson(
-                    record?.studentMaster?.farther?.fileImage ||
-                      record?.studentMaster?.mother?.fileImage,
-                  )}
-                  isActive={item === 4 || item === 2}
-                />
-              </div>
-            ))}
-          </div>
-        ),
+        render: (record) => {
+          const children = record?.children?.filter((itemChil) => itemChil.type === item.value);
+          return (
+            <div className={styles['list-avatar']}>
+              {children?.map((item, index) => (
+                <div
+                  className={styles['item-avatar-signal']}
+                  key={index}
+                  role="presentation"
+                  onClick={() =>
+                    this.setStateData({ visible: true, objects: { ...item, class: record.class } })
+                  }
+                >
+                  <AvatarTable srcLocal fileImage={item.img} isActive={item.isActive} />
+                </div>
+              ))}
+            </div>
+          );
+        },
       })),
     }));
     const columns = [
@@ -329,7 +330,7 @@ class Index extends PureComponent {
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: () => <Text size="normal">Preschool 1</Text>,
+        render: (record) => <Text size="normal">{record.class}</Text>,
       },
       ...columnsMedical,
     ];
@@ -357,7 +358,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      data,
       error,
       classes,
       branches,
@@ -365,8 +365,281 @@ class Index extends PureComponent {
       match: { params },
       loading: { effects },
     } = this.props;
-    const { search, visible } = this.state;
+    const { search, visible, objects } = this.state;
     const loading = effects['medicaFollow/GET_DATA'];
+    const DATA_SOURCE = [
+      {
+        class: 'Preschool (Demo)',
+        id: uuidv4(),
+        children: [
+          {
+            name: 'Thạch Tuấn Khang',
+            img: '/images/medicals/thach-tuan-khang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Nguyển Thị Anh Thư (Test)',
+            img: '/images/medicals/nguyen-thi-anh-thu-test.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Lâm Thụy Minh Khuê',
+            img: '/images/medicals/lam-thi-minh-khue.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Khôi Khải Vĩ',
+            img: '/images/medicals/nguyen-khoi-khai-vi.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Ngô Cát Tú Nghi',
+            img: '/images/medicals/ngo-cat-tu-nghi.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
+          },
+          {
+            name: 'Tô Phan Minh Thiện',
+            img: '/images/medicals/to-phan-minh-thien.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
+          },
+          {
+            name: 'Tô Phan Minh Thiện',
+            img: '/images/medicals/to-phan-minh-thien.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Minh Tuấn',
+            img: '/images/medicals/nguyen-minh-tuan.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Hoàng Thiên Kim',
+            img: '/images/medicals/hoang-thien-kim.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
+          },
+          {
+            name: 'Lê Kilian Khoa',
+            img: '/images/medicals/ke-kilian-khoa-le.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
+          },
+          {
+            name: 'Nguyễn Tuấn Khôi',
+            img: '/images/medicals/nguyen-tuan-khoi.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
+          },
+          {
+            name: 'Lê Kilian Khoa',
+            img: '/images/medicals/ke-kilian-khoa-le.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
+          },
+          {
+            name: 'Thạch Tuấn Khang',
+            img: '/images/medicals/thach-tuan-khang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
+          },
+          {
+            name: 'Nguyễn Tuấn Khôi',
+            img: '/images/medicals/nguyen-tuan-khoi.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
+          },
+        ],
+      },
+      {
+        class: 'Preschool',
+        id: uuidv4(),
+        children: [
+          {
+            name: 'Chen Rui An',
+            img: '/images/medicals/chen-rui-an.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Mai Tuệ Lâm',
+            img: '/images/medicals/mai-tue-lam.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Võ Minh Khôi',
+            img: '/images/medicals/vo-minh-khoi.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Trần Khả Doanh',
+            img: '/images/medicals/nguyen-tran-kha-doanh.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Chen Rui An',
+            img: '/images/medicals/chen-rui-an.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_LUNCH,
+          },
+          {
+            name: 'Đặng Ánh Dương',
+            img: '/images/medicals/dang-anh-duong.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
+          },
+          {
+            name: 'Nguyễn Quốc Thống',
+            img: '/images/medicals/nguyen-quoc-thong.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_LUNCH,
+          },
+        ],
+      },
+      {
+        class: 'Nursery',
+        id: uuidv4(),
+        children: [
+          {
+            name: 'Nguyễn Văn Nhật Minh',
+            img: '/images/medicals/nguyen-van-nhat-minh.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Phương Bùi Cherie',
+            img: '/images/medicals/phuong-bui-cheri.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Mai Ngọc Cát Tường',
+            img: '/images/medicals/mai-ngoc-cat-tuong.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Vũ Trần Bảo Quốc',
+            img: '/images/medicals/vu-tran-quoc-bao.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Hà Anh',
+            img: '/images/medicals/nguyen-ha-anh.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Huỳnh Thanh Tùng',
+            img: '/images/medicals/huynh-thanh-tung.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Hà Anh',
+            img: '/images/medicals/nguyen-ha-anh.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
+          },
+          {
+            name: 'Phương Bùi Cherie',
+            img: '/images/medicals/phuong-bui-cheri.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
+          },
+        ],
+      },
+      {
+        class: 'Montessori',
+        id: uuidv4(),
+        children: [
+          {
+            name: 'Đinh Nguyễn Khả Hân',
+            img: '/images/medicals/dinh-nguyen-kha-han.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Duy Khang',
+            img: '/images/medicals/nguyen-duy-khang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Trương Đắc Gia Hưng',
+            img: '/images/medicals/truong-dac-gia-hung.png',
+            id: uuidv4(),
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
+          },
+          {
+            name: 'Trần Lê Thảo Nguyên',
+            img: '/images/medicals/tran-le-thao-nguyen.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Hoàng Minh Đăng',
+            img: '/images/medicals/nguyen-hoang-minh-dang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Trần Ngọc Xuân Anh',
+            img: '/images/medicals/tran-ngoc-xuan-anh.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
+          },
+          {
+            name: 'Nguyễn Hoàng Minh Đăng',
+            img: '/images/medicals/nguyen-hoang-minh-dang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
+          },
+          {
+            name: 'Nguyễn Duy Khang',
+            img: '/images/medicals/nguyen-duy-khang.png',
+            id: uuidv4(),
+            isActive: true,
+            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
+          },
+        ],
+      },
+    ];
     return (
       <>
         <Helmet title="Theo dõi uống thuốc" />
@@ -384,7 +657,12 @@ class Index extends PureComponent {
               'd-flex justify-content-between align-items-center',
             )}
           >
-            <AvatarTable fullName="Nguyễn Thị A" description="Preschool 1" />
+            <AvatarTable
+              srcLocal
+              fullName={objects.name}
+              fileImage={objects.img}
+              description={objects.class}
+            />
             {HelperModules.tagStatus('PENDING')}
           </div>
           <div className={styles['modal-content']}>
@@ -408,6 +686,19 @@ class Index extends PureComponent {
                   <div className="pl10">
                     <p className={styles.label}>Tên thuốc</p>
                     <p className={styles.norm}>CEELIN</p>
+                  </div>
+                </div>
+                <div>
+                  <p className={styles.label}>Nội dung</p>
+                  <p className={styles.norm}>5 ml</p>
+                </div>
+              </div>
+              <div className={styles.item}>
+                <div className={styles['image-container']}>
+                  <img className={styles.thumb} src="/images/medicals/image_01.png" alt="medical" />
+                  <div className="pl10">
+                    <p className={styles.label}>Tên thuốc</p>
+                    <p className={styles.norm}>PROSPAN</p>
                   </div>
                 </div>
                 <div>
@@ -485,11 +776,12 @@ class Index extends PureComponent {
             </Form>
             <Table
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={DATA_SOURCE}
               loading={loading}
               className="table-color"
               error={error}
               isError={error.isError}
+              childrenColumnName="noColumn"
               bordered
               pagination={this.pagination(pagination)}
               params={{
@@ -508,7 +800,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
+  // data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -520,7 +812,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  data: [],
+  // data: [],
   pagination: {},
   loading: {},
   dispatch: {},

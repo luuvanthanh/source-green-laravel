@@ -1018,7 +1018,8 @@
   flex-wrap: wrap;
   .item-avatar {
     width: 200px;
-    margin: 6px 0;
+    margin: 6px 20px;
+    cursor: pointer;
   }
   .item-avatar-signal {
     width: 50px;
@@ -1116,6 +1117,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin: 10px 0;
     }
     .image-container {
       display: flex;

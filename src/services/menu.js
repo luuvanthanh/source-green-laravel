@@ -1257,13 +1257,13 @@ export async function getLeftMenuHRM() {
       title: 'Lương',
       key: 'salary',
       icon: 'icon icon-cash',
-      permission: [permissions.HRM],
+      permission: [permissions.BANGLUONG],
       children: [
         {
           title: 'Tính lương',
           key: 'salary-payroll',
           url: ['/quan-ly-nhan-su/tinh-luong'],
-          permission: [permissions.HRM],
+          permission: [permissions.BANGLUONG],
           pro: true,
         },
         {
