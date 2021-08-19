@@ -225,7 +225,7 @@ const Index = memo(() => {
         className: 'min-width-200',
         width: 200,
         editable: true,
-        type: variables.INPUT,
+        type: variables.TEXTAREA,
         render: (value) => <Input value={value} placeholder="Nhập" />,
       },
       {
@@ -235,7 +235,7 @@ const Index = memo(() => {
         className: 'min-width-200',
         width: 200,
         editable: true,
-        type: variables.INPUT,
+        type: variables.TEXTAREA,
         render: (value) => <Input value={value} placeholder="Nhập" />,
       },
       {
