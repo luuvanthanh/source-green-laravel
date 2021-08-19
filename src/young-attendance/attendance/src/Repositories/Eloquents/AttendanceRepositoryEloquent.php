@@ -167,10 +167,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
             $parents = $attendance->student->parent;
             $userId = [];
-
+            // dd($parents);
             if (!empty($parents)) {
                 foreach ($parents as $parent) {
                     if (!is_null($parent->account)) {
+
                         $userId[] = $parent->account->AppUserId;
                     }
                 }

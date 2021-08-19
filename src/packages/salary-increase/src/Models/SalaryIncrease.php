@@ -21,6 +21,7 @@ class SalaryIncrease extends UuidModel
      */
     protected $fillable = [
         'DecisionNumber', 'DecisionDate', 'Reason', 'EmployeeId', 'TimeApply', 'Note',
+        'TotalAllowance', 'BasicSalary', 'OldBasicSalary'
     ];
 
     protected $dateTimeFields = [
@@ -60,5 +61,4 @@ class SalaryIncrease extends UuidModel
     {
         return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'SalaryIncreaseParameterValue', 'SalaryIncreaseId', 'ParameterValueId')->withPivot('Value');
     }
-
 }
