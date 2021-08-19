@@ -291,7 +291,6 @@ class Index extends PureComponent {
       {
         title: 'Tổng phụ cấp',
         key: 'payment',
-        dataIndex: 'parameterValues',
         className: 'min-width-150',
         render: (record) => Helper.getPrice(record.totalAllowance),
       },
