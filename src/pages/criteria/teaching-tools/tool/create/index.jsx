@@ -226,7 +226,9 @@ const Index = memo(() => {
         width: 200,
         editable: true,
         type: variables.TEXTAREA,
-        render: (value) => <Input value={value} placeholder="Nhập" />,
+        render: (value) => (
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} value={value} placeholder="Nhập" />
+        ),
       },
       {
         title: 'Tham gia phụ huynh',
@@ -236,7 +238,9 @@ const Index = memo(() => {
         width: 200,
         editable: true,
         type: variables.TEXTAREA,
-        render: (value) => <Input value={value} placeholder="Nhập" />,
+        render: (value) => (
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} value={value} placeholder="Nhập" />
+        ),
       },
       {
         key: 'action',

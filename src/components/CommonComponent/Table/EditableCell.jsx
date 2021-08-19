@@ -223,7 +223,13 @@ const EditableCell = ({
     if (type === variables.TEXTAREA) {
       return (
         <Form.Item name={dataIndex} rules={[]}>
-          <Input onBlur={save} onPressEnter={save} placeholder="Nhập" ref={inputRef} />
+          <Input.TextArea
+            autoSize={{ minRows: 3, maxRows: 3 }}
+            onBlur={save}
+            onPressEnter={save}
+            placeholder="Nhập"
+            ref={inputRef}
+          />
         </Form.Item>
       );
     }
