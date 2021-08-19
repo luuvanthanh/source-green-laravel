@@ -30,7 +30,8 @@ class ProbationaryContractUpdateRequest extends FormRequest
             'contractNumber' => [
                 'string',
                 function ($attribute, $value, $fail) {
-                    $shift = ProbationaryContract::where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
+                    $employeeId = request()->employeeId;
+                    $shift = ProbationaryContract::where('EmployeeId', $employeeId)->where('ContractNumber', $value)->where('Id', '!=', request()->probationary_contract)->first();
 
                     if (!is_null($shift)) {
                         return $fail('Số hợp đồng đã tồn tại.');
@@ -42,7 +43,7 @@ class ProbationaryContractUpdateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->probationary_contract)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($labourContract) && $value <= $labourContract->ContractFrom->format('Y-m-d')) {
                         return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $labourContract->ContractFrom->format('d-m-Y'));
