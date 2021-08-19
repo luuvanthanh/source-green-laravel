@@ -3,7 +3,6 @@ import { connect, Redirect } from 'umi';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
-import NProgress from 'nprogress';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
@@ -27,7 +26,6 @@ import NotesLayout from './Notes';
 import SalaryLayout from './Salary';
 import PhysicalLayout from './Physical';
 
-NProgress.configure({ showSpinner: false });
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
@@ -50,7 +48,7 @@ const Layouts = {
   feePolicy: FeePolicyLayout,
   notes: NotesLayout,
   salary: SalaryLayout,
-  physical: PhysicalLayout,
+  physical: PhysicalLayout
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -134,20 +132,6 @@ class IndexLayout extends React.PureComponent {
     const isUserAuthorized = user.authorized;
     const isUserLoading = loading.models.user;
     const isLoginLayout = getLayout() === 'login';
-    const currentPath = pathname + search;
-    const disabledNProgess = [];
-    if (currentPath !== this.previousPath || loading.global) {
-      if (!disabledNProgess.some((item) => item === pathname)) {
-        NProgress.start();
-      }
-    }
-
-    if (!loading.global) {
-      if (!disabledNProgess.some((item) => item === pathname)) {
-        NProgress.done();
-      }
-      this.previousPath = currentPath;
-    }
 
     const BootstrappedLayout = () => {
       // show loader when user in check authorization process, not authorized yet and not on login pages
