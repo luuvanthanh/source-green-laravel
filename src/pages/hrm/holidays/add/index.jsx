@@ -74,6 +74,7 @@ class Index extends PureComponent {
         ...details,
         startDate: details.startDate && moment(details.startDate),
         endDate: details.endDate && moment(details.endDate),
+        year: details.year && moment(details.year, variables.DATE_FORMAT.YEAR),
       });
     }
   }
@@ -143,7 +144,7 @@ class Index extends PureComponent {
   onChangeYear = (values) => {
     this.formRef?.current?.setFieldsValue({ startDate: null, endDate: null });
     this.setStateData({ disabledDate: !values });
-  }
+  };
 
   render() {
     const {
@@ -185,7 +186,9 @@ class Index extends PureComponent {
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                     disabled={disabledDate}
-                    disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef, 'endDate', { yearKey: 'year'})}
+                    disabledDate={(current) =>
+                      Helper.disabledDateFrom(current, this.formRef, 'endDate', { yearKey: 'year' })
+                    }
                   />
                 </div>
                 <div className="col-lg-6">
@@ -195,7 +198,9 @@ class Index extends PureComponent {
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
                     disabled={disabledDate}
-                    disabledDate={(current) => Helper.disabledDateTo(current, this.formRef, 'startDate', { yearKey: 'year'})}
+                    disabledDate={(current) =>
+                      Helper.disabledDateTo(current, this.formRef, 'startDate', { yearKey: 'year' })
+                    }
                   />
                 </div>
                 <div className="col-lg-6">

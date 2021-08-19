@@ -11,6 +11,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 
 import Button from '@/components/CommonComponent/Button';
+import { v4 as uuidv4 } from 'uuid';
 import styles from '../index.scss';
 import variablesModules from '../variables';
 import HelperModules from './utils/Helper';
@@ -24,6 +25,7 @@ const Index = memo(({ classId, branchId }) => {
   ]);
 
   const [visible, setVisible] = useState(false);
+  const [objects, setObjects] = useState({});
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
@@ -72,8 +74,9 @@ const Index = memo(({ classId, branchId }) => {
     }));
   };
 
-  const onShowInfo = () => {
+  const onShowInfo = (record) => {
     setVisible(true);
+    setObjects(record);
   };
 
   const headerMedical = () => {
@@ -109,19 +112,162 @@ const Index = memo(({ classId, branchId }) => {
       align: 'center',
       render: (record) => (
         <div className={styles['list-avatar']}>
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <div className={styles['item-avatar']} key={item} role="presentation">
-              <AvatarTable
-                fileImage={Helper.getPathAvatarJson(
-                  record?.studentMaster?.farther?.fileImage ||
-                    record?.studentMaster?.mother?.fileImage,
-                )}
-                isActive={item === 4 || item === 2}
-              />
+          {record?.children?.map((item, index) => (
+            <div
+              className={styles['item-avatar']}
+              key={index}
+              role="presentation"
+              onClick={() => onShowInfo({ ...item, ...record })}
+            >
+              <AvatarTable srcLocal fileImage={item.img} isActive={item.isActive} />
             </div>
           ))}
         </div>
       ),
+    },
+  ];
+
+  const DATA_SOURCE = [
+    {
+      class: 'Preschool (Demo)',
+      id: uuidv4(),
+      children: [
+        {
+          name: 'Thạch Tuấn Khang',
+          img: '/images/medicals/thach-tuan-khang.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Nguyển Thị Anh Thư (Test)',
+          img: '/images/medicals/nguyen-thi-anh-thu-test.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Lâm Thụy Minh Khuê',
+          img: '/images/medicals/lam-thi-minh-khue.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Nguyễn Khôi Khải Vĩ',
+          img: '/images/medicals/nguyen-khoi-khai-vi.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Ngô Cát Tú Nghi',
+          img: '/images/medicals/ngo-cat-tu-nghi.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Tô Phan Minh Thiện',
+          img: '/images/medicals/to-phan-minh-thien.png',
+          id: uuidv4(),
+        },
+      ],
+    },
+    {
+      class: 'Preschool 2',
+      id: uuidv4(),
+      children: [
+        {
+          name: 'Chen Rui An',
+          img: '/images/medicals/chen-rui-an.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Mai Tuệ Lâm',
+          img: '/images/medicals/mai-tue-lam.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Võ Minh Khôi',
+          img: '/images/medicals/vo-minh-khoi.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Nguyễn Trần Khả Doanh',
+          img: '/images/medicals/nguyen-tran-kha-doanh.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Đặng Ánh Dương',
+          img: '/images/medicals/dang-anh-duong.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+      ],
+    },
+    {
+      class: 'Nursery 1',
+      id: uuidv4(),
+      children: [
+        {
+          name: 'Nguyễn Văn Nhật Minh',
+          img: '/images/medicals/nguyen-van-nhat-minh.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Phương Bùi Cherie',
+          img: '/images/medicals/phuong-bui-cheri.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Mai Ngọc Cát Tường',
+          img: '/images/medicals/mai-ngoc-cat-tuong.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Vũ Trần Bảo Quốc',
+          img: '/images/medicals/vu-tran-quoc-bao.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Nguyễn Hà Anh',
+          img: '/images/medicals/nguyen-ha-anh.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+      ],
+    },
+    {
+      class: 'Nursery 2',
+      id: uuidv4(),
+      children: [
+        {
+          name: 'Đinh Nguyễn Khả Hân',
+          img: '/images/medicals/dinh-nguyen-kha-han.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+        {
+          name: 'Nguyễn Duy Khang',
+          img: '/images/medicals/nguyen-duy-khang.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Trương Đắc Gia Hưng',
+          img: '/images/medicals/truong-dac-gia-hung.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Trần Lê Thảo Nguyên',
+          img: '/images/medicals/tran-le-thao-nguyen.png',
+          id: uuidv4(),
+        },
+        {
+          name: 'Nguyễn Hoàng Minh Đăng',
+          img: '/images/medicals/nguyen-hoang-minh-dang.png',
+          id: uuidv4(),
+          isActive: true,
+        },
+      ],
     },
   ];
 
@@ -141,7 +287,12 @@ const Index = memo(({ classId, branchId }) => {
             'd-flex justify-content-between align-items-center',
           )}
         >
-          <AvatarTable fullName="Nguyễn Thị A" description="Preschool 1" />
+          <AvatarTable
+            srcLocal
+            fullName={objects.name}
+            fileImage={objects.img}
+            description={objects.class}
+          />
           {HelperModules.tagStatus('PENDING')}
         </div>
         <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
@@ -196,7 +347,48 @@ const Index = memo(({ classId, branchId }) => {
                           <Image
                             key={index}
                             width={85}
-                            src={`${API_UPLOAD}${item}`}
+                            src="/images/medicals/image_01.png"
+                            fallback="/default-upload.png"
+                          />
+                        </div>
+                      ))}
+                    </Image.PreviewGroup>
+                  </div>
+                </div>
+              </Collapse.Panel>
+              <Collapse.Panel
+                header={<div className={styles['container-header']}>CEELIN</div>}
+                key="2"
+              >
+                <p className={styles.label}>Tên thuốc</p>
+                <p className={styles.norm}>PROSPAN</p>
+                <hr />
+                <p className={styles.label}>Thời gian uống</p>
+                <Table
+                  columns={headerMedical()}
+                  dataSource={[{ id: 1 }]}
+                  pagination={false}
+                  params={{
+                    header: headerMedical(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                  className="mb10"
+                />
+                <p className={styles.label}>Ngày uống:</p>
+                <p className={styles.label}>08/08 - 10/08</p>
+                <hr />
+                <div>
+                  <label className={styles.label}>Hình ảnh:</label>
+                  <div className="d-flex">
+                    <Image.PreviewGroup>
+                      {[1, 2, 3].map((item, index) => (
+                        <div key={index} className={styles['group-image']}>
+                          <Image
+                            key={index}
+                            width={85}
+                            src="/images/medicals/image_01.png"
                             fallback="/default-upload.png"
                           />
                         </div>
@@ -231,7 +423,7 @@ const Index = memo(({ classId, branchId }) => {
                 Y tế
               </span>
             </div>
-            <p className={classnames('mb0', 'font-size-14')}>{medicals?.length || 0}</p>
+            <p className={classnames('mb0', 'font-size-14')}>12</p>
           </div>
           <Tabs onChange={changeTab} activeKey={search?.tab}>
             {variablesModules.MEDICAL.map(({ id, name }) => (
@@ -242,10 +434,11 @@ const Index = memo(({ classId, branchId }) => {
             <Table
               bordered
               columns={header()}
-              dataSource={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]}
+              dataSource={DATA_SOURCE}
               pagination={false}
               loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
               className="table-attendances"
+              childrenColumnName="noColumn"
               params={{
                 header: header(),
                 type: 'table',
@@ -253,9 +446,6 @@ const Index = memo(({ classId, branchId }) => {
               isEmpty
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
-              onRow={(record) => ({
-                onClick: () => onShowInfo(record),
-              })}
             />
           </Scrollbars>
         </div>
