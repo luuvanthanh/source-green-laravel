@@ -15,6 +15,7 @@ import Button from '@/components/CommonComponent/Button';
 import classnames from 'classnames';
 
 import { variables, Helper } from '@/utils';
+import { isEmpty } from 'lodash';
 import styles from './style.module.scss';
 
 const { Item: ListItem } = List;
@@ -49,8 +50,12 @@ const Index = memo(() => {
     return mounted.current;
   }, []);
 
-  const mergeMenuMeal = (items) =>
-    items.reduce((result, entry) => result.concat([...entry.menuMealGroupByDay]), []);
+  const mergeMenuMeal = (items) => {
+    if (!isEmpty(items)) {
+      return items.reduce((result, entry) => result.concat([...entry.menuMealGroupByDay]), []);
+    }
+    return [];
+  };
 
   return (
     <>

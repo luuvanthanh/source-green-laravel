@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Link } from 'umi';
+import { isEmpty } from 'lodash';
 import GeneralForm from './forms/general';
 import CertificateForm from './forms/certificate';
 import ContactForm from './forms/contact';
@@ -73,6 +74,16 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
     }
   }, [params.id]);
 
+  const menuStore = (items) => {
+    if (isEmpty(details)) {
+      return [];
+    }
+    if (details?.status === 'STORE') {
+      return items.filter((item) => item.key === 'general');
+    }
+    return items;
+  };
+
   return (
     <div style={{ padding: 20 }}>
       <Helmet title="Tạo hồ sơ nhân viên" />
@@ -94,7 +105,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
               <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
                 {params.id &&
-                  menu.map(({ key, label }) => (
+                  menuStore(menu).map(({ key, label }) => (
                     <MenuItem key={key}>
                       <Link to={`${pathname}?type=${key}`}>{label}</Link>
                     </MenuItem>
