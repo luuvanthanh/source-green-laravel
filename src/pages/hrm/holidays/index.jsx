@@ -276,19 +276,14 @@ class Index extends PureComponent {
     },
     {
       key: 'action',
-      className: 'min-width-100',
-      width: 100,
+      className: 'min-width-80',
+      width: 80,
       fixed: 'right',
       render: (record) => {
         if (!record.holidayDetails) {
           return (
             <div className={styles['list-button']}>
               <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
-              <Button
-                color="primary"
-                icon="edit"
-                onClick={() => history.push(`/quan-ly-nhan-su/ngay-nghi-le/${record.id}/chi-tiet`)}
-              />
             </div>
           );
         }
