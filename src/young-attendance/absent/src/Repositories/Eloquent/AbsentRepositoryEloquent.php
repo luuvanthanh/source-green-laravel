@@ -120,7 +120,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
     public function create(array $attributes)
     {
-
         \DB::beginTransaction();
         try {
             $absent = Absent::create($attributes);
