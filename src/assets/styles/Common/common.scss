@@ -1128,3 +1128,10 @@
     }
   }
 }
+
+.checkbox-container {
+  padding: 16px 20px;
+  &:not(:first-child) {
+    border-top: 1px solid #eaeaea;
+  }
+}

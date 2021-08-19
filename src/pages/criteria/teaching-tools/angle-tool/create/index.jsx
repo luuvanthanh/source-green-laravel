@@ -1,10 +1,10 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form } from 'antd';
+import { Form, Checkbox } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams } from 'umi';
 import csx from 'classnames';
-import { head, isEmpty } from 'lodash';
+import { head, isEmpty, size } from 'lodash';
 
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import Pane from '@/components/CommonComponent/Pane';
@@ -13,6 +13,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { variables, Helper } from '@/utils';
+import styles from '@/assets/styles/Common/common.scss';
 
 const Index = memo(() => {
   const [
@@ -42,7 +43,7 @@ const Index = memo(() => {
       payload: {
         ...values,
         ...params,
-        toolDetailGroups: values.toolDetails.map((item) => ({
+        toolDetailGroups: itemsSelected.map((item) => ({
           toolDetailId: item,
         })),
       },
@@ -94,6 +95,17 @@ const Index = memo(() => {
       );
     } else {
       mountedSet(setItems, toolDetails);
+    }
+  };
+
+  const onChangeCheckbox = (event, record) => {
+    const itemSelected = itemsSelected.find((item) => record.id === item);
+    if (event.target.checked) {
+      if (!itemSelected) {
+        setItemsSelected((prev) => [...prev, record.id]);
+      }
+    } else {
+      setItemsSelected((prev) => prev.filter((item) => item !== record.id));
     }
   };
 
@@ -170,7 +182,7 @@ const Index = memo(() => {
 
               <Pane className="mt20 mb0 card">
                 <Heading type="form-title" className="p20">
-                  Danh sách giáo cụ ({itemsSelected.length}/{toolDetails.length})
+                  Danh sách giáo cụ ({size(itemsSelected)}/{size(toolDetails)})
                 </Heading>
 
                 <Pane className={csx('row')}>
@@ -183,18 +195,19 @@ const Index = memo(() => {
                       onChange={onChange}
                     />
                     <Scrollbars autoHeight autoHeightMax="calc(50vh)">
-                      <FormItem
-                        className="checkbox-column mb0"
-                        name="toolDetails"
-                        type={variables.CHECKBOX}
-                        data={items.map((item) => ({
-                          value: item.id,
-                          label: item.name,
-                        }))}
-                        onChange={(values) => {
-                          setItemsSelected(values);
-                        }}
-                      />
+                      {items.map((item) => {
+                        const record = itemsSelected.find((itemSelect) => itemSelect === item.id);
+                        return (
+                          <div key={item.id} className={styles['checkbox-container']}>
+                            <Checkbox
+                              checked={!!record}
+                              onChange={(event) => onChangeCheckbox(event, item)}
+                            >
+                              {item.name}
+                            </Checkbox>
+                          </div>
+                        );
+                      })}
                     </Scrollbars>
                   </Pane>
                 </Pane>
