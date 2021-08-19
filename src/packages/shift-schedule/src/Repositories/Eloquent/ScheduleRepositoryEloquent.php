@@ -136,7 +136,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             $attributes['ScheduleId'] = $schedule->Id;
             ScheduleRepeatService::add(\Arr::except($attributes, ['StartDate', 'EmployeeId', 'ShiftId']));
         }
-
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
         $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('EmployeeId', $attributes['employeeId'])->where(function ($query) use ($attributes, $dateEndYear) {

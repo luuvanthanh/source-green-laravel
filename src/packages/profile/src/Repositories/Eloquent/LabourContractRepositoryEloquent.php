@@ -175,8 +175,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $labourContract->ContractTo->format('Y-m-d'),
-                    'endDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                    'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                    'endDate' => $labourContract->ContractTo->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
@@ -257,7 +257,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
-            'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value),
+            'salary' => number_format($labourContract->BasicSalary),
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);
