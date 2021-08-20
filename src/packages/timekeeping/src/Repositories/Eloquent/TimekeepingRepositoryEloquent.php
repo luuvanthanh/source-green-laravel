@@ -193,6 +193,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      */
     public function calculatorTimekeepingReport($employee, $attributes)
     {
+
         $startDate = Carbon::parse($attributes['startDate'])->format('Y-m-d');
         $endDate = Carbon::parse($attributes['endDate'])->format('Y-m-d');
         $now = Carbon::now();
@@ -214,7 +215,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
         }
         // thoi gian cham cong
-        $employeeHasTimekeeping = $employee->timekeeping;
+        $employeeHasTimekeeping = $employee->timekeeping()->orderBy('AttendedAt')->get();
 
         // get thoi gian cham cong theo ngay
         foreach ($employeeHasTimekeeping as $timekeeping) {
@@ -277,6 +278,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $endTime = end($value)['BeforeEnd'] ? end($value)['BeforeEnd'] : end($value)['EndTime'];
 
                 if (!empty($timeKeepingByDate[$key])) {
+
                     $checkIn = $timeKeepingByDate[$key][0]->AttendedAt->format('H:i:s');
                     $checkOut = end($timeKeepingByDate[$key])->AttendedAt->format('H:i:s');
 
