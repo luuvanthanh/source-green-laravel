@@ -4,10 +4,17 @@ import { variables } from './variables';
 
 export default class Helpers {
   static tagStatus = (type) => {
-    if (type === variables.STATUS.PENDING) {
-      return <Tag color="primary">{variables.STATUS_NAME.PENDING}</Tag>;
+    if (type === variables.STATUS.NOT_RECEIVED) {
+      return <Tag color="primary">{variables.STATUS_NAME.NOT_RECEIVED}</Tag>;
     }
-    return <Tag color="success">{variables.STATUS_NAME.PROCESSED}</Tag>;
+    return <Tag color="success">{variables.STATUS_NAME.RECEIVED}</Tag>;
+  };
+
+  static tagStatusDrink = (type) => {
+    if (type === variables.STATUS.NOT_DRINK) {
+      return <Tag color="primary">{variables.STATUS_NAME.NOT_DRINK}</Tag>;
+    }
+    return <Tag color="success">{variables.STATUS_NAME.DRINK}</Tag>;
   };
 
   static getStartDate = (date, choose) => {

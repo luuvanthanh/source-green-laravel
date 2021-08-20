@@ -25,9 +25,13 @@ export const variables = {
     },
   ],
   MEDICAL: [
-    { id: 'PROCESSED', name: 'Hoàn thành' },
-    { id: 'PENDING', name: 'Chưa hoàn thành' },
+    { id: 'PROCESSED', name: 'Nhận thuốc' },
+    { id: 'PENDING', name: 'Cho uống' },
   ],
+  STATUS: {
+    PROCESSED: 'PROCESSED',
+    PENDING: 'PENDING'
+  },
   DATA_ATTENDANCE: [
     {
       id: 'student',

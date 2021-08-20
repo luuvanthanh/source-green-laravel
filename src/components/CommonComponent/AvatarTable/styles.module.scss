@@ -72,3 +72,14 @@
   color: $text-white;
   font-size: 8px;
 }
+
+:global(.container-image) {
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+  border-radius: 4px;
+  &.image-border {
+    border: 2px solid #ff9315;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+}

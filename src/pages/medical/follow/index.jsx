@@ -316,7 +316,12 @@ class Index extends PureComponent {
                     this.setStateData({ visible: true, objects: { ...item, class: record.class } })
                   }
                 >
-                  <AvatarTable srcLocal fileImage={item.img} isActive={item.isActive} />
+                  <AvatarTable
+                    srcLocal
+                    fileImage={item.img}
+                    isBorder={!item.isActive}
+                    isActive={item.isActive}
+                  />
                 </div>
               ))}
             </div>
@@ -663,7 +668,8 @@ class Index extends PureComponent {
               fileImage={objects.img}
               description={objects.class}
             />
-            {HelperModules.tagStatus('PENDING')}
+            {objects.isActive && HelperModules.tagStatusDrink('DRINK')}
+            {!objects.isActive && HelperModules.tagStatusDrink('NOT_DRINK')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
