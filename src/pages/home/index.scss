@@ -344,7 +344,7 @@
   color: #7a7e84;
 }
 .modal-student-detail {
-  :global(.ant-modal-header){
+  :global(.ant-modal-header) {
     border-radius: 12px 12px 0 0;
   }
   :global(.ant-modal-close-x) {
@@ -632,5 +632,28 @@
   .item-avatar {
     width: 60px;
     margin: 6px 0;
+    cursor: pointer;
+  }
+}
+
+.tab-container {
+  background-color: $background-white;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  overflow-x: auto;
+  .tab-item {
+    font-size: 14px;
+    line-height: 24px;
+    color: #31434b;
+    padding: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    &.active {
+      font-family: 'ProximaNovaBold';
+      font-style: normal;
+      font-size: 14px;
+      line-height: 24px;
+      color: $text-success;
+    }
   }
 }

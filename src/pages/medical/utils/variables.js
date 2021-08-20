@@ -6,6 +6,10 @@ export const variables = {
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
     PROCESSED: 'PROCESSED',
+    RECEIVED: 'RECEIVED',
+    NOT_RECEIVED: 'NOT_RECEIVED',
+    DRINK: 'DRINK',
+    NOT_DRINK: 'NOT_DRINK',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
@@ -14,6 +18,10 @@ export const variables = {
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
     PROCESSED: 'Đã xử lý',
+    RECEIVED: 'Đã nhận thuốc',
+    NOT_RECEIVED: 'Chưa nhận thuốc',
+    DRINK: 'Đã uống thuốc',
+    NOT_DRINK: 'Chưa uống thuốc',
   },
   STATUS_TIME_CODE: [
     {

@@ -29,7 +29,7 @@ const Index = memo(({ classId, branchId }) => {
   const [search, setSearch] = useState({
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
-    status: variables.STATUS.PENDING,
+    status: variables.STATUS.PROCESSED,
   });
 
   const fetchData = () => {
@@ -119,7 +119,12 @@ const Index = memo(({ classId, branchId }) => {
               role="presentation"
               onClick={() => onShowInfo({ ...item, ...record })}
             >
-              <AvatarTable srcLocal fileImage={item.img} isActive={item.isActive} />
+              <AvatarTable
+                isBorder={!item.isActive}
+                srcLocal
+                fileImage={item.img}
+                isActive={item.isActive}
+              />
             </div>
           ))}
         </div>
@@ -293,7 +298,18 @@ const Index = memo(({ classId, branchId }) => {
             fileImage={objects.img}
             description={objects.class}
           />
-          {HelperModules.tagStatus('PENDING')}
+          {search?.status === variablesModules.STATUS.PROCESSED && (
+            <>
+              {objects.isActive && HelperModules.tagStatus('RECEIVED')}
+              {!objects.isActive && HelperModules.tagStatus('NOT_RECEIVED')}
+            </>
+          )}
+          {search?.status === variablesModules.STATUS.PENDING && (
+            <>
+              {objects.isActive && HelperModules.tagStatusDrink('DRINK')}
+              {!objects.isActive && HelperModules.tagStatusDrink('NOT_DRINK')}
+            </>
+          )}
         </div>
         <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
           <div className={styles['modal-content']}>
@@ -425,29 +441,62 @@ const Index = memo(({ classId, branchId }) => {
             </div>
             <p className={classnames('mb0', 'font-size-14')}>12</p>
           </div>
-          <Tabs onChange={changeTab} activeKey={search?.tab}>
+          <Tabs onChange={changeTab} activeKey={search?.status}>
             {variablesModules.MEDICAL.map(({ id, name }) => (
               <TabPane tab={name} key={id} />
             ))}
           </Tabs>
-          <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
-            <Table
-              bordered
-              columns={header()}
-              dataSource={DATA_SOURCE}
-              pagination={false}
-              loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
-              className="table-attendances"
-              childrenColumnName="noColumn"
-              params={{
-                header: header(),
-                type: 'table',
-              }}
-              isEmpty
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
-          </Scrollbars>
+          {search?.status === variablesModules.STATUS.PROCESSED && (
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+              <Table
+                bordered
+                columns={header()}
+                dataSource={DATA_SOURCE}
+                pagination={false}
+                loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
+                className="table-attendances"
+                childrenColumnName="noColumn"
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                isEmpty
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </Scrollbars>
+          )}
+          {search?.status === variablesModules.STATUS.PENDING && (
+            <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
+              <div className={styles['tab-container']}>
+                <div className={classnames(styles['tab-item'], styles.active)}>
+                  <span>Trước ăn sáng</span>
+                </div>
+                <div className={styles['tab-item']}>
+                  <span>Sau ăn sáng</span>
+                </div>
+                <div className={styles['tab-item']}>
+                  <span>Trước xế sáng</span>
+                </div>
+              </div>
+              <Table
+                bordered
+                columns={header()}
+                dataSource={DATA_SOURCE}
+                pagination={false}
+                loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
+                className="table-attendances"
+                childrenColumnName="noColumn"
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                isEmpty
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </Scrollbars>
+          )}
         </div>
       </div>
     </>
