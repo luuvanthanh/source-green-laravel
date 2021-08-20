@@ -214,8 +214,8 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $isProbation = true;
             }
         }
-
         $dateStartWork = null;
+
         if (!is_null($contract) && $totalWorks > 0) {
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
