@@ -16,11 +16,14 @@ class AvatarTable extends Component {
       shape,
       srcLocal,
       isActive,
+      isBorder,
     } = this.props;
     if (fileImage && fullName) {
       return (
         <div className={classnames(styles['avatar-container'], styles[className])}>
-          <div className="container-image">
+          <div
+            className={classnames('container-image', { [`${styles['image-border']}`]: isBorder })}
+          >
             <div
               className="background-avatar"
               style={{
@@ -61,7 +64,9 @@ class AvatarTable extends Component {
             `${className ? styles[`${className}`] : ''}`,
           )}
         >
-          <div className="container-image">
+          <div
+            className={classnames('container-image', { [`${styles['image-border']}`]: isBorder })}
+          >
             <div
               className="background-avatar"
               style={{
@@ -91,7 +96,7 @@ class AvatarTable extends Component {
     }
     if (fileImage && !fullName) {
       return (
-        <div className="container-image">
+        <div className={classnames('container-image', { [`${styles['image-border']}`]: isBorder })}>
           <div
             className="background-avatar"
             style={{
@@ -140,6 +145,7 @@ AvatarTable.propTypes = {
   shape: PropTypes.string,
   srcLocal: PropTypes.bool,
   isActive: PropTypes.bool,
+  isBorder: PropTypes.bool,
 };
 AvatarTable.defaultProps = {
   size: 40,
@@ -150,6 +156,7 @@ AvatarTable.defaultProps = {
   shape: 'square',
   srcLocal: false,
   isActive: false,
+  isBorder: false,
 };
 
 export default AvatarTable;

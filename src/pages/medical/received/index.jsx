@@ -321,6 +321,7 @@ class Index extends PureComponent {
                   srcLocal
                   fileImage={item.img}
                   fullName={item.name}
+                  isBorder={!item.isActive}
                   isActive={item.isActive}
                 />
               </div>
@@ -372,31 +373,31 @@ class Index extends PureComponent {
             name: 'Thạch Tuấn Khang',
             img: '/images/medicals/thach-tuan-khang.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Nguyển Thị Anh Thư (Test)',
             img: '/images/medicals/nguyen-thi-anh-thu-test.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Lâm Thụy Minh Khuê',
             img: '/images/medicals/lam-thi-minh-khue.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Nguyễn Khôi Khải Vĩ',
             img: '/images/medicals/nguyen-khoi-khai-vi.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Ngô Cát Tú Nghi',
             img: '/images/medicals/ngo-cat-tu-nghi.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Tô Phan Minh Thiện',
@@ -417,13 +418,13 @@ class Index extends PureComponent {
             name: 'Lê Kilian Khoa',
             img: '/images/medicals/ke-kilian-khoa-le.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Nguyễn Tuấn Khôi',
             img: '/images/medicals/nguyen-tuan-khoi.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
         ],
       },
@@ -435,13 +436,13 @@ class Index extends PureComponent {
             name: 'Chen Rui An',
             img: '/images/medicals/chen-rui-an.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Mai Tuệ Lâm',
             img: '/images/medicals/mai-tue-lam.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Võ Minh Khôi',
@@ -457,13 +458,13 @@ class Index extends PureComponent {
             name: 'Đặng Ánh Dương',
             img: '/images/medicals/dang-anh-duong.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Nguyễn Quốc Thống',
             img: '/images/medicals/nguyen-quoc-thong.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
         ],
       },
@@ -475,7 +476,7 @@ class Index extends PureComponent {
             name: 'Nguyễn Văn Nhật Minh',
             img: '/images/medicals/nguyen-van-nhat-minh.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Phương Bùi Cherie',
@@ -496,7 +497,7 @@ class Index extends PureComponent {
             name: 'Nguyễn Hà Anh',
             img: '/images/medicals/nguyen-ha-anh.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Huỳnh Thanh Tùng',
@@ -513,7 +514,7 @@ class Index extends PureComponent {
             name: 'Đinh Nguyễn Khả Hân',
             img: '/images/medicals/dinh-nguyen-kha-han.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Nguyễn Duy Khang',
@@ -534,7 +535,7 @@ class Index extends PureComponent {
             name: 'Nguyễn Hoàng Minh Đăng',
             img: '/images/medicals/nguyen-hoang-minh-dang.png',
             id: uuidv4(),
-            isActive: true
+            isActive: true,
           },
           {
             name: 'Trần Ngọc Xuân Anh',
@@ -567,7 +568,8 @@ class Index extends PureComponent {
               fileImage={objects.img}
               description={objects.class}
             />
-            {HelperModules.tagStatus('PENDING')}
+            {objects.isActive && HelperModules.tagStatus('RECEIVED')}
+            {!objects.isActive && HelperModules.tagStatus('NOT_RECEIVED')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>

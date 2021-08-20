@@ -6,6 +6,10 @@ export const variables = {
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
     PROCESSED: 'PROCESSED',
+    RECEIVED: 'RECEIVED',
+    NOT_RECEIVED: 'NOT_RECEIVED',
+    DRINK: 'DRINK',
+    NOT_DRINK: 'NOT_DRINK',
   },
   STATUS_NAME: {
     NO_VERIFYE: 'Chưa xác nhận',
@@ -14,6 +18,10 @@ export const variables = {
     VALID: 'Lỗi',
     EXPIRE: 'Nghỉ học',
     PROCESSED: 'Đã xử lý',
+    RECEIVED: 'Đã nhận thuốc',
+    NOT_RECEIVED: 'Chưa nhận thuốc',
+    DRINK: 'Đã uống thuốc',
+    NOT_DRINK: 'Chưa uống thuốc',
   },
   STATUS_TIME_CODE: [
     {
@@ -26,11 +34,11 @@ export const variables = {
     },
     {
       value: 'BEFORE_SECOND_BREAKFAST',
-      label: 'Trước xế sáng'
+      label: 'Trước xế sáng',
     },
     {
       value: 'AFTER_SECOND_BREAKFAST',
-      label: 'Sau xế sáng'
+      label: 'Sau xế sáng',
     },
     {
       value: 'BEFORE_LUNCH',
@@ -67,7 +75,7 @@ export const variables = {
     BEFORE_SECOND_LUNCH: 'Trước xế trưa',
     AFTER_SECOND_LUNCH: 'Sau xế trưa',
     BEFORE_TEA_TIME: 'Trước xế chiều',
-    AFTER_TEA_TIME: 'Sau xế chiều'
+    AFTER_TEA_TIME: 'Sau xế chiều',
   },
   STATUS_TABS: [
     {
