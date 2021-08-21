@@ -99,9 +99,11 @@ const Index = memo(({ classId, branchId }) => {
                           )}
                         </p>
                       </div>
-                      <p className={classnames('mt10', 'mb0', 'font-size-14')}>
-                        {item?.content || ''}
-                      </p>
+                      {item?.contents?.map((item, index) => (
+                        <p className={classnames('mt10', 'mb0', 'font-size-14')} key={index}>
+                          - {item || ''}
+                        </p>
+                      ))}
                     </div>
                   ))}
                 </div>
