@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use GGPHP\BusRegistration\Repositories\Eloquent\BusRegistrationRepositoryEloquent;
 use GGPHP\Category\Models\ParamaterFormula;
 use GGPHP\Category\Models\ParamaterValue;
+use GGPHP\Category\Models\ParameterTax;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\OtherDeclaration\Models\OtherDeclaration;
@@ -461,9 +462,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
             $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
 
-
-
-
             // tổng giảm trừ bản thân và người phụ thuộc
             $eeduce = 0;
             $formularDependentPerson = ParamaterFormula::where('Code', 'GIAM_TRU_BAN_THAN_PHU_THUOC')->first();
@@ -474,46 +472,31 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
             $parameter['GIAM_TRU_BAN_THAN_PHU_THUOC'] = $eeduce;
 
-
-
-
             // thuế tncn
             $personalIncomeTax = 0; // chưa làm
-            // if ($rentalIncome > 0) {
-            //     $tax = ParameterTax::where(function ($query) use ($rentalIncome) {
-            //         $query->where([['From', '<=', (int) $rentalIncome], ['To', '>=', (int) $rentalIncome]])
-            //             ->orWhere([['From', '<=', (int) $rentalIncome], ['To', null]]);
-            //     })->first();
+            if ($rentalIncome > 0) {
+                if ($isProbation) {
+                    if ($totalIncome >= 2000000) {
+                        $personalIncomeTax = $totalIncome * 0.1;
+                    }
+                } else {
+                    $tax = ParameterTax::where(function ($query) use ($rentalIncome) {
+                        $query->where([['From', '<=', (int) $rentalIncome], ['To', '>=', (int) $rentalIncome]])
+                            ->orWhere([['From', '<=', (int) $rentalIncome], ['To', null]]);
+                    })->first();
 
-            //     if (!is_null($tax)) {
-            //         switch ($tax->Code) {
-            //             case 'CAP_1':
-            //                 $personalIncomeTax = $rentalIncome * ($tax->Fax / 100);
-
-            //                 break;
-            //             case 'CAP_2':
-            //                 # code...
-            //                 break;
-            //             case 'CAP_3':
-            //                 # code...
-            //                 break;
-            //             case 'CAP_4':
-            //                 # code...
-            //                 break;
-            //             case 'CAP_5':
-            //                 # code...
-            //                 break;
-            //             case 'CAP_6':
-            //                 # code...
-            //                 break;
-            //             case 'CAP_7':
-            //                 # code...
-            //                 break;
-            //         }
-            //     }
-            //     dd($tax);
-            // }
-
+                    if (!is_null($tax)) {
+                        switch ($tax->Code) {
+                            case 'CAP_1':
+                                $personalIncomeTax = $rentalIncome * ($tax->Fax / 100);
+                                break;
+                            default:
+                                $personalIncomeTax = $this->calculateTax($rentalIncome, $tax->Fax);
+                                break;
+                        }
+                    }
+                }
+            }
             $parameter['THUE_TNCN'] = $personalIncomeTax;
 
             //lương thực nhận
@@ -621,5 +604,23 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         }
 
         return $formular;
+    }
+
+    public function calculateTax($rentalIncome, $fax)
+    {
+        $parameterTax = ParameterTax::where(function ($query) use ($rentalIncome) {
+            $query->where('To', '<=', (int) $rentalIncome);
+        })->orderBy('From')->get();
+
+        $tax = 0;
+        $temp = 0;
+        for ($i = 0; $i < count($parameterTax); $i++) {
+            $tax += $parameterTax[$i]->To * ($parameterTax[$i]->Fax / 100);
+            if ($i == count($parameterTax) - 1) {
+                $temp = ($rentalIncome - $parameterTax[$i]->To) * ($fax / 100);
+            }
+        }
+
+        return $tax + $temp;
     }
 }
