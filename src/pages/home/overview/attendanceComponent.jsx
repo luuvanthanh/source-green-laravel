@@ -129,7 +129,7 @@ const Index = memo(({ classId, branchId }) => {
       align: 'center',
       render: (record) => (
         <div>
-          <strong style={{ color: '#FF8300' }}>{record?.report?.annualLeave}</strong>
+          <strong style={{ color: '#FF8300' }}>{record?.report?.unpaidLeave}</strong>
           <span>/{record?.report?.totalStudent}</span>
         </div>
       ),
@@ -142,7 +142,7 @@ const Index = memo(({ classId, branchId }) => {
       align: 'center',
       render: (record) => (
         <div>
-          <strong style={{ color: '#3B5CAD' }}>{record?.report?.unpaidLeave}</strong>
+          <strong style={{ color: '#3B5CAD' }}>{record?.report?.annualLeave}</strong>
           <span>/{record?.report?.totalStudent}</span>
         </div>
       ),
