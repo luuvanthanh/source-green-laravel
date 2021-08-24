@@ -58,10 +58,11 @@ class ProfileMenu extends React.Component {
                     ? styles.actived
                     : ''
                 }`,
+                'mt5 mb5',
               )}
               aria-hidden
             >
-              {variables.ROLES_NAME[item?.name?.toUpperCase()] || ''}
+              {variables.ROLES_NAME[item?.name?.toUpperCase()] || item.name || ''}
             </p>
           ))}
         </Menu.Item>
