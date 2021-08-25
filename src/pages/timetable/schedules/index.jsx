@@ -202,7 +202,7 @@ class Index extends PureComponent {
       ..._.get(values, 'event._def.extendedProps'),
       ..._.get(values, 'event._def'),
       startDate: values?.event?.startStr || '',
-      ẹndDate: values?.event?.endStr || '',
+      endDate: values?.event?.endStr || '',
     };
     this.setStateData({ isOpen: true, details: valuesDetail });
   }
@@ -270,6 +270,7 @@ class Index extends PureComponent {
           title={details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}
           visible={isOpen}
           width={500}
+          centered
           onCancel={this.cancelModal}
           footer={[
             <div className="d-flex justify-content-between" key="action">
