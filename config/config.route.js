@@ -1723,6 +1723,12 @@ export default [
             authority: [permissions.TKB],
           },
           {
+            path: '/thoi-khoa-bieu/:id/chi-tiet',
+            component: './timetable/items/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.TKB],
+          },
+          {
             path: '/thoi-khoa-bieu/lam-viec',
             component: './timetable/schedules',
             wrappers: ['@/wrappers/auth'],

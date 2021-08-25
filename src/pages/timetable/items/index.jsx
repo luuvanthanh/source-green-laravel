@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Modal } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, debounce } from 'lodash';
+import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -66,6 +66,8 @@ class Index extends PureComponent {
         branchId: query.branchId,
         classId: query.classId,
       },
+      details: {},
+      visible: false,
     };
     setIsMounted(true);
   }
@@ -215,10 +217,14 @@ class Index extends PureComponent {
       let array = [];
       items.forEach((item) => {
         item.timetableDetails.forEach((itemTime) => {
-          const durations = moment(itemTime.toTime).diff(moment(itemTime.fromTime), 'seconds');
+          const durations = moment(itemTime.toTime)
+            .add(1, 'seconds')
+            .diff(moment(itemTime.fromTime), 'seconds');
           array = [
             ...array,
             {
+              ...itemTime,
+              parentId: item.id,
               title: itemTime.content,
               rrule: {
                 freq: 'weekly',
@@ -226,7 +232,7 @@ class Index extends PureComponent {
                 byweekday: item.timetableWeeks.map(
                   (itemTimeTableWeek) => variablesModules.DAY_OF_WEEK[itemTimeTableWeek.dayOfWeek],
                 ),
-                dtstart: Helper.joinDateTime(item.fromDate, itemTime.toTime),
+                dtstart: Helper.joinDateTime(item.fromDate, itemTime.fromTime),
                 until: Helper.joinDateTime(item.toDate, itemTime.toTime),
               },
               duration: moment.utc(durations * 1000).format(variables.DATE_FORMAT.TIME_FULL),
@@ -239,19 +245,110 @@ class Index extends PureComponent {
     return [];
   };
 
-  eventClick = () => {};
+  cancelModal = () => {
+    this.setStateData({ visible: false, details: {} });
+  };
+
+  handleEventClick = (values) => {
+    const details = {
+      ...get(values, 'event._def.extendedProps'),
+      ...get(values, 'event._def'),
+      startDate: values?.event?.startStr || '',
+      endDate: values?.event?.endStr || '',
+    };
+    this.setStateData({ visible: true, details });
+  };
+
+  redirectDetails = (pathname, key) => {
+    const { details } = this.state;
+    if (!details?.parentId) {
+      return;
+    }
+    history.push(`${pathname}/${details?.parentId}/${key}`);
+  };
+
+  remove = () => {
+    const { details } = this.state;
+    if (!details?.parentId) {
+      return;
+    }
+    Helper.confirmAction({
+      callback: () => {
+        this.props.dispatch({
+          type: 'timeTables/REMOVE',
+          payload: {
+            id: details?.parentId,
+          },
+          callback: (response) => {
+            if (response) {
+              this.onLoad();
+              this.setStateData({ details: {}, visible: false });
+            }
+          },
+        });
+      },
+    });
+  };
 
   render() {
     const {
+      data,
       branches,
       classes,
-      data,
       location: { pathname },
     } = this.props;
-    const { search } = this.state;
+    const { search, details, visible } = this.state;
     return (
       <>
         <Helmet title="Thời khóa biểu" />
+        <Modal
+          title={details?.title}
+          visible={visible}
+          width={500}
+          centered
+          onCancel={this.cancelModal}
+          footer={[
+            <div className="d-flex justify-content-end" key="action">
+              <Button
+                key="remove"
+                color="danger"
+                icon="remove"
+                ghost
+                className="mr10"
+                onClick={this.remove}
+              >
+                Xóa
+              </Button>
+              <Button
+                key="edit"
+                color="success"
+                icon="edit"
+                ghost
+                onClick={() => this.redirectDetails(pathname, 'chi-tiet')}
+              >
+                Chỉnh sửa
+              </Button>
+            </div>,
+          ]}
+        >
+          <div className="row">
+            <div className="col-lg-6 mb15">
+              <div className="ant-col ant-form-item-label">
+                <span>Tiêu đề</span>
+              </div>
+              <p className="mb0 font-weight-bold">{details?.content || ''}</p>
+            </div>
+            <div className="col-lg-6 mb15">
+              <div className="ant-col ant-form-item-label">
+                <span>Thời gian diễn ra</span>
+              </div>
+              <p className="mb0 font-weight-bold">
+                {Helper.getDate(details.startDate, variables.DATE_FORMAT.DATE_TIME)} -{' '}
+                {Helper.getDate(details.endDate, variables.DATE_FORMAT.HOUR)}
+              </p>
+            </div>
+          </div>
+        </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Thời khóa biểu</Text>
@@ -496,7 +593,7 @@ class Index extends PureComponent {
               locales={allLocales}
               allDaySlot={false}
               height={650}
-              eventClick={this.eventClick}
+              eventClick={this.handleEventClick}
               events={this.convertData(data)}
               ref={this.calendarComponentRef}
             />
