@@ -39,7 +39,10 @@ const General = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
   const mounted = useRef(false);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = Helper.isJSON(details?.fileImage)
+    ? useState(JSON.parse(details?.fileImage))
+    : useState([]);
+
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
