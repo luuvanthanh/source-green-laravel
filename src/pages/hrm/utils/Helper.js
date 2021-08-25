@@ -24,11 +24,25 @@ export default class Helpers {
   };
 
   static tagStatusAccount = (type) => {
-    if (type === variables.STATUS.NO_IMAGE || type === variables.STATUS.HANDLING_IMAGE_FAILED) {
-      return <Tag color="yellow">{variables.STATUS_NAME.NO_IMAGE}</Tag>;
+    if (type === variables.STATUS.NO_IMAGE) {
+      return <Tag color="primary">{variables.STATUS_NAME.NO_IMAGE}</Tag>;
     }
-
-    return <Tag color="success">Đã đăng ký</Tag>;
+    if (type === variables.STATUS.HANDLING_IMAGE) {
+      return <Tag color="primary">{variables.STATUS_NAME.HANDLING_IMAGE}</Tag>;
+    }
+    if (type === variables.STATUS.HANDLING_IMAGE_FAILED) {
+      return <Tag color="danger">{variables.STATUS_NAME.HANDLING_IMAGE_FAILED}</Tag>;
+    }
+    if (type === variables.STATUS.HANDLING_IMAGE_SUCCESSFUL) {
+      return <Tag color="success">{variables.STATUS_NAME.HANDLING_IMAGE_SUCCESSFUL}</Tag>;
+    }
+    if (type === variables.STATUS.DELETED) {
+      return <Tag color="danger">{variables.STATUS_NAME.DELETED}</Tag>;
+    }
+    if (type === variables.STATUS.SYSTEM_ERROR) {
+      return <Tag color="danger">{variables.STATUS_NAME.SYSTEM_ERROR}</Tag>;
+    }
+    return null;
   };
 
   static getStartDate = (date, choose) => {

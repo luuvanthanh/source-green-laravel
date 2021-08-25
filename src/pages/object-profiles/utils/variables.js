@@ -8,14 +8,22 @@ export const variables = {
     STORE: 'STORE',
     NO_IMAGE: 'NO_IMAGE',
     HANDLING_IMAGE_FAILED: 'HANDLING_IMAGE_FAILED',
+    HANDLING_IMAGE: 'HANDLING_IMAGE',
+    HANDLING_IMAGE_SUCCESSFUL: 'HANDLING_IMAGE_SUCCESSFUL',
+    DELETED: 'DELETED',
+    SYSTEM_ERROR: 'SYSTEM_ERROR'
   },
   STATUS_NAME: {
     REGIST: 'Đăng ký',
     JOIN_CLASS: 'Đã xếp lớp',
     LEAVE_SCHOOL: 'Nghỉ học',
     STORE: 'Lưu trữ',
-    NO_IMAGE: 'Chưa đăng ký',
-    HANDLING_IMAGE_FAILED: 'Chưa đăng ký',
+    NO_IMAGE: 'Chưa có hình',
+    HANDLING_IMAGE_FAILED: 'Hình đăng ký không hợp lệ',
+    HANDLING_IMAGE: 'Đang xử lý',
+    HANDLING_IMAGE_SUCCESSFUL: 'Đã đăng ký',
+    DELETED: 'Đã hủy đăng ký',
+    SYSTEM_ERROR: 'Lỗi hệ thống'
   },
   TYPE_USER: {
     RANK: 'rank',

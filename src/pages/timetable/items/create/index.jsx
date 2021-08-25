@@ -50,6 +50,11 @@ const Index = memo(
         classTimetables: values?.classTimetables?.map((item) => ({
           classId: item,
         })),
+        timetableDetails: values?.timetableDetails?.map((item) => ({
+          content: item.content,
+          fromTime: item.fromTime,
+          toTime: item.toTime,
+        })),
       };
       dispatch({
         type: params.id ? 'timeTablesAdd/UPDATE' : 'timeTablesAdd/ADD',
