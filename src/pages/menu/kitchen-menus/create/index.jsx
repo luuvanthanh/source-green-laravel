@@ -59,6 +59,8 @@ const Index = memo(() => {
                   ...menuMealDetails,
                   ...itemMenuDetail.week.map((itemWeek) => ({
                     ...itemWeek,
+                    id: itemMenuDetail.id,
+                    isAdd: itemMenuDetail.isAdd,
                     foodOrderIndex: itemMenuDetail.foodOrderIndex,
                   })),
                 ];
@@ -83,8 +85,11 @@ const Index = memo(() => {
       toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
-        ...omit(item, 'timeline', 'id'),
-        menuMealDetails: item.menuMealDetails || undefined,
+        ...omit(item, 'timeline', 'id', 'isAdd'),
+        menuMealDetails:
+          item?.menuMealDetails?.map((menuItem) => ({
+            ...(menuItem.isAdd ? omit(menuItem, 'id', 'isAdd') : menuItem),
+          })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
       })),
     };
@@ -199,13 +204,14 @@ const Index = memo(() => {
       if (!o[el.foodOrderIndex]) {
         o[el.foodOrderIndex] = {
           foodOrderIndex: el.foodOrderIndex,
-          id: uuidv4(),
+          id: el?.id || uuidv4(),
           week: [],
         };
         r.push(o[el.foodOrderIndex]);
       }
       o[el.foodOrderIndex].week.push({
         dayOfWeek: el.dayOfWeek,
+        id: el?.id || uuidv4(),
         foodId: el.foodId,
       });
       return r;
@@ -268,9 +274,9 @@ const Index = memo(() => {
                   ...itemMenuMeals,
                   weekIndex: item.weekIndex,
                   timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
-                    ...itemTimeline,
-                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
-                  })),
+                      ...itemTimeline,
+                      menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                    })),
                 })),
               }));
             setWeeksKitchen(result);
@@ -334,6 +340,7 @@ const Index = memo(() => {
                               ? last(itemTimeline?.menuMealDetails)?.foodOrderIndex + 1
                               : 1,
                             id: uuidv4(),
+                            isAdd: true,
                             foodId: null,
                             week: [
                               {
@@ -513,6 +520,7 @@ const Index = memo(() => {
                         ...itemMeal?.timeline,
                         {
                           id: uuidv4(),
+                          isAdd: true,
                           name: values.name,
                           fromTime,
                           toTime,
@@ -709,7 +717,11 @@ const Index = memo(() => {
                         />
                       </Pane>
                       <Pane className="col-3">
-                        <Button color="success" onClick={onApply}>
+                        <Button
+                          color="success"
+                          onClick={onApply}
+                          loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                        >
                           {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                         </Button>
                       </Pane>
