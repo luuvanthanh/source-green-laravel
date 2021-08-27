@@ -3,27 +3,27 @@ import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
 export function get(params = {}) {
-  return request('/medicals', {
+  return request('/medicals/group-by-class', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
+      ...omit(params, 'page', 'limit', 'from', 'to'),
       ...Helper.getPagination(params.page, params.limit),
-      creationTimeFrom: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.creationTimeFrom,
-          targetValue: '00:00:00',
-        }),
-        isUTC: true,
-      }),
-      creationTimeTo: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: params.creationTimeTo,
-          targetValue: '23:59:59',
-        }),
-        isUTC: true,
-      }),
+      // from: Helper.getDateTime({
+      //   value: Helper.setDate({
+      //     ...variables.setDateData,
+      //     originValue: params.from,
+      //     targetValue: '00:00:00',
+      //   }),
+      //   isUTC: true,
+      // }),
+      // to: Helper.getDateTime({
+      //   value: Helper.setDate({
+      //     ...variables.setDateData,
+      //     originValue: params.to,
+      //     targetValue: '23:59:59',
+      //   }),
+      //   isUTC: true,
+      // }),
     },
   });
 }

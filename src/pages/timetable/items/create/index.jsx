@@ -96,24 +96,26 @@ const Index = memo(
     };
 
     useEffect(() => {
-      dispatch({
-        type: 'timeTablesAdd/GET_DETAILS',
-        payload: params,
-        callback: (response) => {
-          onChangeBranch(response.branchId);
-          formRef.current.setFieldsValue({
-            date: [moment(response.fromDate), moment(response.fromDate)],
-            timetableWeeks: response.timetableWeeks.map((item) => item.dayOfWeek),
-            branchId: response.branchId,
-            timetableDetails: response.timetableDetails.map((item) => ({
-              ...item,
-              fromTime: moment(item.fromTime),
-              toTime: moment(item.toTime),
-            })),
-            classTimetables: response.classTimetables.map((item) => item.id),
-          });
-        },
-      });
+      if (params.id) {
+        dispatch({
+          type: 'timeTablesAdd/GET_DETAILS',
+          payload: params,
+          callback: (response) => {
+            onChangeBranch(response.branchId);
+            formRef.current.setFieldsValue({
+              date: [moment(response.fromDate), moment(response.fromDate)],
+              timetableWeeks: response.timetableWeeks.map((item) => item.dayOfWeek),
+              branchId: response.branchId,
+              timetableDetails: response.timetableDetails.map((item) => ({
+                ...item,
+                fromTime: moment(item.fromTime),
+                toTime: moment(item.toTime),
+              })),
+              classTimetables: response.classTimetables.map((item) => item.id),
+            });
+          },
+        });
+      }
     }, [params.id]);
 
     useEffect(() => {

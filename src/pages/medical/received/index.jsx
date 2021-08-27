@@ -54,11 +54,11 @@ class Index extends PureComponent {
       search: {
         diseaseName: query?.diseaseName,
         branchId: query?.branchId,
-        status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
-        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
+        from: Helper.getEndDate(query?.from, query?.choose),
+        to: Helper.getStartDate(query?.to, query?.choose),
+        isReceived: true,
       },
       visible: false,
       objects: {},
@@ -107,11 +107,8 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          creationTimeFrom: Helper.getDate(
-            search.creationTimeFrom,
-            variables.DATE_FORMAT.DATE_AFTER,
-          ),
-          creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+          from: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          to: Helper.getDate(search.to, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -229,13 +226,13 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearchDateRank = debounce((creationTimeFrom, creationTimeTo) => {
+  debouncedSearchDateRank = debounce((from, to) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          creationTimeFrom,
-          creationTimeTo,
+          from,
+          to,
         },
       }),
       () => this.onLoad(),
@@ -700,11 +697,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                date: search.creationTimeFrom &&
-                  search.creationTimeTo && [
-                    moment(search.creationTimeFrom),
-                    moment(search.creationTimeTo),
-                  ],
+                date: search.from && search.to && [moment(search.from), moment(search.to)],
               }}
               layout="vertical"
               ref={this.formRef}
