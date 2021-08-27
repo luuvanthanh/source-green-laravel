@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Modal, Collapse, Image } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isArray } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,9 +13,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
-import { v4 as uuidv4 } from 'uuid';
 import { Scrollbars } from 'react-custom-scrollbars';
-import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
 
 let isMounted = true;
@@ -58,7 +56,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         from: Helper.getEndDate(query?.from, query?.choose),
         to: Helper.getStartDate(query?.to, query?.choose),
-        isReceived: true,
+        isReceived: false,
       },
       visible: false,
       objects: {},
@@ -298,14 +296,14 @@ class Index extends PureComponent {
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record?.class}</Text>,
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       {
         title: 'Học sinh',
         key: 'parents',
         render: (record) => (
           <div className={styles['list-avatar']}>
-            {record?.children?.map((item, index) => (
+            {record?.items?.map((item, index) => (
               <div
                 className={styles['item-avatar']}
                 key={index}
@@ -315,11 +313,8 @@ class Index extends PureComponent {
                 }
               >
                 <AvatarTable
-                  srcLocal
-                  fileImage={item.img}
-                  fullName={item.name}
-                  isBorder={!item.isActive}
-                  isActive={item.isActive}
+                  fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                  fullName={item?.student?.fullName}
                 />
               </div>
             ))}
@@ -334,14 +329,14 @@ class Index extends PureComponent {
     const columns = [
       {
         title: 'SÁNG',
-        key: 'class',
-        render: () => <Text size="normal">Trước ăn sáng</Text>,
+        key: 'medicineTimeType',
+        render: (record) => <Text size="normal">{record?.medicineTimeType?.description}</Text>,
       },
       {
-        key: 'parents',
+        key: 'note',
         className: 'min-width-100',
         width: 100,
-        render: () => '5 ml',
+        render: (record) => record.note,
       },
     ];
     return columns;
@@ -349,9 +344,26 @@ class Index extends PureComponent {
 
   handleCancel = () => this.setStateData({ visible: false });
 
+  onReceived = () => {
+    const { objects } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'medicaReceived/RECEIVED',
+      payload: {
+        id: objects.id,
+      },
+      callback: (response) => {
+        if (response) {
+          this.handleCancel();
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   render() {
     const {
-      // data,
+      data,
       error,
       classes,
       branches,
@@ -361,187 +373,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search, visible, objects } = this.state;
     const loading = effects['medicaReceived/GET_DATA'];
-    const DATA_SOURCE = [
-      {
-        class: 'Preschool (Demo)',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Thạch Tuấn Khang',
-            img: '/images/medicals/thach-tuan-khang.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Nguyển Thị Anh Thư (Test)',
-            img: '/images/medicals/nguyen-thi-anh-thu-test.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Lâm Thụy Minh Khuê',
-            img: '/images/medicals/lam-thi-minh-khue.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Nguyễn Khôi Khải Vĩ',
-            img: '/images/medicals/nguyen-khoi-khai-vi.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Ngô Cát Tú Nghi',
-            img: '/images/medicals/ngo-cat-tu-nghi.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Tô Phan Minh Thiện',
-            img: '/images/medicals/to-phan-minh-thien.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Nguyễn Minh Tuấn',
-            img: '/images/medicals/nguyen-minh-tuan.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Hoàng Thiên Kim',
-            img: '/images/medicals/hoang-thien-kim.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Lê Kilian Khoa',
-            img: '/images/medicals/ke-kilian-khoa-le.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Nguyễn Tuấn Khôi',
-            img: '/images/medicals/nguyen-tuan-khoi.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-        ],
-      },
-      {
-        class: 'Preschool 2',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Chen Rui An',
-            img: '/images/medicals/chen-rui-an.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Mai Tuệ Lâm',
-            img: '/images/medicals/mai-tue-lam.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Võ Minh Khôi',
-            img: '/images/medicals/vo-minh-khoi.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Nguyễn Trần Khả Doanh',
-            img: '/images/medicals/nguyen-tran-kha-doanh.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Đặng Ánh Dương',
-            img: '/images/medicals/dang-anh-duong.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Nguyễn Quốc Thống',
-            img: '/images/medicals/nguyen-quoc-thong.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-        ],
-      },
-      {
-        class: 'Nursery 1',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Nguyễn Văn Nhật Minh',
-            img: '/images/medicals/nguyen-van-nhat-minh.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Phương Bùi Cherie',
-            img: '/images/medicals/phuong-bui-cheri.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Mai Ngọc Cát Tường',
-            img: '/images/medicals/mai-ngoc-cat-tuong.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Vũ Trần Bảo Quốc',
-            img: '/images/medicals/vu-tran-quoc-bao.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Nguyễn Hà Anh',
-            img: '/images/medicals/nguyen-ha-anh.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Huỳnh Thanh Tùng',
-            img: '/images/medicals/huynh-thanh-tung.png',
-            id: uuidv4(),
-          },
-        ],
-      },
-      {
-        class: 'Nursery 2',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Đinh Nguyễn Khả Hân',
-            img: '/images/medicals/dinh-nguyen-kha-han.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Nguyễn Duy Khang',
-            img: '/images/medicals/nguyen-duy-khang.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Trương Đắc Gia Hưng',
-            img: '/images/medicals/truong-dac-gia-hung.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Trần Lê Thảo Nguyên',
-            img: '/images/medicals/tran-le-thao-nguyen.png',
-            id: uuidv4(),
-          },
-          {
-            name: 'Nguyễn Hoàng Minh Đăng',
-            img: '/images/medicals/nguyen-hoang-minh-dang.png',
-            id: uuidv4(),
-            isActive: true,
-          },
-          {
-            name: 'Trần Ngọc Xuân Anh',
-            img: '/images/medicals/tran-ngoc-xuan-anh.png',
-            id: uuidv4(),
-          },
-        ],
-      },
-    ];
+    const loadingSubmit = effects['medicaReceived/RECEIVED'];
     return (
       <>
         <Helmet title="Danh sách nhận thuốc" />
@@ -560,118 +392,84 @@ class Index extends PureComponent {
             )}
           >
             <AvatarTable
-              srcLocal
-              fullName={objects.name}
-              fileImage={objects.img}
-              description={objects.class}
+              fullName={objects?.student?.fullName}
+              fileImage={Helper.getPathAvatarJson(objects?.student?.fileImage)}
+              description={objects?.class?.name}
             />
-            {objects.isActive && HelperModules.tagStatus('RECEIVED')}
-            {!objects.isActive && HelperModules.tagStatus('NOT_RECEIVED')}
+            {objects.isReceived && HelperModules.tagStatus('RECEIVED')}
+            {!objects.isReceived && HelperModules.tagStatus('NOT_RECEIVED')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <p className={styles.label}>Triệu chứng</p>
-                <p className={styles.norm}>Ho</p>
+                <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
               <div>
                 <p className={styles.label}>Nơi đặt thuốc</p>
-                <p className={styles.norm}>Trong balo</p>
+                <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>
             </div>
             <hr />
             <h3 className={styles.title}>Thông tin thuốc</h3>
             <Scrollbars autoHeight autoHeightMax="calc(50vh)">
               <Collapse
-                defaultActiveKey={['1']}
+                defaultActiveKey={[0]}
                 className={styles['collapse-container']}
                 expandIconPosition="right"
               >
-                <Collapse.Panel
-                  header={<div className={styles['container-header']}>CEELIN</div>}
-                  key="1"
-                >
-                  <p className={styles.label}>Tên thuốc</p>
-                  <p className={styles.norm}>PROSPAN</p>
-                  <hr />
-                  <p className={styles.label}>Thời gian uống</p>
-                  <Table
-                    columns={this.headerMedical(params)}
-                    dataSource={[{ id: 1 }]}
-                    error={error}
-                    pagination={false}
-                    params={{
-                      header: this.headerMedical(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                    className="mb10"
-                  />
-                  <p className={styles.label}>Ngày uống:</p>
-                  <p className={styles.label}>08/08 - 10/08</p>
-                  <hr />
-                  <div>
-                    <label className={styles.label}>Hình ảnh:</label>
-                    <div className="d-flex">
-                      <Image.PreviewGroup>
-                        {[1].map((item, index) => (
-                          <div key={index} className={styles['group-image']}>
-                            <Image
-                              key={index}
-                              width={85}
-                              src="/images/medicals/image_01.png"
-                              fallback="/default-upload.png"
-                            />
+                {objects?.medicines?.map(
+                  ({ name, fromDate, toDate, files, medicineTimes }, index) => (
+                    <Collapse.Panel
+                      header={<div className={styles['container-header']}>{name}</div>}
+                      key={index}
+                    >
+                      <p className={styles.label}>Tên thuốc</p>
+                      <p className={styles.norm}>{name}</p>
+                      <hr />
+                      <p className={styles.label}>Thời gian uống</p>
+                      <Table
+                        columns={this.headerMedical(params)}
+                        dataSource={medicineTimes}
+                        error={error}
+                        pagination={false}
+                        params={{
+                          header: this.headerMedical(),
+                          type: 'table',
+                        }}
+                        rowKey={(record) => record.id}
+                        scroll={{ x: '100%' }}
+                        className="mb10"
+                      />
+                      <p className={styles.label}>Ngày uống:</p>
+                      <p className={styles.label}>
+                        {Helper.getDateRank(fromDate, toDate, variables.DATE_FORMAT.DATE_MONTH)}
+                      </p>
+                      <hr />
+                      {Helper.isJSON(files) && (
+                        <div>
+                          <label className={styles.label}>Hình ảnh:</label>
+                          <div className="d-flex">
+                            <Image.PreviewGroup>
+                              {isArray(JSON.parse(files)) &&
+                                JSON.parse(files).map((item, index) => (
+                                  <div key={index} className={styles['group-image']}>
+                                    <Image
+                                      key={index}
+                                      width={85}
+                                      src={`${API_UPLOAD}${item}`}
+                                      fallback="/default-upload.png"
+                                    />
+                                  </div>
+                                ))}
+                            </Image.PreviewGroup>
                           </div>
-                        ))}
-                      </Image.PreviewGroup>
-                    </div>
-                  </div>
-                </Collapse.Panel>
-                <Collapse.Panel
-                  header={<div className={styles['container-header']}>PROSPAN</div>}
-                  key="2"
-                >
-                  <p className={styles.label}>Tên thuốc</p>
-                  <p className={styles.norm}>PROSPAN</p>
-                  <hr />
-                  <p className={styles.label}>Thời gian uống</p>
-                  <Table
-                    columns={this.headerMedical(params)}
-                    dataSource={[{ id: 1 }]}
-                    error={error}
-                    pagination={false}
-                    params={{
-                      header: this.headerMedical(),
-                      type: 'table',
-                    }}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                    className="mb10"
-                  />
-                  <p className={styles.label}>Ngày uống:</p>
-                  <p className={styles.label}>08/08 - 10/08</p>
-                  <hr />
-                  <div>
-                    <label className={styles.label}>Hình ảnh:</label>
-                    <div className="d-flex">
-                      <Image.PreviewGroup>
-                        {[1].map((item, index) => (
-                          <div key={index} className={styles['group-image']}>
-                            <Image
-                              key={index}
-                              width={85}
-                              src="/images/medicals/image_01.png"
-                              fallback="/default-upload.png"
-                            />
-                          </div>
-                        ))}
-                      </Image.PreviewGroup>
-                    </div>
-                  </div>
-                </Collapse.Panel>
+                        </div>
+                      )}
+                    </Collapse.Panel>
+                  ),
+                )}
               </Collapse>
             </Scrollbars>
           </div>
@@ -681,7 +479,13 @@ class Index extends PureComponent {
               'd-flex justify-content-center align-items-center',
             )}
           >
-            <Button color="success" size="large" permission="YTE">
+            <Button
+              color="success"
+              size="large"
+              permission="YTE"
+              onClick={this.onReceived}
+              loading={loadingSubmit}
+            >
               Xác nhận đã nhận thuốc
             </Button>
           </div>
@@ -717,6 +521,7 @@ class Index extends PureComponent {
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -725,6 +530,7 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -739,7 +545,7 @@ class Index extends PureComponent {
             </Form>
             <Table
               columns={this.header(params)}
-              dataSource={DATA_SOURCE}
+              dataSource={data}
               loading={loading}
               error={error}
               isError={error.isError}
@@ -750,7 +556,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record.id || record?.class?.id}
               scroll={{ x: '100%' }}
             />
           </div>
@@ -762,7 +568,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  // data: sPropTypes.arrayOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -774,7 +580,7 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  // data: [],
+  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
