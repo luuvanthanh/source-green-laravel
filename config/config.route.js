@@ -189,7 +189,7 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CTH],
           },
-          
+
           {
             path: '/chuong-trinh-hoc/bao-cao-tong-quat-tre',
             component: './criteria/report',
@@ -2102,6 +2102,10 @@ export default [
         ],
       },
       //PHYSICAL
+      {
+        path: '/error',
+        component: './error',
+      },
       {
         path: '/404',
         component: './404',

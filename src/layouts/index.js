@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { connect, Redirect } from 'umi';
+import { connect, Redirect, history } from 'umi';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
@@ -48,12 +48,18 @@ const Layouts = {
   feePolicy: FeePolicyLayout,
   notes: NotesLayout,
   salary: SalaryLayout,
-  physical: PhysicalLayout
+  physical: PhysicalLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
 class IndexLayout extends React.PureComponent {
   previousPath = '';
+
+  componentDidCatch(error) {
+    if (error) {
+      history.push('/error');
+    }
+  }
 
   render() {
     const {
