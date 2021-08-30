@@ -73,7 +73,7 @@ const Index = memo(() => {
                 <div className={styles['info-content']}>
                   <p className={styles['info-norm']}>Thời gian</p>
                   <p className={styles['info-title']}>
-                    {Helper.getDate(data?.fromDate, variables.DATE_FORMAT.MONTH_FULL)}
+                    {Helper.getDate(data?.toDate, variables.DATE_FORMAT.MONTH_FULL)}
                   </p>
                 </div>
               </div>

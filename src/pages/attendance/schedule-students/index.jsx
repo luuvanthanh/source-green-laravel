@@ -455,7 +455,7 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
-    if (moment(dayOfWeek).isoWeekday() > 6) {
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
       return (
         <div
           className={classnames(stylesChildren['cell-content'], {
