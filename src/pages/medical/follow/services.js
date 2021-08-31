@@ -2,24 +2,33 @@ import request from '@/utils/request';
 import { omit } from 'lodash';
 import { Helper, variables } from '@/utils';
 
+export function getConfigs(_params = {}) {
+  return request('/configs/group-by-type', {
+    method: 'GET',
+    params: {
+      type: 'MEDICAL',
+    },
+  });
+}
+
 export function get(params = {}) {
-  return request('/medicals', {
+  return request('/medicals/group-by-class-time', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
-      creationTimeFrom: Helper.getDateTime({
+      from: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.creationTimeFrom,
+          originValue: params.from,
           targetValue: '00:00:00',
         }),
         isUTC: true,
       }),
-      creationTimeTo: Helper.getDateTime({
+      to: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
-          originValue: params.creationTimeTo,
+          originValue: params.to,
           targetValue: '23:59:59',
         }),
         isUTC: true,
