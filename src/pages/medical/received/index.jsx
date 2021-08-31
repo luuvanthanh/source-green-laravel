@@ -57,6 +57,7 @@ class Index extends PureComponent {
         from: Helper.getEndDate(query?.from, query?.choose),
         to: Helper.getStartDate(query?.to, query?.choose),
         isReceived: false,
+        isSent: true,
       },
       visible: false,
       objects: {},
