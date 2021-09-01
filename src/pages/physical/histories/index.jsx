@@ -16,10 +16,10 @@ import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalHistory }) => [
-    physicalHistory,
-    effects,
-  ]);
+  const [
+    { pagination, error, data },
+    loading,
+  ] = useSelector(({ loading: { effects }, physicalHistory }) => [physicalHistory, effects]);
 
   const mounted = useRef(false);
   const history = useHistory();
@@ -51,15 +51,18 @@ const Index = memo(() => {
       key: 'name',
       className: 'min-width-200',
       with: 200,
-      render: (record) => (
-        <Text size="normal">{record?.editor?.name || ''}</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.editor?.name || ''}</Text>,
     },
     {
       title: 'Nội dung',
       key: 'content',
       className: 'min-width-400',
-      render: (record) => !isEmpty(record?.editedStudentPhysicals) ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(', ')}` : '',
+      render: (record) =>
+        !isEmpty(record?.editedStudentPhysicals)
+          ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(
+              ', ',
+            )}`
+          : '',
     },
   ];
 
@@ -67,7 +70,7 @@ const Index = memo(() => {
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
-  */
+   */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -80,13 +83,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilter = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -170,11 +174,17 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <FormItem
                     name="employeeId"
-                    data={loading['categories/GET_TEACHERS'] ? [] : employee.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                    data={
+                      loading['categories/GET_TEACHERS']
+                        ? []
+                        : employee.map((item) => ({ ...item, name: item?.fullName || '-' }))
+                    }
                     type={variables.SELECT}
                     onChange={(value) => changeFilter('employeeId', value)}
                     onSearch={onSearch}
-                    notFoundContent={loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null}
+                    notFoundContent={
+                      loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null
+                    }
                     filterOption
                     placeholder="Tất cả nhân viên"
                   />
