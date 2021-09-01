@@ -33,19 +33,24 @@ class IndexLayout extends React.PureComponent {
 
     // Layout Rendering
     const getLayout = () => {
-      if (/^\/login(?=\/|$)/i.test(pathname)) {
+      if (/^\/login(?=\/|$)/i.test(pathname) || /^\/switch-branches(?=\/|$)/i.test(pathname)) {
         return 'login';
       }
       if (/^\/trang-chu(?=\/|$)/i.test(pathname)) {
+        return 'public';
+      }
+      if (/^\/error(?=\/|$)/i.test(pathname)) {
         return 'public';
       }
       return 'main';
     };
 
     const Container = Layouts[getLayout()];
+    const isUserLogged = user.logged;
     const isUserAuthorized = user.authorized;
     const isUserLoading = loading.models.user;
     const isLoginLayout = getLayout() === 'login';
+    const isSwitchLayout = getLayout() === 'switch-branches';
 
     const BootstrappedLayout = () => {
       // show loader when user in check authorization process, not authorized yet and not on login pages
@@ -57,6 +62,14 @@ class IndexLayout extends React.PureComponent {
         return (
           <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
         );
+      }
+      if (isSwitchLayout && !isUserAuthorized) {
+        if (!isUserLogged) {
+          return (
+            <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
+          );
+        }
+        return <Container>{children}</Container>;
       }
       // redirect to main dashboard when user on login page and authorized
       if (isLoginLayout && isUserAuthorized) {

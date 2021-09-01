@@ -31,8 +31,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ loading }) => ({
+const mapStateToProps = ({ loading, user }) => ({
   loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -233,6 +234,7 @@ class Index extends PureComponent {
   render() {
     const {
       loading: { effects },
+      defaultBranch,
     } = this.props;
     const submitLoading = effects['allocationChangeClass/UPDATE'];
     const loading = effects['allocationChangeClass/GET_STUDENTS'];
@@ -244,7 +246,13 @@ class Index extends PureComponent {
     } = this.state;
 
     return (
-      <Form layout="vertical" colon={false} ref={this.formRef} onFinish={this.finishForm}>
+      <Form
+        layout="vertical"
+        colon={false}
+        initialValues={{ branch: defaultBranch?.id }}
+        ref={this.formRef}
+        onFinish={this.finishForm}
+      >
         <Helmet title="Chuyển lớp" />
         <div
           className={classnames(
@@ -423,11 +431,13 @@ class Index extends PureComponent {
 Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   loading: {},
   dispatch: {},
+  defaultBranch: {},
 };
 
 export default Index;

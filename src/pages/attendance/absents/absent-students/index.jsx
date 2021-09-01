@@ -32,12 +32,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ absentStudents, loading }) => ({
+const mapStateToProps = ({ absentStudents, loading, user }) => ({
+  loading,
   data: absentStudents.data,
   pagination: absentStudents.pagination,
   branches: absentStudents.branches,
   classes: absentStudents.classes,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,12 +48,13 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
-        branchId: query?.branchId,
         classId: query?.classId,
         fullName: query?.fullName,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
@@ -484,6 +486,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -495,6 +498,7 @@ Index.defaultProps = {
   location: {},
   classes: [],
   branches: [],
+  defaultBranch: {},
 };
 
 export default Index;

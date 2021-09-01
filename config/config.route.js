@@ -13,6 +13,10 @@ export default [
         component: './login',
       },
       {
+        path: '/switch-branches',
+        component: './switch-branches',
+      },
+      {
         path: '/trang-chu',
         component: './home',
       },
@@ -203,18 +207,6 @@ export default [
         path: '/thuc-don',
         component: './menu/layout',
         routes: [
-          // {
-          //   path: '/thuc-don',
-          //   component: './menu/index',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.BEP],
-          // },
-          // {
-          //   path: '/thuc-don/tao-moi',
-          //   component: './menu/create',
-          //   wrappers: ['@/wrappers/auth'],
-          //   authority: [permissions.BEP],
-          // },
           {
             path: '/thuc-don',
             component: './menu/kitchen-menus/index',

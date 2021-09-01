@@ -36,12 +36,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ timeTables, loading }) => ({
+const mapStateToProps = ({ timeTables, loading, user }) => ({
+  loading,
   data: timeTables.data,
   branches: timeTables.branches,
   classes: timeTables.classes,
   pagination: timeTables.pagination,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -52,6 +53,7 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
@@ -63,7 +65,7 @@ class Index extends PureComponent {
           ? moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER)
           : moment().endOf('months').format(variables.DATE_FORMAT.DATE_AFTER),
         type: query.type || 'dayGridMonth',
-        branchId: query.branchId,
+        branchId: query.branchId || defaultBranch?.id,
         classId: query.classId,
       },
       details: {},
@@ -366,8 +368,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                date: search.fromDate &&
-                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -376,21 +378,23 @@ class Index extends PureComponent {
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     label="CƠ SỞ"
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
                     label="LỚP"
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -610,6 +614,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -618,6 +623,7 @@ Index.defaultProps = {
   location: {},
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;

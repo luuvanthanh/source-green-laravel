@@ -7,10 +7,8 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import PropTypes from 'prop-types';
-import Cookies from 'universal-cookie';
 import styles from './index.scss';
 
-const cookies = new Cookies();
 @connect(({ user, loading }) => ({ user, loading }))
 class Index extends PureComponent {
   /**
@@ -23,14 +21,10 @@ class Index extends PureComponent {
       dispatch,
       location: { query },
     } = this.props;
-    cookies.remove('access_token', { path: '/' });
-    cookies.remove('token_type', { path: '/' });
     dispatch({
-      type: 'user/LOGIN',
+      type: 'user/SWITCH_BRANCHES',
       payload: {
         ...values,
-        grant_type: 'password',
-        scope: 'Erp',
         redirect: query.redirect,
       },
     });
@@ -39,11 +33,12 @@ class Index extends PureComponent {
   render() {
     const {
       loading: { effects },
+      user,
     } = this.props;
-    const loading = effects['user/LOGIN'];
+    const loading = effects['user/SWITCH_BRANCHES'];
     return (
       <div className={classnames(styles.block, 'login-container')}>
-        <Helmet title="Login" />
+        <Helmet title="Switch Branches" />
         <div className={styles.inner}>
           <div className={styles.form}>
             <div
@@ -51,20 +46,22 @@ class Index extends PureComponent {
             >
               <img src="images/login/logo.png" alt="imageLogin" className={styles.logo} />
             </div>
-            <Form hideRequiredMark initialValues={{}} layout="vertical" onFinish={this.onFinish}>
+            <Form
+              hideRequiredMark
+              initialValues={{
+                branchId: user?.defaultBranch?.id,
+              }}
+              layout="vertical"
+              onFinish={this.onFinish}
+            >
               <FormItem
-                label="User ID / Email"
-                name="username"
-                rules={[variables.RULES.EMPTY_INPUT]}
-                type={variables.INPUT}
+                data={user?.branchs?.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+                name="branchId"
+                type={variables.RADIO}
                 className="input-login"
-              />
-              <FormItem
-                label="Mật khẩu"
-                name="password"
-                rules={[variables.RULES.EMPTY_INPUT]}
-                type={variables.INPUT_PASSWORD}
-                className="input-password"
               />
               <div className="form-actions">
                 <Button
@@ -73,7 +70,7 @@ class Index extends PureComponent {
                   className={styles.button}
                   loading={loading}
                 >
-                  ĐĂNG NHẬP
+                  XÁC NHẬN CƠ SỞ
                 </Button>
               </div>
             </Form>
@@ -88,12 +85,14 @@ Index.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  user: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   dispatch: {},
   loading: {},
   location: {},
+  user: {},
 };
 
 export default Index;

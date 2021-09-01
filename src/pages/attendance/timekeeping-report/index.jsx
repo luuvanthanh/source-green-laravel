@@ -30,12 +30,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ timekeepingReport, loading }) => ({
+const mapStateToProps = ({ timekeepingReport, loading, user }) => ({
+  loading,
   data: timekeepingReport.data,
   pagination: timekeepingReport.pagination,
   branches: timekeepingReport.branches,
   classes: timekeepingReport.classes,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -44,13 +45,14 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
       search: {
-        branchId: query?.branchId,
         classId: query?.classId,
         fullName: query?.fullName,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         endDate: query?.endDate ? moment(query?.endDate) : moment().endOf('months'),
@@ -342,7 +344,9 @@ class Index extends PureComponent {
   renderReality = (items) => {
     if (!isEmpty(items.attendance)) {
       const attendance = items.attendance.filter(
-        (item) => item.status === variablesModules.STATUS_ABSENT.HAVE_IN || item?.status === variablesModules.STATUS_ABSENT.HAVE_OUT
+        (item) =>
+          item.status === variablesModules.STATUS_ABSENT.HAVE_IN ||
+          item?.status === variablesModules.STATUS_ABSENT.HAVE_OUT,
       );
       return size(attendance);
     }
@@ -351,9 +355,7 @@ class Index extends PureComponent {
 
   renderAbsents = (items, status) => {
     if (!isEmpty(items.attendance)) {
-      const attendance = items.attendance.filter(
-        (item) => item.status === status
-      );
+      const attendance = items.attendance.filter((item) => item.status === status);
       return size(attendance);
     }
     return null;
@@ -536,6 +538,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -547,6 +550,7 @@ Index.defaultProps = {
   location: {},
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;

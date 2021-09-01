@@ -21,7 +21,8 @@ const Index = memo(() => {
   const [
     { pagination, error, data, branches, classTypes },
     loading,
-  ] = useSelector(({ loading: { effects }, kitchenMenus }) => [kitchenMenus, effects]);
+    { defaultBranch },
+  ] = useSelector(({ loading: { effects }, kitchenMenus, user }) => [kitchenMenus, effects, user]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -31,6 +32,7 @@ const Index = memo(() => {
 
   const [search, setSearch] = useState({
     ...query,
+    branchId: query.branchId || defaultBranch?.id,
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     date: query?.date || moment(),

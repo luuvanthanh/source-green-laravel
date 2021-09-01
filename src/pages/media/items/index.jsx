@@ -22,10 +22,11 @@ const Index = memo(() => {
   const mountedSet = (f) => (v) => mounted?.current && f(v);
 
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, media }) => [
-    media,
-    effects,
-  ]);
+  const [
+    { pagination, error, data },
+    loading,
+    { defaultBranch },
+  ] = useSelector(({ loading: { effects }, media, user }) => [media, effects, user]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
@@ -42,7 +43,7 @@ const Index = memo(() => {
     sentDateFrom: query?.sentDateFrom || moment().startOf('months'),
     sentDateTo: query?.sentDateTo || moment().endOf('months'),
     description: query?.description,
-    branchId: query?.branchId,
+    branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
   });
 

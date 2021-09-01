@@ -13,9 +13,10 @@ const UserModel = {
     authorized: false,
     user: {},
     permissions: [],
+    defaultBranch: {},
   },
   effects: {
-    *login({ payload }, { call, put }) {
+    *LOGIN({ payload }, { call, put }) {
       try {
         const response = yield call(services.login, payload);
         const me = yield call(services.me, {
@@ -26,12 +27,19 @@ const UserModel = {
           type: 'SET_USER',
           payload: {
             ...me,
-            authorized: true,
             permissions: me.permissionGrants,
+            logged: true,
+          },
+        });
+        history.push({
+          pathname: '/switch-branches',
+          query: {
+            redirect: payload.redirect,
           },
         });
         cookies.set('access_token', response.access_token, { path: '/' });
         cookies.set('token_type', response.token_type, { path: '/' });
+        cookies.set('logged', true, { path: '/' });
         const { can, rules } = new AbilityBuilder();
         me.permissionGrants.forEach((item) => {
           can([item], item);
@@ -58,8 +66,9 @@ const UserModel = {
             type: 'SET_USER',
             payload: {
               ...response,
-              authorized: true,
               permissions: response.permissionGrants,
+              logged: true,
+              authorized: !!cookies.get('logged'),
             },
           });
           const { can, rules } = new AbilityBuilder();
@@ -68,6 +77,19 @@ const UserModel = {
           });
           ability.update(rules);
         }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+        });
+      }
+    },
+    *SWITCH_BRANCHES({ payload }, saga) {
+      try {
+        yield saga.call(services.switchBranches, payload);
+        yield saga.put({
+          type: 'SET_SWITCH_BRANCHES',
+          payload,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -88,6 +110,7 @@ const UserModel = {
       try {
         cookies.remove('access_token', { path: '/' });
         cookies.remove('token_type', { path: '/' });
+        cookies.remove('logged', { path: '/' });
         yield saga.put({
           type: 'SET_LOGOUT',
         });
@@ -102,16 +125,23 @@ const UserModel = {
   reducers: {
     SET_USER: (state, { payload }) => ({
       ...state,
+      ...payload,
       user: {
         ...payload,
       },
-      authorized: true,
+      defaultBranch: payload.defaultBranch || {},
       permissions: payload.permissions,
+    }),
+    SET_SWITCH_BRANCHES: (state, { payload }) => ({
+      ...state,
+      defaultBranch: state?.branchs?.find((item) => item.id === payload.branchId) || {},
+      authorized: true,
     }),
     SET_LOGOUT: (state) => ({
       ...state,
       user: {},
       authorized: false,
+      logged: false,
       permissions: [],
     }),
   },

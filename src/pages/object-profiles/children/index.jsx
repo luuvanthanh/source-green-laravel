@@ -31,12 +31,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ OPchildren, loading }) => ({
+const mapStateToProps = ({ OPchildren, loading, user }) => ({
   loading,
   data: OPchildren.data,
   classes: OPchildren.classes,
   branches: OPchildren.branches,
   pagination: OPchildren.pagination,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -45,6 +46,7 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
@@ -53,7 +55,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
         class: query?.class,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         classStatus: 'ALL',
         isStoreStaus: false,
       },
@@ -350,7 +352,8 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                startDate: search.startDate && moment(search.startDate),
+                branchId: search.branchId || null,
+                class: search.class || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -366,20 +369,22 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
                     placeholder="Chọn cơ sở"
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
                     name="class"
                     onChange={(event) => this.onChangeSelect(event, 'class')}
                     type={variables.SELECT}
                     placeholder="Chọn lớp"
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -420,6 +425,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -431,6 +437,7 @@ Index.defaultProps = {
   location: {},
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;
