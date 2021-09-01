@@ -13,7 +13,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
-import { v4 as uuidv4 } from 'uuid';
 import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
 
@@ -32,14 +31,15 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicaFollow, loading }) => ({
+const mapStateToProps = ({ medicaFollow, loading, user }) => ({
+  loading,
   data: medicaFollow.data,
   branches: medicaFollow.branches,
   classes: medicaFollow.classes,
   pagination: medicaFollow.pagination,
   configs: medicaFollow.configs,
   error: medicaFollow.error,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -48,12 +48,13 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
       search: {
         diseaseName: query?.diseaseName,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -127,7 +128,9 @@ class Index extends PureComponent {
     if (search.branchId) {
       dispatch({
         type: 'medicaFollow/GET_CLASSES',
-        payload: search,
+        payload: {
+          branch: search.branchId,
+        },
       });
     }
     dispatch({
@@ -379,7 +382,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      configs,
       data,
       error,
       classes,
@@ -560,6 +562,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   configs: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -573,6 +576,7 @@ Index.defaultProps = {
   error: {},
   classes: [],
   configs: [],
+  defaultBranch: {},
 };
 
 export default Index;

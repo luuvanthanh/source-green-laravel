@@ -16,10 +16,10 @@ import { variables, Helper } from '@/utils';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, timeTableHistory }) => [
-    timeTableHistory,
-    effects,
-  ]);
+  const [
+    { pagination, error, data },
+    loading,
+  ] = useSelector(({ loading: { effects }, timeTableHistory }) => [timeTableHistory, effects]);
 
   const mounted = useRef(false);
   const history = useHistory();
@@ -30,8 +30,8 @@ const Index = memo(() => {
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     employeeId: query?.employeeId || '',
     actionId: query?.actionId || '',
-    fromDate: query?.fromDate || '',
-    toDate: query?.toDate || '',
+    fromDate: query?.fromDate || moment().startOf('months'),
+    toDate: query?.toDate || moment().endOf('months'),
   });
   const [employee, setEmployee] = useState([]);
 
@@ -52,24 +52,25 @@ const Index = memo(() => {
       key: 'name',
       className: 'min-width-200',
       with: 200,
-      render: (record) => (
-        <Text size="normal">{record?.editor?.name || ''}</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.editor?.name || ''}</Text>,
     },
     {
       title: 'Hành động',
       key: 'action',
       className: 'min-width-200',
       with: 200,
-      render: (record) => (
-        <Text size="normal">{record?.editor?.name || ''}</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.editor?.name || ''}</Text>,
     },
     {
       title: 'Nội dung',
       key: 'content',
       className: 'min-width-400',
-      render: (record) => !isEmpty(record?.editedStudentPhysicals) ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(', ')}` : '',
+      render: (record) =>
+        !isEmpty(record?.editedStudentPhysicals)
+          ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(
+              ', ',
+            )}`
+          : '',
     },
   ];
 
@@ -77,7 +78,7 @@ const Index = memo(() => {
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
-  */
+   */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -90,13 +91,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilter = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -124,7 +126,11 @@ const Index = memo(() => {
       },
       callback: (res) => {
         if (res) {
-          setEmployee(!isEmpty(res?.parsePayload) ? [{id: '', fullName: 'Tất cả nhân viên'}, ...res?.parsePayload] : []);
+          setEmployee(
+            !isEmpty(res?.parsePayload)
+              ? [{ id: '', fullName: 'Tất cả nhân viên' }, ...res?.parsePayload]
+              : [],
+          );
         }
       },
     });
@@ -174,17 +180,24 @@ const Index = memo(() => {
                 ],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                actionId: search.actionId || null,
               }}
             >
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
                     name="employeeId"
-                    data={loading['categories/GET_TEACHERS'] ? [] : employee.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                    data={
+                      loading['categories/GET_TEACHERS']
+                        ? []
+                        : employee.map((item) => ({ ...item, name: item?.fullName || '-' }))
+                    }
                     type={variables.SELECT}
                     onChange={(value) => changeFilter('employeeId', value)}
                     onSearch={onSearch}
-                    notFoundContent={loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null}
+                    notFoundContent={
+                      loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null
+                    }
                     filterOption
                     placeholder="Chọn nhân viên"
                   />
@@ -197,6 +210,7 @@ const Index = memo(() => {
                     onChange={(value) => changeFilter('actionId', value)}
                     filterOption
                     placeholder="Chọn hành động"
+                    allowClear={false}
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -204,6 +218,7 @@ const Index = memo(() => {
                     name="rangeTime"
                     type={variables.RANGE_PICKER}
                     onChange={changeFilterDate}
+                    allowClear={false}
                   />
                 </Pane>
               </Pane>

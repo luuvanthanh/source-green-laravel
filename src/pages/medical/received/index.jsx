@@ -31,13 +31,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicaReceived, loading }) => ({
-  data: medicaReceived.data,
-  branches: medicaReceived.branches,
-  classes: medicaReceived.classes,
-  pagination: medicaReceived.pagination,
-  error: medicaReceived.error,
+const mapStateToProps = ({ medicaReceived, loading, user }) => ({
   loading,
+  data: medicaReceived.data,
+  error: medicaReceived.error,
+  classes: medicaReceived.classes,
+  branches: medicaReceived.branches,
+  pagination: medicaReceived.pagination,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -46,12 +47,13 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
       search: {
         diseaseName: query?.diseaseName,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         from: Helper.getEndDate(query?.from, query?.choose),
@@ -123,7 +125,9 @@ class Index extends PureComponent {
     if (search.branchId) {
       dispatch({
         type: 'medicaReceived/GET_CLASSES',
-        payload: search,
+        payload: {
+          branch: search.branchId,
+        },
       });
     }
     dispatch({
@@ -577,6 +581,7 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -589,6 +594,7 @@ Index.defaultProps = {
   branches: [],
   error: {},
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;

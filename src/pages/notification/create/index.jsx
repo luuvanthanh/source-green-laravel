@@ -28,10 +28,12 @@ const Index = memo(() => {
     menuData,
     { branches, divisions, details },
     loading,
-  ] = useSelector(({ menu, notificationAdd, loading: { effects } }) => [
+    { defaultBranch },
+  ] = useSelector(({ menu, notificationAdd, loading: { effects }, user }) => [
     menu.menuLeftNotification,
     notificationAdd,
     effects,
+    user,
   ]);
 
   const formRef = useRef();
@@ -50,7 +52,7 @@ const Index = memo(() => {
     total: 0,
     hasMore: true,
     loading: false,
-    branchId: null,
+    branchId: defaultBranch?.id || null,
     divisionId: null,
   });
   const [searchParent, setSearchParent] = useState({
@@ -389,7 +391,14 @@ const Index = memo(() => {
   ]);
 
   return (
-    <Form layout="vertical" ref={formRef} initialValues={{}} onFinish={onFinish}>
+    <Form
+      layout="vertical"
+      ref={formRef}
+      initialValues={{
+        branchId: defaultBranch?.id || null,
+      }}
+      onFinish={onFinish}
+    >
       <Helmet title={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} />
       <Breadcrumbs last={params.id ? 'Chỉnh sửa thông báo' : 'Tạo thông báo'} menu={menuData} />
       <Pane className="pr20 pl20">

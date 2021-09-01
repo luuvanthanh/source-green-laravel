@@ -270,13 +270,6 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'TH điểm danh theo giờ',
-          key: 'hours',
-          url: ['/diem-danh/tong-hop-cong-gio'],
-          permission: [permissions.DD],
-          pro: true,
-        },
-        {
           title: 'Lý do điểm danh',
           key: 'attendances-reasons',
           url: [

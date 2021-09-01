@@ -35,7 +35,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 
-@connect(({ user, loading }) => ({ user, loading }))
+@connect(({ user, loading }) => ({ user, loading, defaultBranch: user.defaultBranch }))
 class HomePage extends PureComponent {
   formRef = React.createRef();
 
@@ -59,11 +59,11 @@ class HomePage extends PureComponent {
   }
 
   fetchClasses = () => {
-    const { dispatch, user } = this.props;
+    const { dispatch, user, defaultBranch } = this.props;
     dispatch({
       type: 'categories/GET_CLASSES',
       payload: {
-        branch: user?.user?.objectInfo?.positionLevel?.branchId || undefined,
+        branch: defaultBranch?.id || user?.user?.objectInfo?.positionLevel?.branchId || undefined,
       },
       callback: (res) => {
         if (res) {
@@ -104,8 +104,8 @@ class HomePage extends PureComponent {
 
   renderComponent = (tab, classId) => {
     const { classObject } = this.state;
-    const { user } = this.props;
-    const branchId = user?.user?.objectInfo?.positionLevel?.branch?.id || null;
+    const { user, defaultBranch } = this.props;
+    const branchId = defaultBranch?.id || user?.user?.objectInfo?.positionLevel?.branch?.id || null;
 
     switch (tab) {
       case 'overview':
@@ -125,11 +125,13 @@ class HomePage extends PureComponent {
 
   render() {
     const { classes, classId, tab } = this.state;
-    const { user } = this.props;
+    const { user, defaultBranch } = this.props;
 
     return (
       <div className={styles.container}>
-        <div className={styles.title}>{ user?.user?.objectInfo?.positionLevel?.branch?.name || 'Lake View' }</div>
+        <div className={styles.title}>
+          {defaultBranch?.name || user?.user?.objectInfo?.positionLevel?.branch?.name}
+        </div>
         <div className={styles.flex}>
           <div className="d-flex align-items-center mb30 mt-10">
             <div className={styles['date-header']}>
@@ -163,11 +165,13 @@ class HomePage extends PureComponent {
 HomePage.propTypes = {
   dispatch: PropTypes.objectOf(PropTypes.any),
   user: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 HomePage.defaultProps = {
   dispatch: {},
   user: {},
+  defaultBranch: {},
 };
 
 export default HomePage;

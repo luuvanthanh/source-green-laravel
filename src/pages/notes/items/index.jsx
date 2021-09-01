@@ -32,12 +32,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ noteItems, loading }) => ({
+const mapStateToProps = ({ noteItems, loading, user }) => ({
+  loading,
   data: noteItems.data,
   pagination: noteItems.pagination,
   classes: noteItems.classes,
   branches: noteItems.branches,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,11 +48,12 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
         keyWord: query?.keyWord,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId,
         from: query?.from
           ? moment(query?.from).format(variables.DATE_FORMAT.DATE_AFTER)
@@ -516,6 +518,7 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -527,6 +530,7 @@ Index.defaultProps = {
   location: {},
   classes: [],
   branches: [],
+  defaultBranch: {},
 };
 
 export default Index;
