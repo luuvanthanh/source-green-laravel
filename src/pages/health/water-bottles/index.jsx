@@ -30,10 +30,11 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ waterBottles, loading }) => ({
-  data: waterBottles.data,
-  pagination: waterBottles.pagination,
+const mapStateToProps = ({ waterBottles, loading, user }) => ({
   loading,
+  data: waterBottles.data,
+  defaultBranch: user.defaultBranch,
+  pagination: waterBottles.pagination,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -44,15 +45,16 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
       visible: false,
       search: {
         key: query?.key,
-        branchId: query?.branchId,
-        classId: query?.classId,
         action: query?.action,
+        classId: query?.classId,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
@@ -96,16 +98,32 @@ class Index extends PureComponent {
 
   fetchBranches = () => {
     const { dispatch } = this.props;
+    const { search } = this.state;
     dispatch({
       type: 'categories/GET_BRANCHES',
       callback: (res) => {
         if (res) {
           this.setStateData({
-            branches: !isEmpty(res?.parsePayload) ? [{id: '', name: 'Tất cả lớp'}, ...res?.parsePayload] :[],
+            branches: res?.parsePayload,
           });
         }
       },
     });
+    if (search.branchId) {
+      dispatch({
+        type: 'categories/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+        callback: (res) => {
+          if (res) {
+            this.setStateData({
+              classes: res?.items,
+            });
+          }
+        },
+      });
+    }
   };
 
   /**
@@ -332,12 +350,12 @@ class Index extends PureComponent {
       callback: (res) => {
         if (res) {
           this.setStateData({
-            classes: !isEmpty(res?.items) ? [{id: '', name: 'Tất cả lớp'}, ...res?.items] :[],
+            classes: res?.items,
           });
         }
       },
     });
-  }
+  };
 
   render() {
     const {
@@ -483,19 +501,21 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
+                branchId: search.branchId || null,
+                classId: search.classId || null,
               }}
               layout="vertical"
               ref={this.formRef}
             >
               <div className="row">
-              <div className="col-lg-4 mt-3">
-                <FormItem
-                  name="key"
-                  onChange={(event) => this.onChange(event?.target?.value, 'key')}
-                  placeholder="Nhập từ khóa tìm kiếm"
-                  type={variables.INPUT_SEARCH}
-                />
-              </div>
+                <div className="col-lg-4 mt-3">
+                  <FormItem
+                    name="key"
+                    onChange={(event) => this.onChange(event?.target?.value, 'key')}
+                    placeholder="Nhập từ khóa tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
                 <div className="col-lg-4 mt-3">
                   <FormItem
                     allowClear={false}
@@ -503,7 +523,7 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                     placeholder="Chọn cơ sở"
                     onChange={this.changeBranch}
-                    data={branches}
+                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
                   />
                 </div>
                 <div className="col-lg-4 mt-3">
@@ -513,7 +533,7 @@ class Index extends PureComponent {
                     allowClear={false}
                     placeholder="Chọn lớp"
                     type={variables.SELECT}
-                    data={classes}
+                    data={[{ id: null, name: 'Chọn tất cả các lớp' }, ...classes]}
                   />
                 </div>
               </div>
@@ -545,6 +565,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -554,6 +575,7 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
+  defaultBranch: {},
 };
 
 export default Index;

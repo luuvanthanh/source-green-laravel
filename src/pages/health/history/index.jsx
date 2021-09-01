@@ -29,12 +29,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ healthHistories, loading }) => ({
+const mapStateToProps = ({ healthHistories, loading, user }) => ({
   loading,
   data: healthHistories.data,
   pagination: healthHistories.pagination,
   branches: healthHistories.branches,
   classes: healthHistories.classes,
+  defaultBranch: user.defaultBranch,
   criteriaGroupProperties: healthHistories.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -45,15 +46,16 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
-        branchId: query.branchId,
         classId: query.classId,
+        branchId: query.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         keyWord: query?.keyWord,
-        reportDate: query?.reportDate,
+        reportDate: query?.reportDate || moment(),
       },
     };
     setIsMounted(true);
@@ -343,6 +345,7 @@ class Index extends PureComponent {
                     name="branchId"
                     onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
@@ -351,13 +354,15 @@ class Index extends PureComponent {
                     name="classId"
                     onChange={(event) => this.onChangeSelect(event, 'classId')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    name="date"
+                    name="reportDate"
                     onChange={(event) => this.onChangeDate(event, 'reportDate')}
                     type={variables.DATE_PICKER}
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -392,6 +397,7 @@ Index.propTypes = {
   criteriaGroupProperties: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -404,6 +410,7 @@ Index.defaultProps = {
   criteriaGroupProperties: [],
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;
