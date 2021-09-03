@@ -25,12 +25,12 @@ export const variables = {
     },
   ],
   MEDICAL: [
-    { id: 'PROCESSED', name: 'Nhận thuốc' },
-    { id: 'PENDING', name: 'Cho uống' },
+    { id: 'RECEIVED', name: 'Nhận thuốc' },
+    { id: 'DRINK', name: 'Cho uống' },
   ],
   STATUS: {
-    PROCESSED: 'PROCESSED',
-    PENDING: 'PENDING'
+    RECEIVED: 'RECEIVED',
+    DRINK: 'DRINK',
   },
   DATA_ATTENDANCE: [
     {
@@ -166,6 +166,18 @@ export const variables = {
     AFTER_SECOND_LUNCH: 'Sau xế trưa',
     BEFORE_TEA_TIME: 'Trước xế chiều',
     AFTER_TEA_TIME: 'Sau xế chiều',
+  },
+  STATUS_TIME: {
+    BEFORE_BREAKFAST: 'BEFORE_BREAKFAST',
+    AFTER_BREAKFAST: 'AFTER_BREAKFAST',
+    BEFORE_LUNCH: 'BEFORE_LUNCH',
+    AFTER_LUNCH: 'AFTER_LUNCH',
+    BEFORE_SECOND_BREAKFAST: 'BEFORE_SECOND_BREAKFAST',
+    AFTER_SECOND_BREAKFAST: 'AFTER_SECOND_BREAKFAST',
+    BEFORE_SECOND_LUNCH: 'BEFORE_SECOND_LUNCH',
+    AFTER_SECOND_LUNCH: 'AFTER_SECOND_LUNCH',
+    BEFORE_TEA_TIME: 'BEFORE_TEA_TIME',
+    AFTER_TEA_TIME: 'AFTER_TEA_TIME',
   },
   TITLE_BUS: {
     TOTAL: {
