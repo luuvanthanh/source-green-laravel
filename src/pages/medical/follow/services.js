@@ -36,3 +36,21 @@ export function get(params = {}) {
     },
   });
 }
+
+export function received(params = {}) {
+  return request(`/medicals/${params.id}/medicine-time-type/${params.medicineTimeTypeId}`, {
+    method: 'PUT',
+    params: {
+      ...params,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.date,
+          targetValue: '23:59:59',
+        }),
+        isUTC: true,
+      }),
+    },
+    parse: true,
+  });
+}

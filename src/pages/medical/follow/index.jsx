@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Image } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isArray } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -58,8 +58,8 @@ class Index extends PureComponent {
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
-        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
+        from: Helper.getEndDate(query?.from, query?.choose),
+        to: Helper.getStartDate(query?.to, query?.choose),
       },
       visible: false,
       objects: {},
@@ -108,11 +108,8 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          creationTimeFrom: Helper.getDate(
-            search.creationTimeFrom,
-            variables.DATE_FORMAT.DATE_AFTER,
-          ),
-          creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+          from: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
+          to: Helper.getDate(search.to, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -236,13 +233,13 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearchDateRank = debounce((creationTimeFrom, creationTimeTo) => {
+  debouncedSearchDateRank = debounce((from, to) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          creationTimeFrom,
-          creationTimeTo,
+          from,
+          to,
         },
       }),
       () => this.onLoad(),
@@ -327,19 +324,22 @@ class Index extends PureComponent {
           const children = group?.items?.find((itemGroup) => itemGroup.name === item.name);
           return (
             <div className={styles['list-avatar']}>
-              {children?.items?.map((item, index) => (
+              {children?.items?.map((itemChild, index) => (
                 <div
                   className={styles['item-avatar-signal']}
                   key={index}
                   role="presentation"
                   onClick={() =>
-                    this.setStateData({ visible: true, objects: { ...item, class: record.class } })
+                    this.setStateData({
+                      visible: true,
+                      objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
+                    })
                   }
                 >
                   <AvatarTable
-                    isBorder={!item.isActive}
-                    isActive={item.isActive}
-                    fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                    isBorder={!itemChild.isReceived}
+                    isActive={itemChild.isReceived}
+                    fileImage={Helper.getPathAvatarJson(itemChild?.student?.fileImage)}
                   />
                 </div>
               ))}
@@ -378,7 +378,26 @@ class Index extends PureComponent {
     return columns;
   };
 
-  handleCancel = () => this.setStateData({ visible: false });
+  handleCancel = () => this.setStateData({ visible: false, objects: {} });
+
+  onReceived = () => {
+    const { objects } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'medicaFollow/RECEIVED',
+      payload: {
+        id: objects.id,
+        medicineTimeTypeId: objects.medicineTimeTypeId,
+        date: moment(),
+      },
+      callback: (response) => {
+        if (response) {
+          this.handleCancel();
+          this.onLoad();
+        }
+      },
+    });
+  };
 
   render() {
     const {
@@ -392,6 +411,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search, visible, objects } = this.state;
     const loading = effects['medicaFollow/GET_DATA'];
+    const loadingSubmit = effects['medicaFollow/RECEIVED'];
     return (
       <>
         <Helmet title="Theo dõi uống thuốc" />
@@ -410,67 +430,79 @@ class Index extends PureComponent {
             )}
           >
             <AvatarTable
-              srcLocal
-              fullName={objects.name}
-              fileImage={objects.img}
-              description={objects.class}
+              fullName={objects?.student?.fullName}
+              fileImage={Helper.getPathAvatarJson(objects?.student?.fileImage)}
+              description={objects?.class?.name}
             />
-            {objects.isActive && HelperModules.tagStatusDrink('DRINK')}
-            {!objects.isActive && HelperModules.tagStatusDrink('NOT_DRINK')}
+            {objects.isReceived && HelperModules.tagStatusDrink('DRINK')}
+            {!objects.isReceived && HelperModules.tagStatusDrink('NOT_DRINK')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <p className={styles.label}>Triệu chứng</p>
-                <p className={styles.norm}>Ho</p>
+                <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
               <div>
                 <p className={styles.label}>Nơi đặt thuốc</p>
-                <p className={styles.norm}>Trong balo</p>
+                <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>
             </div>
             <hr />
             <h3 className={styles.title}>UỐNG THUỐC TRƯỚC ĂN SÁNG</h3>
             <div className={styles.list}>
-              <div className={styles.item}>
-                <div className={styles['image-container']}>
-                  <img className={styles.thumb} src="/images/medical.png" alt="medical" />
-                  <div className="pl10">
-                    <p className={styles.label}>Tên thuốc</p>
-                    <p className={styles.norm}>CEELIN</p>
+              {objects?.medicines?.map(({ id, files, name, note }) => (
+                <div className={styles.item} key={id}>
+                  <div className={styles['image-container']}>
+                    {Helper.isJSON(files) && (
+                      <div>
+                        <Image.PreviewGroup>
+                          {isArray(JSON.parse(files)) &&
+                            JSON.parse(files).map((item, index) => (
+                              <div key={index} className={styles['group-image']}>
+                                <Image
+                                  key={index}
+                                  width={85}
+                                  src={`${API_UPLOAD}${item}`}
+                                  fallback="/default-upload.png"
+                                />
+                              </div>
+                            ))}
+                        </Image.PreviewGroup>
+                      </div>
+                    )}
+                    <div className="pl10">
+                      <p className={styles.label}>Tên thuốc</p>
+                      <p className={styles.norm}>{name}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className={styles.label}>Nội dung</p>
+                    <p className={styles.norm}>{note}</p>
                   </div>
                 </div>
-                <div>
-                  <p className={styles.label}>Nội dung</p>
-                  <p className={styles.norm}>5 ml</p>
-                </div>
-              </div>
-              <div className={styles.item}>
-                <div className={styles['image-container']}>
-                  <img className={styles.thumb} src="/images/medicals/image_01.png" alt="medical" />
-                  <div className="pl10">
-                    <p className={styles.label}>Tên thuốc</p>
-                    <p className={styles.norm}>PROSPAN</p>
-                  </div>
-                </div>
-                <div>
-                  <p className={styles.label}>Nội dung</p>
-                  <p className={styles.norm}>5 ml</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-          <div
-            className={classnames(
-              styles['modal-footer'],
-              'd-flex justify-content-center align-items-center',
-            )}
-          >
-            <Button color="success" size="large" permission="YTE">
-              Xác nhận đã cho uống
-            </Button>
-          </div>
+          {!objects?.isReceived && (
+            <div
+              className={classnames(
+                styles['modal-footer'],
+                'd-flex justify-content-center align-items-center',
+              )}
+            >
+              <Button
+                color="success"
+                size="large"
+                permission="YTE"
+                onClick={this.onReceived}
+                loading={loadingSubmit}
+              >
+                Xác nhận đã cho uống
+              </Button>
+            </div>
+          )}
         </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
@@ -483,11 +515,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                date: search.creationTimeFrom &&
-                  search.creationTimeTo && [
-                    moment(search.creationTimeFrom),
-                    moment(search.creationTimeTo),
-                  ],
+                date: search.from && search.to && [moment(search.from), moment(search.to)],
               }}
               layout="vertical"
               ref={this.formRef}
