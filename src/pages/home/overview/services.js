@@ -20,12 +20,63 @@ export function detailsNote(data) {
 }
 
 export function getMedical(params = {}) {
-  return request('/medicals', {
+  return request('/medicals/group-by-class', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
+      isReceived: params.isReceived === false ? 'false' : params.isReceived,
+      from: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.from,
+          targetValue: '00:00:00',
+        }),
+        isUTC: true,
+      }),
+      to: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.to,
+          targetValue: '23:59:59',
+        }),
+        isUTC: true,
+      }),
     },
+  });
+}
+
+export function getMedicalTime(params = {}) {
+  return request('/medicals/group-by-class-time', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+      from: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.from,
+          targetValue: '00:00:00',
+        }),
+        isUTC: true,
+      }),
+      to: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.to,
+          targetValue: '23:59:59',
+        }),
+        isUTC: true,
+      }),
+    },
+  });
+}
+
+export function reminder(params = {}) {
+  return request(`/medicals/${params.id}/reminder`, {
+    method: 'GET',
+    params: {},
+    parse: true,
   });
 }
 
@@ -35,6 +86,15 @@ export function listMedicalbyStudent(params = {}) {
     params: {
       ...params,
       ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function getConfigs(_params = {}) {
+  return request('/configs/group-by-type', {
+    method: 'GET',
+    params: {
+      type: 'MEDICAL',
     },
   });
 }

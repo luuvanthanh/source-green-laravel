@@ -624,6 +624,23 @@
       top: unset !important;
     }
   }
+  .list {
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+    .image-container {
+      display: flex;
+      align-items: center;
+      .thumb {
+        width: 92px;
+        height: 85px;
+        object-fit: cover;
+      }
+    }
+  }
 }
 
 .list-avatar {
@@ -636,11 +653,14 @@
   }
 }
 
-.tab-container {
+:global(.indiana-scroll-container) {
   background-color: $background-white;
   border-radius: 10px 10px 0 0;
+}
+
+.tab-container {
   display: flex;
-  overflow-x: auto;
+  flex-wrap: nowrap;
   .tab-item {
     font-size: 14px;
     line-height: 24px;
