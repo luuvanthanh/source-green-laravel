@@ -110,8 +110,12 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         \DB::beginTransaction();
         try {
             $businessCard->update($attributes);
-            $businessCard->businessCardDetail()->delete();
-            BusinessCardDetailServices::add($id, $attributes['detail']);
+
+            if(!empty($attributes['detail'])){
+                $businessCard->businessCardDetail()->delete();
+                BusinessCardDetailServices::add($id, $attributes['detail']);
+            }
+
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

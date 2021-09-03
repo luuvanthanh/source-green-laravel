@@ -140,16 +140,17 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
-            $urlNoti = env('NOTI_URL') . '/api/notification';
             if (!empty($userId)) {
-                Http::post("$urlNoti", [
+                $dataNoti = [
                     'users' => $userId,
                     'title' => $nameStudent,
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
                     'refId' => $attributes['studentId'],
-                ]);
+                ];
+
+                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         } else {
 
@@ -167,11 +168,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
             $parents = $attendance->student->parent;
             $userId = [];
-            // dd($parents);
+
             if (!empty($parents)) {
                 foreach ($parents as $parent) {
                     if (!is_null($parent->account)) {
-
                         $userId[] = $parent->account->AppUserId;
                     }
                 }
@@ -205,17 +205,17 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
-            $urlNoti = env('NOTI_URL') . '/api/notification';
-
             if (!empty($userId)) {
-                Http::post("$urlNoti", [
+                $dataNoti = [
                     'users' => $userId,
                     'title' => $nameStudent,
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
                     'refId' => $attributes['studentId'],
-                ]);
+                ];
+
+                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         }
 
@@ -392,16 +392,19 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckIn = $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s');
+                                $message = "Bé $nameStudent đã vào lớp lúc $timeCheckIn";
 
                                 if (!empty($userId)) {
-                                    Http::post("$urlNoti", [
+                                    $dataNoti = [
                                         'users' => $userId,
                                         'title' => $nameStudent,
                                         'imageURL' => $urlImage,
-                                        'message' => "Bé $nameStudent đã vào lớp lúc $timeCheckIn",
+                                        'message' => $message,
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
-                                    ]);
+                                    ];
+                    
+                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             }
                         }
@@ -456,16 +459,20 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+                                $message = "Bé $nameStudent đã ra về lúc $timeCheckOut";
+
 
                                 if (!empty($userId)) {
-                                    Http::post("$urlNoti", [
+                                    $dataNoti = [
                                         'users' => $userId,
                                         'title' => $nameStudent,
                                         'imageURL' => $urlImage,
-                                        'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
+                                        'message' => $message,
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
-                                    ]);
+                                    ];
+                    
+                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             } else if ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
 
@@ -496,16 +503,19 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $timeCheckOut = $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s');
+                                $message = "Bé $nameStudent đã ra về lúc $timeCheckOut";
 
                                 if (!empty($userId)) {
-                                    Http::post("$urlNoti", [
+                                    $dataNoti = [
                                         'users' => $userId,
                                         'title' => $nameStudent,
                                         'imageURL' => $urlImage,
-                                        'message' => "Bé $nameStudent đã ra về lúc $timeCheckOut",
+                                        'message' => $message,
                                         'moduleType' => 6,
                                         'refId' => $student->Id,
-                                    ]);
+                                    ];
+                    
+                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             }
                         }
@@ -552,15 +562,19 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 $urlImage = env('IMAGE_URL') . $images[0];
                             }
 
+                            $message = "Bé $nameStudent vắng không phép ngày $date";
+
                             if (!empty($userId)) {
-                                Http::post("$urlNoti", [
+                                $dataNoti = [
                                     'users' => $userId,
                                     'title' => $nameStudent,
                                     'imageURL' => $urlImage,
-                                    'message' => "Bé $nameStudent vắng không phép ngày $date",
+                                    'message' => $message,
                                     'moduleType' => 6,
                                     'refId' => $student->Id,
-                                ]);
+                                ];
+                
+                                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                             }
                         }
                     }
