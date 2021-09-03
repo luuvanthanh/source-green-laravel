@@ -44,6 +44,7 @@ class CreatBusinessCardRequest extends FormRequest
                         $accessAbsent = $this->checkDuplicateBusinessCard($value);
 
                         if (!is_null($accessAbsent)) {
+                            $accessAbsent = Carbon::parse($accessAbsent)->format('d-m-Y');
                             return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
                         }
                     }

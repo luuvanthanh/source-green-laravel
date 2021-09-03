@@ -67,9 +67,9 @@ class UpdateBusinessCardRequest extends FormRequest
             $businessCardDetail = BusinessCardDetail::where('Date', $item['date'])->whereHas('businessCard', function ($query) use ($employeeId) {
                 $query->whereHas('absentType', function ($query) {
                     $query->where('Type', 'BUSINESS_TRAVEL');
-                    $query->where('Id', '!=', request()->id);
                 });
-
+                
+                $query->where('Id', '!=', request()->id);
                 $query->where('EmployeeId', $employeeId);
             })->get();
 

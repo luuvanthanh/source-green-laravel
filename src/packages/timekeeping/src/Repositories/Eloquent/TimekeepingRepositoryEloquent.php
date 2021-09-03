@@ -263,6 +263,16 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     ];
                 }
             }
+
+            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
+            if ($check === 'Saturday' || $check === 'Sunday') {
+                $responseTimeKeepingUser[] = [
+                    "date" => $date->format('Y-m-d'),
+                    "timekeepingReport" => 0,
+                    "type" => "WK",
+                ];
+            }
         }
 
         if (count($employeeHasTimekeeping) > 0) {

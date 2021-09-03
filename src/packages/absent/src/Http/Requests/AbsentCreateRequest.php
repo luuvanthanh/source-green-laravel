@@ -127,4 +127,16 @@ class AbsentCreateRequest extends FormRequest
 
         return true;
     }
+
+        /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'endDate.after_or_equal' => "Trường thời gian kết thúc phải là một ngày sau hoặc bằng thời gian bắt đầu.",
+        ];
+    }
 }
