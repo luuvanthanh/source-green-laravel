@@ -55,18 +55,6 @@ class ParameterValuesTableSeeder extends Seeder
             ),
             3 => 
             array (
-                'Id' => '689b9204-6a5d-40d0-bce8-6c6e5509e027',
-                'Code' => 'DIEU_CHINH_BHXH _NLD',
-                'Name' => 'Điều chỉnh BHXH người lao động',
-                'ApplyDate' => '2021-06-01',
-                'ValueDefault' => '0',
-                'Note' => 'Không',
-                'Type' => 'DECLARE',
-                'CreationTime' => '2021-06-23 08:05:14',
-                'LastModificationTime' => '2021-06-23 08:05:14',
-            ),
-            4 => 
-            array (
                 'Id' => '78197da9-c87c-4997-96e8-d3a49da25a62',
                 'Code' => 'DIEU_CHINH_BHXH_CTT',
                 'Name' => 'Điều chỉnh BHXH công ty trả',
@@ -77,7 +65,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:05:28',
                 'LastModificationTime' => '2021-06-23 08:05:28',
             ),
-            5 => 
+            4 => 
             array (
                 'Id' => 'e5d89251-87a5-4151-94ab-26013366b553',
                 'Code' => 'DONG_GOP_TU_THIEN',
@@ -89,7 +77,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:05:46',
                 'LastModificationTime' => '2021-06-23 08:05:46',
             ),
-            6 => 
+            5 => 
             array (
                 'Id' => '8887f093-2cfd-477b-a447-1f7a5431bd99',
                 'Code' => 'THUONG_DANH_GIA_CV',
@@ -101,7 +89,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:06:06',
                 'LastModificationTime' => '2021-06-23 08:06:06',
             ),
-            7 => 
+            6 => 
             array (
                 'Id' => 'ea497555-94c7-4e04-be7c-bede3afdaaf5',
                 'Code' => 'PC_TRACH_NHIEM',
@@ -113,7 +101,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:49:12',
                 'LastModificationTime' => '2021-06-23 07:49:12',
             ),
-            8 => 
+            7 => 
             array (
                 'Id' => 'e509bd5f-76ab-45b2-be92-7e8ff9248879',
                 'Code' => 'PC_XANG_XE',
@@ -125,7 +113,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:49:45',
                 'LastModificationTime' => '2021-06-23 07:49:45',
             ),
-            9 => 
+            8 => 
             array (
                 'Id' => 'c7051157-205b-44b5-8d21-7c52a40ae88e',
                 'Code' => 'PC_DONG_PHUC',
@@ -137,7 +125,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:50:22',
                 'LastModificationTime' => '2021-06-23 07:50:22',
             ),
-            10 => 
+            9 => 
             array (
                 'Id' => 'bdba76a3-b295-4f8b-b23d-cd691b2726a8',
                 'Code' => 'PC_CHUYEN_CAN',
@@ -149,7 +137,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:50:53',
                 'LastModificationTime' => '2021-06-23 07:50:53',
             ),
-            11 => 
+            10 => 
             array (
                 'Id' => '5f917cd8-bcc3-4b2a-9c19-24b8ef1478cc',
                 'Code' => 'PC_AN_TRUA',
@@ -161,7 +149,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:51:11',
                 'LastModificationTime' => '2021-06-23 07:51:11',
             ),
-            12 => 
+            11 => 
             array (
                 'Id' => 'bab94dec-9f8f-4e28-8bec-365e35b29479',
                 'Code' => 'PC_DIEN_THOAI',
@@ -173,7 +161,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:51:36',
                 'LastModificationTime' => '2021-06-23 07:51:36',
             ),
-            13 => 
+            12 => 
             array (
                 'Id' => '5b7bde65-1039-4f08-994e-964395c907fe',
                 'Code' => 'PC_LEAD_LOP_HOC',
@@ -185,7 +173,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:52:05',
                 'LastModificationTime' => '2021-06-23 07:52:05',
             ),
-            14 => 
+            13 => 
             array (
                 'Id' => 'e21bd3ea-b026-41b9-96ad-5e4657116189',
                 'Code' => 'PC_KHAC',
@@ -197,7 +185,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:52:23',
                 'LastModificationTime' => '2021-06-23 07:52:23',
             ),
-            15 => 
+            14 => 
             array (
                 'Id' => '634dbbcc-7aab-4070-a2d3-1882a4e0e162',
                 'Code' => 'TIEN_DI_XE_BUS_GIO',
@@ -209,7 +197,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:00:44',
                 'LastModificationTime' => '2021-06-23 08:00:44',
             ),
-            16 => 
+            15 => 
             array (
                 'Id' => '1ea2a633-98d5-46ff-80c7-9838e69e20b1',
                 'Code' => 'TI_LE_THAI_SAN',
@@ -221,7 +209,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:01:02',
                 'LastModificationTime' => '2021-06-23 08:01:02',
             ),
-            17 => 
+            16 => 
             array (
                 'Id' => 'c3ca11c2-fd99-4e6a-920b-1e5ae8a9fbea',
                 'Code' => 'SO_NGAY_LAM_VIEC_TRONG_THANG',
@@ -233,7 +221,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:01:33',
                 'LastModificationTime' => '2021-06-23 08:01:33',
             ),
-            18 => 
+            17 => 
             array (
                 'Id' => '837f1b42-c9b9-4693-9442-8a5ed8185c2f',
                 'Code' => 'SO_GIO_LAM_THEM_NGAY_THUONG',
@@ -245,7 +233,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:01:51',
                 'LastModificationTime' => '2021-06-23 08:01:51',
             ),
-            19 => 
+            18 => 
             array (
                 'Id' => '9cd1644c-6cb2-494f-95d6-f56bd2e2add3',
                 'Code' => 'SO_GIO_LAM_THEM_NGAY_LE',
@@ -257,7 +245,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:02:50',
                 'LastModificationTime' => '2021-06-23 08:02:50',
             ),
-            20 => 
+            19 => 
             array (
                 'Id' => '0778d678-3b56-455b-8f0a-ae8eef242177',
                 'Code' => 'SO_NGAY_CHUAN',
@@ -269,7 +257,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:03:18',
                 'LastModificationTime' => '2021-06-23 08:03:18',
             ),
-            21 => 
+            20 => 
             array (
                 'Id' => 'c6cf430c-b96b-4780-8bda-9641a784941f',
                 'Code' => 'SO_GIO_DI_XE_BUS',
@@ -281,7 +269,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:03:33',
                 'LastModificationTime' => '2021-06-23 08:03:33',
             ),
-            22 => 
+            21 => 
             array (
                 'Id' => 'fa9afe3c-df52-4973-955d-2ceb25307fcb',
                 'Code' => 'THUONG_KPI',
@@ -293,7 +281,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:06:22',
                 'LastModificationTime' => '2021-06-23 08:06:22',
             ),
-            23 => 
+            22 => 
             array (
                 'Id' => '7509365a-93b8-4b05-a9e2-16900d702161',
                 'Code' => 'SO_TIEN_TAM_UNG',
@@ -305,7 +293,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:06:46',
                 'LastModificationTime' => '2021-06-23 08:06:46',
             ),
-            24 => 
+            23 => 
             array (
                 'Id' => 'a3901b86-46a8-46e6-a384-fa6173b36917',
                 'Code' => 'SO_GIO_LAM_THEM_CUOI_TUAN',
@@ -317,7 +305,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:02:29',
                 'LastModificationTime' => '2021-06-23 08:02:29',
             ),
-            25 => 
+            24 => 
             array (
                 'Id' => '2678bfa7-e7d8-4279-a467-388f460ae211',
                 'Code' => 'TI_LE_BHYT_NLD',
@@ -329,7 +317,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:55:05',
                 'LastModificationTime' => '2021-07-27 08:44:26',
             ),
-            26 => 
+            25 => 
             array (
                 'Id' => 'c97238a1-e33b-49b8-a271-7523967d5307',
                 'Code' => 'PC_HT_TCSK',
@@ -341,7 +329,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:03:48',
                 'LastModificationTime' => '2021-07-19 05:12:11',
             ),
-            27 => 
+            26 => 
             array (
                 'Id' => 'fe87c1a6-f8c7-4e92-a18f-0f6b09a97e47',
                 'Code' => 'TI_LE_THU_VIEC',
@@ -353,7 +341,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:47:09',
                 'LastModificationTime' => '2021-07-28 09:27:18',
             ),
-            28 => 
+            27 => 
             array (
                 'Id' => '16575902-174c-4c97-8a12-3996904c4588',
                 'Code' => 'TI_LE_BHTN_CTT',
@@ -365,7 +353,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:58:20',
                 'LastModificationTime' => '2021-07-27 08:47:22',
             ),
-            29 => 
+            28 => 
             array (
                 'Id' => 'f804e95c-1ade-4c21-a053-6a3090f57d0e',
                 'Code' => 'TI_LE_BHXH_NLD',
@@ -377,7 +365,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:56:29',
                 'LastModificationTime' => '2021-07-27 08:44:07',
             ),
-            30 => 
+            29 => 
             array (
                 'Id' => '6b502d98-a49b-42c0-b403-a5f271012408',
                 'Code' => 'TI_LE_BHTN_NLD',
@@ -389,7 +377,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:57:10',
                 'LastModificationTime' => '2021-07-27 09:00:00',
             ),
-            31 => 
+            30 => 
             array (
                 'Id' => 'cd51446f-3545-4bf8-bcef-132a94c6cad4',
                 'Code' => 'TI_LE_BHYT_CTT',
@@ -401,7 +389,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:57:57',
                 'LastModificationTime' => '2021-07-27 09:00:41',
             ),
-            32 => 
+            31 => 
             array (
                 'Id' => '444896a4-e0af-40fe-9cd8-791aea696d6a',
                 'Code' => 'TI_LE_BHXH_CTT',
@@ -413,7 +401,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:57:36',
                 'LastModificationTime' => '2021-07-27 09:01:03',
             ),
-            33 => 
+            32 => 
             array (
                 'Id' => '0fa9a0f3-2626-46df-a68c-4370085388b6',
                 'Code' => 'TI_LE_PHI_CONG_DOAN',
@@ -425,7 +413,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:58:37',
                 'LastModificationTime' => '2021-07-27 09:06:23',
             ),
-            34 => 
+            33 => 
             array (
                 'Id' => '311fb993-c1c9-4a9e-8b64-13d2ec1dcb5f',
                 'Code' => 'TI_LE_OT_NGAY_THUONG',
@@ -437,7 +425,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 07:59:48',
                 'LastModificationTime' => '2021-07-27 09:35:03',
             ),
-            35 => 
+            34 => 
             array (
                 'Id' => '8e0c8699-7460-4739-a93d-f7fb5620dc23',
                 'Code' => 'TI_LE_OT_CUOI_TUAN',
@@ -449,7 +437,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:00:09',
                 'LastModificationTime' => '2021-07-27 09:35:18',
             ),
-            36 => 
+            35 => 
             array (
                 'Id' => 'be04ff7e-52cc-4505-80df-7c41762cf5a2',
                 'Code' => 'TI_LE_OT_NGAY_LE',
@@ -461,7 +449,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-06-23 08:00:25',
                 'LastModificationTime' => '2021-07-27 09:35:34',
             ),
-            37 => 
+            36 => 
             array (
                 'Id' => '11a9dafc-320d-463a-a4e0-24fcb9de2e73',
                 'Code' => 'LUONG_CB',
@@ -473,7 +461,7 @@ class ParameterValuesTableSeeder extends Seeder
                 'CreationTime' => '2021-04-19 08:45:02',
                 'LastModificationTime' => '2021-06-23 07:46:27',
             ),
-            38 => 
+            37 => 
             array (
                 'Id' => '3fb9ba2e-804a-440e-8959-c20c96c2c020',
                 'Code' => 'GIAMTRU_PHUTHUOC',
@@ -484,6 +472,18 @@ class ParameterValuesTableSeeder extends Seeder
                 'Type' => 'COMMON',
                 'CreationTime' => '2021-06-23 07:59:04',
                 'LastModificationTime' => '2021-07-27 10:16:09',
+            ),
+            38 => 
+            array (
+                'Id' => '689b9204-6a5d-40d0-bce8-6c6e5509e027',
+                'Code' => 'DIEU_CHINH_BHXH_NLD',
+                'Name' => 'Điều chỉnh BHXH người lao động',
+                'ApplyDate' => '2021-06-01',
+                'ValueDefault' => '0',
+                'Note' => 'Không',
+                'Type' => 'DECLARE',
+                'CreationTime' => '2021-06-23 08:05:14',
+                'LastModificationTime' => '2021-06-23 08:05:14',
             ),
             39 => 
             array (

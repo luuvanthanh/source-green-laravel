@@ -241,6 +241,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             if (!empty($attributes['status'])) {
                 $query->whereIn('Status', $attributes['status']);
             }
+
+            $query->orderBy('Date','DESC');
         }]);
 
         if (!empty($attributes['isAttendance'])) {
