@@ -82,7 +82,6 @@ class Breadcrumbs extends React.Component {
               to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
               key={item.key}
             >
-              <span className={styles.arrow} />
               <strong className={styles.title}>{activeMenuItem.title}</strong>
             </Link>
           );
@@ -93,7 +92,6 @@ class Breadcrumbs extends React.Component {
             to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
             key={item.key}
           >
-            <span className={styles.arrow} />
             <strong className={styles.title}>{activeMenuItem.title}</strong>
           </Link>
         );
