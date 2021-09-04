@@ -1,73 +1,97 @@
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { useLocation, useHistory } from 'umi';
+import { Form } from 'antd';
 import { useSelector, useDispatch } from 'dva';
+import { useHistory, useParams } from 'umi';
+import { head, isEmpty } from 'lodash';
 import classnames from 'classnames';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
-import Text from '@/components/CommonComponent/Text';
-
-import { Helper } from '@/utils';
-import styles from '@/assets/styles/Common/common.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
+import { variables } from '@/utils';
+import styles from './styles.module.scss';
 
 const Index = memo(() => {
+  const [
+    loading,
+    { configs, parents },
+  ] = useSelector(({ loading: { effects }, medicalGroupByType }) => [effects, medicalGroupByType]);
   const dispatch = useDispatch();
-  const [{ error, data }, loading] = useSelector(({ loading: { effects }, groupByType }) => [
-    groupByType,
-    effects,
-  ]);
+  const params = useParams();
 
   const history = useHistory();
-  const { query, pathname } = useLocation();
-
+  const formRef = useRef();
   const mounted = useRef(false);
 
-  const [search] = useState({
-    keyWord: query?.keyWord,
-    isParent: 'false',
-    type: 'MEDICAL',
-  });
-
-  const columns = [
-    {
-      title: 'Tên thời kỳ nhạy cảm',
-      key: 'name',
-      className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.description} </Text>,
-    },
-    {
-      key: 'action',
-      className: 'min-width-80',
-      width: 80,
-      render: (record) => (
-        <div className={styles['list-button']}>
-          <button
-            className={classnames(styles['button-circle'], styles.success)}
-            type="button"
-            onClick={() => history.push(`${pathname}/${record?.id}/chi-tiet`)}
-          >
-            <span className="icon-edit" />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const onFinish = (values) => {
+    const payload = values.data.map((item, index) => ({
+      id: item.id,
+      orderNo: index,
+      items: item.items.map((itemChil, indexChil) => ({
+        id: itemChil.id,
+        orderNo: indexChil,
+      })),
+    }));
+    dispatch({
+      type: 'medicalGroupByType/ADD',
+      payload,
+      callback: (response, error) => {
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     dispatch({
-      type: 'groupByType/GET_DATA',
-      payload: { ...search },
+      type: 'medicalGroupByType/GET_DATA',
+      payload: {
+        ...params,
+        type: 'MEDICAL',
+      },
+      callback: (response) => {
+        if (response) {
+          formRef.current.setFieldsValue({
+            data: response.map((item) => ({
+              ...(item?.group || {}),
+              items: item.items,
+            })),
+          });
+        }
+      },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({
-        ...search,
-      }),
+  }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'medicalGroupByType/GET_CONFIG_TYPES',
+      payload: {
+        ...params,
+        type: 'MEDICAL',
+        isParent: 'false',
+      },
     });
-  }, [search]);
+    dispatch({
+      type: 'medicalGroupByType/GET_PARENT_CONFIG_TYPES',
+      payload: {
+        ...params,
+        isParent: true,
+        type: 'MEDICAL',
+      },
+    });
+  }, []);
 
   useEffect(() => {
     mounted.current = true;
@@ -75,37 +99,143 @@ const Index = memo(() => {
   }, []);
 
   return (
-    <>
-      <Helmet title="Nhóm buổi" />
-      <Pane className="p20">
-        <Pane className="col-lg-6 offset-lg-3">
-          <Pane className="d-flex mb20">
-            <Heading type="page-title">Nhóm buổi</Heading>
-            <Button
-              className="ml-auto"
-              color="success"
-              icon="plus"
-              onClick={() => history.push(`${pathname}/them-moi`)}
+    <Pane style={{ paddingTop: 20 }}>
+      <Helmet title={params.id ? 'Chỉnh sửa' : 'Tạo mới'} />
+      <Pane style={{ padding: 20, paddingBottom: 0 }}>
+        <Pane className="row justify-content-center">
+          <Pane className="col-lg-8">
+            <Heading type="page-title">Thời gian uống thuốc</Heading>
+            <Form
+              className="mt20"
+              layout="vertical"
+              ref={formRef}
+              onFinish={onFinish}
+              initialValues={{
+                data: [{ items: [{}] }],
+              }}
             >
-              Tạo mới
-            </Button>
-          </Pane>
+              <div className={styles.card}>
+                <div className={styles['card-heading']}>
+                  <div className={styles.col}>
+                    <p className={styles.norm}>Nhóm buổi</p>
+                  </div>
+                  <div className={styles.col}>
+                    <p className={styles.norm}>Buổi</p>
+                  </div>
+                </div>
+                <div className={styles['card-body']}>
+                  <Form.List name="data">
+                    {(fields, { add }) => (
+                      <div>
+                        {fields.map((field) => (
+                          <div key={field.key}>
+                            <div className={styles['card-item']}>
+                              <div className={classnames(styles.col, styles['col-first'])}>
+                                <FormItem
+                                  data={parents.map((item) => ({
+                                    id: item.id,
+                                    name: item.description || item.name,
+                                  }))}
+                                  className="mb0"
+                                  name={[field.name, 'id']}
+                                  fieldKey={[field.fieldKey, 'id']}
+                                  type={variables.SELECT}
+                                  rules={[variables.RULES.EMPTY]}
+                                />
+                              </div>
+                              <div className={styles.col}>
+                                <Form.List
+                                  name={[field.name, 'items']}
+                                  fieldKey={[field.fieldKey, 'items']}
+                                >
+                                  {(fieldsItems, { add, remove }) => (
+                                    <div>
+                                      {fieldsItems.map((fieldItems) => (
+                                        <div className={styles['item-form']} key={fieldItems.key}>
+                                          <FormItem
+                                            data={configs.map((item) => ({
+                                              id: item.id,
+                                              name: item.description || item.name,
+                                            }))}
+                                            className="mb0"
+                                            name={[fieldItems.name, 'id']}
+                                            fieldKey={[fieldItems.fieldKey, 'id']}
+                                            type={variables.SELECT}
+                                            rules={[variables.RULES.EMPTY]}
+                                          />
+                                          <div className={styles['list-button']}>
+                                            <button
+                                              className={styles['button-circle']}
+                                              onClick={() => {
+                                                remove(fieldItems.name);
+                                              }}
+                                              type="button"
+                                            >
+                                              <span className="icon-remove" />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                      <div className={styles['item-form']}>
+                                        <Button
+                                          color="success"
+                                          ghost
+                                          icon="plus"
+                                          onClick={() => {
+                                            add();
+                                          }}
+                                        >
+                                          Thêm buổi
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </Form.List>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <div className={styles['card-footer']}>
+                          <Button
+                            color="success"
+                            ghost
+                            icon="plus"
+                            onClick={() => {
+                              add();
+                            }}
+                          >
+                            Thêm nhóm buổi
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </Form.List>
+                </div>
+              </div>
 
-          <Pane className="card">
-            <Table
-              columns={columns}
-              showHeader={false}
-              dataSource={data}
-              loading={loading['groupByType/GET_DATA']}
-              isError={error.isError}
-              pagination={false}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+              <Pane className="d-flex justify-content-between align-items-center mt20">
+                <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
+                  Hủy
+                </p>
+                <Button
+                  className="ml-auto px25"
+                  color="success"
+                  htmlType="submit"
+                  size="large"
+                  loading={
+                    loading['medicalGroupByType/ADD'] ||
+                    loading['medicalGroupByType/UPDATE'] ||
+                    loading['medicalGroupByType/GET_DATA']
+                  }
+                >
+                  Lưu
+                </Button>
+              </Pane>
+            </Form>
           </Pane>
         </Pane>
       </Pane>
-    </>
+    </Pane>
   );
 });
 
