@@ -715,6 +715,32 @@ export async function getLeftMenuMedical() {
       permission: [permissions.YTE],
       pro: true,
     },
+    {
+      title: 'Cấu hình',
+      key: 'setting',
+      icon: 'icon icon-setting',
+      permission: [permissions.YTE],
+      children: [
+        {
+          title: 'Nhóm buổi',
+          key: 'config',
+          url: ['/y-te/nhom-buoi', '/y-te/nhom-buoi/them-moi', '/y-te/nhom-buoi/:id/chi-tiet'],
+          permission: [permissions.YTE],
+        },
+        {
+          title: 'Buổi',
+          key: 'byGroup',
+          url: ['/y-te/buoi', '/y-te/buoi/them-moi', '/y-te/buoi/:id/chi-tiet'],
+          permission: [permissions.YTE],
+        },
+        {
+          title: 'Thời gian uống thuốc',
+          key: 'multi-group',
+          url: ['/y-te/thoi-gian-uong-thuoc'],
+          permission: [permissions.YTE],
+        },
+      ],
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {

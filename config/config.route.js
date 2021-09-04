@@ -1652,7 +1652,49 @@ export default [
         routes: [
           {
             path: '/y-te',
-            redirect: '/y-te/thong-ke',
+            redirect: '/y-te/danh-sach-nhan-thuoc',
+          },
+          {
+            path: '/y-te/thoi-gian-uong-thuoc',
+            component: './medical/group-by-type',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/buoi',
+            component: './medical/by-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/buoi/them-moi',
+            component: './medical/by-types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/buoi/:id/chi-tiet',
+            component: './medical/by-types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/nhom-buoi',
+            component: './medical/types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/nhom-buoi/them-moi',
+            component: './medical/types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
+          {
+            path: '/y-te/nhom-buoi/:id/chi-tiet',
+            component: './medical/types/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
           },
           {
             path: '/y-te/danh-sach-nhan-thuoc',
