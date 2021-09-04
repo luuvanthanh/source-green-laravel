@@ -3,12 +3,13 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, head, omit } from 'lodash';
+import { isEmpty, head, omit } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper, variables } from '@/utils';
+import { variables } from '@/utils';
+import PropTypes from 'prop-types';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 
 let isMounted = true;
@@ -27,7 +28,7 @@ const setIsMounted = (value = true) => {
  */
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ configurationRolesAdd, loading, menu }) => ({
-  loading: loading,
+  loading,
   error: configurationRolesAdd.error,
   details: configurationRolesAdd.details,
   menuConfiguration: menu.menuConfiguration,
@@ -66,10 +67,10 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
-    if (get(params, 'id')) {
+    if (params.id) {
       dispatch({
         type: 'configurationRolesAdd/GET_DETAILS',
-        payload: get(params, 'id'),
+        payload: { ...params },
       });
     }
   }
@@ -79,7 +80,7 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
       });
@@ -93,7 +94,7 @@ class Index extends PureComponent {
     } = this.props;
     const payload = {
       ...values,
-      id: get(params, 'id'),
+      id: params.id,
     };
     dispatch({
       type: params?.id ? 'configurationRolesAdd/UPDATE' : 'configurationRolesAdd/ADD',
@@ -135,54 +136,97 @@ class Index extends PureComponent {
           layout="vertical"
           colon={false}
           onFinish={this.onFinish}
+          initialValues={{ isShowAllBranch: false }}
           ref={this.formRef}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/cau-hinh/vai-tro' }}>
-            <div className={styles['content-form']}>
-              <div className={classnames(styles['content-children'], 'mt10')}>
-                <Text color="dark" size="large-medium">
-                  Thông tin vai trò
-                </Text>
-                <div className="row mt-3">
-                  <div className="col-lg-12">
-                    <FormItem
-                      label="Tên vai trò"
-                      name="name"
-                      rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      type={variables.INPUT}
-                    />
+          <div className="pl20 pr20">
+            <div className="row">
+              <div className="col-lg-6 offset-lg-3">
+                <Loading
+                  loading={loading}
+                  isError={error.isError}
+                  params={{ error, goBack: '/cau-hinh/vai-tro' }}
+                >
+                  <div className={styles['content-form']}>
+                    <div className={classnames(styles['content-children'], 'mt10')}>
+                      <Text color="dark" size="large-medium">
+                        Thông tin vai trò
+                      </Text>
+                      <div className="row mt-3">
+                        <div className="col-lg-12">
+                          <FormItem
+                            label="Tên vai trò"
+                            name="name"
+                            rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                            type={variables.INPUT}
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-lg-12">
+                          <FormItem
+                            data={[
+                              { value: true, label: 'Xem toàn bộ' },
+                              { value: false, label: 'Xem theo cơ sở' },
+                            ]}
+                            name="isShowAllBranch"
+                            type={variables.RADIO}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={classnames(
+                        'd-flex',
+                        'justify-content-center',
+                        'justify-content-between',
+                        'mt-4',
+                      )}
+                    >
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        onClick={() => history.goBack()}
+                      >
+                        Hủy
+                      </p>
+                      <Button
+                        color="green"
+                        icon="save"
+                        htmlType="submit"
+                        size="large"
+                        loading={loadingSubmit || loading}
+                      >
+                        LƯU
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className={classnames('d-flex', 'justify-content-center', 'mt-4')}>
-                <Button
-                  color="gray"
-                  icon="prev"
-                  onClick={() => history.goBack()}
-                  size="large"
-                  className="mr-3"
-                  loading={loadingSubmit || loading}
-                >
-                  HỦY
-                </Button>
-                <Button
-                  color="green"
-                  icon="save"
-                  htmlType="submit"
-                  size="large"
-                  loading={loadingSubmit || loading}
-                >
-                  LƯU
-                </Button>
+                </Loading>
               </div>
             </div>
-          </Loading>
+          </div>
         </Form>
       </>
     );
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  menuConfiguration: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  menuConfiguration: [],
+};
 
 export default Index;

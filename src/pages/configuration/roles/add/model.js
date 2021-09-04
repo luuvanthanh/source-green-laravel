@@ -1,5 +1,3 @@
-import { isEmpty, get } from 'lodash';
-import { notification } from 'antd';
 import * as services from './services';
 
 export default {
@@ -44,10 +42,6 @@ export default {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: get(error.data, 'error.message'),
-        });
         callback(null, error?.data?.error);
       }
     },
@@ -56,10 +50,6 @@ export default {
         yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
-        notification.error({
-          message: 'THÔNG BÁO',
-          description: get(error.data, 'error.message'),
-        });
         callback(null, error?.data?.error);
       }
     },

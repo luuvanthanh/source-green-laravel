@@ -29,14 +29,18 @@ const UserModel = {
             ...me,
             permissions: me.permissionGrants,
             logged: true,
+            authorized: me.isShowAllBranch,
+            defaultBranch: me.isShowAllBranch ? null : me.defaultBranch,
           },
         });
-        history.push({
-          pathname: '/switch-branches',
-          query: {
-            redirect: payload.redirect,
-          },
-        });
+        if (!me.isShowAllBranch) {
+          history.push({
+            pathname: '/switch-branches',
+            query: {
+              redirect: payload.redirect,
+            },
+          });
+        }
         cookies.set('access_token', response.access_token, { path: '/' });
         cookies.set('token_type', response.token_type, { path: '/' });
         cookies.set('logged', true, { path: '/' });
@@ -69,6 +73,7 @@ const UserModel = {
               permissions: response.permissionGrants,
               logged: true,
               authorized: !!cookies.get('logged'),
+              defaultBranch: response.isShowAllBranch ? null : response.defaultBranch,
             },
           });
           const { can, rules } = new AbilityBuilder();
@@ -124,14 +129,14 @@ const UserModel = {
   },
   reducers: {
     SET_USER: (state, { payload }) => ({
-      ...state,
-      ...payload,
-      user: {
+        ...state,
         ...payload,
-      },
-      defaultBranch: payload.defaultBranch || {},
-      permissions: payload.permissions,
-    }),
+        user: {
+          ...payload,
+        },
+        defaultBranch: payload.defaultBranch || {},
+        permissions: payload.permissions,
+      }),
     SET_SWITCH_BRANCHES: (state, { payload }) => ({
       ...state,
       defaultBranch: state?.branchs?.find((item) => item.id === payload.branchId) || {},
