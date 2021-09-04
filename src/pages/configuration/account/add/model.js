@@ -41,7 +41,7 @@ export default {
     }),
     SET_ROLES: (state, { payload }) => ({
       ...state,
-      roles: payload.items,
+      roles: payload,
     }),
     SET_PARENTS: (state, { payload }) => ({
       ...state,
