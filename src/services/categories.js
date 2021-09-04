@@ -1,11 +1,10 @@
 import request from '@/utils/request';
 import { omit } from 'lodash';
-import requestLogin from '@/utils/requestLogin';
 import requestLaravel from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function getRoles(params = {}) {
-  return requestLogin('/api/identity/roles', {
+  return request('/roles/all', {
     method: 'GET',
     params: {
       ...params,

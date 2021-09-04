@@ -107,7 +107,7 @@ export default {
     }),
     SET_ROLES: (state, { payload }) => ({
       ...state,
-      roles: payload.items,
+      roles: payload,
     }),
     SET_DETAILS_ACCOUNT: (state, { payload }) => ({
       ...state,
