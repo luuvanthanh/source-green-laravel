@@ -1,20 +1,24 @@
 import request from '@/utils/request';
-import { omit } from 'lodash';
-import { Helper } from '@/utils';
 
-export function get(params = {}) {
+export function getConfigTypes(params = {}) {
   return request('/configs/by-type', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit'),
-      ...Helper.getPagination(params.page, params.limit),
+      ...params,
     },
   });
 }
 
-export function remove(id) {
-  return request(`/configs/by-type/${id}`, {
-    method: 'DELETE',
-    parse: true,
+export function get(params = {}) {
+  return request(`/configs/group-by-type`, {
+    method: 'GET',
+    params,
+  });
+}
+
+export function add(data = {}) {
+  return request('/configs/create-by-multi-group', {
+    method: 'PUT',
+    data,
   });
 }

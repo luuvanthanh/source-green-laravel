@@ -99,7 +99,7 @@ const Index = memo(() => {
           ...params,
         },
         callback: (response) => {
-          if (response) {
+          if (response.items) {
             formRef.current.setFieldsValue({
               ...response,
               description: response?.group?.description,

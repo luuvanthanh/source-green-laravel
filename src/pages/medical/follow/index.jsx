@@ -301,8 +301,8 @@ class Index extends PureComponent {
   header = () => {
     const { configs } = this.props;
     const columnsMedical = configs.map((parent, index) => ({
-      title: parent?.group?.name,
-      key: parent?.group?.name,
+      title: parent?.group?.name || parent?.group?.description,
+      key: parent?.group?.name || parent?.group?.description,
       className: classnames(
         { yellow: index === 0 },
         { gold: index === 1 },

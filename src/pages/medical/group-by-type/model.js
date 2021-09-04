@@ -1,22 +1,25 @@
 import * as services from './services';
 
 export default {
-  namespace: 'groupByType',
+  namespace: 'medicalGroupByType',
   state: {
-    data: [],
-    pagination: {
-      total: 0,
-    },
+    details: {},
     error: {
       isError: false,
       data: {},
     },
+    configs: [],
+    parents: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
-    SET_DATA: (state, { payload }) => ({
+    SET_CONFIG_TYPES: (state, { payload }) => ({
       ...state,
-      data: payload,
+      configs: payload,
+    }),
+    SET_PARENT_CONFIG_TYPES: (state, { payload }) => ({
+      ...state,
+      parents: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -29,11 +32,11 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_CONFIG_TYPES({ payload }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getConfigTypes, payload);
         yield saga.put({
-          type: 'SET_DATA',
+          type: 'SET_CONFIG_TYPES',
           payload: response,
         });
       } catch (error) {
@@ -43,12 +46,34 @@ export default {
         });
       }
     },
-    *REMOVE({ payload, callback }, saga) {
+    *GET_PARENT_CONFIG_TYPES({ payload }, saga) {
       try {
-        yield saga.call(services.remove, payload.id);
-        callback(payload);
+        const response = yield saga.call(services.getConfigTypes, payload);
+        yield saga.put({
+          type: 'SET_PARENT_CONFIG_TYPES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *ADD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.add, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },
