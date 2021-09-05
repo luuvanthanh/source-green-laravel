@@ -124,6 +124,14 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+    *IMPORT_EXCEL({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.importExcel, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);

@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Modal } from 'antd';
+import { Form, Modal, message, Upload } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams, useLocation } from 'umi';
 import { head, isEmpty, last, omit, size } from 'lodash';
@@ -85,10 +85,12 @@ const Index = memo(() => {
       toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
-        ...omit(item, 'timeline', 'id', 'isAdd'),
+        ...omit(item, 'timeline', 'isAdd'),
         menuMealDetails:
           item?.menuMealDetails?.map((menuItem) => ({
-            ...(menuItem.isAdd ? omit(menuItem, 'id', 'isAdd') : menuItem),
+            ...(menuItem.isAdd
+              ? omit(menuItem, 'id', 'isAdd')
+              : { ...omit(menuItem, 'originId'), id: menuItem.originId }),
           })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
       })),
@@ -127,6 +129,37 @@ const Index = memo(() => {
           month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
           year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
         },
+        callback: (response) => {
+          if (response) {
+            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
+              weekIndex: item.week,
+              menuMeals: meals.map((itemMeal) => ({
+                weekIndex: item.week,
+                mealId: itemMeal.id,
+                name: itemMeal.name,
+                timeline: [],
+              })),
+            }));
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
+            setWeeksKitchen(weeks);
+          }
+        },
+      });
+    });
+  };
+
+  const importExcel = (file) => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        input: file,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      dispatch({
+        type: 'kitchenMenusCreate/IMPORT_EXCEL',
+        payload,
         callback: (response) => {
           if (response) {
             const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
@@ -205,6 +238,7 @@ const Index = memo(() => {
         o[el.foodOrderIndex] = {
           foodOrderIndex: el.foodOrderIndex,
           id: el?.id || uuidv4(),
+          originId: el.id,
           week: [],
         };
         r.push(o[el.foodOrderIndex]);
@@ -212,6 +246,7 @@ const Index = memo(() => {
       o[el.foodOrderIndex].week.push({
         dayOfWeek: el.dayOfWeek,
         id: el?.id || uuidv4(),
+        originId: el.id,
         foodId: el.foodId,
       });
       return r;
@@ -274,9 +309,9 @@ const Index = memo(() => {
                   ...itemMenuMeals,
                   weekIndex: item.weekIndex,
                   timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
-                      ...itemTimeline,
-                      menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
-                    })),
+                    ...itemTimeline,
+                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                  })),
                 })),
               }));
             setWeeksKitchen(result);
@@ -602,6 +637,40 @@ const Index = memo(() => {
     );
   };
 
+  const exportData = () => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      Helper.exportExcel(
+        '/kitchen-menus/export-menu-template',
+        { ...payload },
+        'ThucDon.xlxs',
+        API_URL,
+      );
+    });
+  };
+
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const allowTypes = ['xlxs'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Định dạng hỗ trợ:  .xlxs. Tổng dung lượng không vượt quá 20MB');
+        return;
+      }
+      importExcel(file);
+    },
+    showUploadList: false,
+    fileList: [],
+  };
+
   return (
     <Pane style={{ paddingTop: 20 }}>
       <Modal
@@ -690,7 +759,7 @@ const Index = memo(() => {
                       Thông tin chung
                     </Heading>
                     <Pane className="row align-items-center">
-                      <Pane className="col-3">
+                      <Pane className="col-2">
                         <FormItem
                           label="Thời gian"
                           name="month"
@@ -716,7 +785,7 @@ const Index = memo(() => {
                           rules={[variables.RULES.EMPTY]}
                         />
                       </Pane>
-                      <Pane className="col-3">
+                      <Pane className="col-4 d-flex">
                         <Button
                           color="success"
                           onClick={onApply}
@@ -724,6 +793,15 @@ const Index = memo(() => {
                         >
                           {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                         </Button>
+                        <Upload {...props}>
+                          <Button
+                            color="primary"
+                            className="ml10"
+                            loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                          >
+                            Import excel
+                          </Button>
+                        </Upload>
                       </Pane>
                     </Pane>
                   </Pane>
@@ -950,22 +1028,27 @@ const Index = memo(() => {
                       <p className="btn-delete" role="presentation" onClick={remove}>
                         Hủy
                       </p>
-                      {!isEmpty(weeksKitchen) && (
-                        <Button
-                          className="ml-auto px25"
-                          color="success"
-                          htmlType="submit"
-                          size="large"
-                          disabled={enableButton(weeksKitchen)}
-                          loading={
-                            loading['kitchenMenusCreate/ADD'] ||
-                            loading['kitchenMenusCreate/UPDATE'] ||
-                            loading['kitchenMenusCreate/GET_DATA']
-                          }
-                        >
-                          Lưu
+                      <div className="d-flex">
+                        <Button color="primary" size="large" onClick={exportData}>
+                          Export
                         </Button>
-                      )}
+                        {!isEmpty(weeksKitchen) && (
+                          <Button
+                            className="ml-auto px25 ml10"
+                            color="success"
+                            htmlType="submit"
+                            size="large"
+                            disabled={enableButton(weeksKitchen)}
+                            loading={
+                              loading['kitchenMenusCreate/ADD'] ||
+                              loading['kitchenMenusCreate/UPDATE'] ||
+                              loading['kitchenMenusCreate/GET_DATA']
+                            }
+                          >
+                            Lưu
+                          </Button>
+                        )}
+                      </div>
                     </Pane>
                   )}
                 </Pane>
