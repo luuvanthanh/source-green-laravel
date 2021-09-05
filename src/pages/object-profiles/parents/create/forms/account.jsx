@@ -11,8 +11,6 @@ import { head, isEmpty } from 'lodash';
 import FormItem from '@/components/CommonComponent/FormItem';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
-import HelperModules from '../../../utils/Helper';
-import variablesModules from '../../../utils/variables';
 
 const mapStateToProps = ({ loading, OPParentsAdd }) => ({
   loading,
@@ -52,33 +50,6 @@ const Index = memo(
         type: details?.user?.id ? 'OPParentsAdd/UPDATE_ACCOUNT' : 'OPParentsAdd/ADD_ACCOUNT',
         payload: { ...details, ...values, id: params.id },
         callback: (response, error) => {
-          if (error) {
-            if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-              error?.validationErrors.forEach((item) => {
-                formRef.current.setFields([
-                  {
-                    name: head(item.members),
-                    errors: [item.message],
-                  },
-                ]);
-              });
-            }
-          }
-        },
-      });
-    };
-
-    const register = () => {
-      dispatch({
-        type: 'OPParentsAdd/FACE_REGISTRATION',
-        payload: { id: params.id },
-        callback: (response, error) => {
-          if (response) {
-            dispatch({
-              type: 'OPParentsAdd/GET_DETAILS_ACCOUNT',
-              payload: params,
-            });
-          }
           if (error) {
             if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
               error?.validationErrors.forEach((item) => {
@@ -233,25 +204,6 @@ const Index = memo(
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
-                  {details?.faceImageStatus && (
-                    <Pane className="col-lg-3">
-                      <Form.Item label="Đăng nhập bằng hình ảnh">
-                        {HelperModules.tagStatusAccount(details?.faceImageStatus)}
-                      </Form.Item>
-                    </Pane>
-                  )}
-                  {!isEmpty(details) && (
-                    <Pane className="col-lg-3">
-                      <Form.Item label=" ">
-                        <Button color="success" ghost onClick={register}>
-                          {details?.faceImageStatus === variablesModules.STATUS.NO_IMAGE ||
-                          details?.faceImageStatus === variablesModules.STATUS.HANDLING_IMAGE_FAILED
-                            ? 'Đăng ký'
-                            : 'Đăng ký lại'}
-                        </Button>
-                      </Form.Item>
-                    </Pane>
-                  )}
                 </Pane>
               </Pane>
 
