@@ -88,6 +88,7 @@ const Index = memo(() => {
       key: 'action',
       className: 'min-width-80',
       width: 80,
+      fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
           <Button

@@ -6,6 +6,17 @@ export function get(params = {}) {
   });
 }
 
+export function importExcel(data = {}) {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    formData.append(key, data[key]);
+  });
+  return request('/kitchen-menus/import-menu-template', {
+    method: 'POST',
+    data: formData,
+  });
+}
+
 export function add(data = {}) {
   return request('/kitchen-menus', {
     method: 'POST',
