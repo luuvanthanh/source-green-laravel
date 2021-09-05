@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/roles/all', {
+  return request('/roles', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),

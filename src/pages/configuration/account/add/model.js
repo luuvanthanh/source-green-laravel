@@ -58,7 +58,7 @@ export default {
         const response = yield saga.call(categories.getRoles, payload);
         yield saga.put({
           type: 'SET_ROLES',
-          payload: response,
+          payload: response.items,
         });
       // eslint-disable-next-line no-empty
       } catch (error) {}

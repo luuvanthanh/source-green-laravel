@@ -4,7 +4,7 @@ import requestLaravel from '@/utils/requestLavarel';
 import { Helper, variables } from '@/utils';
 
 export function getRoles(params = {}) {
-  return request('/roles/all', {
+  return request('/roles', {
     method: 'GET',
     params: {
       ...params,

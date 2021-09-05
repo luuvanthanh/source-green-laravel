@@ -126,7 +126,7 @@ export default {
         const response = yield saga.call(categories.getRoles, payload);
         yield saga.put({
           type: 'SET_ROLES',
-          payload: response,
+          payload: response.items,
         });
       } catch (error) {
         yield saga.put({
