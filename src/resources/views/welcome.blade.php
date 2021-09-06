@@ -65,9 +65,10 @@
         </style>
     </head>
     <body>
-        <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+        <script src="https://socket-crm-dev.dn.greenglobal.vn/socket.io/socket.io.js"></script>
         <script>
-            const socket = io('http://localhost:6001', {
+            const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
+                secure: true,
                 transports: ['websocket'],
             });
             socket.on('connect', () => {
