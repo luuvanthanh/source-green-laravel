@@ -18,7 +18,7 @@ const Index = memo(() => {
   const [
     menuData,
     loading,
-    { error },
+    { error, foodCommonsGroups },
   ] = useSelector(({ menu: { menuLeftChildren }, loading: { effects }, foodCommonsCreate }) => [
     menuLeftChildren,
     effects,
@@ -113,6 +113,10 @@ const Index = memo(() => {
           setUnits(response);
         }
       },
+    });
+    dispatch({
+      type: 'foodCommonsCreate/GET_FOOD_COMMONS_GROUPS',
+      payload: {},
     });
   }, []);
 
@@ -267,6 +271,15 @@ const Index = memo(() => {
                             )}
                           </div>
                         )}
+                      />
+                    </Pane>
+                    <Pane className="col-6">
+                      <FormItem
+                        data={foodCommonsGroups}
+                        label="Nhóm nhà hàng"
+                        name="itemGroupId"
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>
                   </Pane>
