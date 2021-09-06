@@ -1,4 +1,4 @@
-export const defaultKey = 'general'
+export const defaultKey = 'general';
 
 export const menu = [
   {
@@ -21,4 +21,4 @@ export const menu = [
     key: 'other',
     label: 'Khác',
   },
-]
+];

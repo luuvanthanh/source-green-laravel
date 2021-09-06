@@ -24,7 +24,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
   const loading = effects[`OPchildrenAdd/GET_DETAILS`];
   const loadingSubmit = effects[`OPchildrenAdd/ADD_TRANSPORTER`];
   const mounted = useRef(false);
-  const [fileImage, setFileImage] = useState([]);
+  const [fileImage, setFileImage] = useState([null]);
 
   const mountedSet = (action, value) => {
     if (mounted.current) {
@@ -88,10 +88,12 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
           ? details?.student?.studentTransporter
           : [{}],
       });
-      mountedSet(
-        setFileImage,
-        details?.student?.studentTransporter.map((item) => item.fileImage),
-      );
+      if (!isEmpty(details?.student?.studentTransporter)) {
+        mountedSet(
+          setFileImage,
+          details?.student?.studentTransporter.map((item) => item.fileImage || null),
+        );
+      }
     }
   }, [details]);
 
