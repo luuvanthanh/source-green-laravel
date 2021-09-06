@@ -70,6 +70,7 @@ const Index = memo(() => {
                 ...itemTimeline,
                 menuMealDetails,
                 mealId: itemMenu.mealId,
+                originId: itemMenu.originId,
               };
             }),
           ];
@@ -85,7 +86,7 @@ const Index = memo(() => {
       toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
-        ...omit(item, 'timeline', 'isAdd'),
+        ...omit(item, 'timeline', 'isAdd', 'originId'),
         menuMealDetails:
           item?.menuMealDetails?.map((menuItem) => ({
             ...(menuItem.isAdd
@@ -306,7 +307,6 @@ const Index = memo(() => {
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
-                originId: item.originId,
                 menuMeals: covertTimeline(
                   item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
                 ).map((itemMenuMeals) => ({
