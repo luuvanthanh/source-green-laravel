@@ -793,15 +793,22 @@ const Index = memo(() => {
                         >
                           {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                         </Button>
-                        <Upload {...props}>
-                          <Button
-                            color="primary"
-                            className="ml10"
-                            loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
-                          >
-                            Import excel
+                        {isEmpty(weeksKitchen) && (
+                          <Button color="primary" onClick={exportData} className="ml10">
+                            Export
                           </Button>
-                        </Upload>
+                        )}
+                        {!isEmpty(weeksKitchen) && (
+                          <Upload {...props}>
+                            <Button
+                              color="primary"
+                              className="ml10"
+                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                            >
+                              Import excel
+                            </Button>
+                          </Upload>
+                        )}
                       </Pane>
                     </Pane>
                   </Pane>
@@ -1029,9 +1036,6 @@ const Index = memo(() => {
                         Hủy
                       </p>
                       <div className="d-flex">
-                        <Button color="primary" size="large" onClick={exportData}>
-                          Export
-                        </Button>
                         {!isEmpty(weeksKitchen) && (
                           <Button
                             className="ml-auto px25 ml10"

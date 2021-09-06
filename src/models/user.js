@@ -95,6 +95,9 @@ const UserModel = {
           type: 'SET_SWITCH_BRANCHES',
           payload,
         });
+        if (payload.isReload) {
+          window.location.reload();
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
@@ -129,14 +132,14 @@ const UserModel = {
   },
   reducers: {
     SET_USER: (state, { payload }) => ({
-        ...state,
+      ...state,
+      ...payload,
+      user: {
         ...payload,
-        user: {
-          ...payload,
-        },
-        defaultBranch: payload.defaultBranch || {},
-        permissions: payload.permissions,
-      }),
+      },
+      defaultBranch: payload.defaultBranch || {},
+      permissions: payload.permissions,
+    }),
     SET_SWITCH_BRANCHES: (state, { payload }) => ({
       ...state,
       defaultBranch: state?.branchs?.find((item) => item.id === payload.branchId) || {},
