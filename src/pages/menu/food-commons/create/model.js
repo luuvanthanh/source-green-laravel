@@ -23,7 +23,7 @@ export default {
     }),
     SET_FOOD_COMMONS_GROUPS: (state, { payload }) => ({
       ...state,
-      foodCommonsGroups: payload.items,
+      foodCommonsGroups: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,

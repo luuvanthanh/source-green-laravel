@@ -110,7 +110,7 @@ const Index = memo(() => {
       payload: {},
       callback: (response) => {
         if (response) {
-          setUnits(response);
+          setUnits(response.filter(item=> item.name));
         }
       },
     });
@@ -172,7 +172,7 @@ const Index = memo(() => {
       },
       callback: (response, error) => {
         if (response) {
-          setUnits((prev) => [response, ...prev]);
+          setUnits((prev) => [response.filter(item=> item.name), ...prev]);
           setCollapsedUnit(false);
         }
         if (error) {
