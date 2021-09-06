@@ -482,15 +482,19 @@ class Index extends PureComponent {
               'd-flex justify-content-center align-items-center',
             )}
           >
-            <Button
-              color="success"
-              size="large"
-              permission="YTE"
-              onClick={this.onReceived}
-              loading={loadingSubmit}
-            >
-              Xác nhận đã nhận thuốc
-            </Button>
+            {!moment()
+              .startOf('days')
+              .isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
+              <Button
+                color="success"
+                size="large"
+                permission="YTE"
+                onClick={this.onReceived}
+                loading={loadingSubmit}
+              >
+                Xác nhận đã nhận thuốc
+              </Button>
+            )}
           </div>
         </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>

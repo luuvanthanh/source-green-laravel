@@ -111,7 +111,7 @@ const Index = memo(
                 fromTime: moment(item.fromTime),
                 toTime: moment(item.toTime),
               })),
-              classTimetables: response.classTimetables.map((item) => item.id),
+              classTimetables: response.classTimetables.map((item) => item?.class?.id),
             });
           },
         });

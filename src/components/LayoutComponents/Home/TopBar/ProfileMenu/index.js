@@ -30,6 +30,20 @@ class ProfileMenu extends React.Component {
     });
   };
 
+  swichBranch = (branch) => {
+    const { dispatch, user } = this.props;
+    if (branch?.id === user?.user?.defaultBranch?.id) {
+      return;
+    }
+    dispatch({
+      type: 'user/SWITCH_BRANCHES',
+      payload: {
+        branchId: branch?.id,
+        isReload: true
+      },
+    });
+  };
+
   render() {
     const { user } = this.props;
     const menu = (
@@ -37,16 +51,26 @@ class ProfileMenu extends React.Component {
         <Menu.Item>
           <span className="font-weight-bold">Hello {user?.user?.userName || 'Anonymous'}</span>
         </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item>
-          <div>
-            <span className="mr-1 font-weight-bold">Email:</span>
-            {user?.user?.email}
-            <br />
-            <span className="mr-1 font-weight-bold">Phone:</span>
-            {user?.user?.phone || '-'}
-          </div>
-        </Menu.Item>
+        {!user?.user?.isShowAllBranch && (
+          <>
+            <Menu.Divider />
+            <Menu.Item>
+              <p className="font-weight-bold mb0">Cơ sở</p>
+              {(user?.user?.branchs).map((item, index) => (
+                <p
+                  key={index}
+                  onClick={() => this.swichBranch(item)}
+                  className={classnames(styles.role, 'mt5 mb5', {
+                    [styles.active]: item.id === user?.user?.defaultBranch?.id,
+                  })}
+                  aria-hidden
+                >
+                  {item.name}
+                </p>
+              ))}
+            </Menu.Item>
+          </>
+        )}
         <Menu.Divider />
         <Menu.Item>
           <p className="font-weight-bold mb0">Vai trò</p>
