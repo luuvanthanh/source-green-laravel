@@ -46,7 +46,13 @@ export default class Helpers {
 
   static getPrice = (value, number = 0, unit = false) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
+      const dots = toString(value)?.split('.');
+      if (size(dots) >= 2) {
+        return `${`${parseFloat(value).toFixed(number)}`.replace(variables.REGEX_NUMBER, ',')}${
+          unit ? '' : ` đ`
+        }`;
+      }
+      return `${`${parseFloat(value).toFixed(0)}`.replace(variables.REGEX_NUMBER, ',')}${
         unit ? '' : ` đ`
       }`;
     }
