@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export function get(params = {}) {
-  return request(`/configs/id`, {
+  return request(`/configs/${params.id}`, {
     method: 'GET',
     params,
   });
@@ -15,7 +15,7 @@ export function add(data = {}) {
 }
 
 export function update(data = {}) {
-  return request(`/configs/id`, {
+  return request(`/configs/${data.id}`, {
     method: 'PUT',
     params: {
       id: data.id,
