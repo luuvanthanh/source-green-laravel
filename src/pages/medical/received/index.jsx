@@ -56,8 +56,7 @@ class Index extends PureComponent {
         branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        from: Helper.getEndDate(query?.from, query?.choose),
-        to: Helper.getStartDate(query?.to, query?.choose),
+        date: query.date ? moment(query.date) : moment(),
         isReceived: false,
         isSent: true,
       },
@@ -108,8 +107,7 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          from: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
-          to: Helper.getDate(search.to, variables.DATE_FORMAT.DATE_AFTER),
+          date: Helper.getDate(search.from, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -506,7 +504,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                date: search.from && search.to && [moment(search.from), moment(search.to)],
+                date: search.date && moment(search.date),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -541,8 +539,8 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
                   />
                 </div>
