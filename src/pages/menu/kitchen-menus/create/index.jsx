@@ -93,6 +93,7 @@ const Index = memo(() => {
               : { ...omit(menuItem, 'originId'), id: menuItem.originId }),
           })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
+        id: item.originId,
       })),
     };
     dispatch({
@@ -204,6 +205,7 @@ const Index = memo(() => {
       if (!o[el.weekIndex]) {
         o[el.weekIndex] = {
           weekIndex: el.weekIndex,
+          originId: el.id,
           menuMeals: [],
         };
         r.push(o[el.weekIndex]);
@@ -220,6 +222,7 @@ const Index = memo(() => {
         o[el.mealId] = {
           mealId: el.mealId,
           name: el?.meal?.name,
+          originId: el?.id,
           timeline: [],
         };
         r.push(o[el.mealId]);
@@ -303,6 +306,7 @@ const Index = memo(() => {
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
+                originId: item.originId,
                 menuMeals: covertTimeline(
                   item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
                 ).map((itemMenuMeals) => ({

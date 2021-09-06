@@ -10,7 +10,7 @@ export function getMeasureUnits(params = {}) {
 }
 
 export function getFoodCommonsGroups(params = {}) {
-  return request(`/food-commons-groups`, {
+  return request(`/food-commons/groups`, {
     method: 'GET',
     params: {
       ...params,
