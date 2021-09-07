@@ -6,15 +6,16 @@ export function get(params = {}) {
   return request('/medicals/group-by-class', {
     method: 'GET',
     params: {
-      ...omit(params, 'page', 'limit', 'from', 'to'),
+      ...omit(params, 'page', 'limit', 'date'),
       ...Helper.getPagination(params.page, params.limit),
       isReceived: params.isReceived === false ? 'false' : params.isReceived,
       from: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.date,
-          targetValue: '00:00:00',
+          targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
       to: Helper.getDateTime({
@@ -23,6 +24,7 @@ export function get(params = {}) {
           originValue: params.date,
           targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
     },
