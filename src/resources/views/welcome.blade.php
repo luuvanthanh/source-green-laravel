@@ -65,22 +65,30 @@
         </style>
     </head>
     <body>
-        <script src="https://socket-crm-dev.dn.greenglobal.vn/socket.io/socket.io.js"></script>
-        <script>
-            const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
-                secure: true,
-                transports: ['websocket'],
-            });
-            socket.on('connect', () => {
-                console.log('Connected', socket.id);
-                socket.emit('subscribe', {
-                channel: 'facebook',
+            <script src="https://socket-crm-dev.dn.greenglobal.vn/socket.io/socket.io.js"></script>
+            <script>
+                const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
+                    transports: ['websocket'],
                 });
-            });
-            socket.on('facebook.receive.message', (event, data) => {
-                console.log(data);
-            });
-        </script>
+                socket.on('connect', () => {
+                    console.log('Connected', socket.id);
+                    socket.emit('subscribe', {
+                    channel: 'facebook',
+                    });
+                });
+                socket.on('facebook.receive.message', (event, data) => {
+                    console.log(data);
+                });
+                socket.on('connect', () => {
+                    console.log('Connected', socket.id);
+                    socket.emit('subscribe', {
+                    channel: 'zalo',
+                    });
+                });
+                socket.on('zalo.receive.message', (event, data) => {
+                    console.log(data);
+                });
+            </script>
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">

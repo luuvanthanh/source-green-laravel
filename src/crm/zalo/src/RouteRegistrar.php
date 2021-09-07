@@ -37,7 +37,12 @@ class RouteRegistrar extends CoreRegistrar
 
                 \Route::get('zalo-redirect', 'ZaloController@zaloRedirect');
 
-                \Route::get('zalo-test', 'ZaloController@zaloTest');
+                \Route::get('followers', 'ZaloController@zaloFollower');
+                \Route::get('getprofile', 'ZaloController@zaloGetProfile');
+                \Route::post('send-messages', 'ZaloController@sendMessages');
+                \Route::get('recent-chat', 'ZaloController@listRecentChat');
+                \Route::get('conversation', 'ZaloController@getConversation');
+
             });
         });
     }

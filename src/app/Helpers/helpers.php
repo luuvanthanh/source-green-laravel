@@ -50,7 +50,7 @@ if (!function_exists('getZaloSdk')) {
         $zalo = new \Zalo\Zalo([
             'app_id' => env("APP_ID_ZALO"),
             'app_secret' => env("APP_SECRET_ZALO"),
-            'callback_url' => 'https://b876de6d9e94.ngrok.io/zalo-callback',
+            'callback_url' => env("APP_URL") . '/api/v1/zalo/zalo-callback',
         ]);
 
         return $zalo;

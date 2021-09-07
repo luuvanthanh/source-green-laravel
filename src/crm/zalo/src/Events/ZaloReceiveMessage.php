@@ -8,8 +8,6 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-// use Zalo\ZaloEndpoint;
-
 class ZaloReceiveMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -35,7 +33,7 @@ class ZaloReceiveMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel("facebook");
+        return new Channel("zalo");
     }
 
     /**
@@ -55,6 +53,6 @@ class ZaloReceiveMessage implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'facebook.receive.message';
+        return 'zalo.receive.message';
     }
 }

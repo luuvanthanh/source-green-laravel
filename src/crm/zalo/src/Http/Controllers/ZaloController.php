@@ -3,9 +3,9 @@
 namespace GGPHP\Crm\Zalo\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use GGPHP\Crm\Zalo\Events\ZaloReceiveMessage;
+use GGPHP\Crm\Zalo\Services\ZaloService;
 use Illuminate\Http\Request;
-use Zalo\Builder\MessageBuilder;
-use Zalo\ZaloEndPoint;
 
 class ZaloController extends Controller
 {
@@ -16,7 +16,7 @@ class ZaloController extends Controller
 
         $helper = $zalo->getRedirectLoginHelper();
 
-        $callBackUrl = 'https://b876de6d9e94.ngrok.io/api/v1/zalo/zalo-callback';
+        $callBackUrl = 'https://fdbb-118-70-192-53.ngrok.io/api/v1/zalo/zalo-callback';
 
         $loginUrl = $helper->getLoginUrlByPage($callBackUrl); // This is login url
 
@@ -32,7 +32,21 @@ class ZaloController extends Controller
     {
         $data = $request->all();
 
-        \Log::info('ac', $data);
+        switch ($data['event_name']) {
+            case 'user_send_text':
+                    $messaging = $data['message']['text'];
+                    \Log::info('send', $data);
+                    \Log::info('send-zalo');
+                        broadcast(new ZaloReceiveMessage([
+                            'sender' => $data['sender']['id'],
+                            'recipient' => $data['recipient']['id'],
+                            'message' => $messaging,
+                        ]));
+                break;
+            default:
+                # code...
+                break;
+        }
     }
 
     public function zaloRedirect(Request $request)
@@ -40,36 +54,38 @@ class ZaloController extends Controller
         return $request->all();
     }
 
-    public function zaloTest(Request $request)
+    public function zaloFollower(Request $request)
     {
+        $zaloFollowers = ZaloService::listFollower($request->all());
 
-        $zalo = getZaloSdk();
+        return $this->success($zaloFollowers, trans('lang::messages.common.getListSuccess'));
+    }
 
-        $access_token = "xL9S7aYNpmNhKL0HIvFF2-vKLXzJu8G0c21-TMZkdstCOKnu0FVG1j5C7tGEue0ForzZTZIOiXR3B7DpAkBf3ifjEcGTygSDtq1jI3_3yZJWOcvL9DRe0Fbg1HnIpynOaKaoCNNN-2cvRnvqR-xRFhT94rjyzkSyjr8dMK_n_pk4TG9iHl7D3PHEAnTBmSTSZr8rCbJoxZADHo98K8Za09mJTq1tlQuzhdDDNcdkroMh8KXfROQn5PL2IK4h_xeWtMLhOp_Xi2ZXLIvp8flcPiPLVWayyhjZGPFtgorDYyO4";
-        // $params = ['data' => json_encode(array(
-        //     'offset' => 0,
-        //     'count' => 10,
-        // ))];
-        // $response = $zalo->get(ZaloEndPoint::API_OA_GET_LIST_FOLLOWER, $access_token, $params);
+    public function zaloGetProfile(Request $request)
+    {
+        $zaloProfile = ZaloService::zaloGetProfile($request->all());
 
-        // $params = ['data' => json_encode(array(
-        //     'user_id' => '18235905065089390',
-        // ))];
-        // $response = $zalo->get(ZaloEndPoint::API_OA_GET_USER_PROFILE, $access_token, $params);
+        return $this->success($zaloProfile, trans('lang::messages.common.getListSuccess'));
+    }
 
-        // dd($response->getDecodedBody());
+    public function sendMessages(Request $request)
+    {
+        $sendMessage = ZaloService::sendMessages($request->all());
 
-        // build data
-        $msgBuilder = new MessageBuilder('text');
-        $msgBuilder->withUserId('18235905065089390');
-        $msgBuilder->withText('Message Text');
+        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+    }
 
-        $msgText = $msgBuilder->build();
+    public function listRecentChat(Request $request)
+    {
+        $sendMessage = ZaloService::listRecentChat($request->all());
 
-        // send request
-        $response = $zalo->post(ZaloEndpoint::API_OA_SEND_MESSAGE, $access_token, $msgText);
-        $result = $response->getDecodedBody(); // result
+        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+    }
 
-        dd($result);
+    public function getConversation(Request $request)
+    {
+        $sendMessage = ZaloService::getConversation($request->all());
+
+        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
     }
 }
