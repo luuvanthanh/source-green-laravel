@@ -89,32 +89,6 @@ class FacebookController extends Controller
     {
         $pageConversation = FacebookService::pageConversation($request->all());
 
-
-        // foreach ($dataPageConversation as $key => $conversation) {
-        //     $data = [];
-        //     foreach ($conversation->senders->data as $key => $value) {
-
-        //         $avatar = null;
-        //         if ($value->id != $request->page_id) {
-        //             $profile_pic = FacebookService::profilePic([
-        //                 "user_id" => $value->id,
-        //                 "page_access_token" => $request->page_access_token,
-        //             ]);
-
-        //             $avatar = $profile_pic->profile_pic;
-        //         }
-
-        //         $data[] = (object) [
-        //             "id" => $value->id,
-        //             "name" => $value->name,
-        //             "email" => $value->email,
-        //             "profile_pic" => $avatar,
-        //         ];
-        //     }
-
-        //     $dataPageConversation[$key]->senders->data = [];
-        // }
-
         return $this->success(["data" => $pageConversation->data], trans('lang::messages.common.getListSuccess'));
     }
 
@@ -144,22 +118,17 @@ class FacebookController extends Controller
         return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
     }
 
-    public function test()
+    public function publishPagePost(Request $request)
     {
-        try {
-            broadcast(new FacebookReceiveMessage([
-                'id' => '1',
-                'status' => 'OKE',
-            ]));
+        $mess = FacebookService::publishPagePost($request->all());
 
+        return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+    }
 
-            \Log::info('Facebook ' . '1' . ' update status successfully');
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-            \Log::error('Facebook ' . '1' . ' update status fail');
-            \Log::error($e);
-        }
+    public function getPagePost(Request $request)
+    {
+        $mess = FacebookService::getPagePost($request->all());
 
-        return $this->success([], trans('lang::messages.common.getListSuccess'));
+        return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
     }
 }
