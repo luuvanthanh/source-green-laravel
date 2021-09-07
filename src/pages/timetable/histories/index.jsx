@@ -151,7 +151,11 @@ const Index = memo(() => {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        fromDate: Helper.getDate(query?.fromDate, variables.DATE_FORMAT.DATE_AFTER),
+        toDate: Helper.getDate(query?.toDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   }, [search]);
 

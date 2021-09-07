@@ -369,27 +369,31 @@ class Index extends PureComponent {
         width: 150,
         render: (record) => Helper.getPrice(record.totalIncome),
       },
-      {
-        title: 'Lương cơ bản + Phụ Cấp',
-        key: 'name',
-        className: 'thead-green',
-        children:
-          data?.columnBasicSalaryAndAllowance?.map((item) => ({
-            title: item.name,
-            key: item.code,
-            className: 'min-width-150 thead-green',
-            width: 150,
-            render: (record) => {
-              if (record.basicSalaryAndAllowance) {
-                const basic = record.basicSalaryAndAllowance.find(
-                  (itemBasic) => itemBasic.code === item.code,
-                );
-                return Helper.getPrice(basic?.value || 0);
-              }
-              return null;
+      ...(!isEmpty(data?.columnBasicSalaryAndAllowance)
+        ? [
+            {
+              title: 'Lương cơ bản + Phụ Cấp',
+              key: 'name',
+              className: 'thead-green',
+              children:
+                data?.columnBasicSalaryAndAllowance?.map((item) => ({
+                  title: item.name,
+                  key: item.code,
+                  className: 'min-width-150 thead-green',
+                  width: 150,
+                  render: (record) => {
+                    if (record.basicSalaryAndAllowance) {
+                      const basic = record.basicSalaryAndAllowance.find(
+                        (itemBasic) => itemBasic.code === item.code,
+                      );
+                      return Helper.getPrice(basic?.value || 0);
+                    }
+                    return null;
+                  },
+                })) || [],
             },
-          })) || [],
-      },
+          ]
+        : []),
       {
         title: 'Phụ cấp phát sinh trong tháng',
         key: 'name',

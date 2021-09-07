@@ -2,7 +2,11 @@ import { memo, useMemo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
+import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
 import classnames from 'classnames';
+import { Switch } from 'antd';
+import { MenuOutlined } from '@ant-design/icons';
+import arrayMove from 'array-move';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -13,18 +17,22 @@ import Text from '@/components/CommonComponent/Text';
 import { variables, Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
+const SortableItem = sortableElement((props) => <tr {...props} />);
+const SortableContainer = sortableContainer((props) => <tbody {...props} />);
+const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [
-    { pagination, error, data },
-    loading,
-  ] = useSelector(({ loading: { effects }, medicalTypes }) => [medicalTypes, effects]);
+  const [{ pagination, error }, loading] = useSelector(({ loading: { effects }, medicalTypes }) => [
+    medicalTypes,
+    effects,
+  ]);
 
   const history = useHistory();
   const { query, pathname } = useLocation();
 
   const mounted = useRef(false);
 
+  const [dataSource, setDataSource] = useState([]);
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -33,7 +41,86 @@ const Index = memo(() => {
     type: 'MEDICAL',
   });
 
+  const onLoad = () => {
+    dispatch({
+      type: 'medicalTypes/GET_DATA',
+      payload: { ...search },
+      callback: (response) => {
+        if (response) {
+          setDataSource(response.map((item, index) => ({ ...item, index })));
+        }
+      },
+    });
+    history.push({
+      pathname,
+      query: Helper.convertParamSearch({
+        ...search,
+      }),
+    });
+  };
+
+  const onChange = (invisible, record) => {
+    dispatch({
+      type: 'medicalTypes/UPDATE_STATUS',
+      payload: { invisible: !record.invisible, id: record.id },
+      callback: (response) => {
+        if (response) {
+          onLoad();
+        }
+      },
+    });
+  };
+
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter((el) => !!el);
+      setDataSource(newData);
+      // dispatch({
+      //   type: 'meals/UPDATE_ORDER_INDEX',
+      //   payload: newData.map((item) => ({
+      //     mealId: item.id,
+      //     meal: {
+      //       code: item.code,
+      //       name: item.name,
+      //       isUsed: item.isUsed,
+      //     },
+      //   })),
+      //   callback: () => {},
+      // });
+    }
+  };
+
+  const DraggableContainer = (props) => (
+    <SortableContainer
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+
+  const DraggableBodyRow = ({ ...restProps }) => {
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const index = dataSource.findIndex((x) => x.index === restProps['data-row-key']);
+    return <SortableItem index={index} {...restProps} />;
+  };
+
   const columns = [
+    {
+      dataIndex: 'sort',
+      width: 30,
+      className: 'drag-visible',
+      render: () => <DragHandle />,
+    },
+    {
+      key: 'invisible',
+      className: 'min-width-80',
+      align: 'left',
+      render: (record) => (
+        <Switch checked={!record.invisible} onChange={(e) => onChange(e, record)} />
+      ),
+    },
     {
       key: 'name',
       className: 'min-width-200',
@@ -79,16 +166,7 @@ const Index = memo(() => {
   );
 
   useEffect(() => {
-    dispatch({
-      type: 'medicalTypes/GET_DATA',
-      payload: { ...search },
-    });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch({
-        ...search,
-      }),
-    });
+    onLoad();
   }, [search]);
 
   useEffect(() => {
@@ -117,11 +195,17 @@ const Index = memo(() => {
             <Table
               columns={columns}
               showHeader={false}
-              dataSource={data}
+              components={{
+                body: {
+                  wrapper: DraggableContainer,
+                  row: DraggableBodyRow,
+                },
+              }}
+              dataSource={dataSource}
               loading={loading['medicalTypes/GET_DATA']}
               isError={error.isError}
+              rowKey="index"
               pagination={paginationProps}
-              rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
           </Pane>

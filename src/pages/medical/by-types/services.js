@@ -15,3 +15,14 @@ export function remove(id) {
     parse: true,
   });
 }
+
+export function updateStatus(data) {
+  return request(`/configs/config-key/${data.id}/invisible`, {
+    method: 'PUT',
+    data,
+    params: {
+      ...data,
+    },
+    parse: true,
+  });
+}

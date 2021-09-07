@@ -51,7 +51,7 @@ class Index extends PureComponent {
     this.state = {
       visible: false,
       search: {
-        key: query?.key,
+        keyWord: query?.keyWord,
         action: query?.action,
         classId: query?.classId,
         branchId: query?.branchId || defaultBranch?.id,
@@ -510,8 +510,8 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-4 mt-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event?.target?.value, 'key')}
+                    name="keyWord"
+                    onChange={(event) => this.onChange(event?.target?.value, 'keyWord')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />

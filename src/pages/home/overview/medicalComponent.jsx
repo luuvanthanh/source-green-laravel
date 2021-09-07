@@ -48,7 +48,7 @@ const Index = memo(({ classId, branchId }) => {
             value: Helper.setDate({
               ...variables.setDateData,
               originValue: moment(),
-              targetValue: '00:00:00',
+              targetValue: '23:59:59',
             }),
             isUTC: false,
           }),
@@ -71,7 +71,7 @@ const Index = memo(({ classId, branchId }) => {
             value: Helper.setDate({
               ...variables.setDateData,
               originValue: moment(),
-              targetValue: '00:00:00',
+              targetValue: '23:59:59',
             }),
             isUTC: false,
           }),
@@ -207,6 +207,8 @@ const Index = memo(({ classId, branchId }) => {
       type: 'overView/REMINDER',
       payload: {
         id: objects.id,
+        type: objects.name ? 'DRUNK' : 'RECEIVE',
+        medicineTime: objects.name,
       },
       callback: (response) => {
         if (response) {

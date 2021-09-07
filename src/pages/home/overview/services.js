@@ -30,16 +30,16 @@ export function getMedical(params = {}) {
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.from,
-          targetValue: '00:00:00',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
       to: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.to,
-          targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
     },
@@ -56,26 +56,26 @@ export function getMedicalTime(params = {}) {
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.from,
-          targetValue: '00:00:00',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
       to: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
           originValue: params.to,
-          targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: true,
       }),
     },
   });
 }
 
-export function reminder(params = {}) {
-  return request(`/medicals/${params.id}/reminder`, {
-    method: 'GET',
-    params: {},
+export function reminder(data = {}) {
+  return request(`/medicals/reminder`, {
+    method: 'POST',
+    data,
     parse: true,
   });
 }
