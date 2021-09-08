@@ -36,6 +36,11 @@ class AbsentCreateRequest extends FormRequest
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
+
+                    if (Carbon::parse($value)->format('Y-m-d') == $now->format('Y-m-d')) {
+                        return true;
+                    }
+
                     $expectedDate = request()->expectedDate;
 
                     if (!is_null($expectedDate)) {

@@ -124,16 +124,31 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     public function create(array $attributes)
     {
         \DB::beginTransaction();
+
         try {
             $absent = Absent::create($attributes);
 
+            $begin = new \DateTime($attributes['startDate']);
+            $end = new \DateTime($attributes['endDate'] . '23:59');
+            $intervalDate = new \DateInterval('P1D');
+            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+            $now = Carbon::now();
+
+            foreach ($periodDate as $date) {
+                $isRefunds = false;
+
+                if ($date->format('Y-m-d') == $now->format('Y-m-d')) {
+                    $isRefunds = true;
+                }
+
+                AbsentStudentDetail::create([
+                    'absentStudentId' => $absent->Id,
+                    'date' => $date->format('Y-m-d'),
+                    'isRefunds' => $isRefunds,
+                ]);
+            }
 
             if ($absent->Status == 'CONFIRM') {
-
-                $begin = new \DateTime($attributes['startDate']);
-                $end = new \DateTime($attributes['endDate'] . '23:59');
-                $intervalDate = new \DateInterval('P1D');
-                $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
                 foreach ($periodDate as $date) {
                     $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
