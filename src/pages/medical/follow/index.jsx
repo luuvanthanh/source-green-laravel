@@ -59,6 +59,8 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query.date ? moment(query.date) : moment(),
+        isSent: true,
+        isReceived: true
       },
       visible: false,
       objects: {},
