@@ -127,6 +127,26 @@ export const variables = {
     { id: 'Saturday', name: 'Thứ bảy' },
     { id: 'Sunday', name: 'Chủ nhật' },
   ],
+  ACTIONS: [
+    {
+      id: 'POST',
+      name: 'Tạo thời khóa biểu',
+    },
+    {
+      id: 'PUT',
+      name: 'Sửa thời khóa biểu',
+    },
+    {
+      id: 'DELETE',
+      name: 'Xóa thời khóa biểu',
+    },
+  ],
+  ACTION: {
+    POST: 'Tạo thời khóa biểu',
+    PUT: 'Sửa thời khóa biểu',
+    PATCH: 'Sửa thời khóa biểu',
+    DELETE: 'Xóa thời khóa biểu',
+  },
 };
 
 export default variables;

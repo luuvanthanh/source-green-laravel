@@ -4,7 +4,7 @@ import { Form, Spin } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce, isEmpty, map } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -13,6 +13,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import { variables, Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
@@ -39,8 +40,8 @@ const Index = memo(() => {
     {
       title: 'Thời gian',
       key: 'creationTime',
-      className: 'min-width-200',
-      with: 200,
+      className: 'min-width-150',
+      with: 150,
       render: (record) => (
         <Text size="normal">
           {Helper.getDate(record?.logTime, variables.DATE_FORMAT.TIME_DATE_VI)}
@@ -59,18 +60,13 @@ const Index = memo(() => {
       key: 'action',
       className: 'min-width-200',
       with: 200,
-      render: (record) => <Text size="normal">{record?.editor?.name || ''}</Text>,
+      render: (record) => <Text size="normal">{variablesModules.ACTION[record.method]}</Text>,
     },
     {
       title: 'Nội dung',
       key: 'content',
       className: 'min-width-400',
-      render: (record) =>
-        !isEmpty(record?.editedStudentPhysicals)
-          ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(
-              ', ',
-            )}`
-          : '',
+      render: (record) => record?.contents?.join(', '),
     },
   ];
 
@@ -209,7 +205,10 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <FormItem
                     name="actionId"
-                    data={[]}
+                    data={[
+                      { id: null, name: 'Chọn tất cả hành động' },
+                      ...variablesModules.ACTIONS,
+                    ]}
                     type={variables.SELECT}
                     onChange={(value) => changeFilter('actionId', value)}
                     filterOption
