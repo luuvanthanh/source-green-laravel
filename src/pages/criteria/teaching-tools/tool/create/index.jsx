@@ -37,6 +37,11 @@ const Index = memo(() => {
       id: uuidv4(),
     },
   ]);
+  const [toolDetailLevels, setToolDetailLevels] = useState([
+    {
+      id: uuidv4(),
+    },
+  ]);
 
   const history = useHistory();
   const formRef = useRef();
@@ -55,6 +60,7 @@ const Index = memo(() => {
           classTypeId: item,
         })),
         toolDetailSensitives,
+        toolDetailLevels,
       },
       callback: (response, error) => {
         if (response) {
@@ -112,6 +118,14 @@ const Index = memo(() => {
                 (item) => item?.classType?.id,
               ),
             });
+            if (!isEmpty(response.toolDetailLevels)) {
+              setToolDetailLevels(
+                response.toolDetailLevels.map((item) => ({
+                  ...item,
+                  id: uuidv4(),
+                })),
+              );
+            }
             setToolDetailSensitives(
               response?.toolDetailSensitives.map((item) => ({
                 ...item,
@@ -280,6 +294,91 @@ const Index = memo(() => {
     };
   });
 
+  const onAddLevels = async () => {
+    const objects = {
+      id: uuidv4(),
+    };
+    await setToolDetailLevels((prevState) => [...prevState, objects]);
+
+    const itemsRow = document.querySelectorAll(
+      `.ant-table-tbody tr[data-row-key='${objects.id}'] .editable-cell-value-wrap`,
+    );
+    if (!isEmpty(itemsRow)) {
+      itemsRow[0].click();
+    }
+  };
+
+  const onRemoveLevels = (record) => {
+    setToolDetailLevels((prevState) => prevState.filter((item) => item.id !== record.id));
+  };
+
+  const handleSaveLevels = (record) => {
+    setToolDetailLevels((prevState) =>
+      prevState.map((item) => (item.id === record.id ? record : item)),
+    );
+  };
+
+  const headerLevels = () => {
+    const columns = [
+      {
+        title: 'Cấp độ',
+        key: 'level',
+        dataIndex: 'level',
+        className: 'min-width-200',
+        width: 200,
+        editable: true,
+        type: variables.INPUT_COUNT,
+        render: (value) => <Input value={value} placeholder="Nhập" />,
+      },
+      {
+        title: 'Diễn giải',
+        key: 'explain',
+        dataIndex: 'explain',
+        className: 'min-width-200',
+        editable: true,
+        type: variables.TEXTAREA,
+        render: (value) => (
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 3 }} value={value} placeholder="Nhập" />
+        ),
+      },
+      {
+        key: 'action',
+        className: 'min-width-50',
+        width: 50,
+        align: 'center',
+        render: (record) => (
+          <div className="groups-input">
+            <span
+              className="icon icon-remove"
+              role="presentation"
+              onClick={() => onRemoveLevels(record)}
+            />
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  };
+
+  const columnsTableLevels = headerLevels().map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        type: col.type,
+        title: col.title,
+        dataIndex: col.dataIndex,
+        dataSelect: col.dataSelect,
+        editable: col.editable,
+        handleSave: handleSaveLevels,
+      }),
+    };
+  });
+
   return (
     <>
       <Helmet title="Tạo giáo cụ" />
@@ -360,6 +459,33 @@ const Index = memo(() => {
                   </Pane>
                 </Pane>
               </Loading>
+            </Pane>
+            <Pane className="my20 mb0 card">
+              <Pane className="border-bottom p20">
+                <Heading type="form-title" className="mb20">
+                  Cấp giáo cụ
+                </Heading>
+                <TableCus
+                  bordered
+                  className="table-edit mt20"
+                  columns={columnsTableLevels}
+                  components={{
+                    body: {
+                      row: EditableRow,
+                      cell: EditableCell,
+                    },
+                  }}
+                  dataSource={toolDetailLevels}
+                  pagination={false}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                  footer={() => (
+                    <Button color="success" icon="plus" onClick={onAddLevels}>
+                      Thêm
+                    </Button>
+                  )}
+                />
+              </Pane>
             </Pane>
             <Pane className="my20 mb0 card">
               <Pane className="border-bottom p20">
