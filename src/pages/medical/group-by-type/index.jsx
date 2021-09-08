@@ -81,6 +81,7 @@ const Index = memo(() => {
         ...params,
         type: 'MEDICAL',
         isParent: 'false',
+        invisible: 'false'
       },
     });
     dispatch({
@@ -89,6 +90,7 @@ const Index = memo(() => {
         ...params,
         isParent: true,
         type: 'MEDICAL',
+        invisible: 'false'
       },
     });
   }, []);

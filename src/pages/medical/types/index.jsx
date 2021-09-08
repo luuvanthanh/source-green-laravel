@@ -2,10 +2,9 @@ import { memo, useMemo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
-import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
+import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import classnames from 'classnames';
 import { Switch } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -19,7 +18,6 @@ import styles from '@/assets/styles/Common/common.scss';
 
 const SortableItem = sortableElement((props) => <tr {...props} />);
 const SortableContainer = sortableContainer((props) => <tbody {...props} />);
-const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [{ pagination, error }, loading] = useSelector(({ loading: { effects }, medicalTypes }) => [
@@ -107,12 +105,6 @@ const Index = memo(() => {
   };
 
   const columns = [
-    {
-      dataIndex: 'sort',
-      width: 30,
-      className: 'drag-visible',
-      render: () => <DragHandle />,
-    },
     {
       key: 'invisible',
       className: 'min-width-80',
