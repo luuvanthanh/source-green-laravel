@@ -26,7 +26,7 @@ class Attendance extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason',
+        'StudentId', 'Date', 'Status', 'CheckIn', 'CheckOut', 'ReasonId', 'Reason', 'StudentTransporterId'
     ];
 
     protected $casts = [
@@ -55,5 +55,13 @@ class Attendance extends UuidModel
     public function attendanceLog()
     {
         return $this->hasMany(\GGPHP\Attendance\Models\AttendanceLog::class, 'AttendanceId');
+    }
+
+    /**
+     * Define relations user
+     */
+    public function studentTransporter()
+    {
+        return $this->hasOne(\GGPHP\Clover\Models\StudentTransporter::class, 'Id', 'StudentTransporterId');
     }
 }

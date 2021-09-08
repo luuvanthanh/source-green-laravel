@@ -89,6 +89,15 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $attributes['date'])->first();
 
+        if (!empty($attributes['studentTransporter'])) {
+            if (is_array($attributes['studentTransporter'])) {
+                $studentTransporter = StudentTransporter::create($attributes['studentTransporter']);
+                $attributes['studentTransporterId'] = $studentTransporter->Id;
+            } else {
+                $attributes['studentTransporterId'] = $attributes['studentTransporter'];
+            }
+        }
+
         if (is_null($attendance)) {
             $attendance = Attendance::create($attributes);
 
@@ -126,7 +135,16 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
                 case 4:
                     $timeCheckOut = $attendance->CheckOut;
-                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut";
+
+                    $textTransporter = '';
+                    if(!is_null($attendance->studentTransporter)){
+                        $transporter = $attendance->studentTransporter;
+                        $nameTransporter = $transporter->FullName;
+                        $relationshipTransporter = $transporter->Relationship;
+                        $textTransporter = "do $nameTransporter - $relationshipTransporter của bé đón về";
+                    }
+
+                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter";
                     break;
                 default:
                     break;
@@ -191,7 +209,15 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
                 case 4:
                     $timeCheckOut = $attendance->CheckOut;
-                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut";
+                    $textTransporter = '';
+                    if(!is_null($attendance->studentTransporter)){
+                        $transporter = $attendance->studentTransporter;
+                        $nameTransporter = $transporter->FullName;
+                        $relationshipTransporter = $transporter->Relationship;
+                        $textTransporter = "do $nameTransporter - $relationshipTransporter của bé đón về";
+                    }
+
+                    $message = "Bé $nameStudent đã ra về  lúc $timeCheckOut $textTransporter";
                     break;
                 default:
                     break;

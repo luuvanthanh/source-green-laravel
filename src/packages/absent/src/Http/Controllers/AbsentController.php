@@ -5,7 +5,6 @@ namespace GGPHP\Absent\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Absent\Http\Requests\AbsentCreateRequest;
 use GGPHP\Absent\Http\Requests\AbsentUpdateRequest;
-use GGPHP\Absent\Models\Absent;
 use GGPHP\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
