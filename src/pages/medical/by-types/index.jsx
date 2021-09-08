@@ -9,16 +9,14 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
-import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
+import { sortableContainer, sortableElement } from 'react-sortable-hoc';
 import { Switch } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import { Helper } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
 
 const SortableItem = sortableElement((props) => <tr {...props} />);
 const SortableContainer = sortableContainer((props) => <tbody {...props} />);
-const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 const Index = memo(() => {
   const dispatch = useDispatch();
   const [{ error }, loading] = useSelector(({ loading: { effects }, medicalByTypes }) => [
@@ -104,12 +102,6 @@ const Index = memo(() => {
   };
 
   const columns = [
-    {
-      dataIndex: 'sort',
-      width: 30,
-      className: 'drag-visible',
-      render: () => <DragHandle />,
-    },
     {
       key: 'invisible',
       className: 'min-width-80',

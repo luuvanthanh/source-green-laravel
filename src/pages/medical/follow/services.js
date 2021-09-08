@@ -7,6 +7,7 @@ export function getConfigs(_params = {}) {
     method: 'GET',
     params: {
       type: 'MEDICAL',
+      invisible: 'false',
     },
   });
 }
