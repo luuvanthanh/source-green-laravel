@@ -64,24 +64,6 @@ const Index = memo(() => {
     });
   };
 
-  const remove = () => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'foodCommonsCreate/REMOVE',
-          payload: {
-            ...params,
-          },
-          callback: (response) => {
-            if (response) {
-              history.goBack();
-            }
-          },
-        });
-      },
-    });
-  };
-
   useEffect(() => {
     if (params.id) {
       dispatch({
@@ -302,11 +284,6 @@ const Index = memo(() => {
               </Pane>
 
               <Pane className="py20 d-flex justify-content-between align-items-center">
-                {params.id && (
-                  <p className="btn-delete" role="presentation" onClick={remove}>
-                    Xóa
-                  </p>
-                )}
                 <Button
                   className="ml-auto px25"
                   color="success"
