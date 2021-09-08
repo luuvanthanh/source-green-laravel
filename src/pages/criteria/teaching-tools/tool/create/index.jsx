@@ -446,16 +446,6 @@ const Index = memo(() => {
                         type={variables.TEXTAREA}
                       />
                     </Pane>
-                    <Pane className="col-lg-3">
-                      <FormItem
-                        label="Cấp độ giáo cụ từ"
-                        name="levelFrom"
-                        type={variables.INPUT_COUNT}
-                      />
-                    </Pane>
-                    <Pane className="col-lg-3">
-                      <FormItem label="Đến" name="levelTo" type={variables.INPUT_COUNT} />
-                    </Pane>
                   </Pane>
                 </Pane>
               </Loading>
