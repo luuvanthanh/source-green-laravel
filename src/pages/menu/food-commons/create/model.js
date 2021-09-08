@@ -72,8 +72,8 @@ export default {
     },
     *ADD_MEASURE_UNIT({ payload, callback }, saga) {
       try {
-        yield saga.call(services.addMeasureUnit, payload);
-        callback(payload);
+        const response = yield saga.call(services.addMeasureUnit, payload);
+        callback(response);
       } catch (error) {
         callback(null, error?.data?.error);
       }
