@@ -4,7 +4,7 @@ import { Tabs, Modal, Image, Collapse } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import moment from 'moment';
-import { isArray, omit } from 'lodash';
+import { isArray, omit, head } from 'lodash';
 import PropTypes from 'prop-types';
 import ScrollContainer from 'react-indiana-drag-scroll';
 
@@ -183,20 +183,23 @@ const Index = memo(({ classId, branchId }) => {
       align: 'center',
       render: (record) => (
         <div className={styles['list-avatar']}>
-          {record?.items?.map((item, index) => (
-            <div
-              className={styles['item-avatar']}
-              key={index}
-              role="presentation"
-              onClick={() => onShowInfo({ ...item, ...record })}
-            >
-              <AvatarTable
-                isBorder={!item.isReceived}
-                isActive={item.isReceived}
-                fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
-              />
-            </div>
-          ))}
+          {record?.items?.map((item, index) => {
+            const status = head(item.status);
+            return (
+              <div
+                className={styles['item-avatar']}
+                key={index}
+                role="presentation"
+                onClick={() => onShowInfo({ ...item, ...record })}
+              >
+                <AvatarTable
+                  isBorder={status?.status === 'NOT_DRINK'}
+                  isActive={status?.status === 'DRINK'}
+                  fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
+                />
+              </div>
+            );
+          })}
         </div>
       ),
     },
@@ -265,8 +268,9 @@ const Index = memo(({ classId, branchId }) => {
           )}
           {search?.status === variablesModules.STATUS.DRINK && (
             <>
-              {objects.isReceived && HelperModules.tagStatusDrink('DRINK')}
-              {!objects.isReceived && HelperModules.tagStatusDrink('NOT_DRINK')}
+              {head(objects?.status)?.status === 'DRINK' && HelperModules.tagStatusDrink('DRINK')}
+              {head(objects?.status)?.status === 'NOT_DRINK' &&
+                HelperModules.tagStatusDrink('NOT_DRINK')}
             </>
           )}
         </div>

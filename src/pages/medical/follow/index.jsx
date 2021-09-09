@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Modal, Image } from 'antd';
 import classnames from 'classnames';
-import { debounce, isArray } from 'lodash';
+import { debounce, isArray, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -60,7 +60,7 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query.date ? moment(query.date) : moment(),
         isSent: true,
-        isReceived: true
+        isReceived: true,
       },
       visible: false,
       objects: {},
@@ -324,25 +324,28 @@ class Index extends PureComponent {
           const children = group?.items?.find((itemGroup) => itemGroup.name === item.name);
           return (
             <div className={styles['list-avatar']}>
-              {children?.items?.map((itemChild, index) => (
-                <div
-                  className={styles['item-avatar-signal']}
-                  key={index}
-                  role="presentation"
-                  onClick={() =>
-                    this.setStateData({
-                      visible: true,
-                      objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
-                    })
-                  }
-                >
-                  <AvatarTable
-                    isBorder={!itemChild.isReceived}
-                    isActive={itemChild.isReceived}
-                    fileImage={Helper.getPathAvatarJson(itemChild?.student?.fileImage)}
-                  />
-                </div>
-              ))}
+              {children?.items?.map((itemChild, index) => {
+                const status = head(itemChild.status);
+                return (
+                  <div
+                    className={styles['item-avatar-signal']}
+                    key={index}
+                    role="presentation"
+                    onClick={() =>
+                      this.setStateData({
+                        visible: true,
+                        objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
+                      })
+                    }
+                  >
+                    <AvatarTable
+                      isBorder={status?.status === 'NOT_DRINK'}
+                      isActive={status?.status === 'DRINK'}
+                      fileImage={Helper.getPathAvatarJson(itemChild?.student?.fileImage)}
+                    />
+                  </div>
+                );
+              })}
             </div>
           );
         },
@@ -434,8 +437,9 @@ class Index extends PureComponent {
               fileImage={Helper.getPathAvatarJson(objects?.student?.fileImage)}
               description={objects?.class?.name}
             />
-            {objects.isReceived && HelperModules.tagStatusDrink('DRINK')}
-            {!objects.isReceived && HelperModules.tagStatusDrink('NOT_DRINK')}
+            {head(objects?.status)?.status === 'DRINK' && HelperModules.tagStatusDrink('DRINK')}
+            {head(objects?.status)?.status === 'NOT_DRINK' &&
+              HelperModules.tagStatusDrink('NOT_DRINK')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
@@ -492,7 +496,9 @@ class Index extends PureComponent {
                 'd-flex justify-content-center align-items-center',
               )}
             >
-              {!moment().startOf('days').isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
+              {!moment()
+                .startOf('days')
+                .isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
                 <Button
                   color="success"
                   size="large"
