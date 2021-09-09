@@ -62,7 +62,11 @@ const Index = memo(() => {
       <Helmet title="Chi tiết" />
       <Breadcrumbs last="Chi tiết" menu={menuData} />
       <Pane style={{ padding: '0 20px' }}>
-        <Loading loading={loading} isError={error.isError} params={{ error, type: 'container', goBack: '/suc-khoe/lich-su' }}>
+        <Loading
+          loading={loading}
+          isError={error.isError}
+          params={{ error, type: 'container', goBack: '/suc-khoe/lich-su' }}
+        >
           {!isEmpty(details) && (
             <Pane className="row">
               <Pane className="col-lg-5">
@@ -148,17 +152,14 @@ const Index = memo(() => {
                           >
                             <Pane className="col-md-5">
                               <Heading type="form-sub-title" style={{ marginBottom: 10 }}>
-                                {Helper.getDate(
-                                  itemChange.changeTime,
-                                  variables.DATE_FORMAT.DATE_TIME,
-                                )}
+                                {Helper.getDate(item.changeTime, variables.DATE_FORMAT.DATE_TIME)}
                               </Heading>
                             </Pane>
                             <Pane className="col-md-7">
                               <Pane>
-                                {item?.editor?.userName}{' '}
+                                {itemChange?.editor?.userName}{' '}
                                 {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}{' '}
-                                {itemChange.criteriaGroupPropertypeName}
+                                {itemChange.criteriaGroupPropertyName?.toLowerCase()}
                               </Pane>
                             </Pane>
                           </Pane>

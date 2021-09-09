@@ -291,7 +291,7 @@ export async function getLeftMenuSchedules() {
       children: [
         {
           title: 'Đơn xin phép cho bé',
-          key: 'absents',
+          key: 'absentsConfig',
           url: [
             '/diem-danh/don-xin-phep-cho-be',
             '/diem-danh/don-xin-phep-cho-be/tao-moi',
@@ -308,13 +308,13 @@ export async function getLeftMenuSchedules() {
           children: [
             {
               title: 'Loại nghỉ phép',
-              key: 'AbsentTypes',
+              key: 'AbsentTypesConfig',
               permission: [permissions.DD],
               url: ['/diem-danh/cau-hinh/loai-cong', '/diem-danh/cau-hinh/loai-cong/:id/chi-tiet'],
             },
             {
               title: 'Lý do nghỉ phép',
-              key: 'AbsentReasons',
+              key: 'AbsentReasonsConfig',
               permission: [permissions.DD],
               url: [
                 '/diem-danh/cau-hinh/ly-do-nghi-phep',
@@ -324,7 +324,7 @@ export async function getLeftMenuSchedules() {
             },
             {
               title: 'Thời gian xin phép',
-              key: 'AbsentTimeline',
+              key: 'AbsentTimelineConfig',
               permission: [permissions.DD],
               url: ['/diem-danh/cau-hinh/thoi-gian-xin-phep'],
             },

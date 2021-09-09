@@ -195,7 +195,7 @@ const Index = memo(() => {
       callback: (response) => {
         if (!isEmpty(response.items)) {
           formRef.current.setFieldsValue({
-            data: response.items,
+            data: Helper.onSortData(response.items),
           });
         }
       },

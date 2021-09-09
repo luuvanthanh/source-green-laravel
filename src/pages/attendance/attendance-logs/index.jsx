@@ -381,7 +381,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              bordered={false}
+              bordered
               rowKey={(record) => record.id}
               scroll={{ x: '100%' }}
             />
