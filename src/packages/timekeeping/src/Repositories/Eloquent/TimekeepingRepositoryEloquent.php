@@ -234,6 +234,8 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
 
         foreach ($periodDate as $date) {
+            $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+
             if (!is_null($dateOff) && $date->format('Y-m-d') >= $dateOff) {
                 $responseTimeKeepingUser[] = [
                     "date" => $date->format('Y-m-d'),
@@ -260,6 +262,23 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                         "date" => $date->format('Y-m-d'),
                         "timekeepingReport" => 0,
                         "type" => "KXD",
+                    ];
+                }
+            }
+             if (($check === 'Saturday' || $check === 'Sunday')) {
+                $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
+
+                if ($checkValue !== false) {
+                    $responseTimeKeepingUser[$checkValue] = [
+                        "date" => $date->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "WK",
+                    ];
+                } else {
+                    $responseTimeKeepingUser[] = [
+                        "date" => $date->format('Y-m-d'),
+                        "timekeepingReport" => 0,
+                        "type" => "WK",
                     ];
                 }
             }

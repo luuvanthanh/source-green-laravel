@@ -24,8 +24,8 @@ class ParamaterValueCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:ParamaterValues,Name',
-            'code' => 'required|string|unique:ParamaterValues,Code',
+            'name' => 'required|string|unique:ParameterValues,Name',
+            'code' => 'required|string|unique:ParameterValues,Code',
             "applyDate" => 'required',
             "valueDefault" => 'required',
             "note" => 'required',

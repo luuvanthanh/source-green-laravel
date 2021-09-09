@@ -52,24 +52,32 @@ class AttendanceCreateRequest extends FormRequest
                         return $fail('Không được xin nghỉ có phép!');
                     }
 
-                    $attendance = Attendance::where('StudentId', $studentId)->where('Date', $date)->first();
+                    if ($value == 'HAVE_OUT') {
+                        $studentTransporter = request()->studentTransporter;
 
-                    if (!is_null($attendance)) {
-
-                        foreach (Attendance::STATUS as $key => $value) {
-                            if ($value == $attendance->Status) {
-                                $status = $key;
-                            }
-                        }
-
-                        // if ($status == Attendance::STATUS['ANNUAL_LEAVE']) {
-                        //     return $fail('Học sinh xin nghỉ phép không được cập nhật dữ liệu!');
-                        // }
-
-                        if ($status == Attendance::STATUS['HAVE_OUT']) {
-                            return $fail('Học sinh đã ra về không được cập nhật dữ liệu!');
+                        if (is_null($studentTransporter)) {
+                            return $fail('Học sinh ra về phải có người đưa đón!');
                         }
                     }
+
+                    // $attendance = Attendance::where('StudentId', $studentId)->where('Date', $date)->first();
+
+                    // if (!is_null($attendance)) {
+
+                    //     foreach (Attendance::STATUS as $key => $value) {
+                    //         if ($value == $attendance->Status) {
+                    //             $status = $key;
+                    //         }
+                    //     }
+
+                    //     // if ($status == Attendance::STATUS['ANNUAL_LEAVE']) {
+                    //     //     return $fail('Học sinh xin nghỉ phép không được cập nhật dữ liệu!');
+                    //     // }
+
+                    //     if ($status == Attendance::STATUS['HAVE_OUT']) {
+                    //         return $fail('Học sinh đã ra về không được cập nhật dữ liệu!');
+                    //     }
+                    // }
 
                     return true;
                 },

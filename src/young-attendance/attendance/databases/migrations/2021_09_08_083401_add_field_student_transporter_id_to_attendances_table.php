@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAddFieldReasonToAttendancesTable extends Migration
+class AddFieldStudentTransporterIdToAttendancesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class CreateAddFieldReasonToAttendancesTable extends Migration
     public function up()
     {
         Schema::table('Attendances', function (Blueprint $table) {
-            $table->uuid('ReasonId')->nullable();
-            $table->string('Reason')->nullable();
+            $table->uuid('StudentTransporterId')->nullable();
         });
     }
 
@@ -27,8 +26,7 @@ class CreateAddFieldReasonToAttendancesTable extends Migration
     public function down()
     {
         Schema::table('Attendances', function (Blueprint $table) {
-            $table->dropColumn('ReasonId');
-            $table->dropColumn('Reason');
+            $table->dropColumn('StudentTransporterId');
         });
     }
 }

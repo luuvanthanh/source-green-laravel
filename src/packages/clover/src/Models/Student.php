@@ -73,4 +73,12 @@ class Student extends UuidModel
     {
         return $this->belongsToMany(\GGPHP\Clover\Models\Parents::class, 'object.StudentParents', 'StudentId', 'ParentId');
     }
+
+     /**
+     * Define relations Schedule
+     */
+    public function studentTransporter()
+    {
+        return $this->hasMany(\GGPHP\Clover\Models\StudentTransporter::class, 'StudentId');
+    }
 }

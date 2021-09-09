@@ -41,7 +41,7 @@ class ScheduleExceptionService
         $listDayException = [];
         $scheduleException = ScheduleException::where('ScheduleId', $schedulesId)->get();
         foreach ($scheduleException as $value) {
-            $listDayException[] = $value->date->toDateString();
+            $listDayException[] = $value->Date->toDateString();
         }
 
         return $listDayException;
