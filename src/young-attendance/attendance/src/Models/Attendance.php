@@ -11,6 +11,7 @@ class Attendance extends UuidModel
         'UNPAID_LEAVE' => 2,
         'HAVE_IN' => 3,
         'HAVE_OUT' => 4,
+        'NOT_IN_CLASS' => 5,
     ];
 
     /**

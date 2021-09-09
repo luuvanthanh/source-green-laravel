@@ -408,6 +408,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //tổng thu nhập
             $totalIncome = 0;
+            $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP')->first();
+
+            if (!is_null($formularTotalIncome)) {
+                $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
+                $totalIncome = eval('return ' . $totalIncome . ';');
+            }
+            $parameter['TONG_THUNHAP'] = $totalIncome;
+
+            //tổng thu nhập trong tháng
+            $totalIncomeMonth = 0;
             $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_CHINH_THUC')->first();
 
             if ($isProbation) {
@@ -418,17 +428,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
                 $totalIncome = eval('return ' . $totalIncome . ';');
             }
-            $parameter['TONG_THUNHAP'] = $totalIncome;
-
-            //tổng thu nhập trong tháng
-            $totalIncomeMonth = 0;
-            $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG')->first();
-
-            if (!is_null($formularTotalIncomeMonth)) {
-                $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
-                $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
-            }
-            $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
+            $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncome;
 
             // tổng giảm trừ bản thân và người phụ thuộc
             $eeduce = 0;
@@ -493,7 +493,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             //lương thực nhận
             $actuallyReceived = 0;
             $formularActuallyReceived = ParamaterFormula::where('Code', 'LUONG_THUC_NHAN')->first();
-
             if (!is_null($formularActuallyReceived)) {
                 $actuallyReceived = $this->getFormular(json_decode($formularActuallyReceived->Recipe), $contract, $parameter);
                 $actuallyReceived = eval('return ' . $actuallyReceived . ';');

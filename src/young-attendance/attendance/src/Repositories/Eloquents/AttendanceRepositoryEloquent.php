@@ -354,19 +354,25 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
             $studentTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($student->Id, $date, $date);
 
             if (!empty($studentTimeWorkShift)) {
-                $timekeepings = $student->inOutHistory()->whereDate('AttendedAt', date($date))->get();
-
                 $timeShift = [];
                 $nowHours = !empty($attributes['time']) ? $attributes['time'] : Carbon::now('GMT+7')->format('H:i:s');
-
                 foreach ($studentTimeWorkShift[$date] as $key => $value) {
                     $timeShift[] = $value['StartTime'] . ' - ' . $value['EndTime'];
                 }
-
-                $shift = Shift::findOrFail($studentTimeWorkShift[$date][0]['ShiftId']);
-
+                
                 foreach ($studentTimeWorkShift[$date] as $key => $value) {
                     $timeAllow = $this->checkTimeAllow($date, $value);
+                    
+                    //chưa vào lớp
+                    if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
+                        $dataNotInClass = [
+                            'Date' => $date,
+                            'StudentId' => $student->Id,
+                            'Status' => Attendance::STATUS['NOT_IN_CLASS'],
+                        ];
+
+                       $this->model->create($dataNotInClass);
+                    }
 
                     // Vào lớp
                     if ($nowHours > Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
@@ -561,15 +567,21 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             })->get();
 
                         if (count($existCheckIn) == 0) {
+                            $existAttendance = Attendance::where('StudentId', $student->Id)
+                            ->whereDate('Date', $date)->first();
+
                             $dataCheckOut = [
                                 'Date' => $date,
                                 'StudentId' => $student->Id,
                                 'Status' => Attendance::STATUS['UNPAID_LEAVE'],
                             ];
 
-                            $this->model->create($dataCheckOut);
+                            if (is_null($existAttendance)) {
+                               $this->model->create($dataCheckOut);
+                            } else {
+                                $existAttendance->update($dataCheckOut);
+                            }
 
-                            $urlNoti = env('NOTI_URL') . '/api/notification';
                             $parents = $student->parent;
                             $userId = [];
 
@@ -587,7 +599,9 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                             if (!is_null($images)) {
                                 $images = json_decode($images);
-                                $urlImage = env('IMAGE_URL') . $images[0];
+                                if (!empty($images)) {
+                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                }
                             }
 
                             $message = "Bé $nameStudent vắng không phép ngày $date";
