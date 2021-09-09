@@ -327,22 +327,25 @@ class Index extends PureComponent {
               <Button
                 color="primary"
                 onClick={() => {
-                  history.push({
-                    pathname: '/quan-ly-nhan-su/tong-hop-cong',
-                    query: {
-                      startDate: Helper.getDate(
-                        moment(search.month)
-                          .startOf('months')
-                          .subtract(1, 'months')
-                          .add(25, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                      endDate: Helper.getDate(
-                        moment(search.month).startOf('months').add(24, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                    },
-                  });
+                  window.open(
+                    `/quan-ly-nhan-su/tong-hop-cong?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
                 }}
               >
                 Xem bảng công
@@ -351,24 +354,27 @@ class Index extends PureComponent {
             {record.id === 'CHOT_BANG_THUONG_KPI' && (
               <Button
                 color="primary"
-                onClick={() =>
-                  history.push({
-                    pathname: '/quan-ly-nhan-su/tong-hop-cong',
-                    query: {
-                      startDate: Helper.getDate(
-                        moment(search.month)
-                          .startOf('months')
-                          .subtract(1, 'months')
-                          .add(25, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                      endDate: Helper.getDate(
-                        moment(search.month).startOf('months').add(24, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                    },
-                  })
-                }
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/tong-hop-cong?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
               >
                 Xem KPI
               </Button>
@@ -376,33 +382,33 @@ class Index extends PureComponent {
             {record.id === 'KHAI_BAO_KHOAN_KHAC' && (
               <Button
                 color="primary"
-                onClick={() =>
-                  history.push({
-                    pathname: '/quan-ly-nhan-su/khai-bao-cac-khoan-khac',
-                    query: {
-                      startDate: Helper.getDate(
-                        moment(search.month)
-                          .startOf('months')
-                          .subtract(1, 'months')
-                          .add(25, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                      endDate: Helper.getDate(
-                        moment(search.month).startOf('months').add(24, 'days'),
-                        variables.DATE_FORMAT.DATE_AFTER,
-                      ),
-                    },
-                  })
-                }
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/khai-bao-cac-khoan-khac?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
               >
                 Xem Khai báo
               </Button>
             )}
             {record.id === 'TINH_LUONG' && (
-              <Button
-                color="primary"
-                onClick={() => this.updateSalary(data)}
-              >
+              <Button color="primary" onClick={() => this.updateSalary(data)}>
                 Tính lương
               </Button>
             )}
