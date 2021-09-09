@@ -5,9 +5,9 @@ export const upload = (files) => {
   const formData = new FormData();
 
   if (isArray(files)) {
-    for (const file of files) {
+    files.forEach((file) => {
       formData.append('files', file);
-    }
+    });
   } else {
     formData.append('files', files);
   }

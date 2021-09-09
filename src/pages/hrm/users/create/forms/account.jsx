@@ -234,11 +234,13 @@ const Index = memo(
                       rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
-                  <Pane className="col-lg-3">
-                    <Form.Item label="Đăng nhập bằng hình ảnh">
-                      {HelperModules.tagStatusAccount(details?.faceImageStatus)}
-                    </Form.Item>
-                  </Pane>
+                  {details?.faceImageStatus && (
+                    <Pane className="col-lg-3">
+                      <Form.Item label="Đăng nhập bằng hình ảnh">
+                        {HelperModules.tagStatusAccount(details?.faceImageStatus)}
+                      </Form.Item>
+                    </Pane>
+                  )}
                   {!isEmpty(details) && (
                     <Pane className="col-lg-3">
                       <Form.Item label=" ">

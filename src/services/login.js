@@ -13,6 +13,7 @@ export function login(data) {
       ...data,
     }),
     isLogin: true,
+    cancelNotification: true,
   });
 }
 
@@ -22,6 +23,14 @@ export function me(data) {
     headers: {
       Authorization: `${data.token_type} ${data.access_token}`,
     },
+  });
+}
+
+export async function switchBranches(params) {
+  return request('/user/switch-branch', {
+    method: 'PATCH',
+    params,
+    parse: true,
   });
 }
 

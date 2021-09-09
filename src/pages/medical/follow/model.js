@@ -14,6 +14,7 @@ export default {
     },
     branches: [],
     classes: [],
+    configs: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -39,6 +40,10 @@ export default {
       ...state,
       classes: payload.items,
     }),
+    SET_CONFIGS: (state, { payload }) => ({
+      ...state,
+      configs: payload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
@@ -52,6 +57,20 @@ export default {
               total: response.totalCount,
             },
           },
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CONFIGS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getConfigs, payload);
+        yield saga.put({
+          type: 'SET_CONFIGS',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
@@ -86,6 +105,14 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *RECEIVED({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.received, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },

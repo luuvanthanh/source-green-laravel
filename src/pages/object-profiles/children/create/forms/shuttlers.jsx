@@ -24,7 +24,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
   const loading = effects[`OPchildrenAdd/GET_DETAILS`];
   const loadingSubmit = effects[`OPchildrenAdd/ADD_TRANSPORTER`];
   const mounted = useRef(false);
-  const [fileImage, setFileImage] = useState([]);
+  const [fileImage, setFileImage] = useState([null]);
 
   const mountedSet = (action, value) => {
     if (mounted.current) {
@@ -88,10 +88,12 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
           ? details?.student?.studentTransporter
           : [{}],
       });
-      mountedSet(
-        setFileImage,
-        details?.student?.studentTransporter.map((item) => item.fileImage),
-      );
+      if (!isEmpty(details?.student?.studentTransporter)) {
+        mountedSet(
+          setFileImage,
+          details?.student?.studentTransporter.map((item) => item.fileImage || null),
+        );
+      }
     }
   }, [details]);
 
@@ -158,7 +160,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                           name={[key, 'identifyNumber']}
                           label="Số CMND"
                           type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          rules={[variables.RULES.MAX_LENGTH_INPUT]}
                         />
                       </Pane>
 
@@ -167,7 +169,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                           name={[key, 'phone']}
                           label="Số điện thoại"
                           type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.PHONE]}
+                          rules={[variables.RULES.PHONE]}
                         />
                       </Pane>
                     </Pane>

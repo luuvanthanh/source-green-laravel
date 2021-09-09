@@ -1,59 +1,27 @@
 import React, { Fragment } from 'react';
-import { connect, Redirect } from 'umi';
+import { connect, Redirect, history } from 'umi';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import Loader from '@/components/LayoutComponents/Loader';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
-import ExchangeLayout from './Exchange';
-import ObjectProfiles from './Object-Profiles';
-import SchedulesLayout from './Schedules';
-import ConfigurationLayout from './Configuration';
-import VehicelLayout from './Vehicel';
-import CriteriaLayout from './Criteria';
-import MenuLayout from './Menu';
-import AllocationLayout from './Allocation';
-import MedicalLayout from './Medical';
-import AttendanceLayout from './Attendance';
-import TimetableLayout from './Timetable';
-import NotificationLayout from './Notification';
-import MediaLayout from './Media';
-import HealthLayout from './Health';
-import HRMLayout from './HRM';
-import FeePolicyLayout from './Fee-Policy';
-import NotesLayout from './Notes';
-import SalaryLayout from './Salary';
-import PhysicalLayout from './Physical';
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
-  communications: ExchangeLayout,
-  objectProfiles: ObjectProfiles,
-  timetable: SchedulesLayout,
-  configuration: ConfigurationLayout,
-  vehicel: VehicelLayout,
-  criteria: CriteriaLayout,
-  menu: MenuLayout,
-  allocation: AllocationLayout,
-  medical: MedicalLayout,
-  attendance: AttendanceLayout,
-  timetableSchedule: TimetableLayout,
-  notification: NotificationLayout,
-  media: MediaLayout,
-  health: HealthLayout,
-  hrm: HRMLayout,
-  feePolicy: FeePolicyLayout,
-  notes: NotesLayout,
-  salary: SalaryLayout,
-  physical: PhysicalLayout
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
 class IndexLayout extends React.PureComponent {
   previousPath = '';
+
+  componentDidCatch(error) {
+    if (error) {
+      history.push('/error');
+    }
+  }
 
   render() {
     const {
@@ -65,73 +33,24 @@ class IndexLayout extends React.PureComponent {
 
     // Layout Rendering
     const getLayout = () => {
-      if (/^\/login(?=\/|$)/i.test(pathname)) {
+      if (/^\/login(?=\/|$)/i.test(pathname) || /^\/switch-branches(?=\/|$)/i.test(pathname)) {
         return 'login';
       }
       if (/^\/trang-chu(?=\/|$)/i.test(pathname)) {
         return 'public';
       }
-      if (/^\/quan-ly-nhan-su(?=\/|$)/i.test(pathname)) {
-        return 'hrm';
+      if (/^\/error(?=\/|$)/i.test(pathname)) {
+        return 'public';
       }
-      if (/^\/trao-doi(?=\/|$)/i.test(pathname)) {
-        return 'communications';
-      }
-      if (/^\/ho-so-doi-tuong(?=\/|$)/i.test(pathname)) {
-        return 'objectProfiles';
-      }
-      if (/^\/diem-danh(?=\/|$)/i.test(pathname)) {
-        return 'attendance';
-      }
-      if (/^\/cau-hinh(?=\/|$)/i.test(pathname)) {
-        return 'configuration';
-      }
-      if (/^\/quan-ly-phuong-tien(?=\/|$)/i.test(pathname)) {
-        return 'vehicel';
-      }
-      if (/^\/chuong-trinh-hoc(?=\/|$)/i.test(pathname)) {
-        return 'criteria';
-      }
-      if (/^\/thuc-don(?=\/|$)/i.test(pathname)) {
-        return 'menu';
-      }
-      if (/^\/phan-bo(?=\/|$)/i.test(pathname)) {
-        return 'allocation';
-      }
-      if (/^\/y-te(?=\/|$)/i.test(pathname)) {
-        return 'medical';
-      }
-      if (/^\/thoi-khoa-bieu(?=\/|$)/i.test(pathname)) {
-        return 'timetableSchedule';
-      }
-      if (/^\/thong-bao(?=\/|$)/i.test(pathname)) {
-        return 'notification';
-      }
-      if (/^\/ghi-nhan(?=\/|$)/i.test(pathname)) {
-        return 'media';
-      }
-      if (/^\/suc-khoe(?=\/|$)/i.test(pathname)) {
-        return 'health';
-      }
-      if (/^\/chinh-sach-phi(?=\/|$)/i.test(pathname)) {
-        return 'feePolicy';
-      }
-      if (/^\/ghi-chu(?=\/|$)/i.test(pathname)) {
-        return 'notes';
-      }
-      if (/^\/bang-luong(?=\/|$)/i.test(pathname)) {
-        return 'salary';
-      }
-      if (/^\/phat-trien-the-chat(?=\/|$)/i.test(pathname)) {
-        return 'physical';
-      }
-      return 'public';
+      return 'main';
     };
 
     const Container = Layouts[getLayout()];
+    const isUserLogged = user.logged;
     const isUserAuthorized = user.authorized;
     const isUserLoading = loading.models.user;
     const isLoginLayout = getLayout() === 'login';
+    const isSwitchLayout = getLayout() === 'switch-branches';
 
     const BootstrappedLayout = () => {
       // show loader when user in check authorization process, not authorized yet and not on login pages
@@ -143,6 +62,14 @@ class IndexLayout extends React.PureComponent {
         return (
           <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
         );
+      }
+      if (isSwitchLayout && !isUserAuthorized) {
+        if (!isUserLogged) {
+          return (
+            <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
+          );
+        }
+        return <Container>{children}</Container>;
       }
       // redirect to main dashboard when user on login page and authorized
       if (isLoginLayout && isUserAuthorized) {

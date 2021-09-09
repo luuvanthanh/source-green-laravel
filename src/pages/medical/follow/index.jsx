@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Image } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isArray } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -13,7 +13,6 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Button from '@/components/CommonComponent/Button';
-import { v4 as uuidv4 } from 'uuid';
 import variablesModules from '../utils/variables';
 import HelperModules from '../utils/Helper';
 
@@ -32,13 +31,15 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ medicaFollow, loading }) => ({
+const mapStateToProps = ({ medicaFollow, loading, user }) => ({
+  loading,
   data: medicaFollow.data,
   branches: medicaFollow.branches,
   classes: medicaFollow.classes,
   pagination: medicaFollow.pagination,
+  configs: medicaFollow.configs,
   error: medicaFollow.error,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -47,17 +48,19 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      defaultBranch,
       location: { query },
     } = props;
     this.state = {
       search: {
         diseaseName: query?.diseaseName,
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         status: query?.status || variablesModules.STATUS.PENDING,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
-        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
+        date: query.date ? moment(query.date) : moment(),
+        isSent: true,
+        isReceived: true
       },
       visible: false,
       objects: {},
@@ -106,11 +109,7 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          creationTimeFrom: Helper.getDate(
-            search.creationTimeFrom,
-            variables.DATE_FORMAT.DATE_AFTER,
-          ),
-          creationTimeTo: Helper.getDate(search.creationTimeTo, variables.DATE_FORMAT.DATE_AFTER),
+          date: Helper.getDate(search.date, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -126,11 +125,17 @@ class Index extends PureComponent {
     if (search.branchId) {
       dispatch({
         type: 'medicaFollow/GET_CLASSES',
-        payload: search,
+        payload: {
+          branch: search.branchId,
+        },
       });
     }
     dispatch({
       type: 'medicaFollow/GET_BRACHES',
+      payload: {},
+    });
+    dispatch({
+      type: 'medicaFollow/GET_CONFIGS',
       payload: {},
     });
   };
@@ -228,13 +233,13 @@ class Index extends PureComponent {
    * @param {string} value value of object search
    * @param {string} type key of object search
    */
-  debouncedSearchDateRank = debounce((creationTimeFrom, creationTimeTo) => {
+  debouncedSearchDateRank = debounce((from, to) => {
     this.setStateData(
       (prevState) => ({
         search: {
           ...prevState.search,
-          creationTimeFrom,
-          creationTimeTo,
+          from,
+          to,
         },
       }),
       () => this.onLoad(),
@@ -294,33 +299,47 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const columnsMedical = variablesModules.TREE_MEDICAL.map((parent) => ({
-      title: parent.label,
-      key: parent.value,
-      className: classnames(parent.color, 'parent'),
-      children: parent?.children?.map((item) => ({
-        title: item.label,
-        key: item.value,
-        className: classnames('min-width-140', parent.color),
+    const { configs } = this.props;
+    const columnsMedical = configs.map((parent, index) => ({
+      title: parent?.group?.name || parent?.group?.description,
+      key: parent?.group?.name || parent?.group?.description,
+      className: classnames(
+        { yellow: index === 0 },
+        { gold: index === 1 },
+        { primary: index === 2 },
+        'parent',
+      ),
+      children: parent?.items?.map((item) => ({
+        title: item.description,
+        key: item.name,
+        className: classnames(
+          'min-width-140',
+          { yellow: index === 0 },
+          { gold: index === 1 },
+          { primary: index === 2 },
+        ),
         width: 140,
         render: (record) => {
-          const children = record?.children?.filter((itemChil) => itemChil.type === item.value);
+          const group = record?.items?.find((item) => item?.group?.id === parent?.group?.id);
+          const children = group?.items?.find((itemGroup) => itemGroup.name === item.name);
           return (
             <div className={styles['list-avatar']}>
-              {children?.map((item, index) => (
+              {children?.items?.map((itemChild, index) => (
                 <div
                   className={styles['item-avatar-signal']}
                   key={index}
                   role="presentation"
                   onClick={() =>
-                    this.setStateData({ visible: true, objects: { ...item, class: record.class } })
+                    this.setStateData({
+                      visible: true,
+                      objects: { ...itemChild, class: record.class, medicineTimeTypeId: item.id },
+                    })
                   }
                 >
                   <AvatarTable
-                    srcLocal
-                    fileImage={item.img}
-                    isBorder={!item.isActive}
-                    isActive={item.isActive}
+                    isBorder={!itemChild.isReceived}
+                    isActive={itemChild.isReceived}
+                    fileImage={Helper.getPathAvatarJson(itemChild?.student?.fileImage)}
                   />
                 </div>
               ))}
@@ -335,7 +354,7 @@ class Index extends PureComponent {
         key: 'class',
         className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record.class}</Text>,
+        render: (record) => <Text size="normal">{record?.class?.name}</Text>,
       },
       ...columnsMedical,
     ];
@@ -359,10 +378,30 @@ class Index extends PureComponent {
     return columns;
   };
 
-  handleCancel = () => this.setStateData({ visible: false });
+  handleCancel = () => this.setStateData({ visible: false, objects: {} });
+
+  onReceived = () => {
+    const { objects } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'medicaFollow/RECEIVED',
+      payload: {
+        id: objects.id,
+        medicineTimeTypeId: objects.medicineTimeTypeId,
+        date: moment(),
+      },
+      callback: (response) => {
+        if (response) {
+          this.handleCancel();
+          this.onLoad();
+        }
+      },
+    });
+  };
 
   render() {
     const {
+      data,
       error,
       classes,
       branches,
@@ -372,279 +411,7 @@ class Index extends PureComponent {
     } = this.props;
     const { search, visible, objects } = this.state;
     const loading = effects['medicaFollow/GET_DATA'];
-    const DATA_SOURCE = [
-      {
-        class: 'Preschool (Demo)',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Thạch Tuấn Khang',
-            img: '/images/medicals/thach-tuan-khang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Nguyển Thị Anh Thư (Test)',
-            img: '/images/medicals/nguyen-thi-anh-thu-test.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Lâm Thụy Minh Khuê',
-            img: '/images/medicals/lam-thi-minh-khue.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Khôi Khải Vĩ',
-            img: '/images/medicals/nguyen-khoi-khai-vi.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Ngô Cát Tú Nghi',
-            img: '/images/medicals/ngo-cat-tu-nghi.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
-          },
-          {
-            name: 'Tô Phan Minh Thiện',
-            img: '/images/medicals/to-phan-minh-thien.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
-          },
-          {
-            name: 'Tô Phan Minh Thiện',
-            img: '/images/medicals/to-phan-minh-thien.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Minh Tuấn',
-            img: '/images/medicals/nguyen-minh-tuan.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Hoàng Thiên Kim',
-            img: '/images/medicals/hoang-thien-kim.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
-          },
-          {
-            name: 'Lê Kilian Khoa',
-            img: '/images/medicals/ke-kilian-khoa-le.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
-          },
-          {
-            name: 'Nguyễn Tuấn Khôi',
-            img: '/images/medicals/nguyen-tuan-khoi.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
-          },
-          {
-            name: 'Lê Kilian Khoa',
-            img: '/images/medicals/ke-kilian-khoa-le.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
-          },
-          {
-            name: 'Thạch Tuấn Khang',
-            img: '/images/medicals/thach-tuan-khang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
-          },
-          {
-            name: 'Nguyễn Tuấn Khôi',
-            img: '/images/medicals/nguyen-tuan-khoi.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
-          },
-        ],
-      },
-      {
-        class: 'Preschool',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Chen Rui An',
-            img: '/images/medicals/chen-rui-an.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Mai Tuệ Lâm',
-            img: '/images/medicals/mai-tue-lam.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Võ Minh Khôi',
-            img: '/images/medicals/vo-minh-khoi.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Trần Khả Doanh',
-            img: '/images/medicals/nguyen-tran-kha-doanh.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Chen Rui An',
-            img: '/images/medicals/chen-rui-an.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_LUNCH,
-          },
-          {
-            name: 'Đặng Ánh Dương',
-            img: '/images/medicals/dang-anh-duong.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_LUNCH,
-          },
-          {
-            name: 'Nguyễn Quốc Thống',
-            img: '/images/medicals/nguyen-quoc-thong.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_LUNCH,
-          },
-        ],
-      },
-      {
-        class: 'Nursery',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Nguyễn Văn Nhật Minh',
-            img: '/images/medicals/nguyen-van-nhat-minh.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Phương Bùi Cherie',
-            img: '/images/medicals/phuong-bui-cheri.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Mai Ngọc Cát Tường',
-            img: '/images/medicals/mai-ngoc-cat-tuong.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Vũ Trần Bảo Quốc',
-            img: '/images/medicals/vu-tran-quoc-bao.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Hà Anh',
-            img: '/images/medicals/nguyen-ha-anh.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Huỳnh Thanh Tùng',
-            img: '/images/medicals/huynh-thanh-tung.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Hà Anh',
-            img: '/images/medicals/nguyen-ha-anh.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
-          },
-          {
-            name: 'Phương Bùi Cherie',
-            img: '/images/medicals/phuong-bui-cheri.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
-          },
-        ],
-      },
-      {
-        class: 'Montessori',
-        id: uuidv4(),
-        children: [
-          {
-            name: 'Đinh Nguyễn Khả Hân',
-            img: '/images/medicals/dinh-nguyen-kha-han.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Duy Khang',
-            img: '/images/medicals/nguyen-duy-khang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Trương Đắc Gia Hưng',
-            img: '/images/medicals/truong-dac-gia-hung.png',
-            id: uuidv4(),
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_BREAKFAST,
-          },
-          {
-            name: 'Trần Lê Thảo Nguyên',
-            img: '/images/medicals/tran-le-thao-nguyen.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Hoàng Minh Đăng',
-            img: '/images/medicals/nguyen-hoang-minh-dang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Trần Ngọc Xuân Anh',
-            img: '/images/medicals/tran-ngoc-xuan-anh.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.AFTER_SECOND_BREAKFAST,
-          },
-          {
-            name: 'Nguyễn Hoàng Minh Đăng',
-            img: '/images/medicals/nguyen-hoang-minh-dang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_SECOND_LUNCH,
-          },
-          {
-            name: 'Nguyễn Duy Khang',
-            img: '/images/medicals/nguyen-duy-khang.png',
-            id: uuidv4(),
-            isActive: true,
-            type: variablesModules.STATUS_TIME_CODE_KEY.BEFORE_TEA_TIME,
-          },
-        ],
-      },
-    ];
+    const loadingSubmit = effects['medicaFollow/RECEIVED'];
     return (
       <>
         <Helmet title="Theo dõi uống thuốc" />
@@ -663,67 +430,81 @@ class Index extends PureComponent {
             )}
           >
             <AvatarTable
-              srcLocal
-              fullName={objects.name}
-              fileImage={objects.img}
-              description={objects.class}
+              fullName={objects?.student?.fullName}
+              fileImage={Helper.getPathAvatarJson(objects?.student?.fileImage)}
+              description={objects?.class?.name}
             />
-            {objects.isActive && HelperModules.tagStatusDrink('DRINK')}
-            {!objects.isActive && HelperModules.tagStatusDrink('NOT_DRINK')}
+            {objects.isReceived && HelperModules.tagStatusDrink('DRINK')}
+            {!objects.isReceived && HelperModules.tagStatusDrink('NOT_DRINK')}
           </div>
           <div className={styles['modal-content']}>
             <h3 className={styles.title}>Thông tin chung</h3>
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <p className={styles.label}>Triệu chứng</p>
-                <p className={styles.norm}>Ho</p>
+                <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
               <div>
                 <p className={styles.label}>Nơi đặt thuốc</p>
-                <p className={styles.norm}>Trong balo</p>
+                <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>
             </div>
             <hr />
             <h3 className={styles.title}>UỐNG THUỐC TRƯỚC ĂN SÁNG</h3>
             <div className={styles.list}>
-              <div className={styles.item}>
-                <div className={styles['image-container']}>
-                  <img className={styles.thumb} src="/images/medical.png" alt="medical" />
-                  <div className="pl10">
-                    <p className={styles.label}>Tên thuốc</p>
-                    <p className={styles.norm}>CEELIN</p>
+              {objects?.medicines?.map(({ id, files, name, note }) => (
+                <div className={styles.item} key={id}>
+                  <div className={styles['image-container']}>
+                    {Helper.isJSON(files) && (
+                      <div>
+                        <Image.PreviewGroup>
+                          {isArray(JSON.parse(files)) &&
+                            JSON.parse(files).map((item, index) => (
+                              <div key={index} className={styles['group-image']}>
+                                <Image
+                                  key={index}
+                                  width={85}
+                                  src={`${API_UPLOAD}${item}`}
+                                  fallback="/default-upload.png"
+                                />
+                              </div>
+                            ))}
+                        </Image.PreviewGroup>
+                      </div>
+                    )}
+                    <div className="pl10">
+                      <p className={styles.label}>Tên thuốc</p>
+                      <p className={styles.norm}>{name}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className={styles.label}>Nội dung</p>
+                    <p className={styles.norm}>{note}</p>
                   </div>
                 </div>
-                <div>
-                  <p className={styles.label}>Nội dung</p>
-                  <p className={styles.norm}>5 ml</p>
-                </div>
-              </div>
-              <div className={styles.item}>
-                <div className={styles['image-container']}>
-                  <img className={styles.thumb} src="/images/medicals/image_01.png" alt="medical" />
-                  <div className="pl10">
-                    <p className={styles.label}>Tên thuốc</p>
-                    <p className={styles.norm}>PROSPAN</p>
-                  </div>
-                </div>
-                <div>
-                  <p className={styles.label}>Nội dung</p>
-                  <p className={styles.norm}>5 ml</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-          <div
-            className={classnames(
-              styles['modal-footer'],
-              'd-flex justify-content-center align-items-center',
-            )}
-          >
-            <Button color="success" size="large" permission="YTE">
-              Xác nhận đã cho uống
-            </Button>
-          </div>
+          {!objects?.isReceived && (
+            <div
+              className={classnames(
+                styles['modal-footer'],
+                'd-flex justify-content-center align-items-center',
+              )}
+            >
+              {!moment().startOf('days').isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
+                <Button
+                  color="success"
+                  size="large"
+                  permission="YTE"
+                  onClick={this.onReceived}
+                  loading={loadingSubmit}
+                >
+                  Xác nhận đã cho uống
+                </Button>
+              )}
+            </div>
+          )}
         </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
@@ -736,11 +517,7 @@ class Index extends PureComponent {
                 ...search,
                 branchId: search.branchId || null,
                 classId: search.classId || null,
-                date: search.creationTimeFrom &&
-                  search.creationTimeTo && [
-                    moment(search.creationTimeFrom),
-                    moment(search.creationTimeTo),
-                  ],
+                date: search.date && moment(search.date),
               }}
               layout="vertical"
               ref={this.formRef}
@@ -773,8 +550,8 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     name="date"
-                    onChange={(event) => this.onChangeDateRank(event, 'date')}
-                    type={variables.RANGE_PICKER}
+                    onChange={(event) => this.onChangeDate(event, 'date')}
+                    type={variables.DATE_PICKER}
                     allowClear={false}
                   />
                 </div>
@@ -782,7 +559,7 @@ class Index extends PureComponent {
             </Form>
             <Table
               columns={this.header(params)}
-              dataSource={DATA_SOURCE}
+              dataSource={data}
               loading={loading}
               className="table-color"
               error={error}
@@ -794,7 +571,7 @@ class Index extends PureComponent {
                 header: this.header(),
                 type: 'table',
               }}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record.id || record?.class?.id}
               scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
@@ -806,7 +583,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  // data: PropTypes.arrayOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
@@ -814,11 +591,13 @@ Index.propTypes = {
   branches: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  configs: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
-  // data: [],
+  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
@@ -826,6 +605,8 @@ Index.defaultProps = {
   branches: [],
   error: {},
   classes: [],
+  configs: [],
+  defaultBranch: {},
 };
 
 export default Index;

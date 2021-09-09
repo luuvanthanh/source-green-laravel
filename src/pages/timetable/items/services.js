@@ -28,4 +28,11 @@ export function get(params = {}) {
   });
 }
 
+export function remove(params = {}) {
+  return request(`/time-tables/${params.id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}
+
 export default get;

@@ -20,12 +20,63 @@ export function detailsNote(data) {
 }
 
 export function getMedical(params = {}) {
-  return request('/medicals', {
+  return request('/medicals/group-by-class', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
       ...Helper.getPagination(params.page, params.limit),
+      isReceived: params.isReceived === false ? 'false' : params.isReceived,
+      from: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.from,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: true,
+      }),
+      to: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.to,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: true,
+      }),
     },
+  });
+}
+
+export function getMedicalTime(params = {}) {
+  return request('/medicals/group-by-class-time', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+      from: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.from,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: true,
+      }),
+      to: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.to,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: true,
+      }),
+    },
+  });
+}
+
+export function reminder(data = {}) {
+  return request(`/medicals/reminder`, {
+    method: 'POST',
+    data,
+    parse: true,
   });
 }
 
@@ -35,6 +86,16 @@ export function listMedicalbyStudent(params = {}) {
     params: {
       ...params,
       ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function getConfigs(_params = {}) {
+  return request('/configs/group-by-type', {
+    method: 'GET',
+    params: {
+      type: 'MEDICAL',
+      invisible: 'false',
     },
   });
 }

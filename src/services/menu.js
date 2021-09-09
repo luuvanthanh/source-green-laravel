@@ -270,13 +270,6 @@ export async function getLeftMenuSchedules() {
           pro: true,
         },
         {
-          title: 'TH điểm danh theo giờ',
-          key: 'hours',
-          url: ['/diem-danh/tong-hop-cong-gio'],
-          permission: [permissions.DD],
-          pro: true,
-        },
-        {
           title: 'Lý do điểm danh',
           key: 'attendances-reasons',
           url: [
@@ -721,6 +714,32 @@ export async function getLeftMenuMedical() {
       icon: 'icon icon-notification',
       permission: [permissions.YTE],
       pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'setting',
+      icon: 'icon icon-setting',
+      permission: [permissions.YTE],
+      children: [
+        {
+          title: 'Nhóm buổi',
+          key: 'config',
+          url: ['/y-te/nhom-buoi', '/y-te/nhom-buoi/them-moi', '/y-te/nhom-buoi/:id/chi-tiet'],
+          permission: [permissions.YTE],
+        },
+        {
+          title: 'Buổi',
+          key: 'byGroup',
+          url: ['/y-te/buoi', '/y-te/buoi/them-moi', '/y-te/buoi/:id/chi-tiet'],
+          permission: [permissions.YTE],
+        },
+        {
+          title: 'Thời gian uống thuốc',
+          key: 'multi-group',
+          url: ['/y-te/thoi-gian-uong-thuoc'],
+          permission: [permissions.YTE],
+        },
+      ],
     },
   ];
 }

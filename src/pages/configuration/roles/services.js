@@ -1,9 +1,9 @@
-import request from '@/utils/requestLogin';
+import request from '@/utils/request';
 import { omit } from 'lodash';
 import { Helper } from '@/utils';
 
 export function get(params = {}) {
-  return request('/api/identity/roles', {
+  return request('/roles', {
     method: 'GET',
     params: {
       ...omit(params, 'page', 'limit'),
@@ -13,7 +13,7 @@ export function get(params = {}) {
 }
 
 export function remove(id) {
-  return request(`/api/identity/roles/${id}`, {
+  return request(`/roles/${id}`, {
     method: 'DELETE',
     parse: true,
   });

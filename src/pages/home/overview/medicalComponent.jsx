@@ -4,14 +4,15 @@ import { Tabs, Modal, Image, Collapse } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import classnames from 'classnames';
 import moment from 'moment';
+import { isArray, omit } from 'lodash';
 import PropTypes from 'prop-types';
+import ScrollContainer from 'react-indiana-drag-scroll';
 
 import { Helper, variables } from '@/utils';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import Table from '@/components/CommonComponent/Table';
 
 import Button from '@/components/CommonComponent/Button';
-import { v4 as uuidv4 } from 'uuid';
 import styles from '../index.scss';
 import variablesModules from '../variables';
 import HelperModules from './utils/Helper';
@@ -19,45 +20,84 @@ import HelperModules from './utils/Helper';
 const { TabPane } = Tabs;
 const Index = memo(({ classId, branchId }) => {
   const dispatch = useDispatch();
-  const [{ medicals }, loading] = useSelector(({ loading: { effects }, overView }) => [
+  const [{ medicals, configs }, loading] = useSelector(({ loading: { effects }, overView }) => [
     overView,
     effects,
   ]);
 
   const [visible, setVisible] = useState(false);
   const [objects, setObjects] = useState({});
+  const [type, setType] = useState(variablesModules.STATUS_TIME.BEFORE_BREAKFAST);
   const [search, setSearch] = useState({
+    classId,
+    branchId,
     page: variables.PAGINATION.PAGE,
     limit: variables.PAGINATION.SIZEMAX,
-    status: variables.STATUS.PROCESSED,
+    status: variablesModules.STATUS.RECEIVED,
   });
 
   const fetchData = () => {
+    if (search.status === variablesModules.STATUS.RECEIVED) {
+      dispatch({
+        type: 'overView/GET_DATA_MEDICAL',
+        payload: {
+          ...omit(search, 'status'),
+          isReceived: false,
+          isSent: true,
+          from: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
+              targetValue: '23:59:59',
+            }),
+            isUTC: false,
+          }),
+          to: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
+              targetValue: '23:59:59',
+            }),
+            isUTC: false,
+          }),
+        },
+      });
+    } else {
+      dispatch({
+        type: 'overView/GET_DATA_MEDICAL_TIME',
+        payload: {
+          ...omit(search, 'status'),
+          from: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
+              targetValue: '23:59:59',
+            }),
+            isUTC: false,
+          }),
+          to: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: moment(),
+              targetValue: '23:59:59',
+            }),
+            isUTC: false,
+          }),
+        },
+      });
+    }
+  };
+
+  const fetchConfigs = () => {
     dispatch({
-      type: 'overView/GET_DATA_MEDICAL',
-      payload: {
-        classId,
-        branchId,
-        ...search,
-        AppliedDateFrom: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-            targetValue: '00:00:00',
-          }),
-          isUTC: false,
-        }),
-        AppliedDateTo: Helper.getDateTime({
-          value: Helper.setDate({
-            ...variables.setDateData,
-            originValue: moment(),
-            targetValue: '23:59:59',
-          }),
-          isUTC: false,
-        }),
-      },
+      type: 'overView/GET_CONFIGS',
+      payload: {},
     });
   };
+
+  useEffect(() => {
+    fetchConfigs();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -83,14 +123,14 @@ const Index = memo(({ classId, branchId }) => {
     const columns = [
       {
         title: 'SÁNG',
-        key: 'class',
-        render: () => 'Trước ăn sáng',
+        key: 'medicineTimeType',
+        render: (record) => record?.medicineTimeType?.description,
       },
       {
-        key: 'parents',
+        key: 'note',
         className: 'min-width-100',
         width: 100,
-        render: () => '5 ml',
+        render: (record) => record.note,
       },
     ];
     return columns;
@@ -102,7 +142,7 @@ const Index = memo(({ classId, branchId }) => {
       key: 'class',
       className: 'min-width-80 max-width-80',
       width: 80,
-      render: () => 'Preschool 1',
+      render: (record) => record?.class?.name,
     },
     {
       title: 'Học sinh',
@@ -112,7 +152,38 @@ const Index = memo(({ classId, branchId }) => {
       align: 'center',
       render: (record) => (
         <div className={styles['list-avatar']}>
-          {record?.children?.map((item, index) => (
+          {record?.items?.map((item, index) => (
+            <div
+              className={styles['item-avatar']}
+              key={index}
+              role="presentation"
+              onClick={() => onShowInfo({ ...item, ...record })}
+            >
+              <AvatarTable fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)} />
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ];
+
+  const headerDrink = () => [
+    {
+      title: 'Lớp',
+      key: 'class',
+      className: 'min-width-80 max-width-80',
+      width: 80,
+      render: (record) => record?.class?.name,
+    },
+    {
+      title: 'Học sinh',
+      key: 'student',
+      className: 'min-width-150',
+      width: 150,
+      align: 'center',
+      render: (record) => (
+        <div className={styles['list-avatar']}>
+          {record?.items?.map((item, index) => (
             <div
               className={styles['item-avatar']}
               key={index}
@@ -120,10 +191,9 @@ const Index = memo(({ classId, branchId }) => {
               onClick={() => onShowInfo({ ...item, ...record })}
             >
               <AvatarTable
-                isBorder={!item.isActive}
-                srcLocal
-                fileImage={item.img}
-                isActive={item.isActive}
+                isBorder={!item.isReceived}
+                isActive={item.isReceived}
+                fileImage={Helper.getPathAvatarJson(item?.student?.fileImage)}
               />
             </div>
           ))}
@@ -132,149 +202,39 @@ const Index = memo(({ classId, branchId }) => {
     },
   ];
 
-  const DATA_SOURCE = [
-    {
-      class: 'Preschool (Demo)',
-      id: uuidv4(),
-      children: [
-        {
-          name: 'Thạch Tuấn Khang',
-          img: '/images/medicals/thach-tuan-khang.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Nguyển Thị Anh Thư (Test)',
-          img: '/images/medicals/nguyen-thi-anh-thu-test.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Lâm Thụy Minh Khuê',
-          img: '/images/medicals/lam-thi-minh-khue.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Nguyễn Khôi Khải Vĩ',
-          img: '/images/medicals/nguyen-khoi-khai-vi.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Ngô Cát Tú Nghi',
-          img: '/images/medicals/ngo-cat-tu-nghi.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Tô Phan Minh Thiện',
-          img: '/images/medicals/to-phan-minh-thien.png',
-          id: uuidv4(),
-        },
-      ],
-    },
-    {
-      class: 'Preschool 2',
-      id: uuidv4(),
-      children: [
-        {
-          name: 'Chen Rui An',
-          img: '/images/medicals/chen-rui-an.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Mai Tuệ Lâm',
-          img: '/images/medicals/mai-tue-lam.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Võ Minh Khôi',
-          img: '/images/medicals/vo-minh-khoi.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Nguyễn Trần Khả Doanh',
-          img: '/images/medicals/nguyen-tran-kha-doanh.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Đặng Ánh Dương',
-          img: '/images/medicals/dang-anh-duong.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-      ],
-    },
-    {
-      class: 'Nursery 1',
-      id: uuidv4(),
-      children: [
-        {
-          name: 'Nguyễn Văn Nhật Minh',
-          img: '/images/medicals/nguyen-van-nhat-minh.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Phương Bùi Cherie',
-          img: '/images/medicals/phuong-bui-cheri.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Mai Ngọc Cát Tường',
-          img: '/images/medicals/mai-ngoc-cat-tuong.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Vũ Trần Bảo Quốc',
-          img: '/images/medicals/vu-tran-quoc-bao.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Nguyễn Hà Anh',
-          img: '/images/medicals/nguyen-ha-anh.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-      ],
-    },
-    {
-      class: 'Nursery 2',
-      id: uuidv4(),
-      children: [
-        {
-          name: 'Đinh Nguyễn Khả Hân',
-          img: '/images/medicals/dinh-nguyen-kha-han.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-        {
-          name: 'Nguyễn Duy Khang',
-          img: '/images/medicals/nguyen-duy-khang.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Trương Đắc Gia Hưng',
-          img: '/images/medicals/truong-dac-gia-hung.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Trần Lê Thảo Nguyên',
-          img: '/images/medicals/tran-le-thao-nguyen.png',
-          id: uuidv4(),
-        },
-        {
-          name: 'Nguyễn Hoàng Minh Đăng',
-          img: '/images/medicals/nguyen-hoang-minh-dang.png',
-          id: uuidv4(),
-          isActive: true,
-        },
-      ],
-    },
-  ];
+  const reminder = () => {
+    dispatch({
+      type: 'overView/REMINDER',
+      payload: {
+        id: objects.id,
+        type: objects.name ? 'DRUNK' : 'RECEIVE',
+        medicineTime: objects.name,
+      },
+      callback: (response) => {
+        if (response) {
+          cancelModal();
+        }
+      },
+    });
+  };
+
+  const changeType = (record) => {
+    setType(record.name);
+  };
+
+  const covertByType = (data) =>
+    data.map((item) => {
+      let object = {};
+      item?.items?.forEach((itemOne) => {
+        if (itemOne?.items?.find((itemTwo) => itemTwo?.name === type)) {
+          object = itemOne?.items?.find((itemTwo) => itemTwo?.name === type) || {};
+        }
+      });
+      return {
+        ...item,
+        ...object,
+      };
+    });
 
   return (
     <>
@@ -293,21 +253,20 @@ const Index = memo(({ classId, branchId }) => {
           )}
         >
           <AvatarTable
-            srcLocal
-            fullName={objects.name}
-            fileImage={objects.img}
-            description={objects.class}
+            fullName={objects?.student?.fullName}
+            fileImage={Helper.getPathAvatarJson(objects?.student?.fileImage)}
+            description={objects?.class?.name}
           />
-          {search?.status === variablesModules.STATUS.PROCESSED && (
+          {search?.status === variablesModules.STATUS.RECEIVED && (
             <>
-              {objects.isActive && HelperModules.tagStatus('RECEIVED')}
-              {!objects.isActive && HelperModules.tagStatus('NOT_RECEIVED')}
+              {objects.isReceived && HelperModules.tagStatus('RECEIVED')}
+              {!objects.isReceived && HelperModules.tagStatus('NOT_RECEIVED')}
             </>
           )}
-          {search?.status === variablesModules.STATUS.PENDING && (
+          {search?.status === variablesModules.STATUS.DRINK && (
             <>
-              {objects.isActive && HelperModules.tagStatusDrink('DRINK')}
-              {!objects.isActive && HelperModules.tagStatusDrink('NOT_DRINK')}
+              {objects.isReceived && HelperModules.tagStatusDrink('DRINK')}
+              {!objects.isReceived && HelperModules.tagStatusDrink('NOT_DRINK')}
             </>
           )}
         </div>
@@ -317,103 +276,113 @@ const Index = memo(({ classId, branchId }) => {
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <p className={styles.label}>Triệu chứng</p>
-                <p className={styles.norm}>Ho</p>
+                <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
               <div>
                 <p className={styles.label}>Nơi đặt thuốc</p>
-                <p className={styles.norm}>Trong balo</p>
+                <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>
             </div>
             <hr />
-            <h3 className={styles.title}>Thông tin thuốc</h3>
-            <Collapse
-              defaultActiveKey={['1']}
-              className={styles['collapse-container']}
-              expandIconPosition="right"
-            >
-              <Collapse.Panel
-                header={<div className={styles['container-header']}>CEELIN</div>}
-                key="1"
-              >
-                <p className={styles.label}>Tên thuốc</p>
-                <p className={styles.norm}>PROSPAN</p>
-                <hr />
-                <p className={styles.label}>Thời gian uống</p>
-                <Table
-                  columns={headerMedical()}
-                  dataSource={[{ id: 1 }]}
-                  pagination={false}
-                  params={{
-                    header: headerMedical(),
-                    type: 'table',
-                  }}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: '100%' }}
-                  className="mb10"
-                />
-                <p className={styles.label}>Ngày uống:</p>
-                <p className={styles.label}>08/08 - 10/08</p>
-                <hr />
-                <div>
-                  <label className={styles.label}>Hình ảnh:</label>
-                  <div className="d-flex">
-                    <Image.PreviewGroup>
-                      {[1, 2, 3].map((item, index) => (
-                        <div key={index} className={styles['group-image']}>
-                          <Image
-                            key={index}
-                            width={85}
-                            src="/images/medicals/image_01.png"
-                            fallback="/default-upload.png"
-                          />
+            {search?.status === variablesModules.STATUS.RECEIVED && (
+              <>
+                <h3 className={styles.title}>Thông tin thuốc</h3>
+                <Collapse
+                  defaultActiveKey={[0]}
+                  className={styles['collapse-container']}
+                  expandIconPosition="right"
+                >
+                  {objects?.medicines?.map(
+                    ({ name, fromDate, toDate, files, medicineTimes }, index) => (
+                      <Collapse.Panel
+                        header={<div className={styles['container-header']}>{name}</div>}
+                        key={index}
+                      >
+                        <p className={styles.label}>Tên thuốc</p>
+                        <p className={styles.norm}>{name}</p>
+                        <hr />
+                        <p className={styles.label}>Thời gian uống</p>
+                        <Table
+                          columns={headerMedical()}
+                          dataSource={medicineTimes}
+                          pagination={false}
+                          params={{
+                            header: headerMedical(),
+                            type: 'table',
+                          }}
+                          rowKey={(record) => record.id}
+                          scroll={{ x: '100%' }}
+                          className="mb10"
+                        />
+                        <p className={styles.label}>Ngày uống:</p>
+                        <p className={styles.label}>
+                          {Helper.getDateRank(fromDate, toDate, variables.DATE_FORMAT.DATE_MONTH)}
+                        </p>
+                        <hr />
+                        {Helper.isJSON(files) && (
+                          <div>
+                            <label className={styles.label}>Hình ảnh:</label>
+                            <div className="d-flex">
+                              <Image.PreviewGroup>
+                                {isArray(JSON.parse(files)) &&
+                                  JSON.parse(files).map((item, index) => (
+                                    <div key={index} className={styles['group-image']}>
+                                      <Image
+                                        key={index}
+                                        width={85}
+                                        src={`${API_UPLOAD}${item}`}
+                                        fallback="/default-upload.png"
+                                      />
+                                    </div>
+                                  ))}
+                              </Image.PreviewGroup>
+                            </div>
+                          </div>
+                        )}
+                      </Collapse.Panel>
+                    ),
+                  )}
+                </Collapse>
+              </>
+            )}
+            {search.status === variablesModules.STATUS.DRINK && (
+              <>
+                <h3 className={styles.title}>UỐNG THUỐC TRƯỚC ĂN SÁNG</h3>
+                <div className={styles.list}>
+                  {objects?.medicines?.map(({ id, files, name, note }) => (
+                    <div className={styles.item} key={id}>
+                      <div className={styles['image-container']}>
+                        {Helper.isJSON(files) && (
+                          <div>
+                            <Image.PreviewGroup>
+                              {isArray(JSON.parse(files)) &&
+                                JSON.parse(files).map((item, index) => (
+                                  <div key={index} className={styles['group-image']}>
+                                    <Image
+                                      key={index}
+                                      width={85}
+                                      src={`${API_UPLOAD}${item}`}
+                                      fallback="/default-upload.png"
+                                    />
+                                  </div>
+                                ))}
+                            </Image.PreviewGroup>
+                          </div>
+                        )}
+                        <div className="pl10">
+                          <p className={styles.label}>Tên thuốc</p>
+                          <p className={styles.norm}>{name}</p>
                         </div>
-                      ))}
-                    </Image.PreviewGroup>
-                  </div>
+                      </div>
+                      <div>
+                        <p className={styles.label}>Nội dung</p>
+                        <p className={styles.norm}>{note}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </Collapse.Panel>
-              <Collapse.Panel
-                header={<div className={styles['container-header']}>CEELIN</div>}
-                key="2"
-              >
-                <p className={styles.label}>Tên thuốc</p>
-                <p className={styles.norm}>PROSPAN</p>
-                <hr />
-                <p className={styles.label}>Thời gian uống</p>
-                <Table
-                  columns={headerMedical()}
-                  dataSource={[{ id: 1 }]}
-                  pagination={false}
-                  params={{
-                    header: headerMedical(),
-                    type: 'table',
-                  }}
-                  rowKey={(record) => record.id}
-                  scroll={{ x: '100%' }}
-                  className="mb10"
-                />
-                <p className={styles.label}>Ngày uống:</p>
-                <p className={styles.label}>08/08 - 10/08</p>
-                <hr />
-                <div>
-                  <label className={styles.label}>Hình ảnh:</label>
-                  <div className="d-flex">
-                    <Image.PreviewGroup>
-                      {[1, 2, 3].map((item, index) => (
-                        <div key={index} className={styles['group-image']}>
-                          <Image
-                            key={index}
-                            width={85}
-                            src="/images/medicals/image_01.png"
-                            fallback="/default-upload.png"
-                          />
-                        </div>
-                      ))}
-                    </Image.PreviewGroup>
-                  </div>
-                </div>
-              </Collapse.Panel>
-            </Collapse>
+              </>
+            )}
           </div>
         </Scrollbars>
 
@@ -423,7 +392,13 @@ const Index = memo(({ classId, branchId }) => {
             'd-flex justify-content-center align-items-center',
           )}
         >
-          <Button color="success" size="large" permission="YTE">
+          <Button
+            color="success"
+            size="large"
+            permission="YTE"
+            onClick={reminder}
+            loading={loading['overView/REMINDER']}
+          >
             Nhắc nhở
           </Button>
         </div>
@@ -446,14 +421,14 @@ const Index = memo(({ classId, branchId }) => {
               <TabPane tab={name} key={id} />
             ))}
           </Tabs>
-          {search?.status === variablesModules.STATUS.PROCESSED && (
+          {search?.status === variablesModules.STATUS.RECEIVED && (
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
               <Table
                 bordered
                 columns={header()}
-                dataSource={DATA_SOURCE}
+                dataSource={medicals}
                 pagination={false}
-                loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
+                loading={loading['overView/GET_DATA_MEDICAL']}
                 className="table-attendances"
                 childrenColumnName="noColumn"
                 params={{
@@ -461,38 +436,43 @@ const Index = memo(({ classId, branchId }) => {
                   type: 'table',
                 }}
                 isEmpty
-                rowKey={(record) => record.id}
+                rowKey={(record) => record?.class?.id || record.id}
                 scroll={{ x: '100%' }}
               />
             </Scrollbars>
           )}
-          {search?.status === variablesModules.STATUS.PENDING && (
+          {search?.status === variablesModules.STATUS.DRINK && (
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 355}>
-              <div className={styles['tab-container']}>
-                <div className={classnames(styles['tab-item'], styles.active)}>
-                  <span>Trước ăn sáng</span>
+              <ScrollContainer>
+                <div className={styles['tab-container']}>
+                  {configs.map((item) => (
+                    <div
+                      className={classnames(styles['tab-item'], {
+                        [styles.active]: item.name === type,
+                      })}
+                      key={item.id}
+                      role="presentation"
+                      onClick={() => changeType(item)}
+                    >
+                      <span>{item.description}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className={styles['tab-item']}>
-                  <span>Sau ăn sáng</span>
-                </div>
-                <div className={styles['tab-item']}>
-                  <span>Trước xế sáng</span>
-                </div>
-              </div>
+              </ScrollContainer>
               <Table
                 bordered
-                columns={header()}
-                dataSource={DATA_SOURCE}
+                columns={headerDrink()}
+                dataSource={covertByType(medicals) || []}
                 pagination={false}
-                loading={loading['overView/GET_CLASS_ATTENDANCE_SUMMARY']}
+                loading={loading['overView/GET_DATA_MEDICAL_TIME']}
                 className="table-attendances"
                 childrenColumnName="noColumn"
                 params={{
-                  header: header(),
+                  header: headerDrink(),
                   type: 'table',
                 }}
                 isEmpty
-                rowKey={(record) => record.id}
+                rowKey={(record) => record?.class?.id || record.id}
                 scroll={{ x: '100%' }}
               />
             </Scrollbars>

@@ -42,4 +42,10 @@ export function remove(id) {
   });
 }
 
+export function getDetails(params) {
+  return request(`/time-tables/${params.id}`, {
+    method: 'GET',
+  });
+}
+
 export default get;

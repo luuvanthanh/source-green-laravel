@@ -107,7 +107,7 @@ export default {
     }),
     SET_ROLES: (state, { payload }) => ({
       ...state,
-      roles: payload.items,
+      roles: payload,
     }),
     SET_DETAILS_ACCOUNT: (state, { payload }) => ({
       ...state,
@@ -366,7 +366,7 @@ export default {
         const response = yield saga.call(categories.getRoles, payload);
         yield saga.put({
           type: 'SET_ROLES',
-          payload: response,
+          payload: response.items,
         });
       } catch (error) {
         yield saga.put({

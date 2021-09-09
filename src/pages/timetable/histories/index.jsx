@@ -4,7 +4,7 @@ import { Form, Spin } from 'antd';
 import { useLocation, useHistory } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import moment from 'moment';
-import { debounce, isEmpty, map } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -13,13 +13,14 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import { variables, Helper } from '@/utils';
+import variablesModules from '../utils/variables';
 
 const Index = memo(() => {
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, timeTableHistory }) => [
-    timeTableHistory,
-    effects,
-  ]);
+  const [
+    { pagination, error, data },
+    loading,
+  ] = useSelector(({ loading: { effects }, timeTableHistory }) => [timeTableHistory, effects]);
 
   const mounted = useRef(false);
   const history = useHistory();
@@ -30,8 +31,8 @@ const Index = memo(() => {
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     employeeId: query?.employeeId || '',
     actionId: query?.actionId || '',
-    fromDate: query?.fromDate || '',
-    toDate: query?.toDate || '',
+    fromDate: query?.fromDate || moment().startOf('months'),
+    toDate: query?.toDate || moment().endOf('months'),
   });
   const [employee, setEmployee] = useState([]);
 
@@ -39,8 +40,8 @@ const Index = memo(() => {
     {
       title: 'Thời gian',
       key: 'creationTime',
-      className: 'min-width-200',
-      with: 200,
+      className: 'min-width-150',
+      with: 150,
       render: (record) => (
         <Text size="normal">
           {Helper.getDate(record?.logTime, variables.DATE_FORMAT.TIME_DATE_VI)}
@@ -52,24 +53,20 @@ const Index = memo(() => {
       key: 'name',
       className: 'min-width-200',
       with: 200,
-      render: (record) => (
-        <Text size="normal">{record?.editor?.name || ''}</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.editor?.name || ''}</Text>,
     },
     {
       title: 'Hành động',
       key: 'action',
       className: 'min-width-200',
       with: 200,
-      render: (record) => (
-        <Text size="normal">{record?.editor?.name || ''}</Text>
-      ),
+      render: (record) => <Text size="normal">{variablesModules.ACTION[record.method]}</Text>,
     },
     {
       title: 'Nội dung',
       key: 'content',
       className: 'min-width-400',
-      render: (record) => !isEmpty(record?.editedStudentPhysicals) ? `Nhập thể chất cho ${map(record?.editedStudentPhysicals, 'student.fullName').join(', ')}` : '',
+      render: (record) => record?.contents?.join(', '),
     },
   ];
 
@@ -77,7 +74,7 @@ const Index = memo(() => {
    * Function set pagination
    * @param {integer} page page of pagination
    * @param {integer} size size of pagination
-  */
+   */
   const changePagination = ({ page, limit }) => {
     setSearch((prevSearch) => ({
       ...prevSearch,
@@ -90,13 +87,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilter = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -124,7 +122,11 @@ const Index = memo(() => {
       },
       callback: (res) => {
         if (res) {
-          setEmployee(!isEmpty(res?.parsePayload) ? [{id: '', fullName: 'Tất cả nhân viên'}, ...res?.parsePayload] : []);
+          setEmployee(
+            !isEmpty(res?.parsePayload)
+              ? [{ id: '', fullName: 'Tất cả nhân viên' }, ...res?.parsePayload]
+              : [],
+          );
         }
       },
     });
@@ -145,7 +147,11 @@ const Index = memo(() => {
     });
     history.push({
       pathname,
-      query: Helper.convertParamSearch(search),
+      query: Helper.convertParamSearch({
+        ...search,
+        fromDate: Helper.getDate(query?.fromDate, variables.DATE_FORMAT.DATE_AFTER),
+        toDate: Helper.getDate(query?.toDate, variables.DATE_FORMAT.DATE_AFTER),
+      }),
     });
   }, [search]);
 
@@ -174,17 +180,24 @@ const Index = memo(() => {
                 ],
                 branchId: search.branchId || null,
                 classId: search.classId || null,
+                actionId: search.actionId || null,
               }}
             >
               <Pane className="row">
                 <Pane className="col-lg-3">
                   <FormItem
                     name="employeeId"
-                    data={loading['categories/GET_TEACHERS'] ? [] : employee.map(item => ({ ...item, name: item?.fullName || '-' }))}
+                    data={
+                      loading['categories/GET_TEACHERS']
+                        ? []
+                        : employee.map((item) => ({ ...item, name: item?.fullName || '-' }))
+                    }
                     type={variables.SELECT}
                     onChange={(value) => changeFilter('employeeId', value)}
                     onSearch={onSearch}
-                    notFoundContent={loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null}
+                    notFoundContent={
+                      loading['categories/GET_TEACHERS'] ? <Spin size="small" /> : null
+                    }
                     filterOption
                     placeholder="Chọn nhân viên"
                   />
@@ -192,11 +205,15 @@ const Index = memo(() => {
                 <Pane className="col-lg-3">
                   <FormItem
                     name="actionId"
-                    data={[]}
+                    data={[
+                      { id: null, name: 'Chọn tất cả hành động' },
+                      ...variablesModules.ACTIONS,
+                    ]}
                     type={variables.SELECT}
                     onChange={(value) => changeFilter('actionId', value)}
                     filterOption
                     placeholder="Chọn hành động"
+                    allowClear={false}
                   />
                 </Pane>
                 <Pane className="col-lg-3">
@@ -204,6 +221,7 @@ const Index = memo(() => {
                     name="rangeTime"
                     type={variables.RANGE_PICKER}
                     onChange={changeFilterDate}
+                    allowClear={false}
                   />
                 </Pane>
               </Pane>

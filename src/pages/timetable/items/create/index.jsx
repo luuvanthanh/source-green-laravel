@@ -7,6 +7,7 @@ import { connect, history, withRouter } from 'umi';
 import { head, isEmpty, omit } from 'lodash';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'dva';
+import moment from 'moment';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -39,18 +40,24 @@ const Index = memo(
 
     const onFinish = (values) => {
       const payload = {
+        ...params,
         ...omit(values, 'date'),
         fromDate: values.date[0],
         toDate: values.date[1],
-        timetableWeeks: values.timetableWeeks.map((item) => ({
+        timetableWeeks: values?.timetableWeeks?.map((item) => ({
           dayOfWeek: item,
         })),
-        classTimetables: values.classTimetables.map((item) => ({
+        classTimetables: values?.classTimetables?.map((item) => ({
           classId: item,
+        })),
+        timetableDetails: values?.timetableDetails?.map((item) => ({
+          content: item.content,
+          fromTime: item.fromTime,
+          toTime: item.toTime,
         })),
       };
       dispatch({
-        type: 'timeTablesAdd/ADD',
+        type: params.id ? 'timeTablesAdd/UPDATE' : 'timeTablesAdd/ADD',
         payload,
         callback: (response, err) => {
           if (response) {
@@ -89,28 +96,54 @@ const Index = memo(
     };
 
     useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'timeTablesAdd/GET_DETAILS',
+          payload: params,
+          callback: (response) => {
+            onChangeBranch(response.branchId);
+            formRef.current.setFieldsValue({
+              date: [moment(response.fromDate), moment(response.fromDate)],
+              timetableWeeks: response.timetableWeeks.map((item) => item.dayOfWeek),
+              branchId: response.branchId,
+              timetableDetails: response.timetableDetails.map((item) => ({
+                ...item,
+                fromTime: moment(item.fromTime),
+                toTime: moment(item.toTime),
+              })),
+              classTimetables: response.classTimetables.map((item) => item?.class?.id),
+            });
+          },
+        });
+      }
+    }, [params.id]);
+
+    useEffect(() => {
       mounted.current = true;
       return mounted.current;
     }, []);
 
     return (
       <>
-        <Breadcrumbs last="Tạo thời khóa biểu " menu={menuLeft} />
+        <Breadcrumbs
+          last={params.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'}
+          menu={menuLeft}
+        />
         <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <Form
-              layout="vertical"
-              ref={formRef}
-              onFinish={onFinish}
-              initialValues={{
-                timetableDetails: [{}],
-              }}
-            >
+          <Form
+            layout="vertical"
+            ref={formRef}
+            onFinish={onFinish}
+            initialValues={{
+              timetableDetails: [{}],
+            }}
+          >
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
               <Pane className="row">
                 <Pane className="col-lg-6">
                   <Pane className="card" style={{ padding: 20 }}>
                     <Heading type="form-title" style={{ marginBottom: 20 }}>
-                      Tạo thời khóa biểu
+                      {params.id ? 'Chỉnh sửa thời khóa biểu' : 'Tạo thời khóa biểu'}
                     </Heading>
 
                     <Pane className={csx('row', 'border-bottom', 'mb20')}>
@@ -123,7 +156,7 @@ const Index = memo(
                           data={variablesModules.DAYS}
                         />
                       </Pane>
-                      <Pane className="col-lg-6">
+                      <Pane className="col-lg-8">
                         <FormItem
                           label="Khoảng thời gian áp dụng"
                           name="date"
@@ -134,7 +167,7 @@ const Index = memo(
                     </Pane>
 
                     <Pane className={csx('row', 'border-bottom', 'mb20')}>
-                      <Pane className="col-lg-6">
+                      <Pane className="col-lg-8">
                         <FormItem
                           label="Cơ sở áp dụng"
                           name="branchId"
@@ -252,14 +285,14 @@ const Index = memo(
                         style={{ marginLeft: 'auto' }}
                         loading={loadingSubmit}
                       >
-                        Tạo
+                        Lưu
                       </Button>
                     </Pane>
                   </Pane>
                 </Pane>
               </Pane>
-            </Form>
-          </Loading>
+            </Loading>
+          </Form>
         </Pane>
       </>
     );

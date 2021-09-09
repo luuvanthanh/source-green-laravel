@@ -60,6 +60,14 @@ export default {
         });
       }
     },
+    *GET_DETAILS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getDetails, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);

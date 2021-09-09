@@ -22,9 +22,14 @@ const Index = memo(() => {
   const mountedSet = (f) => (v) => mounted?.current && f(v);
 
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalStudents }) => [
+  const [
+    { pagination, error, data },
+    loading,
+    { defaultBranch },
+  ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
     physicalStudents,
     effects,
+    user,
   ]);
 
   const history = useHistory();
@@ -39,8 +44,8 @@ const Index = memo(() => {
   const [search, setSearch] = useState({
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-    keyWord : query?.keyWord ,
-    branchId: query?.branchId,
+    branchId: query?.branchId || defaultBranch?.id,
+    keyWord: query?.keyWord,
     classId: query?.classId,
   });
 
@@ -55,48 +60,51 @@ const Index = memo(() => {
           fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
           fullName={record?.student?.fullName || ''}
         />
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => (
-        <Text size="normal">{record?.student?.age || 0} tháng</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.student?.age || 0} tháng</Text>,
     },
     {
       title: 'Giới tính',
       key: 'gender',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => variables.GENDERS[record?.student?.sex] || ''
+      render: (record) => variables.GENDERS[record?.student?.sex] || '',
     },
     {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-200',
       with: 200,
-      render: (record) => record?.student?.class?.branch?.name || ''
+      render: (record) => record?.student?.class?.branch?.name || '',
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-200',
-      render: (record) => record?.student?.class?.name || ''
+      render: (record) => record?.student?.class?.name || '',
     },
     {
       title: 'Chiều cao (cm)',
       key: 'height',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => record?.height?.value ? (
-        <>
-          <span className="font-weight-bold mr5">{record?.height?.value}</span>
-          <span>({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})</span>
-        </>
-      ) : ''
+      render: (record) =>
+        record?.height?.value ? (
+          <>
+            <span className="font-weight-bold mr5">{record?.height?.value}</span>
+            <span>
+              ({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
+            </span>
+          </>
+        ) : (
+          ''
+        ),
     },
     {
       title: 'Cân nặng (kg)',
@@ -106,9 +114,12 @@ const Index = memo(() => {
           key: 'present',
           className: 'min-width-120',
           align: 'center',
-          render: (record) => record?.weight?.value ? (
-            <span className="font-weight-bold text-danger">{record?.weight?.value || 30}</span>
-          ) : ''
+          render: (record) =>
+            record?.weight?.value ? (
+              <span className="font-weight-bold text-danger">{record?.weight?.value || 30}</span>
+            ) : (
+              ''
+            ),
         },
         {
           title: 'Cần đạt',
@@ -116,10 +127,12 @@ const Index = memo(() => {
           className: 'min-width-120',
           align: 'center',
           render: (record) => (
-            <span className="font-weight-bold text-success">{record?.recommendWeight ? record?.recommendWeight.toFixed(1) : 0}</span>
-          )
+            <span className="font-weight-bold text-success">
+              {record?.recommendWeight ? record?.recommendWeight.toFixed(1) : 0}
+            </span>
+          ),
         },
-      ]
+      ],
     },
     {
       key: 'action',
@@ -156,13 +169,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -198,7 +212,7 @@ const Index = memo(() => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       [name]: value,
-      classId: undefined
+      classId: undefined,
     }));
   }, 300);
 
@@ -229,7 +243,7 @@ const Index = memo(() => {
       type: 'physicalStudents/GET_DATA',
       payload: {
         ...search,
-        isUnderWeight: 'true'
+        isUnderWeight: 'true',
       },
     });
     history.push({
@@ -241,7 +255,6 @@ const Index = memo(() => {
   useEffect(() => {
     fetchBranches();
   }, []);
-
 
   return (
     <>

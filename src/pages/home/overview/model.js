@@ -21,6 +21,7 @@ export default {
     },
     classAttendanceSummary: [],
     classDetails: {},
+    configs: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -37,6 +38,10 @@ export default {
       detailsNote: payload,
     }),
     SET_DATA_MEDICAL: (state, { payload }) => ({
+      ...state,
+      medicals: payload.parsePayload,
+    }),
+    SET_DATA_MEDICAL_TIME: (state, { payload }) => ({
       ...state,
       medicals: payload.parsePayload,
     }),
@@ -81,8 +86,26 @@ export default {
         pagination: payload.pagination,
       },
     }),
+    SET_CONFIGS: (state, { payload }) => ({
+      ...state,
+      configs: payload.reduce((summary, item) => summary.concat(item.items), []),
+    }),
   },
   effects: {
+    *GET_CONFIGS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getConfigs, payload);
+        yield saga.put({
+          type: 'SET_CONFIGS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_DATA_NOTE({ payload }, saga) {
       try {
         const response = yield saga.call(services.getNote, payload);
@@ -117,6 +140,28 @@ export default {
           },
         });
       } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *GET_DATA_MEDICAL_TIME({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getMedicalTime, payload);
+        yield saga.put({
+          type: 'SET_DATA_MEDICAL_TIME',
+          payload: {
+            parsePayload: response.items,
+          },
+        });
+      } catch (error) {
+        // continue regardless of error
+      }
+    },
+    *REMINDER({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.reminder, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
         // continue regardless of error
       }
     },

@@ -28,13 +28,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ healthStaticstic, loading }) => ({
+const mapStateToProps = ({ healthStaticstic, loading, user }) => ({
   loading,
   data: healthStaticstic.data,
   pagination: healthStaticstic.pagination,
   branches: healthStaticstic.branches,
   classes: healthStaticstic.classes,
   students: healthStaticstic.students,
+  defaultBranch: user.defaultBranch,
   criteriaGroupProperties: healthStaticstic.criteriaGroupProperties,
 });
 @connect(mapStateToProps)
@@ -45,13 +46,14 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
-        branchId: query.branchId,
         classId: query.classId,
         studentId: query.studentId,
         propertyId: query.propertyId,
+        branchId: query.branchId || defaultBranch?.id,
         fromDate:
           query?.fromDate && moment(query?.fromDate).format(variables.DATE_FORMAT.DATE_AFTER),
         toDate: query?.toDate && moment(query?.toDate).format(variables.DATE_FORMAT.DATE_AFTER),
@@ -450,6 +452,7 @@ Index.propTypes = {
   students: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -459,6 +462,7 @@ Index.defaultProps = {
   students: [],
   branches: [],
   classes: [],
+  defaultBranch: {},
 };
 
 export default Index;

@@ -14,10 +14,12 @@ import {
 import { notification, Modal } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import Cookies from 'universal-cookie';
 import Tag from '@/components/CommonComponent/Tag';
 import L from 'leaflet';
 import { variables } from './variables';
 
+const cookies = new Cookies();
 const { confirm } = Modal;
 export default class Helpers {
   static tagStatus = (type, statusName) => {
@@ -44,7 +46,13 @@ export default class Helpers {
 
   static getPrice = (value, number = 0, unit = false) => {
     if (value) {
-      return `${`${parseFloat(value).toFixed(number)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${
+      const dots = toString(value)?.split('.');
+      if (size(dots) >= 2) {
+        return `${`${parseFloat(value).toFixed(number)}`.replace(variables.REGEX_NUMBER, ',')}${
+          unit ? '' : ` đ`
+        }`;
+      }
+      return `${`${parseFloat(value).toFixed(0)}`.replace(variables.REGEX_NUMBER, ',')}${
         unit ? '' : ` đ`
       }`;
     }
@@ -565,11 +573,16 @@ export default class Helpers {
       return other;
     });
 
-  static exportExcel = async (path, paramSearch, nameFile = 'total.xlsx') => {
+  static exportExcel = async (
+    path,
+    paramSearch,
+    nameFile = 'total.xlsx',
+    prefix = API_URL_LAVAREL,
+  ) => {
     const params = {
       ...pickBy(paramSearch, (value) => value),
     };
-    const url = new URL(`${API_URL_LAVAREL}${path}`);
+    const url = new URL(`${prefix}${path}`);
     Object.keys(params).forEach((key) => {
       if (params[key]) {
         url.searchParams.append(key, params[key]);
@@ -577,6 +590,9 @@ export default class Helpers {
     });
     await fetch(url, {
       method: 'GET',
+      headers: {
+        Authorization: `Bearer ${cookies.get('access_token')}`,
+      },
     })
       .then((response) => {
         if (response.status >= 200 && response.status < 300) {

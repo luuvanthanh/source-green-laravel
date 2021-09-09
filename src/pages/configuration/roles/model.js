@@ -5,7 +5,9 @@ export default {
   namespace: 'configurationRoles',
   state: {
     data: [],
-    pagination: {},
+    pagination: {
+      total: 0,
+    },
     error: {
       isError: false,
       data: {},

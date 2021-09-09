@@ -35,13 +35,14 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ scheduleStudents, loading }) => ({
+const mapStateToProps = ({ scheduleStudents, loading, user }) => ({
+  loading,
   data: scheduleStudents.data,
   category: scheduleStudents.category,
   pagination: scheduleStudents.pagination,
   branches: scheduleStudents.branches,
   classes: scheduleStudents.classes,
-  loading,
+  defaultBranch: user.defaultBranch,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
@@ -53,10 +54,11 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
-        branchId: query?.branchId,
+        branchId: query?.branchId || defaultBranch?.id,
         classId: query?.classId,
         type: query?.type || 'DATE',
         page: query?.page || variables.PAGINATION.PAGE,
@@ -455,13 +457,13 @@ class Index extends PureComponent {
   };
 
   renderWorkShift = (record = [], dayOfWeek = moment(), user = {}) => {
-    if (moment(dayOfWeek).isoWeekday() > 6) {
+    if (moment(dayOfWeek).isoWeekday() >= 6) {
       return (
         <div
           className={classnames(stylesChildren['cell-content'], {
             [stylesChildren[`cell-heading-weekend`]]: moment(dayOfWeek).isoWeekday() >= 6,
           })}
-         />
+        />
       );
     }
 
@@ -597,7 +599,7 @@ class Index extends PureComponent {
           />
         ),
         key: 'fullName',
-        className: 'pl10 pr10 min-width-200',
+        className: 'pl10 pr10 min-width-250',
         render: (record) => (
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
@@ -913,6 +915,7 @@ Index.propTypes = {
   category: PropTypes.objectOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -925,6 +928,7 @@ Index.defaultProps = {
   category: {},
   classes: [],
   branches: [],
+  defaultBranch: {},
 };
 
 export default Index;

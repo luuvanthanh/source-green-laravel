@@ -1,21 +1,21 @@
-import request from '@/utils/requestLogin';
+import request from '@/utils/request';
 
 export function add(data) {
-  return request('/api/identity/roles', {
+  return request('/roles', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data) {
-  return request(`/api/identity/roles/${data.id}`, {
+  return request(`/roles/${data.id}`, {
     method: 'PUT',
     data,
   });
 }
 
-export function details(id) {
-  return request(`/api/identity/roles/${id}`, {
+export function details(params) {
+  return request(`/roles/${params.id}`, {
     method: 'GET',
   });
 }

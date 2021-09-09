@@ -26,7 +26,7 @@ class Index extends PureComponent {
     cookies.remove('access_token', { path: '/' });
     cookies.remove('token_type', { path: '/' });
     dispatch({
-      type: 'user/login',
+      type: 'user/LOGIN',
       payload: {
         ...values,
         grant_type: 'password',
@@ -40,7 +40,7 @@ class Index extends PureComponent {
     const {
       loading: { effects },
     } = this.props;
-    const loading = effects['user/login'];
+    const loading = effects['user/LOGIN'];
     return (
       <div className={classnames(styles.block, 'login-container')}>
         <Helmet title="Login" />

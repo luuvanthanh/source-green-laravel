@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Modal } from 'antd';
+import { Form, Modal, message, Upload } from 'antd';
 import { useSelector, useDispatch } from 'dva';
 import { useHistory, useParams, useLocation } from 'umi';
 import { head, isEmpty, last, omit, size } from 'lodash';
@@ -59,6 +59,8 @@ const Index = memo(() => {
                   ...menuMealDetails,
                   ...itemMenuDetail.week.map((itemWeek) => ({
                     ...itemWeek,
+                    id: itemMenuDetail.id,
+                    isAdd: itemMenuDetail.isAdd,
                     foodOrderIndex: itemMenuDetail.foodOrderIndex,
                   })),
                 ];
@@ -68,6 +70,7 @@ const Index = memo(() => {
                 ...itemTimeline,
                 menuMealDetails,
                 mealId: itemMenu.mealId,
+                originId: itemMenu.originId,
               };
             }),
           ];
@@ -83,9 +86,15 @@ const Index = memo(() => {
       toDate: Helper.getDate(toDate, variables.DATE_FORMAT.DATE_AFTER),
       menuType: 'STUDENT',
       menuMeals: menuMeals.map((item) => ({
-        ...omit(item, 'timeline', 'id'),
-        menuMealDetails: item.menuMealDetails || undefined,
+        ...omit(item, 'timeline', 'isAdd', 'originId'),
+        menuMealDetails:
+          item?.menuMealDetails?.map((menuItem) => ({
+            ...(menuItem.isAdd
+              ? omit(menuItem, 'id', 'isAdd')
+              : { ...omit(menuItem, 'originId'), id: menuItem.originId }),
+          })) || undefined,
         name: item.menuMealDetails ? item.name : undefined,
+        id: item.originId,
       })),
     };
     dispatch({
@@ -142,6 +151,37 @@ const Index = memo(() => {
     });
   };
 
+  const importExcel = (file) => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        input: file,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      dispatch({
+        type: 'kitchenMenusCreate/IMPORT_EXCEL',
+        payload,
+        callback: (response) => {
+          if (response) {
+            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
+              weekIndex: item.week,
+              menuMeals: meals.map((itemMeal) => ({
+                weekIndex: item.week,
+                mealId: itemMeal.id,
+                name: itemMeal.name,
+                timeline: [],
+              })),
+            }));
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
+            setWeeksKitchen(weeks);
+          }
+        },
+      });
+    });
+  };
+
   const remove = () => {
     Helper.confirmAction({
       callback: () => {
@@ -166,6 +206,7 @@ const Index = memo(() => {
       if (!o[el.weekIndex]) {
         o[el.weekIndex] = {
           weekIndex: el.weekIndex,
+          originId: el.id,
           menuMeals: [],
         };
         r.push(o[el.weekIndex]);
@@ -182,6 +223,7 @@ const Index = memo(() => {
         o[el.mealId] = {
           mealId: el.mealId,
           name: el?.meal?.name,
+          originId: el?.id,
           timeline: [],
         };
         r.push(o[el.mealId]);
@@ -199,13 +241,16 @@ const Index = memo(() => {
       if (!o[el.foodOrderIndex]) {
         o[el.foodOrderIndex] = {
           foodOrderIndex: el.foodOrderIndex,
-          id: uuidv4(),
+          id: el?.id || uuidv4(),
+          originId: el.id,
           week: [],
         };
         r.push(o[el.foodOrderIndex]);
       }
       o[el.foodOrderIndex].week.push({
         dayOfWeek: el.dayOfWeek,
+        id: el?.id || uuidv4(),
+        originId: el.id,
         foodId: el.foodId,
       });
       return r;
@@ -334,6 +379,7 @@ const Index = memo(() => {
                               ? last(itemTimeline?.menuMealDetails)?.foodOrderIndex + 1
                               : 1,
                             id: uuidv4(),
+                            isAdd: true,
                             foodId: null,
                             week: [
                               {
@@ -513,6 +559,7 @@ const Index = memo(() => {
                         ...itemMeal?.timeline,
                         {
                           id: uuidv4(),
+                          isAdd: true,
                           name: values.name,
                           fromTime,
                           toTime,
@@ -592,6 +639,40 @@ const Index = memo(() => {
         item.weekIndex === record.weekIndex ? { ...item, collapsed: !record.collapsed } : item,
       ),
     );
+  };
+
+  const exportData = () => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      Helper.exportExcel(
+        '/kitchen-menus/export-menu-template',
+        { ...payload },
+        'ThucDon.xlxs',
+        API_URL,
+      );
+    });
+  };
+
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const allowTypes = ['xlxs'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error('Định dạng hỗ trợ:  .xlxs. Tổng dung lượng không vượt quá 20MB');
+        return;
+      }
+      importExcel(file);
+    },
+    showUploadList: false,
+    fileList: [],
   };
 
   return (
@@ -682,7 +763,7 @@ const Index = memo(() => {
                       Thông tin chung
                     </Heading>
                     <Pane className="row align-items-center">
-                      <Pane className="col-3">
+                      <Pane className="col-2">
                         <FormItem
                           label="Thời gian"
                           name="month"
@@ -708,10 +789,30 @@ const Index = memo(() => {
                           rules={[variables.RULES.EMPTY]}
                         />
                       </Pane>
-                      <Pane className="col-3">
-                        <Button color="success" onClick={onApply}>
+                      <Pane className="col-4 d-flex">
+                        <Button
+                          color="success"
+                          onClick={onApply}
+                          loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                        >
                           {params.id ? 'Áp dụng thực đơn' : 'Tạo mới thực đơn'}
                         </Button>
+                        {isEmpty(weeksKitchen) && (
+                          <Button color="primary" onClick={exportData} className="ml10">
+                            Export
+                          </Button>
+                        )}
+                        {!isEmpty(weeksKitchen) && (
+                          <Upload {...props}>
+                            <Button
+                              color="primary"
+                              className="ml10"
+                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                            >
+                              Import excel
+                            </Button>
+                          </Upload>
+                        )}
                       </Pane>
                     </Pane>
                   </Pane>
@@ -938,22 +1039,24 @@ const Index = memo(() => {
                       <p className="btn-delete" role="presentation" onClick={remove}>
                         Hủy
                       </p>
-                      {!isEmpty(weeksKitchen) && (
-                        <Button
-                          className="ml-auto px25"
-                          color="success"
-                          htmlType="submit"
-                          size="large"
-                          disabled={enableButton(weeksKitchen)}
-                          loading={
-                            loading['kitchenMenusCreate/ADD'] ||
-                            loading['kitchenMenusCreate/UPDATE'] ||
-                            loading['kitchenMenusCreate/GET_DATA']
-                          }
-                        >
-                          Lưu
-                        </Button>
-                      )}
+                      <div className="d-flex">
+                        {!isEmpty(weeksKitchen) && (
+                          <Button
+                            className="ml-auto px25 ml10"
+                            color="success"
+                            htmlType="submit"
+                            size="large"
+                            disabled={enableButton(weeksKitchen)}
+                            loading={
+                              loading['kitchenMenusCreate/ADD'] ||
+                              loading['kitchenMenusCreate/UPDATE'] ||
+                              loading['kitchenMenusCreate/GET_DATA']
+                            }
+                          >
+                            Lưu
+                          </Button>
+                        )}
+                      </div>
                     </Pane>
                   )}
                 </Pane>

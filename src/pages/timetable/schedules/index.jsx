@@ -22,7 +22,6 @@ import listPlugin from '@fullcalendar/list';
 import rrulePlugin from '@fullcalendar/rrule';
 import variablesModules from './variables';
 
-
 let isMounted = true;
 /**
  * Set isMounted
@@ -66,7 +65,7 @@ class Index extends PureComponent {
         eventType: query.eventType || '',
       },
       isOpen: false,
-      details: {}
+      details: {},
     };
     setIsMounted(true);
   }
@@ -202,14 +201,14 @@ class Index extends PureComponent {
       ..._.get(values, 'event._def.extendedProps'),
       ..._.get(values, 'event._def'),
       startDate: values?.event?.startStr || '',
-      ẹndDate: values?.event?.endStr || '',
+      endDate: values?.event?.endStr || '',
     };
     this.setStateData({ isOpen: true, details: valuesDetail });
-  }
+  };
 
   cancelModal = () => {
     this.setStateData({ isOpen: false, details: {} });
-  }
+  };
 
   redirectDetails = (pathname, key) => {
     const { details } = this.state;
@@ -217,7 +216,7 @@ class Index extends PureComponent {
       return;
     }
     history.push(`${pathname}/${details?.publicId}/${key}`);
-  }
+  };
 
   remove = () => {
     const { details } = this.state;
@@ -229,11 +228,11 @@ class Index extends PureComponent {
         this.props.dispatch({
           type: 'timeTablesSchedule/REMOVE',
           payload: {
-            id: details?.publicId
+            id: details?.publicId,
           },
           callback: (response) => {
             if (response) {
-              this.setStateData({ isOpen:  false});
+              this.setStateData({ isOpen: false });
               this.onLoad();
               this.setStateData({ details: {} });
             }
@@ -267,19 +266,18 @@ class Index extends PureComponent {
       <>
         <Helmet title="Thời khóa biểu làm việc / sự kiện" />
         <Modal
-          title={details?.eventType ? variablesModules.TYPE_CALENDAR.find(item => item.id === details?.eventType)?.name : ''}
+          title={
+            details?.eventType
+              ? variablesModules.TYPE_CALENDAR.find((item) => item.id === details?.eventType)?.name
+              : ''
+          }
           visible={isOpen}
           width={500}
+          centered
           onCancel={this.cancelModal}
           footer={[
             <div className="d-flex justify-content-between" key="action">
-              <Button
-                key="remove"
-                color="danger"
-                icon="remove"
-                ghost
-                onClick={this.remove}
-              >
+              <Button key="remove" color="danger" icon="remove" ghost onClick={this.remove}>
                 Xóa
               </Button>
               <Button
@@ -299,7 +297,7 @@ class Index extends PureComponent {
               >
                 Chỉnh sửa
               </Button>
-            </div>
+            </div>,
           ]}
         >
           <div className="row">
@@ -314,7 +312,10 @@ class Index extends PureComponent {
                 <span>Thời gian diễn ra</span>
               </div>
               <p className="mb0 font-weight-bold">
-                {`${Helper.getDate(details.startDate, variables.DATE_FORMAT.DATE_TIME)} - ${Helper.getDate(details.ẹndDate, variables.DATE_FORMAT.HOUR)}`}
+                {`${Helper.getDate(
+                  details.startDate,
+                  variables.DATE_FORMAT.DATE_TIME,
+                )} - ${Helper.getDate(details.ẹndDate, variables.DATE_FORMAT.HOUR)}`}
               </p>
             </div>
             <div className="col-lg-12">
@@ -342,8 +343,7 @@ class Index extends PureComponent {
             <Form
               initialValues={{
                 ...search,
-                date: search.fromDate &&
-                  search.toDate && [moment(search.fromDate), moment(search.toDate)],
+                eventType: search.eventType || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -352,11 +352,15 @@ class Index extends PureComponent {
                 <div className="col-lg-4">
                   <FormItem
                     className="ant-form-item-row"
-                    data={[{ id: '', name: 'Tất cả loại lịch'}, ...variablesModules.TYPE_CALENDAR]}
+                    data={[
+                      { id: null, name: 'Tất cả loại lịch' },
+                      ...variablesModules.TYPE_CALENDAR,
+                    ]}
                     label="LOẠI LỊCH"
                     name="eventType"
                     onChange={(event) => this.onChangeSelect(event, 'eventType')}
                     type={variables.SELECT}
+                    allowClear={false}
                   />
                 </div>
               </div>
@@ -497,9 +501,7 @@ class Index extends PureComponent {
                         'timeGridWeek',
                       );
                       calendarApi.gotoDate(
-                        moment()
-                          .endOf('weeks')
-                          .format(variables.DATE_FORMAT.DATE_AFTER),
+                        moment().endOf('weeks').format(variables.DATE_FORMAT.DATE_AFTER),
                       );
                     }
                   },

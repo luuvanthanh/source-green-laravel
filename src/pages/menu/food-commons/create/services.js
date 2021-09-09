@@ -1,8 +1,33 @@
 import request from '@/utils/request';
 
+export function getMeasureUnits(params = {}) {
+  return request(`/food-commons/measure-units`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
+export function getFoodCommonsGroups(params = {}) {
+  return request(`/food-commons/groups`, {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
 export function get(params = {}) {
   return request(`/food-commons/${params.id}`, {
     method: 'GET',
+  });
+}
+
+export function addMeasureUnit(data = {}) {
+  return request(`/food-commons/measure-units`, {
+    method: 'POST',
+    data,
   });
 }
 

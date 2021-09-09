@@ -22,9 +22,14 @@ const Index = memo(() => {
   const mountedSet = (f) => (v) => mounted?.current && f(v);
 
   const dispatch = useDispatch();
-  const [{ pagination, error, data }, loading] = useSelector(({ loading: { effects }, physicalStudents }) => [
+  const [
+    { pagination, error, data },
+    loading,
+    { defaultBranch },
+  ] = useSelector(({ loading: { effects }, physicalStudents, user }) => [
     physicalStudents,
     effects,
+    user,
   ]);
 
   const history = useHistory();
@@ -40,7 +45,7 @@ const Index = memo(() => {
     page: query?.page || variables.PAGINATION.PAGE,
     limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
     keyWord: query?.keyWord,
-    branchId: query?.branchId,
+    branchId: query?.branchId || defaultBranch?.id,
     classId: query?.classId,
   });
 
@@ -55,65 +60,74 @@ const Index = memo(() => {
           fileImage={Helper.getPathAvatarJson(record?.student?.fileImage)}
           fullName={record?.student?.fullName || ''}
         />
-      )
+      ),
     },
     {
       title: 'Tuổi (tháng)',
       key: 'age',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => (
-        <Text size="normal">{record?.student?.age || 0} tháng</Text>
-      ),
+      render: (record) => <Text size="normal">{record?.student?.age || 0} tháng</Text>,
     },
     {
       title: 'Giới tính',
       key: 'gender',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => variables.GENDERS[record?.student?.sex] || ''
+      render: (record) => variables.GENDERS[record?.student?.sex] || '',
     },
     {
       title: 'Cơ sở',
       key: 'branch',
       className: 'min-width-200',
       with: 200,
-      render: (record) => record?.student?.class?.branch?.name || ''
+      render: (record) => record?.student?.class?.branch?.name || '',
     },
     {
       title: 'Lớp',
       key: 'class',
       className: 'min-width-200',
-      render: (record) => record?.student?.class?.name || ''
+      render: (record) => record?.student?.class?.name || '',
     },
     {
       title: 'Chiều cao (cm)',
       key: 'height',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => record?.height?.value ? (
-        <>
-          <span className="font-weight-bold mr5">{record?.height?.value}</span>
-          <span>({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})</span>
-        </>
-      ) : ''
+      render: (record) =>
+        record?.height?.value ? (
+          <>
+            <span className="font-weight-bold mr5">{record?.height?.value}</span>
+            <span>
+              ({Helper.getDate(record?.height?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
+            </span>
+          </>
+        ) : (
+          ''
+        ),
     },
     {
       title: 'Cân nặng (kg)',
       key: 'wight',
       className: 'min-width-120',
       align: 'center',
-      render: (record) => record?.weight?.value ? (
-        <>
-          <span className="font-weight-bold mr5">{record?.weight?.value}</span>
-          <span>({Helper.getDate(record?.weight?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})</span>
-        </>
-      ) : ''
+      render: (record) =>
+        record?.weight?.value ? (
+          <>
+            <span className="font-weight-bold mr5">{record?.weight?.value}</span>
+            <span>
+              ({Helper.getDate(record?.weight?.reportDate, variables.DATE_FORMAT.DATE_MONTH)})
+            </span>
+          </>
+        ) : (
+          ''
+        ),
     },
     {
       key: 'action',
       className: 'min-width-80',
       width: 80,
+      fixed: 'right',
       render: (record) => (
         <div className={styles['list-button']}>
           <Button
@@ -145,13 +159,14 @@ const Index = memo(() => {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  const paginationTable = (pagination) => Helper.paginationNet({
-    pagination,
-    query,
-    callback: (response) => {
-      changePagination(response);
-    },
-  });
+  const paginationTable = (pagination) =>
+    Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        changePagination(response);
+      },
+    });
 
   const changeFilterDebouce = debounce((name, value) => {
     setSearch((prevSearch) => ({
@@ -187,7 +202,7 @@ const Index = memo(() => {
     setSearch((prevSearch) => ({
       ...prevSearch,
       [name]: value,
-      classId: undefined
+      classId: undefined,
     }));
   }, 300);
 

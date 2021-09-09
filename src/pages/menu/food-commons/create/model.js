@@ -9,6 +9,7 @@ export default {
       data: {},
     },
     toolDetails: [],
+    foodCommonsGroups: [],
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -19,6 +20,10 @@ export default {
     SET_TOOL_DETAILS: (state, { payload }) => ({
       ...state,
       toolDetails: payload.items,
+    }),
+    SET_FOOD_COMMONS_GROUPS: (state, { payload }) => ({
+      ...state,
+      foodCommonsGroups: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -41,6 +46,36 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_FOOD_COMMONS_GROUPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getFoodCommonsGroups, payload);
+        yield saga.put({
+          type: 'SET_FOOD_COMMONS_GROUPS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_MEASURE_UNITS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getMeasureUnits, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *ADD_MEASURE_UNIT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.addMeasureUnit, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
     *ADD({ payload, callback }, saga) {

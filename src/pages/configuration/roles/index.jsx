@@ -4,6 +4,7 @@ import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
+import { CheckOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -225,6 +226,13 @@ class Index extends PureComponent {
         render: (record) => record.name,
       },
       {
+        title: 'Xem toàn bộ cơ sở',
+        key: 'name',
+        align: 'center',
+        className: 'min-width-130',
+        render: (record) => record.isShowAllBranch && <CheckOutlined className={styles.success} />,
+      },
+      {
         key: 'action',
         className: 'min-width-80',
         width: 80,
@@ -235,7 +243,6 @@ class Index extends PureComponent {
               icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
             />
-            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },

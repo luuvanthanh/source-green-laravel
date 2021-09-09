@@ -34,9 +34,10 @@ const mapStateToProps = ({ attendances, loading, user }) => ({
   loading,
   user: user.user,
   data: attendances.data,
-  pagination: attendances.pagination,
   classes: attendances.classes,
   branches: attendances.branches,
+  defaultBranch: user.defaultBranch,
+  pagination: attendances.pagination,
   attendancesReasons: attendances.attendancesReasons,
 });
 @connect(mapStateToProps)
@@ -49,12 +50,13 @@ class Index extends PureComponent {
     super(props);
     const {
       location: { query },
+      defaultBranch,
     } = props;
     this.state = {
       search: {
-        branchId: query?.branchId,
         classId: query?.classId,
         nameStudent: query?.nameStudent,
+        branchId: query?.branchId || defaultBranch?.id,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
         date: query?.date
@@ -95,6 +97,7 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    const { search } = this.state;
     if (params.id) {
       dispatch({
         type: 'attendances/GET_DETAILS',
@@ -103,6 +106,15 @@ class Index extends PureComponent {
         },
       });
     }
+    if (search.branchId) {
+      this.props.dispatch({
+        type: 'attendances/GET_CLASSES',
+        payload: {
+          branch: search.branchId,
+        },
+      });
+    }
+
     dispatch({
       type: 'attendances/GET_BRANCHES',
       payload: {},
@@ -527,6 +539,7 @@ Index.propTypes = {
   user: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
   classes: PropTypes.arrayOf(PropTypes.any),
+  defaultBranch: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -536,10 +549,11 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  pagination: {},
-  attendancesReasons: [],
   branches: [],
   classes: [],
+  pagination: {},
+  defaultBranch: {},
+  attendancesReasons: [],
 };
 
 export default Index;
