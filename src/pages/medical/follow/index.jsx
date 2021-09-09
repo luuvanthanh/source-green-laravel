@@ -489,26 +489,24 @@ class Index extends PureComponent {
               ))}
             </div>
           </div>
-          {!objects?.isReceived && (
+          {moment()
+            .endOf('days')
+            .isSameOrBefore(moment(objects.receivedDate).endOf('days'), 'days') && (
             <div
               className={classnames(
                 styles['modal-footer'],
                 'd-flex justify-content-center align-items-center',
               )}
             >
-              {!moment()
-                .startOf('days')
-                .isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
-                <Button
-                  color="success"
-                  size="large"
-                  permission="YTE"
-                  onClick={this.onReceived}
-                  loading={loadingSubmit}
-                >
-                  Xác nhận đã cho uống
-                </Button>
-              )}
+              <Button
+                color="success"
+                size="large"
+                permission="YTE"
+                onClick={this.onReceived}
+                loading={loadingSubmit}
+              >
+                Xác nhận đã cho uống
+              </Button>
             </div>
           )}
         </Modal>
