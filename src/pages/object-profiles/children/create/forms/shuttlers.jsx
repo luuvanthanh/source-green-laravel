@@ -160,7 +160,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                           name={[key, 'identifyNumber']}
                           label="Số CMND"
                           type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                          rules={[variables.RULES.MAX_LENGTH_INPUT]}
                         />
                       </Pane>
 
@@ -169,7 +169,7 @@ const Shuttlers = memo(({ dispatch, loading: { effects }, match: { params }, det
                           name={[key, 'phone']}
                           label="Số điện thoại"
                           type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.PHONE]}
+                          rules={[variables.RULES.PHONE]}
                         />
                       </Pane>
                     </Pane>
