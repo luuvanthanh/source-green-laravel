@@ -476,15 +476,15 @@ class Index extends PureComponent {
               </Collapse>
             </Scrollbars>
           </div>
-          <div
-            className={classnames(
-              styles['modal-footer'],
-              'd-flex justify-content-center align-items-center',
-            )}
-          >
-            {!moment()
-              .startOf('days')
-              .isAfter(moment(objects.creationTime).startOf('days'), 'days') && (
+          {moment()
+            .endOf('days')
+            .isSameOrBefore(moment(objects.creationTime).endOf('days'), 'days') && (
+            <div
+              className={classnames(
+                styles['modal-footer'],
+                'd-flex justify-content-center align-items-center',
+              )}
+            >
               <Button
                 color="success"
                 size="large"
@@ -494,8 +494,8 @@ class Index extends PureComponent {
               >
                 Xác nhận đã nhận thuốc
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}
