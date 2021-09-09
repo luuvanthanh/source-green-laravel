@@ -75,12 +75,20 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     if (details !== prevProps.details && !isEmpty(details) && params?.id) {
+      const paramaterValues = !isEmpty(head(details.otherDeclarationDetail)?.detail)
+        ? [
+            ...new Map(
+              head(details.otherDeclarationDetail)
+                ?.detail?.map((item) => item.id)
+                .map((item) => [item, item]),
+            ).values(),
+          ]
+        : [];
       this.formRef.current.setFieldsValue({
         ...details,
         time: details.time && moment(details.time),
         employeeId: details.otherDeclarationDetail.map((item) => item.employeeId),
-        paramaterValues:
-          head(details.otherDeclarationDetail)?.detail?.map((item) => item.id) || undefined,
+        paramaterValues,
       });
       this.onSetDetail(details.otherDeclarationDetail);
       this.onSetParamaterValues(head(details.otherDeclarationDetail));

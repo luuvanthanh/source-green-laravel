@@ -72,31 +72,7 @@ class Breadcrumbs extends React.Component {
   };
 
   getBreadcrumb = (props, items) => {
-    const [activeMenuItem, ...path] = this.getPath(items, props.location.pathname);
-    if (activeMenuItem && path?.length) {
-      return path.reverse().map((item, index) => {
-        if (index === path?.length - 1) {
-          return (
-            <Link
-              className="text-muted"
-              to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
-              key={item.key}
-            >
-              <strong className={styles.title}>{activeMenuItem.title}</strong>
-            </Link>
-          );
-        }
-        return (
-          <Link
-            className="text-muted"
-            to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}
-            key={item.key}
-          >
-            <strong className={styles.title}>{activeMenuItem.title}</strong>
-          </Link>
-        );
-      });
-    }
+    const [activeMenuItem] = this.getPath(items, props.location.pathname);
     return (
       <Link className="text-muted" to={head(activeMenuItem.url) ? head(activeMenuItem.url) : '/'}>
         <strong className={styles.title}>{activeMenuItem.title}</strong>

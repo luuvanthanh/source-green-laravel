@@ -727,6 +727,19 @@ export default class Helpers {
     return [];
   };
 
+  static onSortData = (data = [], type = 'orderIndex', asc = true) => {
+    if (!isEmpty(data)) {
+      return data.sort((a, b) => {
+        if (asc) {
+          return Number(a[type]) - Number(b[type]);
+        }
+        return Number(b[type]) - Number(a[type]);
+      });
+    }
+    return [];
+  };
+
+
   static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {
       if (sort === 'asc') {
