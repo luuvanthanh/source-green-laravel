@@ -2,6 +2,7 @@
 
 namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
@@ -9,7 +10,6 @@ use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Container\Container as Application;
-use Illuminate\Support\Facades\Http;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
