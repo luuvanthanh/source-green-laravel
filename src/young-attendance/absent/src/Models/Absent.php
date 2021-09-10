@@ -59,6 +59,14 @@ class Absent extends UuidModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function absentStudentDetail()
+    {
+        return $this->hasMany(AbsentStudentDetail::class, 'AbsentStudentId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function absentReason()
     {
         return $this->belongsTo(AbsentReason::class, 'AbsentReasonId');

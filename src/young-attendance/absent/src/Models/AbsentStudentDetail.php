@@ -8,7 +8,7 @@ class AbsentStudentDetail extends UuidModel
 {
     public $incrementing = false;
 
-    protected $table = 'AbsentStudentDetail';
+    protected $table = 'AbsentStudentDetails';
 
     protected $fillable = [
         'AbsentStudentId', 'Date', 'IsRefunds',
