@@ -114,7 +114,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
             foreach ($employees as &$employee) {
-                $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                    $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
             }
 
             $payroll->payrollDetail()->delete();
@@ -167,7 +167,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         if (!is_null($otherDeclarationDetail)) {
             if (!is_null($otherDeclarationDetail->Detail)) {
                 $incurredAllowance = json_decode($otherDeclarationDetail->Detail);
-
                 foreach ($incurredAllowance as $itemIncurredAllowance) {
                     $value =  isset($itemIncurredAllowance->value) ? $itemIncurredAllowance->value : $itemIncurredAllowance->valueDefault;
 
@@ -175,17 +174,17 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         $parameter['DIEU_CHINH_BHXH_NLD'] = $value;
                         $socialInsuranceAdjustedEmployee =  $value;
                     } elseif ($itemIncurredAllowance->code === 'DIEU_CHINH_BHXH_CTT') {
-                        $parameter['DIEU_CHINH_BHXH_CTT'] = $value;;
-                        $socialInsuranceAdjustedCompany = $value;;
+                        $parameter['DIEU_CHINH_BHXH_CTT'] = $value;
+                        $socialInsuranceAdjustedCompany = $value;
                     } elseif ($itemIncurredAllowance->code === 'DONG_GOP_TU_THIEN') {
-                        $parameter['DONG_GOP_TU_THIEN'] = $value;;
-                        $charity = $value;;
+                        $parameter['DONG_GOP_TU_THIEN'] = $value;
+                        $charity = $value;
                     } elseif ($itemIncurredAllowance->code === 'THANH_TOAN_TU_BHXH') {
-                        $parameter['THANH_TOAN_TU_BHXH'] = $value;;
-                        $socialInsurancePayment = $value;;
+                        $parameter['THANH_TOAN_TU_BHXH'] = $value;
+                        $socialInsurancePayment = $value;
                     } elseif ($itemIncurredAllowance->code === 'SO_TIEN_TAM_UNG') {
-                        $parameter['SO_TIEN_TAM_UNG'] = $value;;
-                        $advance = $value;;
+                        $parameter['SO_TIEN_TAM_UNG'] = $value;
+                        $advance = $value;
                     } elseif (!array_key_exists($itemIncurredAllowance->code, $columnIncurredAllowance)) {
                         $columnIncurredAllowance[$itemIncurredAllowance->code] = [
                             'code' => $itemIncurredAllowance->code,
@@ -418,17 +417,18 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
             //tổng thu nhập trong tháng
             $totalIncomeMonth = 0;
-            $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_CHINH_THUC')->first();
+            $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_CHINH_THUC')->first();
 
             if ($isProbation) {
-                $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_THU_VIEC')->first();
+                $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_THU_VIEC')->first();
             }
 
-            if (!is_null($formularTotalIncome)) {
-                $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
-                $totalIncome = eval('return ' . $totalIncome . ';');
+
+            if (!is_null($formularTotalIncomeMonth)) {
+                $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
+                $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
             }
-            $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncome;
+            $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
 
             // tổng giảm trừ bản thân và người phụ thuộc
             $eeduce = 0;
@@ -454,11 +454,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $rentalIncome = 0;
             $formularRentalIncome = ParamaterFormula::where('Code', 'THUNHAP_TINHTHUE')->first();
 
-            if (!is_null($formularRentalIncome)) {
-                $rentalIncome = $this->getFormular(json_decode($formularRentalIncome->Recipe), $contract, $parameter);
-                $rentalIncome = eval('return ' . $rentalIncome . ';');
-                $rentalIncome = $rentalIncome > 0 ? $rentalIncome : 0;
+            if($totalIncomeMonth  >  $dependentTotal){
+                if (!is_null($formularRentalIncome)) {
+                    $rentalIncome = $this->getFormular(json_decode($formularRentalIncome->Recipe), $contract, $parameter);
+                    $rentalIncome = eval('return ' . $rentalIncome . ';');
+                    $rentalIncome = $rentalIncome > 0 ? $rentalIncome : 0;
+                }
             }
+
             $parameter['THUNHAP_TINHTHUE'] = $rentalIncome;
 
             // thuế tncn
