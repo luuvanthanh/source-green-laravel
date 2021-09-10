@@ -7,6 +7,7 @@ use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
+use GGPHP\YoungAttendance\Absent\Models\AbsentStudentDetail;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Container\Container as Application;
@@ -123,6 +124,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
     public function create(array $attributes)
     {
+
         \DB::beginTransaction();
 
         try {
@@ -241,8 +243,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             }
+
             \DB::commit();
         } catch (\Exception $e) {
+
             \DB::rollback();
         }
 
@@ -257,6 +261,28 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         $absent->update($attributes);
 
+        $absent->absentStudentDetail()->delete();
+
+        $begin = new \DateTime($attributes['startDate']);
+        $end = new \DateTime($attributes['endDate'] . '23:59');
+        $intervalDate = new \DateInterval('P1D');
+        $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+        $now = Carbon::now();
+
+        foreach ($periodDate as $date) {
+            $isRefunds = false;
+
+            if ($date->format('Y-m-d') == $now->format('Y-m-d')) {
+                $isRefunds = true;
+            }
+
+            AbsentStudentDetail::create([
+                'absentStudentId' => $absent->Id,
+                'date' => $date->format('Y-m-d'),
+                'isRefunds' => $isRefunds,
+            ]);
+        }
+
         if ($absent->Status == 'CONFIRM') {
             $beginOld = new \DateTime($absent->StartDate);
             $endOld = new \DateTime($absent->EndDate);
@@ -267,11 +293,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))
                     ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->delete();
             }
-
-            $begin = new \DateTime($attributes['startDate']);
-            $end = new \DateTime($attributes['endDate']);
-            $intervalDate = new \DateInterval('P1D');
-            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
             foreach ($periodDate as $date) {
                 $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
