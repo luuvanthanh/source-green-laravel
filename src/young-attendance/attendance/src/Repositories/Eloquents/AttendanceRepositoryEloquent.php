@@ -365,13 +365,20 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     
                     //chưa vào lớp
                     if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
-                        $dataNotInClass = [
-                            'Date' => $date,
-                            'StudentId' => $student->Id,
-                            'Status' => Attendance::STATUS['NOT_IN_CLASS'],
-                        ];
+                        $existNotInClass = Attendance::where('StudentId', $student->Id)
+                        ->whereDate('Date', $date)
+                        ->first();
 
-                       $this->model->create($dataNotInClass);
+                        if(is_null($existNotInClass)){
+                            $dataNotInClass = [
+                                'Date' => $date,
+                                'StudentId' => $student->Id,
+                                'Status' => Attendance::STATUS['NOT_IN_CLASS'],
+                            ];
+
+                            $this->model->create($dataNotInClass);
+                        }
+
                     }
 
                     // Vào lớp
