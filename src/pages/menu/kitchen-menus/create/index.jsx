@@ -663,10 +663,10 @@ const Index = memo(() => {
     },
     customRequest({ file }) {
       const { name, size } = file;
-      const allowTypes = ['xlxs'];
+      const allowTypes = ['xlsx', 'xls'];
       const maxSize = 5 * 2 ** 20;
       if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
-        message.error('Định dạng hỗ trợ:  .xlxs. Tổng dung lượng không vượt quá 20MB');
+        message.error('Định dạng hỗ trợ: .xls,.xlsx. Tổng dung lượng không vượt quá 20MB');
         return;
       }
       importExcel(file);
