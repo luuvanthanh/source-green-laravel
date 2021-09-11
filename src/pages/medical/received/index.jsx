@@ -476,7 +476,7 @@ class Index extends PureComponent {
               </Collapse>
             </Scrollbars>
           </div>
-          {objects.isReceived &&
+          {!objects.isReceived &&
             Helper.getDate(head(objects?.status)?.date, variables.DATE_FORMAT.DATE_AFTER) ===
               Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
               <div
