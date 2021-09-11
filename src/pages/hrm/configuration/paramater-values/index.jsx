@@ -251,7 +251,7 @@ class Index extends PureComponent {
         key: 'value_default',
         className: 'min-width-150',
         render: (record) => (
-          <Text size="normal">{Helper.getPrice(record.valueDefault, 3, false)}</Text>
+          <Text size="normal">{Helper.getPrice(record.valueDefault, 3, true)}</Text>
         ),
       },
       {

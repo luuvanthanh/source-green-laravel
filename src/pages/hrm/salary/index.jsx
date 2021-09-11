@@ -394,27 +394,31 @@ class Index extends PureComponent {
             },
           ]
         : []),
-      {
-        title: 'Phụ cấp phát sinh trong tháng',
-        key: 'name',
-        className: 'thead-green-1',
-        children:
-          data?.columnIncurredAllowance?.map((item) => ({
-            title: item.name,
-            key: item.code,
-            className: 'min-width-150 thead-green-1',
-            width: 150,
-            render: (record) => {
-              if (record.incurredAllowance) {
-                const incurred = record.incurredAllowance.find(
-                  (itemIncurred) => itemIncurred.code === item.code,
-                );
-                return Helper.getPrice(incurred?.value || 0);
-              }
-              return null;
+      ...(!isEmpty(data?.columnIncurredAllowance)
+        ? [
+            {
+              title: 'Phụ cấp phát sinh trong tháng',
+              key: 'name',
+              className: 'thead-green-1',
+              children:
+                data?.columnIncurredAllowance?.map((item) => ({
+                  title: item.name,
+                  key: item.code,
+                  className: 'min-width-150 thead-green-1',
+                  width: 150,
+                  render: (record) => {
+                    if (record.incurredAllowance) {
+                      const incurred = record.incurredAllowance.find(
+                        (itemIncurred) => itemIncurred.code === item.code,
+                      );
+                      return Helper.getPrice(incurred?.value || 0);
+                    }
+                    return null;
+                  },
+                })) || [],
             },
-          })) || [],
-      },
+          ]
+        : []),
       {
         title: 'Thưởng KPI',
         key: 'kpiBonus',

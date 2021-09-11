@@ -13,7 +13,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-import HelperModules from '../utils/Helper';
 
 let isMounted = true;
 /**
@@ -50,8 +49,12 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: HelperModules.getEndDate(query?.endDate, query?.choose),
-        startDate: HelperModules.getStartDate(query?.startDate, query?.choose),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().startOf('month').add(24, 'days'),
+        startDate: query?.startDate
+          ? moment(query?.startDate)
+          : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
       },
     };
     setIsMounted(true);
