@@ -351,40 +351,44 @@ const Index = memo(({ classId, branchId }) => {
             )}
             {search.status === variablesModules.STATUS.DRINK && (
               <>
-                <h3 className={styles.title}>UỐNG THUỐC TRƯỚC ĂN SÁNG</h3>
-                <div className={styles.list}>
-                  {objects?.medicines?.map(({ id, files, name, note }) => (
-                    <div className={styles.item} key={id}>
-                      <div className={styles['image-container']}>
-                        {Helper.isJSON(files) && (
-                          <div>
-                            <Image.PreviewGroup>
-                              {isArray(JSON.parse(files)) &&
-                                JSON.parse(files).map((item, index) => (
-                                  <div key={index} className={styles['group-image']}>
-                                    <Image
-                                      key={index}
-                                      width={85}
-                                      src={`${API_UPLOAD}${item}`}
-                                      fallback="/default-upload.png"
-                                    />
-                                  </div>
-                                ))}
-                            </Image.PreviewGroup>
+                {objects?.medicines?.map(({ id, files, name, medicineTimes }) => (
+                  <div key={id}>
+                    <h3 className={styles.title}>
+                      UỐNG THUỐC {head(medicineTimes)?.medicineTimeType?.description?.toUpperCase()}
+                    </h3>
+                    <div className={styles.list}>
+                      <div className={styles.item}>
+                        <div className={styles['image-container']}>
+                          {Helper.isJSON(files) && (
+                            <div>
+                              <Image.PreviewGroup>
+                                {isArray(JSON.parse(files)) &&
+                                  JSON.parse(files)?.map((item, index) => (
+                                    <div key={index} className={styles['group-image']}>
+                                      <Image
+                                        key={index}
+                                        width={85}
+                                        src={`${API_UPLOAD}${item}`}
+                                        fallback="/default-upload.png"
+                                      />
+                                    </div>
+                                  ))}
+                              </Image.PreviewGroup>
+                            </div>
+                          )}
+                          <div className="pl10">
+                            <p className={styles.label}>Tên thuốc</p>
+                            <p className={styles.norm}>{name}</p>
                           </div>
-                        )}
-                        <div className="pl10">
-                          <p className={styles.label}>Tên thuốc</p>
-                          <p className={styles.norm}>{name}</p>
+                        </div>
+                        <div>
+                          <p className={styles.label}>Nội dung</p>
+                          <p className={styles.norm}>{head(medicineTimes)?.note}</p>
                         </div>
                       </div>
-                      <div>
-                        <p className={styles.label}>Nội dung</p>
-                        <p className={styles.norm}>{note}</p>
-                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </>
             )}
           </div>

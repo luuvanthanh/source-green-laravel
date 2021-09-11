@@ -651,7 +651,7 @@ const Index = memo(() => {
       Helper.exportExcel(
         '/kitchen-menus/export-menu-template',
         { ...payload },
-        'ThucDon.xlxs',
+        'ThucDon.xlsx',
         API_URL,
       );
     });
