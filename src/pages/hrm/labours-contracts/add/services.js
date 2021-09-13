@@ -1,4 +1,5 @@
 import request from '@/utils/requestLavarel';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
   return request('/v1/labours-contracts', {
@@ -17,5 +18,24 @@ export function update(data = {}) {
 export function details(data) {
   return request(`/v1/labours-contracts/${data.id}`, {
     method: 'GET',
+  });
+}
+
+export function get(data = {}) {
+  return request('/v1/probationary-contracts', {
+    method: 'GET',
+    params: {
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'CreationTime',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['employee', 'typeOfContract', 'position', 'branch']),
+      fullName: data.fullName,
+      employeeId: data.employeeId,
+      search: Helper.convertParamSearchConvert({
+        type: data.type,
+      }),
+    },
   });
 }

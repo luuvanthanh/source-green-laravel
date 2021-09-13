@@ -92,6 +92,14 @@ export default {
         });
       }
     },
+    *GET_CONTRACTS({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        callback(response.parsePayload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
