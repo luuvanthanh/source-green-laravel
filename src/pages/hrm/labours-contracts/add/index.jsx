@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form, Tabs, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, toString, last } from 'lodash';
+import { get, isEmpty, toString, last, head, omit } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -187,6 +187,27 @@ class Index extends PureComponent {
     }));
   };
 
+  onChangeEmployee = (value) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'laboursContractsAdd/GET_CONTRACTS',
+      payload: {
+        employeeId: value,
+      },
+      callback: (response) => {
+        if (!isEmpty(response)) {
+          const details = head(response);
+          this.formRef.current.setFieldsValue({
+            ...omit(details, 'typeOfContractId'),
+            contractDate: details.contractDate && moment(details.contractDate),
+            contractFrom: details.contractFrom && moment(details.contractFrom),
+            contractTo: details.contractTo && moment(details.contractTo),
+          });
+        }
+      },
+    });
+  };
+
   onFinish = (values) => {
     const {
       dispatch,
@@ -349,6 +370,7 @@ class Index extends PureComponent {
                       name="employeeId"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
+                      onChange={this.onChangeEmployee}
                     />
                   </div>
                 </div>
