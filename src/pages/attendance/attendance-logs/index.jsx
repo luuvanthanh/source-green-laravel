@@ -47,6 +47,7 @@ class Index extends PureComponent {
       location: { query },
     } = props;
     this.state = {
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         classId: query?.classId,
         branchId: query?.branchId || defaultBranch?.id,
@@ -84,6 +85,7 @@ class Index extends PureComponent {
 
   loadCategories = () => {
     const { search } = this.state;
+    const { defaultBranch } = this.props;
     this.props.dispatch({
       type: 'attendanceLogs/GET_EMPLOYEES',
       payload: {},
@@ -96,10 +98,12 @@ class Index extends PureComponent {
         },
       });
     }
-    this.props.dispatch({
-      type: 'attendanceLogs/GET_BRANCHES',
-      payload: {},
-    });
+    if (!defaultBranch?.id) {
+      this.props.dispatch({
+        type: 'attendanceLogs/GET_BRANCHES',
+        payload: {},
+      });
+    }
   };
 
   /**
@@ -304,11 +308,12 @@ class Index extends PureComponent {
       employees,
       branches,
       pagination,
+      defaultBranch,
       match: { params },
       loading: { effects },
       classes,
     } = this.props;
-    const { search } = this.state;
+    const { search, defaultBranchs } = this.state;
     const loading = effects['attendanceLogs/GET_DATA'];
     return (
       <>
@@ -345,15 +350,28 @@ class Index extends PureComponent {
                     allowClear={false}
                   />
                 </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    name="branchId"
-                    onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                  />
-                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-3">
+                    <FormItem
+                      data={defaultBranchs}
+                      name="branchId"
+                      onChange={(event) => this.onChangeSelectBranch(event, 'branchId')}
+                      type={variables.SELECT}
+                      allowClear={false}
+                    />
+                  </div>
+                )}
                 <div className="col-lg-3">
                   <FormItem
                     data={[{ id: null, name: 'Chọn tất cả lớp' }, ...classes]}
