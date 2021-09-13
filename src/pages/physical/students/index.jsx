@@ -210,17 +210,19 @@ const Index = memo(() => {
     if (search.branchId) {
       fetchClasses(search.branchId);
     }
-    dispatch({
-      type: 'categories/GET_BRANCHES',
-      callback: (res) => {
-        if (res) {
-          mountedSet(setCategory)((prev) => ({
-            ...prev,
-            branches: res?.parsePayload || [],
-          }));
-        }
-      },
-    });
+    if (!defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_BRANCHES',
+        callback: (res) => {
+          if (res) {
+            mountedSet(setCategory)((prev) => ({
+              ...prev,
+              branches: res?.parsePayload || [],
+            }));
+          }
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -284,15 +286,28 @@ const Index = memo(() => {
                     placeholder="Nhập từ khóa tìm kiếm"
                   />
                 </Pane>
-                <Pane className="col-lg-3">
-                  <FormItem
-                    name="branchId"
-                    type={variables.SELECT}
-                    data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
-                    onChange={(value) => changeFilterBranch('branchId', value)}
-                    allowClear={false}
-                  />
-                </Pane>
+                {!defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      name="branchId"
+                      type={variables.SELECT}
+                      data={[{ name: 'Chọn tất cả', id: null }, ...category?.branches]}
+                      onChange={(value) => changeFilterBranch('branchId', value)}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
+                {defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      name="branchId"
+                      type={variables.SELECT}
+                      data={[defaultBranch]}
+                      onChange={(value) => changeFilterBranch('branchId', value)}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
                 <Pane className="col-lg-3">
                   <FormItem
                     name="classId"

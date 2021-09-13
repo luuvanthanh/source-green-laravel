@@ -160,10 +160,12 @@ const Index = memo(() => {
       type: 'kitchenMenus/GET_CLASS_TYPES',
       payload: {},
     });
-    dispatch({
-      type: 'kitchenMenus/GET_BRANCHES',
-      payload: {},
-    });
+    if (!defaultBranch?.id) {
+      dispatch({
+        type: 'kitchenMenus/GET_BRANCHES',
+        payload: {},
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -200,15 +202,28 @@ const Index = memo(() => {
               }}
             >
               <Pane className="row">
-                <Pane className="col-lg-3">
-                  <FormItem
-                    type={variables.SELECT}
-                    name="branchId"
-                    onChange={(e) => changeFilter('branchId')(e)}
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                    allowClear={false}
-                  />
-                </Pane>
+                {!defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      type={variables.SELECT}
+                      name="branchId"
+                      onChange={(e) => changeFilter('branchId')(e)}
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
+                {defaultBranch?.id && (
+                  <Pane className="col-lg-3">
+                    <FormItem
+                      type={variables.SELECT}
+                      name="branchId"
+                      onChange={(e) => changeFilter('branchId')(e)}
+                      data={[defaultBranch]}
+                      allowClear={false}
+                    />
+                  </Pane>
+                )}
                 <Pane className="col-lg-3">
                   <FormItem
                     type={variables.SELECT}

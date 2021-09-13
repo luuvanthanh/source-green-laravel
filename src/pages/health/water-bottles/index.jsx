@@ -50,6 +50,7 @@ class Index extends PureComponent {
     } = props;
     this.state = {
       visible: false,
+      defaultBranchs: defaultBranch?.id ? [defaultBranch] : [],
       search: {
         keyWord: query?.keyWord,
         action: query?.action,
@@ -97,18 +98,20 @@ class Index extends PureComponent {
   };
 
   fetchBranches = () => {
-    const { dispatch } = this.props;
+    const { dispatch, defaultBranch } = this.props;
     const { search } = this.state;
-    dispatch({
-      type: 'categories/GET_BRANCHES',
-      callback: (res) => {
-        if (res) {
-          this.setStateData({
-            branches: res?.parsePayload,
-          });
-        }
-      },
-    });
+    if (!defaultBranch?.id) {
+      dispatch({
+        type: 'categories/GET_BRANCHES',
+        callback: (res) => {
+          if (res) {
+            this.setStateData({
+              branches: res?.parsePayload,
+            });
+          }
+        },
+      });
+    }
     if (search.branchId) {
       dispatch({
         type: 'categories/GET_CLASSES',
@@ -363,8 +366,9 @@ class Index extends PureComponent {
       pagination,
       match: { params },
       loading: { effects },
+      defaultBranch,
     } = this.props;
-    const { search, visible, waterBottles, classes, branches } = this.state;
+    const { search, visible, waterBottles, classes, branches, defaultBranchs } = this.state;
     const loading = effects['waterBottles/GET_DATA'];
     const loadingSubmit = effects['waterBottles/WATER_BOTTLES'];
     return (
@@ -516,16 +520,30 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-4 mt-3">
-                  <FormItem
-                    allowClear={false}
-                    name="branchId"
-                    type={variables.SELECT}
-                    placeholder="Chọn cơ sở"
-                    onChange={this.changeBranch}
-                    data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
-                  />
-                </div>
+                {!defaultBranch?.id && (
+                  <div className="col-lg-4 mt-3">
+                    <FormItem
+                      allowClear={false}
+                      name="branchId"
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      onChange={this.changeBranch}
+                      data={[{ id: null, name: 'Chọn tất cả cơ sở' }, ...branches]}
+                    />
+                  </div>
+                )}
+                {defaultBranch?.id && (
+                  <div className="col-lg-4 mt-3">
+                    <FormItem
+                      allowClear={false}
+                      name="branchId"
+                      type={variables.SELECT}
+                      placeholder="Chọn cơ sở"
+                      onChange={this.changeBranch}
+                      data={defaultBranchs}
+                    />
+                  </div>
+                )}
                 <div className="col-lg-4 mt-3">
                   <FormItem
                     name="classId"
