@@ -151,37 +151,6 @@ const Index = memo(() => {
     });
   };
 
-  const importExcel = (file) => {
-    formRef.current.validateFields().then((values) => {
-      const payload = {
-        ...values,
-        input: file,
-        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
-        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
-      };
-      dispatch({
-        type: 'kitchenMenusCreate/IMPORT_EXCEL',
-        payload,
-        callback: (response) => {
-          if (response) {
-            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
-              weekIndex: item.week,
-              menuMeals: meals.map((itemMeal) => ({
-                weekIndex: item.week,
-                mealId: itemMeal.id,
-                name: itemMeal.name,
-                timeline: [],
-              })),
-            }));
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
-            setWeeksKitchen(weeks);
-          }
-        },
-      });
-    });
-  };
-
   const remove = () => {
     Helper.confirmAction({
       callback: () => {
@@ -654,6 +623,47 @@ const Index = memo(() => {
         'ThucDon.xlsx',
         API_URL,
       );
+    });
+  };
+
+  const importExcel = (file) => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        input: file,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      dispatch({
+        type: 'kitchenMenusCreate/IMPORT_EXCEL',
+        payload,
+        callback: (response) => {
+          if (response) {
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
+            const result = convertMenuMeal(response?.menuMeals)
+              .sort((a, b) => a.weekIndex - b.weekIndex)
+              .map((item) => ({
+                ...item,
+                menuMeals: covertTimeline(
+                  item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
+                ).map((itemMenuMeals) => ({
+                  ...itemMenuMeals,
+                  weekIndex: item.weekIndex,
+                  timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
+                    ...itemTimeline,
+                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                  })),
+                })),
+              }));
+            setWeeksKitchen(result);
+            formRef.current.setFieldsValue({
+              ...response,
+              month: response.fromDate && moment(response.fromDate),
+            });
+          }
+        },
+      });
     });
   };
 
