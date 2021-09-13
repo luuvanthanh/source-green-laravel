@@ -151,37 +151,6 @@ const Index = memo(() => {
     });
   };
 
-  const importExcel = (file) => {
-    formRef.current.validateFields().then((values) => {
-      const payload = {
-        ...values,
-        input: file,
-        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
-        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
-      };
-      dispatch({
-        type: 'kitchenMenusCreate/IMPORT_EXCEL',
-        payload,
-        callback: (response) => {
-          if (response) {
-            const weeks = response.timetableFeeGroupByWeeks.map((item) => ({
-              weekIndex: item.week,
-              menuMeals: meals.map((itemMeal) => ({
-                weekIndex: item.week,
-                mealId: itemMeal.id,
-                name: itemMeal.name,
-                timeline: [],
-              })),
-            }));
-            setFromDate(response.fromDate);
-            setToDate(response.toDate);
-            setWeeksKitchen(weeks);
-          }
-        },
-      });
-    });
-  };
-
   const remove = () => {
     Helper.confirmAction({
       callback: () => {
@@ -651,9 +620,50 @@ const Index = memo(() => {
       Helper.exportExcel(
         '/kitchen-menus/export-menu-template',
         { ...payload },
-        'ThucDon.xlxs',
+        'ThucDon.xlsx',
         API_URL,
       );
+    });
+  };
+
+  const importExcel = (file) => {
+    formRef.current.validateFields().then((values) => {
+      const payload = {
+        ...values,
+        input: file,
+        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+      };
+      dispatch({
+        type: 'kitchenMenusCreate/IMPORT_EXCEL',
+        payload,
+        callback: (response) => {
+          if (response) {
+            setFromDate(response.fromDate);
+            setToDate(response.toDate);
+            const result = convertMenuMeal(response?.menuMeals)
+              .sort((a, b) => a.weekIndex - b.weekIndex)
+              .map((item) => ({
+                ...item,
+                menuMeals: covertTimeline(
+                  item?.menuMeals?.sort((a, b) => a?.meal?.orderIndex - b?.meal?.orderIndex),
+                ).map((itemMenuMeals) => ({
+                  ...itemMenuMeals,
+                  weekIndex: item.weekIndex,
+                  timeline: itemMenuMeals?.timeline?.map((itemTimeline) => ({
+                    ...itemTimeline,
+                    menuMealDetails: covertWeek(itemTimeline?.menuMealDetails),
+                  })),
+                })),
+              }));
+            setWeeksKitchen(result);
+            formRef.current.setFieldsValue({
+              ...response,
+              month: response.fromDate && moment(response.fromDate),
+            });
+          }
+        },
+      });
     });
   };
 
@@ -663,10 +673,10 @@ const Index = memo(() => {
     },
     customRequest({ file }) {
       const { name, size } = file;
-      const allowTypes = ['xlxs'];
+      const allowTypes = ['xlsx', 'xls'];
       const maxSize = 5 * 2 ** 20;
       if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
-        message.error('Định dạng hỗ trợ:  .xlxs. Tổng dung lượng không vượt quá 20MB');
+        message.error('Định dạng hỗ trợ: .xls,.xlsx. Tổng dung lượng không vượt quá 20MB');
         return;
       }
       importExcel(file);

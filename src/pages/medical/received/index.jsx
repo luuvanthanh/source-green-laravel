@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Modal, Collapse, Image } from 'antd';
 import classnames from 'classnames';
-import { debounce, isArray } from 'lodash';
+import { debounce, isArray, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
 import styles from '@/assets/styles/Common/common.scss';
@@ -476,26 +476,26 @@ class Index extends PureComponent {
               </Collapse>
             </Scrollbars>
           </div>
-          {moment()
-            .endOf('days')
-            .isSameOrBefore(moment(objects.creationTime).endOf('days'), 'days') && (
-            <div
-              className={classnames(
-                styles['modal-footer'],
-                'd-flex justify-content-center align-items-center',
-              )}
-            >
-              <Button
-                color="success"
-                size="large"
-                permission="YTE"
-                onClick={this.onReceived}
-                loading={loadingSubmit}
+          {!objects.isReceived &&
+            Helper.getDate(head(objects?.status)?.date, variables.DATE_FORMAT.DATE_AFTER) ===
+              Helper.getDate(moment(), variables.DATE_FORMAT.DATE_AFTER) && (
+              <div
+                className={classnames(
+                  styles['modal-footer'],
+                  'd-flex justify-content-center align-items-center',
+                )}
               >
-                Xác nhận đã nhận thuốc
-              </Button>
-            </div>
-          )}
+                <Button
+                  color="success"
+                  size="large"
+                  permission="YTE"
+                  onClick={this.onReceived}
+                  loading={loadingSubmit}
+                >
+                  Xác nhận đã nhận thuốc
+                </Button>
+              </div>
+            )}
         </Modal>
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           {/* FORM SEARCH */}

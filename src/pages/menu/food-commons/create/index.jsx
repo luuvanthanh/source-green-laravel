@@ -258,7 +258,7 @@ const Index = memo(() => {
                     <Pane className="col-6">
                       <FormItem
                         data={foodCommonsGroups}
-                        label="Nhóm nhà hàng"
+                        label="Nhóm hàng"
                         name="itemGroupId"
                         type={variables.SELECT}
                         rules={[variables.RULES.EMPTY]}

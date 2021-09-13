@@ -412,8 +412,8 @@ const Index = memo(() => {
                             <Pane className="col-md-7">
                               <Pane>
                                 {itemChange?.editor?.userName}{' '}
-                                {variablesModules?.HEALTH_ACTION_TYPE[`${item.httpMethod}`]}{' '}
-                                {itemChange.criteriaGroupPropertypeName}
+                                {variablesModules?.HEALTH_ACTION_TYPE[item.httpMethod]}{' '}
+                                {itemChange.criteriaGroupPropertyName?.toLowerCase()}
                               </Pane>
                             </Pane>
                           </Pane>
@@ -476,7 +476,7 @@ const Index = memo(() => {
                                     </Pane>
                                   </Pane>
                                 )}
-                                 {criteria.criteriaDataType.type === 'number' && (
+                                {criteria.criteriaDataType.type === 'number' && (
                                   <Pane className="row">
                                     <Pane className="col-lg-12">
                                       <Form.Item name={[key, 'value']} label={criteria.property}>

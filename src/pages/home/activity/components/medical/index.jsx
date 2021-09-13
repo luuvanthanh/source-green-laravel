@@ -93,7 +93,7 @@ const Index = memo(({ classId, branchId }) => {
                             className="full-name-bold"
                             fileImage={Helper.getPathAvatarJson(itemChange?.student?.fileImage)}
                             fullName={itemChange?.student?.fullName}
-                            description={`${itemChange?.student?.age} Tháng tuổi - ${itemChange?.student?.class?.name}`}
+                            description={`${itemChange?.student?.age || ''} Tháng tuổi - ${itemChange?.student?.class?.name || ''}`}
                             size={36}
                           />
                           {itemChange.note === 'IsDrunk' && (

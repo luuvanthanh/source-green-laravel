@@ -228,7 +228,7 @@ class Index extends PureComponent {
   getStudentCriteria = (items, key) => {
     if (items) {
       const itemCriteria = items.find((item) => item?.criteriaGroupProperty?.id === key);
-      return itemCriteria?.value;
+      return itemCriteria?.value || '';
     }
     return null;
   };
