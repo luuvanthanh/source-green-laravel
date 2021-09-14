@@ -641,7 +641,16 @@ const Index = memo(() => {
           if (response) {
             setFromDate(response.fromDate);
             setToDate(response.toDate);
-            const result = convertMenuMeal(response?.menuMeals)
+            const data = response?.menuMeals?.map((item) => {
+              const fromTimeString = item.fromTime.split('T');
+              const toTimeString = item.toTime.split('T');
+              return {
+                ...item,
+                fromTime: moment(last(fromTimeString), variables.DATE_FORMAT.TIME_FULL),
+                toTime: moment(last(toTimeString), variables.DATE_FORMAT.TIME_FULL),
+              };
+            });
+            const result = convertMenuMeal(data)
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
@@ -657,10 +666,6 @@ const Index = memo(() => {
                 })),
               }));
             setWeeksKitchen(result);
-            formRef.current.setFieldsValue({
-              ...response,
-              month: response.fromDate && moment(response.fromDate),
-            });
           }
         },
       });
