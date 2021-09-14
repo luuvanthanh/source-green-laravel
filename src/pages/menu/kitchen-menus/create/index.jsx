@@ -646,8 +646,12 @@ const Index = memo(() => {
               const toTimeString = item.toTime.split('T');
               return {
                 ...item,
-                fromTime: moment(last(fromTimeString), variables.DATE_FORMAT.TIME_FULL),
-                toTime: moment(last(toTimeString), variables.DATE_FORMAT.TIME_FULL),
+                fromTime: moment(
+                  `${moment().format(variables.DATE_FORMAT.DATE_AFTER)}T${last(fromTimeString)}`,
+                ),
+                toTime: moment(
+                  `${moment().format(variables.DATE_FORMAT.DATE_AFTER)}T${last(toTimeString)}`,
+                ),
               };
             });
             const result = convertMenuMeal(data)
@@ -822,7 +826,10 @@ const Index = memo(() => {
                             <Button
                               color="primary"
                               className="ml10"
-                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                              loading={
+                                loading['kitchenMenusCreate/GET_TIMETABLE_FEES'] ||
+                                loading['kitchenMenusCreate/IMPORT_EXCEL']
+                              }
                             >
                               Import excel
                             </Button>
