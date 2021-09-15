@@ -29,6 +29,7 @@ const Index = memo(() => {
       type: 'MedicalTypes/GET_DATA',
       payload: {
         type: 'MEDICAL',
+        isParent: 'false',
       },
     });
   }, []);
@@ -66,6 +67,7 @@ const Index = memo(() => {
             type: 'MedicalTypes/GET_DATA',
             payload: {
               type: 'MEDICAL',
+              isParent: 'false',
             },
           });
         }
