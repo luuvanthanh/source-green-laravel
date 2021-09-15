@@ -29,6 +29,7 @@ const Index = memo(() => {
       type: 'NoteTypes/GET_DATA',
       payload: {
         type: 'NOTE',
+        isParent: 'false',
       },
     });
   }, []);
@@ -46,6 +47,7 @@ const Index = memo(() => {
             type: 'NoteTypes/GET_DATA',
             payload: {
               type: 'NOTE',
+              isParent: 'false',
             },
           });
         }
