@@ -282,7 +282,7 @@ const Index = memo(({ classId, branchId }) => {
                 <p className={styles.label}>Triệu chứng</p>
                 <p className={styles.norm}>{objects?.diseaseName}</p>
               </div>
-              <div>
+              <div className="text-right">
                 <p className={styles.label}>Nơi đặt thuốc</p>
                 <p className={styles.norm}>{objects?.medicineLocation}</p>
               </div>

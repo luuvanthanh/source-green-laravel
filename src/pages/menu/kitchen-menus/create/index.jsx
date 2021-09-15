@@ -641,7 +641,20 @@ const Index = memo(() => {
           if (response) {
             setFromDate(response.fromDate);
             setToDate(response.toDate);
-            const result = convertMenuMeal(response?.menuMeals)
+            const data = response?.menuMeals?.map((item) => {
+              const fromTimeString = item.fromTime.split('T');
+              const toTimeString = item.toTime.split('T');
+              return {
+                ...item,
+                fromTime: moment(
+                  `${moment().format(variables.DATE_FORMAT.DATE_AFTER)}T${last(fromTimeString)}`,
+                ),
+                toTime: moment(
+                  `${moment().format(variables.DATE_FORMAT.DATE_AFTER)}T${last(toTimeString)}`,
+                ),
+              };
+            });
+            const result = convertMenuMeal(data)
               .sort((a, b) => a.weekIndex - b.weekIndex)
               .map((item) => ({
                 ...item,
@@ -657,10 +670,6 @@ const Index = memo(() => {
                 })),
               }));
             setWeeksKitchen(result);
-            formRef.current.setFieldsValue({
-              ...response,
-              month: response.fromDate && moment(response.fromDate),
-            });
           }
         },
       });
@@ -817,7 +826,10 @@ const Index = memo(() => {
                             <Button
                               color="primary"
                               className="ml10"
-                              loading={loading['kitchenMenusCreate/GET_TIMETABLE_FEES']}
+                              loading={
+                                loading['kitchenMenusCreate/GET_TIMETABLE_FEES'] ||
+                                loading['kitchenMenusCreate/IMPORT_EXCEL']
+                              }
                             >
                               Import excel
                             </Button>

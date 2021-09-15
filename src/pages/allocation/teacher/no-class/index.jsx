@@ -49,7 +49,7 @@ class Index extends PureComponent {
         teachers: [],
         branches: [],
         classes: [],
-        positions: []
+        positions: [],
       },
       branchId: '',
       positionId: '',
@@ -60,7 +60,7 @@ class Index extends PureComponent {
       searchTeachers: {
         totalCount: 0,
         page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
+        limit: variables.PAGINATION.SIZEMAX,
       },
     };
     setIsMounted(true);
@@ -99,43 +99,49 @@ class Index extends PureComponent {
   };
 
   selectBranch = async (value) => {
-    this.setStateData((prev) => ({
-      categories: {
-        ...prev?.categories,
-        classes: [],
-        teachers: [],
+    this.setStateData(
+      (prev) => ({
+        categories: {
+          ...prev?.categories,
+          classes: [],
+          teachers: [],
+        },
+        searchTeachers: {
+          totalCount: 0,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+        selectedTeachers: [],
+        hasMore: true,
+        loadingLoadMore: false,
+        branchId: value,
+      }),
+      () => {
+        this.fetchTeachers();
       },
-      searchTeachers: {
-        totalCount: 0,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
-      },
-      selectedTeachers: [],
-      hasMore: true,
-      loadingLoadMore: false,
-      branchId: value,
-    }), () => {
-      this.fetchTeachers();
-    });
+    );
     this.formRef?.current?.resetFields(['classId']);
     this.fetchClasses(value);
   };
 
   selectPosition = (value) => {
-    this.setStateData((prev) => ({
-      ...prev,
-      searchTeachers: {
-        totalCount: 0,
-        page: variables.PAGINATION.PAGE,
-        limit: variables.PAGINATION.PAGE_SIZE,
+    this.setStateData(
+      (prev) => ({
+        ...prev,
+        searchTeachers: {
+          totalCount: 0,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.SIZEMAX,
+        },
+        hasMore: true,
+        loadingLoadMore: false,
+        positionId: value,
+      }),
+      () => {
+        this.fetchTeachers();
       },
-      hasMore: true,
-      loadingLoadMore: false,
-      positionId: value,
-    }), () => {
-      this.fetchTeachers();
-    });
-  }
+    );
+  };
 
   fetchTeachers = () => {
     this.setStateData({ loadingTeacher: true });
