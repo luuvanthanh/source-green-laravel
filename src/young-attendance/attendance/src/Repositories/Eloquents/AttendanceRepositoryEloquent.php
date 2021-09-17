@@ -9,6 +9,7 @@ use GGPHP\Attendance\Presenters\AttendancePresenter;
 use GGPHP\Attendance\Repositories\Contracts\AttendanceRepository;
 use GGPHP\Clover\Models\Classes;
 use GGPHP\Clover\Models\Student;
+use GGPHP\Clover\Models\StudentTransporter;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\YoungAttendance\ShiftSchedule\Models\Shift;
 use GGPHP\YoungAttendance\ShiftSchedule\Repositories\Eloquent\ScheduleRepositoryEloquent;
@@ -91,7 +92,16 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
         if (!empty($attributes['studentTransporter'])) {
             if (is_array($attributes['studentTransporter'])) {
-                $studentTransporter = StudentTransporter::create($attributes['studentTransporter']);
+                $studentTransporter = StudentTransporter::insert([
+                    'Id' => \Webpatser\Uuid\Uuid::generate(4)->string,
+                    'FullName' => $attributes['studentTransporter']['fullName'],
+                    'Relationship' => $attributes['studentTransporter']['relationship'],
+                    'StudentId' => $attributes['studentId'],
+                    'CreationTime' => Carbon::now()->format('Y-m-d H:i:s'),
+                ]);
+
+               $studentTransporter = StudentTransporter::where('StudentId', $attributes['studentId'])->orderBy('CreationTime','DESC')->first();
+
                 $attributes['studentTransporterId'] = $studentTransporter->Id;
             } else {
                 $attributes['studentTransporterId'] = $attributes['studentTransporter'];
@@ -165,6 +175,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
+                    'moduleCode' => "ATTENDANCE",
                     'refId' => $attributes['studentId'],
                 ];
 
@@ -238,6 +249,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 6,
+                    'moduleCode' => "ATTENDANCE",
                     'refId' => $attributes['studentId'],
                 ];
 
@@ -442,6 +454,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
+                                        'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
                     
@@ -510,6 +523,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
+                                        'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
                     
@@ -553,6 +567,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'imageURL' => $urlImage,
                                         'message' => $message,
                                         'moduleType' => 6,
+                                        'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
                     
@@ -620,6 +635,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'imageURL' => $urlImage,
                                     'message' => $message,
                                     'moduleType' => 6,
+                                    'moduleCode' => "ATTENDANCE",
                                     'refId' => $student->Id,
                                 ];
                 

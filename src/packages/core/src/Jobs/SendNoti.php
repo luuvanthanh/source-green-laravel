@@ -9,9 +9,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 
-class SendNoti implements ShouldQueue
+class SendNoti
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, SerializesModels;
 
     protected $data;
 
@@ -32,12 +32,15 @@ class SendNoti implements ShouldQueue
      */
     public function handle()
     {
-        $urlNoti = env('NOTI_URL') . '/api/notification/publish';
-
         $data = $this->data;
+        $moduleCode = $data['moduleCode'];
+        $urlNoti = env('NOTI_URL') . '/api/notification/publish-by-module-code?moduleCode='. $moduleCode;
+
 
         if (!empty($data['users'])) {
-           Http::post("$urlNoti", [
+            $bearerToken = request()->bearerToken();
+
+            Http::withToken("$bearerToken")->post("$urlNoti", [
                 'users' => $data['users'],
                 'title' => $data['title'],
                 'imageURL' => $data['imageURL'],

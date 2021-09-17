@@ -201,6 +201,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 9,
+                        'moduleCode' => "ABSENT_STUDENT",
                         'refId' => $absent->Id,
                     ];
 
@@ -237,6 +238,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'imageURL' => $urlImage,
                         'message' => $message,
                         'moduleType' => 9,
+                        'moduleCode' => "ABSENT_STUDENT",
                         'refId' => $absent->Id,
                     ];
 
@@ -342,6 +344,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 9,
+                    'moduleCode' => "ABSENT_STUDENT",
                     'refId' => $absent->Id,
                 ];
 
@@ -379,6 +382,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'imageURL' => $urlImage,
                     'message' => $message,
                     'moduleType' => 9,
+                    'moduleCode' => "ABSENT_STUDENT",
                     'refId' => $absent->Id,
                 ];
 
@@ -451,6 +455,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 'imageURL' => $urlImage,
                 'message' => $message,
                 'moduleType' => 9,
+                'moduleCode' => "ABSENT_STUDENT",
                 'refId' => $absent->Id,
             ];
 
