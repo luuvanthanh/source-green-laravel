@@ -10,6 +10,7 @@ export default {
       data: {},
     },
     details: {},
+    codes: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -21,6 +22,10 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       dataStores: payload,
+    }),
+    SET_CODES: (state, { payload }) => ({
+      ...state,
+      codes: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -37,6 +42,20 @@ export default {
     }),
   },
   effects: {
+    *GET_CODES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCodes, payload);
+        yield saga.put({
+          type: 'SET_CODES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
