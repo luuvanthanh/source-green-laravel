@@ -3,7 +3,7 @@ import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { isEmpty, head, omit } from 'lodash';
+import { isEmpty, head } from 'lodash';
 import Text from '@/components/CommonComponent/Text';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
@@ -31,6 +31,7 @@ const mapStateToProps = ({ configurationRolesAdd, loading, menu }) => ({
   loading,
   error: configurationRolesAdd.error,
   details: configurationRolesAdd.details,
+  codes: configurationRolesAdd.codes,
   menuConfiguration: menu.menuConfiguration,
 });
 
@@ -67,6 +68,10 @@ class Index extends PureComponent {
       dispatch,
       match: { params },
     } = this.props;
+    dispatch({
+      type: 'configurationRolesAdd/GET_CODES',
+      payload: { ...params },
+    });
     if (params.id) {
       dispatch({
         type: 'configurationRolesAdd/GET_DETAILS',
@@ -94,11 +99,11 @@ class Index extends PureComponent {
     } = this.props;
     const payload = {
       ...values,
-      id: params.id,
+      ...params,
     };
     dispatch({
       type: params?.id ? 'configurationRolesAdd/UPDATE' : 'configurationRolesAdd/ADD',
-      payload: params?.id ? payload : omit(payload, 'id'),
+      payload,
       callback: (response, error) => {
         if (response) {
           history.goBack();
@@ -122,15 +127,17 @@ class Index extends PureComponent {
   render() {
     const {
       error,
+      codes,
       loading: { effects },
       menuConfiguration,
+      match: { params },
     } = this.props;
     const loading = effects['configurationRolesAdd/GET_DETAILS'];
     const loadingSubmit =
       effects['configurationRolesAdd/ADD'] || effects['configurationRolesAdd/UPDATE'];
     return (
       <>
-        <Breadcrumbs last="Tạo vai trò" menu={menuConfiguration} />
+        <Breadcrumbs last={params.id ? 'Sửa vai trò' : 'Tạo vai trò'} menu={menuConfiguration} />
         <Form
           className={styles['layout-form']}
           layout="vertical"
@@ -153,12 +160,21 @@ class Index extends PureComponent {
                         Thông tin vai trò
                       </Text>
                       <div className="row mt-3">
-                        <div className="col-lg-12">
+                        <div className="col-lg-6">
                           <FormItem
                             label="Tên vai trò"
                             name="name"
                             rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
                             type={variables.INPUT}
+                          />
+                        </div>
+                        <div className="col-lg-6">
+                          <FormItem
+                            data={codes.map((item) => ({ id: item, name: item }))}
+                            label="Mã vai trò"
+                            name="code"
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.SELECT}
                           />
                         </div>
                       </div>
@@ -218,6 +234,7 @@ Index.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   menuConfiguration: PropTypes.arrayOf(PropTypes.any),
+  codes: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -227,6 +244,7 @@ Index.defaultProps = {
   error: {},
   details: {},
   menuConfiguration: [],
+  codes: [],
 };
 
 export default Index;
