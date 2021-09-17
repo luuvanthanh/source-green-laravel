@@ -173,7 +173,6 @@ class Index extends PureComponent {
                             data={codes.map((item) => ({ id: item, name: item }))}
                             label="Mã vai trò"
                             name="code"
-                            rules={[variables.RULES.EMPTY]}
                             type={variables.SELECT}
                           />
                         </div>
