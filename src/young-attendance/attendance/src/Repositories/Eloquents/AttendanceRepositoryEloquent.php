@@ -160,11 +160,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
             }
 
-            $images =  $attendance->student->FileImage;
+            $images =  json_decode($attendance->student->FileImage);
             $urlImage = '';
 
-            if (!is_null($images)) {
-                $images = json_decode($images);
+            if (!empty($images)) {
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
@@ -234,11 +233,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     break;
             }
 
-            $images =  $attendance->student->FileImage;
+            $images =  json_decode($attendance->student->FileImage);
             $urlImage = '';
 
-            if (!is_null($images)) {
-                $images = json_decode($images);
+
+            if (!empty($images)) {
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
@@ -421,9 +420,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'CheckIn' => $inOutAfterTimeStart[0]->AttendedAt->format('H:i:s'),
                                 ];
 
-                                $attendance = $this->model->create($dataCheckIn);
+                                $this->model->create($dataCheckIn);
 
-                                $urlNoti = env('NOTI_URL') . '/api/notification';
                                 $parents = $student->parent;
                                 $userId = [];
 
@@ -436,11 +434,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
-                                $images =  $student->FileImage;
+                                $images =  json_decode($student->FileImage);
                                 $urlImage = '';
 
-                                if (!is_null($images)) {
-                                    $images = json_decode($images);
+                                if (!empty($images)) {
                                     $urlImage = env('IMAGE_URL') . $images[0];
                                 }
 
@@ -491,7 +488,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                                 $this->model->create($dataCheckOut);
 
-                                $urlNoti = env('NOTI_URL') . '/api/notification';
                                 $parents = $student->parent;
                                 $userId = [];
 
@@ -504,11 +500,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
-                                $images =  $student->FileImage;
+                                $images =  json_decode($student->FileImage);
                                 $urlImage = '';
 
-                                if (!is_null($images)) {
-                                    $images = json_decode($images);
+                                if (!empty($images)) {
                                     $urlImage = env('IMAGE_URL') . $images[0];
                                 }
 
@@ -536,7 +531,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'CheckOut' => $inOutAfterTimeEnd[0]->AttendedAt->format('H:i:s'),
                                 ]);
 
-                                $urlNoti = env('NOTI_URL') . '/api/notification';
                                 $parents = $student->parent;
                                 $userId = [];
 
@@ -549,11 +543,10 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                 }
 
                                 $nameStudent = $student->FullName;
-                                $images =  $student->FileImage;
+                                $images =  json_decode($student->FileImage);
                                 $urlImage = '';
 
-                                if (!is_null($images)) {
-                                    $images = json_decode($images);
+                                if (!empty($images)) {
                                     $urlImage = env('IMAGE_URL') . $images[0];
                                 }
 
@@ -616,14 +609,11 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             }
 
                             $nameStudent = $student->FullName;
-                            $images =  $student->FileImage;
+                            $images =  json_decode($student->FileImage);
                             $urlImage = '';
 
-                            if (!is_null($images)) {
-                                $images = json_decode($images);
-                                if (!empty($images)) {
+                            if (!empty($images)) {
                                     $urlImage = env('IMAGE_URL') . $images[0];
-                                }
                             }
 
                             $message = "Bé $nameStudent vắng không phép ngày $date";

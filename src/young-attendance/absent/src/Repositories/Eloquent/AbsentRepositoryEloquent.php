@@ -182,11 +182,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $images =  $absent->student->FileImage;
+                $images =  json_decode($absent->student->FileImage);
                 $urlImage = '';
 
-                if (!is_null($images)) {
-                    $images = json_decode($images);
+                if (!empty($images)) {
                     $urlImage = env('IMAGE_URL') . $images[0];
                 }
 
@@ -220,11 +219,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $images =  $absent->student->FileImage;
+                $images =  json_decode($absent->student->FileImage);
                 $urlImage = '';
 
-                if (!is_null($images)) {
-                    $images = json_decode($images);
+                if (!empty($images)) {
                     $urlImage = env('IMAGE_URL') . $images[0];
                 }
                 $startDate = $absent->StartDate->format('d-m');
@@ -325,11 +323,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $images =  $absent->student->FileImage;
+            $images =  json_decode($absent->student->FileImage);
             $urlImage = '';
 
-            if (!is_null($images)) {
-                $images = json_decode($images);
+            if (!empty($images)) {
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
@@ -363,11 +360,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $images =  $absent->student->FileImage;
+            $images =  json_decode($absent->student->FileImage);
             $urlImage = '';
 
-            if (!is_null($images)) {
-                $images = json_decode($images);
+            if (!empty($images)) {
                 $urlImage = env('IMAGE_URL') . $images[0];
             }
 
@@ -435,11 +431,10 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         $nameStudent = $absent->student->FullName;
-        $images =  $absent->student->FileImage;
+        $images =  json_decode($absent->student->FileImage);
         $urlImage = '';
 
-        if (!is_null($images)) {
-            $images = json_decode($images);
+        if (!empty($images)) {
             $urlImage = env('IMAGE_URL') . $images[0];
         }
 
