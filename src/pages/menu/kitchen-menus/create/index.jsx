@@ -631,8 +631,8 @@ const Index = memo(() => {
       const payload = {
         ...values,
         input: file,
-        month: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
-        year: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
+        monthIndex: Helper.getDate(values.month, variables.DATE_FORMAT.MONTH),
+        yearIndex: Helper.getDate(values.month, variables.DATE_FORMAT.YEAR),
       };
       dispatch({
         type: 'kitchenMenusCreate/IMPORT_EXCEL',

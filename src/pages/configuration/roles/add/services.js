@@ -1,5 +1,12 @@
 import request from '@/utils/request';
 
+export function getCodes(params) {
+  return request(`/roles/codes`, {
+    method: 'GET',
+    params,
+  });
+}
+
 export function add(data) {
   return request('/roles', {
     method: 'POST',
