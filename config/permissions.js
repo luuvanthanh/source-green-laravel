@@ -21,6 +21,7 @@ export const permissions = {
   GHICHU: 'GHICHU',
   YKIEN: 'YKIEN',
   HETHONG: 'HETHONG',
-  THECHAT: 'THECHAT'
+  THECHAT: 'THECHAT',
+  CRM: 'CRM'
 };
 export default permissions;

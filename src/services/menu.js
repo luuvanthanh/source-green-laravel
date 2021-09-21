@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/extensions
-import { permissions } from '../../config/permissions';
+import {
+  permissions
+} from '../../config/permissions';
 
 export async function getLeftMenuData() {
-  return [
-    {
+  return [{
       title: 'Tiêu chí - Đánh giá',
       key: 'category',
       url: [
@@ -112,8 +113,7 @@ export async function getLeftMenuData() {
   ];
 }
 export async function getLeftMenuCommunications() {
-  return [
-    {
+  return [{
       title: 'Cần duyệt',
       key: 'approve',
       url: ['/trao-doi/can-duyet'],
@@ -132,8 +132,7 @@ export async function getLeftMenuCommunications() {
   ];
 }
 export async function getLeftMenuProfile() {
-  return [
-    {
+  return [{
       title: 'Học sinh',
       key: 'children',
       url: [
@@ -162,8 +161,7 @@ export async function getLeftMenuProfile() {
       key: 'stores',
       icon: 'icon icon-fileText',
       permission: [permissions.HSDT],
-      children: [
-        {
+      children: [{
           title: 'Học sinh',
           key: 'storeStudents',
           url: ['/ho-so-doi-tuong/hoc-sinh/luu-tru'],
@@ -184,8 +182,7 @@ export async function getLeftMenuProfile() {
       key: 'categories',
       icon: 'icon icon-list',
       permission: [permissions.HSDT],
-      children: [
-        {
+      children: [{
           title: 'Cơ sở',
           key: 'branches',
           url: [
@@ -212,16 +209,14 @@ export async function getLeftMenuProfile() {
   ];
 }
 export async function getLeftMenuSchedules() {
-  return [
-    {
+  return [{
       title: 'Lịch học',
       key: 'schedules',
       url: ['/diem-danh/hoc-sinh'],
       icon: 'icon icon-clock',
       permission: [permissions.DD],
       pro: true,
-      children: [
-        {
+      children: [{
           title: 'Lịch học trẻ',
           key: 'schedules',
           url: ['/diem-danh/lich-hoc-tre'],
@@ -254,8 +249,7 @@ export async function getLeftMenuSchedules() {
       icon: 'icon icon-open-book',
       permission: [permissions.DD],
       pro: true,
-      children: [
-        {
+      children: [{
           title: 'Nhập điểm danh',
           key: 'attendances',
           url: ['/diem-danh/nhap-diem-danh'],
@@ -288,8 +282,7 @@ export async function getLeftMenuSchedules() {
       icon: 'icon icon-clock',
       permission: [permissions.DD],
       pro: true,
-      children: [
-        {
+      children: [{
           title: 'Đơn xin phép cho bé',
           key: 'absentsConfig',
           url: [
@@ -305,8 +298,7 @@ export async function getLeftMenuSchedules() {
           key: 'lateEarlyConfig',
           permission: [permissions.DD],
           multiple: true,
-          children: [
-            {
+          children: [{
               title: 'Loại nghỉ phép',
               key: 'AbsentTypesConfig',
               permission: [permissions.DD],
@@ -343,8 +335,7 @@ export async function getLeftMenuSchedules() {
   ];
 }
 export async function getLeftMenuConfiguration() {
-  return [
-    {
+  return [{
       title: 'Tài khoản',
       key: 'account',
       url: [
@@ -369,8 +360,7 @@ export async function getLeftMenuConfiguration() {
       key: 'categories',
       icon: 'icon icon-list',
       permission: [permissions.CAUHINH],
-      children: [
-        {
+      children: [{
           title: 'Nhóm đối tượng',
           key: 'manager-object',
           url: [
@@ -411,8 +401,7 @@ export async function getLeftMenuConfiguration() {
       key: 'warning',
       icon: 'icon icon-notification',
       permission: [permissions.CAUHINH],
-      children: [
-        {
+      children: [{
           title: 'Sức khỏe',
           key: 'warning-healthy',
           url: ['/cau-hinh/canh-bao/suc-khoe'],
@@ -446,8 +435,7 @@ export async function getLeftMenuConfiguration() {
   ];
 }
 export async function getLeftMenuVehicel() {
-  return [
-    {
+  return [{
       title: 'Quản lý xe',
       key: 'vehicel',
       url: [
@@ -500,8 +488,7 @@ export async function getLeftMenuVehicel() {
   ];
 }
 export async function getLeftMenuCriteria() {
-  return [
-    {
+  return [{
       title: 'Thống kê',
       key: 'report',
       url: ['/chuong-trinh-hoc/bao-cao-tong-quat-tre'],
@@ -602,8 +589,7 @@ export async function getLeftMenuCriteria() {
       key: 'categories',
       icon: 'icon icon-setting',
       permission: [permissions.CTH],
-      children: [
-        {
+      children: [{
           title: 'Nhóm tiêu chí',
           key: 'criteria-groups',
           url: [
@@ -630,8 +616,7 @@ export async function getLeftMenuCriteria() {
   ];
 }
 export async function getLeftMenuChildren() {
-  return [
-    {
+  return [{
       title: 'Danh sách thực đơn',
       key: 'menu',
       url: ['/thuc-don', '/thuc-don/tao-moi', '/thuc-don/:id/chi-tiet', '/thuc-don/:id/chinh-sua'],
@@ -658,8 +643,7 @@ export async function getLeftMenuChildren() {
   ];
 }
 export async function getLeftMenuAllocation() {
-  return [
-    {
+  return [{
       title: 'Học sinh',
       key: 'children',
       url: ['/phan-bo/hoc-sinh/tre-chua-xep-lop', '/phan-bo/hoc-sinh/chuyen-lop'],
@@ -690,8 +674,7 @@ export async function getLeftMenuAllocation() {
   ];
 }
 export async function getLeftMenuMedical() {
-  return [
-    {
+  return [{
       title: 'Danh sách nhận thuốc',
       key: 'children',
       url: ['/y-te/danh-sach-nhan-thuoc'],
@@ -720,8 +703,7 @@ export async function getLeftMenuMedical() {
       key: 'setting',
       icon: 'icon icon-setting',
       permission: [permissions.YTE],
-      children: [
-        {
+      children: [{
           title: 'Nhóm buổi',
           key: 'config',
           url: ['/y-te/nhom-buoi', '/y-te/nhom-buoi/them-moi', '/y-te/nhom-buoi/:id/chi-tiet'],
@@ -744,8 +726,7 @@ export async function getLeftMenuMedical() {
   ];
 }
 export async function getLeftMenuTimeTable() {
-  return [
-    {
+  return [{
       title: 'Thời khóa biểu',
       key: 'timetable',
       url: ['/thoi-khoa-bieu', '/thoi-khoa-bieu/tao-moi', '/thoi-khoa-bieu/:id/chi-tiet'],
@@ -777,25 +758,22 @@ export async function getLeftMenuTimeTable() {
   ];
 }
 export async function getLeftMenuNotification() {
-  return [
-    {
-      title: 'Danh sách',
-      key: 'notification',
-      url: [
-        '/thong-bao/danh-sach',
-        '/thong-bao/tao-moi',
-        '/thong-bao/:id/chi-tiet',
-        '/thong-bao/:id/chinh-sua',
-      ],
-      icon: 'icon icon-list',
-      permission: [permissions.THONGBAO],
-      pro: true,
-    },
-  ];
+  return [{
+    title: 'Danh sách',
+    key: 'notification',
+    url: [
+      '/thong-bao/danh-sach',
+      '/thong-bao/tao-moi',
+      '/thong-bao/:id/chi-tiet',
+      '/thong-bao/:id/chinh-sua',
+    ],
+    icon: 'icon icon-list',
+    permission: [permissions.THONGBAO],
+    pro: true,
+  }, ];
 }
 export async function getLeftMenuMedia() {
-  return [
-    {
+  return [{
       title: 'Đăng hình',
       key: 'upload',
       url: ['/ghi-nhan/dang-hinh'],
@@ -822,8 +800,7 @@ export async function getLeftMenuMedia() {
   ];
 }
 export async function getLeftMenuHealth() {
-  return [
-    {
+  return [{
       title: 'Sức khỏe hôm nay',
       key: 'today',
       url: ['/suc-khoe/hom-nay', '/suc-khoe/hom-nay/tao-moi', '/suc-khoe/hom-nay/:id/chi-tiet'],
@@ -858,19 +835,16 @@ export async function getLeftMenuHealth() {
   ];
 }
 export async function getLeftMenuHRM() {
-  return [
-    {
+  return [{
       title: 'Nhân sự',
       key: 'users',
       icon: 'icon icon-man',
       permission: [permissions.HRM],
-      children: [
-        {
+      children: [{
           title: 'Danh mục',
           key: 'categories',
           permission: [permissions.HRM],
-          children: [
-            {
+          children: [{
               title: 'Cơ sở',
               key: 'branches',
               url: [
@@ -1013,8 +987,7 @@ export async function getLeftMenuHRM() {
           title: 'Quyết định',
           key: 'QD',
           permission: [permissions.HRM],
-          children: [
-            {
+          children: [{
               title: 'QĐ Điều chuyển',
               key: 'transfers',
               url: [
@@ -1100,8 +1073,7 @@ export async function getLeftMenuHRM() {
       icon: 'icon icon-schedules',
       permission: [permissions.HRM],
       pro: true,
-      children: [
-        {
+      children: [{
           title: 'Danh mục Ca làm việc',
           key: 'config',
           url: [
@@ -1161,8 +1133,7 @@ export async function getLeftMenuHRM() {
           title: 'Phiếu đăng ký',
           key: 'types',
           permission: [permissions.HRM],
-          children: [
-            {
+          children: [{
               title: 'Phiếu đi công tác/ đi ra ngoài',
               key: 'business-cards',
               url: [
@@ -1257,18 +1228,16 @@ export async function getLeftMenuHRM() {
           title: 'Cấu hình',
           key: 'categoriesParamater',
           permission: [permissions.HRM],
-          children: [
-            {
-              title: 'Máy chấm công',
-              key: 'fingerprint-timekeepers',
-              url: [
-                '/quan-ly-nhan-su/cau-hinh/may-cham-cong',
-                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/tao-moi',
-                '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
-              ],
-              permission: [permissions.HRM],
-            },
-          ],
+          children: [{
+            title: 'Máy chấm công',
+            key: 'fingerprint-timekeepers',
+            url: [
+              '/quan-ly-nhan-su/cau-hinh/may-cham-cong',
+              '/quan-ly-nhan-su/cau-hinh/may-cham-cong/tao-moi',
+              '/quan-ly-nhan-su/cau-hinh/may-cham-cong/:id/chi-tiet',
+            ],
+            permission: [permissions.HRM],
+          }, ],
         },
       ],
     },
@@ -1277,8 +1246,7 @@ export async function getLeftMenuHRM() {
       key: 'salary',
       icon: 'icon icon-cash',
       permission: [permissions.BANGLUONG],
-      children: [
-        {
+      children: [{
           title: 'Tính lương',
           key: 'salary-payroll',
           url: ['/quan-ly-nhan-su/tinh-luong'],
@@ -1299,8 +1267,7 @@ export async function getLeftMenuHRM() {
       key: 'categoriesParamater',
       icon: 'icon icon-setting',
       permission: [permissions.HRM],
-      children: [
-        {
+      children: [{
           title: 'Tham số giá trị',
           key: 'paramater-values',
           url: [
@@ -1338,14 +1305,12 @@ export async function getLeftMenuHRM() {
   ];
 }
 export async function getLeftMenuFeePolicy() {
-  return [
-    {
+  return [{
       title: 'Báo cáo',
       key: 'report',
       icon: 'icon icon-report',
       permission: [permissions.CHINHSACHPHI],
-      children: [
-        {
+      children: [{
           title: 'Dự kiến các khoản phải thu',
           key: 'expected-fees',
           url: ['/chinh-sach-phi/bao-cao/du-kien-cac-khoan-thu'],
@@ -1430,21 +1395,18 @@ export async function getTopMenuData() {
 }
 
 export async function getLeftMenuNotes() {
-  return [
-    {
-      title: 'Danh sách',
-      key: 'items',
-      url: ['/ghi-chu/danh-sach', '/ghi-chu/tao-moi', '/ghi-chu/:id/chi-tiet'],
-      icon: 'icon icon-list',
-      permission: [permissions.GHICHU],
-      pro: true,
-    },
-  ];
+  return [{
+    title: 'Danh sách',
+    key: 'items',
+    url: ['/ghi-chu/danh-sach', '/ghi-chu/tao-moi', '/ghi-chu/:id/chi-tiet'],
+    icon: 'icon icon-list',
+    permission: [permissions.GHICHU],
+    pro: true,
+  }, ];
 }
 
 export async function getLeftMenuSalary() {
-  return [
-    {
+  return [{
       title: 'Tính lương',
       key: 'payroll',
       icon: 'icon icon-calculate',
@@ -1463,26 +1425,23 @@ export async function getLeftMenuSalary() {
       key: 'categoriesParamater',
       icon: 'icon icon-setting',
       permission: [permissions.BANGLUONG],
-      children: [
-        {
-          title: 'Tham số công thức',
-          key: 'paramater-formulas',
-          url: [
-            '/bang-luong/tham-so-cong-thuc',
-            '/bang-luong/tham-so-cong-thuc/tao-moi',
-            '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
-          ],
-          permission: [permissions.BANGLUONG],
-          pro: true,
-        },
-      ],
+      children: [{
+        title: 'Tham số công thức',
+        key: 'paramater-formulas',
+        url: [
+          '/bang-luong/tham-so-cong-thuc',
+          '/bang-luong/tham-so-cong-thuc/tao-moi',
+          '/bang-luong/tham-so-cong-thuc/:id/chi-tiet',
+        ],
+        permission: [permissions.BANGLUONG],
+        pro: true,
+      }, ],
     },
   ];
 }
 
 export async function getLeftMenuPhysical() {
-  return [
-    {
+  return [{
       title: 'Tất cả học sinh',
       key: 'students',
       icon: 'icon icon-list',
@@ -1517,4 +1476,46 @@ export async function getLeftMenuPhysical() {
       pro: true,
     },
   ];
+}
+
+export async function getLeftMenuCRM() {
+  return [{
+    title: 'Quản lý hệ thống',
+    key: 'manage',
+    permission: [],
+    children: [{
+        title: 'Người dùng',
+        key: 'manage-user',
+        url: [
+          '/crm/quan-ly-he-thong/nguoi-dung',
+          '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
+          '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
+        ],
+        permission: [],
+        pro: true,
+      },
+      {
+        title: 'Vai trò',
+        key: 'manage-roles',
+        url: [
+          '/crm/quan-ly-he-thong/vai-tro',
+          '/crm/quan-ly-he-thong/vai-tro/tao-moi',
+          '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
+        ],
+        permission: [],
+        pro: true,
+      },
+      {
+        title: 'Nhóm',
+        key: 'manage-group',
+        url: [
+          '/crm/quan-ly-he-thong/nhom',
+          '/crm/quan-ly-he-thong/nhom/tao-moi',
+          '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
+        ],
+        permission: [],
+        pro: true,
+      },
+    ],
+  }, ];
 }

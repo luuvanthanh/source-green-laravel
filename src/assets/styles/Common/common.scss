@@ -1181,3 +1181,8 @@
 .danger {
   color: $text-danger;
 }
+
+.required-asterisk:after {
+  content: ' *';
+  color: red;
+}

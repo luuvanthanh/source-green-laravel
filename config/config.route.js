@@ -2135,6 +2135,72 @@ export default [
           },
         ],
       },
+
+      {
+        path: '/crm',
+        component: './crm/layout',
+        routes: [
+          {
+            path: '/crm',
+            redirect: '/crm/quan-ly-he-thong/nguoi-dung',
+          },
+          {
+            path: '/crm/quan-ly-he-thong/nguoi-dung',
+            component: './crm/users',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
+            component: './crm/users/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
+            component: './crm/users/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/vai-tro',
+            component: './crm/roles',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/vai-tro/tao-moi',
+            component: './crm/roles/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
+            component: './crm/roles/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/nhom',
+            component: './crm/group',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/quan-ly-he-thong/nhom/tao-moi',
+            component: './crm/group/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/crm/nhom/quan-ly-he-thong/:id/chi-tiet',
+            component: './crm/group/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
+
       //PHYSICAL
       {
         path: '/error',
