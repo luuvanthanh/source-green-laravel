@@ -2135,10 +2135,8 @@ export default [
           },
         ],
       },
-
       {
         path: '/crm',
-        component: './crm/layout',
         routes: [
           {
             path: '/crm',
@@ -2200,7 +2198,6 @@ export default [
           },
         ],
       },
-
       //PHYSICAL
       {
         path: '/error',

@@ -1482,6 +1482,7 @@ export async function getLeftMenuCRM() {
   return [{
     title: 'Quản lý hệ thống',
     key: 'manage',
+    icon: 'icon icon-bullhorn',
     permission: [],
     children: [{
         title: 'Người dùng',

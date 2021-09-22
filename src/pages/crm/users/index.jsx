@@ -1,115 +1,126 @@
-/* eslint-disable no-plusplus */
 import React, { PureComponent } from 'react';
+import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
-import { history } from 'umi';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
+import PropTypes from 'prop-types';
 
-const data = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    id: i,
-    index: 'TTL01',
-    name: 'Nguyễn Văn Nam',
-    name_login: 'namnv',
-    email: 'namnv@gmail.com',
-    position: 'Sale man',
-  });
-}
+const mapStateToProps = ({ crmUsers, loading }) => ({
+  data: crmUsers.data,
+  error: crmUsers.error,
+  pagination: crmUsers.pagination,
+  loading,
+});
+@connect(mapStateToProps)
 class Index extends PureComponent {
-  render() {
+  formRef = React.createRef();
+
+  pagination = (pagination) => {
+    const {
+      location: { query },
+    } = this.props;
+    return Helper.paginationNet({
+      pagination,
+      query,
+      callback: (response) => {
+        this.changePagination(response);
+      },
+    });
+  };
+
+  header = () => {
     const columns = [
       {
-        title: 'Mã',
-        key: 'index',
-        dataIndex: 'index',
-        className: 'min-width-70',
-        width: 70,
-        align: 'center',
+        title: 'Mã ',
+        key: 'code',
+        className: 'min-width-150',
+        render: (record) => record?.code || '',
       },
       {
-        title: 'Họ và Tên',
+        title: 'Họ tên',
         key: 'name',
-        dataIndex: 'name',
-        className: 'min-width-200',
-        width: 200,
+        className: 'min-width-250',
+        render: (record) => record?.name || '',
       },
       {
         title: 'Tên đăng nhập',
-        key: 'name_login',
-        dataIndex: 'name_login',
-        className: 'min-width-150',
-        width: 150,
+        key: 'name-login',
+        className: 'min-width-250',
+        render: (record) => record?.name_login || '',
       },
       {
         title: 'Email',
         key: 'email',
-        dataIndex: 'email',
-        className: 'min-width-150',
-        width: 150,
+        className: 'min-width-250',
+        render: (record) => record?.email || '',
       },
       {
         title: 'Vai trò',
-        key: 'position',
-        dataIndex: 'position',
-        className: 'min-width-150',
-        width: 150,
+        key: 'name',
+        className: 'min-width-250',
+        render: (record) => record?.name || '',
       },
       {
         key: 'action',
-        className: 'min-width-100',
-        width: 100,
+        className: 'min-width-80',
+        width: 80,
         fixed: 'right',
         render: () => (
           <div className={styles['list-button']}>
-            <Button color="success">Chi tiết</Button>
+            <Button
+              color="success"
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
     ];
+    return columns;
+  };
+
+  render() {
+    const {
+      match: { params },
+      pagination,
+      location: { pathname },
+      data,
+    } = this.props;
     return (
       <>
-        <Helmet title="Người dùng" />
+        <Helmet title="Quản lý người dùng" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          {/* FORM SEARCH */}
-          <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Quản lý người dùng</Text>
-            <Button
-              color="success"
-              icon="plus"
-              onClick={() => history.push('/crm/quan-ly-he-thong/nguoi-dung/tao-moi')}
-            >
-              Thêm mới
+            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
+              Thêm Mới
             </Button>
           </div>
-          <div className={classnames(styles['block-table'])}>
+          <div className={styles['block-table']}>
             <Form layout="vertical" ref={this.formRef}>
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="fullName"
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    type={variables.INPUT_SEARCH}
-                  />
+                <div className="col-lg-4">
+                  <FormItem name="key" placeholder="Nhập từ khóa" type={variables.INPUT_SEARCH} />
                 </div>
               </div>
             </Form>
             <Table
-              columns={columns}
-              dataSource={data}
-              // params={{
-              //   header: this.header(),
-              //   type: 'table',
-              // }}
               bordered={false}
+              columns={this.header(params)}
+              dataSource={data}
+              pagination={this.pagination(pagination)}
+              params={{
+                header: this.header(),
+                type: 'table',
+              }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '55vh' }}
+              scroll={{ x: '100%' }}
             />
           </div>
         </div>
@@ -117,5 +128,19 @@ class Index extends PureComponent {
     );
   }
 }
+
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  pagination: PropTypes.objectOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  pagination: {},
+  location: {},
+  data: [],
+};
 
 export default Index;

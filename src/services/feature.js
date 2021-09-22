@@ -150,7 +150,6 @@ export const feature = {
       src: '/images/home/gear.svg',
       animation: animationImage.setting,
       url: '/crm',
-      permission: [permissions.CAUHINH],
     },
   ],
 };

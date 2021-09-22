@@ -1,151 +1,125 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'umi';
 import { Form } from 'antd';
-import { Helmet } from 'react-helmet';
+import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
-import Select from '@/components/CommonComponent/Select';
-import styles from '@/assets/styles/Common/common.scss';
-
-import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import Pane from '@/components/CommonComponent/Pane';
+import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
-const data = [
-  {
-    id: 1,
-    name: 'Nguyễn Văn Nam',
-  },
-  {
-    id: 2,
-    name: 'Nguyễn Văn',
-  },
-];
+const mapStateToProps = ({ menu, crmGroupAdd, loading }) => ({
+  loading,
+  categories: crmGroupAdd.categories,
+  details: crmGroupAdd.details,
+  branches: crmGroupAdd.branches,
+  menuData: menu.menuLeftCRM,
+});
+
+@connect(mapStateToProps)
 class Index extends PureComponent {
+  formRef = React.createRef();
+
   render() {
+    const { menuData, branches } = this.props;
     return (
       <>
-        <Pane style={{ padding: 20, paddingBottom: 0 }}>
-          <Helmet title="Thêm mới" />
-          <Breadcrumbs className="pb30 pt0" last="Thêm mới" />
-          <Pane className="row justify-content-center">
-            <Pane className="col-lg-12">
-              <Pane className="card">
-                <Form layout="vertical">
-                  <Pane className="px20 pt20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin người dùng
-                    </Heading>
+        <Breadcrumbs last="tạo mới" menu={menuData} />
+        <Pane className="row justify-content-center">
+          <Pane className="col-lg-12">
+            <Pane className="card">
+              <Form className={styles['layout-form']} layout="vertical">
+                <Pane className="px20 pt20">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin người dùng
+                  </Heading>
 
-                    <Pane className="row">
-                      <Pane className="col-lg-6">
-                        <FormItem
-                          label="Tên nhóm"
-                          name="name"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                        />
-                      </Pane>
+                  <Pane className="row">
+                    <Pane className="col-lg-6">
+                      <FormItem
+                        label="Tên nhóm"
+                        name="name"
+                        type={variables.INPUT}
+                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                      />
+                    </Pane>
 
-                      <Pane className="col-lg-6">
-                        <Form.Item
-                          label="Nhân viên quản lý"
-                          name="name_manage"
-                          type={variables.SELECT}
-                        >
-                          <Select dataSet={data} placeholder="Chọn" />
-                        </Form.Item>
-                      </Pane>
+                    <Pane className="col-lg-6">
+                      <FormItem
+                        label="Nhân viên quản lý"
+                        name="name_manage"
+                        data={[...branches]}
+                        type={variables.SELECT}
+                        allowClear={false}
+                      />
+                    </Pane>
 
-                      <Pane className="col-lg-12">
-                        <Form.Item
-                          name="group"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY]}
-                          label={
-                            <span className={styles['required-asterisk']}>
-                              Nhân viên thuộc nhóm
-                            </span>
-                          }
-                        >
-                          <Select
-                            mode="tags"
-                            placeholder="Chọn"
-                            dataSet={data}
-                            itemValue={(item) => item?.fullName || undefined}
-                            style={{ width: '100%' }}
-                          />
-                        </Form.Item>
-                      </Pane>
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        name="group"
+                        data={[...branches]}
+                        type={variables.SELECT_MUTILPLE}
+                        allowClear={false}
+                        rules={[variables.RULES.EMPTY]}
+                        label="Nhân viên thuộc nhóm"
+                      />
+                    </Pane>
 
-                      <Pane className="col-lg-12">
-                        <Form.Item
-                          name="facility"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY]}
-                          label={<span className={styles['required-asterisk']}>Cơ sở quản lý</span>}
-                        >
-                          <Select
-                            mode="tags"
-                            placeholder="Chọn"
-                            dataSet={data}
-                            itemValue={(item) => item?.fullName || undefined}
-                            style={{ width: '100%' }}
-                          />
-                        </Form.Item>
-                      </Pane>
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        name="facility"
+                        data={[...branches]}
+                        mode="tags"
+                        type={variables.SELECT_MUTILPLE}
+                        allowClear={false}
+                        rules={[variables.RULES.EMPTY]}
+                        label="Cơ sở quản lý"
+                      />
+                    </Pane>
 
-                      <Pane className="col-lg-12">
-                        <Form.Item
-                          label={
-                            <span className={styles['required-asterisk']}>Khu vực quản lý</span>
-                          }
-                        >
-                          <Pane className="row">
-                            <Pane className="col-lg-6">
-                              <Form.Item
-                                label="Tỉnh thành"
-                                name="city"
-                                type={variables.INPUT}
-                                rules={[variables.RULES.EMPTY]}
-                              >
-                                <Select dataSet={data} placeholder="Chọn" />
-                              </Form.Item>
-                            </Pane>
-
-                            <Pane className="col-lg-6">
-                              <Form.Item
-                                name="district"
-                                type={variables.INPUT}
-                                label={
-                                  <span className={styles['required-asterisk']}>Quận/Huyện</span>
-                                }
-                                rules={[variables.RULES.EMPTY]}
-                              >
-                                <Select
-                                  mode="tags"
-                                  placeholder="Chọn"
-                                  dataSet={data}
-                                  itemValue={(item) => item?.fullName || undefined}
-                                  style={{ width: '100%' }}
-                                />
-                              </Form.Item>
-                            </Pane>
+                    <Pane className="col-lg-12">
+                      <Form.Item
+                        label={<span className={styles['required-asterisk']}>Khu vực quản lý</span>}
+                      >
+                        <Pane className="row">
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              label="Tỉnh thành"
+                              name="city"
+                              data={[...branches]}
+                              type={variables.SELECT}
+                              allowClear={false}
+                              rules={[variables.RULES.EMPTY]}
+                            />
                           </Pane>
-                        </Form.Item>
-                      </Pane>
+
+                          <Pane className="col-lg-6">
+                            <FormItem
+                              name="district"
+                              data={[...branches]}
+                              mode="tags"
+                              type={variables.SELECT_MUTILPLE}
+                              allowClear={false}
+                              label="Quận/Huyện"
+                              rules={[variables.RULES.EMPTY]}
+                            />
+                          </Pane>
+                        </Pane>
+                      </Form.Item>
                     </Pane>
                   </Pane>
-                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                    <p className="btn-delete" role="presentation">
-                      Hủy
-                    </p>
-                    <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
-                      Lưu
-                    </Button>
-                  </Pane>
-                </Form>
-              </Pane>
+                </Pane>
+                <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                  <p className="btn-delete" role="presentation">
+                    Hủy
+                  </p>
+                  <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
+                    Lưu
+                  </Button>
+                </Pane>
+              </Form>
             </Pane>
           </Pane>
         </Pane>
@@ -153,5 +127,15 @@ class Index extends PureComponent {
     );
   }
 }
+
+Index.propTypes = {
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  menuData: [],
+  branches: [],
+};
 
 export default Index;
