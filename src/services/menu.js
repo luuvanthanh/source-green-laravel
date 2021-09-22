@@ -1522,3 +1522,49 @@ export async function getLeftMenuPhysical() {
     },
   ];
 }
+
+export async function getLeftMenuCRM() {
+  return [
+    {
+      title: 'Quản lý hệ thống',
+      key: 'manage',
+      icon: 'icon icon-bullhorn',
+      permission: [],
+      children: [
+        {
+          title: 'Người dùng',
+          key: 'manage-user',
+          url: [
+            '/crm/quan-ly-he-thong/nguoi-dung',
+            '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
+            '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Vai trò',
+          key: 'manage-roles',
+          url: [
+            '/crm/quan-ly-he-thong/vai-tro',
+            '/crm/quan-ly-he-thong/vai-tro/tao-moi',
+            '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Nhóm',
+          key: 'manage-group',
+          url: [
+            '/crm/quan-ly-he-thong/nhom',
+            '/crm/quan-ly-he-thong/nhom/tao-moi',
+            '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
+  ];
+}
