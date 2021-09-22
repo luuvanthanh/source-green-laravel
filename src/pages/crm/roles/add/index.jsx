@@ -26,33 +26,33 @@ class Index extends PureComponent {
     const { menuData } = this.props;
     return (
       <>
-        <Breadcrumbs last="tạo mới" menu={menuData} />
+        <Breadcrumbs last="Tạo mới" menu={menuData} />
         <Pane className="row justify-content-center">
           <Pane className="col-lg-6">
-            <Pane className="card">
-              <Form className={styles['layout-form']} layout="vertical">
-                <Pane className="px20 pt20">
-                  <Heading type="form-title" className="mb20">
-                    Thông tin vai trò
-                  </Heading>
-
-                  <Pane className="row">
-                    <Pane className="col-lg-12">
-                      <FormItem
-                        label="Tên vai trò"
-                        name="name"
-                        type={variables.INPUT}
-                        rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                      />
-                    </Pane>
-
-                    <Pane className="col-lg-12">
-                      <FormItem
-                        label="Mô tả"
-                        name="description"
-                        rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                        type={variables.TEXTAREA}
-                      />
+            <Form className={styles['layout-form']} layout="vertical">
+              <Pane className="pl20 pr20 mt20">
+                <Pane className="card">
+                  <Pane className="p20">
+                    <Heading type="form-title" className="mb20">
+                      Thông tin vai trò
+                    </Heading>
+                    <Pane className="row mt20">
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          label="Tên vai trò"
+                          name="name"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                        />
+                      </Pane>
+                      <Pane className="col-lg-12">
+                        <FormItem
+                          label="Mô tả"
+                          name="description"
+                          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
+                          type={variables.TEXTAREA}
+                        />
+                      </Pane>
                     </Pane>
                   </Pane>
                 </Pane>
@@ -64,8 +64,8 @@ class Index extends PureComponent {
                     Lưu
                   </Button>
                 </Pane>
-              </Form>
-            </Pane>
+              </Pane>
+            </Form>
           </Pane>
         </Pane>
       </>

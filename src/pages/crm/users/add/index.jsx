@@ -26,17 +26,15 @@ class Index extends PureComponent {
     const { menuData, branches } = this.props;
     return (
       <>
-        <Breadcrumbs last="tạo mới" menu={menuData} />
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-12">
-            <Pane className="card">
-              <Form className={styles['layout-form']} layout="vertical">
-                <Pane className="px20 pt20">
+        <Breadcrumbs last="Tạo mới" menu={menuData} />
+        <Form className={styles['layout-form']} layout="vertical">
+          <Pane className="pl20 pr20 mt20">
+              <Pane className="card">
+                <Pane className="p20">
                   <Heading type="form-title" className="mb20">
                     Thông tin người dùng
                   </Heading>
-
-                  <Pane className="row">
+                  <Pane className="row mt20">
                     <Pane className="col-lg-6">
                       <FormItem
                         label="Họ và tên"
@@ -80,18 +78,17 @@ class Index extends PureComponent {
                     </Pane>
                   </Pane>
                 </Pane>
-                <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                  <p className="btn-delete" role="presentation">
-                    Hủy
-                  </p>
-                  <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
-                    Lưu
-                  </Button>
-                </Pane>
-              </Form>
-            </Pane>
+              </Pane>
           </Pane>
-        </Pane>
+          <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+            <p className="btn-delete" role="presentation">
+              Hủy
+            </p>
+            <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
+              Lưu
+            </Button>
+          </Pane>
+        </Form>
       </>
     );
   }

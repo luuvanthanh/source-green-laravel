@@ -6,13 +6,13 @@ export default {
         id: 1,
         code: 'TTL01',
         name: 'Namvv',
-        name_group: 'Nguyễn Văn Nam',
+        nameGroup: 'Nguyễn Văn Nam',
       },
       {
         id: 2,
         code: 'TTL01',
         name: 'Namvv',
-        name_group: 'Nguyễn Văn Nam',
+        nameGroup: 'Nguyễn Văn Nam',
       },
     ],
     pagination: {
@@ -44,24 +44,6 @@ export default {
       },
     }),
   },
-  effects: {
-    *GET_DATA({ payload }, saga) {
-      try {
-        const response = yield saga.call(payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.parsePayload,
-            pagination: response.pagination,
-          },
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
-  },
+  effects: {},
   subscriptions: {},
 };

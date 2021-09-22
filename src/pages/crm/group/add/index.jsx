@@ -26,17 +26,15 @@ class Index extends PureComponent {
     const { menuData, branches } = this.props;
     return (
       <>
-        <Breadcrumbs last="tạo mới" menu={menuData} />
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-12">
-            <Pane className="card">
-              <Form className={styles['layout-form']} layout="vertical">
-                <Pane className="px20 pt20">
+        <Breadcrumbs last="Tạo mới" menu={menuData} />
+          <Form className={styles['layout-form']} layout="vertical">
+            <Pane className="pl20 pr20 mt20">
+              <Pane className="card">
+                <Pane className="p20">
                   <Heading type="form-title" className="mb20">
                     Thông tin người dùng
                   </Heading>
-
-                  <Pane className="row">
+                  <Pane className="row mt20">
                     <Pane className="col-lg-6">
                       <FormItem
                         label="Tên nhóm"
@@ -59,7 +57,7 @@ class Index extends PureComponent {
                     <Pane className="col-lg-12">
                       <FormItem
                         name="group"
-                        data={[...branches]}
+                        data={branches}
                         type={variables.SELECT_MUTILPLE}
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}
@@ -70,7 +68,7 @@ class Index extends PureComponent {
                     <Pane className="col-lg-12">
                       <FormItem
                         name="facility"
-                        data={[...branches]}
+                        data={branches}
                         mode="tags"
                         type={variables.SELECT_MUTILPLE}
                         allowClear={false}
@@ -81,14 +79,15 @@ class Index extends PureComponent {
 
                     <Pane className="col-lg-12">
                       <Form.Item
-                        label={<span className={styles['required-asterisk']}>Khu vực quản lý</span>}
+                        label='Khu vực quản lý'
+                        rules={[variables.RULES.EMPTY]}
                       >
                         <Pane className="row">
                           <Pane className="col-lg-6">
                             <FormItem
                               label="Tỉnh thành"
                               name="city"
-                              data={[...branches]}
+                              data={branches}
                               type={variables.SELECT}
                               allowClear={false}
                               rules={[variables.RULES.EMPTY]}
@@ -98,7 +97,7 @@ class Index extends PureComponent {
                           <Pane className="col-lg-6">
                             <FormItem
                               name="district"
-                              data={[...branches]}
+                              data={branches}
                               mode="tags"
                               type={variables.SELECT_MUTILPLE}
                               allowClear={false}
@@ -111,6 +110,7 @@ class Index extends PureComponent {
                     </Pane>
                   </Pane>
                 </Pane>
+                </Pane>
                 <Pane className="p20 d-flex justify-content-between align-items-center border-top">
                   <p className="btn-delete" role="presentation">
                     Hủy
@@ -118,11 +118,9 @@ class Index extends PureComponent {
                   <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
                     Lưu
                   </Button>
-                </Pane>
-              </Form>
+              </Pane>
             </Pane>
-          </Pane>
-        </Pane>
+          </Form>
       </>
     );
   }
