@@ -71,8 +71,8 @@ class Index extends PureComponent {
                     <Pane className="col-lg-6">
                       <FormItem
                         label="vai trò"
-                        name="description"
-                        data={[...branches]}
+                        name="roleId"
+                        data={branches}
                         type={variables.SELECT}
                         allowClear={false}
                         rules={[variables.RULES.EMPTY]}

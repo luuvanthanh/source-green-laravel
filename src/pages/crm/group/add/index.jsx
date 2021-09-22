@@ -50,7 +50,7 @@ class Index extends PureComponent {
                       <FormItem
                         label="Nhân viên quản lý"
                         name="name_manage"
-                        data={[...branches]}
+                        data={branches}
                         type={variables.SELECT}
                         allowClear={false}
                       />

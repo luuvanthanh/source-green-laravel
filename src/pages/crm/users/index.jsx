@@ -39,37 +39,36 @@ class Index extends PureComponent {
       {
         title: 'Mã ',
         key: 'code',
-        className: 'min-width-150',
+        width: 150,
         render: (record) => record?.code || '',
       },
       {
         title: 'Họ tên',
         key: 'name',
-        className: 'min-width-250',
+        width: 250,
         render: (record) => record?.name || '',
       },
       {
         title: 'Tên đăng nhập',
         key: 'name-login',
-        className: 'min-width-250',
+        width: 250,
         render: (record) => record?.name_login || '',
       },
       {
         title: 'Email',
         key: 'email',
-        className: 'min-width-250',
+        width: 250,
         render: (record) => record?.email || '',
       },
       {
         title: 'Vai trò',
         key: 'name',
-        className: 'min-width-250',
+        width: 250,
         render: (record) => record?.name || '',
       },
       {
         key: 'action',
-        className: 'min-width-80',
-        width: 80,
+        width: 100,
         fixed: 'right',
         render: () => (
           <div className={styles['list-button']}>
@@ -120,7 +119,7 @@ class Index extends PureComponent {
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+              scroll={{ x: '100%', y: "calc(100vh - 150px)" }}
             />
           </div>
         </div>

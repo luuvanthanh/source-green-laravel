@@ -1,7 +1,8 @@
 export default {
   namespace: 'crmGroup',
   state: {
-    data: [{
+    data: [
+      {
         id: 1,
         code: 'TTL01',
         name: 'Namvv',
@@ -26,18 +27,14 @@ export default {
     INIT_STATE: (state) => ({
       ...state,
       isError: false,
-      data: []
+      data: [],
     }),
-    SET_DATA: (state, {
-      payload
-    }) => ({
+    SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
       pagination: payload.pagination,
     }),
-    SET_ERROR: (state, {
-      payload
-    }) => ({
+    SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
         isError: true,
@@ -48,16 +45,14 @@ export default {
     }),
   },
   effects: {
-    * GET_DATA({
-      payload
-    }, saga) {
+    *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(payload);
         yield saga.put({
           type: 'SET_DATA',
           payload: {
             parsePayload: response.parsePayload,
-            pagination: response.pagination
+            pagination: response.pagination,
           },
         });
       } catch (error) {
