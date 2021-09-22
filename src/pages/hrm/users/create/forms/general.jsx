@@ -99,8 +99,8 @@ const General = memo(() => {
       cancelText: 'Không',
       content:
         details?.status === 'WORKING'
-          ? 'Bạn có muốn lưu trữ nhân viên này. Nếu lưu trữ sẽ ảnh hưởng đến giữ liệu đang có. Bạn có chắc chắn?'
-          : 'Bạn có muốn khôi phục nhân viên này. Nếu khôi phục sẽ ảnh hưởng đến giữ liệu đang có. Bạn có chắc chắn?',
+          ? 'Bạn có muốn lưu trữ nhân viên này. Nếu lưu trữ sẽ ảnh hưởng đến dữ liệu đang có. Bạn có chắc chắn?'
+          : 'Bạn có muốn khôi phục nhân viên này. Nếu khôi phục sẽ ảnh hưởng đến dữ liệu đang có. Bạn có chắc chắn?',
       onOk() {
         dispatch({
           type: 'HRMusersAdd/STORAGE',

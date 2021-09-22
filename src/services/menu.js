@@ -801,7 +801,6 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/dang-hinh'],
       icon: 'icon icon-file',
       permission: [permissions.HA],
-      pro: true,
     },
     {
       title: 'Duyệt hình',
@@ -809,7 +808,6 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/duyet-hinh'],
       icon: 'icon icon-checkmark',
       permission: [permissions.HA],
-      pro: true,
     },
     {
       title: 'Danh sách',
@@ -817,7 +815,13 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/danh-sach', '/ghi-nhan/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [permissions.HA],
-      pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'settings-media',
+      url: ['/ghi-nhan/cau-hinh'],
+      icon: 'icon icon-setting',
+      permission: [permissions.HA],
     },
   ];
 }
