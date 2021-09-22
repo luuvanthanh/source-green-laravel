@@ -1864,6 +1864,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.HA],
           },
+          {
+            path: '/ghi-nhan/cau-hinh',
+            component: './media/watermark',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HA],
+          },
         ],
       },
       // MEDIA
