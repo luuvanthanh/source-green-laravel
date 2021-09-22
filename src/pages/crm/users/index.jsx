@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmRoles, loading }) => ({
-  data: crmRoles.data,
-  error: crmRoles.error,
-  pagination: crmRoles.pagination,
+const mapStateToProps = ({ crmUsers, loading }) => ({
+  data: crmUsers.data,
+  error: crmUsers.error,
+  pagination: crmUsers.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,7 +83,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'crmRoles/GET_DATA',
+      type: 'crmUsers/GET_DATA',
       payload: {
         ...search,
       },
@@ -178,9 +178,9 @@ class Index extends PureComponent {
       },
       {
         title: 'Tên đăng nhập',
-        key: 'name-login',
+        key: 'login',
         width: 250,
-        render: (record) => record?.name_login,
+        render: (record) => record?.nameLogin,
       },
       {
         title: 'Email',
@@ -190,9 +190,9 @@ class Index extends PureComponent {
       },
       {
         title: 'Vai trò',
-        key: 'name',
+        key: 'roles',
         width: 250,
-        render: (record) => record?.name,
+        render: (record) => record?.roles,
       },
       {
         key: 'action',
@@ -217,13 +217,13 @@ class Index extends PureComponent {
       data,
     } = this.props;
     const { search } = this.state;
-    const loading = effects['crmRoles/GET_DATA'];
+    const loading = effects['crmUsers/GET_DATA'];
     return (
       <>
-        <Helmet title="Loại lớp" />
+        <Helmet title="Quản lý người dùng" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Loại lớp</Text>
+            <Text color="dark">Quản lý người dùng</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

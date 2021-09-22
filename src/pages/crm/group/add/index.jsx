@@ -32,7 +32,7 @@ class Index extends PureComponent {
               <Pane className="card">
                 <Pane className="p20">
                   <Heading type="form-title" className="mb20">
-                    Thông tin người dùng
+                  Thông tin nhóm
                   </Heading>
                   <Pane className="row mt20">
                     <Pane className="col-lg-6">
