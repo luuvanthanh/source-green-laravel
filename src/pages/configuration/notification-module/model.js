@@ -76,7 +76,7 @@ export default {
     },
     *UPDATE({ payload, callback }, saga) {
       try {
-        yield saga.call(services.update, payload.id);
+        yield saga.call(services.update, payload);
         callback(payload);
       } catch (error) {
         callback(null, error);
