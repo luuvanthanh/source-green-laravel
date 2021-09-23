@@ -52,7 +52,6 @@ class Index extends PureComponent {
                         name="city"
                         data={branches}
                         type={variables.SELECT}
-                        allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>
@@ -63,7 +62,6 @@ class Index extends PureComponent {
                         name="district"
                         data={branches}
                         type={variables.SELECT_MUTILPLE}
-                        allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>

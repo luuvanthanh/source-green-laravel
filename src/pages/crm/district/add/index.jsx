@@ -52,7 +52,6 @@ class Index extends PureComponent {
                           data={branches}
                           type={variables.SELECT}
                           rules={[variables.RULES.EMPTY]}
-                          allowClear={false}
                         />
                       </Pane>
                     </Pane>

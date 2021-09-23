@@ -50,7 +50,6 @@ class Index extends PureComponent {
                         name="name_manage"
                         data={branches}
                         type={variables.SELECT}
-                        allowClear={false}
                       />
                     </Pane>
 
@@ -59,7 +58,6 @@ class Index extends PureComponent {
                         name="group"
                         data={branches}
                         type={variables.SELECT_MUTILPLE}
-                        allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                         label="Nhân viên thuộc nhóm"
                       />
@@ -71,7 +69,6 @@ class Index extends PureComponent {
                         data={branches}
                         mode="tags"
                         type={variables.SELECT_TAGS}
-                        allowClear={false}
                         rules={[variables.RULES.EMPTY]}
                         label="Cơ sở quản lý"
                       />
@@ -89,7 +86,7 @@ class Index extends PureComponent {
                               name="city"
                               data={branches}
                               type={variables.SELECT}
-                              allowClear={false}
+    
                               rules={[variables.RULES.EMPTY]}
                             />
                           </Pane>
@@ -100,7 +97,7 @@ class Index extends PureComponent {
                               data={branches}
                               mode="tags"
                               type={variables.SELECT_MUTILPLE}
-                              allowClear={false}
+    
                               label="Quận/Huyện"
                               rules={[variables.RULES.EMPTY]}
                             />

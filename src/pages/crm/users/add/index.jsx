@@ -71,8 +71,7 @@ class Index extends PureComponent {
                         label="vai trò"
                         name="roleId"
                         data={branches}
-                        type={variables.SELECT}
-                        allowClear={false}
+                        type={variables.SELECT}             
                         rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>
