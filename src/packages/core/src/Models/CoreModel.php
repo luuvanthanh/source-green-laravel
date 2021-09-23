@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class CoreModel extends Model implements Presentable
 {
-    const CREATED_AT = 'CreationTime';
-    const UPDATED_AT = 'LastModificationTime';
-    const DELETED_AT = 'DeletedAt';
+    // const CREATED_AT = 'CreationTime';
+    // const UPDATED_AT = 'LastModificationTime';
+    // const DELETED_AT = 'DeletedAt';
 
     use CastDatetimeFormatTrait, BootPresentTrait;
 
