@@ -11,6 +11,7 @@ import { Link } from 'umi';
 import GeneralForm from './forms/general';
 import CuratorForm from './forms/curator';
 import AccountForm from './forms/account';
+import NotificationForm from './forms/notification';
 
 import { menu, defaultKey } from './menu';
 
@@ -20,6 +21,7 @@ const forms = {
   general: <GeneralForm />,
   curator: <CuratorForm />,
   account: <AccountForm />,
+  notification: <NotificationForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {

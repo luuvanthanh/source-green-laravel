@@ -59,6 +59,30 @@ export default {
     }),
   },
   effects: {
+    *UPDATE_NOTIFICATION_MODULE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.updateNotificationModule, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_NOTIFICATION_TYPES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getTypes, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_NOTIFICATION_MODULE({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getNotificationModule, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.add, payload);

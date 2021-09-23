@@ -657,6 +657,18 @@ export default [
             redirect: '/cau-hinh/tai-khoan',
           },
           {
+            path: '/cau-hinh/hinh-thuc-nhan-thong-bao',
+            component: './configuration/notification-types',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
+            path: '/cau-hinh/module-gui-thong-bao',
+            component: './configuration/notification-module',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CAUHINH],
+          },
+          {
             path: '/cau-hinh/tai-khoan',
             component: './configuration/account',
             wrappers: ['@/wrappers/auth'],
