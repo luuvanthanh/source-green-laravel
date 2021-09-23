@@ -2,10 +2,10 @@
 
 namespace GGPHP\Crm\Category\Http\Requests;
 
-use GGPHP\Crm\Category\Models\ParentLead;
+use GGPHP\Crm\Category\Models\StatusParentLead;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateParentLeadRequest extends FormRequest
+class UpdateStatusParentLeadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +28,7 @@ class UpdateParentLeadRequest extends FormRequest
             'id' => 'required',
             'name' => [
                 function ($attribute, $value, $fail) {
-                    $parentLead = ParentLead::where('name', $value)->where('id', '!=', $this->id)->first();
+                    $parentLead = StatusParentLead::where('name', $value)->where('id', '!=', $this->id)->first();
 
                     if (is_null($parentLead)) {
                         return true;

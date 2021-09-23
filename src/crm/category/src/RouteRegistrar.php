@@ -29,14 +29,8 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            
-            \Route::resource('parent-leads', 'ParentLeadController');
-        });
-    }
-
-    public function forGuest()
-    {
-        $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('status-parent-leads', 'StatusParentLeadController');
+            \Route::resource('parent-potentials', 'ParentPotentialController');
         });
     }
 }

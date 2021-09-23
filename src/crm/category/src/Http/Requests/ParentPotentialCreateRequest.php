@@ -4,7 +4,7 @@ namespace GGPHP\Crm\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateParentLeadRequest extends FormRequest
+class ParentPotentialCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class CreateParentLeadRequest extends FormRequest
     public function rules()
     {
         return [
-           'name' => 'required|unique:parent_leads,name',
+            'name' => 'required|string|unique:parent_potentials,name',
         ];
     }
 }

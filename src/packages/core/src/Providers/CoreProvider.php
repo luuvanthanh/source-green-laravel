@@ -11,6 +11,7 @@ class CoreProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../../config/constants.php', 'constants');
         /*
          * Optional methods to load your package assets
          */
@@ -21,7 +22,6 @@ class CoreProvider extends ServiceProvider
         // $this->publishes([
         //     __DIR__ . '/../../config/config.php' => config_path('core.php'),
         // ]);
-        $this->mergeConfigFrom(__DIR__ . '/../../config/constants.php', 'constants');
 
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang');
 

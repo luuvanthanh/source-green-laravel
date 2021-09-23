@@ -59,16 +59,16 @@ class CoreRepositoryEloquent extends BaseRepository
     //     return $this->parserResult($model);
     // }
 
-    /**
-     * Update a entity in repository by id
-     *
-     * @throws ValidatorException
-     *
-     * @param array $attributes
-     * @param       $id
-     *
-     * @return mixed
-     */
+    // /**
+    //  * Update a entity in repository by id
+    //  *
+    //  * @throws ValidatorException
+    //  *
+    //  * @param array $attributes
+    //  * @param       $id
+    //  *
+    //  * @return mixed
+    //  */
     // public function update(array $attributes, $id)
     // {
     //     foreach ($attributes as $key => $value) {
@@ -119,16 +119,16 @@ class CoreRepositoryEloquent extends BaseRepository
     //     return $this->parserResult($model);
     // }
 
-    /**
-     * Update or Create an entity in repository
-     *
-     * @throws ValidatorException
-     *
-     * @param array $attributes
-     * @param array $values
-     *
-     * @return mixed
-     */
+    // /**
+    //  * Update or Create an entity in repository
+    //  *
+    //  * @throws ValidatorException
+    //  *
+    //  * @param array $attributes
+    //  * @param array $values
+    //  *
+    //  * @return mixed
+    //  */
     // public function updateOrCreate(array $attributes, array $values = [])
     // {
 
@@ -162,4 +162,5 @@ class CoreRepositoryEloquent extends BaseRepository
 
     //     return $this->parserResult($model);
     // }
+
 }

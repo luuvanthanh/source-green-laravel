@@ -9,6 +9,6 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  *
  * @package namespace App\Repositories\Contracts;
  */
-interface ParentLeadRepository extends RepositoryInterface
+interface StatusParentLeadRepository extends RepositoryInterface
 {
 }

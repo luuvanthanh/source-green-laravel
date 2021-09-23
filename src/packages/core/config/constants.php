@@ -27,9 +27,7 @@ return [
         'SUCCESS' => 200,
     ],
     "FORMAT_TIME" => [
-        'HIS' => 'H:i
-:s
-',
+        'HIS' => 'H:i:s',
         'YMD' => 'Y-m-d',
         'DM' => 'd-m',
     ],

@@ -1,24 +1,53 @@
 {
-    "name": "building/package",
-    "description": "building package posts laravel",
+    "name": "kun391/employees",
+    "description": "A Package for management employees with jsonapi specification",
+    "keywords": [
+        "kun391",
+        "employees"
+    ],
+    "homepage": "https://github.com/kun391/employees",
     "license": "MIT",
+    "type": "library",
     "authors": [
         {
-            "name": "tam smith",
-            "email": "tam@gmail.com"
+            "name": "Kun",
+            "email": "nguyentruongthanh.dn@gmail.com",
+            "role": "Developer"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0"
+    },
     "autoload": {
         "psr-4": {
-            "GGPHP\\Crm\\Category\\": "crm/category/src/"
+            "Kun391\\Users\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kun391\\Users\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GGPHP\\Crm\\Category\\Providers\\CategoryServiceProvider"
-            ]
+                "Kun391\\Users\\UsersServiceProvider"
+            ],
+            "aliases": {
+                "Users": "Kun391\\Users\\UsersFacade"
+            }
         }
     }
 }

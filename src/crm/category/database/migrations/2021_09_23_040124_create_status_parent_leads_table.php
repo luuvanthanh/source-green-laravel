@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateParentLeadsTable extends Migration
+class CreateStatusParentLeadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateParentLeadsTable extends Migration
      */
     public function up()
     {
-        Schema::create('parent_leads', function (Blueprint $table) {
+        Schema::create('status_parent_leads', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->string('code');
@@ -30,6 +30,6 @@ class CreateParentLeadsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parent_leads');
+        Schema::dropIfExists('status_parent_leads');
     }
 }

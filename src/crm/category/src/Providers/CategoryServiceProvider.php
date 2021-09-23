@@ -2,8 +2,10 @@
 
 namespace GGPHP\Crm\Category\Providers;
 
-use GGPHP\Crm\Category\Repositories\Contracts\ParentLeadRepository;
-use GGPHP\Crm\Category\Repositories\Eloquent\ParentLeadRepositoryEloquent;
+use GGPHP\Crm\Category\Repositories\Contracts\ParentPotentialRepository;
+use GGPHP\Crm\Category\Repositories\Contracts\StatusParentLeadRepository;
+use GGPHP\Crm\Category\Repositories\Eloquent\ParentPotentialRepositoryEloquent;
+use GGPHP\Crm\Category\Repositories\Eloquent\StatusParentLeadRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class CategoryServiceProvider extends ServiceProvider
@@ -27,6 +29,7 @@ class CategoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ParentLeadRepository::class, ParentLeadRepositoryEloquent::class);
+        $this->app->bind(StatusParentLeadRepository::class, StatusParentLeadRepositoryEloquent::class);
+        $this->app->bind(ParentPotentialRepository::class, ParentPotentialRepositoryEloquent::class);
     }
 }

@@ -5,11 +5,11 @@ namespace GGPHP\Crm\Category\Transformers;
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
- * Class CategoryDetailTransformer.
+ * Class ParentPotentialTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ParentLeadTransformer extends BaseTransformer
+class ParentPotentialTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -31,10 +31,9 @@ class ParentLeadTransformer extends BaseTransformer
     protected $availableIncludes = [];
 
     /**
-     * Transform the CategoryDetail entity.
+     * Transform the User entity.
      *
-     * @param ParentLead 
-
+     * @param User $model
      *
      * @return array
      */

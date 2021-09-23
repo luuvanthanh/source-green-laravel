@@ -2,9 +2,9 @@
 
 namespace GGPHP\Crm\Category\Repositories\Eloquent;
 
-use GGPHP\Crm\Category\Models\ParentLead;
-use GGPHP\Crm\Category\Presenters\ParentLeadPresenter;
-use GGPHP\Crm\Category\Repositories\Contracts\ParentLeadRepository;
+use GGPHP\Crm\Category\Models\StatusParentLead;
+use GGPHP\Crm\Category\Presenters\StatusParentLeadPresenter;
+use GGPHP\Crm\Category\Repositories\Contracts\StatusParentLeadRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -13,7 +13,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ParentLeadRepositoryEloquent extends BaseRepository implements ParentLeadRepository
+class StatusParentLeadRepositoryEloquent extends BaseRepository implements StatusParentLeadRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class ParentLeadRepositoryEloquent extends BaseRepository implements ParentLeadR
      */
     public function model()
     {
-        return ParentLead::class;
+        return StatusParentLead::class;
     }
 
     /**
@@ -40,7 +40,7 @@ class ParentLeadRepositoryEloquent extends BaseRepository implements ParentLeadR
      */
     public function presenter()
     {
-        return ParentLeadPresenter::class;
+        return StatusParentLeadPresenter::class;
     }
 
     public function getAll(array $attributes)
@@ -50,27 +50,27 @@ class ParentLeadRepositoryEloquent extends BaseRepository implements ParentLeadR
         }
 
         if (!empty($attributes['limit'])) {
-            $parentLead = $this->paginate($attributes['limit']);
+            $statusParentLead = $this->paginate($attributes['limit']);
         } else {
-            $parentLead = $this->get();
+            $statusParentLead = $this->get();
         }
 
-        return $parentLead;
+        return $statusParentLead;
     }
 
     public function create(array $attributes)
     {
         \DB::beginTransaction();
         try {
-            $code = ParentLead::max('code');
+            $code = StatusParentLead::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = "TTL" . "1";
+                $attributes['code'] = StatusParentLead::CODE . "1";
             } else {
                 $getNumber = substr($code, 3) + 1;
-                $attributes['code'] = "TTL" . "$getNumber";
+                $attributes['code'] = StatusParentLead::CODE . "$getNumber";
             }
-            $parentLead = ParentLead::create($attributes);
+            $parentLead = StatusParentLead::create($attributes);
 
             \DB::commit();
         } catch (\Throwable $th) {

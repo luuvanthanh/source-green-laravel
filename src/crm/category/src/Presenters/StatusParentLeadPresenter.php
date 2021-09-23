@@ -2,7 +2,7 @@
 
 namespace GGPHP\Crm\Category\Presenters;
 
-use GGPHP\Crm\Category\Transformers\ParentLeadTransformer;
+use GGPHP\Crm\Category\Transformers\StatusParentLeadTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
@@ -10,17 +10,17 @@ use Prettus\Repository\Presenter\FractalPresenter;
  *
  * @package namespace App\Presenters;
  */
-class ParentLeadPresenter extends FractalPresenter
+class StatusParentLeadPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'ParentLead';
+    public $resourceKeyItem = 'StatusParentLead';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'ParentLead';
+    public $resourceKeyCollection = 'StatusParentLead';
     /**
      * Transformer
      *
@@ -28,6 +28,6 @@ class ParentLeadPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new ParentLeadTransformer();
+        return new StatusParentLeadTransformer();
     }
 }
