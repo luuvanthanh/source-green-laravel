@@ -179,6 +179,7 @@ return [
         GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
         GGPHP\Crm\Facebook\Providers\FacebookServiceProvider::class,
         GGPHP\Crm\Zalo\Providers\ZaloServiceProvider::class,
+        GGPHP\Crm\Category\Providers\CategoryServiceProvider::class
     ],
 
     /*

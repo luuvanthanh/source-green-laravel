@@ -1,0 +1,24 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tam smith",
+            "email": "tam@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\Crm\\Category\\": "crm/category/src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\Crm\\Category\\Providers\\CategoryServiceProvider"
+            ]
+        }
+    }
+}
