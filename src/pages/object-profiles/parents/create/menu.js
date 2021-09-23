@@ -13,4 +13,8 @@ export const menu = [
     key: 'account',
     label: 'Tài khoản',
   },
+  {
+    key: 'notification',
+    label: 'Cấu hình thông báo',
+  },
 ];

@@ -436,6 +436,28 @@ export async function getLeftMenuConfiguration() {
       ],
     },
     {
+      title: 'Thông báo',
+      key: 'notification',
+      icon: 'icon icon-notification',
+      permission: [permissions.CAUHINH],
+      children: [
+        {
+          title: 'Hình thức nhận thông báo',
+          key: 'type-notification',
+          url: ['/cau-hinh/hinh-thuc-nhan-thong-bao'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Module gửi thông báo đến phụ huynh',
+          key: 'module-notification',
+          url: ['/cau-hinh/module-gui-thong-bao'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Phân quyền',
       key: 'permission',
       url: ['/cau-hinh/phan-quyen'],
