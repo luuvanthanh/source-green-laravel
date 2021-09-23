@@ -1566,5 +1566,88 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    {
+      title: 'Danh mục',
+      key: 'category',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Tình trạng PH Lead',
+          key: 'lead',
+          url: [
+            '/crm/danh-muc/ph-lead',
+            '/crm/danh-muc/ph-lead/tao-moi',
+            '/crm/danh-muc/ph-lead/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tình trạng PH Tiềm năng',
+          key: 'potential',
+          url: [
+            '/crm/danh-muc/ph-tiem-nang',
+            '/crm/danh-muc/ph-tiem-nang/tao-moi',
+            '/crm/danh-muc/ph-tiem-nang/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Nguồn tìm kiếm',
+          key: 'search',
+          url: [
+            '/crm/danh-muc/tim-kiem',
+            '/crm/danh-muc/tim-kiem/tao-moi',
+            '/crm/danh-muc/tim-kiem/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tags',
+          key: 'tags',
+          url: [
+            '/crm/danh-muc/tags'
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Tỉnh thành',
+          key: 'city',
+          url: [
+            '/crm/danh-muc/tinh-thanh',
+            '/crm/danh-muc/tinh-thanh/tao-moi',
+            '/crm/danh-muc/tinh-thanh/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Quận Huyện',
+          key: 'district',
+          url: [
+            '/crm/danh-muc/quan-huyen',
+            '/crm/danh-muc/quan-huyen/tao-moi',
+            '/crm/danh-muc/quan-huyen/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Cơ sở',
+          key: 'basis',
+          url: [
+            '/crm/danh-muc/co-so',
+            '/crm/danh-muc/co-so/tao-moi',
+            '/crm/danh-muc/co-so/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
