@@ -167,7 +167,7 @@ class Index extends PureComponent {
       {
         title: 'Mã tình trạng',
         key: 'code',
-        className: 'min-width-150',
+        className: 'max-width-150',
         width: 150,
         render: (record) => record?.code,
       },
@@ -175,7 +175,6 @@ class Index extends PureComponent {
         title: 'Tên tình trạng',
         key: 'name',
         className: 'min-width-250',
-        width: 450,
         render: (record) => record?.name,
       },
       {

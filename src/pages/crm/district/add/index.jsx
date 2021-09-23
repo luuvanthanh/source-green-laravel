@@ -23,7 +23,7 @@ class Index extends PureComponent {
   formRef = React.createRef();
 
   render() {
-    const { menuData,branches } = this.props;
+    const { menuData, branches } = this.props;
     return (
       <>
         <Breadcrumbs last="Thêm mới" menu={menuData} />
@@ -38,22 +38,22 @@ class Index extends PureComponent {
                     </Heading>
                     <Pane className="row mt20">
                       <Pane className="col-lg-12">
-                        <FormItem 
-                        label="Tên quận huyện" 
-                        name="district" 
-                        type={variables.INPUT} 
-                        rules={[variables.RULES.EMPTY]}
+                        <FormItem
+                          label="Tên quận huyện"
+                          name="district"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY]}
                         />
                       </Pane>
                       <Pane className="col-lg-12">
-                      <FormItem
-                        label="Thuộc tỉnh thành"
-                        name="townward"
-                        data={branches}
-                        type={variables.SELECT}
-                        rules={[variables.RULES.EMPTY]}
-                        allowClear={false}
-                      />
+                        <FormItem
+                          label="Thuộc tỉnh thành"
+                          name="townward"
+                          data={branches}
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                          allowClear={false}
+                        />
                       </Pane>
                     </Pane>
                   </Pane>

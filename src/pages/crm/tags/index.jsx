@@ -17,9 +17,9 @@ class Index extends PureComponent {
   }
 
   handleClose = (removedTag) => {
-    // eslint-disable-next-line react/no-access-state-in-setstate
-    const tags = this.state.tags.filter((tag) => tag !== removedTag);
-    this.setState({ tags });
+    this.setState((prevState) => ({
+      tags: prevState.tags.filter((item) => item !== removedTag),
+    }));
   };
 
   showInput = () => {

@@ -175,7 +175,6 @@ class Index extends PureComponent {
         title: 'Tên tình trạng',
         key: 'name',
         className: 'min-width-250',
-        width: 450,
         render: (record) => record?.name,
       },
       {
