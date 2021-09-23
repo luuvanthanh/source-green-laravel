@@ -11,6 +11,7 @@ class CoreProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../../config/constants.php', 'constants');
         /*
          * Optional methods to load your package assets
          */
@@ -18,10 +19,10 @@ class CoreProvider extends ServiceProvider
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'employees');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
-        $this->publishes([
-            __DIR__ . '/../../config/config.php' => config_path('core.php'),
-        ]);
-        $this->mergeConfigFrom(__DIR__ . '/../../config/config.php', 'core');
+        // $this->publishes([
+        //     __DIR__ . '/../../config/config.php' => config_path('core.php'),
+        // ]);
+
 
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang');
 

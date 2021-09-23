@@ -7,7 +7,7 @@ use Webpatser\Uuid\Uuid;
 class UuidModel extends CoreModel
 {
     public $keyType = 'string';
-    protected $primaryKey = 'Id';
+    //protected $primaryKey = 'Id';
 
     public static function boot()
     {
@@ -18,31 +18,31 @@ class UuidModel extends CoreModel
         });
     }
 
-    public static function create($attributes = [])
-    {
-        foreach ($attributes as $key => $value) {
-            $newkey = dashesToCamelCase($key, true);
+    // public static function create($attributes = [])
+    // {
+    //     foreach ($attributes as $key => $value) {
+    //         $newkey = dashesToCamelCase($key, true);
 
-            if ($key != $newkey) {
-                $attributes[$newkey] = $attributes[$key];
-                unset($attributes[$key]);
-            }
-        }
+    //         if ($key != $newkey) {
+    //             $attributes[$newkey] = $attributes[$key];
+    //             unset($attributes[$key]);
+    //         }
+    //     }
 
-        return static::query()->create($attributes);
-    }
+    //     return static::query()->create($attributes);
+    // }
 
-    public function update(array $attributes = [], array $options = [])
-    {
-        foreach ($attributes as $key => $value) {
-            $newkey = dashesToCamelCase($key, true);
+    // public function update(array $attributes = [], array $options = [])
+    // {
+    //     foreach ($attributes as $key => $value) {
+    //         $newkey = dashesToCamelCase($key, true);
 
-            if ($key != $newkey) {
-                $attributes[$newkey] = $attributes[$key];
-                unset($attributes[$key]);
-            }
-        }
+    //         if ($key != $newkey) {
+    //             $attributes[$newkey] = $attributes[$key];
+    //             unset($attributes[$key]);
+    //         }
+    //     }
 
-        return parent::update($attributes, $options);
-    }
+    //     return parent::update($attributes, $options);
+    // }
 }

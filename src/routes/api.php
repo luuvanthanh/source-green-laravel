@@ -23,4 +23,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Crm\Zalo\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+    \GGPHP\Crm\Category\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });
