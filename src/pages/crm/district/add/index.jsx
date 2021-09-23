@@ -10,11 +10,11 @@ import Pane from '@/components/CommonComponent/Pane';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 
-const mapStateToProps = ({ menu, crmRolesAdd, loading }) => ({
+const mapStateToProps = ({ menu, crmDistrictAdd, loading }) => ({
   loading,
-  categories: crmRolesAdd.categories,
-  details: crmRolesAdd.details,
-  branches: crmRolesAdd.branches,
+  categories: crmDistrictAdd.categories,
+  details: crmDistrictAdd.details,
+  branches: crmDistrictAdd.branches,
   menuData: menu.menuLeftCRM,
 });
 
@@ -23,7 +23,7 @@ class Index extends PureComponent {
   formRef = React.createRef();
 
   render() {
-    const { menuData } = this.props;
+    const { menuData, branches } = this.props;
     return (
       <>
         <Breadcrumbs last="Thêm mới" menu={menuData} />
@@ -34,23 +34,24 @@ class Index extends PureComponent {
                 <Pane className="card">
                   <Pane className="p20">
                     <Heading type="form-title" className="mb20">
-                      Thông tin vai trò
+                      Thông tin thêm mới
                     </Heading>
                     <Pane className="row mt20">
                       <Pane className="col-lg-12">
                         <FormItem
-                          label="Tên vai trò"
-                          name="name"
+                          label="Tên quận huyện"
+                          name="district"
                           type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
+                          rules={[variables.RULES.EMPTY]}
                         />
                       </Pane>
                       <Pane className="col-lg-12">
                         <FormItem
-                          label="Mô tả"
-                          name="description"
-                          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                          type={variables.TEXTAREA}
+                          label="Thuộc tỉnh thành"
+                          name="townward"
+                          data={branches}
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
                         />
                       </Pane>
                     </Pane>
@@ -75,10 +76,12 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   menuData: PropTypes.arrayOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   menuData: [],
+  branches: [],
 };
 
 export default Index;

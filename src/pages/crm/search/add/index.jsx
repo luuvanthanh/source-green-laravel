@@ -10,11 +10,11 @@ import Pane from '@/components/CommonComponent/Pane';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 
-const mapStateToProps = ({ menu, crmRolesAdd, loading }) => ({
+const mapStateToProps = ({ menu, crmSearchAdd, loading }) => ({
   loading,
-  categories: crmRolesAdd.categories,
-  details: crmRolesAdd.details,
-  branches: crmRolesAdd.branches,
+  categories: crmSearchAdd.categories,
+  details: crmSearchAdd.details,
+  branches: crmSearchAdd.branches,
   menuData: menu.menuLeftCRM,
 });
 
@@ -34,24 +34,11 @@ class Index extends PureComponent {
                 <Pane className="card">
                   <Pane className="p20">
                     <Heading type="form-title" className="mb20">
-                      Thông tin vai trò
+                    Thông tin thêm mới
                     </Heading>
                     <Pane className="row mt20">
                       <Pane className="col-lg-12">
-                        <FormItem
-                          label="Tên vai trò"
-                          name="name"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          label="Mô tả"
-                          name="description"
-                          rules={[variables.RULES.MAX_LENGTH_TEXTAREA]}
-                          type={variables.TEXTAREA}
-                        />
+                        <FormItem label="Tên nguồn" name="name" type={variables.INPUT} />
                       </Pane>
                     </Pane>
                   </Pane>

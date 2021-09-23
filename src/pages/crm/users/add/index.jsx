@@ -26,7 +26,7 @@ class Index extends PureComponent {
     const { menuData, branches } = this.props;
     return (
       <>
-        <Breadcrumbs last="Tạo mới" menu={menuData} />
+        <Breadcrumbs last="Thêm mới" menu={menuData} />
         <Form className={styles['layout-form']} layout="vertical">
           <Pane className="pl20 pr20 mt20">
               <Pane className="card">
@@ -71,8 +71,7 @@ class Index extends PureComponent {
                         label="vai trò"
                         name="roleId"
                         data={branches}
-                        type={variables.SELECT}
-                        allowClear={false}
+                        type={variables.SELECT}             
                         rules={[variables.RULES.EMPTY]}
                       />
                     </Pane>
