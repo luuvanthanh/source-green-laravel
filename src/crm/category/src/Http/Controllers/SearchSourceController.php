@@ -45,11 +45,16 @@ class SearchSourceController extends Controller
      */
     public function store(CreateSearchSourceRequest $request)
     {
-        $credentials = $request->all();
+        try {
+            $credentials = $request->all();
 
-        $searchSource = $this->searchSourceRepository->create($credentials);
+            $searchSource = $this->searchSourceRepository->create($credentials);
 
-        return $this->success($searchSource, trans('lang::messages.common.createSuccess'));
+            return $this->success($searchSource, trans('lang::messages.common.createSuccess'));
+        } catch (\Throwable $th) {
+
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**

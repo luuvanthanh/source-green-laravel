@@ -75,6 +75,7 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::parserResult($parentLead);

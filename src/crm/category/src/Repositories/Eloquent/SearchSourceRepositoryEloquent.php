@@ -75,6 +75,7 @@ class SearchSourceRepositoryEloquent extends BaseRepository implements SearchSou
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
         }
 
         return parent::parserResult($searchSource);
