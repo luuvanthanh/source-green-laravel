@@ -23,7 +23,6 @@ class CoreProvider extends ServiceProvider
         //     __DIR__ . '/../../config/config.php' => config_path('core.php'),
         // ]);
 
-
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang');
 
         // Publishing the views.
