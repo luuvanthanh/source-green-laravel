@@ -45,11 +45,15 @@ class StatusParentLeadController extends Controller
      */
     public function store(CreateStatusParentLeadRequest $request)
     {
-        $credentials = $request->all();
+        try {
+            $credentials = $request->all();
 
-        $statusParentLead = $this->statusParentLeadRepository->create($credentials);
+            $statusParentLead = $this->statusParentLeadRepository->create($credentials);
 
-        return $this->success($statusParentLead, trans('lang::messages.common.createSuccess'));
+            return $this->success($statusParentLead, trans('lang::messages.common.createSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
