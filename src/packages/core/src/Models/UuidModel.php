@@ -7,7 +7,7 @@ use Webpatser\Uuid\Uuid;
 class UuidModel extends CoreModel
 {
     public $keyType = 'string';
-    //protected $primaryKey = 'Id';
+    // protected $primaryKey = 'Id';
 
     public static function boot()
     {

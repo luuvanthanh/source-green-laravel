@@ -162,4 +162,5 @@ class CoreRepositoryEloquent extends BaseRepository
 
     //     return $this->parserResult($model);
     // }
+
 }
