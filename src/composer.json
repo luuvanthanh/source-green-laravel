@@ -65,7 +65,8 @@
             "GGPHP\\ExcelExporter\\": "packages/excel-exporter/src/",
             "GGPHP\\Crm\\Facebook\\": "crm/facebook/src/",
             "GGPHP\\Crm\\Zalo\\": "crm/zalo/src/",
-            "GGPHP\\Crm\\Category\\": "crm/category/src/"
+            "GGPHP\\Crm\\Category\\": "crm/category/src/",
+            "GGPHP\\Crm\\Province\\": "crm/province/src/"
         },
         "classmap": [
             "database/seeds",
