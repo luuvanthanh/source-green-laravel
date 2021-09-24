@@ -26,8 +26,6 @@ class TagRepositoryEloquent extends BaseRepository implements TagRepository
         return Tag::class;
     }
 
-
-
     /**
      * Boot up the repository, pushing criteria
      */
@@ -39,31 +37,5 @@ class TagRepositoryEloquent extends BaseRepository implements TagRepository
     public function presenter()
     {
         return TagPresenter::class;
-    }
-
-    public function create(array $attributes)
-    {
-        if (!empty($attributes['delete_rows'])) {
-            Tag::whereIn('id', $attributes['delete_rows'])->delete();
-        }
-
-        if (!empty($attributes['update_rows'])) {
-            foreach ($attributes['update_rows'] as $value) {
-                $tag = Tag::find($value['id']);
-                if ($tag) {
-                    $tag->update($value);
-                }
-            }
-        }
-
-        if (!empty($attributes['create_rows'])) {
-            foreach ($attributes['create_rows'] as $value) {
-                Tag::create($value);
-            }
-        }
-
-        $result = Tag::get();
-
-        return parent::parserResult($result);
     }
 }

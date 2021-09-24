@@ -4,7 +4,8 @@ namespace GGPHP\Crm\Category\Http\Controllers;
 
 use GGPHP\Crm\Category\Repositories\Contracts\TagRepository;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\Crm\Category\Http\Requests\TagCreateOrUpdateRequest;
+use GGPHP\Crm\Category\Http\Requests\TagCreateRequest;
+use GGPHP\Crm\Category\Http\Requests\TagDeleteRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -36,7 +37,7 @@ class TagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(TagCreateOrUpdateRequest $request)
+    public function store(TagCreateRequest $request)
     {
         $credentials = $request->all();
 
@@ -44,5 +45,17 @@ class TagController extends Controller
 
         return $this->success($tag, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
+    
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(TagDeleteRequest $request, $id)
+    {
+        $this->tagRepository->delete($id);
 
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
 }

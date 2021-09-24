@@ -4,7 +4,7 @@ namespace GGPHP\Crm\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagCreateOrUpdateRequest extends FormRequest
+class CreateSearchSourceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,7 @@ class TagCreateOrUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'create_rows' => 'array',
-            'update_rows' => 'array',
-            'delete_rows' => 'array',
-            'create_rows.*.name' => 'required|string',
-            'update_rows.*.name' => 'string',
+            'name' => 'required|unique:search_sources,name',
         ];
     }
 }
