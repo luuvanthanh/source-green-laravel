@@ -31,6 +31,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('status-parent-potentials', 'StatusParentPotentialController');
             \Route::resource('status-parent-leads', 'StatusParentLeadController');
+            \Route::resource('tags', 'TagController');
             \Route::resource('search-sources', 'SearchSourceController');
         });
     }

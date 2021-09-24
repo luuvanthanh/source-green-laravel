@@ -40,11 +40,15 @@ class StatusParentPotentialController extends Controller
      */
     public function store(StatusParentPotentialCreateRequest $request)
     {
-        $credentials = $request->all();
+        try {
+            $credentials = $request->all();
 
-        $statusParentPotential = $this->statusParentPotentialRepository->create($credentials);
+            $statusParentPotential = $this->statusParentPotentialRepository->create($credentials);
 
-        return $this->success($statusParentPotential, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+            return $this->success($statusParentPotential, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
