@@ -2,10 +2,9 @@
 
 namespace GGPHP\Crm\Category\Http\Requests;
 
-use GGPHP\Product\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ParentPotentialDeleteRequest extends FormRequest
+class StatusParentPotentialCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,13 +16,15 @@ class ParentPotentialDeleteRequest extends FormRequest
         return true;
     }
 
-    /** 
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules()
     {
-        return [];
+        return [
+            'name' => 'required|string|unique:status_parent_potentials,name',
+        ];
     }
 }

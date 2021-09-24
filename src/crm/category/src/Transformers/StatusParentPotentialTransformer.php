@@ -5,11 +5,11 @@ namespace GGPHP\Crm\Category\Transformers;
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
- * Class ParentPotentialTransformer.
+ * Class StatusParentPotentialTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ParentPotentialTransformer extends BaseTransformer
+class StatusParentPotentialTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include

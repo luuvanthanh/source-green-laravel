@@ -2,18 +2,18 @@
 
 namespace GGPHP\Crm\Category\Repositories\Eloquent;
 
-use GGPHP\Crm\Category\Models\ParentPotential;
+use GGPHP\Crm\Category\Models\StatusParentPotential;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use GGPHP\Crm\Category\Presenters\ParentPotentialPresenter;
-use GGPHP\Crm\Category\Repositories\Contracts\ParentPotentialRepository;
+use GGPHP\Crm\Category\Presenters\StatusParentPotentialPresenter;
+use GGPHP\Crm\Category\Repositories\Contracts\StatusParentPotentialRepository;
 
 /**
- * Class ParentPotentialRepositoryEloquent.
+ * Class StatusParentPotentialRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class ParentPotentialRepositoryEloquent extends BaseRepository implements ParentPotentialRepository
+class StatusParentPotentialRepositoryEloquent extends BaseRepository implements StatusParentPotentialRepository
 {
 
     /**
@@ -23,7 +23,7 @@ class ParentPotentialRepositoryEloquent extends BaseRepository implements Parent
      */
     public function model()
     {
-        return ParentPotential::class;
+        return StatusParentPotential::class;
     }
 
 
@@ -38,22 +38,22 @@ class ParentPotentialRepositoryEloquent extends BaseRepository implements Parent
 
     public function presenter()
     {
-        return ParentPotentialPresenter::class;
+        return StatusParentPotentialPresenter::class;
     }
 
-    public function getParentPotential(array $attributes)
+    public function getStatusParentPotential(array $attributes)
     {
         if (!empty($attributes['key'])) {
             $this->model = $this->model->where('name', 'like', '%' . $attributes['key'] . '%')->orWhere('code', 'like', '%' . $attributes['key'] . '%');
         }
 
         if (!empty($attributes['limit'])) {
-            $parentPotential = $this->paginate($attributes['limit']);
+            $statusParentPotential = $this->paginate($attributes['limit']);
         } else {
-            $parentPotential = $this->get();
+            $statusParentPotential = $this->get();
         }
 
-        return $parentPotential;
+        return $statusParentPotential;
     }
 
     public function create(array $attributes)
@@ -61,21 +61,21 @@ class ParentPotentialRepositoryEloquent extends BaseRepository implements Parent
         \DB::beginTransaction();
         try {
 
-            $code = ParentPotential::max('code');
+            $code = StatusParentPotential::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = ParentPotential::CODE . "1";
+                $attributes['code'] = StatusParentPotential::CODE . "1";
             } else {
                 $stt = substr($code, 3) + 1;
-                $attributes['code'] = ParentPotential::CODE . "$stt";
+                $attributes['code'] = StatusParentPotential::CODE . "$stt";
             }
 
-            $parentPotential = ParentPotential::create($attributes);
+            $statusParentPotential = StatusParentPotential::create($attributes);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
         }
 
-        return parent::parserResult($parentPotential);
+        return parent::parserResult($statusParentPotential);
     }
 }

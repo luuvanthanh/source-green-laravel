@@ -2,10 +2,10 @@
 
 namespace GGPHP\Crm\Category\Http\Requests;
 
-use GGPHP\Crm\Category\Models\ParentPotential;
+use GGPHP\Crm\Category\Models\StatusParentPotential;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ParentPotentialUpdateRequest extends FormRequest
+class StatusParentPotentialUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,9 +28,9 @@ class ParentPotentialUpdateRequest extends FormRequest
             'id' => 'required',
             'name' => [
                 function ($attribute, $value, $fail) {
-                    $parentPotentialName = ParentPotential::where('name', $value)->where('id', '!=', $this->id)->first();
+                    $statusParentPotentialName = StatusParentPotential::where('name', $value)->where('id', '!=', $this->id)->first();
 
-                    if (is_null($parentPotentialName)) {
+                    if (is_null($statusParentPotentialName)) {
                         return true;
                     }
 

@@ -29,7 +29,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('parent-potentials', 'ParentPotentialController');
+            \Route::resource('status-parent-potentials', 'StatusParentPotentialController');
         });
     }
 }

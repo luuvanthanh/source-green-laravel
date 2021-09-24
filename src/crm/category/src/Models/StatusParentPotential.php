@@ -6,13 +6,13 @@ namespace GGPHP\Crm\Category\Models;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ParentPotential extends UuidModel
+class StatusParentPotential extends UuidModel
 {
     use SoftDeletes;
 
-    const CODE='TTN';
+    const CODE = 'TTN';
 
-    protected $table = 'parent_potentials';
+    protected $table = 'status_parent_potentials';
 
     public $incrementing = false;
 
