@@ -1551,7 +1551,7 @@ export async function getLeftMenuCRM() {
       title: 'Quản lý hệ thống',
       key: 'manage',
       icon: 'icon icon-bullhorn',
-      permission: [],
+      permission: [permissions.CRM],
       children: [
         {
           title: 'Người dùng',
@@ -1561,7 +1561,7 @@ export async function getLeftMenuCRM() {
             '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
             '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1572,7 +1572,7 @@ export async function getLeftMenuCRM() {
             '/crm/quan-ly-he-thong/vai-tro/tao-moi',
             '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1583,7 +1583,7 @@ export async function getLeftMenuCRM() {
             '/crm/quan-ly-he-thong/nhom/tao-moi',
             '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
       ],
@@ -1592,7 +1592,7 @@ export async function getLeftMenuCRM() {
       title: 'Danh mục',
       key: 'category',
       icon: 'icon icon-list',
-      permission: [],
+      permission: [permissions.CRM],
       children: [
         {
           title: 'Tình trạng PH Lead',
@@ -1602,7 +1602,7 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/ph-lead/tao-moi',
             '/crm/danh-muc/ph-lead/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1613,7 +1613,7 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/ph-tiem-nang/tao-moi',
             '/crm/danh-muc/ph-tiem-nang/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1624,16 +1624,14 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/tim-kiem/tao-moi',
             '/crm/danh-muc/tim-kiem/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Tags',
           key: 'tags',
-          url: [
-            '/crm/danh-muc/tags'
-          ],
-          permission: [],
+          url: ['/crm/danh-muc/tags'],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1644,7 +1642,7 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/tinh-thanh/tao-moi',
             '/crm/danh-muc/tinh-thanh/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1655,7 +1653,7 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/quan-huyen/tao-moi',
             '/crm/danh-muc/quan-huyen/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
         {
@@ -1666,7 +1664,7 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/co-so/tao-moi',
             '/crm/danh-muc/co-so/:id/chi-tiet',
           ],
-          permission: [],
+          permission: [permissions.CRM],
           pro: true,
         },
       ],
