@@ -2,25 +2,25 @@
 
 namespace GGPHP\Crm\Category\Presenters;
 
-use GGPHP\Crm\Category\Transformers\ParentPotentialTransformer;
+use GGPHP\Crm\Category\Transformers\StatusParentPotentialTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
- * Class ParentPotentialPresenter.
+ * Class StatusParentPotentialPresenter.
  *
  * @package namespace App\Presenters;
  */
-class ParentPotentialPresenter extends FractalPresenter
+class StatusParentPotentialPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'ParentPotential';
+    public $resourceKeyItem = 'StatusParentPotential';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'ParentPotential';
+    public $resourceKeyCollection = 'StatusParentPotential';
     /**
      * Transformer
      *
@@ -28,6 +28,6 @@ class ParentPotentialPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new ParentPotentialTransformer();
+        return new StatusParentPotentialTransformer();
     }
 }

@@ -5,11 +5,11 @@ namespace GGPHP\Crm\Category\Repositories\Contracts;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface ParentPotentialRepository.
+ * Interface StatusParentPotentialRepository.
  *
  * @package namespace App\Repositories;
  */
-interface ParentPotentialRepository extends RepositoryInterface
+interface StatusParentPotentialRepository extends RepositoryInterface
 {
     //
 }
