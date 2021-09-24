@@ -145,13 +145,13 @@ export const feature = {
       target: true,
       permission: [permissions.CAMERAAI],
     },
-    {
-      title: 'CRM',
-      src: '/images/home/gear.svg',
-      animation: animationImage.setting,
-      url: '/crm',
-      permission: [permissions.CRM],
-    },
+    // {
+    //   title: 'CRM',
+    //   src: '/images/home/gear.svg',
+    //   animation: animationImage.setting,
+    //   url: '/crm',
+    //   permission: [permissions.CRM],
+    // },
   ],
 };
 
