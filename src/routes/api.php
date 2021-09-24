@@ -27,4 +27,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Crm\Category\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\Crm\Province\RouteRegistrar::routes(function ($router) {
+        $router->forGuest();
+    });
 });

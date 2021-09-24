@@ -1,0 +1,24 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tam smith",
+            "email": "tam@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\Province\\": "crm/province/src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\Crm\\Province\\Providers\\ProvinceServiceProvider"
+            ]
+        }
+    }
+}
