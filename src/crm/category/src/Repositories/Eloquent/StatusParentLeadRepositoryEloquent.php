@@ -16,6 +16,13 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class StatusParentLeadRepositoryEloquent extends BaseRepository implements StatusParentLeadRepository
 {
     /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'created_at',
+    ];
+
+    /**
      * Specify Model class name
      *
      * @return string
