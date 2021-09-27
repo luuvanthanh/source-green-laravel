@@ -15,8 +15,16 @@ import moment from 'moment';
 
 const DATA_SOURCE = [
   {
-    id: 'CHOT_BANG_LUONG',
+    id: 'CHOT_BANG_LUONG_THANG',
     name: 'Chốt bảng công tháng',
+  },
+  {
+    id: 'CHOT_BANG_CONG_GIO_LAM_THEM',
+    name: 'Chốt bảng công làm thêm giờ',
+  },
+  {
+    id: 'CHOT_BANG_CONG_XE_BUS',
+    name: 'Chốt bảng công xe bus',
   },
   {
     id: 'CHOT_BANG_THUONG_KPI',
@@ -321,14 +329,71 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        align: 'center',
         render: (record) => (
           <div className={styles['list-button']}>
-            {record.id === 'CHOT_BANG_LUONG' && (
+            {record.id === 'CHOT_BANG_LUONG_THANG' && (
               <Button
                 color="primary"
                 onClick={() => {
                   window.open(
                     `/quan-ly-nhan-su/tong-hop-cong?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
+              >
+                Xem bảng công
+              </Button>
+            )}
+            {record.id === 'CHOT_BANG_CONG_GIO_LAM_THEM' && (
+              <Button
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
+              >
+                Xem bảng công
+              </Button>
+            )}
+             {record.id === 'CHOT_BANG_CONG_XE_BUS' && (
+              <Button
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus?${Helper.convertParamSearchConvert(
                       {
                         startDate: Helper.getDate(
                           moment(search.month)
