@@ -131,6 +131,13 @@ export const feature = {
       permission: [permissions.THECHAT],
     },
     {
+      title: 'CRM',
+      src: '/images/home/crm.svg',
+      animation: animationImage.crm,
+      url: '/crm',
+      permission: [permissions.CRM],
+    },
+    {
       title: 'Cấu hình',
       src: '/images/home/gear.svg',
       animation: animationImage.setting,
@@ -144,13 +151,6 @@ export const feature = {
       url: URL_AI,
       target: true,
       permission: [permissions.CAMERAAI],
-    },
-    {
-      title: 'CRM',
-      src: '/images/home/gear.svg',
-      animation: animationImage.setting,
-      url: '/crm',
-      permission: [permissions.CRM],
     },
   ],
 };
