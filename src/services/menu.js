@@ -1669,5 +1669,39 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    {
+      title: 'Sale',
+      key: 'sale',
+      icon: 'icon icon-cash',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Phụ huynh Lead',
+          key: 'sale-lead',
+          url: [
+            '/crm/sale/ph-lead',
+            '/crm/sale/ph-lead/trung',
+            '/crm/sale/ph-lead/tao-moi',
+            '/crm/sale/ph-lead/:id/chi-tiet',
+            '/crm/sale/ph-lead/:id/chi-tiet/them-lich-su',
+            '/crm/sale/ph-lead/:id/chi-tiet/gui-email',
+            '/crm/sale/ph-lead/:id/chi-tiet/them-su-kien',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Phụ huynh Tiềm năng',
+          key: 'potential',
+          url: [
+            '/crm/sale/ph-tiem-nang',
+            '/crm/sale/ph-tiem-nang/tao-moi',
+            '/crm/sale/ph-tiem-nang/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
