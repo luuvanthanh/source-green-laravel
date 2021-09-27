@@ -180,7 +180,8 @@ return [
         GGPHP\Crm\Facebook\Providers\FacebookServiceProvider::class,
         GGPHP\Crm\Zalo\Providers\ZaloServiceProvider::class,
         GGPHP\Crm\Category\Providers\CategoryServiceProvider::class,
-        GGPHP\Crm\Province\Providers\ProvinceServiceProvider::class
+        GGPHP\Crm\Province\Providers\ProvinceServiceProvider::class,
+        GGPHP\Crm\CustomerLead\Providers\CustomerLeadServiceProvider::class
     ],
 
     /*

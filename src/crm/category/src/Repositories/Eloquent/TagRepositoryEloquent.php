@@ -15,7 +15,12 @@ use GGPHP\Crm\Category\Repositories\Contracts\TagRepository;
  */
 class TagRepositoryEloquent extends BaseRepository implements TagRepository
 {
-
+/**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'created_at',
+    ];
     /**
      * Specify Model class name
      *
