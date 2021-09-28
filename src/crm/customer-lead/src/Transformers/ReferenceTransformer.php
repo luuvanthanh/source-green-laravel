@@ -3,14 +3,15 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Category\Transformers\StatusParentLeadTransformer;
+use GGPHP\Crm\CustomerLead\Models\Reference;
 
 /**
- * Class CityTransformer.
+ * Class EventInfoTransformer.
  *
  * @package namespace App\Transformers;
  */
-class CustomerLeadTransformer extends BaseTransformer
+class ReferenceTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -29,30 +30,26 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['reference'];
+    protected $availableIncludes = ['statusParentLead'];
 
     /**
-     * Transform the CategoryDetail entity.
+     * Transform the User entity.
      *
-     * @param  
-
+     * @param Reference $model
      *
      * @return array
      */
     public function customAttributes($model): array
     {
-        return [
-            "employee_info" => json_decode($model->employee_info),
-            "user_create_info" => json_decode($model->user_create_info),
-        ];
+        return [];
     }
 
-    public function includeReference(CustomerLead $customerLead)
+    public function includeStatusParentLead(Reference $reference)
     {   
-        if (empty($customerLead->reference)) {
+        if (empty($reference->statusParentLead)) {
             return;
         }
 
-        return $this->item($customerLead->reference, new ReferenceTransformer, 'Reference');
+        return $this->item($reference->statusParentLead, new StatusParentLeadTransformer, 'StatusParentLead');
     }
 }

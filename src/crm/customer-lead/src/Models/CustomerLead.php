@@ -18,4 +18,9 @@ class CustomerLead extends UuidModel
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
         'phone_company', 'career', 'file_image'
     ];
+
+    public function reference()
+    {
+        return $this->hasOne(Reference::class);
+    }
 }
