@@ -12,7 +12,6 @@ import PropTypes from 'prop-types';
 
 import SelectionMerge from '../selection-merge';
 
-const rowSelection = {};
 let isMounted = true;
 /**
  * Set isMounted
@@ -253,7 +252,6 @@ class Index extends PureComponent {
               columns={this.header(params)}
               dataSource={data}
               loading={loading}
-              rowSelection={{ ...rowSelection }}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),

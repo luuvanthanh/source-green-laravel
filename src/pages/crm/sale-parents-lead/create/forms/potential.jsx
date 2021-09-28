@@ -3,6 +3,8 @@ import { Form, Steps } from 'antd';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
+import styles from '@/assets/styles/Common/common.scss';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import { get } from 'lodash';
@@ -62,21 +64,20 @@ const General = memo(() => {
   return (
     <Form layout="vertical">
       <div className="card">
-        <div style={{ padding: 20 }} className="pb-0 border-bottom">
+        <div style={{ padding: 20 }} className="border-bottom">
           <Heading type="form-title" style={{ marginBottom: 20 }}>
             Tình trạng tiềm năng
           </Heading>
           <div className="row">
-            <Pane className="col-lg-12">
-              <Steps progressDot current={1}>
-                <Step title="Tiềm năng mới" />
-                <Step title="Sale online" />
-                <Step title="Tham quan" />
-                <Step title="Đăng ký nhập học" />
-                <Step title="Test đầu vào" />
-                <Step title="Chính thức" />
+            <Pane className="col-lg-12 ">
+            <Steps labelPlacement="vertical" current={3} size="small" className={styles['wrapper-step']}>
+                <Step title="Tiềm năng mới" icon={<CheckCircleOutlined />} />
+                <Step title="Sale online" icon={<CheckCircleOutlined />} />
+                <Step title="Tham quan" icon={<CheckCircleOutlined />} />
+                <Step title="Đăng ký nhập học" icon={<CheckCircleOutlined />} />
+                <Step title="Test đầu vào" icon={<CheckCircleOutlined />} />
+                <Step title="Chính thức" icon={<CheckCircleOutlined />} />
               </Steps>
-              ,
             </Pane>
           </div>
         </div>

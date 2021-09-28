@@ -1692,7 +1692,7 @@ export async function getLeftMenuCRM() {
         },
         {
           title: 'Phụ huynh Tiềm năng',
-          key: 'potential',
+          key: 'sale-potential',
           url: [
             '/crm/sale/ph-tiem-nang',
             '/crm/sale/ph-tiem-nang/tao-moi',

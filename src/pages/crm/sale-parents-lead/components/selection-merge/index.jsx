@@ -1,17 +1,17 @@
 import React, { PureComponent } from 'react';
-import { Modal, Descriptions, Radio } from 'antd';
+import { Modal, Radio } from 'antd';
 import { connect } from 'umi';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
+import Table from '@/components/CommonComponent/Table';
+import PropTypes from 'prop-types';
 
-import Pane from '@/components/CommonComponent/Pane';
-
-const mapStateToProps = ({ menu, crmSaleSelectionMerge, loading }) => ({
-  loading,
-  categories: crmSaleSelectionMerge.categories,
-  details: crmSaleSelectionMerge.details,
+const mapStateToProps = ({ crmSaleSelectionMerge, loading }) => ({
+  data: crmSaleSelectionMerge.data,
+  error: crmSaleSelectionMerge.error,
+  pagination: crmSaleSelectionMerge.pagination,
   branches: crmSaleSelectionMerge.branches,
-  menuData: menu.menuLeftCRM,
+  loading,
 });
 
 @connect(mapStateToProps)
@@ -37,7 +37,121 @@ class Index extends PureComponent {
     this.setState({ isModalVisible: false });
   };
 
+  /**
+   * Function header table
+   */
+  header = () => {
+    const columns = [
+      {
+        title: 'Mã phụ huynh ',
+        key: 'code',
+        width: 150,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.code}
+          </div>
+        ),
+        fixed: 'left',
+      },
+      {
+        title: 'Hình ảnh phụ huynh',
+        key: 'img',
+        width: 160,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.img}
+          </div>
+        ),
+      },
+      {
+        title: 'Họ  và tên',
+        key: 'name',
+        width: 160,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.name}
+          </div>
+        ),
+      },
+      {
+        title: 'Giới tính',
+        key: 'sex',
+        width: 150,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.sex}
+          </div>
+        ),
+      },
+      {
+        title: 'Email',
+        key: 'email',
+        width: 170,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.email}
+          </div>
+        ),
+      },
+      {
+        title: 'Số điện thoại',
+        key: 'phone',
+        width: 200,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.phone}
+          </div>
+        ),
+      },
+      {
+        title: 'Số điện thoại khác',
+        key: 'phone',
+        width: 200,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.phone}
+          </div>
+        ),
+      },
+      {
+        title: 'Địa chỉ',
+        key: 'address',
+        width: 200,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.address}
+          </div>
+        ),
+      },
+      {
+        title: 'Quận Huyện',
+        key: 'district',
+        width: 170,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.district}
+          </div>
+        ),
+      },
+      {
+        title: 'Tỉnh thành',
+        key: 'city',
+        width: 170,
+        render: (record) => (
+          <div className="d-flex align-items-center">
+            <Radio /> {record?.city}
+          </div>
+        ),
+      },
+    ];
+    return columns;
+  };
+
   render() {
+    const {
+      match: { params },
+      data,
+    } = this.props;
     const { isModalVisible } = this.state;
     return (
       <>
@@ -46,67 +160,36 @@ class Index extends PureComponent {
             Gộp dữ liệu
           </Button>
           <Modal
-            className={styles['wrapper-modal']}
+            title="Chọn gộp dữ liệu"
+            className={styles['wrapper-modal-selection']}
             centered
             visible={isModalVisible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
-            width={900}
+            width={['80%']}
             footer={[
-              <>
-                <Button
-                  color="yellow"
-                  icon="arrowLeft2"
-                  className="mr-5"
-                  onClick={this.handleCancel}
-                >
-                  Quay lại
-                </Button>
-                <Button color="success" icon="shrink" className="ml-5" onClick={this.handleOk}>
-                  Gộp dữ liệu
-                </Button>
-              </>,
+              <Button color="yellow" icon="arrowLeft2" onClick={this.handleCancel}>
+                Quay lại
+              </Button>,
+              <Button color="success" icon="shrink" onClick={this.handleOk}>
+                Gộp dữ liệu
+              </Button>,
             ]}
           >
             <div>
-              <Pane className="row ">
-                <Pane className="col-lg-12 d-block">
-                  <Descriptions bordered layout="horizontal">
-                    <Descriptions.Item label="Mã phụ huynh" span={3}>
-                      <Radio />
-                      PH20210001
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Hình ảnh phụ huynh" span={3}>
-                      <Radio /> Nguyễn Anh
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Họ và tên" span={3}>
-                      <Radio /> anhn@gmail.com
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Giới tính" span={3}>
-                      <Radio /> 0934900900
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Email" span={3}>
-                      <Radio /> 02363123123
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Số điện thoại" span={3}>
-                      <Radio />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Số điện thoại khác" span={3}>
-                      <Radio />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Địa chỉ" span={3}>
-                      <Radio />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Quận Huyện" span={3}>
-                      <Radio />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Tỉnh thành" span={3}>
-                      <Radio />
-                    </Descriptions.Item>
-                  </Descriptions>
-                  ,
-                </Pane>
-              </Pane>
+              <Table
+                bordered
+                columns={this.header(params)}
+                dataSource={data}
+                className="table-edit"
+                pagination={false}
+                params={{
+                  header: this.header(),
+                  type: 'table',
+                }}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+              />
             </div>
           </Modal>
         </div>
@@ -115,4 +198,13 @@ class Index extends PureComponent {
   }
 }
 
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  data: [],
+};
 export default Index;

@@ -78,7 +78,11 @@ class Index extends PureComponent {
             <div>
               <Pane className="row ">
                 <Pane className="col-lg-12 d-block">
-                  <span>Các điều kiện tìm kiếm trùng</span>
+                <div className="ant-col ant-form-item-label">
+                    <label>
+                      <span>Các điều kiện tìm kiếm trùng</span>
+                    </label>
+                  </div>
                   <FormItem
                     className="mt-2"
                     name="name"

@@ -1270,3 +1270,39 @@
   border: 1px solid #C4CDD4 !important;
   border-radius: 3px !important;
 }
+
+.wrapper-step{
+  :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle){
+    background-color: #C4C4C4;
+    border-radius: 50%;
+    color: #C4C4C4;
+  }
+  :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+    background-color: #3BB54A;
+    color:$white;
+    border-radius: 50%;
+  } 
+  :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+    background-color: #3BB54A;
+    color:$white;
+    border-radius: 50%;
+  }
+  :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after ){
+    background-color: #3BB54A;
+  }
+}
+
+.wrapper-btn-student{
+  padding: 20px 0px; 
+}
+
+.wrapper-modal-selection{
+
+  :global(.ant-modal-footer) {
+    display: flex !important;
+    justify-content: center;
+  }
+  Button{
+    margin: 15px;
+  }
+}

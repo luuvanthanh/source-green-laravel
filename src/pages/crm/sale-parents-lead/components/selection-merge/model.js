@@ -1,14 +1,42 @@
 export default {
   namespace: 'crmSaleSelectionMerge',
   state: {
-    branches: [
+    data: [
       {
         id: 1,
+        key: 1,
+        code: 'PH20210001',
         name: 'Nguyễn Văn Nam',
+        sex: 'Nữ',
+        email: 'anhn@gmail.com',
+        phone: '0934900900',
+        address: '52 Huỳnh Ngọc Huệ',
+        district: 'Quận 2',
+        city: 'TP Hồ Chí Minh',
       },
       {
         id: 2,
-        name: 'Nguyễn Văn',
+        key: 2,
+        code: 'PH20210001',
+        name: 'Nguyễn Văn Nam',
+        sex: 'Nữ',
+        email: 'anhn@gmail.com',
+        phone: '0934900900',
+        address: '52 Huỳnh Ngọc Huệ',
+        district: 'Quận 2',
+        city: 'TP Hồ Chí Minh',
+      },
+      {
+        id: 3,
+        key: 3,
+        code: 'PH20210001',
+        name: 'Nguyễn Văn Nam',
+        sex: 'Nữ',
+        email: 'anhn@gmail.com',
+        phone: '0934900900',
+        address: '52 Huỳnh Ngọc Huệ',
+        district: 'Quận 2',
+        city: 'TP Hồ Chí Minh',
       },
     ],
     pagination: {
