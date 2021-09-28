@@ -608,7 +608,13 @@ class Index extends PureComponent {
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
             fullName={record.fullName}
-            description={`${record?.classStudent?.class?.name} - ${record?.classStudent?.class?.branch?.name}`}
+            description={
+              record?.classStudent?.class
+                ? `${record?.classStudent?.class?.name || ''} - ${
+                    record?.classStudent?.class?.branch?.name || ''
+                  }`
+                : " "
+            }
           />
         ),
       },
