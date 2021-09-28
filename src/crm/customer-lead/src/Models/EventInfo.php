@@ -15,6 +15,6 @@ class EventInfo extends UuidModel
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'event_date','event_address','status','result','customer_lead_id'
+        'name', 'date', 'location', 'status', 'result', 'customer_lead_id'
     ];
 }

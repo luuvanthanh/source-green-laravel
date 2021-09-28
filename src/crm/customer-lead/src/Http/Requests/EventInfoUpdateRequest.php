@@ -25,8 +25,8 @@ class EventInfoUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'event_date' => 'date_format:Y-m-d H:i',
-            'event_address' => 'string',
+            'date' => 'date_format:Y-m-d H:i',
+            'location' => 'string',
             'status' => 'string',
         ];
     }
