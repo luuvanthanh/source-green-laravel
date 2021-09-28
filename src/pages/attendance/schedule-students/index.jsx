@@ -608,7 +608,13 @@ class Index extends PureComponent {
           <AvatarTable
             fileImage={Helper.getPathAvatarJson(record.fileImage)}
             fullName={record.fullName}
-            description={`${record?.classStudent?.class?.name} - ${record?.classStudent?.class?.branch?.name}`}
+            description={
+              record?.classStudent?.class
+                ? `${record?.classStudent?.class?.name || ''} - ${
+                    record?.classStudent?.class?.branch?.name || ''
+                  }`
+                : " "
+            }
           />
         ),
       },
@@ -656,7 +662,7 @@ class Index extends PureComponent {
             startDateAdd: moment(dayOfWeek),
             byWeekDay:
               values.repeatBy === variables.DATE_FORMAT.WEEKLY
-                ? variablesModules.DATE_OF_WEEK[moment().format('d')]
+                ? variablesModules.DATE_OF_WEEK[moment(dayOfWeek).format('d')]
                 : null,
           },
           callback: () => {
