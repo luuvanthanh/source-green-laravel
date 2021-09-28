@@ -5,13 +5,13 @@ import { useParams } from 'umi';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'dva';
 import csx from 'classnames';
-import styles from '@/assets/styles/Common/common.scss';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
 import { variables, Helper } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
+import stylesModule from '../../styles.module.scss';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -136,7 +136,7 @@ const General = memo(() => {
                       ))}
                     </Pane>
 
-                    <Pane className={styles['wrapper-btn-student']}>
+                    <Pane className={stylesModule['wrapper-btn-student']}>
                       <Button
                         className="text-uppercase"
                         color="success"

@@ -33,7 +33,7 @@ const ICON_BUTTON = {
   copy: <span className="icon-copy" />,
   shrink: <span className="icon-shrink" />,
   list: <span className="icon-list" />,
-  arrowLeft2: <span className="icon-arrow-left2" />,
+  comeback: <span className="icon-arrow-left2" />,
   facebook: <span className="icon-facebook" />,
   envelop: <span className="icon-envelop" />,
 };

@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { Modal, Radio } from 'antd';
 import { connect } from 'umi';
-import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import PropTypes from 'prop-types';
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ crmSaleSelectionMerge, loading }) => ({
   data: crmSaleSelectionMerge.data,
@@ -161,17 +161,17 @@ class Index extends PureComponent {
           </Button>
           <Modal
             title="Chọn gộp dữ liệu"
-            className={styles['wrapper-modal-selection']}
+            className={stylesModule['wrapper-modal-selection']}
             centered
             visible={isModalVisible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
             width={['80%']}
             footer={[
-              <Button color="yellow" icon="arrowLeft2" onClick={this.handleCancel}>
+              <Button color="yellow" icon="comeback" onClick={this.handleCancel} className="m15">
                 Quay lại
               </Button>,
-              <Button color="success" icon="shrink" onClick={this.handleOk}>
+              <Button color="success" icon="shrink" onClick={this.handleOk} className="m15">
                 Gộp dữ liệu
               </Button>,
             ]}

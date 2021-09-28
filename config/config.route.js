@@ -2359,7 +2359,7 @@ export default [
             authority: [],
           },
           {
-            path: '/crm/sale/ph-lead/:id/chi-tiet/:id/chi-tiet-cuoc-goi',
+            path: '/crm/sale/ph-lead/:id/chi-tiet/:detailId/chi-tiet-cuoc-goi',
             component: './crm/sale-parents-lead/create/add-call',
             wrappers: ['@/wrappers/auth'],
             authority: [],

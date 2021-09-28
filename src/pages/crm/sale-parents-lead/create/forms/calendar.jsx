@@ -16,6 +16,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
+import stylesModule from '../../styles.module.scss';
 
 let isMounted = true;
 /**
@@ -321,7 +322,7 @@ class Index extends PureComponent {
         <Helmet title="Mời tham gia hội thảo" />
         <Modal
           centered
-          className={styles['wrapper-model-calendar']}
+          className={stylesModule['wrapper-model-calendar']}
           footer={[
             <p
               role="presentation"
@@ -329,6 +330,7 @@ class Index extends PureComponent {
               loading={loadingSubmit}
               onClick={this.onFinish}
               size="medium"
+              className={stylesModule['model-calendar-details']}
             >
               CHI TIẾT
             </p>,

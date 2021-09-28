@@ -8,6 +8,7 @@ import Table from '@/components/CommonComponent/Table';
 import { variables } from '@/utils';
 import Pane from '@/components/CommonComponent/Pane';
 import PropTypes from 'prop-types';
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ menu, crmSaleAssignment, loading }) => ({
   loading,
@@ -84,7 +85,7 @@ class Index extends PureComponent {
           </Button>
           <Modal
             title="Phân công nhân viên Sale"
-            className={styles['wrapper-modal']}
+            className={stylesModule['wrapper-modal']}
             centered
             visible={isModalVisible}
             onOk={this.handleOk}
@@ -92,10 +93,10 @@ class Index extends PureComponent {
             width={700}
             footer={[
               <p
+                className={stylesModule['wrapper-modal-cancel']}
                 key="back"
                 role="presentation"
                 onClick={this.handleCancel}
-                className={styles['cheack-btn-cancel']}
               >
                 Hủy
               </p>,
@@ -135,7 +136,7 @@ class Index extends PureComponent {
                 </Pane>
 
                 <div className="p15">
-                  <Pane className={styles['model-body col-lg-12']}>
+                  <Pane className={stylesModule['model-body col-lg-12']}>
                     <span className={styles['assignment-title']}>Nhân viên sale</span>
                     <Table
                       className="mt-2"

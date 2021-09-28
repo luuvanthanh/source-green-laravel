@@ -263,7 +263,7 @@ class Index extends PureComponent {
             <div className="d-flex  justify-content-center mt-5">
               <Button
                 color="yellow"
-                icon="arrowLeft2"
+                icon="comeback"
                 className="mr-5"
                 onClick={() => history.push(`/crm/sale/ph-lead`)}
               >

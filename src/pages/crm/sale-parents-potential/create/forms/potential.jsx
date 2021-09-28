@@ -3,11 +3,11 @@ import { Form, Steps } from 'antd';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
-import styles from '@/assets/styles/Common/common.scss';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import Heading from '@/components/CommonComponent/Heading';
 import Table from '@/components/CommonComponent/Table';
 import { get } from 'lodash';
+import stylesModule from '../../styles.module.scss';
 
 const { Step } = Steps;
 const General = memo(() => {
@@ -70,7 +70,7 @@ const General = memo(() => {
           </Heading>
           <div className="row">
             <Pane className="col-lg-12 ">
-            <Steps labelPlacement="vertical" current={3} size="small" className={styles['wrapper-step']}>
+            <Steps labelPlacement="vertical" current={3} size="small" className={stylesModule['wrapper-step']}>
                 <Step title="Tiềm năng mới" icon={<CheckCircleOutlined />} />
                 <Step title="Sale online" icon={<CheckCircleOutlined />} />
                 <Step title="Tham quan" icon={<CheckCircleOutlined />} />

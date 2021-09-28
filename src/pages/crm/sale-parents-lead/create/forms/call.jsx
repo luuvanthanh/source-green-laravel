@@ -10,6 +10,7 @@ import Table from '@/components/CommonComponent/Table';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { get } from 'lodash';
+import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
   const dispatch = useDispatch();
@@ -110,7 +111,7 @@ const General = memo(() => {
                 color="success"
                 size="large"
                 htmlType="submit"
-                className={styles['wrapper-btn-call']}
+                className={stylesModule['wrapper-btn-call']}
               >
                 <span className="icon-phone" />
               </Button>
@@ -123,7 +124,7 @@ const General = memo(() => {
                 color="success"
                 size="large"
                 htmlType="submit"
-                className={styles['wrapper-btn-call']}
+                className={stylesModule['wrapper-btn-call']}
               >
                 <span className="icon-phone" />
               </Button>
@@ -134,14 +135,16 @@ const General = memo(() => {
 
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
-        <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-          <Heading type="form-title" >
-            Lịch sử chăm sóc
-          </Heading>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/them-lich-su`)}>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <Heading type="form-title">Lịch sử chăm sóc</Heading>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/them-lich-su`)}
+            >
               Thêm lịch sử
             </Button>
-              </div>
+          </div>
           <div className="row">
             <Pane className="col-lg-12">
               <Table

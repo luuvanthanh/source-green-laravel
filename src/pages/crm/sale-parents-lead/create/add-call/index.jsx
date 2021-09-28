@@ -6,10 +6,11 @@ import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import styles from '@/assets/styles/Common/common.scss';
 import { variables } from '@/utils';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
+
+import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
   const dispatch = useDispatch();
@@ -65,26 +66,13 @@ const General = memo(() => {
                   />
                 </Pane>
                 <Pane className="col-lg-6">
-                  <FormItem
-                    name="phone"
-                    label="Số gọi"
-                    type={variables.INPUT}
-                  />
+                  <FormItem name="phone" label="Số gọi" type={variables.INPUT} />
                 </Pane>
                 <Pane className="col-lg-6">
-                  <FormItem
-                    name="phone"
-                    label="Số nhận"
-                    type={variables.INPUT}
-                  />
+                  <FormItem name="phone" label="Số nhận" type={variables.INPUT} />
                 </Pane>
                 <Pane className="col-lg-6">
-                  <FormItem
-                    name="name"
-                    data={data}
-                    label="Người gọi"
-                    type={variables.SELECT}
-                  />
+                  <FormItem name="name" data={data} label="Người gọi" type={variables.SELECT} />
                 </Pane>
                 <Pane className="col-lg-12">
                   <FormItem
@@ -95,24 +83,28 @@ const General = memo(() => {
                   />
                 </Pane>
                 <Pane className="col-lg-12 pb20">
-                <Pane className="row ">
+                  <Pane className="row ">
                     <Pane className="col-lg-12">
-                    <div className="ant-col ant-form-item-label">
-                      <label>
-                        <span>Nội dung</span>
-                      </label>
-                    </div>
+                      <div className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Nội dung</span>
+                        </label>
+                      </div>
                     </Pane>
-                    <Pane className="col-lg-12 d-flex" >
+                    <Pane className="col-lg-12 d-flex">
                       <Upload>
-                        <Button color="white" icon="upload1" className={styles['wrapper-btn-add']}>
+                        <Button
+                          color="white"
+                          icon="upload1"
+                          className={stylesModule['wrapper-btn-add']}
+                        >
                           Tải lên
                         </Button>
                       </Upload>
-                      <span className={styles['wrapper-title-add']}>
+                      <span className={stylesModule['wrapper-title-add']}>
                         Hỗ trợ định dạng: .doc, .pdf, .xls
                       </span>
-                      </Pane>
+                    </Pane>
                   </Pane>
                 </Pane>
               </div>

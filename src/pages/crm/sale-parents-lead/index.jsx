@@ -1,17 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form,Tag } from 'antd';
+import { Form, Tag } from 'antd';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
-import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-
+import styles from '@/assets/styles/Common/common.scss';
 import AssignmentComponent from './components/assignment';
 import CheckCoincide from './components/check-coincide';
 
@@ -127,14 +126,14 @@ class Index extends PureComponent {
     this.debouncedSearch(e.target.value, type);
   };
 
-    /**
+  /**
    * Function change select
    * @param {object} e value of select
    * @param {string} type key of object search
    */
-     onChangeSelect = (e, type) => {
-      this.debouncedSearch(e, type);
-    };
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
 
   /**
    * Function set pagination
@@ -240,9 +239,7 @@ class Index extends PureComponent {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => (
-          <Tag color="#27a600">{record?.tags}</Tag>
-        )
+        render: (record) => <Tag color="#27a600">{record?.tags}</Tag>,
       },
       {
         title: 'Nhân viên chăm sóc',
@@ -262,7 +259,12 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success" onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}>Chi tiết</Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -288,14 +290,19 @@ class Index extends PureComponent {
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Phụ huynh lead</Text>
             <div className="d-flex ">
-            <CheckCoincide/>
-            <Button color="primary" icon="export" className='ml-2'>
-            Import
-            </Button>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)} className='ml-2'>
-            Tạo mới
-            </Button>
-            <AssignmentComponent />
+              <CheckCoincide />
+              <Button color="primary" icon="export" className="ml-2">
+                Import
+              </Button>
+              <Button
+                color="success"
+                icon="plus"
+                onClick={() => history.push(`${pathname}/tao-moi`)}
+                className="ml-2"
+              >
+                Tạo mới
+              </Button>
+              <AssignmentComponent />
             </div>
           </div>
           <div className={styles['block-table']}>

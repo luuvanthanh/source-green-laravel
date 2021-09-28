@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Modal } from 'antd';
 import { connect, history } from 'umi';
-import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import Pane from '@/components/CommonComponent/Pane';
 import PropTypes from 'prop-types';
+
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ crmSaleCheck, loading }) => ({
   loading,
@@ -49,7 +50,7 @@ class Index extends PureComponent {
           </Button>
           <Modal
             title="Tìm kiếm phụ huynh trùng"
-            className={styles['wrapper-modal']}
+            className={stylesModule['wrapper-modal']}
             centered
             visible={isModalVisible}
             onOk={this.handleOk}
@@ -60,17 +61,11 @@ class Index extends PureComponent {
                 key="back"
                 role="presentation"
                 onClick={this.handleCancel}
-                className={styles['cheack-btn-cancel']}
+                className={stylesModule['wrapper-modal-cancel']}
               >
                 Hủy
               </p>,
-              <Button
-                key="submit"
-                color="success"
-                type="primary"
-                onClick={this.handleOk}
-                className={styles['cheack-btn-ok']}
-              >
+              <Button key="submit" color="success" type="primary" onClick={this.handleOk}>
                 Tìm trùng
               </Button>,
             ]}
@@ -78,7 +73,7 @@ class Index extends PureComponent {
             <div>
               <Pane className="row ">
                 <Pane className="col-lg-12 d-block">
-                <div className="ant-col ant-form-item-label">
+                  <div className="ant-col ant-form-item-label">
                     <label>
                       <span>Các điều kiện tìm kiếm trùng</span>
                     </label>
