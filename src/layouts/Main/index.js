@@ -110,7 +110,7 @@ const OBJECTS = {
     menu: 'menuConfiguration',
   },
   CRM: {
-    icon: '/images/home/gear.svg',
+    icon: '/images/home/crm.svg',
     title: 'CRM',
     menu: 'menuLeftCRM',
   },

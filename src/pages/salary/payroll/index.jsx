@@ -15,8 +15,16 @@ import moment from 'moment';
 
 const DATA_SOURCE = [
   {
-    id: 'CHOT_BANG_LUONG',
+    id: 'CHOT_BANG_LUONG_THANG',
     name: 'Chốt bảng công tháng',
+  },
+  {
+    id: 'CHOT_BANG_CONG_GIO_LAM_THEM',
+    name: 'Chốt bảng công làm thêm giờ',
+  },
+  {
+    id: 'CHOT_BANG_CONG_XE_BUS',
+    name: 'Chốt bảng công xe bus',
   },
   {
     id: 'CHOT_BANG_THUONG_KPI',
@@ -47,9 +55,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ payroll, loading }) => ({
-  data: payroll.data,
-  error: payroll.error,
+const mapStateToProps = ({ hrmPayroll, loading }) => ({
+  data: hrmPayroll.data,
+  error: hrmPayroll.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -101,7 +109,7 @@ class Index extends PureComponent {
     } = this.props;
     if (search.month) {
       this.props.dispatch({
-        type: 'payroll/GET_DATA',
+        type: 'hrmPayroll/GET_DATA',
         payload: {
           ...search,
         },
@@ -224,7 +232,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'payroll/REMOVE',
+          type: 'hrmPayroll/REMOVE',
           payload: {
             id,
           },
@@ -240,7 +248,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     if (key === 'CHOT_BANG_LUONG') {
       dispatch({
-        type: 'payroll/UPDATE',
+        type: 'hrmPayroll/UPDATE',
         payload: {
           id: record.id,
           isTimesheet: true,
@@ -256,7 +264,7 @@ class Index extends PureComponent {
     }
     if (key === 'CHOT_BANG_THUONG_KPI') {
       dispatch({
-        type: 'payroll/UPDATE',
+        type: 'hrmPayroll/UPDATE',
         payload: {
           id: record.id,
           isBonus: true,
@@ -272,7 +280,7 @@ class Index extends PureComponent {
     }
     if (key === 'KHAI_BAO_KHOAN_KHAC') {
       dispatch({
-        type: 'payroll/UPDATE',
+        type: 'hrmPayroll/UPDATE',
         payload: {
           id: record.id,
           isOther: true,
@@ -291,7 +299,7 @@ class Index extends PureComponent {
   updateSalary = (record) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'payroll/UPDATE_SALARY',
+      type: 'hrmPayroll/UPDATE_SALARY',
       payload: {
         id: record.id,
       },
@@ -321,14 +329,71 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        align: 'center',
         render: (record) => (
           <div className={styles['list-button']}>
-            {record.id === 'CHOT_BANG_LUONG' && (
+            {record.id === 'CHOT_BANG_LUONG_THANG' && (
               <Button
                 color="primary"
                 onClick={() => {
                   window.open(
                     `/quan-ly-nhan-su/tong-hop-cong?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
+              >
+                Xem bảng công
+              </Button>
+            )}
+            {record.id === 'CHOT_BANG_CONG_GIO_LAM_THEM' && (
+              <Button
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them?${Helper.convertParamSearchConvert(
+                      {
+                        startDate: Helper.getDate(
+                          moment(search.month)
+                            .startOf('months')
+                            .subtract(1, 'months')
+                            .add(25, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                        endDate: Helper.getDate(
+                          moment(search.month).startOf('months').add(24, 'days'),
+                          variables.DATE_FORMAT.DATE_AFTER,
+                        ),
+                      },
+                      variables.QUERY_STRING,
+                    )}`,
+                    '_blank',
+                  );
+                }}
+              >
+                Xem bảng công
+              </Button>
+            )}
+             {record.id === 'CHOT_BANG_CONG_XE_BUS' && (
+              <Button
+                color="primary"
+                onClick={() => {
+                  window.open(
+                    `/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus?${Helper.convertParamSearchConvert(
                       {
                         startDate: Helper.getDate(
                           moment(search.month)
@@ -426,7 +491,7 @@ class Index extends PureComponent {
       loading: { effects },
     } = this.props;
     const { search } = this.state;
-    const loading = effects['payroll/GET_DATA'];
+    const loading = effects['hrmPayroll/GET_DATA'];
     return (
       <>
         <Helmet title="Tính lương" />
