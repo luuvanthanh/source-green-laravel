@@ -109,6 +109,11 @@ const OBJECTS = {
     title: 'Cấu hình',
     menu: 'menuConfiguration',
   },
+  CRM: {
+    icon: '/images/home/crm.svg',
+    title: 'CRM',
+    menu: 'menuLeftCRM',
+  },
 };
 
 @withRouter
@@ -179,6 +184,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/cau-hinh(?=\/|$)/i.test(pathname)) {
       key = 'CONFIG';
+    }
+    if (/^\/crm(?=\/|$)/i.test(pathname)) {
+      key = 'CRM';
     }
     return key;
   };

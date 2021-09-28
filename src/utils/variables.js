@@ -133,6 +133,14 @@ export const variables = {
       name: 'Tháng',
     },
   ],
+  DAY_OF_WEEKS: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  DAY_OF_WEEKS_TEXT: {
+    Monday: 'Thứ 2',
+    Tuesday: 'Thứ 3',
+    Wednesday: 'Thứ 4',
+    Thursday: 'Thứ 5',
+    Friday: 'Thứ 6',
+  },
   STATUS: {
     NO_VERIFYE: 'NO_VERIFYE',
     VERIFIED: 'VERIFIED',
@@ -171,8 +179,8 @@ export const variables = {
   SEMESTER_2: 'HOCKY2',
   GENDERS: {
     MALE: 'Nam',
-    FEMALE: 'Nữ'
-  }
+    FEMALE: 'Nữ',
+  },
 };
 
 export default variables;

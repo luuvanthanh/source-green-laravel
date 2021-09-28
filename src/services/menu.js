@@ -436,6 +436,28 @@ export async function getLeftMenuConfiguration() {
       ],
     },
     {
+      title: 'Thông báo',
+      key: 'notification',
+      icon: 'icon icon-notification',
+      permission: [permissions.CAUHINH],
+      children: [
+        {
+          title: 'Hình thức nhận thông báo',
+          key: 'type-notification',
+          url: ['/cau-hinh/hinh-thuc-nhan-thong-bao'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+        {
+          title: 'Module gửi thông báo đến phụ huynh',
+          key: 'module-notification',
+          url: ['/cau-hinh/module-gui-thong-bao'],
+          permission: [permissions.CAUHINH],
+          pro: true,
+        },
+      ],
+    },
+    {
       title: 'Phân quyền',
       key: 'permission',
       url: ['/cau-hinh/phan-quyen'],
@@ -801,7 +823,6 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/dang-hinh'],
       icon: 'icon icon-file',
       permission: [permissions.HA],
-      pro: true,
     },
     {
       title: 'Duyệt hình',
@@ -809,7 +830,6 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/duyet-hinh'],
       icon: 'icon icon-checkmark',
       permission: [permissions.HA],
-      pro: true,
     },
     {
       title: 'Danh sách',
@@ -817,7 +837,13 @@ export async function getLeftMenuMedia() {
       url: ['/ghi-nhan/danh-sach', '/ghi-nhan/:id/chi-tiet'],
       icon: 'icon icon-list',
       permission: [permissions.HA],
-      pro: true,
+    },
+    {
+      title: 'Cấu hình',
+      key: 'settings-media',
+      url: ['/ghi-nhan/cau-hinh'],
+      icon: 'icon icon-setting',
+      permission: [permissions.HA],
     },
   ];
 }
@@ -1515,6 +1541,133 @@ export async function getLeftMenuPhysical() {
       icon: 'icon icon-clock',
       permission: [],
       pro: true,
+    },
+  ];
+}
+
+export async function getLeftMenuCRM() {
+  return [
+    {
+      title: 'Quản lý hệ thống',
+      key: 'manage',
+      icon: 'icon icon-bullhorn',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Người dùng',
+          key: 'manage-user',
+          url: [
+            '/crm/quan-ly-he-thong/nguoi-dung',
+            '/crm/quan-ly-he-thong/nguoi-dung/tao-moi',
+            '/crm/quan-ly-he-thong/nguoi-dung/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Vai trò',
+          key: 'manage-roles',
+          url: [
+            '/crm/quan-ly-he-thong/vai-tro',
+            '/crm/quan-ly-he-thong/vai-tro/tao-moi',
+            '/crm/quan-ly-he-thong/vai-tro/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Nhóm',
+          key: 'manage-group',
+          url: [
+            '/crm/quan-ly-he-thong/nhom',
+            '/crm/quan-ly-he-thong/nhom/tao-moi',
+            '/crm/quan-ly-he-thong/nhom/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Danh mục',
+      key: 'category',
+      icon: 'icon icon-list',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Tình trạng PH Lead',
+          key: 'lead',
+          url: [
+            '/crm/danh-muc/ph-lead',
+            '/crm/danh-muc/ph-lead/tao-moi',
+            '/crm/danh-muc/ph-lead/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tình trạng PH Tiềm năng',
+          key: 'potential',
+          url: [
+            '/crm/danh-muc/ph-tiem-nang',
+            '/crm/danh-muc/ph-tiem-nang/tao-moi',
+            '/crm/danh-muc/ph-tiem-nang/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Nguồn tìm kiếm',
+          key: 'search',
+          url: [
+            '/crm/danh-muc/tim-kiem',
+            '/crm/danh-muc/tim-kiem/tao-moi',
+            '/crm/danh-muc/tim-kiem/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tags',
+          key: 'tags',
+          url: ['/crm/danh-muc/tags'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Tỉnh thành',
+          key: 'city',
+          url: [
+            '/crm/danh-muc/tinh-thanh',
+            '/crm/danh-muc/tinh-thanh/tao-moi',
+            '/crm/danh-muc/tinh-thanh/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Quận Huyện',
+          key: 'district',
+          url: [
+            '/crm/danh-muc/quan-huyen',
+            '/crm/danh-muc/quan-huyen/tao-moi',
+            '/crm/danh-muc/quan-huyen/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Cơ sở',
+          key: 'basis',
+          url: [
+            '/crm/danh-muc/co-so',
+            '/crm/danh-muc/co-so/tao-moi',
+            '/crm/danh-muc/co-so/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
     },
   ];
 }

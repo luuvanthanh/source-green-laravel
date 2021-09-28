@@ -74,3 +74,29 @@ export function changePassword(data = {}) {
     },
   });
 }
+
+export function getNotificationModule(params) {
+  return request(`/user-notification-module/by-user/${params.id}`, {
+    method: 'GET',
+    params: {
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
+    },
+  });
+}
+
+export function getTypes(params = {}) {
+  return request('/notification-type', {
+    method: 'GET',
+    params: {
+      ...omit(params, 'page', 'limit'),
+      ...Helper.getPagination(params.page, params.limit),
+    },
+  });
+}
+
+export function updateNotificationModule(data) {
+  return request(`/user-notification-module/by-user`, {
+    method: 'PUT',
+    data,
+  });
+}
