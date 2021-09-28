@@ -4,22 +4,25 @@ namespace GGPHP\Crm\CustomerLead\Models;
 
 
 use GGPHP\Core\Models\UuidModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use GGPHP\Crm\Category\Models\Tag;
 
-class EventInfo extends UuidModel
+class CustomerTag extends UuidModel
 {
-    use SoftDeletes;
-
-    protected $table = 'event_infos';
+    protected $table = 'customer_tags';
 
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'date', 'location', 'status', 'result', 'customer_lead_id'
+        'tag_id', 'customer_lead_id'
     ];
 
     public function customerLead()
     {
         return $this->belongsTo(CustomerLead::class);
+    }
+
+    public function tag()
+    {
+        return $this->belongsTo(Tag::class);
     }
 }

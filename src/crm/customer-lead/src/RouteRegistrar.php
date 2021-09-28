@@ -31,6 +31,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('event-infos', 'EventInfoController');
             \Route::resource('customer-leads', 'CustomerLeadController');
+            \Route::resource('customer-tags', 'CustomerTagController');
         });
     }
 }
