@@ -17,6 +17,13 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class DistrictRepositoryEloquent extends BaseRepository implements DistrictRepository
 {
     /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'created_at',
+    ];
+    
+    /**
      * Specify Model class name
      *
      * @return string
