@@ -27,47 +27,45 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs last="Thêm mới" menu={menuData} />
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-6">
-            <Form className={styles['layout-form']} layout="vertical">
-              <Pane className="pl20 pr20 mt20">
-                <Pane className="card">
-                  <Pane className="p20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin thêm mới
-                    </Heading>
-                    <Pane className="row mt20">
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          label="Tên quận huyện"
-                          name="district"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-12">
-                        <FormItem
-                          label="Thuộc tỉnh thành"
-                          name="townward"
-                          data={branches}
-                          type={variables.SELECT}
-                          rules={[variables.RULES.EMPTY]}
-                        />
-                      </Pane>
+        <Pane className="col-lg-8 offset-lg-2">
+          <Form className={styles['layout-form']} layout="vertical">
+            <Pane className="pl20 pr20 mt20">
+              <Pane className="card">
+                <Pane className="p20">
+                  <Heading type="form-title" className="mb20">
+                    Thông tin thêm mới
+                  </Heading>
+                  <Pane className="row mt20">
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        label="Tên quận huyện"
+                        name="district"
+                        type={variables.INPUT}
+                        rules={[variables.RULES.EMPTY]}
+                      />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        label="Thuộc tỉnh thành"
+                        name="townward"
+                        data={branches}
+                        type={variables.SELECT}
+                        rules={[variables.RULES.EMPTY]}
+                      />
                     </Pane>
                   </Pane>
                 </Pane>
-                <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                  <p className="btn-delete" role="presentation">
-                    Hủy
-                  </p>
-                  <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
-                    Lưu
-                  </Button>
-                </Pane>
               </Pane>
-            </Form>
-          </Pane>
+              <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                <p className="btn-delete" role="presentation">
+                  Hủy
+                </p>
+                <Button className="ml-auto px25" color="success" htmlType="submit" size="large">
+                  Lưu
+                </Button>
+              </Pane>
+            </Pane>
+          </Form>
         </Pane>
       </>
     );

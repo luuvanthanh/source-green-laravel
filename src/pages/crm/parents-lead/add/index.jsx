@@ -27,8 +27,7 @@ class Index extends PureComponent {
     return (
       <>
         <Breadcrumbs last="Thêm mới" menu={menuData} />
-        <Pane className="row justify-content-center">
-          <Pane className="col-lg-6">
+          <Pane className="col-lg-6 offset-lg-3">
             <Form className={styles['layout-form']} layout="vertical">
               <Pane className="pl20 pr20 mt20">
                 <Pane className="card">
@@ -54,7 +53,6 @@ class Index extends PureComponent {
               </Pane>
             </Form>
           </Pane>
-        </Pane>
       </>
     );
   }
