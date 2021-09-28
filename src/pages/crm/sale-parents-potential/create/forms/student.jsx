@@ -57,10 +57,10 @@ const General = memo(() => {
     <Form layout="vertical">
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
-          <Heading type="form-title" style={{ marginBottom: 20 }}>
+          <Heading type="form-title" style={{ marginBottom: 10 }}>
             Thông tin học sinh
           </Heading>
-          <div className="row" >
+          <div className="row">
             <Pane className="col-lg-12">
               <FormList name="timetableDetails">
                 {(student, { add, remove }) => (
@@ -73,7 +73,10 @@ const General = memo(() => {
                             'border-bottom': index < student.length - 1,
                           })}
                         >
-                          <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                          <Heading
+                            type="form-block-title"
+                            style={{ marginBottom: 12, marginTop: 12 }}
+                          >
                             Học sinh {index + 1}
                           </Heading>
 
@@ -99,11 +102,7 @@ const General = memo(() => {
                               />
                             </Pane>
                             <Pane className="col-lg-4">
-                              <FormItem
-                                name="fullName"
-                                label="Họ và tên"
-                                type={variables.INPUT}
-                              />
+                              <FormItem name="fullName" label="Họ và tên" type={variables.INPUT} />
                             </Pane>
                             <Pane className="col-lg-4">
                               <FormItem
@@ -114,11 +113,7 @@ const General = memo(() => {
                               />
                             </Pane>
                             <Pane className="col-lg-4">
-                              <FormItem
-                                name="age"
-                                label="Tuổi (Tháng)"
-                                type={variables.INPUT}
-                              />
+                              <FormItem name="age" label="Tuổi (Tháng)" type={variables.INPUT} />
                             </Pane>
                             <Pane className="col-lg-4">
                               <FormItem
