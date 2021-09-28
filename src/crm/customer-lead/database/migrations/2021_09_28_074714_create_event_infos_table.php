@@ -16,7 +16,7 @@ class CreateEventInfosTable extends Migration
         Schema::create('event_infos', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
-            $table->date('date');
+            $table->dateTime('date');
             $table->string('name');
             $table->string('location');
             $table->string('status');
