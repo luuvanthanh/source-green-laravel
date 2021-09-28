@@ -5,6 +5,7 @@ import { useParams } from 'umi';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'dva';
 import csx from 'classnames';
+import styles from '@/assets/styles/Common/common.scss';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -19,7 +20,6 @@ const genders = [
 
 const { List: FormList } = Form;
 
-const marginProps = { style: { marginBottom: 12 } };
 const General = memo(() => {
   const { details, data } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
@@ -60,7 +60,7 @@ const General = memo(() => {
           <Heading type="form-title" style={{ marginBottom: 20 }}>
             Thông tin học sinh
           </Heading>
-          <div className="row" {...marginProps}>
+          <div className="row" >
             <Pane className="col-lg-12">
               <FormList name="timetableDetails">
                 {(student, { add, remove }) => (
@@ -72,7 +72,6 @@ const General = memo(() => {
                           className={csx('position-relative', {
                             'border-bottom': index < student.length - 1,
                           })}
-                          style={{ padding: '20px 20px 0 20px' }}
                         >
                           <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                             Học sinh {index + 1}
@@ -142,7 +141,7 @@ const General = memo(() => {
                       ))}
                     </Pane>
 
-                    <Pane style={{ padding: 20 }} className="border-bottom">
+                    <Pane className={styles['wrapper-btn-student']}>
                       <Button
                         className="text-uppercase"
                         color="success"

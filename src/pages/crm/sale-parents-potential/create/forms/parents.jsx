@@ -129,10 +129,22 @@ const General = memo(() => {
               />
             </div>
             <div className="col-lg-4">
-              <FormItem data={data} name="city" label="Thành phố" type={variables.SELECT} />
+              <FormItem
+                data={data}
+                name="city"
+                label="Thành phố"
+                type={variables.SELECT}
+                rules={[variables.RULES.EMPTY_INPUT]}
+              />
             </div>
             <div className="col-lg-4">
-              <FormItem data={data} name="district" label="Quận" type={variables.SELECT} />
+              <FormItem
+                data={data}
+                name="district"
+                label="Quận"
+                type={variables.SELECT}
+                rules={[variables.RULES.EMPTY_INPUT]}
+              />
             </div>
             <div className="col-lg-4">
               <FormItem
