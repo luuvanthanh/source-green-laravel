@@ -17,6 +17,13 @@ use Prettus\Repository\Criteria\RequestCriteria;
 class TownWardRepositoryEloquent extends BaseRepository implements TownWardRepository
 {
     /**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'created_at',
+    ];
+
+    /**
      * Specify Model class name
      *
      * @return string
