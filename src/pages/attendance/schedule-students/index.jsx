@@ -656,7 +656,7 @@ class Index extends PureComponent {
             startDateAdd: moment(dayOfWeek),
             byWeekDay:
               values.repeatBy === variables.DATE_FORMAT.WEEKLY
-                ? variablesModules.DATE_OF_WEEK[moment().format('d')]
+                ? variablesModules.DATE_OF_WEEK[moment(dayOfWeek).format('d')]
                 : null,
           },
           callback: () => {
