@@ -29,11 +29,8 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('event-infos', 'EventInfoController');
             \Route::resource('customer-leads', 'CustomerLeadController');
         });
-    }
-
-    public function forGuest()
-    {
     }
 }

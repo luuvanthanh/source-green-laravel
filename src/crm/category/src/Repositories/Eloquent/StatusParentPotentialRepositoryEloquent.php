@@ -15,7 +15,12 @@ use GGPHP\Crm\Category\Repositories\Contracts\StatusParentPotentialRepository;
  */
 class StatusParentPotentialRepositoryEloquent extends BaseRepository implements StatusParentPotentialRepository
 {
-
+/**
+     * @var array
+     */
+    protected $fieldSearchable = [
+        'created_at',
+    ];
     /**
      * Specify Model class name
      *
