@@ -14,4 +14,9 @@ class StatusParentLead extends UuidModel
     protected $table = 'status_parent_leads';
 
     protected $fillable = ['code', 'name'];
+
+    public function reference()
+    {
+        return $this->hasMany(Reference::class);
+    }
 }

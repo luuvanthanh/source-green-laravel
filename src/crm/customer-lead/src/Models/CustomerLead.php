@@ -19,6 +19,11 @@ class CustomerLead extends UuidModel
         'phone_company', 'career', 'file_image'
     ];
 
+    public function reference()
+    {
+        return $this->hasOne(Reference::class);
+    }
+
     public function eventInfo()
     {
         return $this->hasMany(EventInfo::class);
@@ -29,4 +34,3 @@ class CustomerLead extends UuidModel
         return $this->hasMany(CustomerTag::class);
     }
 }
-

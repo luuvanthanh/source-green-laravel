@@ -3,15 +3,15 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\Category\Transformers\TagTransformer;
-use GGPHP\Crm\CustomerLead\Models\CustomerTag;
+use GGPHP\Crm\Category\Transformers\StatusParentLeadTransformer;
+use GGPHP\Crm\CustomerLead\Models\Reference;
 
 /**
  * Class EventInfoTransformer.
  *
  * @package namespace App\Transformers;
  */
-class CustomerTagTransformer extends BaseTransformer
+class ReferenceTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -30,12 +30,12 @@ class CustomerTagTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['tag'];
+    protected $availableIncludes = ['statusParentLead'];
 
     /**
      * Transform the User entity.
      *
-     * @param User $model
+     * @param Reference $model
      *
      * @return array
      */
@@ -44,12 +44,12 @@ class CustomerTagTransformer extends BaseTransformer
         return [];
     }
 
-    public function includeTag(CustomerTag $customerTag)
-    {
-        if (empty($customerTag->tag)) {
+    public function includeStatusParentLead(Reference $reference)
+    {   
+        if (empty($reference->statusParentLead)) {
             return;
         }
 
-        return $this->item($customerTag->tag, new TagTransformer, 'Tag');
+        return $this->item($reference->statusParentLead, new StatusParentLeadTransformer, 'StatusParentLead');
     }
 }
