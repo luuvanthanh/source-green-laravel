@@ -77,6 +77,10 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
+        if (!empty($attributes['is_null_employee']) && $attributes['is_null_employee'] == 'true') {
+            $this->model = $this->model->where('employee_id', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerLead = $this->paginate($attributes['limit']);
         } else {
@@ -84,5 +88,17 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         return $customerLead;
+    }
+
+    public function createEmployeeAssignment($attributes)
+    {
+        foreach ($attributes['employee_assignment'] as $value) {
+            $customerLead = CustomerLead::findOrFail($value['customer_lead_id']);
+            $customerLead->update(['employee_id' => $value['employee_id']]);
+            $employeeInfo = json_encode($value['employee_info']);
+            $customerLead->update(['employee_info' => $employeeInfo]);
+        }
+
+        return parent::parserResult($customerLead);
     }
 }
