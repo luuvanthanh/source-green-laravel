@@ -4,7 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EventInfoCreateRequest extends FormRequest
+class CustomerTagCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,8 @@ class EventInfoCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'date' => 'required|after_or_equal:today|date_format:Y-m-d H:i',
-            'location' => 'required|string',
-            'status' => 'required|string',
+            'customer_tag' => 'array',
+            'customer_tag.*.tag_id' => 'required|exists:tags,id',
             'customer_lead_id' => 'required|exists:customer_leads,id',
         ];
     }

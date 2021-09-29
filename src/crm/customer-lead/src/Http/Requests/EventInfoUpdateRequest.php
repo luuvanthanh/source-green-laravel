@@ -28,6 +28,7 @@ class EventInfoUpdateRequest extends FormRequest
             'date' => 'date_format:Y-m-d H:i',
             'location' => 'string',
             'status' => 'string',
+            'customer_lead_id' => 'exists:customer_leads,id',
         ];
     }
 }

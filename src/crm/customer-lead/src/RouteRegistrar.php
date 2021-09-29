@@ -32,6 +32,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('event-infos', 'EventInfoController');
             \Route::resource('customer-leads', 'CustomerLeadController');
             \Route::resource('references', 'ReferenceController');
+            \Route::resource('customer-tags', 'CustomerTagController');
         });
     }
 }

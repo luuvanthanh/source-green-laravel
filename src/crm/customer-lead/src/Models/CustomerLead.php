@@ -23,4 +23,14 @@ class CustomerLead extends UuidModel
     {
         return $this->hasOne(Reference::class);
     }
+
+    public function eventInfo()
+    {
+        return $this->hasMany(EventInfo::class);
+    }
+
+    public function customerTag()
+    {
+        return $this->hasMany(CustomerTag::class);
+    }
 }
