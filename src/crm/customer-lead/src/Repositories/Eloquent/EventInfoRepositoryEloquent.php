@@ -50,11 +50,11 @@ class EventInfoRepositoryEloquent extends BaseRepository implements EventInfoRep
     public function getEventInfo(array $attributes)
     {
         if (!empty($attributes['limit'])) {
-            $statusParentPotential = $this->paginate($attributes['limit']);
+            $eventInfo = $this->paginate($attributes['limit']);
         } else {
-            $statusParentPotential = $this->get();
+            $eventInfo = $this->get();
         }
 
-        return $statusParentPotential;
+        return $eventInfo;
     }
 }

@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 
 /**
  * Class CityTransformer.
@@ -28,7 +29,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['eventInfo','customerTag'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -44,5 +45,15 @@ class CustomerLeadTransformer extends BaseTransformer
             "employee_info" => json_decode($model->employee_info),
             "user_create_info" => json_decode($model->user_create_info),
         ];
+    }
+
+    public function includeEventInfo(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->eventInfo, new EventInfoTransformer, 'EventInfo');
+    }
+
+    public function includeCustomerTag(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->customerTag, new CustomerTagTransformer, 'CustomerTag');
     }
 }
