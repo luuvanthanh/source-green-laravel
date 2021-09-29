@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
+use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
@@ -110,5 +111,12 @@ class CustomerLeadController extends Controller
         $this->customerLeadRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function storeEmployeeAssignment(CreateEmployeeAssignmentRequest $request)
+    {
+        $customerLead = $this->customerLeadRepository->createEmployeeAssignment($request->all());
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
 }

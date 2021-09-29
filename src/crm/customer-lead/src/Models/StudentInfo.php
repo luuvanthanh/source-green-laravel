@@ -12,7 +12,8 @@ class StudentInfo extends UuidModel
     protected $table = 'student_infos';
 
     protected $fillable = [
-        'full_name', 'birth_date', 'sex', 'month_age', 'customer_lead_id', 'file_image'
+        'full_name', 'birth_date', 'sex', 'month_age',
+        'customer_lead_id', 'file_image', 'relationship'
     ];
 
     public function customerLead()

@@ -20,6 +20,7 @@ class CreateStudentInfosTable extends Migration
             $table->date('birth_date')->nullable();
             $table->string('sex')->nullable();
             $table->float('month_age')->nullable();
+            $table->string('relationship')->nullable();
             $table->uuid('customer_lead_id');
             $table->string('file_image', 1000)->nullable();
             $table->timestamps();

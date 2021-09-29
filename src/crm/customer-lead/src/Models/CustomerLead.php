@@ -3,6 +3,9 @@
 namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\SearchSource;
+use GGPHP\Crm\Province\Models\City;
+use GGPHP\Crm\Province\Models\District;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerLead extends UuidModel
@@ -37,5 +40,20 @@ class CustomerLead extends UuidModel
     public function studentInfo()
     {
         return $this->hasMany(StudentInfo::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function searchSource()
+    {
+        return $this->belongsTo(SearchSource::class);
     }
 }

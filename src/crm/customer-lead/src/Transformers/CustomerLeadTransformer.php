@@ -3,7 +3,10 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Province\Transformers\CityTransformer;
+use GGPHP\Crm\Province\Transformers\DistrictTransformer;
 
 /**
  * Class CityTransformer.
@@ -29,7 +32,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo'];
+    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -69,5 +72,32 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeStudentInfo(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->studentInfo, new StudentInfoTransformer, 'StudentInfo');
+    }
+
+    public function includeCity(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->city)) {
+            return;
+        }
+
+        return $this->item($customerLead->city, new CityTransformer, 'City');
+    }
+
+    public function includeDistrict(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->district)) {
+            return;
+        }
+
+        return $this->item($customerLead->district, new DistrictTransformer, 'District');
+    }
+
+    public function includeSearchSource(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->searchSource)) {
+            return;
+        }
+
+        return $this->item($customerLead->searchSource, new SearchSourceTransformer, 'SearchSource');
     }
 }

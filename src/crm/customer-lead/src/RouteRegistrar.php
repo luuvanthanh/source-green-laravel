@@ -34,6 +34,9 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('references', 'ReferenceController');
             \Route::resource('customer-tags', 'CustomerTagController');
             \Route::resource('student-infos', 'StudentInfoController');
+            \Route::post('employee-customer-leads', [
+                'uses' => 'CustomerLeadController@storeEmployeeAssignment',
+            ]);
         });
     }
 }
