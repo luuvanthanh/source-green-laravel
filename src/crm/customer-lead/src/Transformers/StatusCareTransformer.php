@@ -3,14 +3,16 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\CustomerLead\Models\StudentInfo;
+use GGPHP\Crm\Category\Transformers\StatusParentLeadTransformer;
+use GGPHP\Crm\CustomerLead\Models\StatusCare;
+use Predis\Response\Status;
 
 /**
  * Class EventInfoTransformer.
  *
  * @package namespace App\Transformers;
  */
-class StudentInfoTransformer extends BaseTransformer
+class StatusCareTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -29,38 +31,28 @@ class StudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['statusParentLead'];
 
     /**
      * Transform the User entity.
      *
-     * @param User $model
+     * @param StatusCare $model
      *
      * @return array
      */
     public function customAttributes($model): array
     {
-        $relationship = null;
-
-        foreach (StudentInfo::RELATIONSHIP as $key => $value) {
-
-            if ($value == $model->relationship) {
-                $relationship = $key;
-            }
-        }
-
-        $sex = null;
-
-        foreach (StudentInfo::SEX as $key => $value) {
-            
-            if ($value == $model->sex) {
-                $sex = $key;
-            }
-        }
-
         return [
-            'relationship' => $relationship,
-            'sex' => $sex,
+            "user_update_info" => json_decode($model->user_update_info),
         ];
+    }
+
+    public function includeStatusParentLead(StatusCare $statusCare)
+    {
+        if (empty($statusCare->statusParentLead)) {
+            return;
+        }
+
+        return $this->item($statusCare->statusParentLead, new StatusParentLeadTransformer, 'StatusParentLead');
     }
 }

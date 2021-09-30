@@ -48,8 +48,8 @@ class StudentInfoController extends Controller
     {
         $attributes = $request->all();
 
-        $customerLead = $this->studentInfoRepository->create($attributes);
+        $studentInfo = $this->studentInfoRepository->create($attributes);
 
-        return $this->success($customerLead, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+        return $this->success($studentInfo, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 }

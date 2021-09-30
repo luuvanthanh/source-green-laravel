@@ -14,6 +14,12 @@ class CustomerLead extends UuidModel
 
     protected $table = 'customer_leads';
 
+    const SEX = [
+        'FEMALE' => 0,
+        'MALE' => 1,
+        'OTHER' => 2,
+    ];
+
     protected $fillable = [
         'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
         'address', 'city_id', 'district_id', 'facility_id', 'employee_id',
@@ -55,5 +61,10 @@ class CustomerLead extends UuidModel
     public function searchSource()
     {
         return $this->belongsTo(SearchSource::class);
+    }
+
+    public function statusCare()
+    {
+        return $this->hasMany(StatusCare::class);
     }
 }

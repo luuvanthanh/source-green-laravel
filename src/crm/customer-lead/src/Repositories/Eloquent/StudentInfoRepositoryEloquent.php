@@ -62,6 +62,8 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
 
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $value) {
+                $value['relationship'] = StudentInfo::RELATIONSHIP[$value['relationship']];
+                $value['sex'] = StudentInfo::SEX[$value['sex']];
                 StudentInfo::create($value);
             }
         }
@@ -69,6 +71,8 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
         if (!empty($attributes['updateRows'])) {
             foreach ($attributes['updateRows'] as $value) {
                 $updateStudentInfo = StudentInfo::find($value['id']);
+                $value['relationship'] = StudentInfo::RELATIONSHIP[$value['relationship']];
+                $value['sex'] = StudentInfo::SEX[$value['sex']];
                 $updateStudentInfo->update($value);
             }
         }

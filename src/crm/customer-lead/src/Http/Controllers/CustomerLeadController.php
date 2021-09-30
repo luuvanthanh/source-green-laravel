@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateCustomerLeadRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\UpdateCustomerLeadRequest;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,6 +57,10 @@ class CustomerLeadController extends Controller
 
         if (isset($attributes['user_create_info'])) {
             $attributes['user_create_info'] = json_encode($attributes['user_create_info']);
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = CustomerLead::SEX[$attributes['sex']];
         }
 
         $customerLead = $this->customerLeadRepository->create($attributes);

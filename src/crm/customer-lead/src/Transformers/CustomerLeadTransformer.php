@@ -44,7 +44,17 @@ class CustomerLeadTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        $sex = null;
+
+        foreach (CustomerLead::SEX as $key => $value) {
+            
+            if ($value == $model->sex) {
+                $sex = $key;
+            }
+        }
+
         return [
+            'sex' => $sex,
             "employee_info" => json_decode($model->employee_info),
             "user_create_info" => json_decode($model->user_create_info),
         ];
@@ -99,5 +109,10 @@ class CustomerLeadTransformer extends BaseTransformer
         }
 
         return $this->item($customerLead->searchSource, new SearchSourceTransformer, 'SearchSource');
+    }
+
+    public function includeStatusCare(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->statusCare, new StatusCareTransformer, 'StatusCare');
     }
 }
