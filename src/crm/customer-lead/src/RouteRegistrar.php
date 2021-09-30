@@ -36,6 +36,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('employee-customer-leads', [
                 'uses' => 'CustomerLeadController@storeEmployeeAssignment',
             ]);
+            \Route::resource('status-cares', 'StatusCareController');
         });
     }
 }

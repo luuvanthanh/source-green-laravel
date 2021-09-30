@@ -19,4 +19,9 @@ class StatusParentLead extends UuidModel
     {
         return $this->hasMany(Reference::class);
     }
+
+    public function statusCare()
+    {
+        return $this->hasMany(StatusCare::class);
+    }
 }
