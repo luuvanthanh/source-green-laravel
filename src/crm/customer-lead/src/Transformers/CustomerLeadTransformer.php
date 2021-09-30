@@ -29,7 +29,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference'];
+    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'statusCare'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -55,7 +55,7 @@ class CustomerLeadTransformer extends BaseTransformer
 
         return $this->item($customerLead->reference, new ReferenceTransformer, 'Reference');
     }
-    
+
     public function includeEventInfo(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->eventInfo, new EventInfoTransformer, 'EventInfo');
@@ -64,5 +64,10 @@ class CustomerLeadTransformer extends BaseTransformer
     public function includeCustomerTag(CustomerLead $customerLead)
     {
         return $this->collection($customerLead->customerTag, new CustomerTagTransformer, 'CustomerTag');
+    }
+
+    public function includeStatusCare(CustomerLead $customerLead)
+    {
+        return $this->collection($customerLead->statusCare, new StatusCareTransformer, 'StatusCare');
     }
 }
