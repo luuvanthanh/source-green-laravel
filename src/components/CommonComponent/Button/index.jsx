@@ -40,6 +40,8 @@ const ICON_BUTTON = {
   telephone: <span className="icon-telephone" />,
   schedules: <span className="icon-schedules" />,
   file: <span className="icon-file-text" />,
+  circle: <span className="icon-circle-right" />,
+  equalizer: <span className="icon-equalizer" />,
 };
 export default function ButtonCustom({
   children,

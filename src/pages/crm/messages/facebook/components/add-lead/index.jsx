@@ -46,8 +46,8 @@ class Index extends PureComponent {
     return (
       <>
         <div>
-          <Button color="success" icon="plus" onClick={this.showModal}>
-            Thêm mớii
+          <Button color="success" icon="circle" onClick={this.showModal}>
+            Thêm mới
           </Button>
           <Modal
             title="Thông tin phụ huynh Lead"

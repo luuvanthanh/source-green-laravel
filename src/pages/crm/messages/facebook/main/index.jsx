@@ -30,7 +30,7 @@ class Index extends PureComponent {
                 className={stylesModule['main-contents']}
               >
                 <div className={classnames(stylesModule['main-contents-day'], 'col-lg-12')}>
-                  <p  className={stylesModule.title}>Chủ nhật, 31/05/2021</p>
+                  <p className={stylesModule.title}>Chủ nhật, 31/05/2021</p>
                 </div>
 
                 <div>
@@ -50,7 +50,7 @@ class Index extends PureComponent {
                       />
                       <div className={stylesModule.main}>
                         <h3 className={stylesModule.name}>be-nam.doc</h3>
-                        <p className={stylesModule.content}> 1.2 MB Image File</p>
+                        <h4 className={stylesModule.content}> 1.2 MB Image File</h4>
                       </div>
                       <span className="icon-arrow-down2"> </span>
                     </div>

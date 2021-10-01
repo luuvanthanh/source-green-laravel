@@ -33,9 +33,9 @@ class Index extends PureComponent {
                   <AddLead />
                 </div>
 
-                <div className={classnames(stylesModule['right-avt'], 'col-lg-6', 'offset-lg-3')}>
+                <div className={classnames(stylesModule['right-avt'], 'col-lg-12')}>
                   <img
-                    src="/images/facebook/avt05.svg"
+                    src="/images/facebook/avtMain.png"
                     alt="facebook"
                     className={stylesModule.img}
                   />
@@ -103,7 +103,7 @@ class Index extends PureComponent {
                   <h3 className={stylesModule.title}>GHI CHÚ</h3>
                   <span className="icon-pencil"> </span>
                 </div>
-                <div className="p10">
+                <div className="p10 ">
                   <Input.TextArea
                     autoSize={{ minRows: 3, maxRows: 3 }}
                     placeholder="Nhập ghi chú"

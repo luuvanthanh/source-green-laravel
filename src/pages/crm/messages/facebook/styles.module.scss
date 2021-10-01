@@ -3,9 +3,9 @@
 .left-container {
   background-color: $white;
   padding: 0px 0px;
+  width: 100%;
   box-sizing: border-box;
   height: calc(100vh - 100px);
-  display: flex;
 }
 .left-top {
   display: flex;
@@ -34,11 +34,60 @@
 }
 
 .left-search {
-  padding: 9px 9px 0px 9px;
+  height: 45px;
+  padding: 5px 9px 5px 9px;
   width: 100%;
+  position: relative;
   :global(.ant-form-item) {
     margin: 0px !important;
   }
+  .search{
+    position: absolute;
+    top: 50%;
+    width: calc(100% - 18px);
+    transform: translateY(-50%);
+  }
+  .button {
+    position: absolute;
+    right: 20px;  
+    z-index: 1;
+    top: 50%;
+    border: none;
+    cursor: pointer;
+    color: #7A7E84 !important;
+    transform: translateY(-50%);
+  }
+  .button:hover {
+    border: none;
+  }
+}
+
+.left-search-model{
+  display: none;
+  &.active {
+    display: flex;
+    height: 45px;
+    border-bottom: 1px solid #EAEAEA;
+    padding: 14px 15px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+}
+
+.left-search {
+  &.active {
+    display: none;
+    justify-content: space-between;
+  }
+}
+
+.button-icon-cancel{
+  border: none !important;
+}
+
+.button-icon-cancel:hover {
+  border: none !important;
 }
 
 .left-title-time {
@@ -96,7 +145,7 @@
     display: block;
     width: 100%;
     .name {
-      font-family: $base__font-family;
+      font-family: $semi-bold__font-family;
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
@@ -112,7 +161,7 @@
     }
     .title {
       width: 100%;
-      font-family: $base__font-family;
+      font-family: $semi-bold__font-family;
       font-style: normal;
       font-weight: normal;
       font-size: 13px;
@@ -127,7 +176,7 @@
       display: -webkit-box;
     }
     .time {
-      font-family: $base__font-family;
+      font-family: $semi-bold__font-family;
       font-size: 13px;
       line-height: 18px;
       color: #626568;
@@ -169,7 +218,7 @@
   display: block;
   padding-left: 10px;
   .name {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: 600;
     font-size: 13px;
@@ -178,7 +227,7 @@
     font-weight: 600;
   }
   .title {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -198,7 +247,7 @@
   display: flex;
   justify-content: center;
   .title{
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -217,7 +266,7 @@
   padding: 12px 15px;
   border-radius: 6px;
   .content {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -243,7 +292,7 @@
   background-color: $white;
 }
 .main-file {
-  padding: 12px 15px;
+  padding: 12px 0px;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -256,7 +305,7 @@
     display: block;
     width: 100%;
     .name {
-      font-family: $base__font-family;
+      font-family: $semi-bold__font-family;
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
@@ -264,10 +313,10 @@
       color: $text;
     }
     .content {
-      font-family: $base__font-family;
+      font-family: $semi-bold__font-family;
       font-style: normal;
-      font-weight: normal;
       font-size: 12px;
+      font-weight: 400;
       line-height: 18px;
       color: #626568;
     }
@@ -277,8 +326,10 @@
     color: #7f85a2;
     border-radius: 50%;
     border: none;
-    font-size: 17px;
+    padding: 3px;
+    font-size: 13px !important;
     float: right;
+    cursor: pointer;
     border: 1px solid #7f85a2;
   }
 }
@@ -322,7 +373,7 @@
 
 .main-left-contents-time {
   width: 100%;
-  font-family: $base__font-family;
+  font-family: $semi-bold__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 12px;
@@ -344,7 +395,7 @@
   padding: 12px 15px;
   border-radius: 6px;
   .content {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -363,7 +414,7 @@
   padding: 0px;
   margin-bottom: 20px;
   .time {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
@@ -413,19 +464,22 @@
 }
 
 .right-avt {
+  display: flex;
+  justify-content: center;
   width: 100%;
   padding-bottom: 13px;
   padding: 0px;
   img {
-    width: 100%;
-    height: auto;
+    width: 140px;
+    height: 140px;
     object-fit: cover;
     border-radius: 50%;
+    padding-bottom: 9px;
   }
 }
 
 .right-name {
-  font-family: $base__font-family;
+  font-family: $semi-bold__font-family;
   font-weight: 600;
   font-size: 13px;
   line-height: 18px;
@@ -437,7 +491,7 @@
 
 .right-status {
   width: 100%;
-  font-family: $base__font-family;
+  font-family: $semi-bold__font-family;
   font-weight: 600;
   font-size: 12px;
   line-height: 20px;
@@ -465,7 +519,7 @@
 .right-information {
   padding: 0px 35px;
   .title {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -482,7 +536,7 @@
     padding: 12px 0px;
   }
   .facebookName {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -497,7 +551,7 @@
     padding: 12px 0px;
   }
   .facebook {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -518,7 +572,7 @@
   border-bottom: 1px solid $border;
   padding: 10px 10px 20px 10px;
   .title {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: bold;
     font-size: 12px;
@@ -541,16 +595,16 @@
 }
 
 .right-note {
-  padding: 10px;
+  padding: 10px 10px 0px 10px;
   display: flex;
   justify-content: space-between;
   .title {
-    font-family: $base__font-family;
+    font-family: $semi-bold__font-family;
     font-style: normal;
     font-weight: bold;
     font-size: 12px;
     line-height: 20px;
-    color: #3b5cad;
+    color: #3B5CAD;
   }
 }
 
@@ -563,7 +617,7 @@
 }
 
 .button-cancel {
-  font-family: $base__font-family;
+  font-family: $semi-bold__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;

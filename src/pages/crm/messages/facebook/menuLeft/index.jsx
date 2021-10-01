@@ -3,6 +3,7 @@ import { Form } from 'antd';
 import classnames from 'classnames';
 import Pane from '@/components/CommonComponent/Pane';
 import { Scrollbars } from 'react-custom-scrollbars';
+import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
 import stylesModule from '../styles.module.scss';
@@ -10,7 +11,21 @@ import stylesModule from '../styles.module.scss';
 class Index extends PureComponent {
   formRef = React.createRef();
 
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      isActive: false,
+    };
+  }
+
+  changeActive = () => {
+    this.setState((prevState) => ({
+      isActive: !prevState.isActive,
+    }));
+  };
+
   render() {
+    const { isActive } = this.state;
     return (
       <>
         <Form>
@@ -24,8 +39,41 @@ class Index extends PureComponent {
                 />
                 <p className={stylesModule.title}>Clover cơ sở 1</p>
               </div>
-              <div className={classnames(stylesModule['left-search'], 'col-lg-12')}>
-                <FormItem name="key" placeholder="Tìm kiếm" type={variables.INPUT_SEARCH} />
+              <div>
+                <div
+                  className={classnames(stylesModule['left-search'], 'col-lg-12', {
+                    [stylesModule.active]: isActive,
+                  })}
+                >
+                  <FormItem
+                    name="key"
+                    placeholder="Tìm kiếm"
+                    type={variables.INPUT_SEARCH}
+                    className={stylesModule.search}
+                  />
+                  <Button
+                    onClick={this.changeActive}
+                    icon="equalizer"
+                    className={stylesModule.button}
+                  />
+                </div>
+                <div
+                  className={classnames(stylesModule['left-search-model'], 'col-lg-12', {
+                    [stylesModule.active]: isActive,
+                  })}
+                >
+                  <span className={classnames(stylesModule['button-icon'], 'icon-price-tags')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-user')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-eye-blocked')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-undo2')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-phone1')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-phone-off')}> </span>
+                  <Button
+                    onClick={this.changeActive}
+                    icon="cancel"
+                    className={stylesModule['button-icon-cancel']}
+                  />
+                </div>
               </div>
               <div className={classnames(stylesModule['left-title-time'], 'col-lg-12')}>
                 <span>Gần đây</span>
