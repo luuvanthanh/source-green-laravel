@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?4vuhrb');
-  src:  url('fonts/icomoon.eot?4vuhrb#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?4vuhrb') format('truetype'),
-    url('fonts/icomoon.woff?4vuhrb') format('woff'),
-    url('fonts/icomoon.svg?4vuhrb#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?u50aw5');
+  src:  url('fonts/icomoon.eot?u50aw5#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?u50aw5') format('truetype'),
+    url('fonts/icomoon.woff?u50aw5') format('woff'),
+    url('fonts/icomoon.svg?u50aw5#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-mail-add:before {
+  content: "\e9c9";
+}
 .icon-biceps:before {
   content: "\e9a2";
 }
@@ -942,4 +945,10 @@
 }
 .icon-file-excel:before {
   content: "\eae2";
+}
+.icon-smile:before {
+  content: "\e9ca";
+}
+.icon-telephone:before {
+  content: "\e9cf";
 }
