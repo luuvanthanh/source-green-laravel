@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Modal, Select } from 'antd';
-import { connect, history } from 'umi';
+import { connect } from 'umi';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -36,7 +36,7 @@ class Index extends PureComponent {
   };
 
   handleOk = () => {
-    history.push('/crm/sale/ph-lead/trung');
+    this.setState({ isModalVisible: false });
   };
 
   handleCancel = () => {

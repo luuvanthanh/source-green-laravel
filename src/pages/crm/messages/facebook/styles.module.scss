@@ -28,7 +28,7 @@
     font-style: normal;
     font-size: 14px;
     line-height: 24px;
-    color: #3e4247;
+    color: $text;
     font-weight: 400;
   }
 }
@@ -76,7 +76,7 @@
     height: 9px;
     border-radius: 50%;
     border: 1px solid $white;
-    background-color: #27a600;
+    background-color: $background-success;
     position: absolute;
     right: 0%;
     bottom: 0%;
@@ -203,7 +203,7 @@
     font-weight: normal;
     font-size: 12px;
     line-height: 15px;
-    color: rgba(#3e4247,0.6);
+    color: rgba($text,0.6);
     margin-bottom: 14px;
   }
 }
@@ -223,7 +223,7 @@
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
-    color: #3e4247;
+    color: $text;
   }
 }
 
@@ -231,7 +231,7 @@
   width: 55%;
   float: right;
   margin: 5px 0px;
-  background-color: #27a600;
+  background-color: $background-success;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row-reverse;
@@ -261,7 +261,7 @@
       font-weight: 600;
       font-size: 13px;
       line-height: 18px;
-      color: #3e4247;
+      color: $text;
     }
     .content {
       font-family: $base__font-family;
@@ -327,7 +327,7 @@
   font-weight: normal;
   font-size: 12px;
   line-height: 15px;
-  color: rgba(#3e4247, 0.6);
+  color: rgba($text, 0.6);
   float: left;
   font-weight: 400;
   padding: 0px;
@@ -338,7 +338,7 @@
   width: 55%;
   height: auto;
   text-align: right;
-  background-color: #27a600;
+  background-color: $background-success;
   margin: 5px 0px;
   float: right;
   padding: 12px 15px;
@@ -368,14 +368,14 @@
     font-weight: normal;
     font-size: 12px;
     line-height: 15px;
-    color: rgba(#3e4247,0.6);
+    color: rgba($text,0.6);
   }
   span[class*='icon-check-circle'] {
     margin-left: 10px;
     color: $white;
     border-radius: 50%;
     border: none;
-    background-color: #27a600;
+    background-color: $background-success;
   }
 }
 
@@ -456,7 +456,7 @@
   padding: 10px 20px;
   justify-content: space-between;
   .button-contact {
-    color: rgba(#27a600,0.6) !important;
+    color: rgba($text-success,0.6) !important;
     font-size: 18px !important;
   }
 }
@@ -470,7 +470,7 @@
     font-weight: normal;
     font-size: 13px;
     line-height: 18px;
-    color: #3e4247;
+    color: $text;
     padding: 12px 30px;
     border-bottom: 1px solid $border;
     overflow: hidden;
@@ -487,7 +487,7 @@
     font-weight: normal;
     font-size: 13px;
     line-height: 18px;
-    color: #3e4247;
+    color: $text;
     overflow: hidden;
     white-space: pre-wrap;
     text-overflow: ellipsis;
