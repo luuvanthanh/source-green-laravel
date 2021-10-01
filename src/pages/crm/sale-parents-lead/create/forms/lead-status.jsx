@@ -100,7 +100,7 @@ const General = memo(() => {
               </Button>
               <Modal
                 title="Chuyển tiềm năng"
-                className={styles['wrapper-modal']}
+                className={stylesModule['wrapper-modal']}
                 centered
                 visible={isModalVisible}
                 onOk={() => handleOk()}
@@ -110,7 +110,7 @@ const General = memo(() => {
                     key="back"
                     role="presentation"
                     onClick={() => handleCancel()}
-                    className={styles['cheack-btn-cancel']}
+                    className={stylesModule['wrapper-modal-cancel']}
                   >
                     Hủy
                   </p>,
