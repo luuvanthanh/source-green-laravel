@@ -30,7 +30,7 @@ class Index extends PureComponent {
                 className={stylesModule['main-contents']}
               >
                 <div className={classnames(stylesModule['main-contents-day'], 'col-lg-12')}>
-                  <p>Chủ nhật, 31/05/2021</p>
+                  <p  className={stylesModule.title}>Chủ nhật, 31/05/2021</p>
                 </div>
 
                 <div>
@@ -125,7 +125,7 @@ class Index extends PureComponent {
                 </div>
 
                 <div className={classnames(stylesModule['main-contents-day'], 'col-lg-12')}>
-                  <p>Hôm nay</p>
+                  <p className={stylesModule.title}>Hôm nay</p>
                 </div>
 
                 <div>

@@ -1,6 +1,7 @@
+@import '@/assets/styles/mixins.scss';
 // Left
 .left-container {
-  background-color: white;
+  background-color: $white;
   padding: 0px 0px;
   box-sizing: border-box;
   height: calc(100vh - 100px);
@@ -15,7 +16,7 @@
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid $border;
   padding: 14px;
   .img {
     width: 30px;
@@ -49,7 +50,7 @@
   line-height: 20px;
   color: #36383a;
   padding: 9px 20px;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid $border;
 }
 
 .left-main {
@@ -57,7 +58,7 @@
   padding: 11px;
   align-items: center;
   cursor: pointer;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid $border;
   .img {
     position: relative;
     width: 44px;
@@ -74,7 +75,7 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    border: 1px solid white;
+    border: 1px solid $white;
     background-color: #27a600;
     position: absolute;
     right: 0%;
@@ -84,7 +85,7 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    border: 1px solid white;
+    border: 1px solid $white;
     background-color: #9d9d9d;
     position: absolute;
     right: 0%;
@@ -95,7 +96,7 @@
     display: block;
     width: 100%;
     .name {
-      font-family: Proxima Nova;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
@@ -111,7 +112,7 @@
     }
     .title {
       width: 100%;
-      font-family: Proxima Nova;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: normal;
       font-size: 13px;
@@ -126,9 +127,10 @@
       display: -webkit-box;
     }
     .time {
-      font-family: Proxima Nova;
+      font-family: $base__font-family;
       font-size: 13px;
       line-height: 18px;
+      color: #626568;
     }
   }
 }
@@ -151,7 +153,7 @@
 .main-title {
   margin-top: 15px;
   border-radius: 6px;
-  background-color: white;
+  background-color: $white;
   padding: 10px 15px;
   display: flex;
   align-items: center;
@@ -167,7 +169,7 @@
   display: block;
   padding-left: 10px;
   .name {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: 600;
     font-size: 13px;
@@ -176,7 +178,7 @@
     font-weight: 600;
   }
   .title {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -195,26 +197,27 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  font-family: Proxima Nova;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 12px;
-  line-height: 15px;
-  color: #3e4247;
-  opacity: 0.6;
-  margin-bottom: 14px;
+  .title{
+    font-family: $base__font-family;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    color: rgba(#3e4247,0.6);
+    margin-bottom: 14px;
+  }
 }
 
 .main-left-contents {
   width: 60%;
   height: auto;
   float: left;
-  background-color: #ffffff;
+  background-color: $white;
   margin: 5px 0px;
   padding: 12px 15px;
   border-radius: 6px;
   .content {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -237,7 +240,7 @@
   width: 60%;
   float: left;
   margin: 5px 0px;
-  background-color: #ffffff;
+  background-color: $white;
 }
 .main-file {
   padding: 12px 15px;
@@ -253,7 +256,7 @@
     display: block;
     width: 100%;
     .name {
-      font-family: Proxima Nova;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: 600;
       font-size: 13px;
@@ -261,7 +264,7 @@
       color: #3e4247;
     }
     .content {
-      font-family: Proxima Nova;
+      font-family: $base__font-family;
       font-style: normal;
       font-weight: normal;
       font-size: 12px;
@@ -319,15 +322,14 @@
 
 .main-left-contents-time {
   width: 100%;
-  font-family: Proxima Nova;
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: normal;
   font-size: 12px;
   line-height: 15px;
-  color: #3e4247;
+  color: rgba(#3e4247, 0.6);
   float: left;
   font-weight: 400;
-  opacity: 0.6;
   padding: 0px;
   margin-bottom: 25px;
 }
@@ -342,13 +344,13 @@
   padding: 12px 15px;
   border-radius: 6px;
   .content {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
-    color: #ffffff;
+    color: $white;
   }
 }
 
@@ -361,17 +363,16 @@
   padding: 0px;
   margin-bottom: 20px;
   .time {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 12px;
     line-height: 15px;
-    color: #3e4247;
-    opacity: 0.6;
+    color: rgba(#3e4247,0.6);
   }
   span[class*='icon-check-circle'] {
     margin-left: 10px;
-    color: white;
+    color: $white;
     border-radius: 50%;
     border: none;
     background-color: #27a600;
@@ -399,10 +400,7 @@
 //Right
 
 .right-container {
-  background-color: white;
-  // padding: 0px 15px;
-  // box-sizing: border-box;
-  // height: calc(100vh - 100px);
+  background-color: $white;
   width: 100%;
   padding: 0px;
 }
@@ -427,7 +425,7 @@
 }
 
 .right-name {
-  font-family: Proxima Nova;
+  font-family: $base__font-family;
   font-weight: 600;
   font-size: 13px;
   line-height: 18px;
@@ -439,7 +437,7 @@
 
 .right-status {
   width: 100%;
-  font-family: Proxima Nova;
+  font-family: $base__font-family;
   font-weight: 600;
   font-size: 12px;
   line-height: 20px;
@@ -453,29 +451,28 @@
 .right-contact {
   display: flex;
   align-items: center;
-  border-top: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
   padding: 10px 20px;
   justify-content: space-between;
+  .button-contact {
+    color: rgba(#27a600,0.6) !important;
+    font-size: 18px !important;
+  }
 }
 
-.icon-contact {
-  color: #27a600 !important;
-  opacity: 0.6;
-  font-size: 18px !important;
-}
 
 .right-information {
   padding: 0px 35px;
   .title {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
     line-height: 18px;
     color: #3e4247;
     padding: 12px 30px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid $border;
     overflow: hidden;
     white-space: pre-wrap;
     text-overflow: ellipsis;
@@ -485,7 +482,7 @@
     padding: 12px 0px;
   }
   .facebookName {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -500,7 +497,7 @@
     padding: 12px 0px;
   }
   .facebook {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: normal;
     font-size: 13px;
@@ -517,11 +514,11 @@
 }
 
 .right-tags {
-  border-top: 1px solid #eaeaea;
-  border-bottom: 1px solid #eaeaea;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
   padding: 10px 10px 20px 10px;
   .title {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: bold;
     font-size: 12px;
@@ -548,7 +545,7 @@
   display: flex;
   justify-content: space-between;
   .title {
-    font-family: Proxima Nova;
+    font-family: $base__font-family;
     font-style: normal;
     font-weight: bold;
     font-size: 12px;
@@ -565,8 +562,8 @@
   }
 }
 
-.wrapper-modal-cancel {
-  font-family: Proxima Nova;
+.button-cancel {
+  font-family: $base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;

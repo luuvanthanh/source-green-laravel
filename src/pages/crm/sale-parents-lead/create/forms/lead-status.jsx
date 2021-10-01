@@ -110,7 +110,7 @@ const General = memo(() => {
                     key="back"
                     role="presentation"
                     onClick={() => handleCancel()}
-                    className={stylesModule['wrapper-modal-cancel']}
+                    className={stylesModule['button-cancel']}
                   >
                     Hủy
                   </p>,

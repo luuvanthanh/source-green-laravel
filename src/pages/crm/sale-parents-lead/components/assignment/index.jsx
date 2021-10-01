@@ -93,7 +93,7 @@ class Index extends PureComponent {
             width={700}
             footer={[
               <p
-                className={stylesModule['wrapper-modal-cancel']}
+                className={stylesModule['button-cancel']}
                 key="back"
                 role="presentation"
                 onClick={this.handleCancel}

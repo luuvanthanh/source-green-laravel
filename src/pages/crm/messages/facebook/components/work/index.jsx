@@ -49,7 +49,7 @@ class Index extends PureComponent {
             color="white"
             icon="file"
             size="normal"
-            className={stylesModule['icon-contact']}
+            className={stylesModule['button-contact']}
             onClick={this.showModal}
           />
 
@@ -67,7 +67,7 @@ class Index extends PureComponent {
                 key="back"
                 role="presentation"
                 onClick={this.handleCancel}
-                className={stylesModule['wrapper-modal-cancel']}
+                className={stylesModule['button-cancel']}
               >
                 Hủy
               </p>,

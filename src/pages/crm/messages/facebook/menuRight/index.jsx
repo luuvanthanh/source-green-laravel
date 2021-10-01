@@ -54,7 +54,7 @@ class Index extends PureComponent {
                     color="white"
                     icon="telephone"
                     size="normal"
-                    className={stylesModule['icon-contact']}
+                    className={stylesModule['button-contact']}
                   />
                   <Schedules />
                   <Work />

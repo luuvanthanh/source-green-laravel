@@ -48,7 +48,7 @@ class Index extends PureComponent {
             color="white"
             icon="addMail"
             size="normal"
-            className={stylesModule['icon-contact']}
+            className={stylesModule['button-contact']}
             onClick={this.showModal}
           />
           <Modal
@@ -64,7 +64,7 @@ class Index extends PureComponent {
                 key="back"
                 role="presentation"
                 onClick={this.handleCancel}
-                className={stylesModule['wrapper-modal-cancel']}
+                className={stylesModule['button-cancel']}
               >
                 Hủy
               </p>,
