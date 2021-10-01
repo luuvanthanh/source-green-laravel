@@ -22,4 +22,9 @@ class District extends UuidModel
     {
         return $this->hasMany(TownWard::class);
     }
+
+    public function customerLead()
+    {
+        return $this->hasMany(CustomerLead::class);
+    }
 }
