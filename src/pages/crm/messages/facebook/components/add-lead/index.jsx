@@ -216,7 +216,41 @@ class Index extends PureComponent {
                           rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                         />
                       </div>
+                      <div className="col-lg-4">
+                        <FormItem
+                          name="company"
+                          label="Nghề nghiệp"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY_INPUT]}
+                        />
+                      </div>
+                      <div className="col-lg-4">
+                        <FormItem
+                          name="gender"
+                          label="Cơ sở quan tâm"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
                     </div>
+                      <div className="row" {...marginProps}>
+                      <div className="col-lg-4">
+                        <FormItem
+                          name="gender"
+                          label="Học sinh liên hệ"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
+                      <div className="col-lg-4">
+                        <FormItem
+                          name="gender"
+                          label="Mối liên hệ"
+                          type={variables.SELECT}
+                          rules={[variables.RULES.EMPTY]}
+                        />
+                      </div>
+                      </div>
                   </Pane>
                 </Pane>
               </Form>
