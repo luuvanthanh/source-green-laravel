@@ -22,6 +22,7 @@ class CreateStudentInfosTable extends Migration
             $table->float('month_age')->nullable();
             $table->string('relationship')->nullable();
             $table->uuid('customer_lead_id');
+            $table->foreign('customer_lead_id')->references('id')->on('customer_leads')->onDelete('cascade');
             $table->string('file_image', 1000)->nullable();
             $table->timestamps();
             $table->softDeletes();

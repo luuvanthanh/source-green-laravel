@@ -22,6 +22,7 @@ class CreateReferencesTable extends Migration
             $table->string('phone');
             $table->uuid('status_parent_lead_id');
             $table->uuid('customer_lead_id');
+            $table->foreign('customer_lead_id')->references('id')->on('customer_leads')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
