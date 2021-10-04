@@ -42,6 +42,8 @@ const ICON_BUTTON = {
   file: <span className="icon-file-text" />,
   circle: <span className="icon-circle-right" />,
   equalizer: <span className="icon-equalizer" />,
+  sphere: <span className="icon-sphere" />,
+  mobile: <span className="icon-mobile" />,
 };
 export default function ButtonCustom({
   children,
