@@ -65,6 +65,32 @@ const Index = memo(() => {
   const [watermarkPadding, setWatermarkPadding] = useState(0);
   const [imageBefore, setImageBefore] = useState(null);
   const [imageAfter, setImageAfter] = useState(null);
+  const [file, setFile] = useState(null);
+
+  const getBase64 = (file, cb) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      cb(reader.result);
+    };
+    reader.onerror = () => {};
+  };
+
+  const onUploadWatermark = (files) => {
+    setFile(files);
+    getBase64(files, (result) => {
+      setImageBefore(result);
+    });
+    dispatch({
+      type: 'watermark/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          setImageAfter(head(response.results)?.fileInfo?.url);
+        }
+      },
+    });
+  };
 
   const onFinish = () => {
     dispatch({
@@ -76,6 +102,9 @@ const Index = memo(() => {
         watermarkPadding,
       },
       callback: (response, error) => {
+        if (response) {
+          onUploadWatermark(file);
+        }
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
@@ -116,33 +145,9 @@ const Index = memo(() => {
     setWatermarkPosition(key);
   };
 
-  const getBase64 = (file, cb) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      cb(reader.result);
-    };
-    reader.onerror = () => {};
-  };
-
   const onUpload = (files) => {
     getBase64(files, (result) => {
       setWatermark(result);
-    });
-  };
-
-  const onUploadWatermark = (files) => {
-    getBase64(files, (result) => {
-      setImageBefore(result);
-    });
-    dispatch({
-      type: 'watermark/UPLOAD',
-      payload: files,
-      callback: (response) => {
-        if (response) {
-          setImageAfter(head(response.results)?.fileInfo?.url);
-        }
-      },
     });
   };
 
