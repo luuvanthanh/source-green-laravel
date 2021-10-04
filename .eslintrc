@@ -19,7 +19,8 @@
     "ACCESS_TOKEN_MAPBOX": true,
     "API_GEOLOCATION": true,
     "API_SSO_URL": true,
-    "URL_API_REALTIME": true
+    "URL_API_REALTIME": true,
+    "API_URL_CRM": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,
