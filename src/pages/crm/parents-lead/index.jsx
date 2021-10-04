@@ -167,14 +167,14 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'TÊN',
+        title: 'Mã tình trạng',
         key: 'code',
         className: 'max-width-150',
         width: 150,
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'TÊN',
+        title: 'Tên tình trạng ',
         key: 'name',
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.name}</Text>,
@@ -207,7 +207,7 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
- 
+
     const { search } = this.state;
     const loading = effects['crmParentsLead/GET_DATA'];
     return (

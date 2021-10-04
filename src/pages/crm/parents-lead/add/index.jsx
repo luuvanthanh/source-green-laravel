@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty, get, toString, head } from 'lodash';
+import { isEmpty, head } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
@@ -63,12 +63,9 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+    if (details !== prevProps.details && !isEmpty(details) && params.id) {
       this.formRef.current.setFieldsValue({
         ...details,
-        year: toString(details.year),
-        month: toString(details.month),
-        paramValue: details.parameterValues.map((item) => item.id),
       });
     }
   }
