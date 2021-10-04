@@ -1703,5 +1703,29 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    {
+      title: 'Chat',
+      key: 'messages',
+      icon: 'icon icon-bubble2',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Facebook',
+          key: 'facebook',
+          url: [
+            '/crm/chat/facebook',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'zalo',
+          key: 'zalo',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }

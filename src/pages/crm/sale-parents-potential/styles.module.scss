@@ -8,26 +8,26 @@
   }
 }
 
-.wrapper-modal-cancel{
-  font-family: Proxima Nova;
+.button-cancel{
+  font-family:$base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
   font-weight: 600;
-  color: #36383A;
+  color: $text-form-label;
   cursor: pointer;
   text-decoration-line: underline;
 }
 
 .model-body {
-    border-top: 1px solid #EAEAEA;
+    border-top: 1px solid $border-line;
     padding: 15px;
 }
 
 .wrapper-btn {
     display: flex;
     justify-content: flex-end;
-    border-top: 1px solid #EAEAEA;
+    border-top: 1px solid $border-line;
     padding: 15px;
 }
 
@@ -55,19 +55,19 @@
 }
 
 .model-calendar-details {
-  font-family: Proxima Nova;
+  font-family:$base__font-family;
   font-style: normal;
   font-weight: bold;
   font-size: 14px;
   line-height: 20px;
   font-weight: 700;
-  color: #27A600;
+  color: $text-success;
   cursor: pointer;
 }
 
 .wrapper-title-add {
     display: flex;
-    font-family: Proxima Nova;
+    font-family:$base__font-family;
     height: 32px;
     padding-left: 10px;
     align-items: center;
@@ -76,7 +76,7 @@
     font-size: 12px;
     line-height: 22px;
     font-weight: 400;
-    color: #36383A;
+    color: $text-form-label;
 }
 
 .wrapper-btn-add {

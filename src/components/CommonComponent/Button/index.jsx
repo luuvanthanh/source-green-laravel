@@ -36,6 +36,12 @@ const ICON_BUTTON = {
   comeback: <span className="icon-arrow-left2" />,
   facebook: <span className="icon-facebook" />,
   envelop: <span className="icon-envelop" />,
+  addMail: <span className="icon-envelop" />,
+  telephone: <span className="icon-telephone" />,
+  schedules: <span className="icon-schedules" />,
+  file: <span className="icon-file-text" />,
+  circle: <span className="icon-circle-right" />,
+  equalizer: <span className="icon-equalizer" />,
 };
 export default function ButtonCustom({
   children,
