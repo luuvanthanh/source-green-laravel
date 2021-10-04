@@ -37,4 +37,9 @@ class Classes extends UuidModel
     {
         return $this->belongsTo(\GGPHP\Fee\Models\ClassType::class, 'ClassTypeId');
     }
+
+    public function student()
+    {
+        return $this->hasMany(\GGPHP\Clover\Models\Student::class, 'ClassId');
+    }
 }

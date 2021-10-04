@@ -33,7 +33,7 @@ class ClassesTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'teacher',
+        'teacher', 'student'
     ];
 
     /**
@@ -85,5 +85,15 @@ class ClassesTransformer extends BaseTransformer
     public function includeTeacher(Classes $classes)
     {
         return $this->collection($classes->teacher, new UserTransformer, 'Teacher');
+    }
+
+    /**
+     * Include teacher
+     * @param Classes $classes
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeStudent(Classes $classes)
+    {
+        return $this->collection($classes->student, new StudentTransformer, 'Student');
     }
 }

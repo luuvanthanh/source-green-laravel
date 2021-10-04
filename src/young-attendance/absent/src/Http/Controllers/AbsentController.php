@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentConfirmRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentCreateRequest;
 use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentUpdateRequest;
-use GGPHP\YoungAttendance\Absent\Models\Absent;
+use GGPHP\YoungAttendance\Absent\Http\Requests\AbsentDeleteRequest;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -102,11 +102,15 @@ class AbsentController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(AbsentDeleteRequest $request, $id)
     {
-        $this->absentRepository->delete($id);
+        try {
+            $this->absentRepository->delete($id);
 
-        return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+            return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -117,6 +121,18 @@ class AbsentController extends Controller
     public function absentByUser(Request $request)
     {
         $absents = $this->absentRepository->getAbsent($request->all());
+
+        return $this->success($absents, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Get Absent by parent
+     * @param Request $request
+     * @return Response
+     */
+    public function notRefundStudent(Request $request)
+    {
+        $absents = $this->absentRepository->notRefundStudent($request->all());
 
         return $this->success($absents, trans('lang::messages.common.getListSuccess'));
     }
