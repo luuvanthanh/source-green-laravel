@@ -20,8 +20,10 @@ class CustomerLead extends UuidModel
         'OTHER' => 2,
     ];
 
+    const CODE = 'PH';
+
     protected $fillable = [
-        'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
+        'code' ,'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
         'address', 'city_id', 'district_id', 'facility_id', 'employee_id',
         'employee_info', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
