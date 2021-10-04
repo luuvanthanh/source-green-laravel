@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
@@ -100,5 +101,26 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         return parent::parserResult($customerLead);
+    }
+
+    public function create(array $attributes)
+    {
+        $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
+        $customerLead_code = CustomerLead::max('code');
+
+        if (is_null($customerLead_code)) {
+            $attributes['code'] = CustomerLead::CODE . $now . "01";
+        } else {
+
+            if (substr($customerLead_code, 2, 8)  != $now) {
+                $attributes['code'] = CustomerLead::CODE . $now . "01";
+            } else {
+                $stt = substr($customerLead_code, 2) + 1;
+                $attributes['code'] = CustomerLead::CODE . $stt;
+            }
+        }
+        $customerLead = CustomerLead::create($attributes);
+
+        return $this->parserResult($customerLead);
     }
 }
