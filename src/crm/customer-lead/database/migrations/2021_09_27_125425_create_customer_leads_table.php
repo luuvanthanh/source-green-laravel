@@ -16,6 +16,7 @@ class CreateCustomerLeadsTable extends Migration
         Schema::create('customer_leads', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
+            $table->string('code');
             $table->string('full_name');
             $table->date('birth_date');
             $table->string('sex');
