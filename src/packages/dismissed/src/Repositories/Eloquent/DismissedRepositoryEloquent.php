@@ -87,20 +87,20 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
                     'branchId' => $value['branchId'],
                     'positionId' => $value['positionId'],
                     'divisionId' => $value['divisionId'],
-                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
+                    'startDate' => $dismissed->TimeApply->format('Y-m-d'),
                     'type' => 'DISMISSED',
                 ];
 
                 $this->positionLevelRepository->create($dataPosition);
 
-                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $tranfer->TimeApply->format('Y-m-d')], ['EndDate', '>=', $tranfer->TimeApply->format('Y-m-d')]])->first();
+                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $dismissed->TimeApply->format('Y-m-d')], ['EndDate', '>=', $dismissed->TimeApply->format('Y-m-d')]])->first();
 
                 if (!is_null($divisionShift)) {
                     $dataSchedule = [
                         'employeeId' => $value['employeeId'],
                         'shiftId' => $divisionShift->ShiftId,
-                        'startDate' => $tranfer->TimeApply->format('Y-m-d'),
-                        'endDate' => $tranfer->TimeApply->addYear()->format('Y-m-d'),
+                        'startDate' => $dismissed->TimeApply->format('Y-m-d'),
+                        'endDate' => $dismissed->TimeApply->addYear()->format('Y-m-d'),
                         'interval' => 1,
                         'repeatBy' => 'daily',
                     ];
@@ -159,6 +159,7 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
             'monthNow' => $dismissed->DecisionDate ? $dismissed->DecisionDate->format('m') : '.......',
             'yearNow' => $dismissed->DecisionDate ? $dismissed->DecisionDate->format('Y') : '.......',
             'decisionDate' => $dismissed->DecisionDate->format('d/m/Y'),
+            'timeApply' => $dismissed->TimeApply->format('d/m/Y'),
             'fullName' => $employee->FullName ? $employee->FullName : '........',
             'yearBirthday' => $employee->DateOfBirth ? $employee->DateOfBirth->format('Y') : '........',
             'branchWord' => $detail->branch ? $detail->branch->Name : '........',

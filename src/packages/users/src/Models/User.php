@@ -273,6 +273,12 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $query;
     }
 
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('Status', $status);
+    }
+
+
     /**
      * Define relations children
      */

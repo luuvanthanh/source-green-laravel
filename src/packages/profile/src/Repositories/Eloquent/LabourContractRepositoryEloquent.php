@@ -3,6 +3,7 @@
 namespace GGPHP\Profile\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\PositionLevel\Repositories\Eloquent\PositionLevelRepositoryEloquent;
 use GGPHP\Profile\Models\LabourContract;
@@ -45,7 +46,6 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         $this->positionLevelRepository = $positionLevelRepository;
         $this->wordExporterServices = $wordExporterServices;
         $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
-
     }
 
     /**
@@ -137,11 +137,26 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract = LabourContract::create($attributes);
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
 
-            $now = Carbon::now();
+            $labourContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
+
             $dataPosition = [
                 'employeeId' => $attributes['employeeId'],
                 'branchId' => $attributes['branchId'],
@@ -160,8 +175,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 $dataSchedule = [
                     'employeeId' => $attributes['employeeId'],
                     'shiftId' => $divisionShift->ShiftId,
-                    'startDate' => $labourContract->ContractTo->addYear()->format('Y-m-d'),
-                    'endDate' => $labourContract->ContractFrom->addYear()->format('Y-m-d'),
+                    'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                    'endDate' => $labourContract->ContractTo->format('Y-m-d'),
                     'interval' => 1,
                     'repeatBy' => 'daily',
                 ];
@@ -170,7 +185,6 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             }
             \DB::commit();
         } catch (\Exception $e) {
-            dd($e);
             \DB::rollback();
         }
 
@@ -184,11 +198,27 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $labourContract->update($attributes);
-
             $labourContract->parameterValues()->detach();
+            $totalAllowance = 0;
+            $basicSalary = 0;
+
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
                 $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+            $labourContract->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary
+            ]);
+
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -227,7 +257,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
             'position' => $labourContract->position ? $labourContract->position->Name : '........',
             'branchWord' => $labourContract->branch ? $labourContract->branch->Name : '........',
             'workTime' => $labourContract->WorkTime ? $labourContract->WorkTime : '.......',
-            'salary' => number_format($labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value),
+            'salary' => number_format($labourContract->BasicSalary),
         ];
 
         return $this->wordExporterServices->exportWord('labour_contract', $params);

@@ -3,6 +3,7 @@
 namespace GGPHP\Attendance\Transformers;
 
 use GGPHP\Attendance\Models\Attendance;
+use GGPHP\Clover\Transformers\StudentTransporterTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
@@ -17,7 +18,7 @@ class AttendanceTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $defaultIncludes = ['attendanceReason', 'attendanceLog'];
+    protected $defaultIncludes = ['attendanceReason', 'attendanceLog', 'studentTransporter'];
     protected $availableIncludes = [];
 
     /**
@@ -52,6 +53,20 @@ class AttendanceTransformer extends BaseTransformer
         }
 
         return $this->item($attendance->attendanceReason, new AttendanceReasonTransformer, 'AttendanceReason');
+    }
+
+    /**
+     * Include attendanceReason
+     * @param Attendance $attendance
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeStudentTransporter(Attendance $attendance)
+    {
+        if (empty($attendance->studentTransporter)) {
+            return;
+        }
+
+        return $this->item($attendance->studentTransporter, new StudentTransporterTransformer, 'StudentTransporter');
     }
 
     /**

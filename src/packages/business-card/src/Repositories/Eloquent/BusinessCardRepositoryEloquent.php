@@ -53,6 +53,12 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
     public function filterBusinessCard(array $attributes)
     {
 
+
+        if (!empty($attributes['absentTypeId'])) {
+            $this->model = $this->model->where('AbsentTypeId', $attributes['absentTypeId']);
+        }
+
+
         if (!empty($attributes['employeeId'])) {
             $employeeId = explode(',', $attributes['employeeId']);
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
@@ -61,6 +67,14 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         if (!empty($attributes['fullName'])) {
             $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
                 $query->whereLike('FullName', $attributes['fullName']);
+            });
+        }
+
+        if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+            $this->model = $this->model->where(function ($q2) use ($attributes) {
+                $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
             });
         }
 
@@ -96,8 +110,12 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
         \DB::beginTransaction();
         try {
             $businessCard->update($attributes);
-            $businessCard->businessCardDetail()->delete();
-            BusinessCardDetailServices::add($id, $attributes['detail']);
+
+            if(!empty($attributes['detail'])){
+                $businessCard->businessCardDetail()->delete();
+                BusinessCardDetailServices::add($id, $attributes['detail']);
+            }
+
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -105,5 +123,4 @@ class BusinessCardRepositoryEloquent extends CoreRepositoryEloquent implements B
 
         return parent::find($id);
     }
-
 }

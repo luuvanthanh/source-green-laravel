@@ -66,6 +66,15 @@ class DivisionShiftRepositoryEloquent extends CoreRepositoryEloquent implements 
     {
         \DB::beginTransaction();
         try {
+            $afterStartDate = Carbon::parse($attributes['startDate'])->subDay()->format('Y-m-d');
+            $divisionShiftOld = DivisionShift::where('DivisionId', $attributes['divisionId'])->orderBy('CreationTime', 'DESC')->first();
+
+            if (!is_null($divisionShiftOld)) {
+                $divisionShiftOld->update([
+                    'EndDate' => $afterStartDate
+                ]);
+            }
+
             $divisionShift = DivisionShift::create($attributes);
 
             $listUserByDivision = User::whereHas('positionLevel', function ($q) use ($attributes) {
@@ -96,7 +105,6 @@ class DivisionShiftRepositoryEloquent extends CoreRepositoryEloquent implements 
         }
 
         return parent::find($divisionShift->Id);
-
     }
 
     public function update(array $attributes, $id)
@@ -104,6 +112,15 @@ class DivisionShiftRepositoryEloquent extends CoreRepositoryEloquent implements 
         $divisionShift = DivisionShift::findOrFail($id);
         \DB::beginTransaction();
         try {
+            $afterStartDate = Carbon::parse($attributes['startDate'])->subDay()->format('Y-m-d');
+            $divisionShiftOld = DivisionShift::where('DivisionId', $attributes['divisionId'])->orderBy('CreationTime', 'DESC')->first();
+
+            if (!is_null($divisionShiftOld)) {
+                $divisionShiftOld->update([
+                    'EndDate' => $afterStartDate
+                ]);
+            }
+
             $divisionShift->update($attributes);
 
             $divisionId = empty($attributes['divisionId']) ? $attributes['divisionId'] : $divisionShift->DivisionId;

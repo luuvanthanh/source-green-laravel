@@ -136,7 +136,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             $attributes['ScheduleId'] = $schedule->Id;
             ScheduleRepeatService::add(\Arr::except($attributes, ['StartDate', 'EmployeeId', 'ShiftId']));
         }
-
         $listDaySchedule = $this::getDayRepeat($schedule);
         //Kiểm tra và tạo ngoại lệ cho các lịch có sẵn
         $oldschedule = $this->model()::whereNotIn('Id', [$schedule->Id])->where('EmployeeId', $attributes['employeeId'])->where(function ($query) use ($attributes, $dateEndYear) {
@@ -172,7 +171,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                 if (!empty($dateException)) {
                     ScheduleExceptionService::add($value, $dateException);
                 }
-
             }
         }
 
@@ -193,6 +191,18 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                     ->orWhere([['StartDate', '>', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<', $attributes['endDate']]]);
             }]);
+
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['absent' => function ($query) use ($attributes) {
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            }]);
+
+            $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->with(['businessCard' => function ($query) use ($attributes) {
+                $query->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            }]);
         }
 
         if (!empty($attributes['employeeId'])) {
@@ -203,6 +213,8 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
         if (!empty($attributes['fullName'])) {
             $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->whereLike('FullName', $attributes['fullName']);
         }
+
+        $this->employeeRepositoryEloquent->model = $this->employeeRepositoryEloquent->model->status(User::STATUS['WORKING']);
 
         if (!empty($attributes['limit'])) {
             $scheduleUser = $this->employeeRepositoryEloquent->paginate($attributes['limit']);
@@ -439,7 +451,6 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
             default:
                 break;
         }
-
     }
 
     /**
@@ -544,10 +555,8 @@ class ScheduleRepositoryEloquent extends CoreRepositoryEloquent implements Sched
                 }
 
                 $value[$keyItem] = $item;
-
             }
             $shiftOfUser[$key] = $value;
-
         }
 
         return $shiftOfUser;

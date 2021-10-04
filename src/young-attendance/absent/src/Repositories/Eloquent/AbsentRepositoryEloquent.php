@@ -2,14 +2,15 @@
 
 namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Attendance\Models\Attendance;
 use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
+use GGPHP\YoungAttendance\Absent\Models\AbsentStudentDetail;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
 use Illuminate\Container\Container as Application;
-use Illuminate\Support\Facades\Http;
 use Prettus\Repository\Criteria\RequestCriteria;
 
 /**
@@ -32,7 +33,11 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     protected $fieldSearchable = [
         'AbsentTypeId',
         'AbsentReasonId',
+        'StartDate',
+        'LastModificationTime',
+        'CreationTime'
     ];
+
     /**
      * Specify Model class name
      *
@@ -121,16 +126,31 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
     {
 
         \DB::beginTransaction();
+
         try {
             $absent = Absent::create($attributes);
 
+            $begin = new \DateTime($attributes['startDate']);
+            $end = new \DateTime($attributes['endDate'] . '23:59');
+            $intervalDate = new \DateInterval('P1D');
+            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+            $now = Carbon::now();
+
+            foreach ($periodDate as $date) {
+                $isRefunds = false;
+
+                if ($date->format('Y-m-d') == $now->format('Y-m-d')) {
+                    $isRefunds = true;
+                }
+
+                AbsentStudentDetail::create([
+                    'absentStudentId' => $absent->Id,
+                    'date' => $date->format('Y-m-d'),
+                    'isRefunds' => $isRefunds,
+                ]);
+            }
 
             if ($absent->Status == 'CONFIRM') {
-
-                $begin = new \DateTime($attributes['startDate']);
-                $end = new \DateTime($attributes['endDate'] . '23:59');
-                $intervalDate = new \DateInterval('P1D');
-                $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
                 foreach ($periodDate as $date) {
                     $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
@@ -150,7 +170,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     }
                 }
 
-                $urlNoti = env('NOTI_URL') . '/api/notification';
                 $teachers = $absent->student->classStudent->classes->teacher;
                 $userId = [];
 
@@ -163,21 +182,31 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $imageUrl = $absent->student->FileImage;
+                $images =  json_decode($absent->student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
+
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
+                $message = "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate";
+
                 if (!empty($userId)) {
-                    Http::post("$urlNoti", [
+                    $dataNoti = [
                         'users' => $userId,
-                        'title' => 'Clover',
-                        'imageURL' => "string",
-                        'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
+                        'title' => $nameStudent,
+                        'imageURL' => $urlImage,
+                        'message' => $message,
                         'moduleType' => 9,
+                        'moduleCode' => "ABSENT_STUDENT",
                         'refId' => $absent->Id,
-                    ]);
+                    ];
+
+                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             } else {
-                $urlNoti = env('NOTI_URL') . '/api/notification';
                 $parents = $absent->student->parent;
                 $userId = [];
 
@@ -190,23 +219,34 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
 
                 $nameStudent = $absent->student->FullName;
-                $imageUrl = $absent->student->FileImage;
+                $images =  json_decode($absent->student->FileImage);
+                $urlImage = '';
+
+                if (!empty($images)) {
+                    $urlImage = env('IMAGE_URL') . $images[0];
+                }
                 $startDate = $absent->StartDate->format('d-m');
                 $endDate = $absent->EndDate->format('d-m');
+                $message = "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.";
 
                 if (!empty($userId)) {
-                    $response = Http::post("$urlNoti", [
+                    $dataNoti = [
                         'users' => $userId,
                         'title' => $nameStudent,
-                        'imageURL' => "string",
-                        'message' => "Đơn xin phép nghỉ từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
+                        'imageURL' => $urlImage,
+                        'message' => $message,
                         'moduleType' => 9,
+                        'moduleCode' => "ABSENT_STUDENT",
                         'refId' => $absent->Id,
-                    ]);
+                    ];
+
+                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             }
+
             \DB::commit();
         } catch (\Exception $e) {
+
             \DB::rollback();
         }
 
@@ -221,6 +261,28 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
 
         $absent->update($attributes);
 
+        $absent->absentStudentDetail()->delete();
+
+        $begin = new \DateTime($attributes['startDate']);
+        $end = new \DateTime($attributes['endDate'] . '23:59');
+        $intervalDate = new \DateInterval('P1D');
+        $periodDate = new \DatePeriod($begin, $intervalDate, $end);
+        $now = Carbon::now();
+
+        foreach ($periodDate as $date) {
+            $isRefunds = false;
+
+            if ($date->format('Y-m-d') == $now->format('Y-m-d')) {
+                $isRefunds = true;
+            }
+
+            AbsentStudentDetail::create([
+                'absentStudentId' => $absent->Id,
+                'date' => $date->format('Y-m-d'),
+                'isRefunds' => $isRefunds,
+            ]);
+        }
+
         if ($absent->Status == 'CONFIRM') {
             $beginOld = new \DateTime($absent->StartDate);
             $endOld = new \DateTime($absent->EndDate);
@@ -228,14 +290,9 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             $periodDateOld = new \DatePeriod($beginOld, $intervalDateOld, $endOld);
 
             foreach ($periodDateOld as $date) {
-                $attendanceOld = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))
+                Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))
                     ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->delete();
             }
-
-            $begin = new \DateTime($attributes['startDate']);
-            $end = new \DateTime($attributes['endDate']);
-            $intervalDate = new \DateInterval('P1D');
-            $periodDate = new \DatePeriod($begin, $intervalDate, $end);
 
             foreach ($periodDate as $date) {
                 $attendance = Attendance::where('StudentId', $attributes['studentId'])->where('Date', $date->format('Y-m-d'))->first();
@@ -254,8 +311,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 }
             }
 
-            $urlNoti = env('NOTI_URL') . '/api/notification';
-
             $teachers = $absent->student->classStudent->classes->teacher;
             $userId = [];
 
@@ -268,21 +323,31 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $imageUrl = $absent->student->FileImage;
+            $images =  json_decode($absent->student->FileImage);
+            $urlImage = '';
+
+            if (!empty($images)) {
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
+            $message = "Bé $nameStudent xin nghỉ phép được thay đổi ngày $startDate - $endDate";
+
             if (!empty($userId)) {
-                Http::post("$urlNoti", [
+                $dataNoti = [
                     'users' => $userId,
-                    'title' => 'Clover',
-                    'imageURL' => "string",
-                    'message' => "Bé $nameStudent xin nghỉ phép được thay đổi ngày $startDate - $endDate",
+                    'title' => $nameStudent,
+                    'imageURL' => $urlImage,
+                    'message' => $message,
                     'moduleType' => 9,
+                    'moduleCode' => "ABSENT_STUDENT",
                     'refId' => $absent->Id,
-                ]);
+                ];
+
+                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         } else if ($absent->Status == 'PENDING') {
-            $urlNoti = env('NOTI_URL') . '/api/notification';
             $parents = $absent->student->parent;
             $userId = [];
 
@@ -295,18 +360,29 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
 
             $nameStudent = $absent->student->FullName;
-            $imageUrl = $absent->student->FileImage;
+            $images =  json_decode($absent->student->FileImage);
+            $urlImage = '';
+
+            if (!empty($images)) {
+                $urlImage = env('IMAGE_URL') . $images[0];
+            }
+
             $startDate = $absent->StartDate->format('d-m');
             $endDate = $absent->EndDate->format('d-m');
+            $message = "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.";
+
             if (!empty($userId)) {
-                Http::post("$urlNoti", [
+                $dataNoti = [
                     'users' => $userId,
                     'title' => $nameStudent,
-                    'imageURL' => "string",
-                    'message' => "Đơn xin phép nghỉ được thay đổi từ ngày $startDate đến ngày $endDate cần Phụ huynh duyệt đơn.",
+                    'imageURL' => $urlImage,
+                    'message' => $message,
                     'moduleType' => 9,
+                    'moduleCode' => "ABSENT_STUDENT",
                     'refId' => $absent->Id,
-                ]);
+                ];
+
+                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         }
 
@@ -343,7 +419,6 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
             }
         }
 
-        $urlNoti = env('NOTI_URL') . '/api/notification';
         $teachers = $absent->student->classStudent->classes->teacher;
         $userId = [];
 
@@ -356,18 +431,30 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
         }
 
         $nameStudent = $absent->student->FullName;
-        $imageUrl = $absent->student->FileImage;
+        $images =  json_decode($absent->student->FileImage);
+        $urlImage = '';
+
+        if (!empty($images)) {
+            $urlImage = env('IMAGE_URL') . $images[0];
+        }
+
         $startDate = $absent->StartDate->format('d-m');
         $endDate = $absent->EndDate->format('d-m');
+
+        $message = "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate";
+
         if (!empty($userId)) {
-            Http::post("$urlNoti", [
+            $dataNoti = [
                 'users' => $userId,
-                'title' => 'Clover',
-                'imageURL' => "string",
-                'message' => "Bé $nameStudent xin nghỉ phép ngày $startDate - $endDate",
+                'title' => $nameStudent,
+                'imageURL' => $urlImage,
+                'message' => $message,
                 'moduleType' => 9,
+                'moduleCode' => "ABSENT_STUDENT",
                 'refId' => $absent->Id,
-            ]);
+            ];
+
+            dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
         }
 
         return parent::find($id);

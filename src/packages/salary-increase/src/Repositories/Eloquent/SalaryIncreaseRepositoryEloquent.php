@@ -3,7 +3,10 @@
 namespace GGPHP\SalaryIncrease\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Category\Models\ParamaterValue;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\SalaryIncrease\Models\SalaryIncrease;
 use GGPHP\SalaryIncrease\Presenters\SalaryIncreasePresenter;
 use GGPHP\SalaryIncrease\Repositories\Contracts\SalaryIncreaseRepository;
@@ -72,9 +75,36 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         \DB::beginTransaction();
         try {
             $salaryIncrease = SalaryIncrease::create($attributes);
+            $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+
+            if (is_null($labourContract)) {
+                $labourContract = ProbationaryContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+            }
+
+            $totalAllowance = 0;
+            $basicSalary = 0;
             foreach ($attributes['detail'] as $value) {
+                $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                if ($parameterValue->Code != 'LUONG_CB') {
+                    $totalAllowance += $value['value'];
+                } else {
+                    $basicSalary = $value['value'];
+                }
+
+                if (!is_null($labourContract)) {
+                    $labourContract->parameterValues()->detach($value['parameterValueId']);
+                    $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                };
+
                 $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
             }
+
+            $salaryIncrease->update([
+                'TotalAllowance' => $totalAllowance,
+                'BasicSalary' => $basicSalary,
+                'OldBasicSalary' => !is_null($labourContract) ? $labourContract->BasicSalary : 0
+            ]);
 
             \DB::commit();
         } catch (\Exception $e) {
@@ -94,9 +124,35 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
             if (!empty($attributes['detail'])) {
                 $salaryIncrease->parameterValues()->detach();
 
+                $labourContract = LabourContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+
+                if (is_null($labourContract)) {
+                    $labourContract = ProbationaryContract::where('EmployeeId', $attributes['employeeId'])->orderBy('CreationTime', 'DESC')->first();
+                }
+
+                $totalAllowance = 0;
+                $basicSalary = 0;
                 foreach ($attributes['detail'] as $value) {
+                    $parameterValue = ParamaterValue::find($value['parameterValueId']);
+
+                    if ($parameterValue->Code != 'LUONG_CB') {
+                        $totalAllowance += $value['value'];
+                    } else {
+                        $basicSalary = $value['value'];
+                    }
+
+                    if (!is_null($labourContract)) {
+                        $labourContract->parameterValues()->detach($value['parameterValueId']);
+                        $labourContract->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
+                    };
+
                     $salaryIncrease->parameterValues()->attach($value['parameterValueId'], ['Value' => $value['value']]);
                 }
+
+                $salaryIncrease->update([
+                    'TotalAllowance' => $totalAllowance,
+                    'BasicSalary' => $basicSalary,
+                ]);
             }
 
             \DB::commit();
@@ -139,15 +195,11 @@ class SalaryIncreaseRepositoryEloquent extends CoreRepositoryEloquent implements
         $now = Carbon::now();
 
         $employee = $salaryIncrease->employee;
-        $probationaryContract = $employee->probationaryContract->last();
-        $labourContract = $employee->labourContract->last();
-        $oldSalary = is_null($labourContract) ?
-        is_null($probationaryContract) ? '......' : $probationaryContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value
-        : $labourContract->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value;
 
-        $salary = $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first() ? $salaryIncrease->parameterValues->where('Code', 'LUONG_CO_BAN')->first()->pivot->Value : 0;
-        $allowance = $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first() ? $salaryIncrease->parameterValues->where('Code', 'PHU_CAP')->first()->pivot->Value : 0;
+        $oldSalary = !is_null($salaryIncrease->OldBasicSalary) ? $salaryIncrease->OldBasicSalary : 0;
 
+        $salary = !is_null($salaryIncrease->BasicSalary) ? $salaryIncrease->BasicSalary : 0;
+        $allowance =  !is_null($salaryIncrease->TotalAllowance) ? $salaryIncrease->TotalAllowance : 0;
         $total = $salary + $allowance;
 
         $params = [

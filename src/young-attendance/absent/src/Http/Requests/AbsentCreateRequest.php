@@ -18,6 +18,7 @@ class AbsentCreateRequest extends FormRequest
     {
 
         return [
+            'expectedDate' => 'gt:0',
             'absentTypeId' => [
                 'required',
                 'exists:AbsentTypeStudents,Id',
@@ -25,6 +26,7 @@ class AbsentCreateRequest extends FormRequest
             'absentReasonId' => 'required|exists:AbsentReasonStudents,Id',
             'studentId' => 'required',
             'startDate' => [
+                'required',
                 'date',
                 'date_format:Y-m-d',
                 function ($attribute, $value, $fail) {
@@ -34,6 +36,21 @@ class AbsentCreateRequest extends FormRequest
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
+
+                    if (Carbon::parse($value)->format('Y-m-d') == $now->format('Y-m-d')) {
+                        return true;
+                    }
+
+                    $expectedDate = request()->expectedDate;
+
+                    if (!is_null($expectedDate)) {
+                        $checkStarDate = $this->checkStartDate($value);
+
+                        if (!is_null($checkStarDate)) {
+                            return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                        }
+                    }
+
 
                     $accessAbsent = $this->checkDuplicateAbsent($value);
 
@@ -45,6 +62,7 @@ class AbsentCreateRequest extends FormRequest
                 },
             ],
             'endDate' => [
+                'required',
                 'date',
                 'date_format:Y-m-d',
                 'after_or_equal:startDate',
@@ -92,5 +110,23 @@ class AbsentCreateRequest extends FormRequest
         }
 
         return null;
+    }
+
+    private function checkStartDate($value)
+    {
+        $startDate = request()->startDate;
+        $expectedDate = request()->expectedDate;
+        $advanceNotice = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $expectedDate)->where('To', '>=', $expectedDate)->first();
+        if (is_null($advanceNotice)) {
+            return null;
+        } else {
+            $now = Carbon::now()->setTimezone('GMT+7')->addDays($advanceNotice->AdvanceNotice);
+
+            if ($startDate >= $now->format('Y-m-d')) {
+                return null;
+            }
+
+            return $advanceNotice->AdvanceNotice;
+        }
     }
 }

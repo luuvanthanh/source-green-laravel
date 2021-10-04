@@ -27,8 +27,8 @@ class CreateAddFieldReasonToAttendancesTable extends Migration
     public function down()
     {
         Schema::table('Attendances', function (Blueprint $table) {
-            $table->dropColumn('ReasonId')->nullable();
-            $table->dropColumn('Reason')->nullable();
+            $table->dropColumn('ReasonId');
+            $table->dropColumn('Reason');
         });
     }
 }

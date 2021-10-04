@@ -34,6 +34,15 @@ class AbsentUpdateRequest extends FormRequest
                         return $fail("Đơn đã quá hạn không được sửa");
                     }
 
+                    $expectedDate = request()->expectedDate;
+                    if (!is_null($expectedDate)) {
+                        $checkStarDate = $this->checkStartDate($value);
+
+                        if (!is_null($checkStarDate)) {
+                            return $fail("Phải xin phép trước " . $checkStarDate . " ngày");
+                        }
+                    }
+
                     if (Carbon::parse($value)->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
                     }
@@ -95,5 +104,19 @@ class AbsentUpdateRequest extends FormRequest
         }
 
         return null;
+    }
+
+    private function checkStartDate($value)
+    {
+        $startDate = request()->startDate;
+        $expectedDate = request()->expectedDate;
+        $advanceNotice = \GGPHP\YoungAttendance\Absent\Models\AbsentConfigTime::where('From', '<=', $expectedDate)->where('To', '>=', $expectedDate)->first();
+        $now = Carbon::now()->setTimezone('GMT+7')->addDays($advanceNotice->AdvanceNotice);
+
+        if (is_null($advanceNotice) || $startDate >= $now->format('Y-m-d')) {
+            return null;
+        }
+
+        return $advanceNotice->AdvanceNotice;
     }
 }

@@ -159,6 +159,18 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'absent.summary',
                 'group' => 'Nghỉ phép',
             ]);
+
+            \Route::get('absent-config-times', [
+                'uses' => 'AbsentConfigTimeController@index',
+            ]);
+
+            \Route::post('absent-config-times', [
+                'uses' => 'AbsentConfigTimeController@store',
+            ]);
+
+            \Route::get('start-date-by-expected-date', [
+                'uses' => 'AbsentConfigTimeController@getStartDateByExpectedDate',
+            ]);
         });
     }
 }

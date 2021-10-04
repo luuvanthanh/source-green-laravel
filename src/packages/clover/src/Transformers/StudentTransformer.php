@@ -34,7 +34,7 @@ class StudentTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent'];
+    protected $availableIncludes = ['schedules', 'inOutHistory', 'classStudent', 'attendance', 'absent', 'parent', 'studentTransporter'];
 
     /**
      * Transform the Student entity.
@@ -89,6 +89,7 @@ class StudentTransformer extends BaseTransformer
 
         return $this->collection($student->absent, new AbsentTransformer, 'Absent');
     }
+
     /**
      * Include Parent
      * @param Student $student
@@ -111,5 +112,15 @@ class StudentTransformer extends BaseTransformer
         }
 
         return $this->item($student->classStudent, new ClassStudentTransformer, 'ClassStudent');
+    }
+
+    /**
+     * Include StudentTransporter
+     * @param Student $student
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeStudentTransporter(Student $student)
+    {
+        return $this->collection($student->studentTransporter, new StudentTransporterTransformer, 'StudentTransporter');
     }
 }

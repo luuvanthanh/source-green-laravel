@@ -2,8 +2,10 @@
 
 namespace GGPHP\BusinessCard\Http\Requests;
 
+use Carbon\Carbon;
 use GGPHP\Absent\Models\AbsentType;
 use GGPHP\BusinessCard\Models\BusinessCardDetail;
+use GGPHP\Category\Models\HolidayDetail;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreatBusinessCardRequest extends FormRequest
@@ -39,28 +41,35 @@ class CreatBusinessCardRequest extends FormRequest
 
                     if ($absentType->Type === AbsentType::BUSINESS_TRAVEL) {
 
-                        $accessAbsent = $this->checkDuplicateAbsent($value);
+                        $accessAbsent = $this->checkDuplicateBusinessCard($value);
 
                         if (!is_null($accessAbsent)) {
-                            return $fail("Bạn đã nghỉ vào ngày " . $accessAbsent);
+                            $accessAbsent = Carbon::parse($accessAbsent)->format('d-m-Y');
+                            return $fail("Bạn đã có lịch đi công tác vào ngày " . $accessAbsent);
+                        }
+                    }
+
+                    foreach ($value as $key => $item) {
+                        $accessSameHoliday = $this->checkSameHoliday($item);
+
+                        if ($accessSameHoliday !== true) {
+                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
                         }
                     }
 
                     return true;
                 },
-            ]];
+            ]
+        ];
     }
 
     /**
      * @param $value
      * @return bool|string
      */
-    private function checkDuplicateAbsent($value)
+    private function checkDuplicateBusinessCard($value)
     {
         $employeeId = request()->employeeId;
-        $startDate = request()->startDate;
-        $endDate = request()->endDate;
-        $result = [];
         foreach ($value as $item) {
             $businessCardDetail = BusinessCardDetail::where('Date', $item['date'])->whereHas('businessCard', function ($query) use ($employeeId) {
                 $query->whereHas('absentType', function ($query) {
@@ -89,5 +98,21 @@ class CreatBusinessCardRequest extends FormRequest
         }
 
         return null;
+    }
+
+    /**
+     * @param $value
+     * @return bool|string
+     */
+    private function checkSameHoliday($value)
+    {
+        $value = Carbon::parse($value['date'])->format('Y-m-d');
+        $holiday = HolidayDetail::where('StartDate', '<=', $value)->where('EndDate', '>=', $value)->first();
+
+        if (!is_null($holiday)) {
+            return $value;
+        }
+
+        return true;
     }
 }

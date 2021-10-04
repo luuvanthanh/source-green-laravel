@@ -116,9 +116,8 @@ class AbsentController extends Controller
      */
     public function absentByUser(Request $request)
     {
-        $absents = $this->absentRepository->getAbsent($data);
+        $absents = $this->absentRepository->getAbsent($request->all());
 
         return $this->success($absents, trans('lang::messages.common.getListSuccess'));
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace GGPHP\ShiftSchedule\Http\Requests;
 
+use Carbon\Carbon;
 use GGPHP\ShiftSchedule\Models\DivisionShift;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -36,6 +37,14 @@ class DivisionShiftCreateRequest extends FormRequest
 
                     if (!is_null($shift) && $value <= $shift->StartDate->format('Y-m-d')) {
                         return $fail("Thời gian bắt đầu phải lớn hơn " . $shift->StartDate->format('d-m-Y'));
+                    }
+
+                    $now = Carbon::now();
+                    $today = $now->toDateString();
+                    $divisionShift = DivisionShift::where('DivisionId', $divisionId)->where('StartDate', '>', $today)->first();
+
+                    if (!is_null($divisionShift)) {
+                        return $fail('Bạn đã tạo phân ca cho tương lai, vui lòng sửa hoặc xóa phân ca để tạo phân ca mới.');
                     }
                 },
             ],

@@ -1,13 +1,15 @@
 <?php
 
-namespace GGPHP\WorkHour\Http\Requests;
+namespace GGPHP\Attendance\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
-class WorkHourUpdateRequest extends FormRequest
+class AttendanceSummaryByClassRequest extends FormRequest
 {
     /**
-     * Determine if the employee is authorized to make this request.
+     * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
@@ -21,9 +23,10 @@ class WorkHourUpdateRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
+            'date' => 'required',
         ];
     }
 }
