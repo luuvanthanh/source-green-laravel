@@ -22,6 +22,7 @@ class CreateEventInfosTable extends Migration
             $table->string('status');
             $table->string('result')->nullable();
             $table->uuid('customer_lead_id');
+            $table->foreign('customer_lead_id')->references('id')->on('customer_leads')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

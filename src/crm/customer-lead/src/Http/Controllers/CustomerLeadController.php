@@ -124,4 +124,16 @@ class CustomerLeadController extends Controller
 
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function mergeCustomerLead(Request $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = CustomerLead::SEX[$attributes['sex']];
+        }
+        $customerLead = $this->customerLeadRepository->mergeCustomerLead($attributes);
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
+    }
 }
