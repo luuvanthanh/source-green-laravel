@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Crm\Category\Repositories\Eloquent;
+namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
-use GGPHP\Crm\Category\Models\StatusParentLead;
-use GGPHP\Crm\Category\Presenters\StatusParentLeadPresenter;
-use GGPHP\Crm\Category\Repositories\Contracts\StatusParentLeadRepository;
+use GGPHP\Crm\Marketing\Models\MarketingProgram;
+use GGPHP\Crm\Marketing\Presenters\MarketingProgramPresenter;
+use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingProgramRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -13,7 +13,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class StatusParentLeadRepositoryEloquent extends BaseRepository implements StatusParentLeadRepository
+class MarketingProgramRepositoryEloquent extends BaseRepository implements MarketingProgramRepository
 {
     /**
      * @var array
@@ -29,7 +29,7 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
      */
     public function model()
     {
-        return StatusParentLead::class;
+        return MarketingProgram::class;
     }
 
     /**
@@ -47,7 +47,7 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
      */
     public function presenter()
     {
-        return StatusParentLeadPresenter::class;
+        return MarketingProgramPresenter::class;
     }
 
     public function getAll(array $attributes)
@@ -57,27 +57,27 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
         }
 
         if (!empty($attributes['limit'])) {
-            $statusParentLead = $this->paginate($attributes['limit']);
+            $marketingProgram = $this->paginate($attributes['limit']);
         } else {
-            $statusParentLead = $this->get();
+            $marketingProgram = $this->get();
         }
 
-        return $statusParentLead;
+        return $marketingProgram;
     }
 
     public function create(array $attributes)
     {
         \DB::beginTransaction();
         try {
-            $code = StatusParentLead::max('code');
+            $code = MarketingProgram::max('code');
 
             if (is_null($code)) {
-                $attributes['code'] = StatusParentLead::CODE . "1";
+                $attributes['code'] = MarketingProgram::CODE . "1";
             } else {
-                $getNumber = substr($code, 3) + 1;
-                $attributes['code'] = StatusParentLead::CODE . "$getNumber";
+                $getNumber = substr($code, 2) + 1;
+                $attributes['code'] = MarketingProgram::CODE . "$getNumber";
             }
-            $parentLead = StatusParentLead::create($attributes);
+            $marketingProgram = MarketingProgram::create($attributes);
 
             \DB::commit();
         } catch (\Throwable $th) {
@@ -85,6 +85,6 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
             throw new HttpException(500, $th->getMessage());
         }
 
-        return parent::parserResult($parentLead);
+        return parent::parserResult($marketingProgram);
     }
 }

@@ -53,7 +53,7 @@ class SearchSourceRepositoryEloquent extends BaseRepository implements SearchSou
     public function getAll(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'like', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%');
         }
 
         if (!empty($attributes['limit'])) {
