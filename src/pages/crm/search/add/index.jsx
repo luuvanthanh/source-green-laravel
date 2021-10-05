@@ -127,7 +127,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['crmSearchAdd/ADD'] || effects['crmSearchAdd/DELETE'];
+    const loadingSubmit = effects['crmSearchAdd/ADD'] || effects['crmSearchAdd/UPDATE'];
     const loading =
       effects['crmSearchAdd/GET_DETAILS'];
     return (  

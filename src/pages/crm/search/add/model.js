@@ -58,14 +58,6 @@ export default {
         callback(null, error);
       }
     },
-    *DELETE({ payload, callback }, saga) {
-      try {
-        yield saga.call(services.deletes, payload);
-        callback(payload);
-      } catch (error) {
-        callback(null, error);
-      }
-    },
   },
   subscriptions: {},
 };

@@ -127,10 +127,10 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const loadingSubmit = effects['crmParentsPotentialAdd/ADD'] || effects['crmParentsPotentialAdd/DELETE'];
+    const loadingSubmit = effects['crmParentsPotentialAdd/ADD'] || effects['crmParentsPotentialAdd/UPDATE'];
     const loading =
       effects['crmParentsPotentialAdd/GET_DETAILS'];
-    return (
+    return (  
       <>
         <Breadcrumbs
           last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'}

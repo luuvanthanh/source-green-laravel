@@ -20,9 +20,3 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
-
-export function deletes(data = {}) {
-  return request(`/v1/status-parent-potentials/${data.id}`, {
-    method: 'DELETE',
-  });
-}
