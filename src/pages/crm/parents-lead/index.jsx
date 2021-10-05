@@ -88,10 +88,14 @@ class Index extends PureComponent {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -146,44 +150,47 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return Helper.paginationNet({
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
-  };
 
   /**
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
         title: 'Mã tình trạng',
         key: 'code',
         className: 'max-width-150',
         width: 150,
-        render: (record) => record?.code,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'Tên tình trạng',
+        title: 'Tên tình trạng ',
         key: 'name',
-        className: 'min-width-250',
-        render: (record) => record?.name,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         key: 'action',
         width: 100,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success">Chi tiết</Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -193,20 +200,22 @@ class Index extends PureComponent {
 
   render() {
     const {
+      error,
+      data,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
-      data,
     } = this.props;
+
     const { search } = this.state;
     const loading = effects['crmParentsLead/GET_DATA'];
     return (
       <>
-        <Helmet title="Tình trạng phụ huynh lead" />
+        <Helmet title="Tình trạng PH Lead" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tình trạng phụ huynh lead</Text>
+            <Text color="dark">Tình trạng PH Lead</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
@@ -220,7 +229,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-5">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
@@ -236,6 +245,8 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
+              error={error}
+              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',
@@ -252,20 +263,22 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
+  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
+  error: {},
 };
 
 export default Index;
