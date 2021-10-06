@@ -53,7 +53,7 @@ class StatusParentLeadRepositoryEloquent extends BaseRepository implements Statu
     public function getAll(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
         if (!empty($attributes['limit'])) {
