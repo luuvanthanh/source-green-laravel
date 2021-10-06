@@ -11,6 +11,7 @@ const Index = memo(() => {
   const [user, setUser] = useState({});
 
   const responseFacebook = (response) => {
+    console.log('response', response);
     setUser(response);
   };
 
@@ -37,7 +38,9 @@ const Index = memo(() => {
         <Pane className={classnames(stylesModule['main-container'])}>
           <div className="row">
             <div className={classnames(stylesModule['main-title'], 'col-lg-12')}>
-              <img src={user?.picture?.data?.url} alt="facebook" className={stylesModule.img} />
+              {user?.picture?.data?.url && (
+                <img src={user?.picture?.data?.url} alt="facebook" className={stylesModule.img} />
+              )}
               <div className={stylesModule['main-title-right']}>
                 <h3 className={stylesModule.name}>{user?.user}</h3>
                 <p className={stylesModule.title}>Chỉ định cuộc trò chuyện</p>
