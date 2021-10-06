@@ -2,7 +2,9 @@
 
 namespace GGPHP\Crm\Marketing\Providers;
 
+use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingStudentInfoRepository;
 use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingProgramRepository;
+use GGPHP\Crm\Marketing\Repositories\Eloquent\DataMarketingStudentInfoRepositoryEloquent;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\MarketingProgramRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,5 +30,6 @@ class MarketingServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(MarketingProgramRepository::class, MarketingProgramRepositoryEloquent::class);
+        $this->app->bind(DataMarketingStudentInfoRepository::class, DataMarketingStudentInfoRepositoryEloquent::class);
     }
 }
