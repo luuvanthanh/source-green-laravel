@@ -126,6 +126,13 @@ class DataMarketingController extends Controller
     {
         $program = $this->dataMarketingRepository->storeProgram($request->all());
 
-        return $this->success([], trans('lang::messages.common.createSuccess'));
+        return $this->success($program, trans('lang::messages.common.createSuccess'));
+    }
+
+    public function deleteProgram(Request $request)
+    {
+        $this->dataMarketingRepository->deleteProgram($request->all());
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
 }

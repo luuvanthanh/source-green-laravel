@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
+use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
 use GGPHP\Crm\Marketing\Models\Marketing;
 use GGPHP\Crm\Marketing\Presenters\DataMarketingPresenter;
 use GGPHP\Crm\Marketing\Presenters\MarketingPresenter;
@@ -106,10 +107,13 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         $dataMarketing = DataMarketing::find($attributes['data_marketing_id']);
         $dataMarketing->marketingProgram()->attach($attributes['marketing_program_id']);
 
-        return;
+        return parent::parserResult($dataMarketing);
     }
 
-    // public function deleteProgram(){
-
-    // }
+    public function deleteProgram($attributes)
+    {
+        DataMarketingProgram::where('data_marketing_id',$attributes['data_marketing_id'])->where('marketing_program_id',$attributes['marketing_program_id'])->delete();
+    
+        return;
+    }
 }

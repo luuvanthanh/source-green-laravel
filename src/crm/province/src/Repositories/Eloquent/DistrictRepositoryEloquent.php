@@ -55,7 +55,7 @@ class DistrictRepositoryEloquent extends BaseRepository implements DistrictRepos
     {
 
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'like', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%');
         }
 
         if (!empty($attributes['city_province_id'])) {

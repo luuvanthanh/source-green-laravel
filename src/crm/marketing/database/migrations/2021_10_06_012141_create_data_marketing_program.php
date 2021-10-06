@@ -14,11 +14,10 @@ class CreateDataMarketingProgram extends Migration
     public function up()
     {
         Schema::create('data_marketing_program', function (Blueprint $table) {
-            $table->uuid('id')->index()->unique();
-            $table->primary('id');
             $table->uuid('data_marketing_id');
             $table->uuid('marketing_program_id');
-            $table->timestamps();
+            $table->foreign('data_marketing_id')->references('id')->on('data_marketings');
+            $table->foreign('marketing_program_id')->references('id')->on('marketing_programs');
         });
     }
 

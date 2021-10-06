@@ -54,8 +54,8 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
     public function getCustomerLead(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('full_name', 'like', '%' . $attributes['key'] . '%')
-                ->orWhere('phone', 'like', '%' . $attributes['key'] . 'key');
+            $this->model = $this->model->where('full_name', 'ilike', '%' . $attributes['key'] . '%')
+                ->orWhere('phone', 'like', '%' . $attributes['key'] . '%');
         }
 
         if (!empty($attributes['city_id'])) {
@@ -76,6 +76,12 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['employee_id'])) {
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
+        }
+
+        if (!empty($attributes['tag_id'])) {
+            $this->model = $this->model->whereHas('customerTag', function ($query) use ($attributes) {
+                $query->where('tag_id', $attributes['tag_id']);
+            });
         }
 
         if (!empty($attributes['is_null_employee']) && $attributes['is_null_employee'] == 'true') {
@@ -138,7 +144,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         return parent::parserResult($mergeCustomerLead);
     }
-    
+
     public function create(array $attributes)
     {
         $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
