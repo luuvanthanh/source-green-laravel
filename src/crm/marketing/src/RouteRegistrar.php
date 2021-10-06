@@ -29,6 +29,9 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
+            \Route::resource('data-marketings', 'DataMarketingController');
+            \Route::post('program-data-marketings', 'DataMarketingController@storeProgram');
+            \Route::post('delete-program-data-marketings', 'DataMarketingController@deleteProgram');
             \Route::resource('marketing-programs', 'MarketingProgramController');
             \Route::resource('articles', 'ArticleController');
         });
