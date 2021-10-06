@@ -224,6 +224,32 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'BasicSalary' => $basicSalary
             ]);
 
+            $dataPosition = [
+                'employeeId' => $probationaryContract->EmployeeId,
+                'branchId' => $probationaryContract->BranchId,
+                'positionId' => $probationaryContract->PositionId,
+                'divisionId' => $probationaryContract->DivisionId,
+                'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
+                'type' => 'LABOUR',
+            ];
+
+            $this->positionLevelRepository->create($dataPosition);
+
+            $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $probationaryContract->DivisionId)->where([['StartDate', '<=', $probationaryContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $probationaryContract->ContractFrom->format('Y-m-d')]])->first();
+
+            if (!is_null($divisionShift)) {
+                $dataSchedule = [
+                    'employeeId' => $attributes['employeeId'],
+                    'shiftId' => $divisionShift->ShiftId,
+                    'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
+                    'endDate' => $probationaryContract->ContractTo->format('Y-m-d'),
+                    'interval' => 1,
+                    'repeatBy' => 'daily',
+                ];
+
+                $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
+            }
+
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

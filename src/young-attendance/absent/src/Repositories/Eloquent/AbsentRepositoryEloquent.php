@@ -4,14 +4,14 @@ namespace GGPHP\YoungAttendance\Absent\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Attendance\Models\Attendance;
-use GGPHP\Clover\Repositories\Eloquent\StudentRepositoryEloquent;
+use GGPHP\Clover\Repositories\Eloquent\ClassRepositoryEloquent;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\YoungAttendance\Absent\Models\Absent;
 use GGPHP\YoungAttendance\Absent\Models\AbsentStudentDetail;
 use GGPHP\YoungAttendance\Absent\Presenters\AbsentPresenter;
 use GGPHP\YoungAttendance\Absent\Repositories\Absent\AbsentRepository;
-use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class ProfileInformationRepositoryEloquent.
@@ -20,16 +20,6 @@ use Prettus\Repository\Criteria\RequestCriteria;
  */
 class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentRepository
 {
-    protected $studentRepositoryEloquent;
-
-    public function __construct(
-        StudentRepositoryEloquent $studentRepositoryEloquent,
-        Application $app
-    ) {
-        parent::__construct($app);
-        $this->studentRepositoryEloquent = $studentRepositoryEloquent;
-    }
-
     protected $fieldSearchable = [
         'AbsentTypeId',
         'AbsentReasonId',
@@ -110,6 +100,15 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
                     ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
                     ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            });
+        }
+
+        if (!empty($attributes['classId'])) {
+            $classId = explode(',', $attributes['classId']);
+            $this->model = $this->model->whereHas('student', function ($query) use ($classId) {
+                $query->whereHas('classStudent', function ($q) use ($classId) {
+                    $q->whereIn('ClassId', $classId);
+                });
             });
         }
 
@@ -204,7 +203,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'refId' => $absent->Id,
                     ];
 
-                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             } else {
                 $parents = $absent->student->parent;
@@ -240,7 +239,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                         'refId' => $absent->Id,
                     ];
 
-                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                 }
             }
 
@@ -345,7 +344,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'refId' => $absent->Id,
                 ];
 
-                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         } else if ($absent->Status == 'PENDING') {
             $parents = $absent->student->parent;
@@ -382,7 +381,7 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                     'refId' => $absent->Id,
                 ];
 
-                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         }
 
@@ -454,9 +453,90 @@ class AbsentRepositoryEloquent extends CoreRepositoryEloquent implements AbsentR
                 'refId' => $absent->Id,
             ];
 
-            dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+            dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
         }
 
         return parent::find($id);
+    }
+
+    public function notRefundStudent(array $attributes)
+    {
+        $classRepositoryEloquent = resolve(ClassRepositoryEloquent::class);
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $classRepositoryEloquent->model = $classRepositoryEloquent->model->whereIn('BranchId', $branchId);
+        }
+
+        if (!empty($attributes['classId'])) {
+            $classId = explode(',', $attributes['classId']);
+            $classRepositoryEloquent->model = $classRepositoryEloquent->model->whereIn('Id', $classId);
+        }
+
+        $classRepositoryEloquent->model = $classRepositoryEloquent->model->whereHas('student', function ($query) use ($attributes) {
+            $query->whereHas('absent', function ($queryAbsent) use ($attributes) {
+                $queryAbsent->whereHas('absentStudentDetail', function ($queryAbsentDetail) use ($attributes) {
+                    $queryAbsentDetail->where('IsRefunds', true);
+                    if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                        $queryAbsentDetail->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                    }
+                });
+            });
+        })->with(['student' => function ($query) use ($attributes) {
+            $query->whereHas('absent', function ($queryAbsent) use ($attributes) {
+                $queryAbsent->whereHas('absentStudentDetail', function ($queryAbsentDetail) use ($attributes) {
+                    $queryAbsentDetail->where('IsRefunds', true);
+                    if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                        $queryAbsentDetail->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                    }
+                });
+            })->with(['absent' => function ($queryAbsent) use ($attributes) {
+                $queryAbsent->whereHas('absentStudentDetail', function ($queryAbsentDetail) use ($attributes) {
+                    $queryAbsentDetail->where('IsRefunds', true);
+                    if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                        $queryAbsentDetail->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                    }
+                })->with(['absentStudentDetail' => function ($queryAbsentDetail) use ($attributes) {
+                    $queryAbsentDetail->where('IsRefunds', true);
+                    if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
+                        $queryAbsentDetail->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+                    }
+                }]);
+            }]);
+        }]);
+
+        if (!empty($attributes['limit'])) {
+            $class = $classRepositoryEloquent->paginate($attributes['limit']);
+        } else {
+            $class = $classRepositoryEloquent->get();
+        }
+
+        return $class;
+    }
+
+    public function delete($id)
+    {
+        $absent = Absent::findOrFail($id);
+
+        \DB::beginTransaction();
+        try {
+            $beginOld = new \DateTime($absent->StartDate);
+            $endOld = new \DateTime($absent->EndDate);
+            $intervalDateOld = \DateInterval::createFromDateString('1 day');
+            $periodDateOld = new \DatePeriod($beginOld, $intervalDateOld, $endOld);
+
+            foreach ($periodDateOld as $date) {
+                Attendance::where('StudentId', $absent->StudentId)->where('Date', $date->format('Y-m-d'))
+                    ->where('Status', Attendance::STATUS['ANNUAL_LEAVE'])->delete();
+            }
+
+            $absent->delete();
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+            throw new HttpException(500, $e->getMessage());
+        }
+
+        return $absent;
     }
 }

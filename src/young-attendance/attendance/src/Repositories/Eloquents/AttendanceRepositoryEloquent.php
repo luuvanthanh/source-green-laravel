@@ -100,7 +100,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'CreationTime' => Carbon::now()->format('Y-m-d H:i:s'),
                 ]);
 
-               $studentTransporter = StudentTransporter::where('StudentId', $attributes['studentId'])->orderBy('CreationTime','DESC')->first();
+                $studentTransporter = StudentTransporter::where('StudentId', $attributes['studentId'])->orderBy('CreationTime', 'DESC')->first();
 
                 $attributes['studentTransporterId'] = $studentTransporter->Id;
             } else {
@@ -147,7 +147,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     $timeCheckOut = $attendance->CheckOut;
 
                     $textTransporter = '';
-                    if(!is_null($attendance->studentTransporter)){
+                    if (!is_null($attendance->studentTransporter)) {
                         $transporter = $attendance->studentTransporter;
                         $nameTransporter = $transporter->FullName;
                         $relationshipTransporter = $transporter->Relationship;
@@ -178,7 +178,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'refId' => $attributes['studentId'],
                 ];
 
-                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         } else {
 
@@ -220,7 +220,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 case 4:
                     $timeCheckOut = $attendance->CheckOut;
                     $textTransporter = '';
-                    if(!is_null($attendance->studentTransporter)){
+                    if (!is_null($attendance->studentTransporter)) {
                         $transporter = $attendance->studentTransporter;
                         $nameTransporter = $transporter->FullName;
                         $relationshipTransporter = $transporter->Relationship;
@@ -252,7 +252,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                     'refId' => $attributes['studentId'],
                 ];
 
-                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
             }
         }
 
@@ -279,7 +279,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 $query->whereIn('Status', $attributes['status']);
             }
 
-            $query->orderBy('Date','DESC');
+            $query->orderBy('Date', 'DESC');
         }]);
 
         if (!empty($attributes['isAttendance'])) {
@@ -370,17 +370,17 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                 foreach ($studentTimeWorkShift[$date] as $key => $value) {
                     $timeShift[] = $value['StartTime'] . ' - ' . $value['EndTime'];
                 }
-                
+
                 foreach ($studentTimeWorkShift[$date] as $key => $value) {
                     $timeAllow = $this->checkTimeAllow($date, $value);
-                    
+
                     //chưa vào lớp
                     if ($nowHours < Carbon::parse($timeAllow['validBeforeStartTime'])->format('H:i:s')) {
                         $existNotInClass = Attendance::where('StudentId', $student->Id)
-                        ->whereDate('Date', $date)
-                        ->first();
+                            ->whereDate('Date', $date)
+                            ->first();
 
-                        if(is_null($existNotInClass)){
+                        if (is_null($existNotInClass)) {
                             $dataNotInClass = [
                                 'Date' => $date,
                                 'StudentId' => $student->Id,
@@ -389,7 +389,6 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                             $this->model->create($dataNotInClass);
                         }
-
                     }
 
                     // Vào lớp
@@ -454,8 +453,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
-                    
-                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+
+                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             }
                         }
@@ -521,8 +520,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
-                    
-                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+
+                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             } else if ($existCheckOut[0]->Status == Attendance::STATUS['HAVE_IN']) {
 
@@ -563,8 +562,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                         'moduleCode' => "ATTENDANCE",
                                         'refId' => $student->Id,
                                     ];
-                    
-                                    dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+
+                                    dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                                 }
                             }
                         }
@@ -583,7 +582,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
 
                         if (count($existCheckIn) == 0) {
                             $existAttendance = Attendance::where('StudentId', $student->Id)
-                            ->whereDate('Date', $date)->first();
+                                ->whereDate('Date', $date)->first();
 
                             $dataCheckOut = [
                                 'Date' => $date,
@@ -592,7 +591,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             ];
 
                             if (is_null($existAttendance)) {
-                               $this->model->create($dataCheckOut);
+                                $this->model->create($dataCheckOut);
                             } else {
                                 $existAttendance->update($dataCheckOut);
                             }
@@ -613,7 +612,7 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                             $urlImage = '';
 
                             if (!empty($images)) {
-                                    $urlImage = env('IMAGE_URL') . $images[0];
+                                $urlImage = env('IMAGE_URL') . $images[0];
                             }
 
                             $message = "Bé $nameStudent vắng không phép ngày $date";
@@ -628,8 +627,8 @@ class AttendanceRepositoryEloquent extends BaseRepository implements AttendanceR
                                     'moduleCode' => "ATTENDANCE",
                                     'refId' => $student->Id,
                                 ];
-                
-                                dispatch( new \GGPHP\Core\Jobs\SendNoti($dataNoti));
+
+                                dispatch(new \GGPHP\Core\Jobs\SendNoti($dataNoti));
                             }
                         }
                     }

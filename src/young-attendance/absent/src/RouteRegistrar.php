@@ -80,6 +80,11 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Nghỉ phép',
             ]);
 
+
+            \Route::get('not-refund-student', [
+                'uses' => 'AbsentController@notRefundStudent',
+            ]);
+
             //absents types
             \Route::get('absent-type-students', [
                 'comment' => 'Danh sách loại nghỉ phép',

@@ -34,8 +34,7 @@ class SendNoti
     {
         $data = $this->data;
         $moduleCode = $data['moduleCode'];
-        $urlNoti = env('NOTI_URL') . '/api/notification/publish-by-module-code?moduleCode='. $moduleCode;
-
+        $urlNoti = env('NOTI_URL') . '/api/notification/publish-by-module-code?moduleCode=' . $moduleCode;
 
         if (!empty($data['users'])) {
             $bearerToken = request()->bearerToken();
@@ -44,7 +43,7 @@ class SendNoti
                 'users' => $data['users'],
                 'title' => $data['title'],
                 'imageURL' => $data['imageURL'],
-                'message' =>$data['message'],
+                'message' => $data['message'],
                 'moduleType' => $data['moduleType'],
                 'refId' => $data['refId'],
             ]);

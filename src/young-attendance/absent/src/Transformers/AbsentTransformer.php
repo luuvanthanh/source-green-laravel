@@ -21,8 +21,8 @@ use GGPHP\YoungAttendance\Absent\Models\Absent;
 class AbsentTransformer extends BaseTransformer
 {
 
-    protected $defaultIncludes = ['absentType'];
-    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'timekeeping', 'employee'];
+    protected $defaultIncludes = [];
+    protected $availableIncludes = ['parent', 'student', 'absentReason', 'shift', 'timekeeping', 'employee', 'absentStudentDetail'];
 
     /**
      * Include parent
@@ -126,5 +126,16 @@ class AbsentTransformer extends BaseTransformer
         $timekeeping = $absent->student->timekeeping()->whereDate('AttendedAt', $startDate)->get();
 
         return $this->collection($timekeeping, new TimekeepingTransformer, 'Timekeeping');
+    }
+
+    /**
+     * Include Owner
+     * @param Absent $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeAbsentStudentDetail(Absent $absent)
+    {
+
+        return $this->collection($absent->absentStudentDetail, new AbsentStudentDetailTransformer, 'AbsentStudentDetail');
     }
 }

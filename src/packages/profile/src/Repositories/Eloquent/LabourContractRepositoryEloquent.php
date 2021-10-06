@@ -219,6 +219,31 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 'BasicSalary' => $basicSalary
             ]);
 
+            $dataPosition = [
+                'employeeId' => $labourContract->EmployeeId,
+                'branchId' => $labourContract->BranchId,
+                'positionId' => $labourContract->PositionId,
+                'divisionId' => $labourContract->DivisionId,
+                'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                'type' => 'LABOUR',
+            ];
+
+            $this->positionLevelRepository->create($dataPosition);
+
+            $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $labourContract->DivisionId)->where([['StartDate', '<=', $labourContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $labourContract->ContractFrom->format('Y-m-d')]])->first();
+
+            if (!is_null($divisionShift)) {
+                $dataSchedule = [
+                    'employeeId' => $attributes['employeeId'],
+                    'shiftId' => $divisionShift->ShiftId,
+                    'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
+                    'endDate' => $labourContract->ContractTo->format('Y-m-d'),
+                    'interval' => 1,
+                    'repeatBy' => 'daily',
+                ];
+
+                $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
+            }
 
             \DB::commit();
         } catch (\Exception $e) {
