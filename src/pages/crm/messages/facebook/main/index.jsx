@@ -1,50 +1,30 @@
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
+import { useSelector } from 'dva';
 
 import { Form, Input, Upload } from 'antd';
 import classnames from 'classnames';
-import { isEmpty } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import { Scrollbars } from 'react-custom-scrollbars';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
-  const [user, setUser] = useState({});
-
-  const responseFacebook = (response) => {
-    setUser(response);
-  };
+  const { userCRM } = useSelector(({ userCRM }) => ({ userCRM }));
 
   return (
     <>
-      {isEmpty(user) && (
-        <div className={stylesModule['wrapper-login']}>
-          <FacebookLogin
-            appId={APP_ID_FB}
-            autoLoad
-            fields="name,email,picture"
-            callback={responseFacebook}
-            render={(renderProps) => (
-              <button
-                onClick={renderProps.onClick}
-                type="button"
-                className={stylesModule['button-login']}
-              >
-                Login FB
-              </button>
-            )}
-          />
-        </div>
-      )}
       <Form>
         <Pane className={classnames(stylesModule['main-container'])}>
           <div className="row">
             <div className={classnames(stylesModule['main-title'], 'col-lg-12')}>
-              {user?.picture?.data?.url && (
-                <img src={user?.picture?.data?.url} alt="facebook" className={stylesModule.img} />
+              {userCRM?.picture?.data?.url && (
+                <img
+                  src={userCRM?.picture?.data?.url}
+                  alt="facebook"
+                  className={stylesModule.img}
+                />
               )}
               <div className={stylesModule['main-title-right']}>
-                <h3 className={stylesModule.name}>{user?.name}</h3>
+                <h3 className={stylesModule.name}>{userCRM?.name}</h3>
                 <p className={stylesModule.title}>Chỉ định cuộc trò chuyện</p>
               </div>
             </div>
