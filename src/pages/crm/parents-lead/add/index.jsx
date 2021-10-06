@@ -8,7 +8,7 @@ import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
 import Pane from '@/components/CommonComponent/Pane';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 
@@ -44,6 +44,25 @@ class Index extends PureComponent {
     this.state = {};
     setIsMounted(true);
   }
+
+  cancel = (id) => {
+    const { dispatch } = this.props;
+    return Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmParentsLeadAdd/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              history.goBack();
+            }
+          },
+        });
+      },
+    });
+  };
 
   componentDidMount() {
     const {
@@ -128,49 +147,67 @@ class Index extends PureComponent {
       match: { params },
     } = this.props;
     const loadingSubmit = effects['crmParentsLeadAdd/ADD'] || effects['crmParentsLeadAdd/UPDATE'];
-    const loading =
-      effects['crmParentsLeadAdd/GET_DETAILS'];
+    const loading = effects['crmParentsLeadAdd/GET_DETAILS'];
     return (
       <>
-        <Breadcrumbs
-          last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'}
-          menu={menuData}
-        />
-         <Pane className="col-lg-6 offset-lg-3">
-        <Form
-          className={styles['layout-form']}
-          layout="vertical"
-          colon={false}
-          ref={this.formRef}
-          onFinish={this.onFinish}
-        >
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
-            <div className={styles['content-form']}>
-            <Pane className="pl20 pr20 mt20">
-                <Pane className="card">
-                  <Pane className="p20">
-                    <Heading type="form-title" className="mb20">
-                      Thông tin thêm mới
-                    </Heading>
-                    <Pane className="row mt20">
-                      <Pane className="col-lg-12">
-                        <FormItem label="Tên tình trạng" name="name" type={variables.INPUT} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuData} />
+        <Pane className="col-lg-6 offset-lg-3">
+          <Form
+            className={styles['layout-form']}
+            layout="vertical"
+            colon={false}
+            ref={this.formRef}
+            onFinish={this.onFinish}
+          >
+            <Loading loading={loading} isError={error.isError} params={{ error }}>
+              <div className={styles['content-form']}>
+                <Pane className="pl20 pr20 mt20">
+                  <Pane className="card">
+                    <Pane className="p20">
+                      <Heading type="form-title" className="mb20">
+                        Thông tin thêm mới
+                      </Heading>
+                      <Pane className="row mt20">
+                        <Pane className="col-lg-12">
+                          <FormItem label="Tên tình trạng" name="name" type={variables.INPUT} />
+                        </Pane>
                       </Pane>
                     </Pane>
                   </Pane>
+                  <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
+                    {params.id ? (
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        loading={loadingSubmit}
+                        onClick={() => this.cancel(params.id)}
+                      >
+                        Xóa
+                      </p>
+                    ) : (
+                      <p
+                        className="btn-delete"
+                        role="presentation"
+                        loading={loadingSubmit}
+                        onClick={() => history.goBack()}
+                      >
+                        Hủy
+                      </p>
+                    )}
+                    <Button
+                      className="ml-auto px25"
+                      color="success"
+                      htmlType="submit"
+                      size="large"
+                      loading={loadingSubmit}
+                    >
+                      Lưu
+                    </Button>
+                  </Pane>
                 </Pane>
-                <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                  <p className="btn-delete" role="presentation"  loading={loadingSubmit}  onClick={() => history.goBack()}>
-                    Hủy
-                  </p>
-                  <Button className="ml-auto px25" color="success" htmlType="submit" size="large"  loading={loadingSubmit}>
-                    Lưu
-                  </Button>
-                </Pane>
-              </Pane>
-            </div>
-          </Loading>
-        </Form>
+              </div>
+            </Loading>
+          </Form>
         </Pane>
       </>
     );

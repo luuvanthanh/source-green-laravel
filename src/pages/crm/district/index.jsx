@@ -230,10 +230,11 @@ class Index extends PureComponent {
     const columns = [
       {
         title: 'Mã cơ sở',
-        key: 'code',
-        className: 'max-width-150',
+        key: 'index',
+        className: 'min-width-150',
         width: 150,
-        render: (record) => <Text size="normal">{record.code}</Text>,
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Tên tỉnh thành',

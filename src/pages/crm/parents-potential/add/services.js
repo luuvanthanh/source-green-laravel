@@ -20,3 +20,12 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
+
+
+export function remove(id = {}) {
+  return request(`/v1/status-parent-potentials/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}
+
