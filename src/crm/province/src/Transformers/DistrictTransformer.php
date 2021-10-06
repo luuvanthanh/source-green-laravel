@@ -29,7 +29,7 @@ class DistrictTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['townward'];
+    protected $availableIncludes = ['townward', 'city'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -48,5 +48,13 @@ class DistrictTransformer extends BaseTransformer
     public function includeTownWard(District $district)
     {
         return $this->collection($district->townward, new TownWardTransformer, 'TownWard');
+    }
+
+    public function includeCity(District $district)
+    {
+        if (empty($district->city)) {
+            return;
+        }
+        return $this->item($district->city, new CityTransformer, 'City');
     }
 }
