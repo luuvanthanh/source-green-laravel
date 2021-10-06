@@ -1,0 +1,131 @@
+<?php
+
+namespace GGPHP\Crm\Marketing\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use GGPHP\Crm\Marketing\Http\Requests\CreateDataMarketingRequest;
+use GGPHP\Crm\Marketing\Http\Requests\UpdateDataMarketingRequest;
+use GGPHP\Crm\Marketing\Models\DataMarketing;
+use GGPHP\Crm\Marketing\Models\Marketing;
+use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class DataMarketingController extends Controller
+{
+    /**
+     * 
+     * @var $employeeRepository
+     */
+    protected $dataMarketingRepository;
+
+    /**
+     * UserController constructor.
+     * @param ReviewRepository $inOutHistoriesRepository
+     */
+    public function __construct(DataMarketingRepository $dataMarketingRepository)
+    {
+        $this->dataMarketingRepository = $dataMarketingRepository;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $dataMarketing = $this->dataMarketingRepository->getDataMarketing($request->all());
+
+        return $this->success($dataMarketing, trans('lang::messages.common.getListSuccess'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(CreateDataMarketingRequest $request)
+    {
+        $attributes = $request->all();
+
+        if (isset($attributes['user_create_info'])) {
+            $attributes['user_create_info'] = json_encode($attributes['user_create_info']);
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = DataMarketing::SEX[$attributes['sex']];
+        }
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = DataMarketing::STATUS[$attributes['status']];
+        }
+        $dataMarketing = $this->dataMarketingRepository->create($attributes);
+
+        return $this->success($dataMarketing, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\news  $news
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $dataMarketing = $this->dataMarketingRepository->find($id);
+
+        return $this->success($dataMarketing, trans('lang::messages.common.getInfoSuccess'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\news  $news
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateDataMarketingRequest $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (isset($attributes['user_create_info'])) {
+            $attributes['user_create_info'] = json_encode($attributes['user_create_info']);
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = DataMarketing::SEX[$attributes['sex']];
+        }
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = DataMarketing::STATUS[$attributes['status']];
+        }
+
+        $dataMarketing = $this->dataMarketingRepository->update($attributes, $id);
+
+        return $this->success($dataMarketing, trans('lang::messages.common.modifySuccess'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\news  $Marketing
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->dataMarketingRepository->delete($id);
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function storeProgram(Request $request)
+    {
+        $program = $this->dataMarketingRepository->storeProgram($request->all());
+
+        return $this->success([], trans('lang::messages.common.createSuccess'));
+    }
+}
