@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Crm\Category\Http\Requests;
+namespace GGPHP\Crm\Marketing\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagCreateRequest extends FormRequest
+class CreateArticleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,9 @@ class TagCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => 'required|string',
+            'content' => 'required|string',
+            'marketing_program_id' => 'required|exists:marketing_programs,id',
         ];
     }
 }

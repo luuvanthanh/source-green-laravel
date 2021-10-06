@@ -31,12 +31,12 @@ class CreateDataMarketingStudentInfoRequest extends FormRequest
             'create_rows.*.birth_date' => 'date_format:Y-m-d',
             'create_rows.*.sex' => 'string',
             'create_rows.*.month_age' => 'numeric',
-            //'create_rows.*.customer_lead_id' => 'required|exists:customer_leads,id',
+            'create_rows.*.data_marketing_id' => 'required|exists:data_marketings,id',
             'update_rows.*.full_name' => 'string',
             'update_rows.*.birth_date' => 'date_format:Y-m-d',
             'update_rows.*.sex' => 'string',
             'update_rows.*.month_age' => 'numeric',
-            //'update_rows.*.customer_lead_id' => 'exists:customer_leads,id',
+            'update_rows.*.data_marketing_id' => 'exists:data_marketings,id',
 
         ];
     }
