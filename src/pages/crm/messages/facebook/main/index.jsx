@@ -17,7 +17,7 @@ const Index = memo(() => {
 
   return (
     <>
-      {!isEmpty(user) && (
+      {isEmpty(user) && (
         <div className={stylesModule['wrapper-login']}>
           <FacebookLogin
             appId={APP_ID_FB}
