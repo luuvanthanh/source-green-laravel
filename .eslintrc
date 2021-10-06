@@ -20,7 +20,8 @@
     "API_GEOLOCATION": true,
     "API_SSO_URL": true,
     "URL_API_REALTIME": true,
-    "API_URL_CRM": true
+    "API_URL_CRM": true,
+    "APP_ID_FB": true
   },
   "rules": {
     "react/jsx-wrap-multilines": 0,

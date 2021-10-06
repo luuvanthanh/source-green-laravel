@@ -1712,16 +1712,14 @@ export async function getLeftMenuCRM() {
         {
           title: 'Facebook',
           key: 'facebook',
-          url: [
-            '/crm/chat/facebook',
-          ],
+          url: ['/crm/chat/facebook'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
-          title: 'zalo',
+          title: 'Zalo',
           key: 'zalo',
-          url: [],
+          url: ['/crm/chat/zalo'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -1740,7 +1738,7 @@ export async function getLeftMenuCRM() {
             '/crm/tiep-thi/quan-ly-chuong-trinh',
             '/crm/tiep-thi/quan-ly-chuong-trinh/tao-moi',
             '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet',
-            '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/them-bai-viet'
+            '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/them-bai-viet',
           ],
           permission: [permissions.CRM],
           pro: true,
