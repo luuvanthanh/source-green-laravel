@@ -20,3 +20,10 @@ export function details(data = {}) {
     method: 'GET',
   });
 }
+
+export function remove(id = {}) {
+  return request(`/v1/search-sources/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}

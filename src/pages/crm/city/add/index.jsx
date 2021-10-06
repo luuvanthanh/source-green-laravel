@@ -159,7 +159,7 @@ class Index extends PureComponent {
                     </Pane>
                   </Pane>
                 </Pane>
-                <Pane className="p20 d-flex justify-content-between align-items-center border-top">
+                <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
                   <p className="btn-delete" role="presentation"  loading={loadingSubmit}  onClick={() => history.goBack()}>
                     Hủy
                   </p>
