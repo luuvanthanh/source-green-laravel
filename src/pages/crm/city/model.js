@@ -1,20 +1,9 @@
+import * as services from './services';
+
 export default {
   namespace: 'crmCity',
   state: {
-    data: [
-      {
-        id: 1,
-        code: 'TTL01',
-        name: 'Namvv',
-        nameGroup: 'Nguyễn Văn Nam',
-      },
-      {
-        id: 2,
-        code: 'TTL01',
-        name: 'Namvv',
-        nameGroup: 'Nguyễn Văn Nam',
-      },
-    ],
+    data: [],
     pagination: {
       total: 0,
     },
@@ -24,11 +13,7 @@ export default {
     },
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      data: [],
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
@@ -44,6 +29,23 @@ export default {
       },
     }),
   },
-  effects: {},
+  effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+  },
   subscriptions: {},
 };

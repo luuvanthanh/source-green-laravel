@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -27,10 +27,10 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmDistrict, loading }) => ({
-  data: crmDistrict.data,
-  error: crmDistrict.error,
-  pagination: crmDistrict.pagination,
+const mapStateToProps = ({ crmDistricts, loading }) => ({
+  data: crmDistricts.data,
+  error: crmDistricts.error,
+  pagination: crmDistricts.pagination,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,15 +83,19 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'crmDistrict/GET_DATA',
+      type: 'crmDistricts/GET_DATA',
       payload: {
         ...search,
       },
     });
-    history.push({
-      pathname,
-      query: Helper.convertParamSearch(search),
-    });
+    history.push(
+      `${pathname}?${Helper.convertParamSearchConvert(
+        {
+          ...search,
+        },
+        variables.QUERY_STRING,
+      )}`,
+    );
   };
 
   /**
@@ -114,12 +118,40 @@ class Index extends PureComponent {
   }, 300);
 
   /**
+   * Function debounce search
+   * @param {string} value value of object search
+   * @param {string} type key of object search
+   */
+  debouncedSearchStatus = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 200);
+
+  /**
    * Function change input
    * @param {object} e event of input
    * @param {string} type key of object search
    */
   onChange = (e, type) => {
     this.debouncedSearch(e.target.value, type);
+  };
+
+  /**
+   * Function change select
+   * @param {object} e value of select
+   * @param {string} type key of object search
+   */
+  onChangeSelectStatus = (e, type) => {
+    this.debouncedSearchStatus(e, type);
   };
 
   /**
@@ -146,44 +178,81 @@ class Index extends PureComponent {
    * Function pagination of table
    * @param {object} pagination value of pagination items
    */
-  pagination = (pagination) => {
-    const {
-      location: { query },
-    } = this.props;
-    return Helper.paginationNet({
+  pagination = (pagination) =>
+    Helper.paginationLavarel({
       pagination,
-      query,
       callback: (response) => {
         this.changePagination(response);
       },
     });
+
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmDistricts/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) self.onLoad();
+          },
+        });
+      },
+    });
   };
+
+  renderCalulator = (items) =>
+    items
+      .map((item) => {
+        if (!isEmpty(item.formular)) {
+          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
+        }
+        return `${item.operator || ''} ${item.value || item.variable || ''}${this.renderCalulator(
+          item.formular,
+        )}`;
+      })
+      .join(' ');
 
   /**
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
-        title: 'Mã Quận/ Huyện',
+        title: 'Mã cơ sở',
         key: 'code',
         className: 'max-width-150',
         width: 150,
-        render: (record) => record?.code,
+        render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'Tên Quận Huyện',
+        title: 'Tên tỉnh thành',
         key: 'name',
-        className: 'min-width-250',
-        render: (record) => record?.name,
+        className: 'min-width-150',
+        render: (record) => <Text size="normal">{record.name}</Text>,
       },
       {
         key: 'action',
         width: 100,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success">Chi tiết</Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -193,25 +262,26 @@ class Index extends PureComponent {
 
   render() {
     const {
+      error,
+      data,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
-      data,
     } = this.props;
     const { search } = this.state;
-    const loading = effects['crmDistrict/GET_DATA'];
+    const loading = effects['crmDistricts/GET_DATA'];
     return (
       <>
-        <Helmet title="Quận Huyện" />
+        <Helmet title="Tỉnh thành" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Quận Huyện</Text>
+            <Text color="dark">Tỉnh thành</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>
-          <div className={styles['block-table']}>
+          <div className={classnames(styles['block-table'])}>
             <Form
               initialValues={{
                 ...search,
@@ -220,7 +290,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-lg-5">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
@@ -236,12 +306,14 @@ class Index extends PureComponent {
               dataSource={data}
               loading={loading}
               pagination={this.pagination(pagination)}
+              error={error}
+              isError={error.isError}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
               rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+              scroll={{ x: '100%', y: '60vh' }}
             />
           </div>
         </div>
@@ -252,20 +324,22 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
   pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
 };
 
 Index.defaultProps = {
   match: {},
+  data: [],
   pagination: {},
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
+  error: {},
 };
 
 export default Index;
