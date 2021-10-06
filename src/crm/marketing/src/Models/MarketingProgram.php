@@ -21,4 +21,9 @@ class MarketingProgram extends UuidModel
     protected $fillable = [
         'code', 'name', 'start_date', 'end_date', 'status', 'content', 'note'
     ];
+
+    public function article()
+    {
+        return $this->hasMany(Article::class);
+    }
 }

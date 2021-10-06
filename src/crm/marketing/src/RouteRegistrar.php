@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('marketing-programs', 'MarketingProgramController');
+            \Route::resource('articles', 'ArticleController');
         });
     }
 }
