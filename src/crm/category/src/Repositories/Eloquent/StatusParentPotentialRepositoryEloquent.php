@@ -49,7 +49,7 @@ class StatusParentPotentialRepositoryEloquent extends BaseRepository implements 
     public function getStatusParentPotential(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
         if (!empty($attributes['limit'])) {

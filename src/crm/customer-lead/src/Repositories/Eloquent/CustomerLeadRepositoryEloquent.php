@@ -54,8 +54,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
     public function getCustomerLead(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('full_name', 'ilike', '%' . $attributes['key'] . '%')
-                ->orWhere('phone', 'like', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('full_name', $attributes['key'])->orWhereLike('phone', $attributes['key']);
         }
 
         if (!empty($attributes['city_id'])) {

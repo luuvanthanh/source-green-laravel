@@ -58,19 +58,19 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function getDataMarketing(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%')
-                ->orWhere('phone', 'ilike', '%' . $attributes['key'] . '%')->orWhere('em', 'ilike', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('name', $attributes['key'])
+                ->orWhereLike('phone', $attributes['key'])->orWhereLike('phone', $attributes['key']);
         }
 
         if (!empty($attributes['search_source_id'])) {
             $this->model = $this->model->where('search_source_id', $attributes['search_source_id']);
         }
 
-        // if (!empty($attributes['marketing_program_id'])) {
-        //     $this->model = $this->model->whereIn('id',function ($query) use ($attributes){
-        //         $query->select('marketing_programs.data_marketing_id')->from('marketing_programs')->where('i',$attributes['tag_id'])->get();
-        //     });
-        // }
+        if (!empty($attributes['marketing_program_id'])) {
+            $this->model = $this->model->whereIn('id',function ($query) use ($attributes){
+                $query->select('data_marketing_program.data_marketing_id')->from('data_marketing_program')->where('marketing_program_id',$attributes['marketing_program_id'])->get();
+            });
+        }
 
         if (!empty($attributes['limit'])) {
             $dataMarketing = $this->paginate($attributes['limit']);

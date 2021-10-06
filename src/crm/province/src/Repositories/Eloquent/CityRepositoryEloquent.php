@@ -55,7 +55,7 @@ class CityRepositoryEloquent extends BaseRepository implements CityRepository
     {
 
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->where('name', 'ilike', '%' . $attributes['key'] . '%');
+            $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
         if (!empty($attributes['limit'])) {
