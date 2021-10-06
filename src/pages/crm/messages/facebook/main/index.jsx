@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 
 import { Form, Input, Upload } from 'antd';
 import classnames from 'classnames';
+import { isEmpty } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -11,29 +12,30 @@ const Index = memo(() => {
   const [user, setUser] = useState({});
 
   const responseFacebook = (response) => {
-    console.log('response', response);
     setUser(response);
   };
 
   return (
     <>
-      <div className={stylesModule['wrapper-login']}>
-        <FacebookLogin
-          appId={APP_ID_FB}
-          autoLoad
-          callback={responseFacebook}
-          render={(renderProps) => (
-            <button
-              onClick={renderProps.onClick}
-              type="button"
-              className={stylesModule['button-login']}
-            >
-              Login FB
-            </button>
-          )}
-        />
-      </div>
-
+      {!isEmpty(user) && (
+        <div className={stylesModule['wrapper-login']}>
+          <FacebookLogin
+            appId={APP_ID_FB}
+            autoLoad
+            fields="name,email,picture"
+            callback={responseFacebook}
+            render={(renderProps) => (
+              <button
+                onClick={renderProps.onClick}
+                type="button"
+                className={stylesModule['button-login']}
+              >
+                Login FB
+              </button>
+            )}
+          />
+        </div>
+      )}
       <Form>
         <Pane className={classnames(stylesModule['main-container'])}>
           <div className="row">
@@ -42,7 +44,7 @@ const Index = memo(() => {
                 <img src={user?.picture?.data?.url} alt="facebook" className={stylesModule.img} />
               )}
               <div className={stylesModule['main-title-right']}>
-                <h3 className={stylesModule.name}>{user?.user}</h3>
+                <h3 className={stylesModule.name}>{user?.name}</h3>
                 <p className={stylesModule.title}>Chỉ định cuộc trò chuyện</p>
               </div>
             </div>
