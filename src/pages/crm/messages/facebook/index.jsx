@@ -29,7 +29,7 @@ const Index = memo(() => {
           <div className={styles['wrapper-login']}>
             <FacebookLogin
               appId={APP_ID_FB}
-              autoLoad
+              autoLoad={false}
               fields="name,email,picture,birthday"
               callback={responseFacebook}
               render={(renderProps) => (
