@@ -49,7 +49,12 @@ request.interceptors.response.use(
         status: response.status,
       };
     }
-    if (optionsRoot?.parse === true && response.status >= 200 && response.status <= 300) {
+    if (
+      !optionsRoot?.cancelNotification &&
+      optionsRoot?.parse === true &&
+      response.status >= 200 &&
+      response.status <= 300
+    ) {
       notification.success({
         message: 'Thông báo',
         description: 'Bạn đã cập nhật thành công dữ liệu',
@@ -70,7 +75,7 @@ request.interceptors.response.use(
             'Lỗi hệ thống vui lòng kiểm tra lại',
         });
       }
-      if (response.status >= 200 && response.status <= 300) {
+      if (response.status >= 200 && response.status <= 300 && !optionsRoot?.cancelNotification) {
         notification.success({
           message: 'Thông báo',
           description: 'Bạn đã cập nhật thành công dữ liệu',

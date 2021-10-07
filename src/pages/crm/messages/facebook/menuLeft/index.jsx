@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
-import { Form } from 'antd';
+import { Form, Menu, Dropdown } from 'antd';
 import classnames from 'classnames';
 import Pane from '@/components/CommonComponent/Pane';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables } from '@/utils';
+import { DownOutlined } from '@ant-design/icons';
 import stylesModule from '../styles.module.scss';
 
 class Index extends PureComponent {
@@ -26,6 +27,15 @@ class Index extends PureComponent {
 
   render() {
     const { isActive } = this.state;
+    const menu = (
+      <Menu>
+        <Menu.Item>1st menu item</Menu.Item>
+        <Menu.Item>2nd menu item (disabled)</Menu.Item>
+        <Menu.Item>3rd menu item (disabled)</Menu.Item>
+        <Menu.Item>a danger item</Menu.Item>
+      </Menu>
+    );
+
     return (
       <>
         <Form>
@@ -37,7 +47,11 @@ class Index extends PureComponent {
                   alt="facebook"
                   className={stylesModule.img}
                 />
-                <p className={stylesModule.title}>Clover cơ sở 1</p>
+                <Dropdown overlay={menu}>
+                  <p className={stylesModule.title}>
+                    Clover cơ sở 1 <DownOutlined />
+                  </p>
+                </Dropdown>
               </div>
               <div>
                 <div
@@ -62,12 +76,18 @@ class Index extends PureComponent {
                     [stylesModule.active]: isActive,
                   })}
                 >
-                  <span className={classnames(stylesModule['button-icon'], 'icon-price-tags')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-price-tags')}>
+                    {' '}
+                  </span>
                   <span className={classnames(stylesModule['button-icon'], 'icon-user')}> </span>
-                  <span className={classnames(stylesModule['button-icon'], 'icon-eye-blocked')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-eye-blocked')}>
+                    {' '}
+                  </span>
                   <span className={classnames(stylesModule['button-icon'], 'icon-undo2')}> </span>
                   <span className={classnames(stylesModule['button-icon'], 'icon-phone1')}> </span>
-                  <span className={classnames(stylesModule['button-icon'], 'icon-phone-off')}> </span>
+                  <span className={classnames(stylesModule['button-icon'], 'icon-phone-off')}>
+                    {' '}
+                  </span>
                   <Button
                     onClick={this.changeActive}
                     icon="cancel"
