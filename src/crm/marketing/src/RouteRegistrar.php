@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('program-data-marketings', 'DataMarketingController@storeProgram');
             \Route::post('delete-program-data-marketings', 'DataMarketingController@deleteProgram');
             \Route::resource('marketing-programs', 'MarketingProgramController');
+            \Route::resource('data-marketing-student-infos', 'DataMarketingStudentInfoController');
             \Route::resource('articles', 'ArticleController');
         });
     }

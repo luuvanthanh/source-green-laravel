@@ -5,11 +5,8 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
-use GGPHP\Crm\Marketing\Models\Marketing;
 use GGPHP\Crm\Marketing\Presenters\DataMarketingPresenter;
-use GGPHP\Crm\Marketing\Presenters\MarketingPresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
-use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
