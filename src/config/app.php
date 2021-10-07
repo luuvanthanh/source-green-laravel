@@ -182,7 +182,9 @@ return [
         GGPHP\Crm\Category\Providers\CategoryServiceProvider::class,
         GGPHP\Crm\Province\Providers\ProvinceServiceProvider::class,
         GGPHP\Crm\CustomerLead\Providers\CustomerLeadServiceProvider::class,
-        GGPHP\Crm\Marketing\Providers\MarketingServiceProvider::class
+        GGPHP\Crm\Marketing\Providers\MarketingServiceProvider::class,
+        // App\Providers\TwilioAccessTokenProvider::class,
+        // App\Providers\TwilioChatGrantProvider::class,
     ],
 
     /*
