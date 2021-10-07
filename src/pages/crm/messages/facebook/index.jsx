@@ -31,6 +31,7 @@ const Index = memo(() => {
               appId={APP_ID_FB}
               autoLoad={false}
               fields="name,email,picture,birthday"
+              scope="public_profile,user_friends,user_actions.books,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
               callback={responseFacebook}
               render={(renderProps) => (
                 <button
