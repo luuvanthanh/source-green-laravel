@@ -53,4 +53,9 @@ class DataMarketing extends UuidModel
     {
         return $this->belongsToMany(MarketingProgram::class, 'data_marketing_program', 'data_marketing_id', 'marketing_program_id');
     }
+
+    public function studentInfo()
+    {
+        return $this->hasMany(DataMarketingStudentInfo::class);
+    }
 }

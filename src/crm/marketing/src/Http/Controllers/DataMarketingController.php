@@ -7,7 +7,6 @@ use GGPHP\Crm\Marketing\Http\Requests\CreateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Http\Requests\MoveLeadRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
-use GGPHP\Crm\Marketing\Models\Marketing;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
 
 use Illuminate\Http\Request;
@@ -137,9 +136,10 @@ class DataMarketingController extends Controller
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
 
-    public function moveLead(MoveLeadRequest $request){
+    public function moveLead(MoveLeadRequest $request)
+    {
         $this->dataMarketingRepository->moveLead($request->all());
 
-        return $this->success([],trans('thanh cong'));
+        return $this->success([], trans('lang::messages.common.movedSuccess'));
     }
 }

@@ -4,13 +4,12 @@ namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use Carbon\Carbon;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
-use GGPHP\Crm\Marketing\Models\Marketing;
+use GGPHP\Crm\Marketing\Models\DataMarketingStudentInfo;
 use GGPHP\Crm\Marketing\Presenters\DataMarketingPresenter;
-use GGPHP\Crm\Marketing\Presenters\MarketingPresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\DataMarketingRepository;
-use GGPHP\Crm\Marketing\Repositories\Contracts\MarketingRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -144,13 +143,36 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'name_company' => $value->name_company,
                 'address_company' => $value->address_company,
                 'phone_company' => $value->phone_company,
-                'career' => $value->carrer,
+                'career' => $value->career,
                 'file_image' => $value->file_image
             ];
             $CustomerLead = CustomerLead::create($data);
             $value->status = DataMarketing::STATUS['MOVE'];
             $value->update();
+            $studentInfo = DataMarketingStudentInfo::where('data_marketing_id', $value->id)->get();
+            foreach ($studentInfo as $key => $values) {
+                $dataStudent = [
+                    'full_name' => $values->full_name,
+                    'birth_date' => $values->birth_date,
+                    'sex' => $values->sex,
+                    'month_age' => $values->month_age,
+                    'customer_lead_id' => $CustomerLead->id,
+                    'file_image' => $values->file_image,
+                    'relationship' => $values->relationship
+                ];
+                StudentInfo::create($dataStudent);
+            }
         }
+
+        return;
+    }
+
+    public function delete($id)
+    {
+        $dataMarketing = DataMarketing::find($id);
+        $dataMarketing->marketingProgram()->detach();
+        $dataMarketing->delete();
+
         return;
     }
 }

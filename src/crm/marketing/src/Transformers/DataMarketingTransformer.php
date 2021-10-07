@@ -33,7 +33,7 @@ class DataMarketingTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource','marketingProgram'];
+    protected $availableIncludes = ['studentInfo', 'city', 'district', 'searchSource','marketingProgram','studentInfo'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -100,5 +100,10 @@ class DataMarketingTransformer extends BaseTransformer
     public function includeMarketingProgram(DataMarketing $dataMarketing)
     {
         return $this->collection($dataMarketing->marketingProgram, new MarketingProgramTransformer, 'MarketingProgram');
+    }
+
+    public function includeStudentInfo(DataMarketing $dataMarketing)
+    {
+        return $this->collection($dataMarketing->studentInfo, new DataMarketingStudentInfoTransformer, 'StudentInfo');
     }
 }
