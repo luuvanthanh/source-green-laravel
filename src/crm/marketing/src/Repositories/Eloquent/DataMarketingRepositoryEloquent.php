@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Marketing\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\DataMarketingProgram;
 use GGPHP\Crm\Marketing\Models\Marketing;
@@ -67,8 +68,8 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
         }
 
         if (!empty($attributes['marketing_program_id'])) {
-            $this->model = $this->model->whereIn('id',function ($query) use ($attributes){
-                $query->select('data_marketing_program.data_marketing_id')->from('data_marketing_program')->where('marketing_program_id',$attributes['marketing_program_id'])->get();
+            $this->model = $this->model->whereIn('id', function ($query) use ($attributes) {
+                $query->select('data_marketing_program.data_marketing_id')->from('data_marketing_program')->where('marketing_program_id', $attributes['marketing_program_id'])->get();
             });
         }
 
@@ -112,8 +113,44 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
 
     public function deleteProgram($attributes)
     {
-        DataMarketingProgram::where('data_marketing_id',$attributes['data_marketing_id'])->where('marketing_program_id',$attributes['marketing_program_id'])->delete();
-    
+        DataMarketingProgram::where('data_marketing_id', $attributes['data_marketing_id'])->where('marketing_program_id', $attributes['marketing_program_id'])->delete();
+
+        return;
+    }
+
+    public function moveLead($attributes)
+    {
+        $dataMarketing = DataMarketing::whereIn('id', $attributes['data_marketing_id'])->get();
+        foreach ($dataMarketing as $key => $value) {
+            $data = [
+                'code' => $value->code,
+                'full_name' => $value->full_name,
+                'birth_date' => $value->birth_date,
+                'sex' => $value->sex,
+                'email' => $value->email,
+                'phone' => $value->phone,
+                'other_phone' => $value->other_phone,
+                'address' => $value->address,
+                'city_id' => $value->city_id,
+                'district_id' => $value->district_id,
+                'facility_id' => $value->facility_id,
+                'user_create_id' => $value->user_create_id,
+                'user_create_info' => json_encode(json_decode($value->user_create_info)),
+                'search_source_id' => $value->search_source_id,
+                'facebook' => $value->facebook,
+                'zalo' => $value->zalo,
+                'instagram' => $value->instagram,
+                'skype' => $value->skype,
+                'name_company' => $value->name_company,
+                'address_company' => $value->address_company,
+                'phone_company' => $value->phone_company,
+                'career' => $value->carrer,
+                'file_image' => $value->file_image
+            ];
+            $CustomerLead = CustomerLead::create($data);
+            $value->status = DataMarketing::STATUS['MOVE'];
+            $value->update();
+        }
         return;
     }
 }

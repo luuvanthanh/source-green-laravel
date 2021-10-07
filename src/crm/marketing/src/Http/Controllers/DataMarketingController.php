@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Marketing\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Marketing\Http\Requests\CreateDataMarketingRequest;
+use GGPHP\Crm\Marketing\Http\Requests\MoveLeadRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateDataMarketingRequest;
 use GGPHP\Crm\Marketing\Models\DataMarketing;
 use GGPHP\Crm\Marketing\Models\Marketing;
@@ -134,5 +135,11 @@ class DataMarketingController extends Controller
         $this->dataMarketingRepository->deleteProgram($request->all());
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function moveLead(MoveLeadRequest $request){
+        $this->dataMarketingRepository->moveLead($request->all());
+
+        return $this->success([],trans('thanh cong'));
     }
 }

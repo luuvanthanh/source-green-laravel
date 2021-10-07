@@ -34,6 +34,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('delete-program-data-marketings', 'DataMarketingController@deleteProgram');
             \Route::resource('marketing-programs', 'MarketingProgramController');
             \Route::resource('articles', 'ArticleController');
+            \Route::post('move-leads', 'DataMarketingController@moveLead');
         });
     }
 }
