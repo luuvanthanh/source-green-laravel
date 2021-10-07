@@ -14,6 +14,7 @@ const Index = memo(() => {
   const { userCRM } = useSelector(({ userCRM }) => ({ userCRM }));
 
   const responseFacebook = (response) => {
+    console.log('response', response);
     dispatch({
       type: 'userCRM/GET_USER',
       payload: response,

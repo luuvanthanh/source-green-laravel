@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useSelector } from 'dva';
 
 import { Form, Input, Upload } from 'antd';
@@ -9,6 +9,22 @@ import stylesModule from '../styles.module.scss';
 
 const Index = memo(() => {
   const { userCRM } = useSelector(({ userCRM }) => ({ userCRM }));
+
+  useEffect(() => {
+    const socket = io('https://socket-crm-dev.dn.greenglobal.vn', {
+      transports: ['websocket'],
+    });
+    socket.on('connect', () => {
+      console.log('Connected', socket.id);
+      socket.emit('subscribe', {
+        channel: 'facebook',
+      });
+    });
+    socket.on('facebook.receive.message', (event, data) => {
+      console.log(data);
+    });
+    return () => socket.close();
+  }, []);
 
   return (
     <>
