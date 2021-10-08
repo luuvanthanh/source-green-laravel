@@ -44,6 +44,10 @@ const ICON_BUTTON = {
   equalizer: <span className="icon-equalizer" />,
   sphere: <span className="icon-sphere" />,
   mobile: <span className="icon-mobile" />,
+  'add-file-plus': <span className="icon-add-file-plus" />,
+  'calendar-plus': <span className="icon-calendar-plus" />,
+  'phone-plus': <span className="icon-phone-plus" />,
+  'email-plus': <span className="icon-email-plus" />,
 };
 export default function ButtonCustom({
   children,
