@@ -27,6 +27,7 @@ const Index = memo(() => {
   const [message, setMessage] = useState(null);
 
   const responseFacebook = (response) => {
+    console.log('responseFacebook', response);
     dispatch({
       type: 'crmFB/GET_USER',
       payload: response,
