@@ -29,6 +29,7 @@ const Index = memo(() => {
   const [loadingMessage, setLoadingMessage] = useState(false);
 
   const responseFacebook = (response) => {
+    console.log('response', response);
     if (response.userID) {
       dispatch({
         type: 'crmFBDev/GET_USER',
@@ -56,7 +57,7 @@ const Index = memo(() => {
   }, [user.userID]);
 
   useEffect(() => {
-    if (pageCurrent.id) {
+    if (pageCurrent?.id) {
       dispatch({
         type: 'crmFBDev/GET_CONVERSATIONS',
         payload: {
@@ -85,7 +86,7 @@ const Index = memo(() => {
   }, [pageCurrent.id]);
 
   useEffect(() => {
-    if (conversationCurrent.id) {
+    if (conversationCurrent?.id) {
       setLoadingMessage(true);
       dispatch({
         type: 'crmFBDev/GET_MESSAGES',
@@ -115,7 +116,7 @@ const Index = memo(() => {
         channel: 'facebook',
       });
     });
-    if (conversationCurrent.id && user.userID) {
+    if (conversationCurrent?.id && user?.userID) {
       socket.on('facebook.receive.message', (event) => {
         if (event) {
           dispatch({
@@ -137,7 +138,7 @@ const Index = memo(() => {
       });
     }
     return () => socket.close();
-  }, [conversationCurrent.id, user.userID]);
+  }, [conversationCurrent?.id, user?.userID]);
 
   const onChangeConversation = (id) => {
     setConversationCurrent(users.find((item) => item.id === id));
