@@ -2396,7 +2396,7 @@ export default [
           },
           {
             path: '/crm/chat/facebook',
-            component: './crm/messages/facebook',
+            component: './crm/messages/facebook-dev',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
