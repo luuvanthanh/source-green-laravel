@@ -54,4 +54,9 @@ class CustomerPotential extends UuidModel
     {
         return $this->hasMany(CustomerPotentialTag::class);
     }
+
+    public function customerPotentialEventInfo()
+    {
+        return $this->hasMany(CustomerPotentialEventInfo::class);
+    }
 }
