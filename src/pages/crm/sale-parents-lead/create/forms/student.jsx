@@ -1,47 +1,51 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import csx from 'classnames';
-import { connect, withRouter } from 'umi';
+import { useParams } from 'umi';
 import { head, isEmpty } from 'lodash';
-import PropTypes from 'prop-types';
-
+import moment from 'moment';
+import { useSelector, useDispatch } from 'dva';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
-import Loading from '@/components/CommonComponent/Loading';
+import classnames from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables } from '@/utils/variables';
-// import { v4 as uuidv4 } from 'uuid';
+import { variables, Helper } from '@/utils';
+import styles from '@/assets/styles/Common/common.scss';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
 ];
-const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
-  loading,
-  details: crmSaleLeadAdd.details,
-  error: crmSaleLeadAdd.error,
-});
-const Students = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+const relationship = [
+  { id: 'FATHER', name: 'Cha' },
+  { id: 'MOTHER', name: 'Mẹ' },
+];
+
+const Students = memo(() => {
   const formRef = useRef();
-  const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
-  const loadingSubmit = effects[`crmSaleLeadAdd/ADD_STUDENTS`];
+
+  const params = useParams();
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+
   const mounted = useRef(false);
   const [fileImage, setFileImage] = useState([null]);
-  // const [dataSource, setDataSource] = useState([
-  //   {
-  //     id: uuidv4(),
-  //     isAdd: true,
-  //   },
-  // ]);
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
+  const {
+    loading: { effects },
+  } = useSelector(({ loading, crmSaleLeadAdd }) => ({
+    loading,
+    student: crmSaleLeadAdd.student,
+    details: crmSaleLeadAdd.details,
+    degrees: crmSaleLeadAdd.degrees,
+    error: crmSaleLeadAdd.error,
+  }));
 
-  const mountedSet = (action, value) => {
-    if (mounted.current) {
-      action(value);
-    }
-  };
+  const loading = effects[`crmSaleLeadAdd/GET_STUDENTS`];
+  const loadingSubmit = effects[`crmSaleLeadAdd/ADD_STUDENTS`];
 
   const onSetImage = (file, position) => {
     mountedSet(
@@ -51,20 +55,23 @@ const Students = memo(({ dispatch, loading: { effects }, match: { params }, deta
   };
 
   const onFinish = (values) => {
-    // const createRows = dataSource
-    //   .filter((item) => item.isAdd)
-    //   .map((item) => ({ ...omit(item, 'isAdd') }));
-    // const updateRows = dataSource
-    //   .filter((item) => !item.isAdd)
-    //   .map((item) => ({ ...omit(item, 'isAdd') }));
-    const payload = {
-      studentArray: values.studentArray.map((item, index) => ({
-        ...item,
-        fileImage: fileImage[index],
-      })),
-      // createRows,
-      // updateRows,
+    const items = values.data.map((item, index) => ({
+      ...item,
+      fileImage: fileImage[index],
+      birth_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: item.birth_date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
       customer_lead_id: params.id,
+    }));
+    const payload = {
+      createRows: items.filter((item) => !item.id),
+      updateRows: items.filter((item) => item.id),
+      deleteRows: items.filter((item) => item.id),
     };
     dispatch({
       type: 'crmSaleLeadAdd/ADD_STUDENTS',
@@ -73,7 +80,7 @@ const Students = memo(({ dispatch, loading: { effects }, match: { params }, deta
         if (error) {
           if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
             error?.validationErrors.forEach((item) => {
-              formRef.current.setFields([
+              form.setFields([
                 {
                   name: head(item.members),
                   errors: [item.message],
@@ -92,162 +99,175 @@ const Students = memo(({ dispatch, loading: { effects }, match: { params }, deta
   }, []);
 
   useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'crmSaleLeadAdd/GET_DETAILS',
-        payload: params,
-      });
-    }
+    dispatch({
+      type: 'crmSaleLeadAdd/GET_STUDENTS',
+      payload: {},
+      callback: (response) => {
+        if (response) {
+          if (params.id) {
+            formRef.current.setFieldsValue({
+              data: response.parsePayload.map((item) => ({
+                ...item,
+                birth_date: moment(item.birth_date),
+              })),
+            });
+          }
+        }
+      },
+    });
   }, [params.id]);
 
-  useEffect(() => {
-    if (!isEmpty(details) && params.id) {
-      formRef.current.setFieldsValue({
-        studentArray: !isEmpty(details?.student?.studentArray)
-          ? details?.student?.studentArray
-          : [{}],
-      });
-      if (!isEmpty(details?.student?.studentArray)) {
-        mountedSet(
-          setFileImage,
-          details?.student?.studentArray.map((item) => item.fileImage || null),
-        );
-      }
-    }
-  }, [details]);
-
   return (
-    <Form
-      layout="vertical"
-      ref={formRef}
-      onFinish={onFinish}
-      initialValues={{
-        studentArray: [{}],
-      }}
-    >
-      <Pane className="card">
-        <Loading loading={loading} isError={error.isError} params={{ error }}>
-          <Pane style={{ padding: 20 }} className="pb-0">
-            <Heading type="form-title">Thông tin học sinh</Heading>
-          </Pane>
+    <>
+      <Pane>
+        <Pane>
+          <Form
+            layout="vertical"
+            initialValues={{
+              data: [
+                {
+                  ...params,
+                  birth_date: params.birth_date && moment(params.birth_date),
+                },
+              ],
+            }}
+            ref={formRef}
+            onFinish={onFinish}
+          >
+            <Pane>
+              <Pane>
+                <Pane
+                  className={classnames(
+                    'd-flex justify-content-between align-items-center mb20',
+                    styles['heading-container'],
+                  )}
+                >
+                  <h3 className={styles.title}>Thông tin học sinh</h3>
+                </Pane>
+                <Pane className="card">
+                  <div className="row p20">
+                    <div className="col-lg-12">
+                      <Form.List name="data">
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map((field, index) => (
+                              <Pane
+                                key={field.key}
+                                // style={{ padding: 20 }}
+                              >
+                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                                  học sinh {index + 1}
+                                </Heading>
 
-          <Form.List name="studentArray">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name }, index) => (
-                  <Pane
-                    key={key}
-                    className={csx('pb-0', 'border-bottom', 'position-relative')}
-                    style={{ padding: 20 }}
-                  >
-                    <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                      học sinh {index + 1}
-                    </Heading>
+                                <Pane className="row">
+                                  <Pane className="col-lg-4">
+                                    <Form.Item name={[field.key, 'fileImage']} label="Hình ảnh">
+                                      <ImageUpload
+                                        callback={(res) => {
+                                          onSetImage(res.fileInfo.url, index);
+                                        }}
+                                        fileImage={fileImage[index]}
+                                      />
+                                    </Form.Item>
+                                  </Pane>
+                                </Pane>
 
-                    <Pane className="row">
-                      <Pane className="col-lg-4">
-                        <Form.Item name={[key, 'fileImage']} label="Hình ảnh">
-                          <ImageUpload
-                            callback={(res) => {
-                              onSetImage(res.fileInfo.url, index);
-                            }}
-                            fileImage={fileImage[index]}
-                          />
-                        </Form.Item>
-                      </Pane>
-                    </Pane>
+                                <Pane className="row">
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      label="Họ và tên"
+                                      name={[field.name, 'full_name']}
+                                      fieldKey={[field.fieldKey, 'full_name']}
+                                      type={variables.INPUT}
+                                      rules={[
+                                        variables.RULES.EMPTY_INPUT,
+                                        variables.RULES.MAX_LENGTH_INPUT,
+                                      ]}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      name={[field.name, 'birth_date']}
+                                      label="Ngày sinh"
+                                      fieldKey={[field.fieldKey, 'birth_date']}
+                                      type={variables.DATE_PICKER}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      name={[field.name, 'month_age']}
+                                      label="Tuổi (tháng)"
+                                      fieldKey={[field.fieldKey, 'month_age']}
+                                      type={variables.INPUT}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      data={genders}
+                                      name={[field.name, 'sex']}
+                                      label="Giới tính"
+                                      fieldKey={[field.fieldKey, 'sex']}
+                                      type={variables.SELECT}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      data={relationship}
+                                      name={[field.name, 'relationship']}
+                                      label="Mối quan hệ"
+                                      fieldKey={[field.fieldKey, 'relationship']}
+                                      type={variables.SELECT}
+                                    />
+                                  </Pane>
+                                </Pane>
 
-                    <Pane className="row">
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          name={[key, 'full_name']}
-                          label="Họ và tên"
-                          type={variables.INPUT}
-                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          name={[key, 'birth_date']}
-                          label="Ngày sinh"
-                          type={variables.DATE_PICKER}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          name={[key, 'month_age']}
-                          label="Tuổi (tháng)"
-                          type={variables.INPUT}
-                        />
-                      </Pane>
-                      <Pane className="col-lg-4">
-                        <FormItem
-                          data={genders}
-                          name={[key, 'sex']}
-                          label="Giới tính"
-                          type={variables.SELECT}
-                        />
-                      </Pane>
-                    </Pane>
+                                {fields.length > 1 && (
+                                  <DeleteOutlined
+                                    className="position-absolute"
+                                    style={{ top: 20, right: 20 }}
+                                    onClick={() => remove(field.name)}
+                                  />
+                                )}
+                              </Pane>
+                            ))}
 
-                    {fields.length > 1 && (
-                      <DeleteOutlined
-                        className="position-absolute"
-                        style={{ top: 20, right: 20 }}
-                        onClick={() => remove(name)}
-                      />
-                    )}
-                  </Pane>
-                ))}
-
-                <Pane style={{ padding: 20 }} className="border-bottom">
+                            <Pane style={{ padding: 20 }} className="border-bottom">
+                              <Button
+                                color="success"
+                                ghost
+                                icon="plus"
+                                onClick={() => {
+                                  add();
+                                  mountedSet(setFileImage, [...fileImage, null]);
+                                }}
+                              >
+                                Thêm học sinh
+                              </Button>
+                            </Pane>
+                          </>
+                        )}
+                      </Form.List>
+                    </div>
+                  </div>
+                </Pane>
+                <Pane className="d-flex justify-content-between align-items-center mb20">
                   <Button
+                    className="ml-auto px25"
                     color="success"
-                    ghost
-                    icon="plus"
-                    onClick={() => {
-                      add();
-                      mountedSet(setFileImage, [...fileImage, null]);
-                    }}
+                    htmlType="submit"
+                    size="large"
+                    loading={loadingSubmit || loading}
                   >
-                    Thêm học sinh
+                    Lưu
                   </Button>
                 </Pane>
-              </>
-            )}
-          </Form.List>
-
-          <Pane style={{ padding: 20 }}>
-            <Button
-              color="success"
-              style={{ marginLeft: 'auto' }}
-              size="large"
-              htmlType="submit"
-              loading={loadingSubmit || loading}
-            >
-              Lưu
-            </Button>
-          </Pane>
-        </Loading>
+              </Pane>
+            </Pane>
+          </Form>
+        </Pane>
       </Pane>
-    </Form>
+    </>
   );
 });
 
-Students.propTypes = {
-  dispatch: PropTypes.func,
-  match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-};
-
-Students.defaultProps = {
-  match: {},
-  details: {},
-  dispatch: () => {},
-  loading: {},
-  error: {},
-};
-
-export default withRouter(connect(mapStateToProps)(Students));
+export default Students;

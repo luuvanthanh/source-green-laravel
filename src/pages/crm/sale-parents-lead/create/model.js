@@ -5,25 +5,32 @@ export default {
   state: {
     details: {},
     error: {
-      status: null,
       isError: false,
+      data: {},
     },
+    classTypes: [],
+    sensitivePeriods: [],
     parents: [],
     employees: [],
     branches: [],
     classes: [],
     city: [],
     district: [],
-    students: [],
+    student: [],
   },
   reducers: {
-    INIT_STATE: (state) => ({
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    SET_DATA: (state, { payload }) => ({
       ...state,
-      details: {},
-      error: {
-        status: null,
-        isError: false,
-      },
+      details: payload,
+    }),
+    SET_CLASS_TYPES: (state, { payload }) => ({
+      ...state,
+      classTypes: payload.parsePayload,
+    }),
+    SET_SENSITIVE_PERIODS: (state, { payload }) => ({
+      ...state,
+      sensitivePeriods: payload.items,
     }),
     SET_DETAILS: (state, { payload }) => ({
       ...state,
@@ -74,14 +81,44 @@ export default {
       ...state,
       district: payload.parsePayload,
     }),
+    SET_STUDENTS: (state, { payload }) => ({
+      ...state,
+      student: payload.parsePayload,
+    }),
   },
   effects: {
+    // *GET_STUDENTS({ payload, callback }, saga) {
+    //   try {
+    //     const response = yield saga.call(services.getStudent, payload);
+    //     callback(response);
+    //   } catch (error) {
+    //     callback(null, error);
+    //   }
+    // },
+    *GET_STUDENTS({ payload, callback }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getStudent, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_STUDENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *ADD({ payload, callback }, saga) {
       try {
         yield saga.call(services.add, payload);
         callback(payload);
       } catch (error) {
-        callback(null, error);
+        callback(null, error?.data?.error);
       }
     },
     *ADD_STUDENTS({ payload, callback }, saga) {
@@ -126,23 +163,23 @@ export default {
         });
       }
     },
-    *GET_STUDENTS({ payload }, saga) {
-      try {
-        yield saga.put({
-          type: 'INIT_STATE',
-        });
-        const response = yield saga.call(services.getStudent, payload);
-        yield saga.put({
-          type: 'SET_STUDENTS',
-          payload: response,
-        });
-      } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
-      }
-    },
+    // *GET_STUDENTS({ payload }, saga) {
+    //   try {
+    //     yield saga.put({
+    //       type: 'INIT_STATE',
+    //     });
+    //     const response = yield saga.call(services.getStudent, payload);
+    //     yield saga.put({
+    //       type: 'SET_STUDENTS',
+    //       payload: response,
+    //     });
+    //   } catch (error) {
+    //     yield saga.put({
+    //       type: 'SET_ERROR',
+    //       payload: error.data,
+    //     });
+    //   }
+    // },
     *GET_DISTRICTS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDistricts, payload);
@@ -172,5 +209,4 @@ export default {
       }
     },
   },
-  subscriptions: {},
 };

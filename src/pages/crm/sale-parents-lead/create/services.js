@@ -29,7 +29,25 @@ export function add(data = {}) {
 export function addStudents(data = {}) {
   return request('/v1/student-infos', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+      birth_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.birth_date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      dateOfIssueIdCard: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfIssueIdCard,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
     parse: true,
   });
 }
@@ -59,39 +77,43 @@ export function update(data = {}) {
   });
 }
 
-export function getStudent(data = {}) {
-  return request(`/v1/customer-leads/${data.id}?student-infos`, {
+export function getStudent() {
+  return request('/v1/student-infos', {
     method: 'GET',
   });
 }
 
-export function details(data = {}) {
-  return request(`/v1/customer-leads/${data.id}`, {
+export function details(params = {}) {
+  return request(`/v1/customer-leads/${params.id}`, {
     method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['studentInfo']),
+    },
   });
 }
 
 export function updateStatus(data = {}) {
   return request(`/v1/customer-leads/${data.id}/update-status?status=${data.status}`, {
     method: 'PUT',
-    data:{
-        ...data,
-        birth_date: Helper.getDateTime({
-            value: Helper.setDate({
-              ...variables.setDateData,
-              originValue: data.birth_date,
-            }),
-            format: variables.DATE_FORMAT.DATE_AFTER,
-            isUTC: false,
-          }),
-          dateOfIssueIdCard: Helper.getDateTime({
-            value: Helper.setDate({
-              ...variables.setDateData,
-              originValue: data.dateOfIssueIdCard,
-            }),
-            format: variables.DATE_FORMAT.DATE_AFTER,
-            isUTC: false,
-          }),
+    data: {
+      ...data,
+      birth_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.birth_date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      dateOfIssueIdCard: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.dateOfIssueIdCard,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
     },
     parse: true,
   });
