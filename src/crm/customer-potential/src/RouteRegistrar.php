@@ -30,6 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('customer-potentials', 'CustomerPotentialController');
+            \Route::resource('potential-student-infos', 'PotentialStudentInfoController');
         });
     }
 }

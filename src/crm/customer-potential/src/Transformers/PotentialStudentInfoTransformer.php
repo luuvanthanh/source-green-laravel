@@ -29,7 +29,7 @@ class PotentialStudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['CustomerPotential'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -63,5 +63,14 @@ class PotentialStudentInfoTransformer extends BaseTransformer
             'relationship' => $relationship,
             'sex' => $sex,
         ];
+    }
+
+    public function includeCustomerPotential(PotentialStudentInfo $potentialStudentInfo)
+    {
+        if (empty($potentialStudentInfo->customerPotential)) {
+            return;
+        }
+
+        return $this->item($potentialStudentInfo->customerPotential, new CustomerPotentialTransformer, 'CustomerPotential');
     }
 }
