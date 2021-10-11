@@ -84,32 +84,32 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
         }
 
         if (!empty($attributes['limit'])) {
-            $customerLead = $this->paginate($attributes['limit']);
+            $customerPotential = $this->paginate($attributes['limit']);
         } else {
-            $customerLead = $this->get();
+            $customerPotential = $this->get();
         }
 
-        return $customerLead;
+        return $customerPotential;
     }
 
     public function create(array $attributes)
     {
         $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
-        $customerLead_code = CustomerPotential::max('code');
+        $customerPotential_code = CustomerPotential::max('code');
 
-        if (is_null($customerLead_code)) {
+        if (is_null($customerPotential_code)) {
             $attributes['code'] = CustomerPotential::CODE . $now . "01";
         } else {
 
-            if (substr($customerLead_code, 2, 8)  != $now) {
+            if (substr($customerPotential_code, 2, 8)  != $now) {
                 $attributes['code'] = CustomerPotential::CODE . $now . "01";
             } else {
-                $stt = substr($customerLead_code, 2) + 1;
+                $stt = substr($customerPotential_code, 2) + 1;
                 $attributes['code'] = CustomerPotential::CODE . $stt;
             }
         }
-        $customerLead = CustomerPotential::create($attributes);
+        $customerPotential = CustomerPotential::create($attributes);
 
-        return $this->parserResult($customerLead);
+        return $this->parserResult($customerPotential);
     }
 }
