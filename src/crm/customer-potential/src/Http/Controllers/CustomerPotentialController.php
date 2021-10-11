@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerPotential\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\CustomerLead\Http\Requests\CreateEmployeeAssignmentRequest;
 use GGPHP\Crm\CustomerPotential\Http\Requests\CreateCustomerPotentialRequest;
 use GGPHP\Crm\CustomerPotential\Http\Requests\UpdateCustomerPotentialRequest;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
@@ -112,5 +113,12 @@ class CustomerPotentialController extends Controller
         $this->customerPotentialRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function storeEmployeeAssignment(CreateEmployeeAssignmentRequest $request)
+    {
+        $customerPotential = $this->customerPotentialRepository->createEmployeeAssignment($request->all());
+
+        return $this->success($customerPotential, trans('lang::messages.common.modifySuccess'));
     }
 }
