@@ -134,7 +134,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
                 'district_id' => $value->district_id,
                 'facility_id' => $value->facility_id,
                 'user_create_id' => $value->user_create_id,
-                'user_create_info' => json_encode(json_decode($value->user_create_info)),
+                'user_create_info' => $value->user_create_info,
                 'search_source_id' => $value->search_source_id,
                 'facebook' => $value->facebook,
                 'zalo' => $value->zalo,
