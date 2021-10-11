@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomerPotentailTagsTable extends Migration
+class CreateCustomerPotentialTagsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateCustomerPotentailTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer_potentail_tags', function (Blueprint $table) {
+        Schema::create('customer_potential_tags', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->uuid('tag_id');
-            $table->uuid('customer_potentail_id');
-            $table->foreign('customer_potentail_id')->references('id')->on('customer_potentails')->onDelete('cascade');
+            $table->uuid('customer_potential_id');
+            $table->foreign('customer_potential_id')->references('id')->on('customer_potentials')->onDelete('cascade');
             $table->timestamps();
             
         });
@@ -31,6 +31,6 @@ class CreateCustomerPotentailTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_potentail_tags');
+        Schema::dropIfExists('customer_potential_tags');
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Providers;
+namespace GGPHP\Crm\CustomerPotential\Providers;
 
-use GGPHP\Crm\CustomerPotentail\Repositories\Contracts\CustomerPotentailRepository;
-use GGPHP\Crm\CustomerPotentail\Repositories\Eloquent\CustomerPotentailRepositoryEloquent;
+use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialRepository;
+use GGPHP\Crm\CustomerPotential\Repositories\Eloquent\CustomerPotentialRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
-class CustomerPotentailServiceProvider extends ServiceProvider
+class CustomerPotentialServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
@@ -27,6 +27,6 @@ class CustomerPotentailServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(CustomerPotentailRepository::class, CustomerPotentailRepositoryEloquent::class);
+        $this->app->bind(CustomerPotentialRepository::class, CustomerPotentialRepositoryEloquent::class);
     }
 }

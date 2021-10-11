@@ -28,8 +28,8 @@ class District extends UuidModel
         return $this->hasMany(CustomerLead::class);
     }
 
-    public function customerPotentail()
+    public function customerPotential()
     {
-        return $this->hasMany(CustomerPotentail::class);
+        return $this->hasMany(CustomerPotential::class);
     }
 }

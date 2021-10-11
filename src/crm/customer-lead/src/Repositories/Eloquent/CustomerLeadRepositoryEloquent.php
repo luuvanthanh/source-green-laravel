@@ -8,9 +8,9 @@ use GGPHP\Crm\CustomerLead\Models\CustomerTag;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
-use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentail;
-use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentailTag;
-use GGPHP\Crm\CustomerPotentail\Models\PotentailStudentInfo;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialTag;
+use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -170,20 +170,20 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         return $this->parserResult($customerLead);
     }
 
-    public function moveToCustomerPotentail(array $attributes)
+    public function moveToCustomerPotential(array $attributes)
     {
         $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
-        $customerLead_code = CustomerPotentail::max('code');
+        $customerLead_code = CustomerPotential::max('code');
 
         if (is_null($customerLead_code)) {
-            $attributes['code'] = CustomerPotentail::CODE . $now . "01";
+            $attributes['code'] = CustomerPotential::CODE . $now . "01";
         } else {
 
             if (substr($customerLead_code, 2, 8)  != $now) {
-                $attributes['code'] = CustomerPotentail::CODE . $now . "01";
+                $attributes['code'] = CustomerPotential::CODE . $now . "01";
             } else {
                 $stt = substr($customerLead_code, 2) + 1;
-                $attributes['code'] = CustomerPotentail::CODE . $stt;
+                $attributes['code'] = CustomerPotential::CODE . $stt;
             }
         }
 
@@ -215,7 +215,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 'file_image' => $value->file_image,
                 'customer_lead_id' => $value->id
             ];
-            $customerPotentail = CustomerPotentail::create($data);
+            $customerPotential = CustomerPotential::create($data);
 
             $student = StudentInfo::where('customer_lead_id', $value->id)->get();
             foreach ($student as $valueStudent) {
@@ -226,19 +226,19 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                     'month_age' => $valueStudent->month_age,
                     'relationship' => $valueStudent->relationship,
                     'file_image' => $valueStudent->file_image,
-                    'customer_potentail_id' => $customerPotentail->id,
+                    'customer_potential_id' => $customerPotential->id,
                 ];
-                PotentailStudentInfo::create($dataStudent);
+                PotentialStudentInfo::create($dataStudent);
             }
 
             $tag = CustomerTag::where('customer_lead_id', $value->id)->get();
             foreach ($tag as $valueTag) {
                 $dataTag = [
                     'tag_id' => $valueTag->tag_id,
-                    'customer_potentail_id' => $customerPotentail->id,
+                    'customer_potential_id' => $customerPotential->id,
                 ];
 
-                CustomerPotentailTag::create($dataTag);
+                CustomerPotentialTag::create($dataTag);
             }
         }
 

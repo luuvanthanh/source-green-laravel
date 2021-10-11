@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Repositories\Contracts;
+namespace GGPHP\Crm\CustomerPotential\Repositories\Contracts;
 
 use Prettus\Repository\Contracts\RepositoryInterface;
 
@@ -9,6 +9,6 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  *
  * @package namespace App\Repositories\Contracts;
  */
-interface CustomerPotentailRepository extends RepositoryInterface
+interface CustomerPotentialRepository extends RepositoryInterface
 {
 }

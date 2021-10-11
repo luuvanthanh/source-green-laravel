@@ -1,11 +1,11 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Repositories\Eloquent;
+namespace GGPHP\Crm\CustomerPotential\Repositories\Eloquent;
 
 use Carbon\Carbon;
-use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentail;
-use GGPHP\Crm\CustomerPotentail\Presenters\CustomerPotentailPresenter;
-use GGPHP\Crm\CustomerPotentail\Repositories\Contracts\CustomerPotentailRepository;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Presenters\CustomerPotentialPresenter;
+use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -14,7 +14,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class CustomerPotentailRepositoryEloquent extends BaseRepository implements CustomerPotentailRepository
+class CustomerPotentialRepositoryEloquent extends BaseRepository implements CustomerPotentialRepository
 {
     /**
      * @var array
@@ -30,7 +30,7 @@ class CustomerPotentailRepositoryEloquent extends BaseRepository implements Cust
      */
     public function model()
     {
-        return CustomerPotentail::class;
+        return CustomerPotential::class;
     }
 
     /**
@@ -48,7 +48,7 @@ class CustomerPotentailRepositoryEloquent extends BaseRepository implements Cust
      */
     public function presenter()
     {
-        return CustomerPotentailPresenter::class;
+        return CustomerPotentialPresenter::class;
     }
 
     public function getAll(array $attributes)
@@ -95,20 +95,20 @@ class CustomerPotentailRepositoryEloquent extends BaseRepository implements Cust
     public function create(array $attributes)
     {
         $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
-        $customerLead_code = CustomerPotentail::max('code');
+        $customerLead_code = CustomerPotential::max('code');
 
         if (is_null($customerLead_code)) {
-            $attributes['code'] = CustomerPotentail::CODE . $now . "01";
+            $attributes['code'] = CustomerPotential::CODE . $now . "01";
         } else {
 
             if (substr($customerLead_code, 2, 8)  != $now) {
-                $attributes['code'] = CustomerPotentail::CODE . $now . "01";
+                $attributes['code'] = CustomerPotential::CODE . $now . "01";
             } else {
                 $stt = substr($customerLead_code, 2) + 1;
-                $attributes['code'] = CustomerPotentail::CODE . $stt;
+                $attributes['code'] = CustomerPotential::CODE . $stt;
             }
         }
-        $customerLead = CustomerPotentail::create($attributes);
+        $customerLead = CustomerPotential::create($attributes);
 
         return $this->parserResult($customerLead);
     }

@@ -1,28 +1,28 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Http\Controllers;
+namespace GGPHP\Crm\CustomerPotential\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
-use GGPHP\Crm\CustomerPotentail\Http\Requests\CreateCustomerPotentailRequest;
-use GGPHP\Crm\CustomerPotentail\Http\Requests\UpdateCustomerPotentailRequest;
-use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentail;
-use GGPHP\Crm\CustomerPotentail\Repositories\Contracts\CustomerPotentailRepository;
+use GGPHP\Crm\CustomerPotential\Http\Requests\CreateCustomerPotentialRequest;
+use GGPHP\Crm\CustomerPotential\Http\Requests\UpdateCustomerPotentialRequest;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialRepository;
 
-class CustomerPotentailController extends Controller
+class CustomerPotentialController extends Controller
 {
     /**
      * @var $employeeRepository
      */
-    protected $customerPotentailRepository;
+    protected $customerPotentialRepository;
 
     /**
      * UserController constructor.
      * @param StatusParentLeadRepository $inOutHistoriesRepository
      */
-    public function __construct(CustomerPotentailRepository $customerPotentailRepository)
+    public function __construct(CustomerPotentialRepository $customerPotentialRepository)
     {
-        $this->customerPotentailRepository = $customerPotentailRepository;
+        $this->customerPotentialRepository = $customerPotentialRepository;
     }
 
     /**
@@ -33,9 +33,9 @@ class CustomerPotentailController extends Controller
      */
     public function index(Request $request)
     {
-        $customerPotentail = $this->customerPotentailRepository->getAll($request->all());
+        $customerPotential = $this->customerPotentialRepository->getAll($request->all());
 
-        return $this->success($customerPotentail, trans('lang::messages.common.getListSuccess'));
+        return $this->success($customerPotential, trans('lang::messages.common.getListSuccess'));
     }
 
     /**
@@ -44,7 +44,7 @@ class CustomerPotentailController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCustomerPotentailRequest $request)
+    public function store(CreateCustomerPotentialRequest $request)
     {
         $attributes = $request->all();
 
@@ -57,12 +57,12 @@ class CustomerPotentailController extends Controller
         }
 
         if (!empty($attributes['sex'])) {
-            $attributes['sex'] = CustomerPotentail::SEX[$attributes['sex']];
+            $attributes['sex'] = CustomerPotential::SEX[$attributes['sex']];
         }
 
-        $customerPotentail = $this->customerPotentailRepository->create($attributes);
+        $customerPotential = $this->customerPotentialRepository->create($attributes);
 
-        return $this->success($customerPotentail, trans('lang::messages.common.createSuccess'));
+        return $this->success($customerPotential, trans('lang::messages.common.createSuccess'));
     }
 
     /**
@@ -73,9 +73,9 @@ class CustomerPotentailController extends Controller
      */
     public function show($id)
     {
-        $customerPotentail = $this->customerPotentailRepository->find($id);
+        $customerPotential = $this->customerPotentialRepository->find($id);
 
-        return $this->success($customerPotentail, trans('lang::messages.common.getInfoSuccess'));
+        return $this->success($customerPotential, trans('lang::messages.common.getInfoSuccess'));
     }
     /**
      * Update the specified resource in storage.
@@ -84,7 +84,7 @@ class CustomerPotentailController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCustomerPotentailRequest $request, $id)
+    public function update(UpdateCustomerPotentialRequest $request, $id)
     {
         $credentials = $request->all();
 
@@ -96,9 +96,9 @@ class CustomerPotentailController extends Controller
             $credentials['user_create_info'] = json_encode($credentials['user_create_info']);
         }
 
-        $customerPotentail = $this->customerPotentailRepository->update($credentials, $id);
+        $customerPotential = $this->customerPotentialRepository->update($credentials, $id);
 
-        return $this->success($customerPotentail, trans('lang::messages.common.modifySuccess'));
+        return $this->success($customerPotential, trans('lang::messages.common.modifySuccess'));
     }
 
     /**
@@ -109,7 +109,7 @@ class CustomerPotentailController extends Controller
      */
     public function destroy($id)
     {
-        $this->customerPotentailRepository->delete($id);
+        $this->customerPotentialRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }

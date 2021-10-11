@@ -1,15 +1,15 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Models;
+namespace GGPHP\Crm\CustomerPotential\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PotentailStudentInfo extends UuidModel
+class PotentialStudentInfo extends UuidModel
 {
     use SoftDeletes;
 
-    protected $table = 'potentail_student_infos';
+    protected $table = 'potential_student_infos';
 
     const RELATIONSHIP = [
         'MOTHER' => 0,
@@ -24,11 +24,11 @@ class PotentailStudentInfo extends UuidModel
 
     protected $fillable = [
         'full_name', 'birth_date', 'sex', 'month_age',
-        'customer_potentail_id', 'file_image', 'relationship'
+        'customer_potential_id', 'file_image', 'relationship'
     ];
 
-    public function customerPotentail()
+    public function customerPotential()
     {
-        return $this->belongsTo(CustomerPotentail::class);
+        return $this->belongsTo(CustomerPotential::class);
     }
 }
