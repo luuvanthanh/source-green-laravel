@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('potential-student-infos', 'PotentialStudentInfoController');
             \Route::resource('customer-potential-event-infos', 'CustomerPotentialEventInfoController');
             \Route::resource('customer-potential-status-cares', 'CustomerPotentialStatusCareController');
+            \Route::resource('customer-potential-tags', 'CustomerPotentialTagController');
         });
     }
 }

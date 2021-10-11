@@ -4,7 +4,7 @@ namespace GGPHP\Crm\Category\Models;
 
 
 use GGPHP\Core\Models\UuidModel;
-use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StatusParentPotential extends UuidModel
@@ -23,6 +23,6 @@ class StatusParentPotential extends UuidModel
 
     public function customerPotentialStatusCare()
     {
-        return $this->hasMany(CustomerPotential::class);
+        return $this->hasMany(CustomerPotentialStatusCare::class);
     }
 }
