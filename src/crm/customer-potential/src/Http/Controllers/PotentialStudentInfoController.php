@@ -32,9 +32,9 @@ class PotentialStudentInfoController extends Controller
      */
     public function index(Request $request)
     {
-        $customerPotential = $this->potentialStudentInfoRepository->getPotentailStudentInfo($request->all());
+        $potentialStudentInfo = $this->potentialStudentInfoRepository->getPotentailStudentInfo($request->all());
 
-        return $this->success($customerPotential, trans('lang::messages.common.getListSuccess'));
+        return $this->success($potentialStudentInfo, trans('lang::messages.common.getListSuccess'));
     }
 
     /**

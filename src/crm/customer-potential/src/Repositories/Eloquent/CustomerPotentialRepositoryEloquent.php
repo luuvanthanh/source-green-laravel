@@ -78,7 +78,7 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
         }
 
         if (!empty($attributes['tag_id'])) {
-            $this->model = $this->model->whereHas('customerTag', function ($query) use ($attributes) {
+            $this->model = $this->model->whereHas('customerPotentialTag', function ($query) use ($attributes) {
                 $query->where('tag_id', $attributes['tag_id']);
             });
         }

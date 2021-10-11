@@ -30,7 +30,7 @@ class CustomerPotentialTagTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['tag'];
+    protected $availableIncludes = ['tag', 'customerPotential'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -52,5 +52,14 @@ class CustomerPotentialTagTransformer extends BaseTransformer
         }
 
         return $this->item($customerPotentialTag->tag, new TagTransformer, 'Tag');
+    }
+
+    public function includeCustomerPotential(CustomerPotentialTag $customerPotentialTag)
+    {
+        if (empty($customerPotentialTag->customerPotential)) {
+            return;
+        }
+
+        return $this->item($customerPotentialTag->customerPotential, new CustomerPotentialTransformer, 'CustomerPotential');
     }
 }
