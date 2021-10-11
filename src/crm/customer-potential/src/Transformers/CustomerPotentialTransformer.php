@@ -31,7 +31,7 @@ class CustomerPotentialTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo'];
+    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -88,5 +88,10 @@ class CustomerPotentialTransformer extends BaseTransformer
     public function includeCustomerPotentialEventInfo(CustomerPotential $customerPotential)
     {
         return $this->collection($customerPotential->customerPotentialEventInfo, new CustomerPotentialEventInfoTransformer, 'CustomerPotentialEventInfo');
+    }
+
+    public function includeCustomerPotentialStatusCare(CustomerPotential $customerPotential)
+    {
+        return $this->collection($customerPotential->customerPotentialStatusCare, new CustomerPotentialStatusCareTransformer, 'customerPotentialStatusCare');
     }
 }

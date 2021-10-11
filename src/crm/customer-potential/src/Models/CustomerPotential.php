@@ -59,4 +59,9 @@ class CustomerPotential extends UuidModel
     {
         return $this->hasMany(CustomerPotentialEventInfo::class);
     }
+
+    public function customerPotentialStatusCare()
+    {
+        return $this->hasMany(CustomerPotentialStatusCare::class);
+    }
 }

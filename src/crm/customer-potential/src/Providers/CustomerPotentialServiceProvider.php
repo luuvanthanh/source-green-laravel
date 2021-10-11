@@ -4,6 +4,8 @@ namespace GGPHP\Crm\CustomerPotential\Providers;
 
 use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialEventInfoRepository;
 use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialRepository;
+use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialStatusCareRepository;
+use GGPHP\Crm\CustomerPotential\Repositories\Eloquent\CustomerPotentialStatusCareRepositoryEloquent;
 use GGPHP\Crm\CustomerPotential\Repositories\Contracts\CustomerPotentialTagRepository;
 use GGPHP\Crm\CustomerPotential\Repositories\Contracts\PotentialStudentInfoRepository;
 use GGPHP\Crm\CustomerPotential\Repositories\Eloquent\CustomerPotentialEventInfoRepositoryEloquent;
@@ -36,6 +38,7 @@ class CustomerPotentialServiceProvider extends ServiceProvider
         $this->app->bind(CustomerPotentialRepository::class, CustomerPotentialRepositoryEloquent::class);
         $this->app->bind(PotentialStudentInfoRepository::class, PotentialStudentInfoRepositoryEloquent::class);
         $this->app->bind(CustomerPotentialEventInfoRepository::class, CustomerPotentialEventInfoRepositoryEloquent::class);
+        $this->app->bind(CustomerPotentialStatusCareRepository::class, CustomerPotentialStatusCareRepositoryEloquent::class);
         $this->app->bind(CustomerPotentialTagRepository::class, CustomerPotentialTagRepositoryEloquent::class);
     }
 }
