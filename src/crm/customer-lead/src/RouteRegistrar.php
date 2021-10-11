@@ -41,6 +41,10 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('merge-customer-leads', [
                 'uses' => 'CustomerLeadController@mergeCustomerLead',
             ]);
+
+            \Route::post('move-customer-potentails', [
+                'uses' => 'CustomerLeadController@moveToCustomerPotentail'
+            ]);
         });
     }
 }

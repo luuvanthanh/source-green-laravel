@@ -56,6 +56,10 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
+        if (isset($attributes['status'])) {
+            $this->model = $this->model->where('status', $attributes['status']);
+        }
+
         if (!empty($attributes['limit'])) {
             $marketingProgram = $this->paginate($attributes['limit']);
         } else {

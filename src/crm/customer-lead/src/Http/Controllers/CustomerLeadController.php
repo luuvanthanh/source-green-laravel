@@ -136,4 +136,11 @@ class CustomerLeadController extends Controller
 
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));
     }
+
+    public function moveToCustomerPotentail(Request $request)
+    {
+        $this->customerLeadRepository->moveToCustomerPotentail($request->all());
+
+        return $this->success([], trans('lang::messages.common.movedSuccess'));
+    }
 }

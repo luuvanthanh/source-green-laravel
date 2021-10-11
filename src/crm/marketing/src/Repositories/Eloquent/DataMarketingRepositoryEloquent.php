@@ -59,7 +59,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     {
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereLike('name', $attributes['key'])
-                ->orWhereLike('phone', $attributes['key'])->orWhereLike('phone', $attributes['key']);
+                ->orWhereLike('phone', $attributes['key'])->orWhereLike('email', $attributes['key']);
         }
 
         if (!empty($attributes['search_source_id'])) {

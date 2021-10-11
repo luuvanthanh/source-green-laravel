@@ -39,4 +39,8 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Crm\Marketing\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\Crm\CustomerPotentail\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });

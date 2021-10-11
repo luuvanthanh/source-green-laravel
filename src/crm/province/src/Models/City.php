@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Province\Models;
 use GGPHP\ConfigShippingFee\Models\ConfigShippingFee;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentail;
 
 class City extends UuidModel
 {
@@ -22,5 +23,10 @@ class City extends UuidModel
     public function customerLead()
     {
         return $this->hasMany(CustomerLead::class);
+    }
+
+    public function customerPotentail()
+    {
+        return $this->hasMany(CustomerPotentail::class);
     }
 }
