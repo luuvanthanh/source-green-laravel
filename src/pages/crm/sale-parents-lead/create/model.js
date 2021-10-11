@@ -87,14 +87,6 @@ export default {
     }),
   },
   effects: {
-    // *GET_STUDENTS({ payload, callback }, saga) {
-    //   try {
-    //     const response = yield saga.call(services.getStudent, payload);
-    //     callback(response);
-    //   } catch (error) {
-    //     callback(null, error);
-    //   }
-    // },
     *GET_STUDENTS({ payload, callback }, saga) {
       try {
         yield saga.put({
@@ -163,23 +155,6 @@ export default {
         });
       }
     },
-    // *GET_STUDENTS({ payload }, saga) {
-    //   try {
-    //     yield saga.put({
-    //       type: 'INIT_STATE',
-    //     });
-    //     const response = yield saga.call(services.getStudent, payload);
-    //     yield saga.put({
-    //       type: 'SET_STUDENTS',
-    //       payload: response,
-    //     });
-    //   } catch (error) {
-    //     yield saga.put({
-    //       type: 'SET_ERROR',
-    //       payload: error.data,
-    //     });
-    //   }
-    // },
     *GET_DISTRICTS({ payload }, saga) {
       try {
         const response = yield saga.call(services.getDistricts, payload);

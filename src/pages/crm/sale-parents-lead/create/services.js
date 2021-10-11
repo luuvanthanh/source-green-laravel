@@ -77,9 +77,10 @@ export function update(data = {}) {
   });
 }
 
-export function getStudent() {
+export function getStudent(params) {
   return request('/v1/student-infos', {
     method: 'GET',
+    params,
   });
 }
 
@@ -88,7 +89,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo']),
+      include: Helper.convertIncludes(['studentInfo', 'city', 'district']),
     },
   });
 }

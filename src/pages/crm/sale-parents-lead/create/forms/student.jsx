@@ -9,14 +9,14 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
-import classnames from 'classnames';
+import csx from 'classnames';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import styles from '@/assets/styles/Common/common.scss';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
+  { id: 'OTHER', name: 'Khác' },
 ];
 const relationship = [
   { id: 'FATHER', name: 'Cha' },
@@ -57,7 +57,7 @@ const Students = memo(() => {
   const onFinish = (values) => {
     const items = values.data.map((item, index) => ({
       ...item,
-      fileImage: fileImage[index],
+      file_image: fileImage[index],
       birth_date: Helper.getDateTime({
         value: Helper.setDate({
           ...variables.setDateData,
@@ -101,17 +101,17 @@ const Students = memo(() => {
   useEffect(() => {
     dispatch({
       type: 'crmSaleLeadAdd/GET_STUDENTS',
-      payload: {},
+      payload: {
+        customer_lead_id: params.id,
+      },
       callback: (response) => {
         if (response) {
-          if (params.id) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) => ({
-                ...item,
-                birth_date: moment(item.birth_date),
-              })),
-            });
-          }
+          formRef.current.setFieldsValue({
+            data: response.parsePayload.map((item) => ({
+              ...item,
+              birth_date: moment(item.birth_date),
+            })),
+          });
         }
       },
     });
@@ -136,16 +136,8 @@ const Students = memo(() => {
           >
             <Pane>
               <Pane>
-                <Pane
-                  className={classnames(
-                    'd-flex justify-content-between align-items-center mb20',
-                    styles['heading-container'],
-                  )}
-                >
-                  <h3 className={styles.title}>Thông tin học sinh</h3>
-                </Pane>
                 <Pane className="card">
-                  <div className="row p20">
+                  <div className="row">
                     <div className="col-lg-12">
                       <Form.List name="data">
                         {(fields, { add, remove }) => (
@@ -153,15 +145,19 @@ const Students = memo(() => {
                             {fields.map((field, index) => (
                               <Pane
                                 key={field.key}
-                                // style={{ padding: 20 }}
+                                className={csx('pb-0', 'border-bottom', 'position-relative')}
+                                style={{ padding: 20 }}
                               >
+                                <Heading type="form-title" style={{ marginBottom: 20 }}>
+                                  Thông tin học sinh
+                                </Heading>
                                 <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                  học sinh {index + 1}
+                                  Học sinh {index + 1}
                                 </Heading>
 
                                 <Pane className="row">
                                   <Pane className="col-lg-4">
-                                    <Form.Item name={[field.key, 'fileImage']} label="Hình ảnh">
+                                    <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
                                       <ImageUpload
                                         callback={(res) => {
                                           onSetImage(res.fileInfo.url, index);
@@ -191,6 +187,7 @@ const Students = memo(() => {
                                       label="Ngày sinh"
                                       fieldKey={[field.fieldKey, 'birth_date']}
                                       type={variables.DATE_PICKER}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">
@@ -208,6 +205,7 @@ const Students = memo(() => {
                                       label="Giới tính"
                                       fieldKey={[field.fieldKey, 'sex']}
                                       type={variables.SELECT}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">
@@ -217,6 +215,7 @@ const Students = memo(() => {
                                       label="Mối quan hệ"
                                       fieldKey={[field.fieldKey, 'relationship']}
                                       type={variables.SELECT}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
                                     />
                                   </Pane>
                                 </Pane>
@@ -225,7 +224,7 @@ const Students = memo(() => {
                                   <DeleteOutlined
                                     className="position-absolute"
                                     style={{ top: 20, right: 20 }}
-                                    onClick={() => remove(field.name)}
+                                    onClick={() => remove(index)}
                                   />
                                 )}
                               </Pane>
@@ -241,7 +240,7 @@ const Students = memo(() => {
                                   mountedSet(setFileImage, [...fileImage, null]);
                                 }}
                               >
-                                Thêm học sinh
+                                Thêm
                               </Button>
                             </Pane>
                           </>

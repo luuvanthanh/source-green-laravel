@@ -18,7 +18,7 @@ const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
-  { id: 'OTHER', name: 'Khác'},
+  { id: 'OTHER', name: 'Khác' },
 ];
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   loading,
@@ -32,8 +32,8 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, city, district }) => {
     const formRef = useRef();
-    const [files, setFiles] = Helper.isJSON(details?.fileImage)
-      ? useState(JSON.parse(details?.fileImage))
+    const [files, setFiles] = Helper.isJSON(details?.file_image)
+      ? useState(JSON.parse(details?.file_image))
       : useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
@@ -49,7 +49,13 @@ const General = memo(
         type: 'crmSaleLeadAdd/GET_CITIES',
         payload: {},
       });
-    }, []);
+      if(params.id){
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DISTRICTS',
+          payload: {},
+        });
+      }
+    }, [params.id]);
 
     const onChangeCity = (city_id) => {
       dispatch({
@@ -60,6 +66,7 @@ const General = memo(
       });
     };
 
+
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -68,8 +75,8 @@ const General = memo(
       dispatch({
         type: params.id ? 'crmSaleLeadAdd/UPDATE' : 'crmSaleLeadAdd/ADD',
         payload: params.id
-          ? { ...details, ...values, id: params.id, fileImage: JSON.stringify(files) }
-          : { ...values, fileImage: JSON.stringify(files), status: 'WORKING' },
+          ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
+          : { ...values, file_image: JSON.stringify(files), status: 'WORKING' },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -107,8 +114,8 @@ const General = memo(
           dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
           dateOff: details.dateOff && moment(details.dateOff),
         });
-        if (Helper.isJSON(details?.student?.fileImage)) {
-          mountedSet(setFiles, JSON.parse(details?.student?.fileImage));
+        if (Helper.isJSON(details?.file_image)) {
+          mountedSet(setFiles, JSON.parse(details?.file_image));
         }
       }
     }, [details]);
