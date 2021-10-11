@@ -52,6 +52,10 @@ class CustomerPotentialTagRepositoryEloquent extends BaseRepository implements C
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['customer_potential_id'])) {
+            $this->model = $this->model->where('customer_potential_id', $attributes['customer_potential_id']);
+        }
+        
         if (!empty($attributes['limit'])) {
             $PotentialStudentInfo = $this->paginate($attributes['limit']);
         } else {

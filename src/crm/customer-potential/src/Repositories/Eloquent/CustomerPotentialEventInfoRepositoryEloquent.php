@@ -49,6 +49,10 @@ class CustomerPotentialEventInfoRepositoryEloquent extends BaseRepository implem
 
     public function getCustomerPotentialEventInfo(array $attributes)
     {
+        if (!empty($attributes['customer_potential_id'])) {
+            $this->model = $this->model->where('customer_potential_id', $attributes['customer_potential_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotentialEventInfo = $this->paginate($attributes['limit']);
         } else {
