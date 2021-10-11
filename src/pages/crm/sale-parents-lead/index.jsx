@@ -10,6 +10,7 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
 import AssignmentComponent from './components/assignment';
 import CheckCoincide from './components/check-coincide';
@@ -207,7 +208,12 @@ class Index extends PureComponent {
         title: 'Tên',
         key: 'name',
         width: 250,
-        render: (record) => record?.full_name,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.file_image)}
+            fullName={record.full_name}
+          />
+        ),
       },
       {
         title: 'Số điện thoại',
