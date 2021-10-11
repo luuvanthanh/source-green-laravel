@@ -4,6 +4,7 @@ namespace GGPHP\Crm\Category\Models;
 
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StatusParentPotential extends UuidModel
@@ -19,4 +20,9 @@ class StatusParentPotential extends UuidModel
     public $fillable = [
         'name', 'code'
     ];
+
+    public function customerPotentialStatusCare()
+    {
+        return $this->hasMany(CustomerPotential::class);
+    }
 }
