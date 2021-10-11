@@ -69,7 +69,7 @@
             "GGPHP\\Crm\\Province\\": "crm/province/src/",
             "GGPHP\\Crm\\CustomerLead\\": "crm/customer-lead/src/",
             "GGPHP\\Crm\\Marketing\\": "crm/marketing/src/",
-            "GGPHP\\Crm\\CustomerPotentail\\": "crm/customer-potentail/src/"
+            "GGPHP\\Crm\\CustomerPotential\\": "crm/customer-potential/src/"
         },
         "classmap": [
             "database/seeds",

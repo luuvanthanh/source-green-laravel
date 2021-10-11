@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail;
+namespace GGPHP\Crm\CustomerPotential;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 
@@ -9,7 +9,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * The namespace implementation.
      */
-    protected static $namespace = '\GGPHP\Crm\CustomerPotentail\Http\Controllers';
+    protected static $namespace = '\GGPHP\Crm\CustomerPotential\Http\Controllers';
 
     /**
      * Register routes for bread.
@@ -29,7 +29,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('customer-potentails', 'CustomerPotentailController');
+            \Route::resource('customer-potentials', 'CustomerPotentialController');
         });
     }
 }

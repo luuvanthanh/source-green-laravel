@@ -1,16 +1,16 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Transformers;
+namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\CustomerPotentail\Models\PotentailStudentInfo;
+use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 
 /**
  * Class CityTransformer.
  *
  * @package namespace App\Transformers;
  */
-class PotentailStudentInfoTransformer extends BaseTransformer
+class PotentialStudentInfoTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -43,7 +43,7 @@ class PotentailStudentInfoTransformer extends BaseTransformer
     {
         $relationship = null;
 
-        foreach (PotentailStudentInfo::RELATIONSHIP as $key => $value) {
+        foreach (PotentialStudentInfo::RELATIONSHIP as $key => $value) {
 
             if ($value == $model->relationship) {
                 $relationship = $key;
@@ -52,8 +52,8 @@ class PotentailStudentInfoTransformer extends BaseTransformer
 
         $sex = null;
 
-        foreach (PotentailStudentInfo::SEX as $key => $value) {
-            
+        foreach (PotentialStudentInfo::SEX as $key => $value) {
+
             if ($value == $model->sex) {
                 $sex = $key;
             }

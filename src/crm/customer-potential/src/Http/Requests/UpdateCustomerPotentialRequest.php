@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Http\Requests;
+namespace GGPHP\Crm\CustomerPotential\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerPotentailRequest extends FormRequest
+class UpdateCustomerPotentialRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

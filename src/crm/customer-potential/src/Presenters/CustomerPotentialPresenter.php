@@ -1,8 +1,8 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Presenters;
+namespace GGPHP\Crm\CustomerPotential\Presenters;
 
-use GGPHP\Crm\CustomerPotentail\Transformers\CustomerPotentailTransformer;
+use GGPHP\Crm\CustomerPotential\Transformers\CustomerPotentialTransformer;
 use Prettus\Repository\Presenter\FractalPresenter;
 
 /**
@@ -10,17 +10,17 @@ use Prettus\Repository\Presenter\FractalPresenter;
  *
  * @package namespace App\Presenters;
  */
-class CustomerPotentailPresenter extends FractalPresenter
+class CustomerPotentialPresenter extends FractalPresenter
 {
     /**
      * @var string
      */
-    public $resourceKeyItem = 'CustomerPotentail';
+    public $resourceKeyItem = 'CustomerPotential';
 
     /**
      * @var string
      */
-    public $resourceKeyCollection = 'CustomerPotentail';
+    public $resourceKeyCollection = 'CustomerPotential';
     /**
      * Transformer
      *
@@ -28,6 +28,6 @@ class CustomerPotentailPresenter extends FractalPresenter
      */
     public function getTransformer()
     {
-        return new CustomerPotentailTransformer();
+        return new CustomerPotentialTransformer();
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePotentailStudentInfosTable extends Migration
+class CreatePotentialStudentInfosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePotentailStudentInfosTable extends Migration
      */
     public function up()
     {
-        Schema::create('potentail_student_infos', function (Blueprint $table) {
+        Schema::create('potential_student_infos', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->string('full_name');
@@ -21,8 +21,8 @@ class CreatePotentailStudentInfosTable extends Migration
             $table->string('sex')->nullable();
             $table->float('month_age')->nullable();
             $table->string('relationship')->nullable();
-            $table->uuid('customer_potentail_id');
-            $table->foreign('customer_potentail_id')->references('id')->on('customer_potentails')->onDelete('cascade');
+            $table->uuid('customer_potential_id');
+            $table->foreign('customer_potential_id')->references('id')->on('customer_potentials')->onDelete('cascade');
             $table->string('file_image', 1000)->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -36,6 +36,6 @@ class CreatePotentailStudentInfosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('potentail_student_infos');
+        Schema::dropIfExists('potential_student_infos');
     }
 }

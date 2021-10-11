@@ -1,17 +1,18 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Models;
+namespace GGPHP\Crm\CustomerPotential\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerPotentail extends UuidModel
+class CustomerPotential extends UuidModel
 {
     use SoftDeletes;
 
-    protected $table = 'customer_potentails';
+    protected $table = 'customer_potentials';
 
     const SEX = [
         'FEMALE' => 0,
@@ -34,9 +35,9 @@ class CustomerPotentail extends UuidModel
         return $this->belongsTo(CustomerLead::class);
     }
 
-    public function potentailStudentInfo()
+    public function potentialStudentInfo()
     {
-        return $this->hasMany(PotentailStudentInfo::class);
+        return $this->hasMany(PotentialStudentInfo::class);
     }
 
     public function city()
@@ -49,8 +50,8 @@ class CustomerPotentail extends UuidModel
         return $this->belongsTo(District::class);
     }
 
-    public function customerPotentailTag()
+    public function customerPotentialTag()
     {
-        return $this->hasMany(CustomerPotentailTag::class);
+        return $this->hasMany(CustomerPotentialTag::class);
     }
 }

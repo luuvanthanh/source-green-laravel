@@ -1,17 +1,17 @@
 <?php
 
-namespace GGPHP\Crm\CustomerPotentail\Transformers;
+namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\Category\Transformers\TagTransformer;
-use GGPHP\Crm\CustomerPotentail\Models\CustomerPotentailTag;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialTag;
 
 /**
  * Class CityTransformer.
  *
  * @package namespace App\Transformers;
  */
-class CustomerPotentailTagTransformer extends BaseTransformer
+class CustomerPotentialTagTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -45,12 +45,12 @@ class CustomerPotentailTagTransformer extends BaseTransformer
         return [];
     }
 
-    public function includeTag(CustomerPotentailTag $customerPotentailTag)
+    public function includeTag(CustomerPotentialTag $customerPotentialTag)
     {
-        if (empty($customerPotentailTag->tag)) {
+        if (empty($customerPotentialTag->tag)) {
             return;
         }
-        
-        return $this->item($customerPotentailTag->tag, new TagTransformer, 'Tag');
+
+        return $this->item($customerPotentialTag->tag, new TagTransformer, 'Tag');
     }
 }

@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\Category\Models\SearchSource;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,7 +24,7 @@ class CustomerLead extends UuidModel
     const CODE = 'PH';
 
     protected $fillable = [
-        'code' ,'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
+        'code', 'full_name', 'birth_date', 'sex', 'email', 'phone', 'other_phone',
         'address', 'city_id', 'district_id', 'facility_id', 'employee_id',
         'employee_info', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
@@ -68,5 +69,10 @@ class CustomerLead extends UuidModel
     public function statusCare()
     {
         return $this->hasMany(StatusCare::class);
+    }
+
+    public function customerPotential()
+    {
+        return $this->hasMany(CustomerPotential::class);
     }
 }

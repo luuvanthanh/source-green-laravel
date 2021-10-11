@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomerPotentailsTable extends Migration
+class CreateCustomerPotentialsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateCustomerPotentailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer_potentails', function (Blueprint $table) {
+        Schema::create('customer_potentials', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->string('code');
@@ -54,6 +54,6 @@ class CreateCustomerPotentailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_potentails');
+        Schema::dropIfExists('customer_potentials');
     }
 }
