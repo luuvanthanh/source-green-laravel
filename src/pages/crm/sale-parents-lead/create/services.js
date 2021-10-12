@@ -154,3 +154,29 @@ export function getDistricts(params) {
     },
   });
 }
+
+export function getStatusLead(params = {}) {
+  return request('/v1/status-cares', {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes(['statusParentLead']),
+    },
+  });
+}
+
+export function getParentLead() {
+  return request(`/v1/status-parent-leads`, {
+    method: 'GET',
+  });
+}
+
+export function addStatusLead(data = {}) {
+  return request('/v1/status-cares', {
+    method: 'POST',
+    data,
+  });
+}

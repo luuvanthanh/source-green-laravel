@@ -1,67 +1,109 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Modal, Form } from 'antd';
+import { memo, useRef, useEffect } from 'react';
+import { Form } from 'antd';
 import { useParams } from 'umi';
+import { isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
-import styles from '@/assets/styles/Common/common.scss';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
-import { variables } from '@/utils';
+import { variables, Helper } from '@/utils';
+import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
+import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { get } from 'lodash';
 import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
+  const formRef = useRef();
   const dispatch = useDispatch();
   const params = useParams();
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const mounted = useRef(false);
-  const { data } = useSelector(({ loading, crmSaleLeadAdd }) => ({
+  const {
+    parentLead,
+    lead,
+    error,
+    loading: { effects },
+  } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
-    details: crmSaleLeadAdd.details,
-    data: crmSaleLeadAdd.data,
+    lead: crmSaleLeadAdd.lead,
     error: crmSaleLeadAdd.error,
+    details: crmSaleLeadAdd.details,
+    parentLead: crmSaleLeadAdd.parentLead,
+    detailsLead: crmSaleLeadAdd.detailsLead,
+    data: crmSaleLeadAdd.data,
   }));
+
+  const loadingSubmit = effects[`crmSaleLeadAdd/ADD_STATUS_LEAD`];
+  const loading = effects[`crmSaleLeadAdd/GET_STATUS_LEAD`];
+
+  const onFinish = (values) => {
+    dispatch({
+      type: 'crmSaleLeadAdd/ADD_STATUS_LEAD',
+      payload: {
+        ...values,
+        customer_lead_id: params.id,
+      },
+      callback: (response, error) => {
+        if (response) {
+          dispatch({
+            type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+            payload: {
+              customer_lead_id: params.id,
+            },
+          });
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     dispatch({
-      type: 'crmSaleLeadAdd/GET_DATA',
-      payload: params,
+      type: 'crmSaleLeadAdd/GET_PARENT_LEAD',
+      payload: {},
     });
   }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmSaleLeadAdd/GET_STATUS_LEAD',
+      payload: {
+        customer_lead_id: params.id,
+      },
+    });
+  }, [params.id]);
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
   const header = () => {
     const columns = [
       {
         title: 'Ngày cập nhật',
-        key: 'updateDay',
-        className: 'max-width-150',
-        width: 150,
-        render: (record) => get(record, 'updateDay'),
+        key: 'day',
+        className: 'max-width-200',
+        width: 200,
+        render: (record) =>
+          Helper.getDate(get(record, 'updated_at'), variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Tên tình trạng chăm sóc',
-        key: 'status',
+        key: 'statusParent',
         className: 'min-width-150',
-        render: (record) => get(record, 'name'),
+        render: (record) => <Text size="normal">{get(record, 'statusParentLead.name')}</Text>,
       },
       {
         title: 'Người cập nhật',
@@ -73,85 +115,40 @@ const General = memo(() => {
     ];
     return columns;
   };
-
   return (
-    <Form layout="vertical">
+    <Form layout="vertical" initialValues={{ data: [{}] }} ref={formRef} onFinish={onFinish}>
       <div className="card">
-        <div style={{ padding: 20 }} className="pb-0 border-bottom">
-          <Heading type="form-title" style={{ marginBottom: 20 }}>
-            Tình trạng lead
-          </Heading>
-          <div className="row">
-            <Pane className="col-lg-12">
-              <span>Mối liên hệ</span>
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem className="mt-2" data={data} name="relationship" type={variables.SELECT} />
-            </Pane>
-            <Pane className={styles[('order-assignment-btn', 'col-lg-2')]}>
+        <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <div style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Heading type="form-title" style={{ marginBottom: 20 }}>
+              Tình trạng chăm sóc
+            </Heading>
+            <div className="row">
+              <Pane className="col-lg-4">
+                <FormItem
+                  options={['id', 'name']}
+                  name="status_parent_lead_id"
+                  data={parentLead}
+                  placeholder="Chọn"
+                  label="Tình trạng chăm sóc"
+                  type={variables.SELECT}
+                  rules={[variables.RULES.EMPTY_INPUT]}
+                />
+              </Pane>
+            </div>
+            <div className={stylesModule['wrapper-btn']}>
               <Button
-                onClick={() => showModal()}
-                className="text-uppercase mt-2"
                 color="success"
-                ghost
-                icon="plus"
+                size="normal"
+                htmlType="submit"
+                loading={loadingSubmit || loading}
               >
-                Chuyển tiềm năng
+                Lưu
               </Button>
-              <Modal
-                title="Chuyển tiềm năng"
-                className={stylesModule['wrapper-modal']}
-                centered
-                visible={isModalVisible}
-                onOk={() => handleOk()}
-                onCancel={() => handleCancel()}
-                footer={[
-                  <p
-                    key="back"
-                    role="presentation"
-                    onClick={() => handleCancel()}
-                    className={stylesModule['button-cancel']}
-                  >
-                    Hủy
-                  </p>,
-                  <Button
-                    key="submit"
-                    color="success"
-                    type="primary"
-                    onClick={() => handleOk()}
-                    className={styles['cheack-btn-ok']}
-                  >
-                    Lưu
-                  </Button>,
-                ]}
-              >
-                <div>
-                  <Pane className="row">
-                    <div className="col-lg-6">
-                      <FormItem name="parents" label="Phụ huynh tiềm năng" type={variables.INPUT} />
-                    </div>
-                    <div className="col-lg-6">
-                      <FormItem name="phone" label="Số điện thoại" type={variables.INPUT} />
-                    </div>
-                    <div className="col-lg-6">
-                      <FormItem name="address" label="Địa chỉ " type={variables.INPUT} />
-                    </div>
-                    <div className="col-lg-6">
-                      <FormItem name="date" label="Ngày chuyển" type={variables.DATE_PICKER} />
-                    </div>
-                  </Pane>
-                </div>
-              </Modal>
-            </Pane>
+            </div>
           </div>
-          <div className={stylesModule['wrapper-btn']}>
-            <Button color="success" size="large" htmlType="submit">
-              Lưu
-            </Button>
-          </div>
-        </div>
+        </Loading>
       </div>
-
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
           <Heading type="form-title" style={{ marginBottom: 20 }}>
@@ -161,7 +158,7 @@ const General = memo(() => {
             <Pane className="col-lg-12">
               <Table
                 columns={header()}
-                dataSource={data}
+                dataSource={lead}
                 pagination={false}
                 className="table-edit"
                 isEmpty
