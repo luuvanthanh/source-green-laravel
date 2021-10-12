@@ -31,7 +31,7 @@ class StatusCareTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['statusParentLead'];
+    protected $availableIncludes = ['statusParentLead', 'customerLead'];
 
     /**
      * Transform the User entity.
@@ -54,5 +54,14 @@ class StatusCareTransformer extends BaseTransformer
         }
 
         return $this->item($statusCare->statusParentLead, new StatusParentLeadTransformer, 'StatusParentLead');
+    }
+
+    public function includeCustomerLead(StatusCare $statusCare)
+    {
+        if (empty($statusCare->customerLead)) {
+            return;
+        }
+
+        return $this->item($statusCare->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }
