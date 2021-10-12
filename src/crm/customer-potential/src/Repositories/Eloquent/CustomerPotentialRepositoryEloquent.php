@@ -83,6 +83,10 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
             });
         }
 
+        if (!empty($attributes['is_null_employee']) && $attributes['is_null_employee'] == 'true') {
+            $this->model = $this->model->where('employee_id', null);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotential = $this->paginate($attributes['limit']);
         } else {
@@ -111,5 +115,17 @@ class CustomerPotentialRepositoryEloquent extends BaseRepository implements Cust
         $customerPotential = CustomerPotential::create($attributes);
 
         return $this->parserResult($customerPotential);
+    }
+
+    public function createEmployeeAssignment($attributes)
+    {
+        foreach ($attributes['employee_assignment'] as $value) {
+            $customerPotential = CustomerPotential::findOrFail($value['customer_potential_id']);
+            $customerPotential->update(['employee_id' => $value['employee_id']]);
+            $employeeInfo = json_encode($value['employee_info']);
+            $customerPotential->update(['employee_info' => $employeeInfo]);
+        }
+
+        return parent::parserResult($customerPotential);
     }
 }

@@ -53,6 +53,10 @@ class CustomerPotentialStatusCareRepositoryEloquent extends BaseRepository imple
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['customer_potential_id'])) {
+            $this->model = $this->model->where('customer_potential_id', $attributes['customer_potential_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotentialtatusCare = $this->paginate($attributes['limit']);
         } else {

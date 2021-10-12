@@ -48,6 +48,10 @@ class StudentInfoRepositoryEloquent extends BaseRepository implements StudentInf
 
     public function getStudentInfo(array $attributes)
     {
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $studentInfo = $this->paginate($attributes['limit']);
         } else {

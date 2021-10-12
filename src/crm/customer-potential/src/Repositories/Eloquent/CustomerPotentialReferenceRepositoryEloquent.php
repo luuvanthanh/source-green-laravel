@@ -47,6 +47,10 @@ class CustomerPotentialReferenceRepositoryEloquent extends BaseRepository implem
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['customer_potential_id'])) {
+            $this->model = $this->model->where('customer_potential_id', $attributes['customer_potential_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $customerPotentialReference = $this->paginate($attributes['limit']);
         } else {
@@ -59,12 +63,12 @@ class CustomerPotentialReferenceRepositoryEloquent extends BaseRepository implem
     public function create(array $attributes)
     {
         $customerPotentialReferenceId = CustomerPotentialReference::where('customer_potential_id', $attributes['customer_potential_id'])->first();
-        
+
         \DB::beginTransaction();
         try {
 
             if (is_null($customerPotentialReferenceId)) {
-                
+
                 CustomerPotentialReference::create($attributes);
             }
 

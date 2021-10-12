@@ -49,6 +49,11 @@ class EventInfoRepositoryEloquent extends BaseRepository implements EventInfoRep
 
     public function getEventInfo(array $attributes)
     {
+
+        if (!empty($attributes['customer_lead_id'])) {
+            $this->model = $this->model->where('customer_lead_id', $attributes['customer_lead_id']);
+        }
+        
         if (!empty($attributes['limit'])) {
             $eventInfo = $this->paginate($attributes['limit']);
         } else {
