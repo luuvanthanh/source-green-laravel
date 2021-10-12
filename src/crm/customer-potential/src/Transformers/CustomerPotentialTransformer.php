@@ -84,19 +84,4 @@ class CustomerPotentialTransformer extends BaseTransformer
     {
         return $this->collection($customerPotential->customerPotentialTag, new CustomerPotentialTagTransformer, 'CustomerPotentialTag');
     }
-
-    public function includeCustomerPotentialEventInfo(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialEventInfo, new CustomerPotentialEventInfoTransformer, 'CustomerPotentialEventInfo');
-    }
-
-    public function includeCustomerPotentialStatusCare(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialStatusCare, new CustomerPotentialStatusCareTransformer, 'customerPotentialStatusCare');
-    }
-
-    public function includeCustomerPotentialReference(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialReference, new CustomerPotentialReferenceTransformer, 'CustomerPotentialReference');
-    }
 }
