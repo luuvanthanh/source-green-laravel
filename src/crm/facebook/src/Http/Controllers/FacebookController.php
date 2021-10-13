@@ -61,9 +61,13 @@ class FacebookController extends Controller
      */
     public function getPageFacebook(Request $request)
     {
-        $pages = FacebookService::listPages($request->all());
+        try {
+            $pages = FacebookService::listPages($request->all());
 
-        return $this->success(["data" => $pages->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $pages], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -74,9 +78,13 @@ class FacebookController extends Controller
      */
     public function getPageTokenFacebook(Request $request)
     {
-        $pageToken = FacebookService::pageToken($request->all());
+        try {
+            $pageToken = FacebookService::pageToken($request->all());
 
-        return $this->success(["data" => $pageToken], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $pageToken], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -87,9 +95,13 @@ class FacebookController extends Controller
      */
     public function getPageConversationFacebook(Request $request)
     {
-        $pageConversation = FacebookService::pageConversation($request->all());
+        try {
+            $pageConversation = FacebookService::pageConversation($request->all());
 
-        return $this->success(["data" => $pageConversation->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $pageConversation], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -100,9 +112,13 @@ class FacebookController extends Controller
      */
     public function getPageConversationMessageFacebook(Request $request)
     {
-        $pageConversationMessage = FacebookService::pageConversationMessage($request->all());
+        try {
+            $pageConversationMessage = FacebookService::pageConversationMessage($request->all());
 
-        return $this->success(["data" => $pageConversationMessage->data], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $pageConversationMessage], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     /**
@@ -113,22 +129,34 @@ class FacebookController extends Controller
      */
     public function pageConversationSendMessageFacebook(Request $request)
     {
-        $mess = FacebookService::pageConversationSendMessage($request->all());
+        try {
+            $mess = FacebookService::pageConversationSendMessage($request->all());
 
-        return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function publishPagePost(Request $request)
     {
-        $mess = FacebookService::publishPagePost($request->all());
+        try {
+            $mess = FacebookService::publishPagePost($request->all());
 
-        return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+            return $this->success(["data" => $mess], trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function getPagePost(Request $request)
     {
-        $mess = FacebookService::getPagePost($request->all());
+        try {
+            $mess = FacebookService::getPagePost($request->all());
 
-        return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
+            return $this->success((array) $mess, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 }
