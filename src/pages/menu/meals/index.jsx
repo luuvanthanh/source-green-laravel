@@ -137,13 +137,7 @@ const Index = memo(() => {
   };
 
   const DraggableContainer = (props) => (
-    <SortableContainer
-      useDragHandle
-      disableAutoscroll
-      helperClass="row-dragging"
-      onSortEnd={onSortEnd}
-      {...props}
-    />
+    <SortableContainer useDragHandle helperClass="row-dragging" onSortEnd={onSortEnd} {...props} />
   );
 
   const DraggableBodyRow = ({ ...restProps }) => {
