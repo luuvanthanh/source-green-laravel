@@ -168,6 +168,13 @@ export function getStatusLead(params = {}) {
   });
 }
 
+
+export function getTags() {
+  return request(`/v1/tags`, {
+    method: 'GET',
+  });
+}
+
 export function getParentLead() {
   return request(`/v1/status-parent-leads`, {
     method: 'GET',
@@ -180,3 +187,24 @@ export function addStatusLead(data = {}) {
     data,
   });
 }
+
+export function addTags(data = {}) {
+  return request('/v1/customer-tags', {
+    method: 'POST',
+    data,
+  });
+}
+
+
+export function getCustomerTags(data = {}) {
+  return request('/v1/customer-tags', {
+    method: 'GET',
+    params: {
+      ...data,
+      include: Helper.convertIncludes([
+        'tags',
+      ]),
+    },
+  });
+}
+

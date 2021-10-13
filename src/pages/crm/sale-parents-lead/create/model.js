@@ -5,6 +5,7 @@ export default {
   state: {
     details: {},
     detailsLead: {},
+    detailsTags: [],
     error: {
       isError: false,
       data: {},
@@ -20,6 +21,7 @@ export default {
     student: [],
     lead: [],
     parentLead: [],
+    tags: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -31,6 +33,7 @@ export default {
     SET_DATA: (state, { payload }) => ({
       ...state,
       details: payload,
+      detailsTags: payload,
     }),
     SET_CLASS_TYPES: (state, { payload }) => ({
       ...state,
@@ -101,6 +104,14 @@ export default {
     SET_PARENT_LEAD: (state, { payload }) => ({
       ...state,
       parentLead: payload.parsePayload,
+    }),
+    SET_TAGS: (state, { payload }) => ({
+      ...state,
+      tags: payload.parsePayload,
+    }),
+    SET_CUSTOMER_TAGS: (state, { payload }) => ({
+      ...state,
+      detailsTags: payload.parsePayload,
     }),
   },
   effects: {
@@ -198,6 +209,46 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_TAGS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTags, payload);
+        yield saga.put({
+          type: 'SET_TAGS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CUSTOMER_TAGS({ payload, callback }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getCustomerTags, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_CUSTOMER_TAGS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_TAGS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addTags, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
     *GET_STATUS_LEAD({ payload }, saga) {
