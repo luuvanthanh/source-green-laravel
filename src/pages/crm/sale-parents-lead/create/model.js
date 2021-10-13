@@ -4,6 +4,7 @@ export default {
   namespace: 'crmSaleLeadAdd',
   state: {
     details: {},
+    detailsLead: {},
     error: {
       isError: false,
       data: {},
@@ -17,9 +18,16 @@ export default {
     city: [],
     district: [],
     student: [],
+    lead: [],
+    parentLead: [],
   },
   reducers: {
-    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({
+      ...state,
+      detailsLead: {},
+      isError: false,
+      data: [],
+    }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       details: payload,
@@ -84,6 +92,15 @@ export default {
     SET_STUDENTS: (state, { payload }) => ({
       ...state,
       student: payload.parsePayload,
+    }),
+    SET_STATUS_LEAD: (state, { payload }) => ({
+      ...state,
+      detailsLead: payload,
+      lead: payload.parsePayload,
+    }),
+    SET_PARENT_LEAD: (state, { payload }) => ({
+      ...state,
+      parentLead: payload.parsePayload,
     }),
   },
   effects: {
@@ -181,6 +198,45 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_STATUS_LEAD({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getStatusLead, payload);
+        yield saga.put({
+          type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_PARENT_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParentLead, payload);
+        yield saga.put({
+          type: 'SET_PARENT_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_STATUS_LEAD({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addStatusLead, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },

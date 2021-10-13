@@ -43,7 +43,6 @@ const General = memo(
       effects[`crmSaleLeadAdd/UPDATE`] ||
       effects[`crmSaleLeadAdd/UPDATE_STATUS`];
     const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
-
     useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_CITIES',
