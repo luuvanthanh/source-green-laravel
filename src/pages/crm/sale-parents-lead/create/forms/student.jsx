@@ -240,7 +240,7 @@ const Students = memo(() => {
                                   mountedSet(setFileImage, [...fileImage, null]);
                                 }}
                               >
-                                Thêm
+                                Thêm học sinh
                               </Button>
                             </Pane>
                           </>
