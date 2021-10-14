@@ -7,6 +7,7 @@ use GGPHP\Crm\CustomerLead\Http\Requests\EventInfoDeleteRequest;
 use GGPHP\Crm\CustomerLead\Http\Requests\EventInfoUpdateRequest;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\EventInfoRepository;
 use GGPHP\Core\Http\Controllers\Controller;
+use GGPHP\Crm\CustomerLead\Models\EventInfo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -42,6 +43,9 @@ class EventInfoController extends Controller
     {
         $credentials = $request->all();
 
+        if (!empty($credentials['status'])) {
+            $credentials['status'] = EventInfo::STATUS[$credentials['status']];
+        }
         $eventInfo = $this->eventInfoRepository->create($credentials);
 
         return $this->success($eventInfo, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
