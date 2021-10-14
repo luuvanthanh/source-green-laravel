@@ -29,7 +29,7 @@ class PotentialStudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['CustomerPotential'];
+    protected $availableIncludes = ['customerPotential'];
 
     /**
      * Transform the CategoryDetail entity.

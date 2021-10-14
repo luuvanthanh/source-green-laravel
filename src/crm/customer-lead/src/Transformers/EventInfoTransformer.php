@@ -40,11 +40,22 @@ class EventInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $status = null;
+
+        foreach (EventInfo::STATUS as $key => $value) {
+
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
+        return [
+            'status' => $status,
+        ];
     }
-    
+
     public function includeCustomerLead(EventInfo $eventInfo)
-    {   
+    {
         if (empty($eventInfo->customerLead)) {
             return;
         }

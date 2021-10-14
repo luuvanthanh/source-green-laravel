@@ -53,6 +53,7 @@ class CustomerPotentialTransformer extends BaseTransformer
 
         return [
             'sex' => $sex,
+            "employee_info" => json_decode($model->employee_info),
             "user_create_info" => json_decode($model->user_create_info),
         ];
     }
