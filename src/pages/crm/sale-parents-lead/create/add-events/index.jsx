@@ -1,8 +1,8 @@
 import { memo, useRef, useEffect } from 'react';
-import { Form } from 'antd';
+import { Breadcrumb, Form } from 'antd';
 import moment from 'moment';
 import { Helmet } from 'react-helmet';
-import { connect, withRouter } from 'umi';
+import { Link, connect, withRouter, history } from 'umi';
 
 import { head, isEmpty, get } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
@@ -12,6 +12,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import PropTypes from 'prop-types';
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   loading,
@@ -24,7 +25,7 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
-
+  const [form] = Form.useForm();
   const loadingSubmit =
     effects[`crmSaleLeadAdd/ADD_EVENTS`] || effects[`crmSaleLeadAdd/UPDATE_EVENTS`];
   const loading = effects[`crmSaleLeadAdd/GET_EVENTS`];
@@ -46,9 +47,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         ? { ...details, ...values, customer_lead_id: params.id }
         : { ...values, customer_lead_id: params.id },
       callback: (response, error) => {
-        // if (response) {
-        //   history.goBack();
-        // }
+        if (response) {
+          history.goBack();
+        }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {
@@ -71,24 +72,51 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   }, []);
 
   useEffect(() => {
-    formRef.current.setFieldsValue({
+    form.setFieldsValue({
       ...details,
       ...head(details.positionLevel),
       date: details.date && moment(details.date),
-      time: details.time && moment(details.time),
+      time: details.time && moment(details.time, variables.DATE_FORMAT.HOUR),
     });
   }, [details]);
 
   return (
     <>
+      <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
+        <Breadcrumb.Item>
+          <Link to="/crm/sale/ph-lead" className={stylesModule.details}>
+            Phụ huynh lead
+          </Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link
+            to={`/crm/sale/ph-lead/${params.id}/chi-tiet?type=events`}
+            className={stylesModule.details}
+          >
+            Chi tiết
+          </Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item className={stylesModule.detailsEnd}>
+          {params.detailId ? 'Chi tiết sự kiện' : 'Thêm thông tin sự kiện'}
+        </Breadcrumb.Item>
+      </Breadcrumb>
+
       <Helmet title="Thêm cuộc gọi" />
-      <Pane className="col-lg-6 offset-lg-3">
-        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+      <Pane className="col-lg-6 offset-lg-3 p10">
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          name="control-ref"
+          initialValues={{ data: [{}] }}
+        >
           <Loading loading={loading} isError={error.isError} params={{ error }}>
             <div className="card">
               <div style={{ padding: 20 }} className="pb-0 border-bottom">
                 <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-                  <Heading type="form-title">Thông tin thêm mới</Heading>
+                  <Heading type="form-title">
+                    {params.detailId ? 'Chi tiết sự kiện' : 'Thông tin thêm mới'}
+                  </Heading>
                 </div>
                 <div className="row">
                   <Pane className="col-lg-6">
@@ -130,7 +158,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 </div>
               </div>
               <Pane className="p20 d-flex justify-content-between align-items-center ">
-                <p className="btn-delete" role="presentation">
+                <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                   Hủy
                 </p>
                 <Button
@@ -138,7 +166,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   color="success"
                   htmlType="submit"
                   size="large"
-                  loading={loadingSubmit}
+                  loading={loadingSubmit || loading}
                 >
                   Lưu
                 </Button>

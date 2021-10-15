@@ -2,21 +2,19 @@ import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import moment from 'moment';
 import { useParams } from 'umi';
-import { isEmpty, get } from 'lodash';
+import { head, isEmpty, get } from 'lodash';
 import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
-import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils';
 import FormItem from '@/components/CommonComponent/FormItem';
 
 const General = memo(() => {
   const formRef = useRef();
-
+  const [form] = Form.useForm();
   const {
     loading: { effects },
-    error,
     detailsReferences,
     parentLead,
   } = useSelector(({ loading, crmSaleLeadAdd }) => ({
@@ -39,9 +37,6 @@ const General = memo(() => {
       type: 'crmSaleLeadAdd/ADD_REFERENCES',
       payload: { ...detailsReferences, ...values, customer_lead_id: params.id, id: params.id },
       callback: (response, error) => {
-        // if (response) {
-        //   history.goBack();
-        // }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {
@@ -59,15 +54,6 @@ const General = memo(() => {
   };
 
   useEffect(() => {
-    if (params.id) {
-      formRef.current.setFieldsValue({
-        ...detailsReferences,
-        birth_date: detailsReferences.birth_date && moment(detailsReferences.birth_date),
-      });
-    }
-  }, [detailsReferences]);
-
-  useEffect(() => {
     dispatch({
       type: 'crmSaleLeadAdd/GET_PARENT_LEAD',
       payload: {},
@@ -81,11 +67,13 @@ const General = memo(() => {
       callback: (response) => {
         if (response) {
           if (params.id) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) => ({
-                ...item,
-                birth_date: moment(item.birth_date),
-              })),
+            form.setFieldsValue({
+              ...head(
+                response.parsePayload.map((item) => ({
+                  ...item,
+                  birth_date: moment(item.birth_date),
+                })),
+              ),
             });
           }
         }
@@ -107,86 +95,85 @@ const General = memo(() => {
             initialValues={{
               data: [{}],
             }}
-            ref={formRef}
+            name="control-ref"
+            form={form}
             onFinish={onFinish}
           >
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Pane>
               <Pane>
-                <Pane>
-                  <Pane className="card">
-                    <div className="row">
-                      <div className="col-lg-12">
-                        <Pane style={{ padding: 20 }}>
-                          <Heading type="form-title" style={{ marginBottom: 20 }}>
-                            Người giới thiệu
-                          </Heading>
+                <Pane className="card">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <Pane style={{ padding: 20 }}>
+                        <Heading type="form-title" style={{ marginBottom: 20 }}>
+                          Người giới thiệu
+                        </Heading>
 
-                          <Pane className="row">
-                            <Pane className="col-lg-4">
-                              <FormItem
-                                label="Họ và tên"
-                                name="full_name"
-                                type={variables.INPUT}
-                                rules={[
-                                  variables.RULES.EMPTY_INPUT,
-                                  variables.RULES.MAX_LENGTH_INPUT,
-                                ]}
-                              />
-                            </Pane>
-                            <Pane className="col-lg-4">
-                              <FormItem
-                                name="birth_date"
-                                label="Ngày sinh"
-                                type={variables.DATE_PICKER}
-                              />
-                            </Pane>
-                            <Pane className="col-lg-4">
-                              <FormItem
-                                label="Địa chỉ"
-                                name="address"
-                                type={variables.INPUT}
-                                rules={[
-                                  variables.RULES.EMPTY_INPUT,
-                                  variables.RULES.MAX_LENGTH_INPUT,
-                                ]}
-                              />
-                            </Pane>
-                            <Pane className="col-lg-4">
-                              <FormItem
-                                label="Số điện thoại"
-                                name="phone"
-                                type={variables.INPUT}
-                                rules={[variables.RULES.EMPTY_INPUT]}
-                              />
-                            </Pane>
-                            <Pane className="col-lg-4">
-                              <FormItem
-                                label="Tình trạng"
-                                data={parentLead}
-                                options={['id', 'name']}
-                                name="status_parent_lead_id"
-                                type={variables.SELECT}
-                              />
-                            </Pane>
+                        <Pane className="row">
+                          <Pane className="col-lg-4">
+                            <FormItem
+                              label="Họ và tên"
+                              name="full_name"
+                              type={variables.INPUT}
+                              rules={[
+                                variables.RULES.EMPTY_INPUT,
+                                variables.RULES.MAX_LENGTH_INPUT,
+                              ]}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-4">
+                            <FormItem
+                              name="birth_date"
+                              label="Ngày sinh"
+                              type={variables.DATE_PICKER}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-4">
+                            <FormItem
+                              label="Địa chỉ"
+                              name="address"
+                              type={variables.INPUT}
+                              rules={[
+                                variables.RULES.EMPTY_INPUT,
+                                variables.RULES.MAX_LENGTH_INPUT,
+                              ]}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-4">
+                            <FormItem
+                              label="Số điện thoại"
+                              name="phone"
+                              type={variables.INPUT}
+                              rules={[variables.RULES.EMPTY_INPUT]}
+                            />
+                          </Pane>
+                          <Pane className="col-lg-4">
+                            <FormItem
+                              label="Tình trạng"
+                              data={parentLead}
+                              options={['id', 'name']}
+                              name="status_parent_lead_id"
+                              type={variables.SELECT}
+                            />
                           </Pane>
                         </Pane>
-                      </div>
+                      </Pane>
                     </div>
-                  </Pane>
-                  <Pane className="d-flex justify-content-between align-items-center mb20">
-                    <Button
-                      className="ml-auto px25"
-                      color="success"
-                      htmlType="submit"
-                      size="large"
-                      loading={loadingSubmit || loading}
-                    >
-                      Lưu
-                    </Button>
-                  </Pane>
+                  </div>
+                </Pane>
+                <Pane className="d-flex justify-content-between align-items-center mb20">
+                  <Button
+                    className="ml-auto px25"
+                    color="success"
+                    htmlType="submit"
+                    size="large"
+                    loading={loadingSubmit || loading}
+                  >
+                    Lưu
+                  </Button>
                 </Pane>
               </Pane>
-            </Loading>
+            </Pane>
           </Form>
         </Pane>
       </Pane>

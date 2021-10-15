@@ -121,6 +121,10 @@ export default {
       details: payload.parsePayload,
       events: payload.parsePayload,
     }),
+    SET_EVENTS_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload.parsePayload,
+    }),
     SET_REFERENCES: (state, { payload }) => ({
       ...state,
       detailsReferences: payload.parsePayload,
@@ -332,8 +336,9 @@ export default {
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.getEvents, payload);
+       
         yield saga.put({
-          type: 'SET_EVENTS',
+          type: 'SET_EVENTS_DETAILS',
           payload: response,
         });
       } catch (error) {

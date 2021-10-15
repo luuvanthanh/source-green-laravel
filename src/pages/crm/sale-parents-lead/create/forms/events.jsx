@@ -1,42 +1,42 @@
 import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
-import { useParams,  useLocation, history } from 'umi';
+import { useParams, useLocation, history } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import styles from '@/assets/styles/Common/common.scss';
 import Pane from '@/components/CommonComponent/Pane';
 import Text from '@/components/CommonComponent/Text';
-import Heading from '@/components/CommonComponent/Heading';
 import { get } from 'lodash';
+import Heading from '@/components/CommonComponent/Heading';
 import { Helper } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import Button from '@/components/CommonComponent/Button';
 import HelperModules from '../../utils/Helper';
-
 
 const General = memo(() => {
   const dispatch = useDispatch();
   const params = useParams();
   const { pathname } = useLocation();
   const mounted = useRef(false);
-  const { events, loading: { effects }, } = useSelector(({ loading, crmSaleLeadAdd }) => ({
+  const {
+    events,
+    loading: { effects },
+  } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
     events: crmSaleLeadAdd.events,
     details: crmSaleLeadAdd.details,
     data: crmSaleLeadAdd.data,
     error: crmSaleLeadAdd.error,
   }));
-  const loading =
-    effects[`crmSaleLeadAdd/EVENTS`];
+  const loading = effects[`crmSaleLeadAdd/EVENTS`];
 
   useEffect(() => {
     dispatch({
       type: 'crmSaleLeadAdd/EVENTS',
       payload: {
         customer_lead_id: params.id,
-      }
+      },
     });
-  }, []);
-
+  }, [params.id]);
 
   useEffect(() => {
     mounted.current = true;
@@ -51,12 +51,14 @@ const General = memo(() => {
           payload: {
             id,
           },
-        });
-        dispatch({
-          type: 'crmSaleLeadAdd/EVENTS',
-          payload: {
-            customer_lead_id: params.id,
-          }
+          callback: () => {
+            dispatch({
+              type: 'crmSaleLeadAdd/EVENTS',
+              payload: {
+                customer_lead_id: params.id,
+              },
+            });
+          },
         });
       },
     });
@@ -67,9 +69,13 @@ const General = memo(() => {
       {
         title: 'Ngày diễn ra',
         key: 'date',
-        className: 'min-width-200',
+        className: 'min-width-150',
         width: 200,
-        render: (record) => <Text size="normal">{record.date},{record.time}</Text>,
+        render: (record) => (
+          <Text size="normal">
+            {Helper.getDate(record.date)}, {record.time}
+          </Text>
+        ),
       },
       {
         title: 'Tên sự kiện',
@@ -108,7 +114,7 @@ const General = memo(() => {
             <Button
               color="primary"
               icon="edit"
-             onClick={() => history.push(`${pathname}/${record.id}/chi-tiet-su-kien`)}
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet-su-kien`)}
             />
             <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
           </div>
@@ -122,31 +128,35 @@ const General = memo(() => {
     <Form layout="vertical">
       <div className="card">
         <div style={{ padding: 20 }} className="pb-0 border-bottom">
-        <div className="d-flex justify-content-between">
-          <Heading type="form-title" style={{ marginBottom: 20 }}>
-          Thông tin sự kiện
-          </Heading>
-          <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/them-su-kien`)}>
-          Thêm sự kiện
-      </Button>
+          <div className="d-flex justify-content-between">
+            <Heading type="form-title" style={{ marginBottom: 20 }}>
+              Thông tin sự kiện
+            </Heading>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/them-su-kien`)}
+            >
+              Thêm sự kiện
+            </Button>
           </div>
           <div className="row">
             <Pane className="col-lg-12">
-            <Table
-              columns={header()}
-              dataSource={events}
-              pagination={false}
-              className="table-normal"
-              isEmpty
-              loading={loading}
-              params={{
-                header: header(),
-                type: 'table',
-              }}
-              bordered
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-            />
+              <Table
+                columns={header()}
+                dataSource={events}
+                pagination={false}
+                className="table-normal"
+                isEmpty
+                loading={loading}
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                bordered
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
             </Pane>
           </div>
         </div>
