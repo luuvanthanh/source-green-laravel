@@ -4,9 +4,10 @@ import { useParams,  useLocation, history } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import styles from '@/assets/styles/Common/common.scss';
 import Pane from '@/components/CommonComponent/Pane';
+import Text from '@/components/CommonComponent/Text';
 import Heading from '@/components/CommonComponent/Heading';
 import { get } from 'lodash';
-
+import { Helper } from '@/utils';
 import Table from '@/components/CommonComponent/Table';
 import Button from '@/components/CommonComponent/Button';
 import HelperModules from '../../utils/Helper';
@@ -17,47 +18,72 @@ const General = memo(() => {
   const params = useParams();
   const { pathname } = useLocation();
   const mounted = useRef(false);
-  const { data } = useSelector(({ loading, crmSaleLeadAdd }) => ({
+  const { events, loading: { effects }, } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
+    events: crmSaleLeadAdd.events,
     details: crmSaleLeadAdd.details,
     data: crmSaleLeadAdd.data,
     error: crmSaleLeadAdd.error,
   }));
+  const loading =
+    effects[`crmSaleLeadAdd/EVENTS`];
 
   useEffect(() => {
     dispatch({
-      type: 'crmSaleLeadAdd/GET_DATA',
-      payload: params,
+      type: 'crmSaleLeadAdd/EVENTS',
+      payload: {
+        customer_lead_id: params.id,
+      }
     });
   }, []);
+
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
 
+  const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmSaleLeadAdd/REMOVE_EVENTS',
+          payload: {
+            id,
+          },
+        });
+        dispatch({
+          type: 'crmSaleLeadAdd/EVENTS',
+          payload: {
+            customer_lead_id: params.id,
+          }
+        });
+      },
+    });
+  };
+
   const header = () => {
     const columns = [
       {
         title: 'Ngày diễn ra',
-        key: 'updateDay',
-        className: 'min-width-150',
-        width: 150,
-        render: (record) => get(record, 'updateDay'),
+        key: 'date',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => <Text size="normal">{record.date},{record.time}</Text>,
       },
       {
         title: 'Tên sự kiện',
-        key: 'email',
+        key: 'name',
         width: 150,
         className: 'min-width-150',
         render: (record) => get(record, 'name'),
       },
       {
         title: 'Địa điểm diễn ra',
-        key: 'status',
+        key: 'location',
         width: 150,
         className: 'min-width-150',
-        render: (record) => get(record, 'name'),
+        render: (record) => get(record, 'location'),
       },
       {
         title: 'Trạng thái',
@@ -68,23 +94,23 @@ const General = memo(() => {
       },
       {
         title: 'Kết quả sự kiện',
-        key: 'status',
+        key: 'result',
         width: 150,
         className: 'min-width-150',
-        render: (record) => get(record, 'name'),
+        render: (record) => get(record, 'result'),
       },
       {
         key: 'Thao tác',
         width: 100,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="primary"
               icon="edit"
-            //   onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+             onClick={() => history.push(`${pathname}/${record.id}/chi-tiet-su-kien`)}
             />
-            <Button color="danger" icon="remove" />
+            <Button color="danger" icon="remove" onClick={() => onRemove(record.id)} />
           </div>
         ),
       },
@@ -108,10 +134,11 @@ const General = memo(() => {
             <Pane className="col-lg-12">
             <Table
               columns={header()}
-              dataSource={data}
+              dataSource={events}
               pagination={false}
               className="table-normal"
               isEmpty
+              loading={loading}
               params={{
                 header: header(),
                 type: 'table',
