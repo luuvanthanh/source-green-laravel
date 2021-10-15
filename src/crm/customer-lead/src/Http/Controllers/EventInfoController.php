@@ -74,6 +74,10 @@ class EventInfoController extends Controller
     {
         $credentials = $request->all();
 
+        if (!empty($credentials['status'])) {
+            $credentials['status'] = EventInfo::STATUS[$credentials['status']];
+        }
+
         $eventInfo = $this->eventInfoRepository->update($credentials, $id);
 
         return $this->success($eventInfo, trans('lang::messages.common.modifySuccess'));
