@@ -133,10 +133,7 @@ const General = memo(() => {
                               label="Địa chỉ"
                               name="address"
                               type={variables.INPUT}
-                              rules={[
-                                variables.RULES.EMPTY_INPUT,
-                                variables.RULES.MAX_LENGTH_INPUT,
-                              ]}
+                              rules={[ variables.RULES.MAX_LENGTH_INPUT]}
                             />
                           </Pane>
                           <Pane className="col-lg-4">

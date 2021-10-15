@@ -120,7 +120,12 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 </div>
                 <div className="row">
                   <Pane className="col-lg-6">
-                    <FormItem name="date" label="Ngày diễn ra" type={variables.DATE_PICKER} />
+                    <FormItem
+                      name="date"
+                      label="Ngày diễn ra"
+                      type={variables.DATE_PICKER}
+                      rules={[variables.RULES.EMPTY]}
+                    />
                   </Pane>
                   <Pane className="col-lg-6">
                     <FormItem
@@ -131,10 +136,20 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                     />
                   </Pane>
                   <Pane className="col-lg-6">
-                    <FormItem name="name" label="Tên sự  kiện" type={variables.INPUT} />
+                    <FormItem
+                      name="name"
+                      label="Tên sự  kiện"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
                   </Pane>
                   <Pane className="col-lg-6">
-                    <FormItem name="location" label="Địa điêm diễn ra" type={variables.INPUT} />
+                    <FormItem
+                      name="location"
+                      label="Địa điêm diễn ra"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
                   </Pane>
                   <Pane className="col-lg-6">
                     <FormItem
@@ -145,6 +160,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                       ]}
                       label="Trạng thái"
                       type={variables.SELECT}
+                      rules={[variables.RULES.EMPTY]}
                     />
                   </Pane>
                   <Pane className="col-lg-12">
