@@ -44,8 +44,10 @@ const Students = memo(() => {
     error: crmSaleLeadAdd.error,
   }));
 
+  const [students, setStudents] = useState([]);
   const loading = effects[`crmSaleLeadAdd/GET_STUDENTS`];
   const loadingSubmit = effects[`crmSaleLeadAdd/ADD_STUDENTS`];
+  const [deleteRows, setDeleteRows] = useState([]);
 
   const onSetImage = (file, position) => {
     mountedSet(
@@ -71,7 +73,7 @@ const Students = memo(() => {
     const payload = {
       createRows: items.filter((item) => !item.id),
       updateRows: items.filter((item) => item.id),
-      deleteRows: items.filter((item) => item.id),
+      deleteRows,
     };
     dispatch({
       type: 'crmSaleLeadAdd/ADD_STUDENTS',
@@ -106,6 +108,7 @@ const Students = memo(() => {
       },
       callback: (response) => {
         if (response) {
+          setStudents(response.parsePayload);
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
@@ -116,6 +119,15 @@ const Students = memo(() => {
       },
     });
   }, [params.id]);
+
+  useEffect(() => {
+    if (!isEmpty(students)) {
+      mountedSet(
+        setFileImage,
+        students.map((item) => item.file_image || null),
+      );
+    }
+  }, [students]);
 
   return (
     <>
@@ -187,7 +199,6 @@ const Students = memo(() => {
                                       label="Ngày sinh"
                                       fieldKey={[field.fieldKey, 'birth_date']}
                                       type={variables.DATE_PICKER}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">
@@ -220,11 +231,17 @@ const Students = memo(() => {
                                   </Pane>
                                 </Pane>
 
-                                {fields.length > 1 && (
+                                {fields.length > 0 && (
                                   <DeleteOutlined
                                     className="position-absolute"
                                     style={{ top: 20, right: 20 }}
-                                    onClick={() => remove(index)}
+                                    onClick={() => {
+                                      const student = students?.find(
+                                        (item, studentsIndex) => studentsIndex === index,
+                                      );
+                                      setDeleteRows((prev) => [...prev, student.id]);
+                                      remove(index);
+                                    }}
                                   />
                                 )}
                               </Pane>
