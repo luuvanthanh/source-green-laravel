@@ -56,6 +56,10 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             $this->model = $this->model->whereLike('name', $attributes['key']);
         }
 
+        if (!empty($attributes['marketing_program_id'])) {
+            $this->model = $this->model->where('marketing_program_id', $attributes['marketing_program_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $article = $this->paginate($attributes['limit']);
         } else {

@@ -47,6 +47,10 @@ class DataMarketingStudentInfoRepositoryEloquent extends BaseRepository implemen
 
     public function getStudentInfo(array $attributes)
     {
+        if (!empty($attributes['data_marketing_id'])) {
+            $this->model = $this->model->where('data_marketing_id', $attributes['data_marketing_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $studentInfo = $this->paginate($attributes['limit']);
         } else {
