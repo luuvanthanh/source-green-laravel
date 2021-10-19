@@ -1686,6 +1686,7 @@ export async function getLeftMenuCRM() {
             '/crm/sale/ph-lead/:id/chi-tiet/them-lich-su',
             '/crm/sale/ph-lead/:id/chi-tiet/gui-email',
             '/crm/sale/ph-lead/:id/chi-tiet/them-su-kien',
+            '/crm/sale/ph-lead/:id/chi-tiet/:detailId/chi-tiet-su-kien',
           ],
           permission: [permissions.CRM],
           pro: true,

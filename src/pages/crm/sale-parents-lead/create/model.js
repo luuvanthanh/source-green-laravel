@@ -6,6 +6,7 @@ export default {
     details: {},
     detailsLead: {},
     detailsTags: [],
+    detailsReferences :[],
     error: {
       isError: false,
       data: {},
@@ -22,6 +23,7 @@ export default {
     lead: [],
     parentLead: [],
     tags: [],
+    events: [],
   },
   reducers: {
     INIT_STATE: (state) => ({
@@ -105,6 +107,7 @@ export default {
       ...state,
       parentLead: payload.parsePayload,
     }),
+
     SET_TAGS: (state, { payload }) => ({
       ...state,
       tags: payload.parsePayload,
@@ -112,6 +115,19 @@ export default {
     SET_CUSTOMER_TAGS: (state, { payload }) => ({
       ...state,
       detailsTags: payload.parsePayload,
+    }),
+    SET_EVENTS: (state, { payload }) => ({
+      ...state,
+      details: payload.parsePayload,
+      events: payload.parsePayload,
+    }),
+    SET_EVENTS_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload.parsePayload,
+    }),
+    SET_REFERENCES: (state, { payload }) => ({
+      ...state,
+      detailsReferences: payload.parsePayload,
     }),
   },
   effects: {
@@ -288,6 +304,91 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *ADD_EVENTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addEvents, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *UPDATE_EVENTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateEvents, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *REMOVE_EVENTS({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.removeEvents, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_EVENTS({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getEvents, payload);
+       
+        yield saga.put({
+          type: 'SET_EVENTS_DETAILS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *EVENTS({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.Events, payload);
+        yield saga.put({
+          type: 'SET_EVENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_REFERENCES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addReferences, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_REFERENCES({ payload ,callback}, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getReferences, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_REFERENCES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

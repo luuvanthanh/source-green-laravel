@@ -116,3 +116,18 @@
       justify-content: center;
     }
 }
+
+.wrapper-breadcrumb {
+  padding: 20px 40px;
+  .details {
+    font-family:$base__font-family;
+    font-size: 13px;
+    color: #7A7E84;
+  }
+  .detailsEnd {
+    font-family:$base__font-family;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3E4247;
+  }
+}

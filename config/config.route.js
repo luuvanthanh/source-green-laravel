@@ -2377,6 +2377,12 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/sale/ph-lead/:id/chi-tiet/:detailId/chi-tiet-su-kien',
+            component: './crm/sale-parents-lead/create/add-events',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/sale/ph-tiem-nang',
             component: './crm/sale-parents-potential',
             wrappers: ['@/wrappers/auth'],
