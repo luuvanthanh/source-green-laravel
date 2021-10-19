@@ -1302,20 +1302,20 @@ export async function getLeftMenuHRM() {
       title: 'Lương',
       key: 'salary',
       icon: 'icon icon-cash',
-      permission: [permissions.BANGLUONG],
+      permission: [permissions.HRM],
       children: [
         {
           title: 'Tính lương',
           key: 'salary-payroll',
           url: ['/quan-ly-nhan-su/tinh-luong'],
-          permission: [permissions.BANGLUONG],
+          permission: [permissions.HRM],
           pro: true,
         },
         {
           title: 'Bảng lương',
           key: 'salary-items',
           url: ['/quan-ly-nhan-su/bang-luong'],
-          permission: [permissions.BANGLUONG],
+          permission: [permissions.HRM],
           pro: true,
         },
       ],
