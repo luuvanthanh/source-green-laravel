@@ -1,0 +1,134 @@
+@import '@/assets/styles/mixins.scss';
+.wrapper-modal {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.wrapper-modal-cancel{
+  font-family: Proxima Nova;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: #36383A;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.model-body {
+    border-top: 1px solid #EAEAEA;
+    padding: 15px;
+}
+
+.wrapper-btn {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #EAEAEA;
+    padding: 15px;
+}
+
+.wrapper-btn-call {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100% !important;
+}
+
+.wrapper-model-calendar {
+    :global(.ant-modal-header) {
+      border-radius: 12px 12px 0px 0px;
+    }
+    :global(.ant-modal-content) {
+      border-radius: 12px;
+    }
+    :global(.ant-modal-footer) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+}
+
+.model-calendar-details {
+  font-family: Proxima Nova;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #27A600;
+  cursor: pointer;
+}
+
+.wrapper-title-add {
+    display: flex;
+    font-family: Proxima Nova;
+    height: 32px;
+    padding-left: 10px;
+    align-items: center;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #36383A;
+}
+
+.wrapper-btn-add {
+    color: #225CC5 !important;
+    border: 1px solid #C4CDD4 !important;
+    border-radius: 3px !important;
+}
+
+.wrapper-step{
+    :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle){
+      background-color: #C4C4C4;
+      border-radius: 50%;
+      color: #C4C4C4;
+    }
+    :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+      background-color: #3BB54A;
+      color:$white;
+      border-radius: 50%;
+    } 
+    :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+      background-color: #3BB54A;
+      color:$white;
+      border-radius: 50%;
+    }
+    :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after ){
+      background-color: #3BB54A;
+    }
+}
+  
+.wrapper-btn-student{
+    padding: 20px 0px; 
+}
+
+.wrapper-modal-selection{
+    :global(.ant-modal-footer) {
+      display: flex !important;
+      justify-content: center;
+    }
+    Button{
+      margin: 15px;
+    }
+}
+
+.button-fb {
+  font-size: 10px !important;
+  background-color: #1171D9 !important;
+}
+
+.button-Website {
+  font-size: 10px !important;
+}
+
+.button-Mobile {
+  font-size: 10px !important;
+}

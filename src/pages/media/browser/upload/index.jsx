@@ -77,7 +77,7 @@ const Index = memo(({ onOk, onCancel, ...props }) => {
 
   const upload = () => {
     dispatch({
-      type: 'upload/UPLOAD',
+      type: 'upload/UPLOAD_WATER_MARK',
       payload: fileList,
       showNotification: false,
       callback: ({ results = [] }) => {

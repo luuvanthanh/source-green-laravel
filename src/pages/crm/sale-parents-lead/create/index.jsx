@@ -49,13 +49,13 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   const [{ menuLeftCRM }] = useSelector(({ menu }) => [menu]);
 
   useEffect(() => {
-    if (params.id) {
-      dispatch({
-        type: 'crmSaleLeadAdd/GET_DATA',
-        payload: params,
-      });
-    }
-  }, [params.id]);
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
 
   return (
     <div style={{ padding: 20 }}>

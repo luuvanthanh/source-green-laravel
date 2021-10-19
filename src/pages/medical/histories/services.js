@@ -14,7 +14,8 @@ export function get(params = {}) {
           originValue: params.creationTimeFrom,
           targetValue: '00:00:00',
         }),
-        isUTC: true,
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
       }),
       creationTimeTo: Helper.getDateTime({
         value: Helper.setDate({
@@ -22,7 +23,8 @@ export function get(params = {}) {
           originValue: params.creationTimeTo,
           targetValue: '23:59:59',
         }),
-        isUTC: true,
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
       }),
     },
   });

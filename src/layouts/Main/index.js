@@ -212,13 +212,15 @@ class MainLayout extends React.PureComponent {
           settings__menuTop: isMenuTop,
         })}
       >
-        <Menu
-          menu={get(menu, [OBJECTS[key]?.menu]) || menu.menuLeftMedia}
-          info={{
-            icon: OBJECTS[key]?.icon || '/images/home/movies.svg',
-            title: OBJECTS[key]?.title || 'Ghi nhận',
-          }}
-        />
+        {OBJECTS[key]?.menu && (
+          <Menu
+            menu={get(menu, [OBJECTS[key]?.menu]) || menu.menuLeftMedia}
+            info={{
+              icon: OBJECTS[key]?.icon || '/images/home/movies.svg',
+              title: OBJECTS[key]?.title || 'Ghi nhận',
+            }}
+          />
+        )}
         <Settings />
         <Layout>
           <Layout.Header>

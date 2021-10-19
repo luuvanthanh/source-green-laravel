@@ -86,7 +86,7 @@ const Curator = memo(
         dispatch({
           type: 'OPParentsAdd/GET_NOTIFICATION_MODULE',
           payload: {
-            ...detailsAccount,
+            id: detailsAccount?.user?.id,
           },
           callback: (response) => {
             if (response) {

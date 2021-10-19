@@ -1,153 +1,11 @@
+import * as services from './services';
+
 export default {
   namespace: 'crmSaleParentsLead',
   state: {
-    data: [
-      {
-        id: 1,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 2,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 3,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 4,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 5,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 6,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 7,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 8,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-      {
-        id: 9,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        city: 'TP. HCM',
-        district: 'Quận 2',
-        basis: 'Cơ sở quận 2',
-        age: 25,
-        status: 'Lead mới',
-        tags: 'Quan tâm học phí ',
-        staff: 'Nguyễn Thị B',
-        search: 'Data MKT',
-      },
-    ],
-    branches: [
-      {
-        id: 1,
-        name: 'Nguyễn Văn Nam',
-      },
-      {
-        id: 2,
-        name: 'Nguyễn Văn',
-      },
-    ],
+    data: [],
+    city: [],
+    district: [],
     pagination: {
       total: 0,
     },
@@ -157,11 +15,7 @@ export default {
     },
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      data: [],
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
       data: payload.parsePayload,
@@ -176,7 +30,60 @@ export default {
         },
       },
     }),
+    SET_CITIES: (state, { payload }) => ({
+      ...state,
+      city: payload.parsePayload,
+    }),
+    SET_DISTRICTS: (state, { payload }) => ({
+      ...state,
+      district: payload.parsePayload,
+    }),
   },
-  effects: {},
+  effects: {
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DISTRICTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getDistricts, payload);
+        yield saga.put({
+          type: 'SET_DISTRICTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CITIES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCities, payload);
+        yield saga.put({
+          type: 'SET_CITIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+  },
   subscriptions: {},
 };

@@ -1302,20 +1302,20 @@ export async function getLeftMenuHRM() {
       title: 'Lương',
       key: 'salary',
       icon: 'icon icon-cash',
-      permission: [permissions.BANGLUONG],
+      permission: [permissions.HRM],
       children: [
         {
           title: 'Tính lương',
           key: 'salary-payroll',
           url: ['/quan-ly-nhan-su/tinh-luong'],
-          permission: [permissions.BANGLUONG],
+          permission: [permissions.HRM],
           pro: true,
         },
         {
           title: 'Bảng lương',
           key: 'salary-items',
           url: ['/quan-ly-nhan-su/bang-luong'],
-          permission: [permissions.BANGLUONG],
+          permission: [permissions.HRM],
           pro: true,
         },
       ],
@@ -1550,7 +1550,7 @@ export async function getLeftMenuCRM() {
     {
       title: 'Quản lý hệ thống',
       key: 'manage',
-      icon: 'icon icon-bullhorn',
+      icon: 'icon icon-setting',
       permission: [permissions.CRM],
       children: [
         {
@@ -1686,6 +1686,7 @@ export async function getLeftMenuCRM() {
             '/crm/sale/ph-lead/:id/chi-tiet/them-lich-su',
             '/crm/sale/ph-lead/:id/chi-tiet/gui-email',
             '/crm/sale/ph-lead/:id/chi-tiet/them-su-kien',
+            '/crm/sale/ph-lead/:id/chi-tiet/:detailId/chi-tiet-su-kien',
           ],
           permission: [permissions.CRM],
           pro: true,
@@ -1697,6 +1698,59 @@ export async function getLeftMenuCRM() {
             '/crm/sale/ph-tiem-nang',
             '/crm/sale/ph-tiem-nang/tao-moi',
             '/crm/sale/ph-tiem-nang/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Chat',
+      key: 'messages',
+      icon: 'icon icon-bubble2',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Facebook',
+          key: 'facebook',
+          url: ['/crm/chat/facebook'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Zalo',
+          key: 'zalo',
+          url: ['/crm/chat/zalo'],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Marketing',
+      key: 'marketing',
+      icon: 'icon icon-bullhorn',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Quản lý chương trình',
+          key: 'marketing-manage',
+          url: [
+            '/crm/tiep-thi/quan-ly-chuong-trinh',
+            '/crm/tiep-thi/quan-ly-chuong-trinh/tao-moi',
+            '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet',
+            '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/them-bai-viet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Data marketing',
+          key: 'marketing-data',
+          url: [
+            '/crm/tiep-thi/du-lieu',
+            '/crm/tiep-thi/du-lieu/tao-moi',
+            '/crm/tiep-thi/du-lieu/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,

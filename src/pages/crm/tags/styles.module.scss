@@ -1,0 +1,32 @@
+@import '@/assets/styles/mixins.scss';
+
+.model-tag {
+    display: flex;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    .tag{
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        margin: 0 auto;
+        font-style: normal;
+        font-family: $semi-bold__font-family;
+    }
+    .btn-cancel{
+        margin-left: 5px;
+        font-size: 10px !important;
+        cursor: pointer;
+    }
+}
+
+.wrapper-tag {
+    border: 1px solid #C4CDD4;
+    box-sizing: border-box;
+    border-radius: 3px;
+    padding: 7px;
+}
+
+.container-tag {
+    display: flex;
+}
