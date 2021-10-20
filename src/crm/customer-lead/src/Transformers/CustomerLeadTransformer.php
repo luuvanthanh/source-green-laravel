@@ -32,7 +32,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource'];
+    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -47,7 +47,7 @@ class CustomerLeadTransformer extends BaseTransformer
         $sex = null;
 
         foreach (CustomerLead::SEX as $key => $value) {
-            
+
             if ($value == $model->sex) {
                 $sex = $key;
             }
