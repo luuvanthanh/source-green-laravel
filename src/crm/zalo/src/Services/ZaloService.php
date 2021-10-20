@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Zalo\Services;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Zalo\Builder\MessageBuilder;
 use Zalo\Exceptions\ZaloResponseException;
 use Zalo\Exceptions\ZaloSDKException;
@@ -26,13 +27,19 @@ class ZaloService
             ))];
             $response = $zalo->get(ZaloEndPoint::API_OA_GET_LIST_FOLLOWER, $access_token, $params);
         } catch (ZaloResponseException $e) {
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
-            exit;
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (ZaloSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Zalo SDK returned an error: ' . $e->getMessage();
-            exit;
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         return $response->getDecodedBody();
@@ -52,12 +59,19 @@ class ZaloService
 
             $response = $zalo->get(ZaloEndPoint::API_OA_GET_USER_PROFILE, $accessToken, $params);
         } catch (ZaloResponseException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
 
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (ZaloSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Zalo SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         return $response->getDecodedBody();
@@ -76,12 +90,19 @@ class ZaloService
             $msgText = $msgBuilder->build();
             $response = $zalo->post(ZaloEndpoint::API_OA_SEND_MESSAGE, $accessToken, $msgText);
         } catch (ZaloResponseException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
 
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (ZaloSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Zalo SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         return $response->getDecodedBody();
@@ -101,12 +122,19 @@ class ZaloService
 
             $response = $zalo->get(ZaloEndpoint::API_OA_GET_LIST_RECENT_CHAT, $accessToken, $data);
         } catch (ZaloResponseException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
 
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (ZaloSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Zalo SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         return $response->getDecodedBody();
@@ -127,11 +155,19 @@ class ZaloService
 
             $response = $zalo->get(ZaloEndpoint::API_OA_GET_CONVERSATION, $accessToken, $data);
         } catch (ZaloResponseException $e) {
-            // When Graph returns an error
-            echo 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (ZaloSDKException $e) {
-            // When validation fails or other local issues
-            echo 'Zalo SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         return $response->getDecodedBody();

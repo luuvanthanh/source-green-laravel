@@ -60,36 +60,56 @@ class ZaloController extends Controller
 
     public function zaloFollower(Request $request)
     {
-        $zaloFollowers = ZaloService::listFollower($request->all());
+        try {
+            $zaloFollowers = ZaloService::listFollower($request->all());
 
-        return $this->success($zaloFollowers, trans('lang::messages.common.getListSuccess'));
+            return $this->success($zaloFollowers, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function zaloGetProfile(Request $request)
     {
-        $zaloProfile = ZaloService::zaloGetProfile($request->all());
+        try {
+            $zaloProfile = ZaloService::zaloGetProfile($request->all());
 
-        return $this->success($zaloProfile, trans('lang::messages.common.getListSuccess'));
+            return $this->success($zaloProfile, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function sendMessages(Request $request)
     {
-        $sendMessage = ZaloService::sendMessages($request->all());
+        try {
+            $sendMessage = ZaloService::sendMessages($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function listRecentChat(Request $request)
     {
-        $sendMessage = ZaloService::listRecentChat($request->all());
+        try {
+            $sendMessage = ZaloService::listRecentChat($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 
     public function getConversation(Request $request)
     {
-        $sendMessage = ZaloService::getConversation($request->all());
+        try {
+            $sendMessage = ZaloService::getConversation($request->all());
 
-        return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+            return $this->success($sendMessage, trans('lang::messages.common.getListSuccess'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 }

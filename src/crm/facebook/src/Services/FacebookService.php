@@ -2,6 +2,8 @@
 
 namespace GGPHP\Crm\Facebook\Services;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 class FacebookService
 {
     /**
@@ -20,14 +22,24 @@ class FacebookService
                 $attributes['user_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
 
-        return json_decode($graphNode);
+        return json_decode($graphNode)->data;
     }
 
     /**
@@ -45,9 +57,19 @@ class FacebookService
                 $attributes['user_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
@@ -70,14 +92,24 @@ class FacebookService
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
 
-        return json_decode($graphNode);
+        return json_decode($graphNode)->data;
     }
 
     /**
@@ -96,9 +128,19 @@ class FacebookService
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
@@ -122,14 +164,24 @@ class FacebookService
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
 
-        return json_decode($graphNode);
+        return json_decode($graphNode)->data;
     }
 
     /**
@@ -154,9 +206,19 @@ class FacebookService
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
 
         $graphNode = $response->getBody();
@@ -170,7 +232,7 @@ class FacebookService
 
         try {
             $pageId = $attributes['page_id'];
-             $response = $fb->post(
+            $response = $fb->post(
                 "$pageId/feed",
                 [
                     "message" => $attributes['message'],
@@ -179,10 +241,21 @@ class FacebookService
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
+
         $graphNode = $response->getBody();
 
         return json_decode($graphNode);
@@ -194,15 +267,26 @@ class FacebookService
 
         try {
             $pageId = $attributes['page_id'];
-             $response = $fb->get(
+            $response = $fb->get(
                 "$pageId/feed?fields=admin_creator,full_picture,icon,permalink_url",
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
-            return 'Graph returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
-            return 'Facebook SDK returned an error: ' . $e->getMessage();
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
+
         $graphNode = $response->getBody();
 
         return json_decode($graphNode);
