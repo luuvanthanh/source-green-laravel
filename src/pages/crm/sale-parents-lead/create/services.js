@@ -1,4 +1,5 @@
 import request from '@/utils/requestCrm';
+
 import { Helper, variables } from '@/utils';
 
 export function add(data = {}) {
@@ -296,6 +297,31 @@ export function getReferences(params = {}) {
     method: 'GET',
     params: {
       ...params,
+    },
+  });
+}
+
+export function getData(params = {}) {
+  return request('/v1/event-infos', {
+    method: 'GET',
+    params: {
+      ...params,
+      date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      time: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: params.time,
+        }),
+        format: variables.DATE_FORMAT.HOUR,
+        isUTC: false,
+      }),
     },
   });
 }

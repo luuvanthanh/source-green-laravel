@@ -1,3 +1,4 @@
+import * as categories from '@/services/categories';
 import * as services from './services';
 
 export default {
@@ -24,18 +25,27 @@ export default {
     parentLead: [],
     tags: [],
     events: [],
+    calendar:[],
+    data: [],
+    branchess: [],
   },
   reducers: {
+    SET_BRANCHESS: (state, { payload }) => ({
+      ...state,
+      branchess: payload.parsePayload,
+    }),
     INIT_STATE: (state) => ({
       ...state,
       detailsLead: {},
       isError: false,
       data: [],
+      events: [],
+      calendar: [],
     }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
-      detailsTags: payload,
+       details: payload.parsePayload,
+      calendar: payload.parsePayload,
     }),
     SET_CLASS_TYPES: (state, { payload }) => ({
       ...state,
@@ -382,6 +392,37 @@ export default {
         callback(response);
         yield saga.put({
           type: 'SET_REFERENCES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_DATA({ payload }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getData, payload);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCHES({ payload }, saga) {
+      try {
+        const response = yield saga.call(categories.getBranches, payload);
+        yield saga.put({
+          type: 'SET_BRANCHES',
           payload: response,
         });
       } catch (error) {
