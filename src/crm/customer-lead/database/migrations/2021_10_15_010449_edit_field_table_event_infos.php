@@ -26,7 +26,7 @@ class EditFieldTableEventInfos extends Migration
     public function down()
     {
         Schema::table('event_infos', function (Blueprint $table) {
-            $table->dateTime('date');
+            $table->dateTime('date')->change();
         });
     }
 }
