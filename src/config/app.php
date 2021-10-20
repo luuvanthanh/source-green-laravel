@@ -183,7 +183,8 @@ return [
         GGPHP\Crm\Province\Providers\ProvinceServiceProvider::class,
         GGPHP\Crm\CustomerLead\Providers\CustomerLeadServiceProvider::class,
         GGPHP\Crm\Marketing\Providers\MarketingServiceProvider::class,
-        GGPHP\Crm\CustomerPotential\Providers\CustomerPotentialServiceProvider::class
+        GGPHP\Crm\CustomerPotential\Providers\CustomerPotentialServiceProvider::class,
+        GGPHP\Crm\Employee\Providers\EmployeeServiceProvider::class
     ],
 
     /*

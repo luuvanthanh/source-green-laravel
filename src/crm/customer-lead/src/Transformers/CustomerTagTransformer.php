@@ -30,7 +30,7 @@ class CustomerTagTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['tag'];
+    protected $availableIncludes = ['tag','customerLead'];
 
     /**
      * Transform the User entity.
@@ -51,5 +51,14 @@ class CustomerTagTransformer extends BaseTransformer
         }
 
         return $this->item($customerTag->tag, new TagTransformer, 'Tag');
+    }
+
+    public function includeCustomerLead(CustomerTag $customerTag)
+    {   
+        if (empty($customerTag->customerLead)) {
+            return;
+        }
+
+        return $this->item($customerTag->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }

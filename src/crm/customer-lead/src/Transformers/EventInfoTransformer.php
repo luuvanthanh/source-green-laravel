@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\CustomerLead\Models\EventInfo;
 
 /**
  * Class EventInfoTransformer.
@@ -28,7 +29,7 @@ class EventInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['customerLead'];
 
     /**
      * Transform the User entity.
@@ -39,6 +40,26 @@ class EventInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $status = null;
+
+        foreach (EventInfo::STATUS as $key => $value) {
+
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
+        return [
+            'status' => $status,
+        ];
+    }
+
+    public function includeCustomerLead(EventInfo $eventInfo)
+    {
+        if (empty($eventInfo->customerLead)) {
+            return;
+        }
+
+        return $this->item($eventInfo->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }

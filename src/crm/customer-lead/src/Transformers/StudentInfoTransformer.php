@@ -29,7 +29,7 @@ class StudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['customerLead'];
 
     /**
      * Transform the User entity.
@@ -62,5 +62,14 @@ class StudentInfoTransformer extends BaseTransformer
             'relationship' => $relationship,
             'sex' => $sex,
         ];
+    }
+
+    public function includeCustomerLead(StudentInfo $studentInfo)
+    {
+        if (empty($studentInfo->customerLead)) {
+            return;
+        }
+
+        return $this->item($studentInfo->customerLead, new CustomerLeadTransformer, 'CustomerLead');
     }
 }

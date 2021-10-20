@@ -25,7 +25,7 @@ class EventInfoUpdateRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'date' => 'date_format:Y-m-d H:i',
+            'date' => 'date_format:Y-m-d',
             'location' => 'string',
             'status' => 'string',
             'customer_lead_id' => 'exists:customer_leads,id',

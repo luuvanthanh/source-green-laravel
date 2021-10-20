@@ -16,7 +16,7 @@ class ZaloController extends Controller
 
         $helper = $zalo->getRedirectLoginHelper();
 
-        $callBackUrl = 'https://fdbb-118-70-192-53.ngrok.io/api/v1/zalo/zalo-callback';
+        $callBackUrl = 'https://84dd-14-176-232-86.ngrok.io/api/v1/zalo/zalo-callback';
 
         $loginUrl = $helper->getLoginUrlByPage($callBackUrl); // This is login url
 
@@ -32,21 +32,25 @@ class ZaloController extends Controller
     {
         $data = $request->all();
 
-        switch ($data['event_name']) {
-            case 'user_send_text':
-                $messaging = $data['message']['text'];
-                \Log::info('send', $data);
-                \Log::info('send-zalo');
-                broadcast(new ZaloReceiveMessage([
-                    'sender' => $data['sender']['id'],
-                    'recipient' => $data['recipient']['id'],
-                    'message' => $messaging,
-                ]));
-                break;
-            default:
-                # code...
-                break;
+        if (isset($data['event_name'])) {
+            switch ($data['event_name']) {
+                case 'user_send_text':
+                    $messaging = $data['message']['text'];
+                    \Log::info('send', $data);
+                    \Log::info('send-zalo');
+                    broadcast(new ZaloReceiveMessage([
+                        'sender' => $data['sender']['id'],
+                        'recipient' => $data['recipient']['id'],
+                        'message' => $messaging,
+                    ]));
+                    break;
+                default:
+                    # code...
+                    break;
+            }
         }
+
+        return $this->success([], trans('lang::messages.common.getListSuccess'));
     }
 
     public function zaloRedirect(Request $request)

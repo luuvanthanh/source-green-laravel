@@ -53,6 +53,7 @@ class CustomerPotentialTransformer extends BaseTransformer
 
         return [
             'sex' => $sex,
+            "employee_info" => json_decode($model->employee_info),
             "user_create_info" => json_decode($model->user_create_info),
         ];
     }
@@ -83,20 +84,5 @@ class CustomerPotentialTransformer extends BaseTransformer
     public function includeCustomerPotentialTag(CustomerPotential $customerPotential)
     {
         return $this->collection($customerPotential->customerPotentialTag, new CustomerPotentialTagTransformer, 'CustomerPotentialTag');
-    }
-
-    public function includeCustomerPotentialEventInfo(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialEventInfo, new CustomerPotentialEventInfoTransformer, 'CustomerPotentialEventInfo');
-    }
-
-    public function includeCustomerPotentialStatusCare(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialStatusCare, new CustomerPotentialStatusCareTransformer, 'customerPotentialStatusCare');
-    }
-
-    public function includeCustomerPotentialReference(CustomerPotential $customerPotential)
-    {
-        return $this->collection($customerPotential->customerPotentialReference, new CustomerPotentialReferenceTransformer, 'CustomerPotentialReference');
     }
 }
