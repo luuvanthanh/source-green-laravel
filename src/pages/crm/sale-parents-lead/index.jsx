@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tag } from 'antd';
 import classnames from 'classnames';
-import { get, debounce } from 'lodash';
+import { isEmpty, get, debounce, size, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -15,7 +15,6 @@ import styles from '@/assets/styles/Common/common.scss';
 import AssignmentComponent from './components/assignment';
 import CheckCoincide from './components/check-coincide';
 
-const rowSelection = {};
 let isMounted = true;
 /**
  * Set isMounted
@@ -55,6 +54,7 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      dataSource: [],
     };
     setIsMounted(true);
   }
@@ -67,6 +67,40 @@ class Index extends PureComponent {
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  onSelectChange = (e) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item) => ({
+        ...item,
+        isActive: !!e.includes(item.id),
+      })),
+    }));
+  };
+
+  save = () => {
+    const { dispatch } = this.props;
+    const payload = {
+      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+    };
+    dispatch({
+      type: 'crmSaleParentsLead/ADD',
+      payload,
+      callback: (response, error) => {
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   /**
    * Set state properties
@@ -94,6 +128,13 @@ class Index extends PureComponent {
       type: 'crmSaleParentsLead/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataSource: response.parsePayload,
+          });
+        }
       },
     });
     history.push({
@@ -302,9 +343,12 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
-      data,
     } = this.props;
-    const { search } = this.state;
+    const { search, dataSource } = this.state;
+
+    const rowSelection = {
+      onChange: this.onSelectChange,
+    };
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
@@ -326,6 +370,16 @@ class Index extends PureComponent {
                 Tạo mới
               </Button>
               <AssignmentComponent />
+              <Button
+                color="success"
+                icon="plus"
+                // onClick={() => history.push(`${pathname}/tao-moi`)}
+                className="ml-2"
+                onClick={this.save}
+                disabled={!size(dataSource.filter((item) => item.isActive))}
+              >
+                Chuyển tiềm năng
+              </Button>
             </div>
           </div>
           <div className={styles['block-table']}>
@@ -415,7 +469,7 @@ class Index extends PureComponent {
             <Table
               bordered={false}
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
               rowSelection={{ ...rowSelection }}
               pagination={this.pagination(pagination)}
@@ -439,7 +493,6 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
 };
@@ -450,7 +503,6 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
   city: [],
   district: [],
 };
