@@ -80,18 +80,14 @@ class HealthInsuranceRepositoryEloquent extends CoreRepositoryEloquent implement
 
     public function createOrUpdate(array $attributes)
     {
-        $healthInsurrance = HealthInsurance::where('EmployeeId', $attributes['employeeId'])->first();
+        $healthInsurance = HealthInsurance::where('EmployeeId', $attributes['employeeId'])->first();
 
-        if (empty($healthInsurrance)) {
-            HealthInsurance::create($attributes);
+        if (is_null($healthInsurance)) {
+            $healthInsurance = HealthInsurance::create($attributes);
+        } else {
+            $healthInsurance->update($attributes);
         }
 
-        if (!empty($healthInsurrance)) {
-            $healthInsurrance->update($attributes);
-        }
-
-        $healthInsurrance = HealthInsurance::orderBy('Id')->get();
-
-        return parent::parserResult($healthInsurrance);
+        return parent::parserResult($healthInsurance);
     }
 }
