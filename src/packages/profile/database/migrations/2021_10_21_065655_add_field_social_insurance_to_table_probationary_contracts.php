@@ -14,7 +14,7 @@ class AddFieldSocialInsuranceToTableProbationaryContracts extends Migration
     public function up()
     {
         Schema::table('ProbationaryContracts', function (Blueprint $table) {
-            $table->boolean('IsSocialInsurance')->nullable()->default(false);
+            $table->boolean('IsSocialInsurance')->default(false);
         });
     }
 

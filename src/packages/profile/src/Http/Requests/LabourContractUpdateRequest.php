@@ -26,7 +26,17 @@ class LabourContractUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employeeId' => 'exists:Employees,Id',
+            'employeeId' => [
+                'exists:Employees,Id',
+                function ($attribute, $value, $fail) {
+                    $employeeId = request()->employeeId;
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+
+                    if (!is_null($labourContract)  && $labourContract->Id != request()->id) {
+                        return $fail("Hợp đồng không phải là mới nhất, không được phép chỉnh sửa.");
+                    }
+                },
+            ],
             'contractNumber' => [
                 'string',
                 function ($attribute, $value, $fail) {
@@ -44,12 +54,12 @@ class LabourContractUpdateRequest extends FormRequest
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->labours_contract)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
 
-                    if (!is_null($labourContract) && $value <= $labourContract->ContractFrom->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $labourContract->ContractFrom->format('d-m-Y'));
+                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractFrom->format('Y-m-d')) {
+                        return $fail("Thời hạn từ phải lớn hơn thời hạn từ của hợp đồng thử việc gần nhất " . $probationaryContract->ContractFrom->format('d-m-Y'));
                     }
 
-                    if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractFrom->format('Y-m-d')) {
-                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng gần nhất " . $probationaryContract->ContractFrom->format('d-m-Y'));
+                    if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
+                        return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất " . $labourContract->ContractTo->format('d-m-Y'));
                     }
                 },
             ],
