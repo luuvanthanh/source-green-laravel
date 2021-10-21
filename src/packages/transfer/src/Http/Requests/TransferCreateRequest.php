@@ -3,6 +3,8 @@
 namespace GGPHP\Transfer\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransferCreateRequest extends FormRequest
@@ -54,7 +56,18 @@ class TransferCreateRequest extends FormRequest
                     return $fail('Dữ liệu cơ sở mới, bộ phận mới, chức vụ mới đã có trong hệ thống ! vui lòng thay đổi 1 hoặc 2 trong 3 dữ liệu ');
                 }
             ],
-            'data.*.employeeId' => 'required',
+            'data.*.employeeId' => [
+                'exists:Employees,Id',
+                function ($attribute, $value, $fail) {
+                    $employeeId = request()->employeeId;
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+
+                    if (is_null($labourContract)  && is_null($probationaryContract)) {
+                        return $fail("Chưa có hợp đồng không được tạo điều chuyển.");
+                    }
+                },
+            ],
             'data.*.branchId' => 'required',
             'data.*.divisionId' => 'required',
             'data.*.positionId' => 'required',
