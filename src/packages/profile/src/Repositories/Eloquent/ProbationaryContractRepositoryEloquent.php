@@ -232,7 +232,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'positionId' => $probationaryContract->PositionId,
                 'divisionId' => $probationaryContract->DivisionId,
                 'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
-                'type' => 'LABOUR',
+                'type' => 'PROBATION',
                 'ModelId' => $probationaryContract->Id,
                 'ModelType' => ProbationaryContract::class,
             ];

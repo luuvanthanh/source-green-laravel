@@ -19,7 +19,7 @@ class OtherDeclaration extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'NumberOfWorkdays', 'Time',
+        'NumberOfWorkdays', 'Time', 'IsDiseaseSalary'
     ];
 
     /**
@@ -30,5 +30,4 @@ class OtherDeclaration extends UuidModel
     {
         return $this->hasMany(\GGPHP\OtherDeclaration\Models\OtherDeclarationDetail::class, 'OtherDeclarationId');
     }
-
 }
