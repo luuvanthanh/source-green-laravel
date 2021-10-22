@@ -44,7 +44,6 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         $this->wordExporterServices = $wordExporterServices;
         $this->positionLevelRepository = $positionLevelRepository;
         $this->scheduleRepositoryEloquent = $scheduleRepositoryEloquent;
-
     }
 
     /**
@@ -80,36 +79,7 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         \DB::beginTransaction();
         try {
             $tranfer = Transfer::create($attributes);
-            TransferDetailServices::add($tranfer->Id, $attributes['data']);
-
-            foreach ($attributes['data'] as $value) {
-                $dataPosition = [
-                    'employeeId' => $value['employeeId'],
-                    'branchId' => $value['branchId'],
-                    'positionId' => $value['positionId'],
-                    'divisionId' => $value['divisionId'],
-                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
-                    'type' => 'TRANFER',
-                ];
-
-                $this->positionLevelRepository->create($dataPosition);
-
-                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $tranfer->TimeApply->format('Y-m-d')], ['EndDate', '>=', $tranfer->TimeApply->format('Y-m-d')]])->first();
-
-                if (!is_null($divisionShift)) {
-                    $dataSchedule = [
-                        'employeeId' => $value['employeeId'],
-                        'shiftId' => $divisionShift->ShiftId,
-                        'startDate' => $tranfer->TimeApply->format('Y-m-d'),
-                        'endDate' => $tranfer->TimeApply->addYear()->format('Y-m-d'),
-                        'interval' => 1,
-                        'repeatBy' => 'daily',
-                    ];
-
-                    $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
-                }
-
-            }
+            TransferDetailServices::add($tranfer->Id, $attributes['data'], $tranfer->TimeApply);
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
@@ -123,11 +93,9 @@ class TransferRepositoryEloquent extends CoreRepositoryEloquent implements Trans
         $tranfer = Transfer::findOrfail($id);
         \DB::beginTransaction();
         try {
-
             $tranfer->update($attributes);
 
-            $tranfer->transferDetails()->delete();
-            TransferDetailServices::add($tranfer->Id, $attributes['data']);
+            TransferDetailServices::update($tranfer->Id, $attributes['data'], $tranfer->TimeApply);
 
             \DB::commit();
         } catch (\Exception $e) {

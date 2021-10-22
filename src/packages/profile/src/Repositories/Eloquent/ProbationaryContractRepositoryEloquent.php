@@ -156,6 +156,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'TotalAllowance' => $totalAllowance,
                 'BasicSalary' => $basicSalary
             ]);
+            $probationaryContract->employee->update(['DateOff' => null]);
 
             $dataPosition = [
                 'employeeId' => $attributes['employeeId'],
@@ -164,9 +165,9 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'divisionId' => $attributes['divisionId'],
                 'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
                 'type' => 'PROBATION',
+                'ModelId' => $probationaryContract->Id,
+                'ModelType' => ProbationaryContract::class,
             ];
-
-            $probationaryContract->employee->update(['DateOff' => null]);
 
             $this->positionLevelRepository->create($dataPosition);
 
@@ -224,6 +225,7 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'BasicSalary' => $basicSalary
             ]);
 
+            $positionLevel = $probationaryContract->positionLevel;
             $dataPosition = [
                 'employeeId' => $probationaryContract->EmployeeId,
                 'branchId' => $probationaryContract->BranchId,
@@ -231,9 +233,16 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
                 'divisionId' => $probationaryContract->DivisionId,
                 'startDate' => $probationaryContract->ContractFrom->format('Y-m-d'),
                 'type' => 'LABOUR',
+                'ModelId' => $probationaryContract->Id,
+                'ModelType' => ProbationaryContract::class,
             ];
 
-            $this->positionLevelRepository->create($dataPosition);
+            if (!is_null($positionLevel)) {
+                $this->positionLevelRepository->update($dataPosition, $positionLevel->Id);
+            } else {
+                $this->positionLevelRepository->create($dataPosition);
+            }
+
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $probationaryContract->DivisionId)->where([['StartDate', '<=', $probationaryContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $probationaryContract->ContractFrom->format('Y-m-d')]])->first();
 

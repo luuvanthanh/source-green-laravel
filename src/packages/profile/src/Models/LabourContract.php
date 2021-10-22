@@ -75,4 +75,12 @@ class LabourContract extends UuidModel
     {
         return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'LabourContractParameterValue', 'LabourContractId', 'ParameterValueId')->withPivot('Value');
     }
+
+    /**
+     * Define relations upload file
+     */
+    public function positionLevel()
+    {
+        return $this->morphOne('GGPHP\PositionLevel\Models\PositionLevel', 'positionLevelTable', 'ModelType', 'ModelId');
+    }
 }
