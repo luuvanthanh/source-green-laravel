@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
 
@@ -31,7 +32,7 @@ class CustomerPotentialTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare', 'customerPotentialReference'];
+    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare', 'customerPotentialReference', 'employee'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -84,5 +85,14 @@ class CustomerPotentialTransformer extends BaseTransformer
     public function includeCustomerPotentialTag(CustomerPotential $customerPotential)
     {
         return $this->collection($customerPotential->customerPotentialTag, new CustomerPotentialTagTransformer, 'CustomerPotentialTag');
+    }
+
+    public function includeEmployee(CustomerPotential $customerPotential)
+    {
+        if (empty($customerPotential->employee)) {
+            return;
+        }
+
+        return $this->item($customerPotential->employee, new EmployeeTransformer, 'Employee');
     }
 }
