@@ -46,8 +46,6 @@ class LabourContractCreateRequest extends FormRequest
                 },
             ],
             'typeOfContractId' => 'required|exists:TypeOfContracts,Id',
-            'year' => 'required',
-            'month' => 'required',
             'divisionId' => 'required|exists:Divisions,Id',
             'contractFrom' => [
                 'required', 'date',
@@ -66,7 +64,7 @@ class LabourContractCreateRequest extends FormRequest
                     }
                 },
             ],
-            'contractTo' => 'required|date',
+            'contractTo' => 'date',
             'positionId' => 'required|exists:Positions,Id',
             'work' => 'required|string',
             'workTime' => 'required|string',
