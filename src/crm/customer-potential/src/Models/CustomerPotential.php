@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerPotential\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -68,5 +69,10 @@ class CustomerPotential extends UuidModel
     public function customerPotentialReference()
     {
         return $this->hasMany(CustomerPotentialReference::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 }
