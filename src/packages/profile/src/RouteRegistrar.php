@@ -50,6 +50,8 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'ProbationaryContractController@exportWord',
                 'as' => 'probationary-contracts.word.export',
             ]);
+
+            \Route::resource('health-insurances', 'HealthInsuranceController');
         });
     }
 }
