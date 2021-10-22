@@ -10,6 +10,7 @@ use GGPHP\LateEarly\Models\LateEarly;
 use GGPHP\MaternityLeave\Models\MaternityLeave;
 use GGPHP\PositionLevel\Models\PositionLevel;
 use GGPHP\Timekeeping\Models\Timekeeping;
+use GGPHP\WorkOnline\Models\WorkOnline;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -306,5 +307,10 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
     public function account()
     {
         return $this->hasOne(\GGPHP\Clover\Models\EmployeeAccount::class, 'EmployeeId');
+    }
+
+    public function workOnline()
+    {
+        return $this->hasMany(WorkOnline::class, 'EmployeeId');
     }
 }
