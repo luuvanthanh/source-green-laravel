@@ -372,8 +372,7 @@ class Index extends PureComponent {
               <AssignmentComponent />
               <Button
                 color="success"
-                icon="plus"
-                // onClick={() => history.push(`${pathname}/tao-moi`)}
+                icon="next"
                 className="ml-2"
                 onClick={this.save}
                 disabled={!size(dataSource.filter((item) => item.isActive))}
