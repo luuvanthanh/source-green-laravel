@@ -13,7 +13,7 @@ class ProbationaryContract extends UuidModel
     protected $fillable = [
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'SalaryRatio',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
-        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary'
+        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary', 'IsSocialInsurance'
     ];
 
     protected $dateTimeFields = [
@@ -74,5 +74,13 @@ class ProbationaryContract extends UuidModel
     public function parameterValues()
     {
         return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'ProbationaryContractParameterValue', 'ProbationaryContractId', 'ParameterValueId')->withPivot('Value');
+    }
+
+    /**
+     * Define relations upload file
+     */
+    public function positionLevel()
+    {
+        return $this->morphOne('GGPHP\PositionLevel\Models\PositionLevel', 'positionLevelTable', 'ModelType', 'ModelId');
     }
 }

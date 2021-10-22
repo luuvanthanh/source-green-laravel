@@ -78,43 +78,33 @@ class AppointRepositoryEloquent extends CoreRepositoryEloquent implements Appoin
     {
         \DB::beginTransaction();
         try {
-            $tranfer = Appoint::create($attributes);
-            AppointDetailServices::add($tranfer->Id, $attributes['data']);
+            $appoint = Appoint::create($attributes);
+            AppointDetailServices::add($appoint->Id, $attributes['data'], $appoint->TimeApply);
 
-            foreach ($attributes['data'] as $value) {
-                $dataPosition = [
-                    'employeeId' => $value['employeeId'],
-                    'branchId' => $value['branchId'],
-                    'positionId' => $value['positionId'],
-                    'divisionId' => $value['divisionId'],
-                    'startDate' => $tranfer->TimeApply->format('Y-m-d'),
-                    'type' => 'APPOINT',
-                ];
-
-                $this->positionLevelRepository->create($dataPosition);
-
-                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $tranfer->TimeApply->format('Y-m-d')], ['EndDate', '>=', $tranfer->TimeApply->format('Y-m-d')]])->first();
-
-                if (!is_null($divisionShift)) {
-                    $dataSchedule = [
-                        'employeeId' => $value['employeeId'],
-                        'shiftId' => $divisionShift->ShiftId,
-                        'startDate' => $tranfer->TimeApply->format('Y-m-d'),
-                        'endDate' => $tranfer->TimeApply->addYear()->format('Y-m-d'),
-                        'interval' => 1,
-                        'repeatBy' => 'daily',
-                    ];
-
-                    $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
-                }
-
-            }
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();
         }
 
-        return parent::find($tranfer->Id);
+        return parent::find($appoint->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $appoint = Appoint::findOrfail($id);
+
+        \DB::beginTransaction();
+        try {
+            $appoint->update($attributes);
+
+            AppointDetailServices::update($appoint->Id, $attributes['data'], $appoint->TimeApply);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($appoint->Id);
     }
 
     public function getAppoint(array $attributes)

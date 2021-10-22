@@ -79,35 +79,25 @@ class DismissedRepositoryEloquent extends CoreRepositoryEloquent implements Dism
         \DB::beginTransaction();
         try {
             $dismissed = Dismissed::create($attributes);
-            DismissedDetailServices::add($dismissed->Id, $attributes['data']);
+            DismissedDetailServices::add($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
 
-            foreach ($attributes['data'] as $value) {
-                $dataPosition = [
-                    'employeeId' => $value['employeeId'],
-                    'branchId' => $value['branchId'],
-                    'positionId' => $value['positionId'],
-                    'divisionId' => $value['divisionId'],
-                    'startDate' => $dismissed->TimeApply->format('Y-m-d'),
-                    'type' => 'DISMISSED',
-                ];
+        return parent::find($dismissed->Id);
+    }
 
-                $this->positionLevelRepository->create($dataPosition);
+    public function update(array $attributes, $id)
+    {
+        $dismissed = Dismissed::findOrfail($id);
 
-                $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $value['divisionId'])->where([['StartDate', '<=', $dismissed->TimeApply->format('Y-m-d')], ['EndDate', '>=', $dismissed->TimeApply->format('Y-m-d')]])->first();
+        \DB::beginTransaction();
+        try {
+            $dismissed->update($attributes);
 
-                if (!is_null($divisionShift)) {
-                    $dataSchedule = [
-                        'employeeId' => $value['employeeId'],
-                        'shiftId' => $divisionShift->ShiftId,
-                        'startDate' => $dismissed->TimeApply->format('Y-m-d'),
-                        'endDate' => $dismissed->TimeApply->addYear()->format('Y-m-d'),
-                        'interval' => 1,
-                        'repeatBy' => 'daily',
-                    ];
+            DismissedDetailServices::update($dismissed->Id, $attributes['data'], $dismissed->TimeApply);
 
-                    $this->scheduleRepositoryEloquent->createOrUpdate($dataSchedule);
-                }
-            }
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollback();

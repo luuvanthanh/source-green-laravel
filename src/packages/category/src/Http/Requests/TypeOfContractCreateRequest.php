@@ -27,7 +27,6 @@ class TypeOfContractCreateRequest extends FormRequest
             'name' => 'required|string|unique:TypeOfContracts,Name',
             'code' => 'required|string|unique:TypeOfContracts,Code',
             "name" => 'required',
-            "year" => 'required',
             "month" => 'required',
             "paramValue" => 'required|array',
             // "paramFormula" => 'required|array',

@@ -23,7 +23,8 @@ class Children extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'FullName', 'Gender', 'Birthday', 'Status', 'Relationship', 'IsDependentPerson'
+        'EmployeeId', 'FullName', 'Gender', 'Birthday', 'Status', 'Relationship', 'IsDependentPerson',
+        'TaxCode', 'DedectionTimeFrom', 'DedectionTimeTo', 'FileImage'
     ];
 
     /**

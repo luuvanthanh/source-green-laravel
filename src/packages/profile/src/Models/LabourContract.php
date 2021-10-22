@@ -13,7 +13,7 @@ class LabourContract extends UuidModel
     protected $fillable = [
         'ContractNumber', 'ContractDate', 'TypeOfContractId', 'EmployeeId', 'Year',
         'Month', 'DivisionId', 'ContractFrom', 'ContractTo', 'PositionId', 'Work',
-        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary'
+        'WorkTime', 'BranchId', 'TotalAllowance', 'BasicSalary','IsSocialInsurance'
     ];
 
     protected $dateTimeFields = [
@@ -74,5 +74,13 @@ class LabourContract extends UuidModel
     public function parameterValues()
     {
         return $this->belongsToMany(\GGPHP\Category\Models\ParamaterValue::class, 'LabourContractParameterValue', 'LabourContractId', 'ParameterValueId')->withPivot('Value');
+    }
+
+    /**
+     * Define relations upload file
+     */
+    public function positionLevel()
+    {
+        return $this->morphOne('GGPHP\PositionLevel\Models\PositionLevel', 'positionLevelTable', 'ModelType', 'ModelId');
     }
 }

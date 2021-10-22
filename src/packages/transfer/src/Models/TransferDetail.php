@@ -40,6 +40,14 @@ class TransferDetail extends UuidModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function transfer()
+    {
+        return $this->belongsTo(Transfer::class, 'TransferId');
+    }
+
+    /**
      * Define relations position
      */
     public function position()
@@ -61,5 +69,13 @@ class TransferDetail extends UuidModel
     public function branch()
     {
         return $this->hasOne(\GGPHP\Category\Models\Branch::class, 'Id', 'BranchId');
+    }
+
+    /**
+     * Define relations upload file
+     */
+    public function positionLevel()
+    {
+        return $this->morphOne('GGPHP\PositionLevel\Models\PositionLevel', 'positionLevelTable', 'ModelType', 'ModelId');
     }
 }
