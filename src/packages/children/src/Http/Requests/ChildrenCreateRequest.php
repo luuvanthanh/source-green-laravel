@@ -30,6 +30,8 @@ class ChildrenCreateRequest extends FormRequest
             'data' => 'required|array',
             'data.*.fullName' => 'required|string',
             'data.*.birthday' => 'date|date_format:Y-m-d',
+            'data.*.DedectionTimeFrom' => 'date|date_format:Y-m-d',
+            'data.*.DedectionTimeTo' => 'date|date_format:Y-m-d',
         ];
     }
 }
