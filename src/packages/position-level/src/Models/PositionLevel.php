@@ -20,7 +20,7 @@ class PositionLevel extends UuidModel
      */
     protected $fillable = [
         'EmployeeId', 'BranchId', 'PositionId', 'DivisionId',
-        'StartDate', 'EndDate', 'Type',
+        'StartDate', 'EndDate', 'Type', 'ModelId', 'ModelType'
     ];
 
     protected $dateTimeFields = [
@@ -74,5 +74,13 @@ class PositionLevel extends UuidModel
     public function division()
     {
         return $this->hasOne(\GGPHP\Category\Models\Division::class, 'Id', 'DivisionId');
+    }
+
+    /**
+     * Define relations object
+     */
+    public function positionLevelTable()
+    {
+        return $this->morphTo();
     }
 }

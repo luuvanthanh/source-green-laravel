@@ -3,6 +3,8 @@
 namespace GGPHP\Dismissed\Http\Requests;
 
 use Carbon\Carbon;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DismissedCreateRequest extends FormRequest
@@ -43,7 +45,18 @@ class DismissedCreateRequest extends FormRequest
                 },
             ],
             'data' => 'required|array',
-            'data.*.employeeId' => 'required',
+            'data.*.employeeId' => [
+                'exists:Employees,Id',
+                function ($attribute, $value, $fail) {
+                    $employeeId = request()->employeeId;
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+
+                    if (is_null($labourContract)  && is_null($probationaryContract)) {
+                        return $fail("Chưa có hợp đồng không được tạo quyết định.");
+                    }
+                },
+            ],
             'data.*.branchId' => 'required',
             'data.*.divisionId' => 'required',
             'data.*.positionId' => 'required',

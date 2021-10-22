@@ -40,6 +40,14 @@ class AppointDetail extends UuidModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function appoint()
+    {
+        return $this->belongsTo(Appoint::class, 'AppointId');
+    }
+
+    /**
      * Define relations position
      */
     public function position()

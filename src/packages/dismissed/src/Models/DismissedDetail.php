@@ -40,6 +40,14 @@ class DismissedDetail extends UuidModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dismissed()
+    {
+        return $this->belongsTo(Dismissed::class, 'DismissedId');
+    }
+
+    /**
      * Define relations position
      */
     public function position()

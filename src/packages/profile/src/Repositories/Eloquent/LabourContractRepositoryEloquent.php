@@ -164,6 +164,8 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 'divisionId' => $attributes['divisionId'],
                 'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
                 'type' => 'LABOUR',
+                'ModelId' => $labourContract->Id,
+                'ModelType' => LabourContract::class,
             ];
 
             $labourContract->employee->update(['DateOff' => null]);
@@ -219,6 +221,7 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 'BasicSalary' => $basicSalary
             ]);
 
+            $positionLevel = $labourContract->positionLevel;
             $dataPosition = [
                 'employeeId' => $labourContract->EmployeeId,
                 'branchId' => $labourContract->BranchId,
@@ -226,9 +229,15 @@ class LabourContractRepositoryEloquent extends CoreRepositoryEloquent implements
                 'divisionId' => $labourContract->DivisionId,
                 'startDate' => $labourContract->ContractFrom->format('Y-m-d'),
                 'type' => 'LABOUR',
+                'ModelId' => $labourContract->Id,
+                'ModelType' => LabourContract::class,
             ];
 
-            $this->positionLevelRepository->create($dataPosition);
+            if (!is_null($positionLevel)) {
+                $this->positionLevelRepository->update($dataPosition, $positionLevel->Id);
+            } else {
+                $this->positionLevelRepository->create($dataPosition);
+            }
 
             $divisionShift = \GGPHP\ShiftSchedule\Models\DivisionShift::where('DivisionId', $labourContract->DivisionId)->where([['StartDate', '<=', $labourContract->ContractFrom->format('Y-m-d')], ['EndDate', '>=', $labourContract->ContractFrom->format('Y-m-d')]])->first();
 
