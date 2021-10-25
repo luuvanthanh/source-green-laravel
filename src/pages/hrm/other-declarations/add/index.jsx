@@ -354,8 +354,18 @@ class Index extends PureComponent {
               <div className="row">
                 <div className="col-lg-12">
                   <FormItem
+                    label="Tính lương mùa dịch"
+                    name="isDiseaseSalary"
+                    type={variables.CHECKBOX_FORM}
+                    valuePropName="checked"
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-lg-12">
+                  <FormItem
                     data={categories?.paramaterValues}
-                    label="KHAI BÁO"
+                    label="Khai báo"
                     name="paramaterValues"
                     rules={[variables.RULES.EMPTY]}
                     type={variables.SELECT_MUTILPLE}

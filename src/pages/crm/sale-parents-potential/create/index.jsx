@@ -37,7 +37,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'crmSaleParentsPotentialAdd/GET_DATA',
+        type: 'crmSaleParentsPotentialAdd/GET_DETAILS',
         payload: params,
       });
     }

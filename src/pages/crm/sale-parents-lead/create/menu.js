@@ -18,7 +18,7 @@ export const menu = [{
   },
   {
     key: 'leadStatus',
-    label: 'Tình trạng Lead',
+    label: 'Tình trạng chăm sóc',
   },
   {
     key: 'account',

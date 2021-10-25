@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form,Tag } from 'antd';
+import { Form, Tag } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
-import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import styles from '@/assets/styles/Common/common.scss';
 
-const rowSelection = {};
 let isMounted = true;
 /**
  * Set isMounted
@@ -33,6 +33,8 @@ const mapStateToProps = ({ crmSaleParentsPotential, loading }) => ({
   error: crmSaleParentsPotential.error,
   pagination: crmSaleParentsPotential.pagination,
   branches: crmSaleParentsPotential.branches,
+  city: crmSaleParentsPotential.city,
+  district: crmSaleParentsPotential.district,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,12 +52,14 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      dataSource: [],
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -88,6 +92,13 @@ class Index extends PureComponent {
       type: 'crmSaleParentsPotential/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataSource: response.parsePayload,
+          });
+        }
       },
     });
     history.push({
@@ -124,14 +135,14 @@ class Index extends PureComponent {
     this.debouncedSearch(e.target.value, type);
   };
 
-    /**
+  /**
    * Function change select
    * @param {object} e value of select
    * @param {string} type key of object search
    */
-     onChangeSelect = (e, type) => {
-      this.debouncedSearch(e, type);
-    };
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
 
   /**
    * Function set pagination
@@ -170,6 +181,18 @@ class Index extends PureComponent {
     });
   };
 
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_CITIES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_DISTRICTS',
+      payload: {},
+    });
+  };
+
   /**
    * Function header table
    */
@@ -182,14 +205,20 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        render: (record) => record?.index,
         fixed: 'left',
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Tên',
         key: 'name',
         width: 250,
-        render: (record) => record?.name,
+        render: (record) => (
+          <AvatarTable
+            fileImage={Helper.getPathAvatarJson(record.file_image)}
+            fullName={record.full_name}
+          />
+        ),
       },
       {
         title: 'Số điện thoại',
@@ -207,51 +236,49 @@ class Index extends PureComponent {
         title: 'Tỉnh thành',
         key: 'city',
         width: 150,
-        render: (record) => record?.city,
+        render: (record) => <Text size="normal">{get(record, 'city.name')}</Text>,
       },
       {
         title: 'Quận',
         key: 'district',
         width: 150,
-        render: (record) => record?.district,
+        render: (record) => <Text size="normal">{get(record, 'district.name')}</Text>,
       },
       {
         title: 'Cơ sở quan tâm',
-        key: 'basis',
+        key: 'facility',
         width: 200,
-        render: (record) => record?.basis,
+        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
       },
       {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => record?.age,
+        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
       },
       {
         title: 'Tình trạng Lead',
         key: 'status',
         width: 150,
-        render: (record) => record?.status,
+        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
       },
       {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => (
-          <Tag color="#27a600">{record?.tags}</Tag>
-        )
+        render: (record) => <Tag color="#27a600">{get(record, 'name')}</Tag>,
       },
       {
         title: 'Nhân viên chăm sóc',
         key: 'staff',
         width: 250,
-        render: (record) => record?.staff,
+        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',
         key: 'search',
         width: 150,
-        render: (record) => record?.search,
+        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
       },
       {
         key: 'action',
@@ -259,7 +286,12 @@ class Index extends PureComponent {
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success" onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}>Chi tiết</Button>
+            <Button
+              color="success"
+              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
+            >
+              Chi tiết
+            </Button>
           </div>
         ),
       },
@@ -269,13 +301,14 @@ class Index extends PureComponent {
 
   render() {
     const {
+      city,
+      district,
       match: { params },
       pagination,
       loading: { effects },
-      data,
-      branches,
     } = this.props;
-    const { search } = this.state;
+    const { search, dataSource } = this.state;
+
     const loading = effects['crmSaleParentsPotential/GET_DATA'];
     return (
       <>
@@ -303,9 +336,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
-                    name="a"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    data={city}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn Tỉnh thành"
@@ -313,9 +346,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
-                    name="b"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    data={district}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn Quận huyện"
@@ -323,7 +356,6 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
                     name="c"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
@@ -333,7 +365,6 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
                     name="d"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
@@ -343,7 +374,6 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
                     name="e"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
@@ -353,7 +383,6 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
                     name="f"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
@@ -363,7 +392,6 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-3">
                   <FormItem
-                    data={branches}
                     name="f"
                     onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
@@ -376,9 +404,8 @@ class Index extends PureComponent {
             <Table
               bordered={false}
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
-              rowSelection={{ ...rowSelection }}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -400,8 +427,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  branches: PropTypes.arrayOf(PropTypes.any),
+  city: PropTypes.arrayOf(PropTypes.any),
+  district: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -410,8 +437,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
-  branches: [],
+  city: [],
+  district: [],
 };
 
 export default Index;

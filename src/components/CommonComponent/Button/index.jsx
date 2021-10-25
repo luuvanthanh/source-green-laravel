@@ -48,6 +48,7 @@ const ICON_BUTTON = {
   'calendar-plus': <span className="icon-calendar-plus" />,
   'phone-plus': <span className="icon-phone-plus" />,
   'email-plus': <span className="icon-email-plus" />,
+  next: <span className="icon-next" />,
 };
 export default function ButtonCustom({
   children,
