@@ -114,7 +114,11 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
             foreach ($employees as &$employee) {
+                if ($otherDeclaration->IsDiseaseSalary) {
+                    $employee = $this->calculatorSalaryDisease($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                } else {
                     $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                }
             }
 
             $payroll->payrollDetail()->delete();
@@ -374,7 +378,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $unionDues = eval('return ' . $unionDues . ';');
             }
             $parameter['PHI_CONG_DOAN'] = $unionDues;
- 
+
             // phụ cấp xe bus
             $busAllowance = 0;
             $formularBusAllowance = ParamaterFormula::where('Code', 'PC_BUS')->first();
@@ -454,7 +458,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $rentalIncome = 0;
             $formularRentalIncome = ParamaterFormula::where('Code', 'THUNHAP_TINHTHUE')->first();
 
-            if($totalIncomeMonth  >  $dependentTotal){
+            if ($totalIncomeMonth  >  $dependentTotal) {
                 if (!is_null($formularRentalIncome)) {
                     $rentalIncome = $this->getFormular(json_decode($formularRentalIncome->Recipe), $contract, $parameter);
                     $rentalIncome = eval('return ' . $rentalIncome . ';');
@@ -467,7 +471,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             // thuế tncn
             $personalIncomeTax = 0;
             if ($rentalIncome > 0) {
-               
+
                 if ($isProbation) {
                     if ($totalIncome >= 2000000) {
                         $personalIncomeTax = $totalIncome * 0.1;
@@ -475,10 +479,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 } else {
                     $tax = ParameterTax::where(function ($query) use ($rentalIncome) {
                         $query->where([['From', '<=', (int) $rentalIncome], ['To', '>=', (int) $rentalIncome]])
-                        ->orWhere([['From', '<=', (int) $rentalIncome], ['To', null]]);
+                            ->orWhere([['From', '<=', (int) $rentalIncome], ['To', null]]);
                     })->first();
-                    
-                  
+
+
                     if (!is_null($tax)) {
                         switch ($tax->Code) {
                             case 'CAP_1':
@@ -492,7 +496,287 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 }
             }
             $parameter['THUE_TNCN'] = $personalIncomeTax;
-            
+
+            //lương thực nhận
+            $actuallyReceived = 0;
+            $formularActuallyReceived = ParamaterFormula::where('Code', 'LUONG_THUC_NHAN')->first();
+            if (!is_null($formularActuallyReceived)) {
+                $actuallyReceived = $this->getFormular(json_decode($formularActuallyReceived->Recipe), $contract, $parameter);
+                $actuallyReceived = eval('return ' . $actuallyReceived . ';');
+            }
+            $parameter['LUONG_THUC_NHAN'] = $actuallyReceived;
+
+            $dataInsert[] = [
+                'Id' => \Webpatser\Uuid\Uuid::generate(4)->string,
+                'PayrollId' => $payroll->Id,
+                'EmployeeId' => $employee->Id,
+                'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
+                'IsProbation' => $isProbation, //thử việc
+                'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
+                'IsSocialInsurance' => false, //Không tham gia BHXH
+                'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
+                'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
+                'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
+                'KpiBonus' => null, //THƯỞNG KPI
+                'OtTax' => (int) $totalOtFax, //Tính thuế
+                'OtNoTax' => (int) $totalOtNoFax, //"không tính thuế"
+                'UnpaidLeave' => null, //Nghỉ không lương
+                'TotalWork' => (int) $totalWorks, //Ngày công thực tế trong tháng
+                'TotalIncomeMonth' => (int) $totalIncomeMonth, //TỔNG THU NHẬP TRONG THÁNG
+                'SocialInsuranceEmployee' => (int) $socialInsuranceEmployee, //BHXH nld
+                'SocialInsuranceAdjustedEmployee' => $socialInsuranceAdjustedEmployee, //Điều chỉnh BHXH nld
+                'SocialInsuranceCompany' => (int) $socialInsuranceCompany, //BHXH cty
+                'SocialInsuranceAdjustedCompany' => $socialInsuranceAdjustedCompany, //Điều chỉnh BHXH cty
+                'HealthInsuranceEmployee' => (int) $healthInsuranceEmployee, //BHYT  nld
+                'HealthInsuranceCompany' => (int) $healthInsuranceCompany, //BHYT  cty
+                'UnemploymentInsuranceEmployee' => (int) $unemploymentInsuranceEmployee, //BHTN nld
+                'UnemploymentInsuranceCompany' => (int) $unemploymentInsuranceCompany, //BHTN cty
+                'UnionDues' => $unionDues, //Phí công đoàn
+                'DependentPerson' => $dependentPerson, //Số người phụ thuộc
+                'Eeduce' => $eeduce, //Tổng giảm trừ bản thân và người phụ thuộc
+                'Charity' => $charity, //Đóng góp từ thiện
+                'TotalReduce' => (int) $dependentTotal, //Tổng các khoản giảm trừ
+                'RentalIncome' => (int) $rentalIncome, //Thu nhập tính thuế
+                'PersonalIncomeTax' => (int) $personalIncomeTax, //Thuế TNCN
+                'SocialInsurancePayment' => $socialInsurancePayment, //Thanh toán từ BHXH
+                'Advance' => $advance, // tạm ứng
+                'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
+                'Note' => null, // ghi chú
+            ];
+        }
+
+        return true;
+    }
+
+    public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
+    {
+        $parameter = [];
+        $dependentPerson = $employee->children->count();
+        $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
+        $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+
+
+        $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])->totalWorks;
+        $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
+
+        $incurredAllowance = [];
+
+        $socialInsuranceAdjustedEmployee = 0;
+        $socialInsuranceAdjustedCompany = 0;
+        $charity = 0;
+        $socialInsurancePayment = 0;
+        $advance = 0;
+        $isMaternity = false;
+        $bassicSalary = 0;
+
+        $maternityLeave = $employee->maternityLeave()->where(function ($q2) use ($startDate) {
+            $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $startDate]]);
+        })->first();
+
+        if (!is_null($otherDeclarationDetail)) {
+            $isMaternity = true;
+        }
+
+        $incurredAllowance = json_encode($incurredAllowance);
+
+        $totalBusRegistration = $this->busRegistrationRepositoryEloquent->calculatorBusRegistrationReport($employee, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])->totalBusRegistration;
+
+        $isProbation = false;
+
+        $contract = $employee->labourContract()->orderBy('CreationTime')->first();
+
+        if (is_null($contract)) {
+            $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
+            if (!is_null($contract)) {
+                $isProbation = true;
+            }
+        }
+        $dateStartWork = null;
+
+        if (!is_null($contract) && $totalWorks > 0) {
+            $dateStartWork = $contract->ContractFrom->format('Y-m-d');
+            $parameterValues = $contract->parameterValues;
+
+            $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
+            $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
+            $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
+
+            // phụ cấp theo hd
+            $contractAllowance = 0;
+
+            //Lương cơ bản và phụ cấp
+            $basicSalaryAndAllowance = [];
+            foreach ($parameterValues as $parameterValue) {
+
+                if ($parameterValue->Code == "LUONG_CB" || $parameterValue->Code == "PC_DONG_PHUC" || $parameterValue->Code == "PC_AN_TRUA" || $parameterValue->Code == "PC_DIEN_THOAI") {
+                    if ($parameterValue->Code != "LUONG_CB") {
+                        $contractAllowance += $parameterValue->pivot->Value;
+                    }
+
+                    if ($parameterValue->Code == "LUONG_CB") {
+                        $bassicSalary = $parameterValue->pivot->Value;
+                    }
+
+                    $basicSalaryAndAllowance[] = [
+                        'code' => $parameterValue->Code,
+                        'name' => $parameterValue->Name,
+                        'value' => $parameterValue->pivot->Value,
+                    ];
+
+                    if (!array_key_exists($parameterValue->Code, $columnBasicSalaryAndAllowance)) {
+                        $columnBasicSalaryAndAllowance[$parameterValue->Code] = [
+                            'code' => $parameterValue->Code,
+                            'name' => $parameterValue->Name,
+                        ];
+                    }
+                }
+            }
+
+            $basicSalaryAndAllowance = json_encode($basicSalaryAndAllowance);
+
+            //Luong theo giờ
+            $salaryByHour = 0;
+            $formularSalaryByHour = ParamaterFormula::where('Code', 'LUONG_THEO_GIO')->first();
+
+            if (!is_null($formularSalaryByHour)) {
+                $salaryByHour = $this->getFormular(json_decode($formularSalaryByHour->Recipe), $contract, $parameter);
+                $salaryByHour = eval('return ' . $salaryByHour . ';');
+            }
+            $parameter['LUONG_THEO_GIO'] = $salaryByHour;
+
+            // Lương làm thêm không tính thuế
+            $totalOtNoFax = 0;
+            $parameter['OT_KHONG_TINH_THUE'] = $totalOtNoFax;
+
+            //Tổng lương làm thêm
+            $totalOt = 0;
+            $parameter['TOTAL_OT'] = $totalOt;
+
+            // Lương làm thêm tính thuế
+            $totalOtFax = 0;
+            $parameter['OT_TINH_THUE'] = $totalOtFax;
+
+            //bhxh nld
+            $socialInsuranceEmployee = 0;
+            $parameter['BHXH_NLD'] = $socialInsuranceEmployee;
+
+            //bhyt nld
+            $healthInsuranceEmployee = 0;
+            $parameter['BHYT_NLD'] = $healthInsuranceEmployee;
+
+            //bhtn nld
+            $unemploymentInsuranceEmployee = 0;
+            $parameter['BHTN_NLD'] = $unemploymentInsuranceEmployee;
+
+            //Tổng bh nld
+            $totalEmployeeInsurance = 0;
+            $parameter['TONG_BH_NLD'] = $totalEmployeeInsurance;
+
+            //bhxh cty
+            $socialInsuranceCompany = 0;
+            $parameter['BHXH_CTT'] = $socialInsuranceCompany;
+
+            //bhyt cty
+            $healthInsuranceCompany = 0;
+            $parameter['BHYT_CTT'] = $healthInsuranceCompany;
+
+            //bhtn cty
+            $unemploymentInsuranceCompany = 0;
+            $parameter['BHTN_CTT'] = $unemploymentInsuranceCompany;
+
+            //Tổng bh cty
+            $totalCompanyInsurance = 0;
+            $parameter['TONG_BH_CTT'] = $totalCompanyInsurance;
+
+            //phí công đoàn
+            $unionDues = 0;
+            $parameter['PHI_CONG_DOAN'] = $unionDues;
+
+            // phụ cấp xe bus
+            $busAllowance = 0;
+            $parameter['PC_BUS'] = $busAllowance;
+
+            //phụ cấp hàng tháng
+            $monthlyAllowance = 0;
+            $parameter['PC_HANGTHANG'] = $monthlyAllowance;
+
+            //tổng thu nhập
+            $totalIncome = 0;
+
+            $parameter['PC_THEOHD'] = $contractAllowance;
+
+            $formularTotalIncome = ParamaterFormula::where('Code', 'TONG_THUNHAP')->first();
+
+            if (!is_null($formularTotalIncome)) {
+                $totalIncome = $this->getFormular(json_decode($formularTotalIncome->Recipe), $contract, $parameter);
+                $totalIncome = eval('return ' . $totalIncome . ';');
+            }
+            $parameter['TONG_THUNHAP'] = $bassicSalary;
+
+            //tổng thu nhập trong tháng
+            $totalIncomeMonth = 0;
+            $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_CHINH_THUC')->first();
+
+            if ($isProbation) {
+                $formularTotalIncomeMonth = ParamaterFormula::where('Code', 'TONG_THUNHAP_TRONG_THANG_NV_THU_VIEC')->first();
+            }
+
+
+            if (!is_null($formularTotalIncomeMonth)) {
+                $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
+                $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
+            }
+            $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
+
+            // tổng giảm trừ bản thân và người phụ thuộc
+            $eeduce = 0;
+            $formularDependentPerson = ParamaterFormula::where('Code', 'TONG_GIAMTRU_BANTHAN_PHUTHUOC')->first();
+
+            if (!is_null($formularDependentPerson)) {
+                $eeduce = $this->getFormular(json_decode($formularDependentPerson->Recipe), $contract, $parameter);
+                $eeduce = eval('return ' . $eeduce . ';');
+            }
+            $parameter['TONG_GIAMTRU_BANTHAN_PHUTHUOC'] = $eeduce;
+
+            //tổng giảm trừ
+            $dependentTotal = 0;
+            $parameter['TONG_GIAMTRU'] = $dependentTotal;
+
+            // thu nhập tính thuế
+            $rentalIncome = 0;
+            // thuế tncn
+            $personalIncomeTax = 0;
+
+            if ($totalIncomeMonth > 11000000) {
+                $rentalIncome = $totalIncomeMonth - $eeduce;
+
+                $tax = ParameterTax::where(function ($query) use ($rentalIncome) {
+                    $query->where([['From', '<=', (int) $rentalIncome], ['To', '>=', (int) $rentalIncome]])
+                        ->orWhere([['From', '<=', (int) $rentalIncome], ['To', null]]);
+                })->first();
+
+                if (!is_null($tax)) {
+                    switch ($tax->Code) {
+                        case 'CAP_1':
+                            $personalIncomeTax = $rentalIncome * ($tax->Fax / 100);
+                            break;
+                        default:
+                            $personalIncomeTax = round($this->calculateTax($rentalIncome, $tax->Fax));
+                            break;
+                    }
+                }
+            }
+
+            $parameter['THUNHAP_TINHTHUE'] = $rentalIncome;
+
+            $parameter['THUE_TNCN'] = $personalIncomeTax;
+
             //lương thực nhận
             $actuallyReceived = 0;
             $formularActuallyReceived = ParamaterFormula::where('Code', 'LUONG_THUC_NHAN')->first();
@@ -608,10 +892,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $valueFirst = 0;
         $valueEnd = 0;
         for ($i = 0; $i < count($parameterTax); $i++) {
-            if($i == 0){
+            if ($i == 0) {
                 $valueFirst = $parameterTax[$i]->To * ($parameterTax[$i]->Fax / 100);
-            }else{
-                $temp += ( $parameterTax[$i]->To - $parameterTax[$i - 1]->To) * ($parameterTax[$i]->Fax / 100);
+            } else {
+                $temp += ($parameterTax[$i]->To - $parameterTax[$i - 1]->To) * ($parameterTax[$i]->Fax / 100);
             }
 
             if ($i == count($parameterTax) - 1) {
