@@ -58,7 +58,7 @@ class DataMarketingRepositoryEloquent extends BaseRepository implements DataMark
     public function getDataMarketing(array $attributes)
     {
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereLike('name', $attributes['key'])
+            $this->model = $this->model->whereLike('full_name', $attributes['key'])
                 ->orWhereLike('phone', $attributes['key'])->orWhereLike('email', $attributes['key']);
         }
 
