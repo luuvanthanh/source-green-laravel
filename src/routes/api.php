@@ -167,5 +167,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\Zalo\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\WorkOnline\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });
     // });

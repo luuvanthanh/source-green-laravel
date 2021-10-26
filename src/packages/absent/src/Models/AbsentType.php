@@ -3,6 +3,7 @@
 namespace GGPHP\Absent\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\WorkOnline\Models\WorkOnline;
 
 class AbsentType extends UuidModel
 {
@@ -24,6 +25,7 @@ class AbsentType extends UuidModel
     const ADD_TIME = 'ADD_TIME';
     const GO_OUT = 'GO_OUT';
     const MATERNITY_LEAVE = 'MATERNITY_LEAVE';
+    const WORK_ONLINE = 'WORK_ONLINE';
 
     protected $fillable = [
         'Name', 'Status', 'Type', 'Code', 'IsTimeKeeping',
