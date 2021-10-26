@@ -17,6 +17,9 @@ export function get(data = {}) {
         'search',
         'reference.statusParentLead',
         'studentInfo',
+        'employee',
+        'statusParentLead',
+        'customerTag.tag'
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
