@@ -61,7 +61,7 @@ class StudentController extends Controller
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function import()
+    public function importStudent()
     {
         Excel::import(new StudentImport, request()->file('file'));
 

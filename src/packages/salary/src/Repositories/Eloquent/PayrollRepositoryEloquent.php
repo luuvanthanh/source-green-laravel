@@ -106,7 +106,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnBasicSalaryAndAllowance = [];
         $columnIncurredAllowance = [];
 
-        $employees = User::where('Status', User::STATUS['WORKING'])->get();
+        $employees = User::where('Status', User::STATUS['WORKING'])->where("Id", "bf294594-f592-4e48-81cb-94508c6944cf")->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
@@ -811,7 +811,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
                 $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
                 $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
-
+                dd($totalWorks);
                 //Lương cơ bản và phụ cấp
                 $basicSalaryAndAllowance = [];
                 foreach ($parameterValues as $parameterValue) {
@@ -938,10 +938,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 if (!is_null($formularTotalIncomeMonth)) {
                     $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
+                    dd($totalIncomeMonth);
                     $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
                 }
                 $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
-
                 // tổng giảm trừ bản thân và người phụ thuộc
                 $eeduce = 0;
                 $formularDependentPerson = ParamaterFormula::where('Code', 'TONG_GIAMTRU_BANTHAN_PHUTHUOC')->first();
@@ -1125,7 +1125,20 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return $valueFirst + $temp + $valueEnd;
     }
 
-    public function calculatorMaternity()
+    public function exportPayroll(array $attributes)
     {
+
+        $payroll = Payroll::findOrFail($attributes['id']);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($payroll->Month)->format('m.Y');
+        $params['{start_time}'] = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $params['{end_time}'] = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+
+        $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
+        $params['{number_of_work_days}'] = $otherDeclaration->NumberOfWorkdays;
+
+
+        return $this->excelExporterServices->export('salary_month', $params);
     }
 }

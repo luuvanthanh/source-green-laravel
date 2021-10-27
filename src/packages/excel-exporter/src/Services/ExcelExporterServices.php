@@ -20,6 +20,9 @@ class ExcelExporterServices
         'bus_registrations' => [
             'template' => 'bus_registrations.xlsx',
         ],
+        'salary_month' => [
+            'template' => 'salary_month.xlsx',
+        ],
     ];
 
     protected $disk, $endPoint, $templateFileUrl, $resultFileUrl;

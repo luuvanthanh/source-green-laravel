@@ -102,4 +102,21 @@ class PayRollController extends Controller
 
         return $this->success($payRoll, trans('lang::messages.common.modifySuccess'));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportPayroll(Request $request)
+    {
+        $result = $this->payRollRepository->exportPayroll($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }
