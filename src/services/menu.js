@@ -1751,6 +1751,7 @@ export async function getLeftMenuCRM() {
             '/crm/tiep-thi/du-lieu',
             '/crm/tiep-thi/du-lieu/tao-moi',
             '/crm/tiep-thi/du-lieu/:id/chi-tiet',
+            '/crm/tiep-thi/du-lieu/:id/chi-tiet/tao-moi',
           ],
           permission: [permissions.CRM],
           pro: true,

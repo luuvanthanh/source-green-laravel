@@ -1,14 +1,14 @@
 export const variables = {
   STATUS: {
     NO_VERIFYE: 'NO_VERIFYE',
-    VERIFIED: 'VERIFIED',
-    PENDING: 'PENDING',
+    MOVE: 'MOVE',
+    NOT_MOVE: 'NOT_MOVE',
     VALID: 'VALID',
     EXPIRE: 'EXPIRE',
   },
   STATUS_NAME: {
-    VERIFIED: 'Đã chuyển lead',
-    PENDING: 'Chưa chuyển',
+    MOVE: 'Đã chuyển lead',
+    NOT_MOVE: 'Chưa chuyển',
   },
   STATUS_SHIFT: {
     ON: 'ON',

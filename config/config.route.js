@@ -2359,7 +2359,7 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/sale/ph-lead/:id/chi-tiet/:detailId/chi-tiet-cuoc-goi',
+            path: '/crm/sale/ph-lead/:id/chi-tiet/:detailI/tao-moid/chi-tiet-cuoc-goi',
             component: './crm/sale-parents-lead/create/add-call',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
@@ -2457,6 +2457,12 @@ export default [
           {
             path: '/crm/tiep-thi/du-lieu/:id/chi-tiet',
             component: './crm/marketing-data/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/tiep-thi/du-lieu/:id/chi-tiet/tao-moi',
+            component: './crm/marketing-data/create/add_marketing',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
