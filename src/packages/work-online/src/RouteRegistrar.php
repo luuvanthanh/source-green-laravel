@@ -1,6 +1,6 @@
 <?php
 
-namespace GGPHP\Salary;
+namespace GGPHP\WorkOnline;
 
 use GGPHP\Core\RouteRegistrar as CoreRegistrar;
 
@@ -9,7 +9,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * The namespace implementation.
      */
-    protected static $namespace = '\GGPHP\Salary\Http\Controllers';
+    protected static $namespace = '\GGPHP\WorkOnline\Http\Controllers';
 
     /**
      * Register routes for bread.
@@ -29,12 +29,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            //work-hours
-            \Route::resource('payrolls', 'PayRollController');
-
-            \Route::post('payslip', 'PayRollController@payslip');
-
-            \Route::get('export-payrolls', 'PayRollController@exportPayroll');
+            \Route::resource('work-onlines', 'WorkOnlineController');
         });
     }
 }

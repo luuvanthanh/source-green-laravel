@@ -398,6 +398,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             }
             $parameter['PC_THEOHD'] = $contractAllowance;
 
+            //giảm trừ phụ cấp ăn trưa
+            $lunchAllowanceReduction = 0;
+            $formularLunchAllowanceReduction = ParamaterFormula::where('Code', 'GIAMTRU_PC_AN_TRUA')->first();
+
+            if (!is_null($formularLunchAllowanceReduction)) {
+                $lunchAllowanceReduction = $this->getFormular(json_decode($formularLunchAllowanceReduction->Recipe), $contract, $parameter);
+                $lunchAllowanceReduction = eval('return ' . $lunchAllowanceReduction . ';');
+            }
+            $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction <= 730000 ? $lunchAllowanceReduction : 730000;
+
             //phụ cấp hàng tháng
             $monthlyAllowance = 0;
             $formularMonthlyAllowance = ParamaterFormula::where('Code', 'PC_HANGTHANG')->first();
@@ -737,6 +747,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $contractAllowance = 0;
                 $parameter['PC_THEOHD'] = $contractAllowance;
 
+                //giảm trừ phụ cấp ăn trưa
+                $lunchAllowanceReduction = 0;
+                $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction;
 
                 $parameter['TONG_THUNHAP'] = $bassicSalary;
 
@@ -811,7 +824,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
                 $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
                 $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
-
                 //Lương cơ bản và phụ cấp
                 $basicSalaryAndAllowance = [];
                 foreach ($parameterValues as $parameterValue) {
@@ -906,6 +918,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $monthlyAllowance = 0;
                 $parameter['PC_HANGTHANG'] = $monthlyAllowance;
 
+                //giảm trừ phụ cấp ăn trưa
+                $lunchAllowanceReduction = 0;
+                $formularLunchAllowanceReduction = ParamaterFormula::where('Code', 'GIAMTRU_PC_AN_TRUA')->first();
+
+                if (!is_null($formularLunchAllowanceReduction)) {
+                    $lunchAllowanceReduction = $this->getFormular(json_decode($formularLunchAllowanceReduction->Recipe), $contract, $parameter);
+                    $lunchAllowanceReduction = eval('return ' . $lunchAllowanceReduction . ';');
+                }
+                $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction <= 730000 ? $lunchAllowanceReduction : 730000;
+
                 //tổng thu nhập
                 $totalIncome = 0;
 
@@ -941,7 +963,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
                 }
                 $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;
-
                 // tổng giảm trừ bản thân và người phụ thuộc
                 $eeduce = 0;
                 $formularDependentPerson = ParamaterFormula::where('Code', 'TONG_GIAMTRU_BANTHAN_PHUTHUOC')->first();
@@ -1125,7 +1146,20 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         return $valueFirst + $temp + $valueEnd;
     }
 
-    public function calculatorMaternity()
+    public function exportPayroll(array $attributes)
     {
+
+        $payroll = Payroll::findOrFail($attributes['id']);
+
+        $params = [];
+        $params['{month}'] = Carbon::parse($payroll->Month)->format('m.Y');
+        $params['{start_time}'] = Carbon::parse($payroll->Month)->subMonth()->setDay(26)->format('Y-m-d');
+        $params['{end_time}'] = Carbon::parse($payroll->Month)->setDay(25)->format('Y-m-d');
+
+        $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
+        $params['{number_of_work_days}'] = $otherDeclaration->NumberOfWorkdays;
+
+
+        return $this->excelExporterServices->export('salary_month', $params);
     }
 }

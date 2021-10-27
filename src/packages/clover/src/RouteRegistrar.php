@@ -36,8 +36,7 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'students.index',
             ]);
 
-            \Route::post('import', 'StudentController@import')->name('import');
-
+            \Route::post('import-student', 'StudentController@importStudent')->name('import');
         });
     }
 
@@ -54,7 +53,6 @@ class RouteRegistrar extends CoreRegistrar
                 'uses' => 'StudentController@index',
                 'as' => 'students.index',
             ]);
-
         });
     }
 }

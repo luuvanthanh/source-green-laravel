@@ -101,7 +101,8 @@
             "GGPHP\\Salary\\": "packages/salary/src/",
             "GGPHP\\Facebook\\": "crm/facebook/src/",
             "GGPHP\\Zalo\\": "crm/zalo/src/",
-            "ZK\\": "packages/zk/src"
+            "ZK\\": "packages/zk/src",
+            "GGPHP\\WorkOnline\\": "packages/work-online/src"
         },
         "classmap": [
             "database/seeds",
