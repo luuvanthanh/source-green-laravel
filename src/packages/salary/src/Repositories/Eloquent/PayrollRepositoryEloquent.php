@@ -638,13 +638,18 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 foreach ($parameterValues as $parameterValue) {
                     if ($parameterValue->Code == "LUONG_CB") {
                         $bassicSalary = $parameterValue->pivot->Value;
+                        $basicSalaryAndAllowance[] = [
+                            'code' => $parameterValue->Code,
+                            'name' => $parameterValue->Name,
+                            'value' => $parameterValue->pivot->Value,
+                        ];
+                    } else {
+                        $basicSalaryAndAllowance[] = [
+                            'code' => $parameterValue->Code,
+                            'name' => $parameterValue->Name,
+                            'value' => 0,
+                        ];
                     }
-
-                    $basicSalaryAndAllowance[] = [
-                        'code' => $parameterValue->Code,
-                        'name' => $parameterValue->Name,
-                        'value' => 0,
-                    ];
 
                     if (!array_key_exists($parameterValue->Code, $columnBasicSalaryAndAllowance)) {
                         $columnBasicSalaryAndAllowance[$parameterValue->Code] = [
@@ -755,6 +760,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 //tổng thu nhập trong tháng
                 $totalIncomeMonth = 0;
+                $totalIncomeMonth = $bassicSalary;
                 $parameter['TONG_THUNHAP_TRONG_THANG'] = $bassicSalary;
 
                 // tổng giảm trừ bản thân và người phụ thuộc
