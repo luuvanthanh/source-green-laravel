@@ -1083,16 +1083,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                         $valueVariable = ParamaterValue::where('Code', $item->variable)->first();
 
                         if (is_null($valueVariable) && array_key_exists($item->variable, $parameter)) {
-                            $value = $parameter[$item->variable];
+                            $value = !is_null($parameter[$item->variable]) ? $parameter[$item->variable] : 0;
                         } else {
                             $value = !is_null($valueVariable) ? $valueVariable->ValueDefault : 0;
                         }
                     } else {
-                        $value = $valueVariable->pivot->Value;
+                        $value = !is_null($valueVariable->pivot->Value) ? $valueVariable->pivot->Value : 0;
                     }
 
                     if (array_key_exists($item->variable, $parameter)) {
-                        $value = $parameter[$item->variable];
+                        $value = !is_null($parameter[$item->variable]) ? $parameter[$item->variable] : 0;
                     }
 
                     if (!is_null($item->operator)) {
