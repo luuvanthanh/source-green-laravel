@@ -614,10 +614,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $isProbation = false;
 
-        $contract = $employee->labourContract()->orderBy('CreationTime')->first();
+        $contract = $employee->labourContract()->orderBy('CreationTime', 'DESC')->first();
 
         if (is_null($contract)) {
-            $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
+            $contract = $employee->probationaryContract()->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }
