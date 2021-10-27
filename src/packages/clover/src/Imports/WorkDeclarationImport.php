@@ -27,8 +27,8 @@ class WorkDeclarationImport implements ToModel
             $intervalDate = \DateInterval::createFromDateString('1 day');
             $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
 
-            $employee = User::where("FullName", trim($row[0]))->first();
-            // dd($employee);
+            $employee = User::where("FullName", trim($row[0]))->where("Status", User::STATUS['WORKING'])->first();
+
             foreach ($periodDate as $date) {
 
                 if (!is_null($employee)) {

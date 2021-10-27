@@ -106,7 +106,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $columnBasicSalaryAndAllowance = [];
         $columnIncurredAllowance = [];
 
-        $employees = User::where('Status', User::STATUS['WORKING'])->where("Id", "bf294594-f592-4e48-81cb-94508c6944cf")->get();
+        $employees = User::where('Status', User::STATUS['WORKING'])->get();
 
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
@@ -397,6 +397,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $contractAllowance = eval('return ' . $contractAllowance . ';');
             }
             $parameter['PC_THEOHD'] = $contractAllowance;
+
+            //giảm trừ phụ cấp ăn trưa
+            $lunchAllowanceReduction = 0;
+            $formularLunchAllowanceReduction = ParamaterFormula::where('Code', 'GIAMTRU_PC_AN_TRUA')->first();
+
+            if (!is_null($formularLunchAllowanceReduction)) {
+                $lunchAllowanceReduction = $this->getFormular(json_decode($formularLunchAllowanceReduction->Recipe), $contract, $parameter);
+                $lunchAllowanceReduction = eval('return ' . $lunchAllowanceReduction . ';');
+            }
+            $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction <= 730000 ? $lunchAllowanceReduction : 730000;
 
             //phụ cấp hàng tháng
             $monthlyAllowance = 0;
@@ -737,6 +747,9 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $contractAllowance = 0;
                 $parameter['PC_THEOHD'] = $contractAllowance;
 
+                //giảm trừ phụ cấp ăn trưa
+                $lunchAllowanceReduction = 0;
+                $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction;
 
                 $parameter['TONG_THUNHAP'] = $bassicSalary;
 
@@ -811,7 +824,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $parameter['SO_NGAY_CHUAN'] = (int) $numberOfWorkdays;
                 $parameter['SO_GIO_DI_XE_BUS'] = $totalBusRegistration;
                 $parameter['SO_NGAY_LAM_VIEC_TRONG_THANG'] = $totalWorks;
-                dd($totalWorks);
                 //Lương cơ bản và phụ cấp
                 $basicSalaryAndAllowance = [];
                 foreach ($parameterValues as $parameterValue) {
@@ -906,6 +918,16 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $monthlyAllowance = 0;
                 $parameter['PC_HANGTHANG'] = $monthlyAllowance;
 
+                //giảm trừ phụ cấp ăn trưa
+                $lunchAllowanceReduction = 0;
+                $formularLunchAllowanceReduction = ParamaterFormula::where('Code', 'GIAMTRU_PC_AN_TRUA')->first();
+
+                if (!is_null($formularLunchAllowanceReduction)) {
+                    $lunchAllowanceReduction = $this->getFormular(json_decode($formularLunchAllowanceReduction->Recipe), $contract, $parameter);
+                    $lunchAllowanceReduction = eval('return ' . $lunchAllowanceReduction . ';');
+                }
+                $parameter['GIAMTRU_PC_AN_TRUA'] = $lunchAllowanceReduction <= 730000 ? $lunchAllowanceReduction : 730000;
+
                 //tổng thu nhập
                 $totalIncome = 0;
 
@@ -938,7 +960,6 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
                 if (!is_null($formularTotalIncomeMonth)) {
                     $totalIncomeMonth = $this->getFormular(json_decode($formularTotalIncomeMonth->Recipe), $contract, $parameter);
-                    dd($totalIncomeMonth);
                     $totalIncomeMonth = eval('return ' . $totalIncomeMonth . ';');
                 }
                 $parameter['TONG_THUNHAP_TRONG_THANG'] = $totalIncomeMonth;

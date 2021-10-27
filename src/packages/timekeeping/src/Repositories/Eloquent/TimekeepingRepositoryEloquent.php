@@ -227,6 +227,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         }
 
         $employeeTimeWorkShift = ScheduleRepositoryEloquent::getUserTimeWorkShift($employee->Id, $startDate, $endDate);
+
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
 
@@ -265,7 +266,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                     ];
                 }
             }
-             if (($check === 'Saturday' || $check === 'Sunday')) {
+            if (($check === 'Saturday' || $check === 'Sunday')) {
                 $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
                 if ($checkValue !== false) {
@@ -284,8 +285,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
         }
 
-        if (count($employeeHasTimekeeping) > 0) {
-            $count = count($employeeTimeWorkShift);
+        if (count($employeeHasTimekeeping) > 0 || count($workDeclarationByDate) > 0) {
 
             foreach ($employeeTimeWorkShift as $key => $value) {
 
