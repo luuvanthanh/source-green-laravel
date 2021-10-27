@@ -1,56 +1,22 @@
+import * as services from './services';
+
 export default {
   namespace: 'crmSaleAssignment',
   state: {
-    branches: [
-      {
-        id: 1,
-        name: 'Nguyễn Văn Nam',
-      },
-      {
-        id: 2,
-        name: 'Nguyễn Văn',
-      },
-    ],
-    data: [
-      {
-        id: 1,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        email: 'a@gmail.com',
-        address: '52 Hoàng Diệu',
-        nameChildren: 'Nguyễn Anh Nhân',
-        birth: '12/12/2021',
-      },
-      {
-        id: 2,
-        index: 1,
-        name: 'Namvv',
-        phone: '09265125',
-        address: '52 Hoàng Diệu',
-        email: 'a@gmail.com',
-        nameChildren: 'Nguyễn Anh Nhân',
-        birth: '12/12/2021',
-      },
-    ],
-    pagination: {
-      total: 0,
-    },
+    details: {},
     error: {
       isError: false,
       data: {},
     },
+    classorders: [],
+    sensitivePeriods: [],
+    employees:[],
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      data: [],
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
+      details: payload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -61,17 +27,34 @@ export default {
         },
       },
     }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(payload);
         yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.parsePayload,
-            pagination: response.pagination,
-          },
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.get, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+        callback(null, error);
+      }
+    },
+    *GET_EMPLOYEES({ payload,callback }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
         });
       } catch (error) {
         yield saga.put({
@@ -80,6 +63,17 @@ export default {
         });
       }
     },
+    *ASSIGNMENT({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.assignment, payload);
+        callback(response);
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+        callback(null, error);
+      }
+    }
   },
-  subscriptions: {},
 };
