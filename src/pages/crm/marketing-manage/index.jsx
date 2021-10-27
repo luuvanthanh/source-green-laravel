@@ -1,16 +1,22 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { isEmpty, debounce, head } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import styles from '@/assets/styles/Common/common.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import styles from '@/assets/styles/Common/common.scss';
 import HelperModules from './utils/Helper';
 
+const genders = [
+  { id: 'APPLY', name: 'Áp dụng' },
+  { id: 'NOT_APPLY', name: 'Chưa áp dụng' },
+];
 let isMounted = true;
 /**
  * Set isMounted
@@ -31,6 +37,8 @@ const mapStateToProps = ({ crmMarketingManage, loading }) => ({
   error: crmMarketingManage.error,
   pagination: crmMarketingManage.pagination,
   branches: crmMarketingManage.branches,
+  city: crmMarketingManage.city,
+  district: crmMarketingManage.district,
   loading,
 });
 @connect(mapStateToProps)
@@ -48,17 +56,53 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      dataSource: [],
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  onSelectChange = (e) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item) => ({
+        ...item,
+        isActive: !!e.includes(item.id),
+      })),
+    }));
+  };
+
+  save = () => {
+    const { dispatch } = this.props;
+    const payload = {
+      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+    };
+    dispatch({
+      type: 'crmMarketingManage/ADD',
+      payload,
+      callback: (response, error) => {
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   /**
    * Set state properties
@@ -86,6 +130,13 @@ class Index extends PureComponent {
       type: 'crmMarketingManage/GET_DATA',
       payload: {
         ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataSource: response.parsePayload,
+          });
+        }
       },
     });
     history.push({
@@ -168,6 +219,18 @@ class Index extends PureComponent {
     });
   };
 
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'crmMarketingManage/GET_CITIES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmMarketingManage/GET_DISTRICTS',
+      payload: {},
+    });
+  };
+
   /**
    * Function header table
    */
@@ -192,17 +255,17 @@ class Index extends PureComponent {
       },
       {
         title: 'Thời gian bắt đầu',
-        key: 'startTime',
+        key: 'start_date',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.startTime,
+        render: (record) => record?.end_date,
       },
       {
         title: 'Thời gian kết thúc',
-        key: 'startend',
+        key: 'end_date',
         className: 'min-width-150',
         width: 150,
-        render: (record) => record?.startend,
+        render: (record) => record?.end_date,
       },
       {
         title: 'Trạng thái',
@@ -236,15 +299,16 @@ class Index extends PureComponent {
       pagination,
       loading: { effects },
       location: { pathname },
-      data,
     } = this.props;
+    const { search, dataSource } = this.state;
+
     const loading = effects['crmMarketingManage/GET_DATA'];
     return (
       <>
-        <Helmet title="Quản lý chương trình " />
+        <Helmet title="Quản lý chương trình" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Quản lý chương trình </Text>
+            <Text color="dark">Quản lý chương trình</Text>
             <div className="d-flex ">
               <Button
                 color="success"
@@ -257,10 +321,38 @@ class Index extends PureComponent {
             </div>
           </div>
           <div className={styles['block-table']}>
+            <Form
+              initialValues={{
+                ...search,
+              }}
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
+                    placeholder="Nhập từ khóa"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Chọn tất cả trạng thái' }, ...genders]}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'status')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn trạng thái"
+                  />
+                </div>
+              </div>
+            </Form>
             <Table
               bordered={false}
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
               pagination={this.pagination(pagination)}
               params={{
@@ -283,7 +375,6 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -292,7 +383,6 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
 };
 
 export default Index;
