@@ -58,6 +58,7 @@ class RouteRegistrar extends CoreRegistrar
                 'group' => 'Khai báo công',
             ]);
 
+            \Route::post('import-work-declaration', 'WorkDeclarationController@importWorkDeclaration');
         });
     }
 }

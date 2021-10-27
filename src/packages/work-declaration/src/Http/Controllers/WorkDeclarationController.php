@@ -2,12 +2,14 @@
 
 namespace GGPHP\WorkDeclaration\Http\Controllers;
 
+use GGPHP\Clover\Imports\WorkDeclarationImport;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\WorkDeclaration\Http\Requests\WorkDeclarationCreateRequest;
 use GGPHP\WorkDeclaration\Http\Requests\WorkDeclarationUpdateRequest;
 use GGPHP\WorkDeclaration\Repositories\Contracts\WorkDeclarationRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class WorkDeclarationController extends Controller
 {
@@ -93,4 +95,13 @@ class WorkDeclarationController extends Controller
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function importWorkDeclaration()
+    {
+        Excel::import(new WorkDeclarationImport, request()->file('file'));
+
+        return back();
+    }
 }
