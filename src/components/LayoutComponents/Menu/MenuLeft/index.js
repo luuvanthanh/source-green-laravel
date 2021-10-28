@@ -57,6 +57,12 @@ class MenuLeft extends React.Component {
     this.setSelectedKeys(this.props);
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.badges !== prevProps.badges) {
+      this.onSetMenu(this.props.badges);
+    }
+  }
+
   // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(newProps) {
     if (newProps.isMenuCollapsed && !newProps.isMobileView) {
@@ -65,12 +71,6 @@ class MenuLeft extends React.Component {
       });
     }
     this.setSelectedKeys(newProps);
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.badges !== prevProps.badges) {
-      this.onSetMenu(this.props.badges);
-    }
   }
 
   onSetMenu = (badges) => {
@@ -334,15 +334,15 @@ class MenuLeft extends React.Component {
         className={isLightTheme ? `${styles.menu} ${styles.light} light` : styles.menu}
       >
         <div className={styles.logo}>
-          <Link to="/" className={styles.logoContainer}>
-            <div className={styles['block-menu']}>
+          <div className={styles.logoContainer}>
+            <Link to="/" className={styles['block-menu']}>
               <img
                 alt="Clean UI React Admin Template"
                 className={styles.image}
                 src={info?.icon || '/images/home/note.svg'}
               />
               {!isMenuCollapsed && <h1 className={styles.title}>{info?.title || 'Điểm danh'}</h1>}
-            </div>
+            </Link>
             {!isMenuCollapsed && (
               <Popover
                 placement="rightTop"
@@ -353,7 +353,7 @@ class MenuLeft extends React.Component {
                 <span className="icon-toggle" />
               </Popover>
             )}
-          </Link>
+          </div>
         </div>
         <Scrollbars
           autoHeight
@@ -402,6 +402,7 @@ MenuLeft.propTypes = {
   isLightTheme: PropTypes.bool,
   info: PropTypes.objectOf(PropTypes.any),
   menu: PropTypes.arrayOf(PropTypes.any),
+  location: PropTypes.objectOf(PropTypes.any),
 };
 MenuLeft.defaultProps = {
   isMobileView: false,
@@ -415,5 +416,6 @@ MenuLeft.defaultProps = {
   permissions: [],
   info: {},
   menu: [],
+  location: {},
 };
 export default MenuLeft;

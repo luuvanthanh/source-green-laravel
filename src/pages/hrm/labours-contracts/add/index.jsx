@@ -405,14 +405,6 @@ class Index extends PureComponent {
                 <div className="row">
                   <div className="col-lg-4">
                     <FormItem
-                      label="Số năm hợp đồng"
-                      name="year"
-                      type={variables.INPUT_COUNT}
-                      rules={[variables.RULES.EMPTY]}
-                    />
-                  </div>
-                  <div className="col-lg-4">
-                    <FormItem
                       label="Số tháng hợp đồng"
                       name="month"
                       type={variables.INPUT_COUNT}
@@ -483,6 +475,14 @@ class Index extends PureComponent {
                       name="branchId"
                       type={variables.SELECT}
                       rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="Tham gia BHXH"
+                      name="isSocialInsurance"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
                     />
                   </div>
                 </div>

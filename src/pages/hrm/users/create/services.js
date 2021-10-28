@@ -519,3 +519,22 @@ export function storage(params = {}) {
     parse: true,
   });
 }
+
+// health-insurances
+export function getHealthInsurances(params = {}) {
+  return requestLavarel(`/v1/health-insurances`, {
+    method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes(['employee']),
+    },
+  });
+}
+
+export function addHealthInsurances(params = {}) {
+  return requestLavarel(`/v1/health-insurances`, {
+    method: 'POST',
+    params,
+  });
+}
+// health-insurances

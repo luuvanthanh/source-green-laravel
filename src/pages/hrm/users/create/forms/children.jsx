@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Modal, Checkbox } from 'antd';
-import { get, isEmpty } from 'lodash';
+import { Form, Modal, Checkbox, Upload, message } from 'antd';
+import { get, isEmpty, head, last } from 'lodash';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -17,6 +17,7 @@ import styles from '@/assets/styles/Common/common.scss';
 const Index = memo(() => {
   const [visible, setVisible] = useState(false);
   const [objects, setObjects] = useState({});
+  const [fileImage, setFileImage] = useState([]);
 
   const {
     children,
@@ -58,12 +59,18 @@ const Index = memo(() => {
     mountedSet(setVisible, true);
     mountedSet(setObjects, record);
     if (formRefModal.current) {
+      setFileImage(Helper.isJSON(record.fileImage) ? JSON.parse(record.fileImage) : []);
       formRefModal.current.setFieldsValue({
         ...record,
         data: [
           {
             ...record,
             birthday: record.birthday && moment(record.birthday),
+            date: record.dedectionTimeFrom &&
+              record.dedectionTimeTo && [
+                moment(record.dedectionTimeFrom),
+                moment(record.dedectionTimeTo),
+              ],
           },
         ],
       });
@@ -81,6 +88,11 @@ const Index = memo(() => {
           data: values.data.map((item) => ({
             ...item,
             birthday: moment(item.birthday).format(variables.DATE_FORMAT.DATE_AFTER),
+            dedectionTimeFrom:
+              head(item.date) && moment(head(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
+            dedectionTimeTo:
+              last(item.date) && moment(last(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
+            fileImage: !isEmpty(fileImage) ? JSON.stringify(fileImage) : undefined,
           })),
         },
         callback: (response, error) => {
@@ -183,6 +195,25 @@ const Index = memo(() => {
         render: (record) => record.relationship,
       },
       {
+        title: 'Mã số thuế',
+        key: 'relationship',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => record.taxCode,
+      },
+      {
+        title: 'Thời gian bắt đầu giảm từ',
+        key: 'relationship',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          Helper.getDateRank(
+            record.dedectionTimeFrom,
+            record.dedectionTimeTo,
+            variables.DATE_FORMAT.DATE,
+          ),
+      },
+      {
         title: 'Phụ thuộc',
         key: 'isDependentPerson',
         className: 'min-width-130',
@@ -193,6 +224,30 @@ const Index = memo(() => {
             defaultChecked={record.isDependentPerson}
             onChange={(e) => onChange(e, record)}
           />
+        ),
+      },
+      {
+        title: 'Đính kèm file',
+        key: 'FileImage',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: (record) => (
+          <div className={classnames(styles['files-container'], 'mt5')}>
+            {Helper.isJSON(record.fileImage) &&
+              JSON.parse(record.fileImage)?.map((item) => (
+                <div className={styles.item} key={item.id}>
+                  <a
+                    className={styles['link-wrap']}
+                    href={`${API_UPLOAD}${item.url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.name}
+                  </a>
+                </div>
+              ))}
+          </div>
         ),
       },
       {
@@ -231,6 +286,42 @@ const Index = memo(() => {
       payload: params,
     });
   }, []);
+
+  const onRemoFile = (record) => {
+    setFileImage((prev) => prev.filter((item) => item.id !== record.id));
+  };
+
+  const onUpload = (files) => {
+    dispatch({
+      type: 'upload/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          setFileImage((prev) => [...prev, head(response.results)?.fileInfo]);
+        }
+      },
+    });
+  };
+
+  const props = {
+    beforeUpload() {
+      return null;
+    },
+    customRequest({ file }) {
+      const { name, size } = file;
+      const allowTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpeg', 'jpg', 'png'];
+      const maxSize = 5 * 2 ** 20;
+      if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+        message.error(
+          'Định dạng hỗ trợ: .pdf, .doc, .docx, .xls, .xlsx, .jpeg, .jpg, .png. Tổng dung lượng không vượt quá 20MB',
+        );
+        return;
+      }
+      onUpload(file);
+    },
+    showUploadList: false,
+    fileList: [],
+  };
 
   return (
     <>
@@ -328,6 +419,24 @@ const Index = memo(() => {
                         </div>
                         <div className="col-lg-6">
                           <FormItem
+                            label="MÃ SỐ THUẾ"
+                            name={[field.name, 'taxCode']}
+                            fieldKey={[field.fieldKey, 'taxCode']}
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.INPUT}
+                          />
+                        </div>
+                        <div className="col-lg-6">
+                          <FormItem
+                            label="THỜI GIAN BẮT ĐẦU TÍNH GIẢM TỪ"
+                            name={[field.name, 'date']}
+                            fieldKey={[field.fieldKey, 'date']}
+                            rules={[variables.RULES.EMPTY]}
+                            type={variables.RANGE_PICKER}
+                          />
+                        </div>
+                        <div className="col-lg-6">
+                          <FormItem
                             className="checkbox-row checkbox-small"
                             label="NGƯỜI PHỤ THUỘC"
                             name={[field.name, 'isDependentPerson']}
@@ -335,6 +444,43 @@ const Index = memo(() => {
                             type={variables.CHECKBOX_FORM}
                             valuePropName="checked"
                           />
+                        </div>
+                        <div className="col-lg-12">
+                          <div className="row">
+                            <div className="col-lg-12">
+                              <label className="ant-col ant-form-item-label d-block">
+                                <span>Đính kèm file</span>
+                              </label>
+                              <Upload {...props}>
+                                <Button color="primary" icon="upload1">
+                                  Tải lên
+                                </Button>
+                              </Upload>
+                              {!isEmpty(fileImage) && (
+                                <div className={classnames(styles['files-container'], 'mt5')}>
+                                  {fileImage.map((item) => (
+                                    <div className={styles.item} key={item.id}>
+                                      <a
+                                        href={`${API_UPLOAD}${item.url}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                      >
+                                        {item.name}
+                                      </a>
+                                      <span
+                                        role="presentation"
+                                        className="icon-cross"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          onRemoFile(item);
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
