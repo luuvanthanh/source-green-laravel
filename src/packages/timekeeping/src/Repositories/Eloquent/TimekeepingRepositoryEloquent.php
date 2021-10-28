@@ -285,7 +285,10 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
             }
         }
 
-        if (count($employeeHasTimekeeping) > 0 || count($workDeclarationByDate) > 0) {
+        $countEmployeeHasTimekeeping = count($employeeHasTimekeeping);
+        $countWorkDeclarationByDate = count($workDeclarationByDate);
+
+        if ($countEmployeeHasTimekeeping > 0 || $countWorkDeclarationByDate > 0) {
 
             foreach ($employeeTimeWorkShift as $key => $value) {
 
@@ -370,7 +373,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $responseTimeKeepingUser = $this->calculatorAbsents($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
         $responseTimeKeepingUser = $this->calculatorBusinessTravel($employee, $startDate, $endDate, $responseTimeKeepingUser, $timeKeepingByDate, $employeeTimeWorkShift, $workDeclarationByDate, $dateOff);
-        $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff);
+        $responseTimeKeepingUser = $this->calculatorMaternityLeave($employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff, $countEmployeeHasTimekeeping, $countWorkDeclarationByDate);
 
         $totalWorks = 0;
         foreach ($responseTimeKeepingUser as $key => &$item) {
@@ -504,7 +507,7 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
      * @param string $startDate
      * @param string $endDate
      */
-    public function calculatorMaternityLeave(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff)
+    public function calculatorMaternityLeave(&$employee, $startDate, $endDate, $responseTimeKeepingUser, $periodDate, $dateOff, $countEmployeeHasTimekeeping, $countWorkDeclarationByDate)
     {
         $maternityLeaves = $employee->maternityLeave()->where(function ($q2) use ($startDate, $endDate) {
             $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
@@ -523,30 +526,32 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 break;
             }
 
-            foreach ($holidayDetails as $holidayDetail) {
-                if ($holidayDetail->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $holidayDetail->EndDate->format('Y-m-d')) {
-                    $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
+            if ($countEmployeeHasTimekeeping > 0 || $countWorkDeclarationByDate > 0) {
+                foreach ($holidayDetails as $holidayDetail) {
+                    if ($holidayDetail->StartDate->format('Y-m-d') <= $date->format('Y-m-d') && $date->format('Y-m-d') <= $holidayDetail->EndDate->format('Y-m-d')) {
+                        $checkValue = array_search($date->format('Y-m-d'), array_column($responseTimeKeepingUser, 'date'));
 
-                    $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
+                        $check = Carbon::parse($date)->setTimezone('GMT+7')->format('l');
 
-                    if ($check === 'Saturday' || $check === 'Sunday') {
-                        $timekeepingReport = 0;
-                    } else {
-                        $timekeepingReport = 1;
-                    }
+                        if ($check === 'Saturday' || $check === 'Sunday') {
+                            $timekeepingReport = 0;
+                        } else {
+                            $timekeepingReport = 1;
+                        }
 
-                    if ($checkValue !== false) {
-                        $responseTimeKeepingUser[$checkValue] = [
-                            "date" => $date->format('Y-m-d'),
-                            "timekeepingReport" => $timekeepingReport,
-                            "type" => "L",
-                        ];
-                    } else {
-                        $responseTimeKeepingUser[] = [
-                            "date" => $date->format('Y-m-d'),
-                            "timekeepingReport" => $timekeepingReport,
-                            "type" => "L",
-                        ];
+                        if ($checkValue !== false) {
+                            $responseTimeKeepingUser[$checkValue] = [
+                                "date" => $date->format('Y-m-d'),
+                                "timekeepingReport" => $timekeepingReport,
+                                "type" => "L",
+                            ];
+                        } else {
+                            $responseTimeKeepingUser[] = [
+                                "date" => $date->format('Y-m-d'),
+                                "timekeepingReport" => $timekeepingReport,
+                                "type" => "L",
+                            ];
+                        }
                     }
                 }
             }

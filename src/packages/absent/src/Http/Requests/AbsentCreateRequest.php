@@ -53,9 +53,9 @@ class AbsentCreateRequest extends FormRequest
 
                         $accessSameHoliday = $this->checkSameHoliday($item);
 
-                        if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
-                        }
+                        // if ($accessSameHoliday !== true) {
+                        //     return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                        // }
                     }
 
                     return true;
@@ -128,7 +128,7 @@ class AbsentCreateRequest extends FormRequest
         return true;
     }
 
-        /**
+    /**
      * Get the validation messages that apply to the request.
      *
      * @return array

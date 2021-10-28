@@ -42,9 +42,9 @@ class AbsentUpdateRequest extends FormRequest
 
                         $accessSameHoliday = $this->checkSameHoliday($item);
 
-                        if ($accessSameHoliday !== true) {
-                            return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
-                        }
+                        // if ($accessSameHoliday !== true) {
+                        //     return $fail("Không được đăng ký vào ngày lễ " . $accessSameHoliday);
+                        // }
                     }
 
 
