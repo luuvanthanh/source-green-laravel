@@ -35,6 +35,7 @@ class LabourContractCreateRequest extends FormRequest
                     $employeeId = request()->employeeId;
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($labourContract) && $value <= $labourContract->ContractDate->format('Y-m-d')) {
                         return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $labourContract->ContractDate->format('d-m-Y'));
@@ -53,7 +54,7 @@ class LabourContractCreateRequest extends FormRequest
                     $employeeId = request()->employeeId;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    $value = Carbon::parse($value)->format('Y-m-d');
+                    $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($labourContract) && $value <= $labourContract->ContractTo->format('Y-m-d')) {
                         return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng lao động gần nhất " . $labourContract->ContractTo->format('d-m-Y'));

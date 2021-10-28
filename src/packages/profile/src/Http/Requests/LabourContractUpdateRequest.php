@@ -53,6 +53,7 @@ class LabourContractUpdateRequest extends FormRequest
                     $employeeId = request()->employeeId;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->labours_contract)->orderBy('CreationTime', 'DESC')->first();
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractFrom->format('Y-m-d')) {
                         return $fail("Thời hạn từ phải lớn hơn thời hạn từ của hợp đồng thử việc gần nhất " . $probationaryContract->ContractFrom->format('d-m-Y'));
