@@ -4,11 +4,11 @@ import { variables } from './variables';
 
 export default class Helpers {
   static tagStatus = (type) => {
-    if (type === variables.STATUS.PENDING) {
-      return <Tag color="yellow">{variables.STATUS_NAME.PENDING}</Tag>;
+    if (type === variables.STATUS.NOT_MOVE) {
+      return <Tag color="yellow">{variables.STATUS_NAME.NOT_MOVE}</Tag>;
     }
-    if (type === variables.STATUS.VERIFIED) {
-      return <Tag color="success">{variables.STATUS_NAME.VERIFIED}</Tag>;
+    if (type === variables.STATUS.MOVE) {
+      return <Tag color="success">{variables.STATUS_NAME.MOVE}</Tag>;
     }
     if (type === variables.STATUS.PENDING) {
       return <Tag color="primary">{variables.STATUS_NAME.PENDING}</Tag>;

@@ -31,7 +31,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
   useEffect(() => {
     if (params.id) {
       dispatch({
-        type: 'crmMarketingDataAdd/GET_DATA',
+        type: 'crmMarketingDataAdd/GET_DETAILS',
         payload: params,
       });
     }
@@ -50,13 +50,22 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
           <div className="card">
             <Scrollbars autoHeight autoHeightMax={window.innerHeight - 200}>
               <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
-                {menu
-                  .filter((item) => item.key)
-                  .map(({ key, label }) => (
-                    <MenuItem key={key}>
-                      <Link to={`${pathname}?type=${key}`}>{label}</Link>
-                    </MenuItem>
-                  ))}
+              {params.id &&
+                  menu
+                    .filter((item) => item.key)
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))}
+                {!params.id &&
+                  menu
+                    .filter((item) => item.key === 'parents')
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))}
               </Menu>
             </Scrollbars>
           </div>

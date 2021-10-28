@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
+import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { isEmpty, debounce, head, size, get } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
+import styles from '@/assets/styles/Common/common.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import styles from '@/assets/styles/Common/common.scss';
-import AssignmentComponent from './components/assignment';
 import HelperModules from './utils/Helper';
 
-const rowSelection = {};
 let isMounted = true;
 /**
  * Set isMounted
@@ -33,6 +33,10 @@ const mapStateToProps = ({ crmMarketingData, loading }) => ({
   error: crmMarketingData.error,
   pagination: crmMarketingData.pagination,
   branches: crmMarketingData.branches,
+  city: crmMarketingData.city,
+  searchs: crmMarketingData.searchs,
+  district: crmMarketingData.district,
+  program: crmMarketingData.program,
   loading,
 });
 @connect(mapStateToProps)
@@ -50,17 +54,53 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
+      dataSource: [],
     };
     setIsMounted(true);
   }
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
     setIsMounted(false);
   }
+
+  onSelectChange = (e) => {
+    this.setStateData((prevState) => ({
+      dataSource: prevState.dataSource.map((item) => ({
+        ...item,
+        isActive: !!e.includes(item.id),
+      })),
+    }));
+  };
+
+  save = () => {
+    const { dispatch } = this.props;
+    const payload = {
+      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+    };
+    dispatch({
+      type: 'crmMarketingData/ADD',
+      payload,
+      callback: (response, error) => {
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   /**
    * Set state properties
@@ -86,6 +126,25 @@ class Index extends PureComponent {
     } = this.props;
     this.props.dispatch({
       type: 'crmMarketingData/GET_DATA',
+      payload: {
+        ...search,
+      },
+      callback: (response) => {
+        if (response) {
+          this.setStateData({
+            dataSource: response.parsePayload,
+          });
+        }
+      },
+    });
+    this.props.dispatch({
+      type: 'crmMarketingData/GET_SEARCH',
+      payload: {
+        ...search,
+      },
+    });
+    this.props.dispatch({
+      type: 'crmMarketingData/GET_PROGRAM',
       payload: {
         ...search,
       },
@@ -170,6 +229,18 @@ class Index extends PureComponent {
     });
   };
 
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'crmMarketingData/GET_CITIES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmMarketingData/GET_DISTRICTS',
+      payload: {},
+    });
+  };
+
   /**
    * Function header table
    */
@@ -182,14 +253,15 @@ class Index extends PureComponent {
         title: 'STT ',
         key: 'index',
         width: 80,
-        render: (record) => record?.index,
         fixed: 'left',
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
         title: 'Tên phụ huynh',
         key: 'name',
         width: 250,
-        render: (record) => record?.name,
+        render: (record) => record?.full_name,
       },
       {
         title: 'Email',
@@ -214,13 +286,15 @@ class Index extends PureComponent {
         title: 'Chương trình',
         key: 'basis',
         width: 200,
-        render: (record) => record?.basis,
+        render: (record) => (
+          <text size="normal">{record?.marketingProgram?.map((item) => item.name).join(', ')}</text>
+        ),
       },
       {
         title: 'Nguồn',
-        key: 'age',
-        width: 100,
-        render: (record) => record?.age,
+        key: 'search',
+        width: 200,
+        render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
       },
       {
         key: 'action',
@@ -241,21 +315,63 @@ class Index extends PureComponent {
     return columns;
   };
 
+  onSelectChange = (e) => {
+    this.setState((prevState) => ({
+      dataSource: prevState.dataSource.map((item) => ({
+        ...item,
+        isActive: !!e.includes(item.id),
+      })),
+    }));
+  };
+
+  save = () => {
+    const { dispatch } = this.props;
+    const payload = {
+      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+    };
+    dispatch({
+      type: 'crmMarketingData/ADD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          this.onLoad();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+
   render() {
     const {
       match: { params },
       pagination,
+      searchs,
+      program,
       loading: { effects },
       location: { pathname },
-      data,
     } = this.props;
+    const { search, dataSource } = this.state;
+    const rowSelection = {
+      onChange: this.onSelectChange,
+    };
     const loading = effects['crmMarketingData/GET_DATA'];
     return (
       <>
-        <Helmet title="Data marketing" />
+        <Helmet title="Data Marketing" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Data marketing</Text>
+            <Text color="dark">Data Marketing</Text>
             <div className="d-flex ">
               <Button color="primary" icon="export" className="ml-2">
                 Import
@@ -268,14 +384,60 @@ class Index extends PureComponent {
               >
                 Tạo mới
               </Button>
-              <AssignmentComponent />
+              <Button
+                color="success"
+                icon="next"
+                className="ml-2"
+                onClick={this.save}
+                disabled={!size(dataSource.filter((item) => item.isActive))}
+              >
+                Chuyển lead
+              </Button>
             </div>
           </div>
           <div className={styles['block-table']}>
+            <Form
+              initialValues={{
+                ...search,
+              }}
+              layout="vertical"
+              ref={this.formRef}
+            >
+              <div className="row">
+                <div className="col-lg-3">
+                  <FormItem
+                    name="key"
+                    onChange={(event) => this.onChange(event, 'key')}
+                    placeholder="Nhập từ khóa"
+                    type={variables.INPUT_SEARCH}
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={program}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'marketing_program_id')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn chương trình"
+                  />
+                </div>
+                <div className="col-lg-3">
+                  <FormItem
+                    data={searchs}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn nguồn"
+                  />
+                </div>
+              </div>
+            </Form>
             <Table
               bordered={false}
               columns={this.header(params)}
-              dataSource={data}
+              dataSource={dataSource}
               loading={loading}
               rowSelection={{ ...rowSelection }}
               pagination={this.pagination(pagination)}
@@ -299,7 +461,8 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
+  searchs: PropTypes.arrayOf(PropTypes.any),
+  program: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -308,7 +471,8 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  data: [],
+  searchs: [],
+  program: [],
 };
 
 export default Index;
