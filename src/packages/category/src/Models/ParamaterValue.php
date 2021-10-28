@@ -8,6 +8,12 @@ class ParamaterValue extends UuidModel
 {
     public $incrementing = false;
 
+    const CONTRACT = "CONTRACT";
+    const COMMON = "COMMON";
+    const
+
+        DECLARE= "DECLARE";
+
     /**
      * Declare the table name
      */
