@@ -25,7 +25,6 @@ class UpdateArticleRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'content' => 'string',
             'marketing_program_id' => 'exists:marketing_programs,id',
         ];
     }
