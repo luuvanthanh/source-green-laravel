@@ -60,6 +60,7 @@ AppMenu.propTypes = {
   isMobileView: PropTypes.bool,
   isLightTheme: PropTypes.bool,
   menu: PropTypes.arrayOf(PropTypes.any),
+  info: PropTypes.objectOf(PropTypes.any),
 };
 
 AppMenu.defaultProps = {
@@ -68,6 +69,7 @@ AppMenu.defaultProps = {
   isMobileView: false,
   isLightTheme: false,
   menu: [],
+  info: {},
 };
 
 export default AppMenu;

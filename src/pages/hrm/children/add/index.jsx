@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form } from 'antd';
+import { Form, Upload, message } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, last, head } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -42,7 +42,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      fileImage: [],
+    };
     setIsMounted(true);
   }
 
@@ -78,9 +80,15 @@ class Index extends PureComponent {
           {
             ...details,
             birthday: details.birthday && moment(details.birthday),
+            date: details.dedectionTimeFrom &&
+              details.dedectionTimeTo && [
+                moment(details.dedectionTimeFrom),
+                moment(details.dedectionTimeTo),
+              ],
           },
         ],
       });
+      this.onSetFileImage(details?.fileImage);
     }
   }
 
@@ -106,11 +114,18 @@ class Index extends PureComponent {
     });
   };
 
+  onSetFileImage = (fileImage) => {
+    this.setStateData({
+      fileImage: Helper.isJSON(fileImage) ? JSON.parse(fileImage) : [],
+    });
+  };
+
   onFinish = (values) => {
     const {
       dispatch,
       match: { params },
     } = this.props;
+    const { fileImage } = this.state;
     dispatch({
       type: params.id ? 'childrenHRMAdd/UPDATE' : 'childrenHRMAdd/ADD',
       payload: {
@@ -119,6 +134,11 @@ class Index extends PureComponent {
         data: values.data.map((item) => ({
           ...item,
           birthday: moment(item.birthday).format(variables.DATE_FORMAT.DATE_AFTER),
+          dedectionTimeFrom:
+            head(item.date) && moment(head(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
+          dedectionTimeTo:
+            last(item.date) && moment(last(item.date)).format(variables.DATE_FORMAT.DATE_AFTER),
+          fileImage: !isEmpty(fileImage) ? JSON.stringify(fileImage) : undefined,
         })),
       },
       callback: (response, error) => {
@@ -141,6 +161,26 @@ class Index extends PureComponent {
     });
   };
 
+  onRemoFile = (record) => {
+    this.setStateData((prevState) => ({
+      fileImage: prevState.fileImage.filter((item) => item.id !== record.id),
+    }));
+  };
+
+  onUpload = (files) => {
+    this.props.dispatch({
+      type: 'upload/UPLOAD',
+      payload: files,
+      callback: (response) => {
+        if (response) {
+          this.setStateData((prevState) => ({
+            fileImage: [...prevState.fileImage, head(response.results)?.fileInfo],
+          }));
+        }
+      },
+    });
+  };
+
   render() {
     const {
       error,
@@ -149,9 +189,30 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
+    const { fileImage } = this.state;
     const loading =
       effects['childrenHRMAdd/GET_CATEGORIES'] || effects['childrenHRMAdd/GET_DETAILS'];
     const loadingSubmit = effects['childrenHRMAdd/ADD'] || effects['childrenHRMAdd/UPDATE'];
+    const self = this;
+    const props = {
+      beforeUpload() {
+        return null;
+      },
+      customRequest({ file }) {
+        const { name, size } = file;
+        const allowTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpeg', 'jpg', 'png'];
+        const maxSize = 5 * 2 ** 20;
+        if (!allowTypes.includes(last(name.split('.'))) || size > maxSize) {
+          message.error(
+            'Định dạng hỗ trợ: .pdf, .doc, .docx, .xls, .xlsx, .jpeg, .jpg, .png. Tổng dung lượng không vượt quá 20MB',
+          );
+          return;
+        }
+        self.onUpload(file);
+      },
+      showUploadList: false,
+      fileList: [],
+    };
     return (
       <>
         <Breadcrumbs
@@ -244,6 +305,24 @@ class Index extends PureComponent {
                               </div>
                               <div className="col-lg-6">
                                 <FormItem
+                                  label="MÃ SỐ THUẾ"
+                                  name={[field.name, 'taxCode']}
+                                  fieldKey={[field.fieldKey, 'taxCode']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.INPUT}
+                                />
+                              </div>
+                              <div className="col-lg-6">
+                                <FormItem
+                                  label="THỜI GIAN BẮT ĐẦU TÍNH GIẢM TỪ"
+                                  name={[field.name, 'date']}
+                                  fieldKey={[field.fieldKey, 'date']}
+                                  rules={[variables.RULES.EMPTY]}
+                                  type={variables.RANGE_PICKER}
+                                />
+                              </div>
+                              <div className="col-lg-6">
+                                <FormItem
                                   className="checkbox-row checkbox-small"
                                   label="NGƯỜI PHỤ THUỘC"
                                   name={[field.name, 'isDependentPerson']}
@@ -251,6 +330,43 @@ class Index extends PureComponent {
                                   type={variables.CHECKBOX_FORM}
                                   valuePropName="checked"
                                 />
+                              </div>
+                              <div className="col-lg-12">
+                                <div className="row">
+                                  <div className="col-lg-12">
+                                    <label className="ant-col ant-form-item-label d-block">
+                                      <span>Đính kèm file</span>
+                                    </label>
+                                    <Upload {...props}>
+                                      <Button color="primary" icon="upload1">
+                                        Tải lên
+                                      </Button>
+                                    </Upload>
+                                    {!isEmpty(fileImage) && (
+                                      <div className={classnames(styles['files-container'], 'mt5')}>
+                                        {fileImage.map((item) => (
+                                          <div className={styles.item} key={item.id}>
+                                            <a
+                                              href={`${API_UPLOAD}${item.url}`}
+                                              target="_blank"
+                                              rel="noreferrer"
+                                            >
+                                              {item.name}
+                                            </a>
+                                            <span
+                                              role="presentation"
+                                              className="icon-cross"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                this.onRemoFile(item);
+                                              }}
+                                            />
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           ))}

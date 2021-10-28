@@ -814,6 +814,24 @@ export default {
         callback(null, error);
       }
     },
+    // transfers
+    *GET_HEALTH_INSURANCES({ payload, callback }, saga) {
+      try {
+        const response = yield saga.call(services.getHealthInsurances, payload);
+        callback(response);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *ADD_HEALTH_INSURANCES({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addHealthInsurances, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    // transfers
   },
   subscriptions: {},
 };

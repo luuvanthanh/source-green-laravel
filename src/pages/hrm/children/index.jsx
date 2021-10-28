@@ -278,6 +278,25 @@ class Index extends PureComponent {
         render: (record) => record.relationship,
       },
       {
+        title: 'Mã số thuế',
+        key: 'relationship',
+        className: 'min-width-130',
+        width: 130,
+        render: (record) => record.taxCode,
+      },
+      {
+        title: 'Thời gian bắt đầu giảm từ',
+        key: 'relationship',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) =>
+          Helper.getDateRank(
+            record.dedectionTimeFrom,
+            record.dedectionTimeTo,
+            variables.DATE_FORMAT.DATE,
+          ),
+      },
+      {
         title: 'Phụ thuộc',
         key: 'isDependentPerson',
         className: 'min-width-130',
@@ -288,6 +307,30 @@ class Index extends PureComponent {
             defaultChecked={record.isDependentPerson}
             onChange={(e) => this.onChange(e, record)}
           />
+        ),
+      },
+      {
+        title: 'Đính kèm file',
+        key: 'FileImage',
+        className: 'min-width-150',
+        width: 150,
+        align: 'center',
+        render: (record) => (
+          <div className={classnames(styles['files-container'], 'mt5')}>
+            {Helper.isJSON(record.fileImage) &&
+              JSON.parse(record.fileImage)?.map((item) => (
+                <div className={styles.item} key={item.id}>
+                  <a
+                    className={styles['link-wrap']}
+                    href={`${API_UPLOAD}${item.url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.name}
+                  </a>
+                </div>
+              ))}
+          </div>
         ),
       },
       {

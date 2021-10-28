@@ -38,6 +38,10 @@ export const menu = [
     label: 'Bảo hiểm xã hội',
   },
   {
+    key: 'healthInsurrance',
+    label: 'Bảo hiểm y tế',
+  },
+  {
     key: 'children',
     label: 'Thông tin quan hệ gia đình',
   },

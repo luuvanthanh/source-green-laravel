@@ -121,7 +121,7 @@ const Index = memo(() => {
         title: 'Số năm/tháng hợp đồng',
         key: 'contract_category',
         className: 'min-width-150',
-        render: (record) => `${record.year} năm ${record.month} tháng`,
+        render: (record) => `${record.month} tháng`,
       },
       {
         title: 'Thời hạn HĐ từ',
@@ -168,11 +168,8 @@ const Index = memo(() => {
         key: 'status',
         width: 150,
         className: 'min-width-150',
-        render: record =>
-          Helper.getStatusContracts(
-            moment(record?.contractFrom),
-            moment(record?.contractTo),
-          ),
+        render: (record) =>
+          Helper.getStatusContracts(moment(record?.contractFrom), moment(record?.contractTo)),
       },
       {
         title: 'Thao tác',
@@ -463,14 +460,6 @@ const Index = memo(() => {
           <Pane className="row">
             <Pane className="col-lg-4">
               <FormItem
-                label="Số năm hợp đồng"
-                name="year"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
-            <Pane className="col-lg-4">
-              <FormItem
                 label="Số tháng hợp đồng"
                 name="month"
                 type={variables.INPUT_COUNT}
@@ -544,6 +533,14 @@ const Index = memo(() => {
                 name="branchId"
                 type={variables.SELECT}
                 rules={[variables.RULES.EMPTY]}
+              />
+            </Pane>
+            <Pane className="col-lg-12">
+              <FormItem
+                label="Tham gia BHXH"
+                name="isSocialInsurance"
+                type={variables.CHECKBOX_FORM}
+                valuePropName="checked"
               />
             </Pane>
           </Pane>
