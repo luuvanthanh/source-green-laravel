@@ -2,7 +2,7 @@ import request from '@/utils/requestCrm';
 import { Helper } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/customer-leads', {
+  return request('/v1/marketing-programs', {
     method: 'GET',
     params: {
       ...data,
@@ -17,9 +17,6 @@ export function get(data = {}) {
         'search',
         'reference.statusParentLead',
         'studentInfo',
-        'employee',
-        'statusParentLead',
-        'customerTag.tag'
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },

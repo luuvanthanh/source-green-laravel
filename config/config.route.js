@@ -2442,6 +2442,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+            {
+            path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/:detailId/chi-tiet',
+            component: './crm/marketing-manage/create/add-posts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
           {
             path: '/crm/tiep-thi/du-lieu',
             component: './crm/marketing-data',

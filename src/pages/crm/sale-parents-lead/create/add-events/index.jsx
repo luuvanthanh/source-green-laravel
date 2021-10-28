@@ -129,7 +129,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   </Pane>
                   <Pane className="col-lg-6">
                     <FormItem
-                      label="GIỜ"
+                      label="Giờ"
                       name="time"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.TIME_PICKER}
@@ -156,7 +156,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                       name="status"
                       data={[
                         { id: 'COMING_EVENTS', name: 'Sắp diễn ra' },
-                        { id: 'PAST_EVENTS', name: 'đã diễn ra' },
+                        { id: 'PAST_EVENTS', name: 'Đã diễn ra' },
                       ]}
                       label="Trạng thái"
                       type={variables.SELECT}

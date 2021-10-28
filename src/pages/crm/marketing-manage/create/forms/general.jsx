@@ -1,95 +1,192 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
+import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
-import { useParams } from 'umi';
-import { useSelector, useDispatch } from 'dva';
+import { connect, history, withRouter } from 'umi';
+import PropTypes from 'prop-types';
+
+import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import { variables } from '@/utils';
+import Loading from '@/components/CommonComponent/Loading';
+import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import { Helper } from '@/utils';
 
 const marginProps = { style: { marginBottom: 12 } };
-const General = memo(() => {
-  const { data } = useSelector(({ loading, crmMarketingManageAdd }) => ({
-    loading,
-    details: crmMarketingManageAdd.details,
-    data: crmMarketingManageAdd.data,
-    error: crmMarketingManageAdd.error,
-  }));
-  const dispatch = useDispatch();
-  const params = useParams();
+const genders = [
+  { id: 'APPLY', name: 'Áp dụng' },
+  { id: 'NOT_APPLY', name: 'Chưa áp dụng' },
+];
+const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
+  loading,
+  details: crmMarketingManageAdd.details,
+  error: crmMarketingManageAdd.error,
+  branches: crmMarketingManageAdd.branches,
+  classes: crmMarketingManageAdd.classes,
+  city: crmMarketingManageAdd.city,
+  district: crmMarketingManageAdd.district,
+});
+const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+  const formRef = useRef();
+  const [setFiles] = Helper.isJSON(details?.file_image)
+    ? useState(JSON.parse(details?.file_image))
+    : useState([]);
   const mounted = useRef(false);
-
+  const mountedSet = (setFunction, value) =>
+    !!mounted?.current && setFunction && setFunction(value);
+  const loadingSubmit =
+    effects[`crmMarketingManageAdd/ADD`] ||
+    effects[`crmMarketingManageAdd/UPDATE`] ||
+    effects[`crmMarketingManageAdd/UPDATE_STATUS`];
+  const loading = effects[`crmMarketingManageAdd/GET_DETAILS`];
   useEffect(() => {
     dispatch({
-      type: 'crmMarketingManageAdd/GET_DATA',
-      payload: params,
+      type: 'crmMarketingManageAdd/GET_CITIES',
+      payload: {},
     });
-  }, []);
+    if (params.id) {
+      dispatch({
+        type: 'crmMarketingManageAdd/GET_DISTRICTS',
+        payload: {},
+      });
+    }
+  }, [params.id]);
+
+  /**
+   * Function submit form modal
+   * @param {object} values values of form
+   */
+  const onFinish = (values) => {
+    dispatch({
+      type: params.id ? 'crmMarketingManageAdd/UPDATE' : 'crmMarketingManageAdd/ADD',
+      payload: params.id ? { ...details, ...values } : { ...values },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
 
+  useEffect(() => {
+    if (!isEmpty(details) && params.id) {
+      formRef.current.setFieldsValue({
+        ...details,
+        ...head(details.positionLevel),
+        start_date: details.start_date && moment(details.start_date),
+        end_date: details.end_date && moment(details.end_date),
+      });
+      if (Helper.isJSON(details?.file_image)) {
+        mountedSet(setFiles, JSON.parse(details?.file_image));
+      }
+    }
+  }, [details]);
+
   return (
-    <Form layout="vertical">
-      <div className="card">
-        <div style={{ padding: 20 }} className="pb-0 border-bottom">
-          <Heading type="form-title" style={{ marginBottom: 20 }}>
-            Thông tin phụ huynh
-          </Heading>
-          <div className="row" {...marginProps}>
-            {params.id ? (
-              <div className="col-lg-3">
-                <FormItem name="day" label="Ngày gọi" type={variables.INPUT} />
-              </div>
-            ) : (
-              ''
-            )}
-            <div className="col-lg-3">
-              <FormItem
-                name="day"
-                label="Ngày gọi"
-                type={variables.DATE_PICKER}
-                disabledDate={(current) => current > moment()}
-              />
-            </div>
-            <div className="col-lg-3">
-              <FormItem
-                name="day"
-                label="Ngày gọi"
-                type={variables.DATE_PICKER}
-                disabledDate={(current) => current > moment()}
-              />
-            </div>
-            <div className="col-lg-3">
-              <FormItem data={data} name="gender" label="Giới tính" type={variables.SELECT} />
-            </div>
-          </div>
-          <div className="row" {...marginProps}>
-            <div className="col-lg-12">
-              <FormItem name="email" label="Email" type={variables.INPUT} />
-            </div>
-            <div className="col-lg-12">
-              <FormItem name="phoneNumber" label="Số điện thoại" type={variables.TEXTAREA} />
-            </div>
-            <div className="col-lg-12">
-              <FormItem name="phoneNumber" label="Số điện thoại Khác" type={variables.TEXTAREA} />
-            </div>
-          </div>
-        </div>
-        <div className="d-flex justify-content-between align-items-center" style={{ padding: 20 }}>
-          <p className="btn-delete" role="presentation">
-            Hủy
-          </p>
-          <Button color="success" size="large" htmlType="submit">
-            Lưu
-          </Button>
-        </div>
-      </div>
+    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+      <Pane className="card">
+        <Loading loading={loading} isError={error.isError} params={{ error }}>
+          <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+            <Heading type="form-title" style={{ marginBottom: 20 }}>
+              Thông tin cơ bản
+            </Heading>
+
+            <Pane className="row" {...marginProps}>
+              <Pane className="col-lg-3">
+                <FormItem
+                  name="start_date"
+                  label="Thời gian bắt đầu"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-3">
+                <FormItem
+                  name="end_date"
+                  label="Thời gian kết thúc"
+                  type={variables.DATE_PICKER}
+                  rules={[variables.RULES.EMPTY]}
+                />
+              </Pane>
+              <Pane className="col-lg-3">
+                <FormItem
+                  options={['id', 'name']}
+                  name="status"
+                  data={genders}
+                  placeholder="Chọn"
+                  type={variables.SELECT}
+                  label="Trạng thái"
+                  rules={[variables.RULES.EMPTY_INPUT]}
+                />
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItem
+                  name="name"
+                  label="Tên chương trình"
+                  type={variables.INPUT}
+                  rules={[variables.RULES.EMPTY_INPUT]}
+                />
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItem name="content" label="Nội dung" type={variables.TEXTAREA} />
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItem name="note" label="ghi chú" type={variables.TEXTAREA} />
+              </Pane>
+            </Pane>
+          </Pane>
+
+          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+              Lưu
+            </Button>
+          </Pane>
+        </Loading>
+      </Pane>
     </Form>
   );
 });
 
-export default General;
+General.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  city: PropTypes.arrayOf(PropTypes.any),
+  district: PropTypes.arrayOf(PropTypes.any),
+};
+
+General.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => {},
+  loading: {},
+  error: {},
+  branches: [],
+  classes: [],
+  city: [],
+  district: [],
+};
+
+export default withRouter(connect(mapStateToProps)(General));

@@ -296,19 +296,19 @@ class Index extends PureComponent {
         title: 'Tình trạng Lead',
         key: 'status',
         width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'statusParentLead.name')}</Text>,
       },
       {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => <Tag color="#27a600">{get(record, 'name')}</Tag>,
+        render: (record) => <Tag color="#27a600">{get(record, 'customerTag.tag.id')}</Tag>,
       },
       {
         title: 'Nhân viên chăm sóc',
         key: 'staff',
         width: 250,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',
