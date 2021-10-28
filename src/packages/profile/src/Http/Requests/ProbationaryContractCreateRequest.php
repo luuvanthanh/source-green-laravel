@@ -45,6 +45,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractDate->format('Y-m-d')) {
                         return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $probationaryContract->ContractDate->format('d-m-Y'));
@@ -61,7 +62,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                     $employeeId = request()->employeeId;
 
                     $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('ContractDate', 'DESC')->first();
-                    $value = Carbon::parse($value)->format('Y-m-d');
+                    $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->contractTo->format('Y-m-d')) {
                         return $fail("Thời hạn từ phải lớn hơn thời hạn đến của hợp đồng thử việc gần nhất " . $probationaryContract->contractTo->format('d-m-Y'));
