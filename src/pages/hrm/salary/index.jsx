@@ -717,7 +717,11 @@ class Index extends PureComponent {
                 <Table.Summary.Row>
                   <Table.Summary.Cell fixed="left" colSpan={5} />
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalIncome, 0))}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.totalIncome, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   {data.columnBasicSalaryAndAllowance.map((item) => {
                     let summary = 0;
@@ -731,7 +735,7 @@ class Index extends PureComponent {
                     });
                     return (
                       <Table.Summary.Cell key={item.code}>
-                        {Helper.getPrice(summary)}
+                        <strong>{Helper.getPrice(summary)}</strong>
                       </Table.Summary.Cell>
                     );
                   })}
@@ -747,121 +751,170 @@ class Index extends PureComponent {
                     });
                     return (
                       <Table.Summary.Cell key={item.code}>
-                        {Helper.getPrice(summary)}
+                        <strong>{Helper.getPrice(summary)}</strong>
                       </Table.Summary.Cell>
                     );
                   })}
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.kpiBonus, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.kpiBonus, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otTax, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.otTax, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.otNoTax, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.otNoTax, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {pageData.reduce((total, item) => total + toNumber(item.unpaidLeave), 0)}
+                    <strong>
+                      {pageData.reduce((total, item) => total + toNumber(item.unpaidLeave), 0)}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {pageData.reduce((total, item) => total + toNumber(item.totalWork), 0)}
+                    <strong>
+                      {pageData.reduce((total, item) => total + toNumber(item.totalWork), 0)}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.totalIncomeMonth, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.totalIncomeMonth, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.socialInsuranceEmployee, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.socialInsuranceEmployee, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.healthInsuranceEmployee, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.healthInsuranceEmployee, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce(
-                        (total, item) => total + item.unemploymentInsuranceEmployee,
-                        0,
-                      ),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce(
+                          (total, item) => total + item.unemploymentInsuranceEmployee,
+                          0,
+                        ),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce(
-                        (total, item) => total + item.socialInsuranceAdjustedEmployee,
-                        0,
-                      ),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce(
+                          (total, item) => total + item.socialInsuranceAdjustedEmployee,
+                          0,
+                        ),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.socialInsuranceCompany, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.socialInsuranceCompany, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.healthInsuranceCompany, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.healthInsuranceCompany, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce(
-                        (total, item) => total + item.unemploymentInsuranceCompany,
-                        0,
-                      ),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce(
+                          (total, item) => total + item.unemploymentInsuranceCompany,
+                          0,
+                        ),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce(
-                        (total, item) => total + item.socialInsuranceAdjustedCompany,
-                        0,
-                      ),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce(
+                          (total, item) => total + item.socialInsuranceAdjustedCompany,
+                          0,
+                        ),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.unionDues, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.unionDues, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {pageData.reduce((total, item) => total + item.dependentPerson, 0)}
+                    <strong>
+                      {pageData.reduce((total, item) => total + item.dependentPerson, 0)}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.eeduce, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.eeduce, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.charity, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.charity, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.totalReduce, 0))}{' '}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.totalReduce, 0),
+                      )}{' '}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {' '}
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.rentalIncome, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.rentalIncome, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.personalIncomeTax, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.personalIncomeTax, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.socialInsurancePayment, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.socialInsurancePayment, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>
-                    {Helper.getPrice(pageData.reduce((total, item) => total + item.advance, 0))}
+                    <strong>
+                      {Helper.getPrice(pageData.reduce((total, item) => total + item.advance, 0))}
+                    </strong>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell />
                   <Table.Summary.Cell>
-                    {Helper.getPrice(
-                      pageData.reduce((total, item) => total + item.actuallyReceived, 0),
-                    )}
+                    <strong>
+                      {Helper.getPrice(
+                        pageData.reduce((total, item) => total + item.actuallyReceived, 0),
+                      )}
+                    </strong>
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
               )}

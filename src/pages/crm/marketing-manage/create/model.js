@@ -235,14 +235,6 @@ import * as categories from '@/services/categories';
           callback(null, error?.data?.error);
         }
       },
-      *UPDATE_STATUS_POSTS({ payload, callback }, saga) {
-        try {
-          yield saga.call(services.updateStatusPosts, payload);
-          callback(payload);
-        } catch (error) {
-          callback(null, error?.data?.error);
-        }
-      },
       *GET_DETAILS({ payload }, saga) {
         try {
           yield saga.put({
