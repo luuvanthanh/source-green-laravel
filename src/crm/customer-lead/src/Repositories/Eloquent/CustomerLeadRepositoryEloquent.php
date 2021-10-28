@@ -115,7 +115,8 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         if (!empty($attributes['customer_lead_id'])) {
-            $this->model = $this->model->whereIn('id', $attributes['customer_lead_id']);
+            $customer_lead_id = explode(',',$attributes['customer_lead_id']);
+            $this->model = $this->model->whereIn('id', $customer_lead_id);
         }
 
         if (!empty($attributes['limit'])) {
