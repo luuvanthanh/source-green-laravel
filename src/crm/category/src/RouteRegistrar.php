@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('status-parent-leads', 'StatusParentLeadController');
             \Route::resource('tags', 'TagController');
             \Route::resource('search-sources', 'SearchSourceController');
+            \Route::resource('status-admission-registers', 'StatusAdmissionRegisterController');
         });
     }
 }
