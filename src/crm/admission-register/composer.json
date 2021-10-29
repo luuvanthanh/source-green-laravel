@@ -1,0 +1,24 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tamnn",
+            "email": "tamnn@greenglobal.vn"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\Crm\\AdmissionRegister\\": "crm/admission-register/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\Crm\\AdmissionRegister\\Providers\\AdmissionRegisterServiceProvider::class"
+            ]
+        }
+    }
+}

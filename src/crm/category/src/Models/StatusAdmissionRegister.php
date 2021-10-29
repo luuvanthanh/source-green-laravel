@@ -14,4 +14,9 @@ class StatusAdmissionRegister extends UuidModel
     protected $table = 'status_admission_registers';
 
     protected $fillable = ['code', 'name'];
+
+    public function admissionRegister()
+    {
+        return $this->hasMany(AdmissionRegister::class);
+    }
 }
