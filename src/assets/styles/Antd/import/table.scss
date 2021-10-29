@@ -1,10 +1,10 @@
-@import '@/assets/styles/mixins.scss';
+@import "@/assets/styles/mixins.scss";
 
 @for $i from 0 through 100 {
   $value: $i * 5;
-  $unit: '';
+  $unit: "";
   @if $i != 0 {
-    $unit: 'px';
+    $unit: "px";
   }
   .max-width-#{$i*5} {
     max-width: #{$value}#{$unit};
@@ -12,9 +12,9 @@
 }
 @for $i from 0 through 100 {
   $value: $i * 5;
-  $unit: '';
+  $unit: "";
   @if $i != 0 {
-    $unit: 'px';
+    $unit: "px";
   }
   .col-fixed-#{$i*5} {
     width: #{$value}#{$unit};
@@ -22,9 +22,9 @@
 }
 @for $i from 0 through 300 {
   $value: $i * 5;
-  $unit: '';
+  $unit: "";
   @if $i != 0 {
-    $unit: 'px';
+    $unit: "px";
   }
   .min-width-#{$i*5} {
     min-width: #{$value}#{$unit};
@@ -95,7 +95,7 @@
 
 .ant-rate-star {
   margin-right: 5px;
-  > div[aria-checked='true'] {
+  > div[aria-checked="true"] {
     .anticon-star {
       color: $background-success;
     }
@@ -218,7 +218,23 @@
 // }
 
 .table-salary {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
+  &.table-salary-collapsed {
+    th {
+      font-size: 6px;
+      padding: 5px;
+    }
+    td {
+      font-size: 7px;
+      padding: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      p {
+        white-space: normal;
+        font-size: 7px !important;
+      }
+    }
+  }
   .ant-table-container {
     &:after {
       background-color: $background-white;
@@ -290,7 +306,7 @@
       background-color: #d3e9f2;
     }
     .parent {
-      font-family: 'ProximaNovaSemibold';
+      font-family: "ProximaNovaSemibold";
     }
   }
 }

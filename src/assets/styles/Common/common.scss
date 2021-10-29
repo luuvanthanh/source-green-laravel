@@ -1225,3 +1225,21 @@
     text-overflow: ellipsis;
   }
 }
+
+.tab-switch {
+  display: flex;
+  .tab-item {
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 22px;
+    color: $text;
+    &.active {
+      font-weight: bold;
+      color: $text-success;
+      text-decoration: underline;
+    }
+    &:not(:first-child) {
+      margin-left: 20px;
+    }
+  }
+}
