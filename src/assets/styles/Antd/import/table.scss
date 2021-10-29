@@ -202,36 +202,29 @@
       }
     }
   }
-  .ant-table-thead {
-    .ant-table-cell {
-      // border: 1px solid rgba($color: $border-dark, $alpha: 0.35);
-    }
-    th {
-      // border-bottom: 1px solid rgba($color: $border-dark, $alpha: 0.35);
-    }
-  }
 }
-
-// .table-work {
-//   .ant-table-container {
-//   }
-// }
 
 .table-salary {
   font-family: "Roboto", sans-serif;
+  .total-row {
+    td {
+      font-family: "ProximaNovaSemibold";
+    }
+  }
   &.table-salary-collapsed {
     th {
       font-size: 6px;
-      padding: 5px;
+      padding: 2px;
     }
     td {
       font-size: 7px;
-      padding: 5px;
+      padding: 2px;
       white-space: nowrap;
       overflow: hidden;
       p {
         white-space: normal;
         font-size: 7px !important;
+        line-height: 10px !important;
       }
     }
   }
