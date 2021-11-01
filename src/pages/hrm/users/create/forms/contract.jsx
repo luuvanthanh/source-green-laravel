@@ -458,6 +458,14 @@ const Index = memo(() => {
           </Pane>
 
           <Pane className="row">
+            <div className="col-lg-4">
+              <FormItem
+                label="Số năm hợp đồng"
+                name="year"
+                type={variables.INPUT_COUNT}
+                rules={[variables.RULES.EMPTY]}
+              />
+            </div>
             <Pane className="col-lg-4">
               <FormItem
                 label="Số tháng hợp đồng"
