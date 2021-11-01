@@ -184,7 +184,8 @@ return [
         GGPHP\Crm\CustomerLead\Providers\CustomerLeadServiceProvider::class,
         GGPHP\Crm\Marketing\Providers\MarketingServiceProvider::class,
         GGPHP\Crm\CustomerPotential\Providers\CustomerPotentialServiceProvider::class,
-        GGPHP\Crm\Employee\Providers\EmployeeServiceProvider::class
+        GGPHP\Crm\Employee\Providers\EmployeeServiceProvider::class,
+        GGPHP\Crm\AdmissionRegister\Providers\AdmissionRegisterServiceProvider::class
     ],
 
     /*

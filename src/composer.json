@@ -70,7 +70,8 @@
             "GGPHP\\Crm\\CustomerLead\\": "crm/customer-lead/src/",
             "GGPHP\\Crm\\Marketing\\": "crm/marketing/src/",
             "GGPHP\\Crm\\CustomerPotential\\": "crm/customer-potential/src/",
-            "GGPHP\\Crm\\Employee\\": "crm/employee/src"
+            "GGPHP\\Crm\\Employee\\": "crm/employee/src",
+            "GGPHP\\Crm\\AdmissionRegister\\": "crm/admission-register/src"
         },
         "classmap": [
             "database/seeds",
