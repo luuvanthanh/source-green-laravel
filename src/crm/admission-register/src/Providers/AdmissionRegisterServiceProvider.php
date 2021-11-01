@@ -3,7 +3,9 @@
 namespace GGPHP\Crm\AdmissionRegister\Providers;
 
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
+use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ConfirmTransporterRepository;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\AdmissionRegisterRepositoryEloquent;
+use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\ConfirmTransporterRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class AdmissionRegisterServiceProvider extends ServiceProvider
@@ -28,5 +30,6 @@ class AdmissionRegisterServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(AdmissionRegisterRepository::class, AdmissionRegisterRepositoryEloquent::class);
+        $this->app->bind(ConfirmTransporterRepository::class, ConfirmTransporterRepositoryEloquent::class);
     }
 }
