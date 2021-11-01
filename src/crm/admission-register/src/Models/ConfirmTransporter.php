@@ -11,7 +11,7 @@ class ConfirmTransporter extends UuidModel
     protected $table = 'confirm_transporters';
 
     protected $fillable = [
-        'full_name', 'relationship', 'id_card', 'file_image', 'admission_register_id'
+        'full_name', 'relationship', 'id_card', 'file_image', 'admission_register_id', 'phone'
     ];
 
     public function admissionRegister()

@@ -2,13 +2,10 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
-use GGPHP\Crm\AdmissionRegister\Models\AdmissionRegister;
+
 use GGPHP\Crm\AdmissionRegister\Models\ConfirmTransporter;
-use GGPHP\Crm\AdmissionRegister\Presenters\AdmissionRegisterPresenter;
 use GGPHP\Crm\AdmissionRegister\Presenters\ConfirmTransporterPresenter;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ConfirmTransporterRepository;
-use GGPHP\Crm\AdmissionRegister\Services\ParentInfoService;
-use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
