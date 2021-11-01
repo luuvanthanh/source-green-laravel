@@ -272,7 +272,7 @@ class Index extends PureComponent {
         title: 'Nhân viên chăm sóc',
         key: 'staff',
         width: 250,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',

@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag } from 'antd';
+import { Form, Tag, Modal } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, get, debounce, size, head } from 'lodash';
+import { isEmpty, get, debounce, size, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
+import Pane from '@/components/CommonComponent/Pane';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
@@ -13,8 +14,17 @@ import PropTypes from 'prop-types';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
 import AssignmentComponent from './components/assignment';
-import CheckCoincide from './components/check-coincide';
+import Check from './components/list-coincide';
+import stylesModule from './styles.module.scss';
 
+const dataSearchCheck = [
+  { id: 'full_name:true', name: 'Tên' },
+  { id: 'address:true', name: 'Địa chỉ' },
+  { id: 'email:true', name: 'Email' },
+  { id: 'phone:true', name: 'Số điện thoại' },
+  { id: 'children_full_name:true', name: 'Tên con' },
+  { id: 'children_birth_date:true', name: 'Ngày sinh con' },
+];
 let isMounted = true;
 /**
  * Set isMounted
@@ -37,11 +47,15 @@ const mapStateToProps = ({ crmSaleParentsLead, loading }) => ({
   branches: crmSaleParentsLead.branches,
   city: crmSaleParentsLead.city,
   district: crmSaleParentsLead.district,
+  tags: crmSaleParentsLead.tags,
+  lead: crmSaleParentsLead.lead,
   loading,
 });
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
+
+  formCheck = React.createRef();
 
   constructor(props) {
     super(props);
@@ -55,6 +69,9 @@ class Index extends PureComponent {
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
       dataSource: [],
+      isModalVisible: false,
+      isModal: false,
+      dataCheck: {},
     };
     setIsMounted(true);
   }
@@ -227,6 +244,14 @@ class Index extends PureComponent {
       type: 'crmSaleParentsLead/GET_DISTRICTS',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_TAGS',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_STATUS_LEAD',
+      payload: {},
+    });
   };
 
   /**
@@ -281,28 +306,49 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{get(record, 'district.name')}</Text>,
       },
       {
-        title: 'Cơ sở quan tâm',
-        key: 'facility',
-        width: 200,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
-      },
-      {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => (
+          <>
+            {record?.studentInfo?.map((item, index) => (
+              <Text size="normal" key={index}>
+                {item.month_age}
+              </Text>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Tình trạng Lead',
         key: 'status',
         width: 150,
-        render: (record) => <Text size="normal">{get(record, 'statusParentLead.name')}</Text>,
+        render: (record) => (
+          <>
+            {' '}
+            {record?.statusCare
+              ?.map((item, index) => (
+                <Text size="normal" key={index}>
+                  {get(item, 'statusParentLead.name')}
+                </Text>
+              ))
+              .pop()}{' '}
+          </>
+        ),
       },
       {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => <Tag color="#27a600">{get(record, 'customerTag.tag.id')}</Tag>,
+        render: (record) => (
+          <>
+            {record?.customerTag?.map((item, index) => (
+              <Tag size="normal" color="#27a600" key={index}>
+                {get(item, 'tag.name')}
+              </Tag>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Nhân viên chăm sóc',
@@ -335,152 +381,243 @@ class Index extends PureComponent {
     return columns;
   };
 
+  //
+
+  showModal = () => {
+    this.setState({ isModalVisible: true });
+  };
+
+  handleOk = () => {
+    this.formCheck.current.validateFields().then((values) => {
+      const search = values?.name?.reduce(
+        (a, v) => ({ ...a, [head(v.split(':'))]: last(v.split(':')) }),
+        {},
+      );
+      this.setState(() => ({
+        dataCheck: search,
+        isModalVisible: false,
+        isModal: true,
+      }));
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({ isModalVisible: false });
+  };
+
+  callbackFunction = () => {
+    this.setState(() => ({
+      isModal: false,
+    }));
+  };
+
   render() {
     const {
       city,
       district,
+      tags,
+      lead,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { search, dataSource } = this.state;
-
+    const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
     };
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
-        <Helmet title="Phụ huynh lead" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Phụ huynh lead</Text>
-            <div className="d-flex ">
-              <CheckCoincide />
-              <Button color="primary" icon="export" className="ml-2">
-                Import
-              </Button>
-              <Button
-                color="success"
-                icon="plus"
-                onClick={() => history.push(`${pathname}/tao-moi`)}
-                className="ml-2"
-              >
-                Tạo mới
-              </Button>
-              <AssignmentComponent />
-              <Button
-                color="success"
-                icon="next"
-                className="ml-2"
-                onClick={this.save}
-                disabled={!size(dataSource.filter((item) => item.isActive))}
-              >
-                Chuyển tiềm năng
-              </Button>
-            </div>
-          </div>
-          <div className={styles['block-table']}>
-            <Form
-              initialValues={{
-                ...search,
-              }}
-              layout="vertical"
-              ref={this.formRef}
-            >
-              <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={city}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Tỉnh thành"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={district}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Quận huyện"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="c"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn cơ sở"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="d"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nguồn"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="e"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tình trạng lead"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nhân viên"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tags"
-                  />
+        {isModal ? (
+          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
+        ) : (
+          <>
+            <Helmet title="Phụ huynh lead" />
+            <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+              <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+                <Text color="dark">Phụ huynh lead</Text>
+                <div className="d-flex ">
+                  <div>
+                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal}>
+                      Check trùng
+                    </Button>
+                    <Modal
+                      title="Tìm kiếm phụ huynh trùng"
+                      className={stylesModule['wrapper-modal-check']}
+                      centered
+                      visible={isModalVisible}
+                      onOk={this.handleOk}
+                      onCancel={this.handleCancel}
+                      width={900}
+                      footer={[
+                        <p
+                          key="back"
+                          role="presentation"
+                          onClick={this.handleCancel}
+                          className={stylesModule['button-cancel']}
+                        >
+                          Hủy
+                        </p>,
+                        <Button
+                          htmlType="submit"
+                          color="success"
+                          type="primary"
+                          onClick={this.handleOk}
+                        >
+                          Tìm trùng
+                        </Button>,
+                      ]}
+                    >
+                      <div>
+                        <Form layout="vertical" ref={this.formCheck}>
+                          <Pane className="card">
+                            <Pane style={{ padding: 20 }}>
+                              <Pane className="row">
+                                <Pane className="col-lg-12">
+                                  <FormItem
+                                    label="Các điều kiện tìm kiếm trùng"
+                                    className="mt-2"
+                                    name="name"
+                                    data={dataSearchCheck}
+                                    mode="tags"
+                                    type={variables.SELECT_MUTILPLE}
+                                  />
+                                </Pane>
+                              </Pane>
+                            </Pane>
+                          </Pane>
+                        </Form>
+                      </div>
+                    </Modal>
+                  </div>
+                  <Button color="primary" icon="export" className="ml-2">
+                    Import
+                  </Button>
+                  <Button
+                    color="success"
+                    icon="plus"
+                    onClick={() => history.push(`${pathname}/tao-moi`)}
+                    className="ml-2"
+                  >
+                    Tạo mới
+                  </Button>
+                  <AssignmentComponent />
+                  <Button
+                    color="success"
+                    icon="next"
+                    className="ml-2"
+                    onClick={this.save}
+                    disabled={!size(dataSource.filter((item) => item.isActive))}
+                  >
+                    Chuyển tiềm năng
+                  </Button>
                 </div>
               </div>
-            </Form>
-            <Table
-              bordered={false}
-              columns={this.header(params)}
-              dataSource={dataSource}
-              loading={loading}
-              rowSelection={{ ...rowSelection }}
-              pagination={this.pagination(pagination)}
-              params={{
-                header: this.header(),
-                type: 'table',
-              }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
-            />
-          </div>
-        </div>
+              <div className={styles['block-table']}>
+                <Form
+                  initialValues={{
+                    ...search,
+                  }}
+                  layout="vertical"
+                  ref={this.formRef}
+                >
+                  <div className="row">
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="key"
+                        onChange={(event) => this.onChange(event, 'key')}
+                        placeholder="Nhập từ khóa"
+                        type={variables.INPUT_SEARCH}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={city}
+                        name="name"
+                        onChange={(event) => this.onChangeSelect(event, 'city_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn Tỉnh thành"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={district}
+                        name="name"
+                        onChange={(event) => this.onChangeSelect(event, 'district_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn Quận huyện"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="c"
+                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn cơ sở"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="d"
+                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn nguồn"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={lead}
+                        name="name"
+                        onChange={(event) => this.onChangeSelect(event, 'lead_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn tình trạng lead"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="f"
+                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn nhân viên"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={tags}
+                        name="name"
+                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn tags"
+                      />
+                    </div>
+                  </div>
+                </Form>
+                <Table
+                  bordered={false}
+                  columns={this.header(params)}
+                  dataSource={dataSource}
+                  loading={loading}
+                  rowSelection={{ ...rowSelection }}
+                  pagination={this.pagination(pagination)}
+                  params={{
+                    header: this.header(),
+                    type: 'table',
+                  }}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </>
     );
   }
@@ -494,6 +631,8 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  tags: PropTypes.arrayOf(PropTypes.any),
+  lead: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -504,6 +643,8 @@ Index.defaultProps = {
   location: {},
   city: [],
   district: [],
+  tags: [],
+  lead: [],
 };
 
 export default Index;
