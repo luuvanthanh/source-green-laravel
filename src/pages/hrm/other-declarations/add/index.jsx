@@ -195,14 +195,18 @@ class Index extends PureComponent {
     const { categories } = this.props;
     this.setStateData((prevState) => ({
       paramaterValues: [
-        ...prevState.paramaterValues,
-        categories.paramaterValues.find((item) => item.id === last(value)),
+        ...value.map((item) => {
+          const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+          return itemParamaterValues;
+        }),
       ],
       detail: prevState.detail.map((item) => ({
         ...item,
-        detail: [
-          ...prevState.paramaterValues,
-          categories.paramaterValues.find((item) => item.id === last(value)),
+        paramaterValues: [
+          ...value.map((item) => {
+            const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+            return itemParamaterValues;
+          }),
         ],
       })),
     }));
