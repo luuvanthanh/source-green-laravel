@@ -962,16 +962,13 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
         $params['[[month]]'][] = array_values($month);
 
         $listMerge = [];
-        $listIndexValue = [];
         $listRowTs = [];
 
         $callbacks = [
             '[[month]]' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $row_index = $param->row_index;
                 $col_index = $param->col_index;
                 $cell_coordinate = $param->coordinate;
-                $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $mergeCoordinate[] = $cell_coordinate;
@@ -1006,7 +1003,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 }
             },
             '[[values]]' => function (CallbackParam $param) use (&$listMerge, &$listRowTs) {
-
                 $sheet = $param->sheet;
                 $row_index = $param->row_index;
                 $col_index = $param->col_index;
@@ -1014,7 +1010,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $value = $param->param[$row_index][$col_index];
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
-                $listMergeValue = [];
 
                 if ($value == '') {
                     $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
@@ -1094,7 +1089,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $sheet->getRowDimension($currentRow)->setRowHeight(80);
             },
             '{work}' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
@@ -1105,7 +1099,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
                 $listMerge[] = $merge;
             },
             '{sign}' => function (CallbackParam $param) use (&$listMerge) {
-                $sheet = $param->sheet;
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
                 $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
