@@ -26,7 +26,7 @@ class UpdateMarketingProgramRequest extends FormRequest
         return [
             'name' => 'string',
             'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
+            'end_date' => 'date_format:Y-m-d|after:start_date',
         ];
     }
 }
