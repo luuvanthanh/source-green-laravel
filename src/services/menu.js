@@ -1113,7 +1113,7 @@ export async function getLeftMenuHRM() {
           ],
         },
         {
-          title: 'Lưu trữ',
+          title: 'Hồ sơ đã lưu trữ',
           key: 'storages',
           url: ['/quan-ly-nhan-su/luu-tru'],
           permission: [permissions.HRM],
@@ -1751,6 +1751,7 @@ export async function getLeftMenuCRM() {
             '/crm/tiep-thi/du-lieu',
             '/crm/tiep-thi/du-lieu/tao-moi',
             '/crm/tiep-thi/du-lieu/:id/chi-tiet',
+            '/crm/tiep-thi/du-lieu/:id/chi-tiet/tao-moi',
           ],
           permission: [permissions.CRM],
           pro: true,

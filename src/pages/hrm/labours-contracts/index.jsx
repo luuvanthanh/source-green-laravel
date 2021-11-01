@@ -259,7 +259,7 @@ class Index extends PureComponent {
         title: 'Số năm/tháng hợp đồng',
         key: 'contract_category',
         className: 'min-width-150',
-        render: (record) => `${record.year} năm ${record.month} tháng`,
+        render: (record) => `${record.month} tháng`,
       },
       {
         title: 'Thời hạn HĐ từ',

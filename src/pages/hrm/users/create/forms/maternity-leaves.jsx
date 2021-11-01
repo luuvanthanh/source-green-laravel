@@ -186,7 +186,7 @@ const Index = memo(() => {
     <>
       <Modal
         visible={visible}
-        title="Thông tin nghỉ thai sản"
+        title="Thông tin tăng thai sản"
         onOk={handleOk}
         centered
         width={700}
@@ -244,7 +244,7 @@ const Index = memo(() => {
       </Modal>
       <Pane className="card">
         <Pane style={{ padding: 20 }} className="pb-0">
-          <Heading type="form-title">Thông tin nghỉ thai sản</Heading>
+          <Heading type="form-title">Thông tin tăng thai sản</Heading>
         </Pane>
         <Pane style={{ padding: 20 }} className="pb-0">
           <Table

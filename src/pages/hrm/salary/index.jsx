@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Table } from 'antd';
+import { Form } from 'antd';
 import classnames from 'classnames';
 import { debounce, isEmpty, toNumber } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -52,6 +52,7 @@ class Index extends PureComponent {
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
+      isCollapsed: false,
     };
     setIsMounted(true);
   }
@@ -320,53 +321,65 @@ class Index extends PureComponent {
    */
   header = () => {
     const { data } = this.props;
+    const { isCollapsed } = this.state;
     const columns = [
       {
         title: 'Họ và tên',
         key: 'name',
-        width: 200,
-        className: 'min-width-200 thead-green',
+        width: isCollapsed ? 100 : 200,
+        className: isCollapsed ? 'min-width-100 thead-green' : 'min-width-200 thead-green',
         fixed: 'left',
-        render: (record) => (
-          <AvatarTable
-            fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
-            fullName={record?.employee?.fullName}
-          />
-        ),
+        render: (record) =>
+          record.key !== 'TOTAL' && (
+            <AvatarTable
+              fileImage={Helper.getPathAvatarJson(record?.employee?.fileImage)}
+              fullName={record?.employee?.fullName}
+            />
+          ),
       },
       {
         title: 'Ngày bắt đầu làm việc',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getDate(record.dateStartWork, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Nghỉ không lương/Thai sản',
         key: 'isMaternity',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record?.isMaternity && 'Có',
       },
       {
         title: 'Thử việc',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record?.isProbation && 'Có',
       },
       {
         title: 'Không tham gia BHXH',
         key: 'isSocialInsurance',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record?.isProbation && 'Có',
       },
       {
         title: 'Tổng thu nhập',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.totalIncome),
       },
       ...(!isEmpty(data?.columnBasicSalaryAndAllowance)
@@ -379,8 +392,8 @@ class Index extends PureComponent {
                 data?.columnBasicSalaryAndAllowance?.map((item) => ({
                   title: item.name,
                   key: item.code,
-                  className: 'min-width-150 thead-green',
-                  width: 150,
+                  className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+                  width: isCollapsed ? 50 : 150,
                   render: (record) => {
                     if (record.basicSalaryAndAllowance) {
                       const basic = record.basicSalaryAndAllowance.find(
@@ -404,8 +417,10 @@ class Index extends PureComponent {
                 data?.columnIncurredAllowance?.map((item) => ({
                   title: item.name,
                   key: item.code,
-                  className: 'min-width-150 thead-green-1',
-                  width: 150,
+                  className: isCollapsed
+                    ? 'min-width-50 thead-green-1'
+                    : 'min-width-150 thead-green-1',
+                  width: isCollapsed ? 50 : 150,
                   render: (record) => {
                     if (record.incurredAllowance) {
                       const incurred = record.incurredAllowance.find(
@@ -422,8 +437,8 @@ class Index extends PureComponent {
       {
         title: 'Thưởng KPI',
         key: 'kpiBonus',
-        className: 'min-width-150 thead-yellow text-yellow',
-        width: 150,
+        className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.kpiBonus),
       },
       {
@@ -434,15 +449,15 @@ class Index extends PureComponent {
           {
             title: 'OT tính thuế ',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPercent(record.otTax),
           },
           {
             title: 'OT không tính thuế',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPercent(record.otNoTax),
           },
         ],
@@ -450,22 +465,28 @@ class Index extends PureComponent {
       {
         title: 'Nghỉ không lương',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record.unpaidLeave,
       },
       {
         title: 'Ngày công thực tế trong tháng',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record.totalWork,
       },
       {
         title: 'Tổng thu nhập trong tháng',
         key: 'name',
-        className: 'min-width-150 thead-green text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-green text-primary'
+          : 'min-width-150 thead-green text-primary',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.totalIncomeMonth),
       },
       {
@@ -476,29 +497,29 @@ class Index extends PureComponent {
           {
             title: 'BHXH 8%',
             key: 'name',
-            className: 'min-width-150 thead-primary',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.socialInsuranceEmployee),
           },
           {
             title: 'BHYT 1.5%',
             key: 'name',
-            className: 'min-width-150 thead-primary',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.healthInsuranceEmployee),
           },
           {
             title: 'BHTN 1%',
             key: 'name',
-            className: 'min-width-150 thead-primary',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.unemploymentInsuranceEmployee),
           },
           {
             title: 'Điều chỉnh BHXH',
             key: 'name',
-            className: 'min-width-150 thead-primary',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-primary' : 'min-width-150 thead-primary',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.socialInsuranceAdjustedEmployee),
           },
         ],
@@ -511,36 +532,36 @@ class Index extends PureComponent {
           {
             title: 'BHXH 17.5%',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.socialInsuranceCompany),
           },
           {
             title: 'BHYT 3%',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.healthInsuranceCompany),
           },
           {
             title: 'BHTN 1%',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.unemploymentInsuranceCompany),
           },
           {
             title: 'Điều chỉnh BHXH',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.socialInsuranceAdjustedCompany),
           },
           {
             title: 'Phí công đoàn',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.unionDues),
           },
         ],
@@ -553,22 +574,22 @@ class Index extends PureComponent {
           {
             title: 'Số người phụ thuộc',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => record.dependentPerson,
           },
           {
             title: 'Tổng giảm trừ bản thân và người phụ thuộc',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.eeduce),
           },
           {
             title: 'Đóng góp từ thiện',
             key: 'name',
-            className: 'min-width-150 thead-green',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.charity),
           },
         ],
@@ -576,22 +597,22 @@ class Index extends PureComponent {
       {
         title: 'Tổng các khoản giảm trừ',
         key: 'name',
-        className: 'min-width-150 thead-green',
-        width: 150,
+        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.totalReduce),
       },
       {
         title: 'Thu nhập tính thuế',
         key: 'name',
-        className: 'min-width-150 thead-green',
-        width: 150,
+        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.rentalIncome),
       },
       {
         title: 'Thuế TNCN',
         key: 'name',
-        className: 'min-width-150 thead-green',
-        width: 150,
+        className: isCollapsed ? 'min-width-50 thead-green' : 'min-width-150 thead-green',
+        width: isCollapsed ? 50 : 150,
         render: (record) => Helper.getPrice(record.personalIncomeTax),
       },
       {
@@ -602,15 +623,15 @@ class Index extends PureComponent {
           {
             title: 'Thanh toán từ BHXH',
             key: 'name',
-            className: 'min-width-150 thead-yellow',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.socialInsurancePayment),
           },
           {
             title: 'Trừ các khoản đã chi tạm ứng',
             key: 'name',
-            className: 'min-width-150 thead-yellow text-yellow',
-            width: 150,
+            className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+            width: isCollapsed ? 50 : 150,
             render: (record) => Helper.getPrice(record.advance),
           },
         ],
@@ -618,20 +639,145 @@ class Index extends PureComponent {
       {
         title: 'Ghi chú',
         key: 'note',
-        className: 'min-width-150 thead-yellow',
-        width: 150,
+        className: isCollapsed ? 'min-width-50 thead-yellow' : 'min-width-150 thead-yellow',
+        width: isCollapsed ? 50 : 150,
         render: (record) => record.note,
       },
       {
         title: 'Lương thực nhận',
         key: 'name',
-        className: 'min-width-150 thead-yellow text-primary',
-        width: 150,
+        className: isCollapsed
+          ? 'min-width-50 thead-yellow text-primary'
+          : 'min-width-150 thead-yellow text-primary',
+        width: isCollapsed ? 50 : 150,
         fixed: 'right',
         render: (record) => Helper.getPrice(record.actuallyReceived),
       },
     ];
     return columns;
+  };
+
+  onChangeCollapsed = () => {
+    this.setStateData(
+      (prevState) => ({
+        isCollapsed: !prevState.isCollapsed,
+      }),
+      () => {
+        this.props.dispatch({
+          type: 'settings/CHANGE_SETTING_COLLAPSED',
+          payload: {
+            setting: 'isMenuCollapsed',
+            value: this.state.isCollapsed,
+          },
+        });
+      },
+    );
+  };
+
+  addSummary = (data) => {
+    if (!isEmpty(data.payrollDetail)) {
+      return [
+        ...data.payrollDetail,
+        {
+          key: 'TOTAL',
+          totalIncome: data.payrollDetail.reduce((total, item) => total + item.totalIncome, 0),
+          kpiBonus: data.payrollDetail.reduce((total, item) => total + item.kpiBonus, 0),
+          otTax: data.payrollDetail.reduce((total, item) => total + item.otTax, 0),
+          otNoTax: data.payrollDetail.reduce((total, item) => total + item.otNoTax, 0),
+          unpaidLeave: data.payrollDetail.reduce((total, item) => total + item.unpaidLeave, 0),
+          totalWork: data.payrollDetail.reduce((total, item) => total + item.totalWork, 0),
+          totalIncomeMonth: data.payrollDetail.reduce(
+            (total, item) => total + item.totalIncomeMonth,
+            0,
+          ),
+          socialInsuranceEmployee: data.payrollDetail.reduce(
+            (total, item) => total + item.socialInsuranceEmployee,
+            0,
+          ),
+          healthInsuranceEmployee: data.payrollDetail.reduce(
+            (total, item) => total + item.healthInsuranceEmployee,
+            0,
+          ),
+          unemploymentInsuranceEmployee: data.payrollDetail.reduce(
+            (total, item) => total + item.unemploymentInsuranceEmployee,
+            0,
+          ),
+          socialInsuranceAdjustedEmployee: data.payrollDetail.reduce(
+            (total, item) => total + item.socialInsuranceAdjustedEmployee,
+            0,
+          ),
+          socialInsuranceCompany: data.payrollDetail.reduce(
+            (total, item) => total + item.socialInsuranceCompany,
+            0,
+          ),
+          healthInsuranceCompany: data.payrollDetail.reduce(
+            (total, item) => total + item.healthInsuranceCompany,
+            0,
+          ),
+          unemploymentInsuranceCompany: data.payrollDetail.reduce(
+            (total, item) => total + item.unemploymentInsuranceCompany,
+            0,
+          ),
+          socialInsuranceAdjustedCompany: data.payrollDetail.reduce(
+            (total, item) => total + item.socialInsuranceAdjustedCompany,
+            0,
+          ),
+          unionDues: data.payrollDetail.reduce((total, item) => total + item.unionDues, 0),
+          dependentPerson: data.payrollDetail.reduce(
+            (total, item) => total + item.dependentPerson,
+            0,
+          ),
+          eeduce: data.payrollDetail.reduce((total, item) => total + item.eeduce, 0),
+          charity: data.payrollDetail.reduce((total, item) => total + item.charity, 0),
+          totalReduce: data.payrollDetail.reduce((total, item) => total + item.totalReduce, 0),
+          rentalIncome: data.payrollDetail.reduce((total, item) => total + item.rentalIncome, 0),
+          personalIncomeTax: data.payrollDetail.reduce(
+            (total, item) => total + item.personalIncomeTax,
+            0,
+          ),
+          socialInsurancePayment: data.payrollDetail.reduce(
+            (total, item) => total + item.socialInsurancePayment,
+            0,
+          ),
+          advance: data.payrollDetail.reduce((total, item) => total + item.advance, 0),
+          actuallyReceived: data.payrollDetail.reduce(
+            (total, item) => total + item.actuallyReceived,
+            0,
+          ),
+          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance.map((item) => {
+            let summary = 0;
+            data.payrollDetail.forEach((itemPage) => {
+              if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
+                const basic = itemPage.basicSalaryAndAllowance.find(
+                  (itemBasic) => itemBasic.code === item.code,
+                );
+                if (basic) summary += toNumber(basic.value);
+              }
+            });
+            return {
+              ...item,
+              value: summary,
+            };
+          }),
+          incurredAllowance: data?.columnIncurredAllowance.map((item) => {
+            let summary = 0;
+            data.payrollDetail.forEach((itemPage) => {
+              if (!isEmpty(itemPage.incurredAllowance)) {
+                const basic = itemPage.incurredAllowance.find(
+                  (itemBasic) => itemBasic.code === item.code,
+                );
+                if (basic) summary += toNumber(basic.value);
+              }
+            });
+            return {
+              ...item,
+              value: summary,
+            };
+          }),
+        },
+      ];
+    }
+    return [];
   };
 
   render() {
@@ -644,7 +790,7 @@ class Index extends PureComponent {
       branches,
       employees,
     } = this.props;
-    const { search } = this.state;
+    const { search, isCollapsed } = this.state;
     const loading = effects['salary/GET_DATA'];
     return (
       <>
@@ -652,6 +798,26 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">BẢNG LƯƠNG</Text>
+            <div className={styles['tab-switch']}>
+              <div
+                className={classnames(styles['tab-item'], {
+                  [styles.active]: !isCollapsed,
+                })}
+                role="presentation"
+                onClick={this.onChangeCollapsed}
+              >
+                Hiển thị rộng
+              </div>
+              <div
+                className={classnames(styles['tab-item'], {
+                  [styles.active]: isCollapsed,
+                })}
+                role="presentation"
+                onClick={this.onChangeCollapsed}
+              >
+                Hiển thị hẹp
+              </div>
+            </div>
           </div>
           <div className={classnames(styles['block-table'])}>
             <Form
@@ -702,223 +868,19 @@ class Index extends PureComponent {
             </Form>
             <TableCus
               bordered
-              className="table-salary"
+              className={classnames('table-salary', { 'table-salary-collapsed': isCollapsed })}
               columns={this.header(params)}
-              dataSource={data?.payrollDetail || []}
+              dataSource={this.addSummary(data)}
               loading={loading}
               pagination={false}
               error={error}
               isError={error.isError}
+              rowClassName={(record) => (record.key === 'TOTAL' ? 'total-row' : '')}
               params={{
                 header: this.header(),
                 type: 'table',
               }}
-              summary={(pageData) => (
-                <Table.Summary.Row>
-                  <Table.Summary.Cell fixed="left" colSpan={5} />
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.totalIncome, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  {data.columnBasicSalaryAndAllowance.map((item) => {
-                    let summary = 0;
-                    pageData.forEach((itemPage) => {
-                      if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
-                        const basic = itemPage.basicSalaryAndAllowance.find(
-                          (itemBasic) => itemBasic.code === item.code,
-                        );
-                        if (basic) summary += toNumber(basic.value);
-                      }
-                    });
-                    return (
-                      <Table.Summary.Cell key={item.code}>
-                        <strong>{Helper.getPrice(summary)}</strong>
-                      </Table.Summary.Cell>
-                    );
-                  })}
-                  {data.columnIncurredAllowance.map((item) => {
-                    let summary = 0;
-                    pageData.forEach((itemPage) => {
-                      if (!isEmpty(itemPage.incurredAllowance)) {
-                        const basic = itemPage.incurredAllowance.find(
-                          (itemBasic) => itemBasic.code === item.code,
-                        );
-                        if (basic) summary += toNumber(basic.value);
-                      }
-                    });
-                    return (
-                      <Table.Summary.Cell key={item.code}>
-                        <strong>{Helper.getPrice(summary)}</strong>
-                      </Table.Summary.Cell>
-                    );
-                  })}
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.kpiBonus, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.otTax, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.otNoTax, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {pageData.reduce((total, item) => total + toNumber(item.unpaidLeave), 0)}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {pageData.reduce((total, item) => total + toNumber(item.totalWork), 0)}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.totalIncomeMonth, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.socialInsuranceEmployee, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.healthInsuranceEmployee, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce(
-                          (total, item) => total + item.unemploymentInsuranceEmployee,
-                          0,
-                        ),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce(
-                          (total, item) => total + item.socialInsuranceAdjustedEmployee,
-                          0,
-                        ),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.socialInsuranceCompany, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.healthInsuranceCompany, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce(
-                          (total, item) => total + item.unemploymentInsuranceCompany,
-                          0,
-                        ),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce(
-                          (total, item) => total + item.socialInsuranceAdjustedCompany,
-                          0,
-                        ),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.unionDues, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {pageData.reduce((total, item) => total + item.dependentPerson, 0)}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.eeduce, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.charity, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.totalReduce, 0),
-                      )}{' '}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.rentalIncome, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.personalIncomeTax, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.socialInsurancePayment, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(pageData.reduce((total, item) => total + item.advance, 0))}
-                    </strong>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell />
-                  <Table.Summary.Cell>
-                    <strong>
-                      {Helper.getPrice(
-                        pageData.reduce((total, item) => total + item.actuallyReceived, 0),
-                      )}
-                    </strong>
-                  </Table.Summary.Cell>
-                </Table.Summary.Row>
-              )}
-              rowKey={(record) => record.id}
+              rowKey={(record) => record.id || record.key}
               scroll={{ x: '100%', y: '55vh' }}
             />
           </div>

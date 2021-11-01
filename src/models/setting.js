@@ -28,6 +28,7 @@ export default {
     background: localStorage.getItem('background') || 'images/bg.jpg',
   },
   reducers: {
+    SET_SETTING_COLLAPSED: (state, action) => ({ ...state, ...action.payload }),
     SET_STATE: (state, action) => ({ ...state, ...action.payload }),
     SET_CHANGE_BACKGROUND: (state, { payload }) => ({ ...state, background: payload }),
   },
@@ -46,6 +47,14 @@ export default {
       yield put({
         type: 'SET_CHANGE_BACKGROUND',
         payload,
+      });
+    },
+    *CHANGE_SETTING_COLLAPSED({ payload: { setting, value } }, { put }) {
+      yield put({
+        type: 'SET_SETTING_COLLAPSED',
+        payload: {
+          [setting]: value,
+        },
       });
     },
   },
