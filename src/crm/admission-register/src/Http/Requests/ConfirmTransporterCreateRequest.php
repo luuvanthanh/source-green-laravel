@@ -27,6 +27,7 @@ class ConfirmTransporterCreateRequest extends FormRequest
             'confirm_transporter' => 'array',
             'confirm_transporter.*.full_name' => 'required',
             'confirm_transporter.*.relationship' => 'required',
+            'admission_register_id' => 'exists:admission_registers,id'
         ];
     }
 }

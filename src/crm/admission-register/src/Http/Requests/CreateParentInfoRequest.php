@@ -24,11 +24,10 @@ class CreateParentInfoRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'required|string',
-            'birth_date' => 'required|date_format:Y-m-d',
+            'full_name' => 'string',
+            'birth_date' => 'date_format:Y-m-d',
             'sex' => 'string',
             'email' => 'email',
-            'phone' => 'required',
             'address' => 'string',
             'admission_register_id' => 'exists:admission_registers,id'
         ];
