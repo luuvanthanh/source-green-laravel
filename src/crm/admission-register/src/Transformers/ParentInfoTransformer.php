@@ -3,6 +3,9 @@
 namespace GGPHP\Crm\AdmissionRegister\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
+use GGPHP\Crm\Province\Transformers\CityTransformer;
+use GGPHP\Crm\Province\Transformers\DistrictTransformer;
 
 /**
  * Class CityTransformer.
@@ -28,7 +31,7 @@ class ParentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['city', 'district', 'admissionRegister'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -40,6 +43,44 @@ class ParentInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $sex = null;
+
+        foreach (ParentInfo::SEX as $key => $value) {
+
+            if ($value == $model->sex) {
+                $sex = $key;
+            }
+        }
+
+        return [
+            'sex' => $sex,
+        ];
+    }
+
+    public function includeCity(ParentInfo $parentInfo)
+    {
+        if (empty($parentInfo->city)) {
+            return;
+        }
+
+        return $this->item($parentInfo->city, new CityTransformer, 'City');
+    }
+
+    public function includeDistrict(ParentInfo $parentInfo)
+    {
+        if (empty($parentInfo->district)) {
+            return;
+        }
+
+        return $this->item($parentInfo->district, new DistrictTransformer, 'District');
+    }
+
+    public function includeAdmissionRegister(ParentInfo $parentInfo)
+    {
+        if (empty($parentInfo->admissionRegister)) {
+            return;
+        }
+
+        return $this->item($parentInfo->admissionRegister, new AdmissionRegisterTransformer, 'AdmissionRegister');
     }
 }
