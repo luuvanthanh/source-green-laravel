@@ -31,6 +31,7 @@ class RouteRegistrar extends CoreRegistrar
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('admission-registers', 'AdmissionRegisterController');
             \Route::resource('parent-infos', 'ParentInfoController');
+            \Route::resource('confirm-transporters', 'ConfirmTransporterController');
         });
     }
 }
