@@ -31,4 +31,9 @@ class AdmissionRegister extends UuidModel
     {
         return $this->belongsTo(StatusAdmissionRegister::class, 'status_admission_register_id');
     }
+
+    public function confirmTransporter()
+    {
+        return $this->hasMany(ConfirmTransporter::class);
+    }
 }
