@@ -1,0 +1,146 @@
+@import '@/assets/styles/mixins.scss';
+.wrapper-modal {
+  :global(.ant-modal-footer) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.button-cancel{
+  font-family:$base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-form-label;
+  cursor: pointer;
+  text-decoration-line: underline;
+}
+
+.model-body {
+    border-top: 1px solid $border-line;
+    padding: 15px;
+}
+
+.wrapper-btn {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid $border-line;
+    padding: 15px;
+}
+
+.wrapper-btn-call {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100% !important;
+}
+
+.wrapper-model-calendar {
+    :global(.ant-modal-header) {
+      border-radius: 12px 12px 0px 0px;
+    }
+    :global(.ant-modal-content) {
+      border-radius: 12px;
+    }
+    :global(.ant-modal-footer) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+}
+
+.model-calendar-details {
+  font-family:$base__font-family;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: $text-success;
+  cursor: pointer;
+}
+
+.wrapper-title-add {
+    display: flex;
+    font-family:$base__font-family;
+    height: 32px;
+    padding-left: 10px;
+    align-items: center;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 22px;
+    font-weight: 400;
+    color: $text-form-label;
+}
+
+.wrapper-btn-add {
+    color: #225CC5 !important;
+    border: 1px solid #C4CDD4 !important;
+    border-radius: 3px !important;
+}
+
+.wrapper-step{
+    :global(.ant-steps-item-wait .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle){
+      background-color: #C4C4C4;
+      border-radius: 50%;
+      color: #C4C4C4;
+    }
+    :global(.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+      background-color: #3BB54A;
+      color:$white;
+      border-radius: 50%;
+    } 
+    :global(.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .anticon-check-circle ){
+      background-color: #3BB54A;
+      color:$white;
+      border-radius: 50%;
+    }
+    :global(.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after ){
+      background-color: #3BB54A;
+    }
+}
+  
+.wrapper-btn-student{
+    padding: 20px 0px; 
+}
+
+.wrapper-modal-selection{
+    :global(.ant-modal-footer) {
+      display: flex !important;
+      justify-content: center;
+    }
+    Button{
+      margin: 15px;
+    }
+}
+
+.wrapper-input {
+  display: flex;
+  padding: 10px 20px;
+  margin-right: 20px;
+  align-items: center;
+}
+
+.wrapper-title {
+  font-weight: 700;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: bold;
+  font-family:$base__font-family;
+}
+
+.title-Information {
+  font-family:$base__font-family;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #3E4247;
+}

@@ -2401,6 +2401,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/sale/dang-ky-nhap-hoc',
+            component: './crm/sale-admission-registers',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/sale/dang-ky-nhap-hoc/tao-moi',
+            component: './crm/sale-admission-registers/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/sale/dang-ky-nhap-hoc/:id/chi-tiet',
+            component: './crm/sale-admission-registers/create',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/chat/facebook',
             component: './crm/messages/facebook-dev',
             wrappers: ['@/wrappers/auth'],

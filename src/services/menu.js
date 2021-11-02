@@ -1702,6 +1702,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Đăng ký nhập học',
+          key: 'sale-admission',
+          url: [
+            '/crm/sale/dang-ky-nhap-hoc',
+            '/crm/sale/dang-ky-nhap-hoc/tao-moi',
+            '/crm/sale/dang-ky-nhap-hoc/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {

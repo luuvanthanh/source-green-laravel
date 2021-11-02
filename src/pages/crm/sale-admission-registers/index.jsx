@@ -2,16 +2,15 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, debounce, head, size, get } from 'lodash';
+import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
 import Table from '@/components/CommonComponent/Table';
-import styles from '@/assets/styles/Common/common.scss';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
-import HelperModules from './utils/Helper';
+import styles from '@/assets/styles/Common/common.scss';
 
 let isMounted = true;
 /**
@@ -28,15 +27,13 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmMarketingData, loading }) => ({
-  data: crmMarketingData.data,
-  error: crmMarketingData.error,
-  pagination: crmMarketingData.pagination,
-  branches: crmMarketingData.branches,
-  city: crmMarketingData.city,
-  searchs: crmMarketingData.searchs,
-  district: crmMarketingData.district,
-  program: crmMarketingData.program,
+const mapStateToProps = ({ crmSaleAdmission, loading }) => ({
+  data: crmSaleAdmission.data,
+  error: crmSaleAdmission.error,
+  pagination: crmSaleAdmission.pagination,
+  branches: crmSaleAdmission.branches,
+  city: crmSaleAdmission.city,
+  district: crmSaleAdmission.district,
   loading,
 });
 @connect(mapStateToProps)
@@ -54,7 +51,6 @@ class Index extends PureComponent {
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
       },
-      dataSource: [],
     };
     setIsMounted(true);
   }
@@ -67,40 +63,6 @@ class Index extends PureComponent {
   componentWillUnmount() {
     setIsMounted(false);
   }
-
-  onSelectChange = (e) => {
-    this.setStateData((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
-        ...item,
-        isActive: !!e.includes(item.id),
-      })),
-    }));
-  };
-
-  save = () => {
-    const { dispatch } = this.props;
-    const payload = {
-      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
-    };
-    dispatch({
-      type: 'crmMarketingData/ADD',
-      payload,
-      callback: (response, error) => {
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              this.formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
 
   /**
    * Set state properties
@@ -125,7 +87,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'crmMarketingData/GET_DATA',
+      type: 'crmSaleAdmission/GET_DATA',
       payload: {
         ...search,
       },
@@ -135,18 +97,6 @@ class Index extends PureComponent {
             dataSource: response.parsePayload,
           });
         }
-      },
-    });
-    this.props.dispatch({
-      type: 'crmMarketingData/GET_SEARCH',
-      payload: {
-        ...search,
-      },
-    });
-    this.props.dispatch({
-      type: 'crmMarketingData/GET_PROGRAM',
-      payload: {
-        ...search,
       },
     });
     history.push({
@@ -232,11 +182,11 @@ class Index extends PureComponent {
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'crmMarketingData/GET_CITIES',
+      type: 'crmSaleAdmission/GET_CITIES',
       payload: {},
     });
     dispatch({
-      type: 'crmMarketingData/GET_DISTRICTS',
+      type: 'crmSaleAdmission/GET_DISTRICTS',
       payload: {},
     });
   };
@@ -258,43 +208,46 @@ class Index extends PureComponent {
           Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
       },
       {
-        title: 'Tên phụ huynh',
-        key: 'name',
+        title: 'Tên học sinh',
+        key: 'full_name',
         width: 250,
-        render: (record) => record?.full_name,
+        render: (record) => <Text size="normal">{record.full_name}</Text>,
       },
       {
-        title: 'Email',
-        key: 'email',
-        width: 200,
-        render: (record) => record?.email,
-      },
-      {
-        title: 'Số điện thoại',
-        key: 'phone',
+        title: 'Ngày sinh',
+        key: 'birth_day',
         width: 150,
-        render: (record) => record?.phone,
+        render: (record) => record?.birth_day,
       },
       {
-        title: 'Trạng thái',
+        title: 'Tháng tuổi',
+        key: 'age',
+        width: 150,
+        render: (record) => record?.age,
+      },
+      {
+        title: 'Thời gian đăng ký',
+        key: 'time',
+        width: 150,
+        render: (record) => record?.time,
+      },
+      {
+        title: 'Họ tên cha',
+        key: 'parents',
+        width: 200,
+        render: (record) => record?.name_parents,
+      },
+      {
+        title: 'Họ tên mẹ',
+        key: 'facility',
+        width: 200,
+        render: (record) => record?.name_mon,
+      },
+      {
+        title: 'Tình trạng',
         key: 'status',
-        className: 'min-width-150',
         width: 150,
-        render: (record) => HelperModules.tagStatus(record.status),
-      },
-      {
-        title: 'Chương trình',
-        key: 'basis',
-        width: 200,
-        render: (record) => (
-          <text size="normal">{record?.marketingProgram?.map((item) => item.name).join(', ')}</text>
-        ),
-      },
-      {
-        title: 'Nguồn',
-        key: 'search',
-        width: 200,
-        render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
+        render: (record) => record?.status,
       },
       {
         key: 'action',
@@ -315,85 +268,33 @@ class Index extends PureComponent {
     return columns;
   };
 
-  onSelectChange = (e) => {
-    this.setState((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
-        ...item,
-        isActive: !!e.includes(item.id),
-      })),
-    }));
-  };
-
-  save = () => {
-    const { dispatch } = this.props;
-    const payload = {
-      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
-    };
-    dispatch({
-      type: 'crmMarketingData/ADD',
-      payload,
-      callback: (response, error) => {
-        if (response) {
-          this.onLoad();
-        }
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              this.formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
-
   render() {
     const {
+      city,
+      data,
+      district,
       match: { params },
       pagination,
-      searchs,
-      program,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    const { search, dataSource } = this.state;
-    const rowSelection = {
-      onChange: this.onSelectChange,
-    };
-    const loading = effects['crmMarketingData/GET_DATA'];
+    const { search } = this.state;
+
+    const loading = effects['crmSaleAdmission/GET_DATA'];
     return (
       <>
-        <Helmet title="Data Marketing" />
+        <Helmet title="Danh sách học sinh đăng ký nhập học" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Data Marketing</Text>
-            <div className="d-flex ">
-              <Button color="primary" icon="export" className="ml-2">
-                Import
-              </Button>
-              <Button
-                color="success"
-                icon="plus"
-                onClick={() => history.push(`${pathname}/tao-moi`)}
-                className="ml-2"
-              >
-                Tạo mới
-              </Button>
-              <Button
-                color="success"
-                icon="next"
-                className="ml-2"
-                onClick={this.save}
-                disabled={!size(dataSource.filter((item) => item.isActive))}
-              >
-                Chuyển lead
-              </Button>
-            </div>
+            <Text color="dark">Danh sách học sinh đăng ký nhập học</Text>
+            <Button
+              color="success"
+              icon="plus"
+              onClick={() => history.push(`${pathname}/tao-moi`)}
+              className="ml-2"
+            >
+              Tạo mới
+            </Button>
           </div>
           <div className={styles['block-table']}>
             <Form
@@ -404,7 +305,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
+                <div className="col-lg-4">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}
@@ -412,21 +313,39 @@ class Index extends PureComponent {
                     type={variables.INPUT_SEARCH}
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
-                    data={program}
+                    data={city}
                     name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'marketing_program_id')}
+                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn chương trình"
+                    placeholder="Chọn Tỉnh thành"
                   />
                 </div>
-                <div className="col-lg-3">
+                <div className="col-lg-2">
                   <FormItem
-                    data={searchs}
-                    name="source"
-                    onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
+                    data={district}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn Quận huyện"
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    name="c"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                    placeholder="Chọn cơ sở"
+                  />
+                </div>
+                <div className="col-lg-2">
+                  <FormItem
+                    name="d"
+                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn nguồn"
@@ -437,9 +356,8 @@ class Index extends PureComponent {
             <Table
               bordered={false}
               columns={this.header(params)}
-              dataSource={dataSource}
+              dataSource={data}
               loading={loading}
-              rowSelection={{ ...rowSelection }}
               pagination={this.pagination(pagination)}
               params={{
                 header: this.header(),
@@ -461,8 +379,9 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  searchs: PropTypes.arrayOf(PropTypes.any),
-  program: PropTypes.arrayOf(PropTypes.any),
+  city: PropTypes.arrayOf(PropTypes.any),
+  district: PropTypes.arrayOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -471,8 +390,9 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  searchs: [],
-  program: [],
+  city: [],
+  district: [],
+  data: [],
 };
 
 export default Index;
