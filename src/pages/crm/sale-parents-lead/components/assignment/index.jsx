@@ -177,11 +177,12 @@ const Index = memo(() => {
         </Button>
         <Modal
           title="Phân công nhân viên Sale"
-          className={styles['wrapper-modal']}
+          className={stylesModule['wrapper-modal']}
           visible={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
           width={960}
+          centered
           footer={[
             <p
               key="back"

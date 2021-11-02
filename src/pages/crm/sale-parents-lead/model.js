@@ -6,6 +6,8 @@ export default {
     data: [],
     city: [],
     district: [],
+    tags: [],
+    lead: [],
     pagination: {
       total: 0,
     },
@@ -37,6 +39,14 @@ export default {
     SET_DISTRICTS: (state, { payload }) => ({
       ...state,
       district: payload.parsePayload,
+    }),
+    SET_TAGS: (state, { payload }) => ({
+      ...state,
+      tags: payload.parsePayload,
+    }),
+    SET_STATUS_LEAD: (state, { payload }) => ({
+      ...state,
+      lead: payload.parsePayload,
     }),
   },
   effects: {
@@ -91,6 +101,34 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_TAGS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTags, payload);
+        yield saga.put({
+          type: 'SET_TAGS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_STATUS_LEAD({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getStatusLead, payload);
+        yield saga.put({
+          type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

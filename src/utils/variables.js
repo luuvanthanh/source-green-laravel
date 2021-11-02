@@ -180,6 +180,7 @@ export const variables = {
   GENDERS: {
     MALE: 'Nam',
     FEMALE: 'Nữ',
+    OTHER: 'Khác',
   },
 };
 

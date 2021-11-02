@@ -2,7 +2,7 @@ import request from '@/utils/requestCrm';
 import { Helper } from '@/utils';
 
 export function get(data = {}) {
-  return request('/v1/customer-leads', {
+  return request(`/v1/customer-leads?`, {
     method: 'GET',
     params: {
       ...data,
@@ -12,15 +12,9 @@ export function get(data = {}) {
       sortedBy: 'desc',
       searchJoin: 'and',
       include: Helper.convertIncludes([
-        'city',
-        'district',
         'search',
-        'statusCare.statusParentLead',
-        'studentInfo',
-        'employee',
-        'customerTag.tag',
+        'studentInfo'
       ]),
-      employeeId: data.employeeId && data.employeeId.join(','),
     },
   });
 }
@@ -52,20 +46,31 @@ export function add(data = {}) {
   });
 }
 
-export function getTags() {
-  return request(`/v1/tags`, {
-    method: 'GET',
-    params: {
-      orderBy: 'name',
-    },
+export function addCoincide(data = {}) {
+  return request(`/v1/merge-customer-leads`, {
+    method: 'POST',
+    data,
+    parse: true,
   });
 }
 
-export function getStatusLead() {
-  return request(`/v1/status-parent-leads`, {
+export function getCoincide(params = {}) {
+  return request(`/v1/customer-leads`, {
     method: 'GET',
     params: {
-      orderBy: 'name',
+      ...params,
+      limit: params.limit,
+      page: params.page,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes([
+        'search',
+        'studentInfo',
+        'city',
+        'district',
+      ]),
+      employeeId: params.employeeId && params.employeeId.join(','),
     },
   });
 }

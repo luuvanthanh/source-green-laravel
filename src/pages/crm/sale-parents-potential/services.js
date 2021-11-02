@@ -17,6 +17,7 @@ export function get(data = {}) {
         'search',
         'reference.statusParentLead',
         'studentInfo',
+        'employee',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
