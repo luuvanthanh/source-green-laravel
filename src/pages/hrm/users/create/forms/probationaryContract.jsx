@@ -541,6 +541,14 @@ const Index = memo(() => {
                 rules={[variables.RULES.EMPTY]}
               />
             </Pane>
+            <Pane className="col-lg-12">
+              <FormItem
+                label="Tham gia BHXH"
+                name="isSocialInsurance"
+                type={variables.CHECKBOX_FORM}
+                valuePropName="checked"
+              />
+            </Pane>
           </Pane>
 
           {!isEmpty(parameterValuesDetails) && (

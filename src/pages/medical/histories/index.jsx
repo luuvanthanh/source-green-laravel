@@ -47,8 +47,8 @@ class Index extends PureComponent {
         actionType: query?.actionType,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        creationTimeFrom: Helper.getEndDate(query?.creationTimeFrom, query?.choose),
-        creationTimeTo: Helper.getStartDate(query?.creationTimeTo, query?.choose),
+        creationTimeFrom: Helper.getStartDate(query?.creationTimeFrom, query?.choose),
+        creationTimeTo: Helper.getEndDate(query?.creationTimeTo, query?.choose),
       },
     };
     setIsMounted(true);
@@ -192,6 +192,8 @@ class Index extends PureComponent {
           ...prevState.search,
           creationTimeFrom,
           creationTimeTo,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
         },
       }),
       () => this.onLoad(),

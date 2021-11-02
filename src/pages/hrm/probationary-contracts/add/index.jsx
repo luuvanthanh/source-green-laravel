@@ -118,9 +118,7 @@ class Index extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'probationaryContractsAdd/GET_CATEGORIES',
-      payload: {
-
-      },
+      payload: {},
     });
     dispatch({
       type: 'probationaryContractsAdd/GET_TYPE_CONTRACTS',
@@ -486,6 +484,14 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="Tham gia BHXH"
+                      name="isSocialInsurance"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
+                    />
+                  </div>
                 </div>
                 {!isEmpty(parameterValues) && (
                   <>
@@ -566,7 +572,7 @@ Index.defaultProps = {
   error: {},
   details: {},
   categories: {},
-  contractTypes: []
+  contractTypes: [],
 };
 
 export default Index;
