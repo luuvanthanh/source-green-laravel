@@ -12,6 +12,7 @@ import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
+import Button from '@/components/CommonComponent/Button';
 
 let isMounted = true;
 /**
@@ -53,6 +54,7 @@ class Index extends PureComponent {
         month: query?.month ? moment(query.month) : moment().startOf('months'),
       },
       isCollapsed: false,
+      loadingDownload: false,
     };
     setIsMounted(true);
   }
@@ -780,6 +782,23 @@ class Index extends PureComponent {
     return [];
   };
 
+  exportData = async (id) => {
+    const { search } = this.state;
+    this.setState({
+      loadingDownload: true,
+    });
+    await Helper.exportExcel(
+      `/v1/export-payrolls`,
+      {
+        id,
+      },
+      `BangLuong-${Helper.getDate(search.month, variables.DATE_FORMAT.MONTH_FULL)}.xlsx`,
+    );
+    this.setState({
+      loadingDownload: false,
+    });
+  };
+
   render() {
     const {
       data,
@@ -790,7 +809,7 @@ class Index extends PureComponent {
       branches,
       employees,
     } = this.props;
-    const { search, isCollapsed } = this.state;
+    const { search, isCollapsed, loadingDownload } = this.state;
     const loading = effects['salary/GET_DATA'];
     return (
       <>
@@ -855,6 +874,17 @@ class Index extends PureComponent {
                     type={variables.SELECT}
                   />
                 </div>
+                {data.id && (
+                  <div className="col-lg-3">
+                    <Button
+                      color="success"
+                      onClick={() => this.exportData(data.id)}
+                      loading={loadingDownload}
+                    >
+                      Xuất bảng công
+                    </Button>
+                  </div>
+                )}
                 <div className="col-lg-12">
                   <FormItem
                     data={Helper.convertSelectUsers(employees)}
