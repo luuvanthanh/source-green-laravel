@@ -5,6 +5,8 @@ namespace GGPHP\Crm\Facebook\Http\Controllers;
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Facebook\Events\FacebookReceiveMessage;
 use GGPHP\Crm\Facebook\Services\FacebookService;
+use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
+use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleRepositoryEloquent;
 use Illuminate\Http\Request;
 
 class FacebookController extends Controller
@@ -46,6 +48,18 @@ class FacebookController extends Controller
                             'message' => $text,
                         ]));
                     }
+                }
+                if (isset($entry['changes'])) {
+                    $changes = $entry['changes'][0];
+
+                    if (isset($changes['value']['post_id'])) {
+                        if ($changes['value']['item'] == "video") {
+                            $postFacebookInfo = PostFacebookInfo::where('video_id', $changes['value']['video_id'])->first();
+                            $postFacebookInfo->facebook_post_id = $changes['value']['post_id'];
+                            $postFacebookInfo->update();
+                        }
+                    }
+                    ArticleRepositoryEloquent::postFacebookInfo($changes);
                 }
                 break;
         }

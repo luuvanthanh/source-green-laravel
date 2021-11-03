@@ -2,6 +2,7 @@
 
 namespace GGPHP\Crm\Facebook\Services;
 
+use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FacebookService
@@ -261,6 +262,78 @@ class FacebookService
         return json_decode($graphNode);
     }
 
+    public static function publishPagePostWithImage(array $attributes, $url)
+    {
+        $fb = getFacebookSdk();
+
+        try {
+            $pageId = $attributes['page_id'];
+            $response = $fb->post(
+                "$pageId/photos",
+                [
+                    "message" => $attributes['message'],
+                    "url" => $url,
+                ],
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
+
+    public static function publishPagePostWithVideo(array $attributes, $url)
+    {
+        $fb = getFacebookSdk();
+        $url = $fb->fileToUpload($url);
+        try {
+            $pageId = $attributes['page_id'];
+            $response = $fb->post(
+                "$pageId/videos",
+                [
+                    "title" => $attributes['title'],
+                    "description" => $attributes['description'],
+                    "url" => $url,
+                ],
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
+
+
     public static function getPagePost(array $attributes)
     {
         $fb = getFacebookSdk();
@@ -290,5 +363,21 @@ class FacebookService
         $graphNode = $response->getBody();
 
         return json_decode($graphNode);
+    }
+
+    public static function createUserFacebookInfo($attributes)
+    {
+        $userId = $attributes['value']['from']['id'];
+        $userFacebookInfo = UserFacebookInfo::where('user_id', $userId)->first();
+
+        if (is_null($userFacebookInfo)) {
+            if (isset($attributes['value']['from']['name'])) {
+                $data = [
+                    'user_id' => $userId,
+                    'user_name' => $attributes['value']['from']['name']
+                ];
+            }
+            UserFacebookInfo::create($data);
+        }
     }
 }
