@@ -39,13 +39,13 @@ class DivisionShiftCreateRequest extends FormRequest
                         return $fail("Thời gian bắt đầu phải lớn hơn " . $shift->StartDate->format('d-m-Y'));
                     }
 
-                    // $now = Carbon::now();
-                    // $today = $now->toDateString();
-                    // $divisionShift = DivisionShift::where('DivisionId', $divisionId)->where('StartDate', '>', $today)->first();
+                    $now = Carbon::now();
+                    $today = $now->toDateString();
+                    $divisionShift = DivisionShift::where('DivisionId', $divisionId)->where('StartDate', '>', $today)->first();
 
-                    // if (!is_null($divisionShift)) {
-                    //     return $fail('Bạn đã tạo phân ca cho tương lai, vui lòng sửa hoặc xóa phân ca để tạo phân ca mới.');
-                    // }
+                    if (!is_null($divisionShift)) {
+                        return $fail('Bạn đã tạo phân ca cho tương lai, vui lòng sửa hoặc xóa phân ca để tạo phân ca mới.');
+                    }
                 },
             ],
             'endDate' => [

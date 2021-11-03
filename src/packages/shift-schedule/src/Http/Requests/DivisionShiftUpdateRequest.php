@@ -36,13 +36,13 @@ class DivisionShiftUpdateRequest extends FormRequest
                         return $fail("Thời gian bắt đầu phải lớn hơn " . $shift->StartDate->format('d-m-Y'));
                     }
 
-                    // $now = Carbon::now();
-                    // $today = $now->toDateString();
-                    // $startDate = DivisionShift::find(request('id'))->StartDate->toDateString();
+                    $now = Carbon::now();
+                    $today = $now->toDateString();
+                    $startDate = DivisionShift::find(request('id'))->StartDate->toDateString();
 
-                    // if ($today >= $startDate) {
-                    //     return $fail('Phân ca đã được áp dụng, vui lòng tạo phân ca mới, không được sửa');
-                    // }
+                    if ($today >= $startDate) {
+                        return $fail('Phân ca đã được áp dụng, vui lòng tạo phân ca mới, không được sửa');
+                    }
                 },
             ],
             'endDate' => [

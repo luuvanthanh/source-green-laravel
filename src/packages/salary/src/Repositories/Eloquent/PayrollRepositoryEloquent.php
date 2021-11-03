@@ -123,16 +123,23 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
                 }
             }
+            \DB::beginTransaction();
 
-            $payroll->payrollDetail()->delete();
-            PayRollDetail::insert($dataInsert);
+            try {
+                $payroll->payrollDetail()->delete();
+                PayRollDetail::insert($dataInsert);
 
-            $payroll->update([
-                'columnBasicSalaryAndAllowance' => json_encode(array_values($columnBasicSalaryAndAllowance)),
-                'columnIncurredAllowance' => json_encode(array_values($columnIncurredAllowance)),
-            ]);
+                $payroll->update([
+                    'columnBasicSalaryAndAllowance' => json_encode(array_values($columnBasicSalaryAndAllowance)),
+                    'columnIncurredAllowance' => json_encode(array_values($columnIncurredAllowance)),
+                ]);
 
-            $payroll->update(['IsSalary' => true]);
+                $payroll->update(['IsSalary' => true]);
+
+                \DB::commit();
+            } catch (\Throwable $th) {
+                \DB::rollback();
+            }
         }
 
         return parent::find($attributes['id']);
@@ -140,6 +147,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
     {
+        $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
@@ -212,10 +220,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $isProbation = false;
 
-        $contract = $employee->labourContract()->orderBy('CreationTime')->first();
+        $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
 
         if (is_null($contract)) {
-            $contract = $employee->probationaryContract()->orderBy('CreationTime')->first();
+            $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }
@@ -561,6 +569,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
     public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
     {
+        $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
@@ -618,10 +627,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $isProbation = false;
 
-        $contract = $employee->labourContract()->orderBy('CreationTime', 'DESC')->first();
+        $contract = $employee->labourContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
 
         if (is_null($contract)) {
-            $contract = $employee->probationaryContract()->orderBy('CreationTime', 'DESC')->first();
+            $contract = $employee->probationaryContract()->where('ContractFrom', '<=', $month)->where('ContractTo', '>=', $month)->orderBy('CreationTime', 'DESC')->first();
             if (!is_null($contract)) {
                 $isProbation = true;
             }

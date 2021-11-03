@@ -48,8 +48,8 @@ class AppointCreateRequest extends FormRequest
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
 
                     if (is_null($labourContract)  && is_null($probationaryContract)) {
                         return $fail("Chưa có hợp đồng không được tạo quyết định.");

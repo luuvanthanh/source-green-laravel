@@ -24,7 +24,7 @@ class AbsentDeleteRequest extends FormRequest
                     $absent = Absent::findOrFail($value);
                     $now = Carbon::now();
 
-                    if ($absent->StartDate->format('Y-m-d') <= $now->format('Y-m-d')) {
+                    if ($absent->StartDate->format('Y-m-d') < $now->format('Y-m-d')) {
                         return $fail("Không được xóa dữ liệu trong quá khứ!");
                     }
 

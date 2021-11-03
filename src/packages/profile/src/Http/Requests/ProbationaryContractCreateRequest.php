@@ -32,7 +32,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
 
                     if (!is_null($labourContract)) {
                         return $fail("Đã có hợp đồng lao động, không được tạo hợp đồng thử việc.");
@@ -44,7 +44,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                 'required', 'date',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractDate->format('Y-m-d')) {
@@ -61,7 +61,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
 
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('ContractDate', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->orderBy('ContractDate', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->contractTo->format('Y-m-d')) {
