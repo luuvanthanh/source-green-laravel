@@ -96,10 +96,15 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
     {
         $resignationDecision = ResignationDecision::create($attributes);
 
-        $employee = User::where('Id', $attributes['employeeId'])->update([
+        $employee = User::where('Id', $attributes['employeeId'])->first();
+
+        $employee->update([
             'DateOff' => $attributes['timeApply'],
             'Status' => User::STATUS['STORE'],
         ]);
+
+        $employee->labourContract()->update('IsEffect', false);
+        $employee->probationaryContract()->update('IsEffect', false);
 
         return parent::find($resignationDecision->Id);
     }

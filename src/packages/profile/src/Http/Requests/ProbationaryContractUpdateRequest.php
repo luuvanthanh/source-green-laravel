@@ -31,13 +31,13 @@ class ProbationaryContractUpdateRequest extends FormRequest
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $labourContract = LabourContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->where('IsEffect', true)->first();
 
                     if (!is_null($labourContract)) {
                         return $fail("Đã có hợp đồng lao động, không được chỉnh sửa hợp đồng thử việc.");
                     }
 
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->where('IsEffect', true)->first();
 
                     if (!is_null($probationaryContract) && $probationaryContract->Id != request()->id) {
                         return $fail("Hợp đồng không phải là mới nhất, không được phép chỉnh sửa.");
@@ -49,7 +49,7 @@ class ProbationaryContractUpdateRequest extends FormRequest
                 'string',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $shift = ProbationaryContract::where('EmployeeId', $employeeId)->where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
+                    $shift = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->where('ContractNumber', $value)->where('Id', '!=', request()->id)->first();
 
                     if (!is_null($shift)) {
                         return $fail('Số hợp đồng đã tồn tại.');
@@ -60,7 +60,7 @@ class ProbationaryContractUpdateRequest extends FormRequest
                 'date',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('IsEffect', true)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($probationaryContract) && $value <= $probationaryContract->ContractTo->format('Y-m-d')) {

@@ -115,7 +115,10 @@ class UserController extends Controller
             $attributes['status'] = User::STATUS[$attributes['status']];
         }
 
-        $employee = $this->employeeRepository->update(['Status' => $attributes['status']], $id);
+        $employee = $this->employeeRepository->update([
+            'Status' => $attributes['status'],
+            'DateOff' => null
+        ], $id);
 
         return $this->success($employee, trans('lang::messages.common.modifySuccess'));
     }
