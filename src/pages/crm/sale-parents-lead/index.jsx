@@ -49,6 +49,8 @@ const mapStateToProps = ({ crmSaleParentsLead, loading }) => ({
   district: crmSaleParentsLead.district,
   tags: crmSaleParentsLead.tags,
   lead: crmSaleParentsLead.lead,
+  employees: crmSaleParentsLead.employees,
+  searchSource: crmSaleParentsLead.searchSource,
   loading,
 });
 @connect(mapStateToProps)
@@ -252,6 +254,14 @@ class Index extends PureComponent {
       type: 'crmSaleParentsLead/GET_STATUS_LEAD',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_EMPLOYEES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_SEARCH',
+      payload: {},
+    });
   };
 
   /**
@@ -360,7 +370,7 @@ class Index extends PureComponent {
         title: 'Nguồn tìm kiếm',
         key: 'search',
         width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
       },
       {
         key: 'action',
@@ -417,6 +427,8 @@ class Index extends PureComponent {
       district,
       tags,
       lead,
+      employees,
+      searchSource,
       match: { params },
       pagination,
       loading: { effects },
@@ -429,7 +441,7 @@ class Index extends PureComponent {
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
-        {isModal ? (
+        {isModal && Object.keys(dataCheck).length >= 6 ? (
           <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
         ) : (
           <>
@@ -482,6 +494,7 @@ class Index extends PureComponent {
                                     data={dataSearchCheck}
                                     mode="tags"
                                     type={variables.SELECT_MUTILPLE}
+                                    rules={[variables.RULES.EMPTY]}
                                   />
                                 </Pane>
                               </Pane>
@@ -534,7 +547,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={city}
-                        name="name"
+                        name="city"
                         onChange={(event) => this.onChangeSelect(event, 'city_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -544,7 +557,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={district}
-                        name="name"
+                        name="district"
                         onChange={(event) => this.onChangeSelect(event, 'district_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -562,8 +575,9 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="d"
-                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        name="search"
+                        data={searchSource}
+                        onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                         type={variables.SELECT}
                         allowClear={false}
                         placeholder="Chọn nguồn"
@@ -572,7 +586,7 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={lead}
-                        name="name"
+                        name="lead"
                         onChange={(event) => this.onChangeSelect(event, 'lead_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -581,9 +595,11 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="f"
-                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        name="full_name"
+                        data={employees}
+                        onChange={(event) => this.onChangeSelect(event, 'employee_id')}
                         type={variables.SELECT}
+                        options={['id', 'full_name']}
                         allowClear={false}
                         placeholder="Chọn nhân viên"
                       />
@@ -591,9 +607,9 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         data={tags}
-                        name="name"
-                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
+                        name="tags"
                         type={variables.SELECT}
+                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
                         allowClear={false}
                         placeholder="Chọn tags"
                       />
@@ -633,6 +649,8 @@ Index.propTypes = {
   district: PropTypes.arrayOf(PropTypes.any),
   tags: PropTypes.arrayOf(PropTypes.any),
   lead: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+  searchSource: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -645,6 +663,8 @@ Index.defaultProps = {
   district: [],
   tags: [],
   lead: [],
+  employees: [],
+  searchSource: [],
 };
 
 export default Index;

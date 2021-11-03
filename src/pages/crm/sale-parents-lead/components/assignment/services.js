@@ -9,6 +9,9 @@ export function get() {
 export function getEmployees() {
   return request(`/v1/employees`, {
     method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
   });
 }
 

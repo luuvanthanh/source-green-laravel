@@ -156,3 +156,13 @@ export function addStatusLead(data = {}) {
     data,
   });
 }
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}

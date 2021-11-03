@@ -19,6 +19,7 @@ export function get(data = {}) {
         'studentInfo',
         'employee',
         'customerTag.tag',
+        'searchSource',
       ]),
       employeeId: data.employeeId && data.employeeId.join(','),
     },
@@ -65,6 +66,25 @@ export function getStatusLead() {
   return request(`/v1/status-parent-leads`, {
     method: 'GET',
     params: {
+      orderBy: 'name',
+    },
+  });
+}
+
+export function getEmployees() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
+  });
+}
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
       orderBy: 'name',
     },
   });

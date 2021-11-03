@@ -28,9 +28,10 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   classes: crmSaleLeadAdd.classes,
   city: crmSaleLeadAdd.city,
   district: crmSaleLeadAdd.district,
+  search: crmSaleLeadAdd.search,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search }) => {
     const formRef = useRef();
     const [files, setFiles] = Helper.isJSON(details?.file_image)
       ? useState(JSON.parse(details?.file_image))
@@ -46,6 +47,10 @@ const General = memo(
     useEffect(() => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_CITIES',
+        payload: {},
+      });
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_SEARCH',
         payload: {},
       });
       if(params.id){
@@ -263,6 +268,17 @@ const General = memo(
                     label="Thuộc tỉnh thành"
                   />
                 </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name="search_source_id"
+                    data={search}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Nguồn tiềm kiếm"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
               </Pane>
             </Pane>
 
@@ -288,6 +304,7 @@ General.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  search: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -300,6 +317,7 @@ General.defaultProps = {
   classes: [],
   city: [],
   district: [],
+  search: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));
