@@ -163,6 +163,9 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
+    const {
+      location: { pathname },
+    } = this.props;
     const columns = [
       {
         title: 'Mã cơ sở',
@@ -176,36 +179,29 @@ class Index extends PureComponent {
         key: 'basis',
         className: 'min-width-200',
         width: 200,
-        render: (record) => record?.nameBasis,
-      },
-      {
-        title: 'Tỉnh thành',
-        key: 'city',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) => record?.city,
-      },
-      {
-        title: 'Quận Huyện',
-        key: 'district',
-        className: 'min-width-200',
-        width: 200,
-        render: (record) => record?.district,
+        render: (record) => record?.name,
       },
       {
         title: 'Địa chỉ',
-        key: 'address',
-        className: 'min-width-250',
-        width: 350,
+        key: 'city',
+        className: 'min-width-200',
+        width: 200,
         render: (record) => record?.address,
+      },
+      {
+        title: 'Số điện thoại',
+        key: 'district',
+        className: 'min-width-200',
+        width: 200,
+        render: (record) => record?.phone_number,
       },
       {
         key: 'action',
         width: 100,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={styles['list-button']}>
-            <Button color="success">Chi tiết</Button>
+            <Button color="success"   onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}>Chi tiết</Button>
           </div>
         ),
       },
@@ -218,7 +214,6 @@ class Index extends PureComponent {
       match: { params },
       pagination,
       loading: { effects },
-      location: { pathname },
       data,
     } = this.props;
     const { search } = this.state;
@@ -229,9 +224,6 @@ class Index extends PureComponent {
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Cơ sở</Text>
-            <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
-            </Button>
           </div>
           <div className={styles['block-table']}>
             <Form

@@ -1,35 +1,16 @@
+import * as services from './services';
+
 export default {
   namespace: 'crmBasisAdd',
   state: {
-    branches: [
-      {
-        id: 1,
-        name: 'Nguyễn Văn Nam',
-      },
-      {
-        id: 2,
-        name: 'Nguyễn Văn',
-      },
-    ],
-    pagination: {
-      total: 0,
-    },
+    details: {},
     error: {
       isError: false,
       data: {},
     },
   },
   reducers: {
-    INIT_STATE: (state) => ({
-      ...state,
-      isError: false,
-      data: [],
-    }),
-    SET_DATA: (state, { payload }) => ({
-      ...state,
-      data: payload.parsePayload,
-      pagination: payload.pagination,
-    }),
+    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
       error: {
@@ -39,18 +20,21 @@ export default {
         },
       },
     }),
+    SET_DETAILS: (state, { payload }) => ({
+      ...state,
+      details: payload,
+    }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DETAILS({ payload }, saga) {
       try {
-        const response = yield saga.call(payload);
-        yield saga.put({
-          type: 'SET_DATA',
-          payload: {
-            parsePayload: response.parsePayload,
-            pagination: response.pagination,
-          },
-        });
+        const response = yield saga.call(services.details, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DETAILS',
+            payload: response.parsePayload,
+          });
+        }
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
