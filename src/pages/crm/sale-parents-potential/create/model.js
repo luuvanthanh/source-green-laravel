@@ -17,6 +17,7 @@ export default {
     employees: [],
     branches: [],
     classes: [],
+    search: [],
     city: [],
     district: [],
     student: [],
@@ -80,6 +81,10 @@ export default {
     SET_PARENT_LEAD: (state, { payload }) => ({
       ...state,
       parentLead: payload.parsePayload,
+    }),
+    SET_SEARCH: (state, { payload }) => ({
+      ...state,
+      search: payload.parsePayload,
     }),
   },
   effects: {
@@ -216,6 +221,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_SEARCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSearch, payload);
+        yield saga.put({
+          type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

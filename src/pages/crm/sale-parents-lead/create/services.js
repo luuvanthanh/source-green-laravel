@@ -82,7 +82,7 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'city', 'district']),
+      include: Helper.convertIncludes(['studentInfo', 'city', 'district','searchSource','statusCare.statusParentLead','employee']),
     },
   });
 }
@@ -322,6 +322,16 @@ export function getData(params = {}) {
         format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
       }),
+    },
+  });
+}
+
+export function getSearch(params) {
+  return request(`/v1/search-sources`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
     },
   });
 }

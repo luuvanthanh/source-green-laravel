@@ -18,6 +18,7 @@ export default {
     employees: [],
     branches: [],
     classes: [],
+    search: [],
     city: [],
     district: [],
     student: [],
@@ -138,6 +139,10 @@ export default {
     SET_REFERENCES: (state, { payload }) => ({
       ...state,
       detailsReferences: payload.parsePayload,
+    }),
+    SET_SEARCH: (state, { payload }) => ({
+      ...state,
+      search: payload.parsePayload,
     }),
   },
   effects: {
@@ -423,6 +428,20 @@ export default {
         const response = yield saga.call(categories.getBranches, payload);
         yield saga.put({
           type: 'SET_BRANCHES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SEARCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSearch, payload);
+        yield saga.put({
+          type: 'SET_SEARCH',
           payload: response,
         });
       } catch (error) {

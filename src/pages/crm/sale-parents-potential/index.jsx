@@ -35,6 +35,10 @@ const mapStateToProps = ({ crmSaleParentsPotential, loading }) => ({
   branches: crmSaleParentsPotential.branches,
   city: crmSaleParentsPotential.city,
   district: crmSaleParentsPotential.district,
+  tags: crmSaleParentsPotential.tags,
+  lead: crmSaleParentsPotential.lead,
+  employees: crmSaleParentsPotential.employees,
+  searchSource: crmSaleParentsPotential.searchSource,
   loading,
 });
 @connect(mapStateToProps)
@@ -191,6 +195,22 @@ class Index extends PureComponent {
       type: 'crmSaleParentsPotential/GET_DISTRICTS',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_TAGS',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_STATUS_LEAD',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_EMPLOYEES',
+      payload: {},
+    });
+    dispatch({
+      type: 'crmSaleParentsPotential/GET_SEARCH',
+      payload: {},
+    });
   };
 
   /**
@@ -245,28 +265,49 @@ class Index extends PureComponent {
         render: (record) => <Text size="normal">{get(record, 'district.name')}</Text>,
       },
       {
-        title: 'Cơ sở quan tâm',
-        key: 'facility',
-        width: 200,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
-      },
-      {
         title: 'Tháng tuổi',
         key: 'age',
         width: 100,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => (
+          <>
+            {record?.potentialStudentInfo?.map((item, index) => (
+              <Text size="normal" key={index}>
+                {item.month_age}
+              </Text>
+            ))}
+          </>
+        ),
       },
       {
-        title: 'Tình trạng Lead',
+        title: 'Tình trạng Tiềm năng',
         key: 'status',
-        width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        width: 170,
+        render: (record) => (
+          <>
+            {' '}
+            {record?.customerPotentialStatusCare
+              ?.map((item, index) => (
+                <Text size="normal" key={index}>
+                  {get(item, 'statusParentPotential.name')}
+                </Text>
+              ))
+              .pop()}{' '}
+          </>
+        ),
       },
       {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => <Tag color="#27a600">{get(record, 'name')}</Tag>,
+        render: (record) => (
+          <>
+            {record?.customerPotentialTag?.map((item, index) => (
+              <Tag size="normal" color="#27a600" key={index}>
+                {get(item, 'tag.name')}
+              </Tag>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Nhân viên chăm sóc',
@@ -278,7 +319,7 @@ class Index extends PureComponent {
         title: 'Nguồn tìm kiếm',
         key: 'search',
         width: 150,
-        render: (record) => <Text size="normal">{get(record, 'name')}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'searchSource.name')}</Text>,
       },
       {
         key: 'action',
@@ -303,12 +344,15 @@ class Index extends PureComponent {
     const {
       city,
       district,
+      tags,
+      lead,
+      employees,
+      searchSource,
       match: { params },
       pagination,
       loading: { effects },
     } = this.props;
     const { search, dataSource } = this.state;
-
     const loading = effects['crmSaleParentsPotential/GET_DATA'];
     return (
       <>
@@ -326,80 +370,85 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-3">
-                  <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
-                    type={variables.INPUT_SEARCH}
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={city}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'city_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Tỉnh thành"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    data={district}
-                    name="name"
-                    onChange={(event) => this.onChangeSelect(event, 'district_id')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn Quận huyện"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="c"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn cơ sở"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="d"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nguồn"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="e"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tình trạng lead"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn nhân viên"
-                  />
-                </div>
-                <div className="col-lg-3">
-                  <FormItem
-                    name="f"
-                    onChange={(event) => this.onChangeSelect(event, 'branchId')}
-                    type={variables.SELECT}
-                    allowClear={false}
-                    placeholder="Chọn tags"
-                  />
-                </div>
-              </div>
+              <div className="col-lg-3">
+                      <FormItem
+                        name="key"
+                        onChange={(event) => this.onChange(event, 'key')}
+                        placeholder="Nhập từ khóa"
+                        type={variables.INPUT_SEARCH}
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={city}
+                        name="city"
+                        onChange={(event) => this.onChangeSelect(event, 'city_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn Tỉnh thành"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={district}
+                        name="district"
+                        onChange={(event) => this.onChangeSelect(event, 'district_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn Quận huyện"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="c"
+                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn cơ sở"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                    <FormItem
+                        name="search"
+                        data={searchSource}
+                        onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn nguồn"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={lead}
+                        name="lead"
+                        onChange={(event) => this.onChangeSelect(event, 'lead_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn tình trạng lead"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        name="full_name"
+                        options={['id', 'full_name']}
+                        data={employees}
+                        onChange={(event) => this.onChangeSelect(event, 'employee_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn nhân viên"
+                      />
+                    </div>
+                    <div className="col-lg-3">
+                      <FormItem
+                        data={tags}
+                        name="tags"
+                        onChange={(event) => this.onChangeSelect(event, 'tag_id')}
+                        type={variables.SELECT}
+                        allowClear={false}
+                        placeholder="Chọn tags"
+                      />
+                    </div>
+                  </div>
             </Form>
             <Table
               bordered={false}
@@ -429,6 +478,10 @@ Index.propTypes = {
   location: PropTypes.objectOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  tags: PropTypes.arrayOf(PropTypes.any),
+  lead: PropTypes.arrayOf(PropTypes.any),
+  employees: PropTypes.arrayOf(PropTypes.any),
+  searchSource: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -439,6 +492,10 @@ Index.defaultProps = {
   location: {},
   city: [],
   district: [],
+  tags: [],
+  lead: [],
+  employees: [],
+  searchSource: [],
 };
 
 export default Index;

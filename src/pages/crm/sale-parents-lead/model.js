@@ -8,6 +8,8 @@ export default {
     district: [],
     tags: [],
     lead: [],
+    searchSource: [],
+    employees: [],
     pagination: {
       total: 0,
     },
@@ -47,6 +49,14 @@ export default {
     SET_STATUS_LEAD: (state, { payload }) => ({
       ...state,
       lead: payload.parsePayload,
+    }),
+    SET_EMPLOYEES: (state, { payload }) => ({
+      ...state,
+      employees: payload.parsePayload,
+    }),
+    SET_SEARCH: (state, { payload }) => ({
+      ...state,
+      searchSource: payload.parsePayload,
     }),
   },
   effects: {
@@ -122,6 +132,34 @@ export default {
         const response = yield saga.call(services.getStatusLead, payload);
         yield saga.put({
           type: 'SET_STATUS_LEAD',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_EMPLOYEES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getEmployees, payload);
+        yield saga.put({
+          type: 'SET_EMPLOYEES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_SEARCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSearch, payload);
+        yield saga.put({
+          type: 'SET_SEARCH',
           payload: response,
         });
       } catch (error) {
