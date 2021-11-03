@@ -3,7 +3,9 @@
 namespace GGPHP\Crm\CustomerPotential\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
@@ -32,7 +34,7 @@ class CustomerPotentialTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare', 'customerPotentialReference', 'employee'];
+    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare', 'customerPotentialReference', 'employee', 'searchSource'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -94,5 +96,19 @@ class CustomerPotentialTransformer extends BaseTransformer
         }
 
         return $this->item($customerPotential->employee, new EmployeeTransformer, 'Employee');
+    }
+
+    public function includeCustomerPotentialStatusCare(CustomerPotential $customerPotential)
+    {
+        return $this->collection($customerPotential->customerPotentialStatusCare, new CustomerPotentialStatusCareTransformer, 'CustomerPotentialStatusCare');
+    }
+
+    public function includeSearchSource(CustomerPotential $customerPotential)
+    {
+        if (empty($customerPotential->searchSource)) {
+            return;
+        }
+
+        return $this->item($customerPotential->searchSource, new SearchSourceTransformer, 'SearchSource');
     }
 }

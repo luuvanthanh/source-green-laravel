@@ -115,7 +115,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         }
 
         if (!empty($attributes['customer_lead_id'])) {
-            $customer_lead_id = explode(',',$attributes['customer_lead_id']);
+            $customer_lead_id = explode(',', $attributes['customer_lead_id']);
             $this->model = $this->model->whereIn('id', $customer_lead_id);
         }
 
@@ -202,6 +202,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
                 'city_id' => $value->city_id,
                 'district_id' => $value->district_id,
                 'facility_id' => $value->facility_id,
+                'employee_id' => $value->employee_id,
                 'user_create_id' => $value->user_create_id,
                 'user_create_info' => $value->user_create_info,
                 'search_source_id' => $value->search_source_id,
