@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import { get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -211,31 +211,39 @@ class Index extends PureComponent {
         title: 'Tên học sinh',
         key: 'full_name',
         width: 250,
-        render: (record) => <Text size="normal">{record.full_name}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'studentInfo.full_name')}</Text>,
       },
       {
         title: 'Ngày sinh',
         key: 'birth_day',
         width: 150,
-        render: (record) => record?.birth_day,
+        render: (record) => <Text size="normal">{get(record, 'studentInfo.birth_date')}</Text>,
       },
       {
         title: 'Tháng tuổi',
         key: 'age',
         width: 150,
-        render: (record) => record?.age,
+        render: (record) => <Text size="normal">{get(record, 'studentInfo.month_age')}</Text>,
       },
       {
         title: 'Thời gian đăng ký',
         key: 'time',
         width: 150,
-        render: (record) => record?.time,
+        render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Họ tên cha',
         key: 'parents',
         width: 200,
-        render: (record) => record?.name_parents,
+        render: (record) => (
+          <>
+            {record?.parentInfo?.map((item, index) => (
+              <Text size="normal"  key={index}>
+                {get(item, 'full_name')}
+              </Text>
+            ))}
+          </>
+        ),
       },
       {
         title: 'Họ tên mẹ',
@@ -279,7 +287,6 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     const { search } = this.state;
-
     const loading = effects['crmSaleAdmission/GET_DATA'];
     return (
       <>
