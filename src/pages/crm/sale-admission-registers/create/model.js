@@ -6,6 +6,10 @@ import * as services from './services';
       details: {},
       customerLead: [],
       studentsLead: [],
+      city: [],
+      district: [],
+      parents: [],
+      student: [],
       error: {
         isError: false,
         data: {},
@@ -33,6 +37,18 @@ import * as services from './services';
       SET_STUDENTS_LEAD: (state, { payload }) => ({
         ...state,
         studentsLead: payload.parsePayload,
+      }),
+      SET_GET_PARENTS: (state, { payload }) => ({
+        ...state,
+        parents: payload.parsePayload,
+      }),
+      SET_CITIES: (state, { payload }) => ({
+        ...state,
+        city: payload.parsePayload,
+      }),
+      SET_DISTRICTS: (state, { payload }) => ({
+        ...state,
+        district: payload.parsePayload,
       }),
     },
     effects: {
@@ -103,6 +119,60 @@ import * as services from './services';
             type: 'SET_ERROR',
             payload: error.data,
           });
+        }
+      },
+      *GET_PARENTS({ payload, callback }, saga) {
+        try {
+          yield saga.put({
+            type: 'INIT_STATE',
+          });
+          const response = yield saga.call(services.getParents, payload);
+          callback(response);
+          yield saga.put({
+            type: 'SET_GET_PARENTS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_DISTRICTS({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getDistricts, payload);
+          yield saga.put({
+            type: 'SET_DISTRICTS',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_CITIES({ payload }, saga) {
+        try {
+          const response = yield saga.call(services.getCities, payload);
+          yield saga.put({
+            type: 'SET_CITIES',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *ADD_PARENTS({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.addParents, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
         }
       },
     },
