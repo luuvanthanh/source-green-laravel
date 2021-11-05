@@ -24,12 +24,14 @@ class CreateParentInfoRequest extends FormRequest
     public function rules()
     {
         return [
-            'full_name' => 'string',
-            'birth_date' => 'date_format:Y-m-d',
-            'sex' => 'string',
-            'email' => 'email',
-            'address' => 'string',
-            'admission_register_id' => 'exists:admission_registers,id'
+            'createRows' => 'array',
+            'updateRows' => 'array',
+            'createRows.*.full_name' => 'required|string',
+            'createRows.*.birth_date' => 'required|date_format:Y-m-d',
+            'createRows.*.sex' => 'string',
+            'createRows.*.email' => 'email',
+            'createRows.*.address' => 'string',
+            'createRows.*.admission_register_id' => 'exists:admission_registers,id'
         ];
     }
 }

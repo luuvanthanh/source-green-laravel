@@ -26,6 +26,7 @@ class CreateTestInputRequest extends FormRequest
         return [
             'employee_id' => 'required|exists:employees,id',
             'date_interview' => 'required|date_format:Y-m-d',
+            'admission_register_id' => 'required| exists:admission_registers,id'
         ];
     }
 }

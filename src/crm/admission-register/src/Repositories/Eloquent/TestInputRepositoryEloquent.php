@@ -52,6 +52,10 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['admission_register_id'])) {
+            $this->model = $this->model->where('admission_register_id', $attributes['admission_register_id']);
+        }
+
         if (!empty($attributes['limit'])) {
             $testInput = $this->paginate($attributes['limit']);
         } else {
@@ -59,5 +63,20 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
         }
 
         return $testInput;
+    }
+
+    public function createOrUpdate(array $attributes)
+    {
+        $testInput = TestInput::where('admission_register_id', $attributes['admission_register_id'])->first();
+
+        if (is_null($testInput)) {
+            TestInput::create($attributes);
+        }
+
+        if (!is_null($testInput)) {
+            $testInput->update($attributes);
+        }
+
+        return $this->parserResult($testInput);
     }
 }

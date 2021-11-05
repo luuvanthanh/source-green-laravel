@@ -67,14 +67,17 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
 
     public function createOrUpdate(array $attributes)
     {
-        $parentInfo = ParentInfo::where('admission_register_id', $attributes['admission_register_id'])->first();
-
-        if (is_null($parentInfo)) {
-            ParentInfo::create($attributes);
+        if (!empty($attributes['createRows'])) {
+            foreach ($attributes['createRows'] as $value) {
+                $parentInfo = ParentInfo::create($value);
+            }
         }
 
-        if (!is_null($parentInfo)) {
-            $parentInfo->update($attributes);
+        if (!empty($attributes['updateRows'])) {
+            foreach ($attributes['updateRows'] as $value) {
+                $parentInfo = ParentInfo::findOrFail($value['id']);
+                $parentInfo->update($value);
+            }
         }
 
         return $this->parserResult($parentInfo);
