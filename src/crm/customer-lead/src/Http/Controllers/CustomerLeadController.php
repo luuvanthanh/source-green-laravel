@@ -100,6 +100,10 @@ class CustomerLeadController extends Controller
             $credentials['user_create_info'] = json_encode($credentials['user_create_info']);
         }
 
+        if (!empty($credentials['sex'])) {
+            $credentials['sex'] = CustomerLead::SEX[$credentials['sex']];
+        }
+
         $customerLead = $this->customerLeadRepository->update($credentials, $id);
 
         return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));

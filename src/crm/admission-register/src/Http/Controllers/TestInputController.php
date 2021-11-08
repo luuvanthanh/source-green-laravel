@@ -49,7 +49,7 @@ class TestInputController extends Controller
     {
         $attributes = $request->all();
 
-        $testInput = $this->testInputRepository->create($attributes);
+        $testInput = $this->testInputRepository->createOrUpdate($attributes);
 
         return $this->success($testInput, trans('lang::messages.common.createSuccess'));
     }
