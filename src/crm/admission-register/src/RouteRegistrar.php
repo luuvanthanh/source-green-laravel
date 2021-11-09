@@ -32,6 +32,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('admission-registers', 'AdmissionRegisterController');
             \Route::resource('parent-infos', 'ParentInfoController');
             \Route::resource('confirm-transporters', 'ConfirmTransporterController');
+            \Route::resource('test-inputs', 'TestInputController');
         });
     }
 }

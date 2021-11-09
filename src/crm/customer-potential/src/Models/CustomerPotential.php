@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerPotential\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Province\Models\City;
@@ -74,5 +75,10 @@ class CustomerPotential extends UuidModel
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function searchSource()
+    {
+        return $this->belongsTo(SearchSource::class);
     }
 }

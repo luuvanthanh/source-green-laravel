@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Category\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 
 class Branch extends UuidModel
 {
@@ -11,4 +12,9 @@ class Branch extends UuidModel
     protected $fillable = [
         'code', 'name', 'address', 'phone_number', 'branch_id_hrm'
     ];
+
+    public function customerLead()
+    {
+        return $this->hasMany(CustomerLead::class);
+    }
 }

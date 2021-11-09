@@ -2,9 +2,9 @@
 
 namespace GGPHP\Crm\AdmissionRegister\Repositories\Eloquent;
 
-use GGPHP\Crm\AdmissionRegister\Models\ParentInfo;
-use GGPHP\Crm\AdmissionRegister\Presenters\ParentInfoPresenter;
-use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ParentInfoRepository;
+use GGPHP\Crm\AdmissionRegister\Models\TestInput;
+use GGPHP\Crm\AdmissionRegister\Presenters\TestInputPresenter;
+use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 
@@ -13,7 +13,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
  *
  * @package namespace App\Repositories\Eloquent;
  */
-class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoRepository
+class TestInputRepositoryEloquent extends BaseRepository implements TestInputRepository
 {
     /**
      * @var array
@@ -29,7 +29,7 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
      */
     public function model()
     {
-        return ParentInfo::class;
+        return TestInput::class;
     }
 
     /**
@@ -47,7 +47,7 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
      */
     public function presenter()
     {
-        return ParentInfoPresenter::class;
+        return TestInputPresenter::class;
     }
 
     public function getAll(array $attributes)
@@ -57,29 +57,26 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
         }
 
         if (!empty($attributes['limit'])) {
-            $parentInfo = $this->paginate($attributes['limit']);
+            $testInput = $this->paginate($attributes['limit']);
         } else {
-            $parentInfo = $this->get();
+            $testInput = $this->get();
         }
 
-        return $parentInfo;
+        return $testInput;
     }
 
     public function createOrUpdate(array $attributes)
     {
-        if (!empty($attributes['createRows'])) {
-            foreach ($attributes['createRows'] as $value) {
-                $parentInfo = ParentInfo::create($value);
-            }
+        $testInput = TestInput::where('admission_register_id', $attributes['admission_register_id'])->first();
+
+        if (is_null($testInput)) {
+            TestInput::create($attributes);
         }
 
-        if (!empty($attributes['updateRows'])) {
-            foreach ($attributes['updateRows'] as $value) {
-                $parentInfo = ParentInfo::findOrFail($value['id']);
-                $parentInfo->update($value);
-            }
+        if (!is_null($testInput)) {
+            $testInput->update($attributes);
         }
 
-        return $this->parserResult($parentInfo);
+        return $this->parserResult($testInput);
     }
 }

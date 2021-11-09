@@ -52,6 +52,10 @@ class EmployeeRepositoryEloquent extends BaseRepository implements EmployeeRepos
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('full_name', $attributes['key']);
+        }
+
         if (!empty($attributes['limit'])) {
             $employee = $this->paginate($attributes['limit']);
         } else {

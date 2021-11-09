@@ -16,7 +16,7 @@ class ParentInfoService
                 'email' => $customerLead->email,
                 'phone' => $customerLead->phone,
                 'other_phone' => $customerLead->other_phone,
-                'address' => $customerLead->email,
+                'address' => $customerLead->address,
                 'city_id' => $customerLead->city_id,
                 'district_id' => $customerLead->district_id,
                 'facebook' => $customerLead->facebook,

@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\Employee\Models\Employee;
@@ -80,5 +81,10 @@ class CustomerLead extends UuidModel
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

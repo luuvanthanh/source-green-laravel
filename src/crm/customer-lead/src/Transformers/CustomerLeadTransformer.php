@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\BranchTransformer;
 use GGPHP\Crm\Category\Transformers\SearchSourceTransformer;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
@@ -33,7 +34,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare', 'employee'];
+    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare', 'employee', 'branch'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -124,5 +125,14 @@ class CustomerLeadTransformer extends BaseTransformer
         }
 
         return $this->item($customerLead->employee, new EmployeeTransformer, 'Employee');
+    }
+
+    public function includeBranch(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->branch)) {
+            return;
+        }
+
+        return $this->item($customerLead->branch, new BranchTransformer, 'Branch');
     }
 }
