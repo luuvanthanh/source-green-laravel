@@ -36,3 +36,56 @@ export function getCustomerLead() {
       },
     });
   }
+
+  export function details(params = {}) {
+    return request(`/v1/admission-registers/${params.id}`, {
+      method: 'GET',
+      params: {
+        ...params,
+        include: Helper.convertIncludes(['studentInfo', 'city', 'district','searchSource','statusCare.statusParentLead','employee']),
+      },
+    });
+  }
+
+  export function getParents(params) {
+    return request('/v1/parent-infos', {
+      method: 'GET',
+      params,
+    });
+  }
+
+  export function getCities() {
+    return request(`/v1/citys`, {
+      method: 'GET',
+      params: {
+        orderBy: 'name',
+      },
+    });
+  }
+  
+  export function getDistricts(params) {
+    return request(`/v1/districts`, {
+      method: 'GET',
+      params: {
+        ...params,
+        orderBy: 'name',
+      },
+    });
+  }
+
+  export function addParents(data = {}) {
+    return request('/v1/parent-infos', {
+      method: 'POST',
+      data : {
+        ...data,
+        birth_date: Helper.getDateTime({
+          value: Helper.setDate({
+            ...variables.setDateData,
+            originValue: data.birth_date,
+          }),
+          format: variables.DATE_FORMAT.DATE_AFTER,
+          isUTC: false,
+        }),
+      }
+    });
+  }
