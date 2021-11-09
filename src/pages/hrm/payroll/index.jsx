@@ -315,8 +315,12 @@ class Index extends PureComponent {
    * Function header table
    */
   header = () => {
-    const { data } = this.props;
+    const {
+      data,
+      loading: { effects },
+    } = this.props;
     const { search } = this.state;
+    const loading = effects['hrmPayroll/UPDATE'] || effects['hrmPayroll/UPDATE_SALARY'];
     const columns = [
       {
         title: 'Tên',
@@ -388,7 +392,7 @@ class Index extends PureComponent {
                 Xem bảng công
               </Button>
             )}
-             {record.id === 'CHOT_BANG_CONG_XE_BUS' && (
+            {record.id === 'CHOT_BANG_CONG_XE_BUS' && (
               <Button
                 color="primary"
                 onClick={() => {
@@ -473,7 +477,7 @@ class Index extends PureComponent {
               </Button>
             )}
             {record.id === 'TINH_LUONG' && (
-              <Button color="primary" onClick={() => this.updateSalary(data)}>
+              <Button color="primary" onClick={() => this.updateSalary(data)} loading={loading}>
                 Tính lương
               </Button>
             )}
