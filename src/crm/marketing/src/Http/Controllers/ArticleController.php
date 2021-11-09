@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Marketing\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\Marketing\Http\Requests\CreateArticleRequest;
+use GGPHP\Crm\Marketing\Http\Requests\PostArticleFacebookRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateArticleRequest;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 
@@ -91,5 +92,17 @@ class ArticleController extends Controller
         $this->articleRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    public function postArticleFacebook(PostArticleFacebookRequest $request)
+    {
+        try {
+            $attributes = $request->all();
+            $response = $this->articleRepository->postArticleFacebook($attributes);
+
+            return $this->success((array) $response, trans('Đăng bài viết lên facebook thành công'));
+        } catch (\Throwable $th) {
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+        }
     }
 }

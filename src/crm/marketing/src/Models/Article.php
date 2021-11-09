@@ -12,7 +12,7 @@ class Article extends UuidModel
     protected $table = 'articles';
 
     protected $fillable = [
-        'name', 'content', 'file_image', 'marketing_program_id'
+        'name', 'content', 'file_image', 'marketing_program_id',
     ];
 
     public function marketingProgram()
