@@ -881,7 +881,7 @@ class Index extends PureComponent {
                       onClick={() => this.exportData(data.id)}
                       loading={loadingDownload}
                     >
-                      Xuất bảng công
+                      Xuất bảng lương
                     </Button>
                   </div>
                 )}

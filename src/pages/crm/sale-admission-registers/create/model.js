@@ -76,22 +76,6 @@ import * as services from './services';
           callback(null, error);
         }
       },
-      *UPDATE({ payload, callback }, saga) {
-        try {
-          yield saga.call(services.update, payload);
-          callback(payload);
-        } catch (error) {
-          callback(null, error);
-        }
-      },
-      *REMOVE({ payload, callback }, saga) {
-        try {
-          yield saga.call(services.remove, payload.id);
-          callback(payload);
-        } catch (error) {
-          callback(null, error);
-        }
-      },
       *GET_CUSTOMER_LEAD({ payload }, saga) {
         try {
           const response = yield saga.call(services.getCustomerLead, payload);
