@@ -22,7 +22,7 @@ const Curator = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, detailsAccount, error }) => {
     const formRef = useRef();
 
-    const loadingSubmit = effects[`OPParentsAdd/ADD`] || effects[`OPParentsAdd/UPDATE`];
+    const loadingSubmit = effects[`OPParentsAdd/UPDATE_NOTIFICATION_MODULE`];
     const loading =
       effects[`OPParentsAdd/GET_DETAILS`] ||
       effects[`OPParentsAdd/GET_EMPLOYEES`] ||
@@ -38,7 +38,7 @@ const Curator = memo(
       dispatch({
         type: 'OPParentsAdd/UPDATE_NOTIFICATION_MODULE',
         payload: dataSource.map((item) => ({
-          userId: detailsAccount.id,
+          userId: detailsAccount?.user?.id,
           notificationModuleId: item?.notificationModule?.id,
           notificationTypeId: item?.notificationType?.id,
         })),

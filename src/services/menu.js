@@ -1026,7 +1026,7 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Thống kê con của nhân viên',
+          title: 'Thông tin quan hệ gia đình nhân viên',
           key: 'children',
           url: [
             '/quan-ly-nhan-su/thong-ke-con-cua-nhan-vien',

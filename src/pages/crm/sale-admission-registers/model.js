@@ -104,34 +104,6 @@ import * as services from './services';
           callback(null, error?.data?.error);
         }
       },
-      *GET_TAGS({ payload }, saga) {
-        try {
-          const response = yield saga.call(services.getTags, payload);
-          yield saga.put({
-            type: 'SET_TAGS',
-            payload: response,
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
-      },
-      *GET_STATUS_LEAD({ payload }, saga) {
-        try {
-          const response = yield saga.call(services.getStatusLead, payload);
-          yield saga.put({
-            type: 'SET_STATUS_LEAD',
-            payload: response,
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
-      },
     },
     subscriptions: {},
   };

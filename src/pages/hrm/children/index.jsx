@@ -364,11 +364,11 @@ class Index extends PureComponent {
     const loading = effects['childrenHRM/GET_DATA'];
     return (
       <>
-        <Helmet title="Danh sách thống kê con nhân viên" />
+        <Helmet title="Danh sách thông tin quan hệ gia đình nhân viên" />
         <div className={classnames(styles['content-form'], styles['content-form-childrenHRM'])}>
           {/* FORM SEARCH */}
           <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
-            <Text color="dark">Danh sách thống kê con nhân viên</Text>
+            <Text color="dark">Danh sách thông tin quan hệ gia đình nhân viên</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Tạo mới
             </Button>
