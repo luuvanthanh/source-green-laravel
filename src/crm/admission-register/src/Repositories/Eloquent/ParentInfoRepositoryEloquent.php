@@ -69,12 +69,20 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
     {
         if (!empty($attributes['createRows'])) {
             foreach ($attributes['createRows'] as $value) {
+
+                if (!empty($value['sex'])) {
+                    $value['sex'] = ParentInfo::SEX[$value['sex']];
+                }
                 $parentInfo = ParentInfo::create($value);
             }
         }
 
         if (!empty($attributes['updateRows'])) {
             foreach ($attributes['updateRows'] as $value) {
+
+                if (!empty($value['sex'])) {
+                    $value['sex'] = ParentInfo::SEX[$value['sex']];
+                }
                 $parentInfo = ParentInfo::findOrFail($value['id']);
                 $parentInfo->update($value);
             }
