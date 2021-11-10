@@ -315,7 +315,7 @@ class Index extends PureComponent {
                 {`${Helper.getDate(
                   details.startDate,
                   variables.DATE_FORMAT.DATE_TIME,
-                )} - ${Helper.getDate(details.ẹndDate, variables.DATE_FORMAT.HOUR)}`}
+                )} - ${Helper.getDate(details.endDate, variables.DATE_FORMAT.HOUR)}`}
               </p>
             </div>
             <div className="col-lg-12">
