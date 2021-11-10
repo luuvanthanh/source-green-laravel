@@ -107,4 +107,3 @@ import * as services from './services';
     },
     subscriptions: {},
   };
-  
