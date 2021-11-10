@@ -105,15 +105,42 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
 
             $data = [
                 'full_name' => $user->FullName,
-                'employee_id_hrm' => $user->Id
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage
             ];
 
             $employeeCrm = CrmService::createEmployee($data);
-          
+
             if (isset($employeeCrm->data->id)) {
                 $user->EmployeeIdCrm = $employeeCrm->data->id;
                 $user->update();
             }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw new HttpException(500, $th->getMessage());
+        }
+
+        return parent::parserResult($user);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        \DB::beginTransaction();
+        try {
+            $user = User::findOrFail($id);
+
+            $user->update($attributes);
+
+            $data = [
+                'full_name' => $user->FullName,
+                'employee_id_hrm' => $user->Id,
+                'file_image' => $user->FileImage
+            ];
+            $employeeIdCrm = $user->EmployeeIdCrm;
+
+            $employeeCrm = CrmService::updateEmployee($data, $employeeIdCrm);
+
             \DB::commit();
         } catch (\Throwable $th) {
             \DB::rollback();
