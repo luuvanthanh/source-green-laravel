@@ -7,6 +7,7 @@ import * as services from './services';
       customerLead: [],
       studentsLead: [],
       writtenConsent: [],
+      students: {},
       city: [],
       district: [],
       parents: [],
@@ -54,6 +55,10 @@ import * as services from './services';
       SET_WRITTEN_CONSENT: (state, { payload }) => ({
         ...state,
         writtenConsent: payload.parsePayload,
+      }),
+      SET_STUDENTS: (state, { payload }) => ({
+        ...state,
+        students: payload,
       }),
     },
     effects: {
@@ -188,6 +193,14 @@ import * as services from './services';
             type: 'SET_ERROR',
             payload: error.data,
           });
+        }
+      },
+      *UPDATE_STUDENTS({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.updateStudents, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error?.data?.error);
         }
       },
     },

@@ -1,317 +1,245 @@
-import { memo, useRef, useState, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
-import { useParams } from 'umi';
-import { head, isEmpty } from 'lodash';
+import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
-import { useDispatch } from 'dva';
+import { connect, withRouter } from 'umi';
+import PropTypes from 'prop-types';
+
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
-import csx from 'classnames';
+import Loading from '@/components/CommonComponent/Loading';
+import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
+import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
+import { Helper } from '@/utils';
 
+const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
   { id: 'OTHER', name: 'Khác' },
 ];
+const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
+  loading,
+  details: crmSaleAdmissionAdd.details,
+  error: crmSaleAdmissionAdd.error,
+  branches: crmSaleAdmissionAdd.branches,
+  classes: crmSaleAdmissionAdd.classes,
+  students: crmSaleAdmissionAdd.students,
+});
+const General = memo(
+  ({ dispatch, loading: { effects }, match: { params }, details, error, students }) => {
+    const formRef = useRef();
+    const [files, setFiles] = Helper.isJSON(get(details, 'studentInfo.file_image'))
+      ? useState(JSON.parse(get(details, 'studentInfo.file_image')))
+      : useState([]);
+    const mounted = useRef(false);
+    const mountedSet = (setFunction, value) =>
+      !!mounted?.current && setFunction && setFunction(value);
+    const loadingSubmit =
+      effects[`crmSaleAdmissionAdd/UPDATE_STUDENTS`];
+    const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+    useEffect(() => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_DETAILS',
+        payload: params,
+      });
 
-const Students = memo(() => {
-  const formRef = useRef();
+    }, []);
 
-  const params = useParams();
-  const dispatch = useDispatch();
-  const [form] = Form.useForm();
 
-  const mounted = useRef(false);
-  const [fileImage, setFileImage] = useState([null]);
-  const mountedSet = (setFunction, value) =>
-    !!mounted?.current && setFunction && setFunction(value);
-  // const {
-  //   loading: { effects },
-  // } = useSelector(({ loading, crmSaleAdmissionAdd }) => ({
-  //   loading,
-  //   student: crmSaleAdmissionAdd.student,
-  //   details: crmSaleAdmissionAdd.details,
-  //   degrees: crmSaleAdmissionAdd.degrees,
-  //   error: crmSaleAdmissionAdd.error,
-  // }));
 
-  const [students, setStudents] = useState([]);
-  // const loading = effects[`crmSaleAdmissionAdd/GET_STUDENTS`];
-  // const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD_STUDENTS`];
-  // const [deleteRows, setDeleteRows] = useState([]);
-
-  const onSetImage = (file, position) => {
-    mountedSet(
-      setFileImage,
-      fileImage.map((item, index) => (index === position ? file : item)),
-    );
-  };
-
-  const onFinish = (values) => {
-    const items = values.data.map((item, index) => ({
-      ...item,
-      file_image: fileImage[index],
-      birth_date: Helper.getDateTime({
-        value: Helper.setDate({
-          ...variables.setDateData,
-          originValue: item.birth_date,
-        }),
-        format: variables.DATE_FORMAT.DATE_AFTER,
-        isUTC: false,
-      }),
-      customer_potential_id: params.id,
-    }));
-    const payload = {
-      createRows: items.filter((item) => !item.id),
-      updateRows: items.filter((item) => item.id),
-      // deleteRows,
-    };
-    dispatch({
-      type: 'crmSaleAdmissionAdd/ADD_STUDENTS',
-      payload,
-      callback: (response, error) => {
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              form.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
+    /**
+     * Function submit form modal
+     * @param {object} values values of form
+     */
+    const onFinish = (values) => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/UPDATE_STUDENTS',
+        payload: params.id
+          ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
+          : { ...values, file_image: JSON.stringify(files) },
+        callback: (response, error) => {
+          // if (response) {
+          //   history.goBack();
+          // }
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
           }
+        },
+      });
+    };
+
+    useEffect(() => {
+      mounted.current = true;
+      return mounted.current;
+    }, []);
+
+    useEffect(() => {
+      if (!isEmpty(details) && params.id) {
+        formRef.current.setFieldsValue({
+          ...details,
+          ...head(details.positionLevel),
+          startDate:
+            head(details.positionLevel)?.startDate &&
+            moment(head(details.positionLevel)?.startDate),
+          birth_date: get(students, 'studentInfo.birth_date') && moment(get(students, 'studentInfo.birth_date')),
+        });
+        if (Helper.isJSON(details?.file_image)) {
+          mountedSet(setFiles, JSON.parse(details?.file_image));
         }
-      },
-    });
-  };
+      }
+    }, [details]);
 
-  useEffect(() => {
-    mounted.current = true;
-    return mounted.current;
-  }, []);
+    const uploadFiles = (file) => {
+      mountedSet(setFiles, (prev) => [...prev, file]);
+    };
+    return (
+      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+        <Pane className="card">
+          <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                Thông tin học sinh
+              </Heading>
 
-  useEffect(() => {
-    dispatch({
-      type: 'crmSaleAdmissionAdd/GET_STUDENTS',
-      payload: {
-        customer_potential_id: params.id,
-      },
-      callback: (response) => {
-        if (response) {
-          setStudents(response.parsePayload);
-          formRef.current.setFieldsValue({
-            data: response.parsePayload.map((item) => ({
-              ...item,
-              birth_date: moment(item.birth_date),
-            })),
-          });
-        }
-      },
-    });
-  }, [params.id]);
-
-  useEffect(() => {
-    if (!isEmpty(students)) {
-      mountedSet(
-        setFileImage,
-        students.map((item) => item.file_image || null),
-      );
-    }
-  }, [students]);
-
-  return (
-    <>
-      <Pane>
-        <Pane>
-          <Form
-            layout="vertical"
-            initialValues={{
-              data: [
-                {
-                  ...params,
-                  birth_date: params.birth_date && moment(params.birth_date),
-                },
-              ],
-            }}
-            ref={formRef}
-            onFinish={onFinish}
-          >
-            <Pane>
-              <Pane>
-                <Pane className="card">
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <Form.List name="data">
-                        {(fields, { add, remove }) => (
-                          <>
-                            {fields.map((field, index) => (
-                              <Pane
-                                key={field.key}
-                                className={csx('pb-0', 'border-bottom', 'position-relative')}
-                                style={{ padding: 20 }}
-                              >
-                                <Heading type="form-title" style={{ marginBottom: 20 }}>
-                                  Thông tin học sinh
-                                </Heading>
-                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                  Học sinh {index + 1}
-                                </Heading>
-
-                                <Pane className="row">
-                                  <Pane className="col-lg-4">
-                                    <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
-                                      <ImageUpload
-                                        callback={(res) => {
-                                          onSetImage(res.fileInfo.url, index);
-                                        }}
-                                        fileImage={fileImage[index]}
-                                      />
-                                    </Form.Item>
-                                  </Pane>
-                                </Pane>
-
-                                <Pane className="row">
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      label="Họ và tên"
-                                      name={[field.name, 'full_name']}
-                                      fieldKey={[field.fieldKey, 'full_name']}
-                                      type={variables.INPUT}
-                                      rules={[
-                                        variables.RULES.EMPTY_INPUT,
-                                        variables.RULES.MAX_LENGTH_INPUT,
-                                      ]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name={[field.name, 'birth_date']}
-                                      label="Ngày sinh"
-                                      fieldKey={[field.fieldKey, 'birth_date']}
-                                      type={variables.DATE_PICKER}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name={[field.name, 'month_age']}
-                                      label="Tuổi (tháng)"
-                                      fieldKey={[field.fieldKey, 'month_age']}
-                                      type={variables.INPUT}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      data={genders}
-                                      name={[field.name, 'sex']}
-                                      label="Giới tính"
-                                      fieldKey={[field.fieldKey, 'sex']}
-                                      type={variables.SELECT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-8">
-                                    <FormItem
-                                      label="Địa chỉ"
-                                      name={[field.name, 'address']}
-                                      fieldKey={[field.fieldKey, 'address']}
-                                      type={variables.INPUT}
-                                      rules={[
-                                        variables.RULES.EMPTY_INPUT,
-                                        variables.RULES.MAX_LENGTH_INPUT,
-                                      ]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      data={genders}
-                                      name={[field.name, 'basis']}
-                                      label="Cơ sở"
-                                      fieldKey={[field.fieldKey, 'basis']}
-                                      type={variables.SELECT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      data={genders}
-                                      name={[field.name, 'class']}
-                                      label="Lớp"
-                                      fieldKey={[field.fieldKey, 'class']}
-                                      type={variables.SELECT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      data={genders}
-                                      name={[field.name, 'day']}
-                                      label="Năm"
-                                      fieldKey={[field.fieldKey, 'day']}
-                                      type={variables.SELECT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                </Pane>
-
-                                {fields.length > 0 && (
-                                  <DeleteOutlined
-                                    className="position-absolute"
-                                    style={{ top: 20, right: 20 }}
-                                    onClick={() => {
-                                      // const student = students?.find(
-                                      //   (item, studentsIndex) => studentsIndex === index,
-                                      // );
-                                      // setDeleteRows((prev) => [...prev, student.id]);
-                                      remove(index);
-                                    }}
-                                  />
-                                )}
-                              </Pane>
-                            ))}
-
-                            <Pane style={{ padding: 20 }} className="border-bottom">
-                              <Button
-                                color="success"
-                                ghost
-                                icon="plus"
-                                onClick={() => {
-                                  add();
-                                  mountedSet(setFileImage, [...fileImage, null]);
-                                }}
-                              >
-                                Thêm học sinh
-                              </Button>
-                            </Pane>
-                          </>
-                        )}
-                      </Form.List>
-                    </div>
-                  </div>
+              <Pane className="row">
+                <Pane className="col">
+                  <Form.Item name="file_image" label="Hình ảnh học sinh">
+                    <MultipleImageUpload
+                      files={files}
+                      callback={(files) => uploadFiles(files)}
+                      removeFiles={(files) => mountedSet(setFiles, files)}
+                      disabled
+                    />
+                  </Form.Item>
                 </Pane>
-                <Pane className="d-flex justify-content-between align-items-center mb20">
-                  <Button
-                    className="ml-auto px25"
-                    color="success"
-                    htmlType="submit"
-                    size="large"
-                    // loading={loadingSubmit || loading}
-                  >
-                    Lưu
-                  </Button>
+              </Pane>
+              <Pane className="row" {...marginProps}>
+                <Pane className="col-lg-4">
+                  <Form.Item>
+
+                    <FormItem
+                      value={get(details, 'studentInfo.full_name')}
+                      label="Ngày sinh"
+                      type={variables.INPUT}
+                      disabled
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </Form.Item>
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    value={get(details, 'studentInfo.birth_date')}
+                    label="Ngày sinh"
+                    type={variables.INPUT}
+                    format={variables.DATE_FORMAT.DATE_TIME}
+                    rules={[variables.RULES.EMPTY]}
+                    disabled
+                    disabledDate={(current) => current > moment()}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    value={get(details, 'studentInfo.month_age')}
+                    label="Tuổi (tháng)"
+                    type={variables.INPUT}
+                    disabled
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    value={get(details, 'studentInfo.sex')}
+                    options={['id', 'name']}
+                    data={genders}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    disabled
+                    label="Giới tính"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-8">
+                  <FormItem
+                    name="address"
+                    label="Địa chỉ"
+                    type={variables.INPUT}
+                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name=""
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Cơ sở"
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name=""
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Lớp"
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name=""
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Năm"
+                  />
                 </Pane>
               </Pane>
             </Pane>
-          </Form>
-        </Pane>
-      </Pane>
-    </>
-  );
-});
 
-export default Students;
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                Lưu
+              </Button>
+            </Pane>
+          </Loading>
+        </Pane>
+      </Form>
+    );
+  },
+);
+
+General.propTypes = {
+  dispatch: PropTypes.func,
+  match: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  branches: PropTypes.arrayOf(PropTypes.any),
+  classes: PropTypes.arrayOf(PropTypes.any),
+  students: PropTypes.objectOf(PropTypes.any),
+};
+
+General.defaultProps = {
+  match: {},
+  details: {},
+  dispatch: () => { },
+  loading: {},
+  error: {},
+  branches: [],
+  classes: [],
+  students: {},
+};
+
+export default withRouter(connect(mapStateToProps)(General));
