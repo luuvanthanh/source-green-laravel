@@ -26,7 +26,7 @@ class TagController extends Controller
      */
     public function index(Request $request)
     {
-        $tag = $this->tagRepository->all();
+        $tag = $this->tagRepository->getAll($request->all());
 
         return $this->success($tag, trans('lang::messages.common.getListSuccess'));
     }
@@ -45,7 +45,7 @@ class TagController extends Controller
 
         return $this->success($tag, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
-    
+
     /**
      * Remove the specified resource from storage.
      *

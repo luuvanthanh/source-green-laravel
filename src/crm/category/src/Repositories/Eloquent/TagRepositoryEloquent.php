@@ -15,7 +15,7 @@ use GGPHP\Crm\Category\Repositories\Contracts\TagRepository;
  */
 class TagRepositoryEloquent extends BaseRepository implements TagRepository
 {
-/**
+    /**
      * @var array
      */
     protected $fieldSearchable = [
@@ -42,5 +42,20 @@ class TagRepositoryEloquent extends BaseRepository implements TagRepository
     public function presenter()
     {
         return TagPresenter::class;
+    }
+
+    public function getAll($attributes)
+    {
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('name', $attributes['key']);
+        }
+
+        if (!empty($attributes['limit'])) {
+            $tag = $this->paginate($attributes['limit']);
+        } else {
+            $tag = $this->get();
+        }
+
+        return $tag;
     }
 }
