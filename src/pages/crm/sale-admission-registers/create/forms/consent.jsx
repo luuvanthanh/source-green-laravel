@@ -28,16 +28,14 @@ const Students = memo(() => {
     loading: { effects },
   } = useSelector(({ loading, crmSaleAdmissionAdd }) => ({
     loading,
-    student: crmSaleAdmissionAdd.student,
+    writtenConsent: crmSaleAdmissionAdd.writtenConsent,
     details: crmSaleAdmissionAdd.details,
     degrees: crmSaleAdmissionAdd.degrees,
     error: crmSaleAdmissionAdd.error,
   }));
 
-  const [students, setStudents] = useState([]);
-
-  const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD_STUDENTS`];
-  // const [deleteRows, setDeleteRows] = useState([]);
+  const [writtenConsent, setWrittenConsent] = useState([]);
+  const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD_WRITTEN_CONSENT`];
 
   const onSetImage = (file, position) => {
     mountedSet(
@@ -47,7 +45,7 @@ const Students = memo(() => {
   };
 
   const onFinish = (values) => {
-    const items = values.data.map((item, index) => ({
+    const confirm_transporter = values.data.map((item, index) => ({
       ...item,
       file_image: fileImage[index],
       birth_date: Helper.getDateTime({
@@ -58,15 +56,13 @@ const Students = memo(() => {
         format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
-      customer_potential_id: params.id,
     }));
     const payload = {
-      createRows: items.filter((item) => !item.id),
-      updateRows: items.filter((item) => item.id),
-      // deleteRows,
+      confirm_transporter,
+      admission_register_id: params.id,
     };
     dispatch({
-      type: 'crmSaleAdmissionAdd/ADD_STUDENTS',
+      type: 'crmSaleAdmissionAdd/ADD_WRITTEN_CONSENT',
       payload,
       callback: (response, error) => {
         if (error) {
@@ -92,13 +88,13 @@ const Students = memo(() => {
 
   useEffect(() => {
     dispatch({
-      type: 'crmSaleAdmissionAdd/GET_STUDENTS',
+      type: 'crmSaleAdmissionAdd/GET_WRITTEN_CONSENT',
       payload: {
-        customer_potential_id: params.id,
+        admission_register_id: params.id,
       },
       callback: (response) => {
         if (response) {
-          setStudents(response.parsePayload);
+          setWrittenConsent(response.parsePayload);
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
@@ -111,13 +107,13 @@ const Students = memo(() => {
   }, [params.id]);
 
   useEffect(() => {
-    if (!isEmpty(students)) {
+    if (!isEmpty(writtenConsent)) {
       mountedSet(
         setFileImage,
-        students.map((item) => item.file_image || null),
+        writtenConsent.map((item) => item.file_image || null),
       );
     }
-  }, [students]);
+  }, [writtenConsent]);
 
   return (
     <>
@@ -186,8 +182,8 @@ const Students = memo(() => {
                                   <Pane className="col-lg-4">
                                     <FormItem
                                       label="Mối quan hệ"
-                                      name={[field.name, 'full_name']}
-                                      fieldKey={[field.fieldKey, 'full_name']}
+                                      name={[field.name, 'relationship']}
+                                      fieldKey={[field.fieldKey, 'relationship']}
                                       type={variables.INPUT}
                                       rules={[
                                         variables.RULES.EMPTY_INPUT,
@@ -198,8 +194,8 @@ const Students = memo(() => {
                                   <Pane className="col-lg-4">
                                     <FormItem
                                       label="Số CMND"
-                                      name={[field.name, 'full_name']}
-                                      fieldKey={[field.fieldKey, 'full_name']}
+                                      name={[field.name, 'id_card']}
+                                      fieldKey={[field.fieldKey, 'id_card']}
                                       type={variables.INPUT}
                                       rules={[
                                         variables.RULES.EMPTY_INPUT,
@@ -210,8 +206,8 @@ const Students = memo(() => {
                                   <Pane className="col-lg-4">
                                     <FormItem
                                       label="Số điện thoại"
-                                      name={[field.name, 'full_name']}
-                                      fieldKey={[field.fieldKey, 'full_name']}
+                                      name={[field.name, 'phone']}
+                                      fieldKey={[field.fieldKey, 'phone']}
                                       type={variables.INPUT}
                                       rules={[
                                         variables.RULES.EMPTY_INPUT,
@@ -226,10 +222,6 @@ const Students = memo(() => {
                                     className="position-absolute"
                                     style={{ top: 20, right: 20 }}
                                     onClick={() => {
-                                      // const student = students?.find(
-                                      //   (item, studentsIndex) => studentsIndex === index,
-                                      // );
-                                      // setDeleteRows((prev) => [...prev, student.id]);
                                       remove(index);
                                     }}
                                   />
@@ -255,19 +247,19 @@ const Students = memo(() => {
                       </Form.List>
                     </div>
                   </div>
-                <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-                  <Button color="primary" icon="export" className="ml-2">
-                    Xuất file khai báo y tế
-                  </Button>
-                  <Button
-                    color="success"
-                    htmlType="submit"
-                    loading={loadingSubmit}
-                    className="ml-2"
-                  >
-                    Lưu
-                  </Button>
-                </Pane>
+                  <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+                    <Button color="primary" icon="export" className="ml-2">
+                      Xuất file khai báo y tế
+                    </Button>
+                    <Button
+                      color="success"
+                      htmlType="submit"
+                      loading={loadingSubmit}
+                      className="ml-2"
+                    >
+                      Lưu
+                    </Button>
+                  </Pane>
                 </Pane>
               </Pane>
             </Pane>

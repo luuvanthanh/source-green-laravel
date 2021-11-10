@@ -6,6 +6,7 @@ import * as services from './services';
       details: {},
       customerLead: [],
       studentsLead: [],
+      writtenConsent: [],
       city: [],
       district: [],
       parents: [],
@@ -49,6 +50,10 @@ import * as services from './services';
       SET_DISTRICTS: (state, { payload }) => ({
         ...state,
         district: payload.parsePayload,
+      }),
+      SET_WRITTEN_CONSENT: (state, { payload }) => ({
+        ...state,
+        writtenConsent: payload.parsePayload,
       }),
     },
     effects: {
@@ -157,6 +162,32 @@ import * as services from './services';
           callback(payload);
         } catch (error) {
           callback(null, error);
+        }
+      },
+      *ADD_WRITTEN_CONSENT({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.addWrittenConsent, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
+        }
+      },
+      *GET_WRITTEN_CONSENT({ payload, callback }, saga) {
+        try {
+          yield saga.put({
+            type: 'INIT_STATE',
+          });
+          const response = yield saga.call(services.getWrittenConsent, payload);
+          callback(response);
+          yield saga.put({
+            type: 'SET_WRITTEN_CONSENT',
+            payload: response,
+          });
+        } catch (error) {
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
         }
       },
     },
