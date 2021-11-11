@@ -129,6 +129,12 @@ const Students = memo(() => {
     }
   }, [students]);
 
+  const [dayOfBirth, setDayOfBirth] = useState(null);
+  const onChaneDate = (e) => {
+    mountedSet(setDayOfBirth, e);
+  };
+
+
   return (
     <>
       <Pane>
@@ -199,15 +205,14 @@ const Students = memo(() => {
                                       label="Ngày sinh"
                                       fieldKey={[field.fieldKey, 'birth_date']}
                                       type={variables.DATE_PICKER}
+                                      onChange={onChaneDate}
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">
-                                    <FormItem
-                                      name={[field.name, 'month_age']}
-                                      label="Tuổi (tháng)"
-                                      fieldKey={[field.fieldKey, 'month_age']}
-                                      type={variables.INPUT}
-                                    />
+                                    <Form.Item label="Tuổi (tháng)">
+                                      {dayOfBirth &&
+                                        moment().diff(moment(dayOfBirth), 'month')}
+                                    </Form.Item>
                                   </Pane>
                                   <Pane className="col-lg-4">
                                     <FormItem

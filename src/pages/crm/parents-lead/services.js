@@ -8,3 +8,9 @@ export function get(params = {}) {
     },
   });
 }
+
+export function remove(id) {
+  return request(`/v1/status-parent-leads/${id}`, {
+    method: 'DELETE',
+  });
+}

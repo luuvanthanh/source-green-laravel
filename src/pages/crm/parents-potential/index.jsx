@@ -158,6 +158,31 @@ class Index extends PureComponent {
       },
     });
 
+
+    onRemove = (id) => {
+      const { dispatch } = this.props;
+      const self = this;
+      Helper.confirmAction({
+        callback: () => {
+          dispatch({
+            type: 'crmParentsPotential/REMOVE',
+            payload: {
+              id,
+            },
+            callback: (response,error) => {
+              if (response) {
+                self.onLoad();
+              }
+              if (error) {
+                history.push('./');
+              }
+            },
+          });
+        },
+      });
+    };
+
+
   /**
    * Function header table
    */
@@ -186,11 +211,11 @@ class Index extends PureComponent {
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
+              color="primary"
+              icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },

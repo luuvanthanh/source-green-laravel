@@ -173,8 +173,7 @@ class Index extends PureComponent {
                         </Pane>
                       </Pane>
                     </Pane>
-                  </Pane>
-                  <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
+                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
                     {params.id ? (
                       <p
                         className="btn-delete"
@@ -203,6 +202,7 @@ class Index extends PureComponent {
                     >
                       Lưu
                     </Button>
+                  </Pane>
                   </Pane>
                 </Pane>
               </div>

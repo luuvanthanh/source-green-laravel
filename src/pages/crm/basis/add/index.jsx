@@ -115,13 +115,13 @@ class Index extends PureComponent {
                         Thông tin chi tiết
                       </Heading>
                       <Pane className="row mt20">
-                        <Pane className="col-lg-12">
+                        <Pane className="col-lg-4">
                           <FormItem label="Tên cơ sở" name="name" type={variables.INPUT} />
                         </Pane>
-                        <Pane className="col-lg-12">
+                        <Pane className="col-lg-4">
                           <FormItem label="Địa chỉ" name="address" type={variables.INPUT} />
                         </Pane>
-                        <Pane className="col-lg-12">
+                        <Pane className="col-lg-4">
                           <FormItem
                             label="Số điện thoại"
                             name="phone_number"
@@ -130,11 +130,11 @@ class Index extends PureComponent {
                         </Pane>
                       </Pane>
                     </Pane>
-                  </Pane>
-                  <Pane className="pt20 pb20 d-flex border-top flex-row-reverse">
+                  <Pane className="p20 d-flex border-top flex-row-reverse">
                     <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
                       Hủy
                     </p>
+                  </Pane>
                   </Pane>
                 </Pane>
               </div>

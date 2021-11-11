@@ -155,10 +155,10 @@ class Index extends PureComponent {
                         Thông tin thêm mới
                       </Heading>
                       <Pane className="row mt20">
-                        <Pane className="col-lg-12">
+                        <Pane className="col-lg-6">
                           <FormItem label="Tên quận huyện" name="name" type={variables.INPUT} />
                         </Pane>
-                        <Pane className="col-lg-12">
+                        <Pane className="col-lg-6">
                           <FormItem
                             options={['id', 'name']}
                             name="city_id"
@@ -170,8 +170,7 @@ class Index extends PureComponent {
                         </Pane>
                       </Pane>
                     </Pane>
-                  </Pane>
-                  <Pane className="pt20 pb20 d-flex justify-content-between align-items-center border-top">
+                  <Pane className="p20 d-flex justify-content-between align-items-center border-top">
                     <p
                       className="btn-delete"
                       role="presentation"
@@ -189,6 +188,7 @@ class Index extends PureComponent {
                     >
                       Lưu
                     </Button>
+                  </Pane>
                   </Pane>
                 </Pane>
               </div>
