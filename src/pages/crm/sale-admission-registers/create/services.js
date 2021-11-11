@@ -138,3 +138,44 @@ export function updateStudents(data = {}) {
     },
   });
 }
+
+export function getEmloyees() {
+  return request(`/v1/employees`, {
+    method: 'GET',
+    params: {
+      orderBy: 'full_name',
+    },
+  });
+}
+
+export function addTestInput(data = {}) {
+  return request('/v1/test-inputs', {
+    method: 'POST',
+    data: {
+      ...data,
+      date_interview: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.date_interview,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+      time_interview: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.time_interview,
+        }),
+        format: variables.DATE_FORMAT.HOUR,
+        isUTC: false,
+      }),
+    },
+  });
+}
+
+export function getTestInputs(params = {}) {
+  return request(`/v1/test-inputs`, {
+    method: 'GET',
+    params,
+  });
+}
