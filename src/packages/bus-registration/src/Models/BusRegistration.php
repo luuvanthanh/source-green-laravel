@@ -2,6 +2,7 @@
 
 namespace GGPHP\BusRegistration\Models;
 
+use GGPHP\Absent\Models\BusRegistrationDetail;
 use GGPHP\Core\Models\UuidModel;
 
 class BusRegistration extends UuidModel
@@ -19,11 +20,13 @@ class BusRegistration extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'EmployeeId', 'Date', 'HourNumber', 'Note',
+        'EmployeeId', 'Date', 'StartDate', 'EndDate', 'HourNumber', 'Note',
     ];
 
     protected $dateTimeFields = [
         'Date',
+        'StartDate',
+        'EndDate',
     ];
 
     /**
@@ -33,6 +36,8 @@ class BusRegistration extends UuidModel
      */
     protected $casts = [
         'Date' => 'datetime',
+        'StartDate' => 'datetime',
+        'EndDate' => 'datetime',
     ];
 
     /**
@@ -42,5 +47,13 @@ class BusRegistration extends UuidModel
     public function employee()
     {
         return $this->belongsTo(\GGPHP\Users\Models\User::class, 'EmployeeId');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function busRegistrationDetail()
+    {
+        return $this->hasMany(BusRegistrationDetail::class, 'BusRegistrationId');
     }
 }

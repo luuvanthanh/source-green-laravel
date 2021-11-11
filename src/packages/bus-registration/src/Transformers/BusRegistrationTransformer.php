@@ -2,6 +2,7 @@
 
 namespace GGPHP\BusRegistration\Transformers;
 
+use GGPHP\BusRegistration\Transformers\BusRegistrationDetailTransformer;
 use GGPHP\BusRegistration\Models\BusRegistration;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Transformers\UserTransformer;
@@ -14,7 +15,7 @@ use GGPHP\Users\Transformers\UserTransformer;
 class BusRegistrationTransformer extends BaseTransformer
 {
 
-    protected $availableIncludes = ['employee'];
+    protected $availableIncludes = ['employee', 'busRegistrationDetail'];
     protected $defaultIncludes = [];
 
     public function customAttributes($model): array
@@ -35,4 +36,13 @@ class BusRegistrationTransformer extends BaseTransformer
         return $this->item($busRegistration->employee, new UserTransformer, 'Employee');
     }
 
+    /**
+     * Include Owner
+     * @param BusRegistration $absent
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeBusRegistrationDetail(BusRegistration $busRegistration)
+    {
+        return $this->collection($busRegistration->busRegistrationDetail, new BusRegistrationDetailTransformer, 'BusRegistrationDetail');
+    }
 }

@@ -65,6 +65,9 @@ class UserTransformer extends BaseTransformer
             'Status' => $status,
             'workHourSummary' => $model->workHourSummary,
             'totalWorkHourSummary' => $model->totalWorkHourSummary,
+            'totalWorkWeekday' => $model->totalWorkWeekday,
+            'totalWorkWeekend' => $model->totalWorkWeekend,
+            'totalWorkHoliday' => $model->totalWorkHoliday,
             'busRegistrationSummary' => $model->busRegistrationSummary,
             'totalBusRegistration' => $model->totalBusRegistration,
         ];

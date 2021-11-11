@@ -20,7 +20,10 @@ use Illuminate\Container\Container as Application;
 use Prettus\Repository\Criteria\RequestCriteria;
 use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
+use GGPHP\Category\Models\HolidayDetail;
+use GGPHP\WorkHour\Repositories\Eloquent\WorkHourRepositoryEloquent;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class PayrollRepositoryEloquent.
@@ -38,12 +41,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         ExcelExporterServices $excelExporterServices,
         TimekeepingRepositoryEloquent $timekeepingRepositoryEloquent,
         BusRegistrationRepositoryEloquent $busRegistrationRepositoryEloquent,
+        WorkHourRepositoryEloquent $workHourRepositoryEloquent,
         Application $app
     ) {
         parent::__construct($app);
         $this->excelExporterServices = $excelExporterServices;
         $this->busRegistrationRepositoryEloquent = $busRegistrationRepositoryEloquent;
         $this->timekeepingRepositoryEloquent = $timekeepingRepositoryEloquent;
+        $this->workHourRepositoryEloquent = $workHourRepositoryEloquent;
     }
 
     /**
@@ -114,13 +119,35 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $otherDeclaration = OtherDeclaration::where('Time', $payroll->Month)->first();
 
         if (!is_null($otherDeclaration)) {
+            $holiday = [];
+            $holidayDetails = HolidayDetail::where(function ($q2) use ($startDate, $endDate) {
+                $q2->where([['StartDate', '<=', $startDate], ['EndDate', '>=', $endDate]])
+                    ->orWhere([['StartDate', '>=', $startDate], ['StartDate', '<=', $endDate]])
+                    ->orWhere([['EndDate', '>=', $startDate], ['EndDate', '<=', $endDate]]);
+            })->get();
+
+            if (!empty(count($holidayDetails))) {
+                foreach ($holidayDetails as $holidayDetail) {
+                    $begin = new \DateTime($holidayDetail->StartDate->format('Y-m-d'));
+                    $end = new \DateTime($holidayDetail->EndDate->format('Y-m-d'));
+                    $intervalDate = \DateInterval::createFromDateString('1 day');
+                    $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
+
+                    foreach ($periodDate as $date) {
+                        if (!in_array($date->format('Y-m-d'), $holiday)) {
+                            $holiday[] = $date->format('Y-m-d');
+                        }
+                    }
+                }
+            }
+
             $numberOfWorkdays = $otherDeclaration->NumberOfWorkdays;
 
             foreach ($employees as &$employee) {
                 if ($otherDeclaration->IsDiseaseSalary) {
-                    $employee = $this->calculatorSalaryDisease($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                    $employee = $this->calculatorSalaryDisease($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance, $holiday);
                 } else {
-                    $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance);
+                    $employee = $this->calculatorSalary($payroll, $employee, $dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, $columnBasicSalaryAndAllowance, $columnIncurredAllowance, $holiday);
                 }
             }
             \DB::beginTransaction();
@@ -139,24 +166,42 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 \DB::commit();
             } catch (\Throwable $th) {
                 \DB::rollback();
+                throw new HttpException(500, $th->getMessage());
             }
         }
 
         return parent::find($attributes['id']);
     }
 
-    public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
+    public function calculatorSalary($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance, $holiday)
     {
         $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
         $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $isSocialInsurance = false;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
             'endDate' => $endDate,
         ])->totalWorks;
+        $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
+
+        $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
+
+        //Giờ OT ngày thường
+        $parameter['SO_GIO_LAM_THEM_NGAY_THUONG'] = $overtime->totalWorkWeekday;
+        $otWeekday = $overtime->totalWorkWeekday;
+
+        //Giờ OT cuối tuần
+        $parameter['SO_GIO_LAM_THEM_CUOI_TUAN'] =  $overtime->totalWorkWeekend;
+        $otWeekend = $overtime->totalWorkWeekend;
+
+        //Giờ OT ngày lễ
+        $parameter['SO_GIO_LAM_THEM_NGAY_LE'] = $overtime->totalWorkHoliday;
+        $otHoliday = $overtime->totalWorkHoliday;
+
         $otherDeclarationDetail = $otherDeclaration->otherDeclarationDetail->where('EmployeeId', $employee->Id)->first();
 
         $incurredAllowance = [];
@@ -231,6 +276,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $dateStartWork = null;
 
         if (!is_null($contract) && $totalWorks > 0) {
+            $isSocialInsurance = $contract->IsSocialInsurance;
             $dateStartWork = $contract->ContractFrom->format('Y-m-d');
             $parameterValues = $contract->parameterValues;
 
@@ -531,7 +577,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                 'IsProbation' => $isProbation, //thử việc
                 'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                'IsSocialInsurance' => false, //Không tham gia BHXH
+                'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                 'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                 'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                 'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -560,20 +606,38 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 'Advance' => $advance, // tạm ứng
                 'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
                 'Note' => null, // ghi chú
-                'SalaryByHour' => $salaryByHour, // lương theo giờ
+                'SalaryByHour' => $salaryByHour, // lương theo giờ,
+                'OtWeekday' => $otWeekday,
+                'OtWeekend' => $otWeekend,
+                'OtHoliday' => $otHoliday,
             ];
         }
 
         return true;
     }
 
-    public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance)
+    public function calculatorSalaryDisease($payroll, $employee, &$dataInsert, $startDate, $endDate, $numberOfWorkdays, $otherDeclaration, &$columnBasicSalaryAndAllowance, &$columnIncurredAllowance, $holiday)
     {
         $month = $payroll->Month;
         $parameter = [];
         $dependentPerson = $employee->children->count();
         $parameter['DIEU_CHINH_BHXH_NLD'] = 0;
         $parameter['SO_NGUOI_PHU_THUOC'] = $dependentPerson;
+        $isSocialInsurance = false;
+
+        $overtime = $this->workHourRepositoryEloquent->calculatorWorkHourReport($employee, $holiday);
+
+        //Giờ OT ngày thường
+        $parameter['SO_GIO_LAM_THEM_NGAY_THUONG'] = $overtime->totalWorkWeekday;
+        $otWeekday = $overtime->totalWorkWeekday;
+
+        //Giờ OT cuối tuần
+        $parameter['SO_GIO_LAM_THEM_CUOI_TUAN'] =  $overtime->totalWorkWeekend;
+        $otWeekend = $overtime->totalWorkWeekend;
+
+        //Giờ OT ngày lễ
+        $parameter['SO_GIO_LAM_THEM_NGAY_LE'] = $overtime->totalWorkHoliday;
+        $otHoliday = $overtime->totalWorkHoliday;
 
         $totalWorks = $this->timekeepingRepositoryEloquent->calculatorTimekeepingReport($employee, [
             'startDate' => $startDate,
@@ -640,6 +704,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         if (!is_null($maternityLeave)) {
             $isMaternity = true;
             if (!is_null($contract)) {
+                $isSocialInsurance = $contract->IsSocialInsurance;
                 $dateStartWork = $contract->ContractFrom->format('Y-m-d');
                 $parameterValues = $contract->parameterValues;
 
@@ -804,7 +869,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                     'IsProbation' => $isProbation, //thử việc
                     'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                    'IsSocialInsurance' => false, //Không tham gia BHXH
+                    'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                     'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                     'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                     'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -834,10 +899,14 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
                     'Note' => null, // ghi chú,
                     'SalaryByHour' => $salaryByHour,
+                    'OtWeekday' => $otWeekday,
+                    'OtWeekend' => $otWeekend,
+                    'OtHoliday' => $otHoliday,
                 ];
             }
         } else {
             if (!is_null($contract) && $totalWorks > 0) {
+                $isSocialInsurance = $contract->IsSocialInsurance;
                 $dateStartWork = $contract->ContractFrom->format('Y-m-d');
                 $parameterValues = $contract->parameterValues;
 
@@ -1052,7 +1121,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'DateStartWork' => $dateStartWork, // ngày bắt đầu làm việc
                     'IsProbation' => $isProbation, //thử việc
                     'IsMaternity' => $isMaternity, //Nghỉ không lương/Thai sản
-                    'IsSocialInsurance' => false, //Không tham gia BHXH
+                    'IsSocialInsurance' => $isSocialInsurance, //Không tham gia BHXH
                     'BasicSalaryAndAllowance' => $basicSalaryAndAllowance, //Lương cơ bản + Phụ Cấp
                     'IncurredAllowance' => $incurredAllowance, //PHỤ CẤP PHÁT SINH TRONG THÁNG
                     'TotalIncome' => (int) $totalIncome, //TỔNG THU NHẬP
@@ -1082,6 +1151,10 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     'ActuallyReceived' => (int) $actuallyReceived, // Net income - Lương thực nhận
                     'Note' => null, // ghi chú,
                     'SalaryByHour' => $salaryByHour,
+                    'OtWeekday' => $otWeekday,
+                    'OtWeekend' => $otWeekend,
+                    'OtHoliday' => $otHoliday,
+
                 ];
             }
         }
@@ -1344,6 +1417,30 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
         $params['{total_actually_received}'] = 0;
         $params['{total_note}'] = '';
 
+        $total_total_income = 0;
+        $total_ot_tax = 0;
+        $total_ot_no_tax = 0;
+        $total_total_work = 0;
+        $total_total_income_month = 0;
+        $total_social_insurance_employee = 0;
+        $total_health_insurance_employee = 0;
+        $total_unemployment_insurance_employee = 0;
+        $total_social_insurance_adjusted_employee = 0;
+        $total_social_insurance_company = 0;
+        $total_health_insurance_company = 0;
+        $total_unemployment_insurance_company = 0;
+        $total_social_insurance_adjusted_company = 0;
+        $total_union_dues = 0;
+        $total_dependent_person = 0;
+        $total_eeduce = 0;
+        $total_charity = 0;
+        $total_dependent_total = 0;
+        $total_rental_income = 0;
+        $total_personal_income_tax = 0;
+        $total_social_insurance_payment = 0;
+        $total_advance = 0;
+        $total_actually_received = 0;
+
         //data employee
         foreach ($payroll->payrollDetail as $key => $payrollDetail) {
             $basicSalaryAllowanceEmployee = json_decode($payrollDetail->BasicSalaryAndAllowance);
@@ -1381,36 +1478,33 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             $otHoliday = !is_null($payrollDetail->OtHoliday) ? $payrollDetail->OtHoliday : 0;
 
             //total
-            $params['{total_total_income}'] += $payrollDetail->TotalIncome;
-            // $params['{total_kpi_bonus}'] += $payrollDetail->KpiBonus;
-            $params['{total_ot_tax}'] += $payrollDetail->OtTax;
-            $params['{total_ot_no_tax}'] += $payrollDetail->OtNoTax;
-            // $params['{total_unpaid_leave}'] += $payrollDetail->UnpaidLeave;
-            $params['{total_total_work}'] += $payrollDetail->TotalWork;
-            $params['{total_total_income_month}'] += $payrollDetail->TotalIncomeMonth;
-            $params['{total_social_insurance_employee}'] += $payrollDetail->SocialInsuranceEmployee;
-            $params['{total_health_insurance_employee}'] += $payrollDetail->HealthInsuranceEmployee;
-            $params['{total_unemployment_insurance_employee}'] += $payrollDetail->UnemploymentInsuranceEmployee;
-            $params['{total_social_insurance_adjusted_employee}'] += $payrollDetail->SocialInsuranceAdjustedEmployee;
-            $params['{total_social_insurance_company}'] += $payrollDetail->SocialInsuranceCompany;
-            $params['{total_health_insurance_company}'] += $payrollDetail->HealthInsuranceCompany;
-            $params['{total_unemployment_insurance_company}'] += $payrollDetail->UnemploymentInsuranceCompany;
-            $params['{total_social_insurance_adjusted_company}'] += $payrollDetail->SocialInsuranceAdjustedCompany;
-            $params['{total_union_dues}'] += $payrollDetail->UnionDues;
-            $params['{total_dependent_person}'] += $payrollDetail->DependentPerson;
-            $params['{total_eeduce}'] += $payrollDetail->Eeduce;
-            $params['{total_charity}'] += $payrollDetail->Charity;
-            $params['{total_dependent_total}'] += $payrollDetail->TotalReduce;
-            $params['{total_rental_income}'] += $payrollDetail->RentalIncome;
-            $params['{total_personal_income_tax}'] += $payrollDetail->PersonalIncomeTax;
-            $params['{total_social_insurance_payment}'] += $payrollDetail->SocialInsurancePayment;
-            $params['{total_advance}'] += $payrollDetail->Advance;
-            $params['{total_actually_received}'] += $payrollDetail->ActuallyReceived;
-
+            $total_total_income   += $payrollDetail->TotalIncome;
+            $total_ot_tax += $payrollDetail->OtTax;
+            $total_ot_no_tax += $payrollDetail->OtNoTax;
+            $total_total_work  += $payrollDetail->TotalWork;
+            $total_total_income_month += $payrollDetail->TotalIncomeMonth;
+            $total_social_insurance_employee += $payrollDetail->SocialInsuranceEmployee;
+            $total_health_insurance_employee += $payrollDetail->HealthInsuranceEmployee;
+            $total_unemployment_insurance_employee += $payrollDetail->UnemploymentInsuranceEmployee;
+            $total_social_insurance_adjusted_employee += $payrollDetail->SocialInsuranceAdjustedEmployee;
+            $total_social_insurance_company += $payrollDetail->SocialInsuranceCompany;
+            $total_health_insurance_company  += $payrollDetail->HealthInsuranceCompany;
+            $total_unemployment_insurance_company += $payrollDetail->UnemploymentInsuranceCompany;
+            $total_social_insurance_adjusted_company  += $payrollDetail->SocialInsuranceAdjustedCompany;
+            $total_union_dues  += $payrollDetail->UnionDues;
+            $total_dependent_person += $payrollDetail->DependentPerson;
+            $total_eeduce += $payrollDetail->Eeduce;
+            $total_charity += $payrollDetail->Charity;
+            $total_dependent_total += $payrollDetail->TotalReduce;
+            $total_rental_income += $payrollDetail->RentalIncome;
+            $total_personal_income_tax += $payrollDetail->PersonalIncomeTax;
+            $total_social_insurance_payment += $payrollDetail->SocialInsurancePayment;
+            $total_advance += $payrollDetail->Advance;
+            $total_actually_received += $payrollDetail->ActuallyReceived;
             $params['[number]'][] = ++$key;
             $params['[employee_code]'][] = $payrollDetail->employee->Code;
             $params['[full_name]'][] = $payrollDetail->employee->FullName;
-            $params['[date_start_work]'][] = $payrollDetail->employee->WorkDate;
+            $params['[date_start_work]'][] = Carbon::parse($payrollDetail->DateStartWork)->format('d-m-Y');
             $params['[probation]'][] = $payrollDetail->IsProbation ? 'Có' : '';
             $params['[maternity]'][] = $payrollDetail->IsMaternity ? 'Có' : '';
             $params['[is_social_insurance]'][] = $payrollDetail->IsSocialInsurance ? 'Có' : '';
@@ -1456,6 +1550,30 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
 
         $params['[[total_value_basic_salary_allowance]]'][] = array_values($totalBsa);
         $params['[[total_value_allowances_incurred]]'][] = array_values($totalAi);
+        //total
+        $params['{total_total_income}'] = number_format($total_total_income);
+        $params['{total_ot_tax}'] = number_format($total_ot_tax);
+        $params['{total_ot_no_tax}'] = number_format($total_ot_no_tax);
+        $params['{total_total_work}'] = number_format($total_total_work);
+        $params['{total_total_income_month}'] = number_format($total_total_income_month);
+        $params['{total_social_insurance_employee}'] = number_format($total_social_insurance_employee);
+        $params['{total_health_insurance_employee}'] = number_format($total_health_insurance_employee);
+        $params['{total_unemployment_insurance_employee}'] = number_format($total_unemployment_insurance_employee);
+        $params['{total_social_insurance_adjusted_employee}'] = number_format($total_social_insurance_adjusted_employee);
+        $params['{total_social_insurance_company}'] = number_format($total_social_insurance_company);
+        $params['{total_health_insurance_company}'] = number_format($total_health_insurance_company);
+        $params['{total_unemployment_insurance_company}'] = number_format($total_unemployment_insurance_company);
+        $params['{total_social_insurance_adjusted_company}'] = number_format($total_social_insurance_adjusted_company);
+        $params['{total_union_dues}'] = number_format($total_union_dues);
+        $params['{total_dependent_person}'] = number_format($total_dependent_person);
+        $params['{total_eeduce}'] = number_format($total_eeduce);
+        $params['{total_charity}'] = number_format($total_charity);
+        $params['{total_dependent_total}'] = number_format($total_dependent_total);
+        $params['{total_rental_income}'] = number_format($total_rental_income);
+        $params['{total_personal_income_tax}'] = number_format($total_personal_income_tax);
+        $params['{total_social_insurance_payment}'] = number_format($total_social_insurance_payment);
+        $params['{total_advance}'] = number_format($total_advance);
+        $params['{total_actually_received}'] = number_format($total_actually_received);
 
         $endColumnBasicSalaryAllowance = null;
         $listMerge = [];
@@ -2122,6 +2240,19 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                     ->setARGB('deeaf6');
                 $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
             },
+            '[[value_basic_salary_allowance]]' => function (CallbackParam $param) use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $value = $param->param[$row_index][$col_index];
+                $sheet = $param->sheet;
+                $floorValue = floor($value);
+
+                if (($value - $floorValue) > 0) {
+                    $sheet->getStyle($cell_coordinate)->getNumberFormat()
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);
+                }
+            },
             '{total}' => function (CallbackParam $param) use (&$listMerge) {
                 $cell_coordinate = $param->coordinate;
                 $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
@@ -2145,189 +2276,243 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '[[total_value_allowances_incurred]]' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_kpi_bonus}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_ot_tax}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_ot_no_tax}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_unpaid_leave}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_total_work}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_total_income_month}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_social_insurance_employee}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_health_insurance_employee}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_unemployment_insurance_employee}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_social_insurance_adjusted_employee}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_social_insurance_company}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_health_insurance_company}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_unemployment_insurance_company}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_social_insurance_adjusted_company}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_union_dues}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_dependent_person}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_eeduce}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_charity}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_dependent_total}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_rental_income}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_personal_income_tax}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_social_insurance_payment}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_advance}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_actually_received}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '{total_note}' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
                 $sheet = $param->sheet;
                 $sheet->getStyle($cell_coordinate)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()
                     ->setARGB('dadada');
-                $sheet->getStyle($cell_coordinate)->getFont()->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getBorders()->getOutline()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_HAIR);
+                $sheet->getStyle($cell_coordinate)->getFont()->setSize(9)->setBold(true);
+                $sheet->getStyle($cell_coordinate)->getAlignment()->setHorizontal('right')->setVertical('center');
             },
             '[empty_1]' => function (CallbackParam $param) {
                 $cell_coordinate = $param->coordinate;
@@ -2355,7 +2540,7 @@ class PayrollRepositoryEloquent extends CoreRepositoryEloquent implements Payrol
             },
 
         ];
-
+        // dd($params);
         return $this->excelExporterServices->export('salary_month', $params, $callbacks, $events);
     }
 }

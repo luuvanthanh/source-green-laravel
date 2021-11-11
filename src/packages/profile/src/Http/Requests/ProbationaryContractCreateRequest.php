@@ -53,7 +53,7 @@ class ProbationaryContractCreateRequest extends FormRequest
                 },
             ],
             'typeOfContractId' => 'required|exists:TypeOfContracts,Id',
-            'salaryRatio' => 'required',
+            // 'salaryRatio' => 'required',
             'month' => 'required',
             'divisionId' => 'required|exists:Divisions,Id',
             'contractFrom' => [

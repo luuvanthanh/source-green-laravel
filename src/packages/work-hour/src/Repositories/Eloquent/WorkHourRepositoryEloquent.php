@@ -7,6 +7,7 @@ use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Category\Models\Branch;
 use GGPHP\Category\Models\Division;
+use GGPHP\Category\Models\HolidayDetail;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Users\Models\User;
@@ -145,8 +146,31 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
             $result = $employees->paginate($attributes['limit']);
         }
 
+        $holidayDetails = HolidayDetail::where(function ($q2) use ($attributes) {
+            $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+        })->get();
+
+        $holiday = [];
+
+        if (!empty(count($holidayDetails))) {
+            foreach ($holidayDetails as $holidayDetail) {
+                $begin = new \DateTime($holidayDetail->StartDate->format('Y-m-d'));
+                $end = new \DateTime($holidayDetail->EndDate->format('Y-m-d'));
+                $intervalDate = \DateInterval::createFromDateString('1 day');
+                $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
+
+                foreach ($periodDate as $date) {
+                    if (!in_array($date->format('Y-m-d'), $holiday)) {
+                        $holiday[] = $date->format('Y-m-d');
+                    }
+                }
+            }
+        }
+
         foreach ($result as &$employee) {
-            $employee = $this->calculatorWorkHourReport($employee, $attributes);
+            $employee = $this->calculatorWorkHourReport($employee, $holiday);
         }
 
         if ($parser) {
@@ -156,11 +180,14 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
         return $this->employeeRepositoryEloquent->parserResult($result);
     }
 
-    public function calculatorWorkHourReport($employee, $attributes)
+    public function calculatorWorkHourReport($employee, $holiday)
     {
         $workHours = $employee->workHours->toArray();
         $newWorkHours = [];
         $totalWorkHourSummary = 0;
+        $totalWorkWeekday = 0;
+        $totalWorkWeekend = 0;
+        $totalWorkHoliday = 0;
 
         if (count($workHours) > 0) {
             foreach ($workHours as $key => $workHour) {
@@ -169,24 +196,37 @@ class WorkHourRepositoryEloquent extends CoreRepositoryEloquent implements WorkH
                 $time = (strtotime($hours->out) - strtotime($hours->in)) / 3600;
 
                 if (array_key_exists($date, $newWorkHours)) {
-                    $newWorkHours[$date] += $time;
+                    $newWorkHours[$date]['value'] += $time;
                 } else {
-                    $newWorkHours[$date] = $time;
+                    $newWorkHours[$date] = [
+                        'date' => $date,
+                        'value' => $time
+                    ];
                 }
-            }
 
-            foreach ($newWorkHours as $key => $value) {
-                $newWorkHours[] = [
-                    'date' => $key,
-                    'value' => $value,
-                ];
-                $totalWorkHourSummary += $value;
-                unset($newWorkHours[$key]);
+                if (in_array($date, $holiday)) {
+                    $totalWorkHoliday += $time;
+                } else {
+                    $check = Carbon::parse($workHour['Date'])->setTimezone('GMT+7')->format('l');
+
+                    if ($check === 'Saturday' || $check === 'Sunday') {
+                        $totalWorkWeekend += $time;
+                    } else {
+                        $totalWorkWeekday += $time;
+                    }
+                }
+
+                $totalWorkHourSummary += $time;
             }
         }
 
-        $employee->workHourSummary = $newWorkHours;
+        $employee->workHourSummary = array_values($newWorkHours);
         $employee->totalWorkHourSummary = $totalWorkHourSummary;
+        $employee->totalWorkWeekday = $totalWorkWeekday;
+        $employee->totalWorkWeekend = $totalWorkWeekend;
+        $employee->totalWorkHoliday = $totalWorkHoliday;
+
+        return $employee;
     }
 
     public function exportWorkHourReport(array $attributes)

@@ -52,7 +52,7 @@ class ShiftUpdateRequest extends FormRequest
             'time' => [
                 'array',
                 function ($attribute, $value, $fail) {
-                    for ($i = 1; $i < count($value); $i++) {
+                    for ($i = 0; $i < count($value); $i++) {
 
                         if ($value[$i]['endTime'] <= $value[$i]['startTime']) {
                             return $fail('Thời gian kết thúc phải lớn hơn thời gian bắt đầu.');

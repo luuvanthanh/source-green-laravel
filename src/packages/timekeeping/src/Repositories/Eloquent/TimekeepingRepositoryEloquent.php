@@ -230,7 +230,6 @@ class TimekeepingRepositoryEloquent extends CoreRepositoryEloquent implements Ti
 
         $begin = new \DateTime($startDate);
         $end = new \DateTime($endDate);
-
         $intervalDate = \DateInterval::createFromDateString('1 day');
         $periodDate = new \DatePeriod($begin, $intervalDate, $end->modify('+1 day'));
 

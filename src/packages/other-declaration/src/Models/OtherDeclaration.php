@@ -30,4 +30,13 @@ class OtherDeclaration extends UuidModel
     {
         return $this->hasMany(\GGPHP\OtherDeclaration\Models\OtherDeclarationDetail::class, 'OtherDeclarationId');
     }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function changeContractParameter()
+    {
+        return $this->hasMany(\GGPHP\OtherDeclaration\Models\ChangeContractParameter::class, 'OtherDeclarationId');
+    }
 }

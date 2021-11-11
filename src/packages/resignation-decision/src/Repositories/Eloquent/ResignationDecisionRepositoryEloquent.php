@@ -103,8 +103,8 @@ class ResignationDecisionRepositoryEloquent extends CoreRepositoryEloquent imple
             'Status' => User::STATUS['STORE'],
         ]);
 
-        $employee->labourContract()->update('IsEffect', false);
-        $employee->probationaryContract()->update('IsEffect', false);
+        $employee->labourContract()->update(['IsEffect' => false]);
+        $employee->probationaryContract()->update(['IsEffect' => false]);
 
         return parent::find($resignationDecision->Id);
     }

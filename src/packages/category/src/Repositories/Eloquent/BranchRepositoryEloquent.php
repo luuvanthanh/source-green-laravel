@@ -8,6 +8,7 @@ use GGPHP\Category\Repositories\Contracts\BranchRepository;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\CrmService;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class BranchRepositoryEloquent.

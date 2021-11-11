@@ -5,6 +5,7 @@ namespace GGPHP\BusRegistration\Repositories\Eloquent;
 use alhimik1986\PhpExcelTemplator\params\CallbackParam;
 use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
+use GGPHP\BusRegistration\Services\BusRegistrationDetailServices;
 use GGPHP\BusRegistration\Models\BusRegistration;
 use GGPHP\BusRegistration\Presenters\BusRegistrationPresenter;
 use GGPHP\BusRegistration\Repositories\Contracts\BusRegistrationRepository;
@@ -71,7 +72,11 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
     public function filterBusRegistration(array $attributes)
     {
         if (!empty($attributes['startDate']) && !empty($attributes['endDate'])) {
-            $this->model = $this->model->where('Date', '>=', $attributes['startDate'])->where('Date', '<=', $attributes['endDate']);
+            $this->model = $this->model->where(function ($q2) use ($attributes) {
+                $q2->where([['StartDate', '<=', $attributes['startDate']], ['EndDate', '>=', $attributes['endDate']]])
+                    ->orWhere([['StartDate', '>=', $attributes['startDate']], ['StartDate', '<=', $attributes['endDate']]])
+                    ->orWhere([['EndDate', '>=', $attributes['startDate']], ['EndDate', '<=', $attributes['endDate']]]);
+            });
         }
 
         if (!empty($attributes['employeeId'])) {
@@ -94,6 +99,43 @@ class BusRegistrationRepositoryEloquent extends CoreRepositoryEloquent implement
         }
 
         return $busRegistration;
+    }
+
+    public function create(array $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $busRegistration = BusRegistration::create($attributes);
+
+            BusRegistrationDetailServices::add($busRegistration->Id, $attributes['detail']);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($busRegistration->Id);
+    }
+
+    public function update(array $attributes, $id)
+    {
+
+        $busRegistration = BusRegistration::findOrfail($id);
+        \DB::beginTransaction();
+        try {
+            $busRegistration->update($attributes);
+
+            if (!empty($attributes['detail'])) {
+                $busRegistration->busRegistrationDetail()->delete();
+                BusRegistrationDetailServices::add($busRegistration->Id, $attributes['detail']);
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollback();
+        }
+
+        return parent::find($busRegistration->Id);
     }
 
     public function busRegistrationSummary(array $attributes, $parser = false)

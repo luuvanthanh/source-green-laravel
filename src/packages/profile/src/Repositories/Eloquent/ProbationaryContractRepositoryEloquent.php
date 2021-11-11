@@ -112,6 +112,21 @@ class ProbationaryContractRepositoryEloquent extends CoreRepositoryEloquent impl
             $this->model = $this->model->whereIn('EmployeeId', $employeeId);
         }
 
+        if (!empty($attributes['typeOfContractId'])) {
+            $typeOfContractId = explode(',', $attributes['typeOfContractId']);
+            $this->model = $this->model->whereIn('TypeOfContractId', $typeOfContractId);
+        }
+
+        if (!empty($attributes['branchId'])) {
+            $branchId = explode(',', $attributes['branchId']);
+            $this->model = $this->model->whereIn('BranchId', $branchId);
+        }
+
+        if (!empty($attributes['positionId'])) {
+            $positionId = explode(',', $attributes['positionId']);
+            $this->model = $this->model->whereIn('PositionId', $positionId);
+        }
+
         if (!empty($attributes['fullName'])) {
             $this->model = $this->model->whereHas('employee', function ($query) use ($attributes) {
                 $query->whereLike('FullName', $attributes['fullName']);

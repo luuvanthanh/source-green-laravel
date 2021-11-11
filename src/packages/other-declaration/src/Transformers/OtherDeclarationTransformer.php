@@ -14,12 +14,11 @@ class OtherDeclarationTransformer extends BaseTransformer
 {
 
     protected $availableIncludes = [];
-    protected $defaultIncludes = ['otherDeclarationDetail'];
+    protected $defaultIncludes = ['otherDeclarationDetail', 'changeContractParameter'];
 
     public function customAttributes($model): array
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -31,4 +30,12 @@ class OtherDeclarationTransformer extends BaseTransformer
         return $this->collection($otherDeclaration->otherDeclarationDetail, new OtherDeclarationDetailTransformer, 'OtherDeclarationDetail');
     }
 
+    /**
+     * Include User
+     * @param  OtherDeclaration $otherDeclaration
+     */
+    public function includeChangeContractParameter(OtherDeclaration $otherDeclaration)
+    {
+        return $this->collection($otherDeclaration->changeContractParameter, new ChangeContractParameterTransformer, 'ChangeContractParameter');
+    }
 }
