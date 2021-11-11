@@ -93,7 +93,6 @@ class Index extends PureComponent {
     this.props.dispatch({
       type: 'crmSaleCheckList/GET_DATA',
       payload: {
-        ...search,
         ...dataCheck,
       },
       callback: (response) => {
@@ -607,7 +606,6 @@ class Index extends PureComponent {
   render() {
     const {
       match: { params },
-      pagination,
       loading: { effects },
     } = this.props;
     const { dataSource, isModalVisible, dataCoincide } = this.state;
@@ -631,7 +629,7 @@ class Index extends PureComponent {
               dataSource={dataSource}
               loading={loading}
               rowSelection={{ ...rowSelection }}
-              pagination={this.pagination(pagination)}
+              pagination={false}
               params={{
                 header: this.header(),
                 type: 'table',
@@ -703,7 +701,6 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
@@ -713,7 +710,6 @@ Index.propTypes = {
 
 Index.defaultProps = {
   match: {},
-  pagination: {},
   loading: {},
   dispatch: {},
   location: {},

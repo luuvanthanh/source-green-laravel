@@ -441,7 +441,7 @@ class Index extends PureComponent {
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
-        {isModal && Object.keys(dataCheck).length >= 6 ? (
+        {isModal  ? (
           <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
         ) : (
           <>

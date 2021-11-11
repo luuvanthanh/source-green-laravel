@@ -1,7 +1,8 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { isEmpty, get } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { head, isEmpty, get } from 'lodash';
+import moment from 'moment';
+import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
 import Pane from '@/components/CommonComponent/Pane';
@@ -17,102 +18,118 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   error: crmSaleAdmissionAdd.error,
   branches: crmSaleAdmissionAdd.branches,
   classes: crmSaleAdmissionAdd.classes,
-  city: crmSaleAdmissionAdd.city,
-  district: crmSaleAdmissionAdd.district,
+  students: crmSaleAdmissionAdd.students,
 });
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
-  const formRef = useRef();
-  const mounted = useRef(false);
-  const loadingSubmit =
-    effects[`crmSaleAdmissionAdd/ADD`] ||
-    effects[`crmSaleAdmissionAdd/UPDATE`] ||
-    effects[`crmSaleAdmissionAdd/UPDATE_STATUS`];
-  const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
- 
-  const onFinish = (values) => {
-    dispatch({
-      type: params.id ? 'crmSaleAdmissionAdd/UPDATE' : 'crmSaleAdmissionAdd/ADD',
-      payload: params.id
-        ? { ...details, ...values, id: params.id }
-        : { ...values, status: 'WORKING' },
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
-        }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
+const General = memo(
+  ({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+    const formRef = useRef();
+    const mounted = useRef(false);
+    const [ramdom, setRamdom] = useState(0);
+    const loadingSubmit =
+      effects[`crmSaleAdmissionAdd/UPDATE_STUDENTS`];
+    const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
+    useEffect(() => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_DETAILS',
+        payload: params,
+      });
+    }, [params.id, ramdom]);
+
+    /**
+     * Function submit form modal
+     * @param {object} values values of form
+     */
+    const onFinish = (values) => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/UPDATE_STUDENTS',
+        payload: { ...details, ...values, id: params.id },
+        callback: (response, error) => {
+          if (response) {
+            setRamdom(Math.random());
           }
-        }
-      },
-    });
-  };
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    };
 
-  useEffect(() => {
-    mounted.current = true;
-    return mounted.current;
-  }, []);
+    useEffect(() => {
+      mounted.current = true;
+      return mounted.current;
+    }, []);
 
-  return (
-    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-      {/* <Pane className="card"> */}
-      <Loading loading={loading} isError={error.isError} params={{ error }}>
+    useEffect(() => {
+      if (!isEmpty(details) && params.id) {
+        formRef.current.setFieldsValue({
+          ...details,
+          ...head(details.positionLevel),
+
+          startDate:
+            head(details.positionLevel)?.startDate &&
+            moment(head(details.positionLevel)?.startDate),
+          date_register: details.date_register && moment(details.date_register),
+        });
+      }
+    }, [details]);
+
+    return (
+      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
-          <Pane className="border-bottom">
-            <Pane className="p20">
-            <Heading type="form-title" style={{ marginBottom: 20 }}>
+          <Loading loading={loading} isError={error.isError} params={{ error }}>
+            <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin đăng ký
-            </Heading>
-            <Pane className="row">
-              <Pane className="col-lg-4">
-                <FormItem
-                  name="time"
-                  label="Thời gian đăng ký nhập học"
-                  type={variables.DATE_PICKER}
-                  rules={[variables.RULES.EMPTY]}
-                />
-              </Pane>
-              <Pane className="col-lg-12">
-                <FormItem
-                  name=""
-                  placeholder="Nhập"
-                  label="Mong muốn của phụ huynh"
-                  type={variables.TEXTAREA}
+              </Heading>
+              <Pane className="row">
+                <Pane className="col-lg-4">
+                  <FormItem
+                    name="date_register"
+                    label="Thời gian đăng ký nhập học"
+                    type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
+                  />
+                </Pane>
+                <Pane className="col-lg-12">
+                  <FormItem
+                    name="parent_wish"
+                    placeholder="Nhập"
+                    label="Mong muốn của phụ huynh"
+                    type={variables.TEXTAREA}
                   // rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                />
-              </Pane>
-              <Pane className="col-lg-12">
-                <FormItem
-                  name=""
-                  placeholder="Nhập"
-                  label="Lưu ý trẻ"
-                  type={variables.TEXTAREA}
+                  />
+                </Pane>
+                <Pane className="col-lg-12">
+                  <FormItem
+                    name="children_note"
+                    placeholder="Nhập"
+                    label="Lưu ý trẻ"
+                    type={variables.TEXTAREA}
                   // rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                />
+                  />
+                </Pane>
               </Pane>
             </Pane>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+              <Button color="success" size="large" htmlType="submit" loading={loadingSubmit || loading}>
+                Lưu
+              </Button>
             </Pane>
-          </Pane>
-          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-            <Button color="primary" icon="export" className="ml-2">
-              Xuất đơn đăng ký
-            </Button>
-            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
-              Lưu
-            </Button>
-          </Pane>
+          </Loading>
         </Pane>
-      </Loading>
-    </Form>
-  );
-});
+      </Form>
+    );
+  },
+);
 
 General.propTypes = {
   dispatch: PropTypes.func,
@@ -125,7 +142,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
 };
