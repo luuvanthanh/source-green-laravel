@@ -118,7 +118,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['children_full_name']) && $attributes['children_full_name'] == 'true') {
             $this->model = $this->model->whereHas('studentInfo', function ($query) {
-                $query->orWhereIn('full_name', function ($q) {
+                $query->whereIn('full_name', function ($q) {
                     $q->select('student_infos.full_name')->from('student_infos')->groupBy('student_infos.full_name')->havingRaw('count(*) > 1');
                 });
             });
@@ -126,7 +126,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         if (!empty($attributes['children_birth_date']) && $attributes['children_birth_date'] == 'true') {
             $this->model = $this->model->whereHas('studentInfo', function ($query) {
-                $query->orWhereIn('birth_date', function ($q) {
+                $query->whereIn('birth_date', function ($q) {
                     $q->select('student_infos.birth_date')->from('student_infos')->groupBy('student_infos.birth_date')->havingRaw('count(*) > 1');
                 });
             });
@@ -163,6 +163,16 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
         $mergeCustomerLead = CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->orderBy('created_at', 'DESC')->first();
         $mergeCustomerLead->update($attributes);
+
+        if (!empty($attributes['studen_info'])) {
+            if (!empty($mergeCustomerLead->studentInfo)) {
+                $mergeCustomerLead->studentInfo()->forceDelete();
+            }
+            foreach ($attributes['studen_info'] as $value) {
+                $value['customer_lead_id'] = $mergeCustomerLead->id;
+                StudentInfo::create($value);
+            }
+        }
         CustomerLead::whereIn('id', $attributes['merge_customer_lead_id'])->where('id', '!=', $mergeCustomerLead->id)->forceDelete();
 
         return parent::parserResult($mergeCustomerLead);
