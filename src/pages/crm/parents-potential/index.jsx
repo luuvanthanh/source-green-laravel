@@ -159,28 +159,25 @@ class Index extends PureComponent {
     });
 
 
-    onRemove = (id) => {
-      const { dispatch } = this.props;
-      const self = this;
-      Helper.confirmAction({
-        callback: () => {
-          dispatch({
-            type: 'crmParentsPotential/REMOVE',
-            payload: {
-              id,
-            },
-            callback: (response,error) => {
-              if (response) {
-                self.onLoad();
-              }
-              if (error) {
-                history.push('./');
-              }
-            },
-          });
-        },
-      });
-    };
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmParentsPotential/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
 
 
   /**
@@ -194,8 +191,8 @@ class Index extends PureComponent {
       {
         title: 'Mã tình trạng',
         key: 'code',
-        className: 'max-width-150',
-        width: 150,
+        className: 'min-width-150',
+        width: 300,
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
@@ -206,7 +203,7 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        width: 100,
+        width: 125,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>

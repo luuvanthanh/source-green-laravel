@@ -158,11 +158,11 @@ class Index extends PureComponent {
       },
     });
 
-    /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-   onRemove = (id) => {
+  /**
+ * Function remove items
+ * @param {uid} id id of items
+ */
+  onRemove = (id) => {
     const { dispatch } = this.props;
     const self = this;
     Helper.confirmAction({
@@ -172,12 +172,9 @@ class Index extends PureComponent {
           payload: {
             id,
           },
-          callback: (response,error) => {
+          callback: (response) => {
             if (response) {
               self.onLoad();
-            }
-            if (error) {
-              history.push('./');
             }
           },
         });

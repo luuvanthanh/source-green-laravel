@@ -32,6 +32,8 @@ const Students = memo(() => {
 
   const mounted = useRef(false);
   const [fileImage, setFileImage] = useState([null]);
+  const [dayOfBirth, setDayOfBirth] = useState(null);
+
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
   const {
@@ -109,6 +111,9 @@ const Students = memo(() => {
       callback: (response) => {
         if (response) {
           setStudents(response.parsePayload);
+          setDayOfBirth(moment(response.parsePayload.map((item) => ({
+            birth_date: moment(item.birth_date),
+          })),));
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
@@ -125,11 +130,10 @@ const Students = memo(() => {
       mountedSet(
         setFileImage,
         students.map((item) => item.file_image || null),
-      );
-    }
+        );
+      }
   }, [students]);
 
-  const [dayOfBirth, setDayOfBirth] = useState(null);
   const onChaneDate = (e) => {
     mountedSet(setDayOfBirth, e);
   };
@@ -209,7 +213,7 @@ const Students = memo(() => {
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">
-                                    <Form.Item label="Tuổi (tháng)">
+                                    <Form.Item label="Tuổi (tháng)" name={[field.name, 'month_age']}>
                                       {dayOfBirth &&
                                         moment().diff(moment(dayOfBirth), 'month')}
                                     </Form.Item>

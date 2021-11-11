@@ -10,8 +10,9 @@ export function get(params = {}) {
 }
 
 
-export function remove(id) {
+export function remove(id = {}) {
   return request(`/v1/status-parent-potentials/${id}`, {
     method: 'DELETE',
+    parse: true,
   });
 }
