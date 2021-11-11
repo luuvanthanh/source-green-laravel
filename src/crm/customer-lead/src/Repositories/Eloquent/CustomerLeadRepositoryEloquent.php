@@ -3,12 +3,14 @@
 namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 
 use Carbon\Carbon;
+use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
 use GGPHP\Crm\CustomerLead\Repositories\Contracts\CustomerLeadRepository;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
+use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialTag;
 use GGPHP\Crm\CustomerPotential\Models\PotentialStudentInfo;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -191,76 +193,65 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
 
     public function moveToCustomerPotential(array $attributes)
     {
-        $now = Carbon::now()->setTimezone('GMT+7')->format('Ymd');
-        $customerLead_code = CustomerPotential::max('code');
+        $customerLead = CustomerLead::where('id', $attributes['id'])->first();
+        $data = [
+            'code' => $customerLead->code,
+            'full_name' => $customerLead->full_name,
+            'birth_date' => $customerLead->birth_date,
+            'sex' => $customerLead->sex,
+            'email' => $customerLead->email,
+            'phone' => $customerLead->phone,
+            'other_phone' => $customerLead->other_phone,
+            'address' => $customerLead->address,
+            'city_id' => $customerLead->city_id,
+            'district_id' => $customerLead->district_id,
+            'facility_id' => $customerLead->facility_id,
+            'employee_id' => $customerLead->employee_id,
+            'user_create_id' => $customerLead->user_create_id,
+            'user_create_info' => $customerLead->user_create_info,
+            'search_source_id' => $customerLead->search_source_id,
+            'facebook' => $customerLead->facebook,
+            'zalo' => $customerLead->zalo,
+            'instagram' => $customerLead->instagram,
+            'skype' => $customerLead->skype,
+            'name_company' => $customerLead->name_company,
+            'address_company' => $customerLead->address_company,
+            'phone_company' => $customerLead->phone_company,
+            'career' => $customerLead->career,
+            'file_image' => $customerLead->file_image,
+            'customer_lead_id' => $customerLead->id
+        ];
+        $customerPotential = CustomerPotential::create($data);
 
-        if (is_null($customerLead_code)) {
-            $attributes['code'] = CustomerPotential::CODE . $now . "01";
-        } else {
-
-            if (substr($customerLead_code, 2, 8)  != $now) {
-                $attributes['code'] = CustomerPotential::CODE . $now . "01";
-            } else {
-                $stt = substr($customerLead_code, 2) + 1;
-                $attributes['code'] = CustomerPotential::CODE . $stt;
-            }
-        }
-
-        $customerLead = CustomerLead::whereIn('id', $attributes['id'])->get();
-        foreach ($customerLead as $value) {
-            $data = [
-                'code' => $value->code,
+        $student = StudentInfo::where('customer_lead_id', $customerLead->id)->get();
+        foreach ($student as $value) {
+            $dataStudent = [
                 'full_name' => $value->full_name,
                 'birth_date' => $value->birth_date,
                 'sex' => $value->sex,
-                'email' => $value->email,
-                'phone' => $value->phone,
-                'other_phone' => $value->other_phone,
-                'address' => $value->address,
-                'city_id' => $value->city_id,
-                'district_id' => $value->district_id,
-                'facility_id' => $value->facility_id,
-                'employee_id' => $value->employee_id,
-                'user_create_id' => $value->user_create_id,
-                'user_create_info' => $value->user_create_info,
-                'search_source_id' => $value->search_source_id,
-                'facebook' => $value->facebook,
-                'zalo' => $value->zalo,
-                'instagram' => $value->instagram,
-                'skype' => $value->skype,
-                'name_company' => $value->name_company,
-                'address_company' => $value->address_company,
-                'phone_company' => $value->phone_company,
-                'career' => $value->career,
+                'month_age' => $value->month_age,
+                'relationship' => $value->relationship,
                 'file_image' => $value->file_image,
-                'customer_lead_id' => $value->id
+                'customer_potential_id' => $customerPotential->id,
             ];
-            $customerPotential = CustomerPotential::create($data);
-
-            $student = StudentInfo::where('customer_lead_id', $value->id)->get();
-            foreach ($student as $valueStudent) {
-                $dataStudent = [
-                    'full_name' => $valueStudent->full_name,
-                    'birth_date' => $valueStudent->birth_date,
-                    'sex' => $valueStudent->sex,
-                    'month_age' => $valueStudent->month_age,
-                    'relationship' => $valueStudent->relationship,
-                    'file_image' => $valueStudent->file_image,
-                    'customer_potential_id' => $customerPotential->id,
-                ];
-                PotentialStudentInfo::create($dataStudent);
-            }
-
-            $tag = CustomerTag::where('customer_lead_id', $value->id)->get();
-            foreach ($tag as $valueTag) {
-                $dataTag = [
-                    'tag_id' => $valueTag->tag_id,
-                    'customer_potential_id' => $customerPotential->id,
-                ];
-
-                CustomerPotentialTag::create($dataTag);
-            }
+            PotentialStudentInfo::create($dataStudent);
         }
+
+        $tag = CustomerTag::where('customer_lead_id', $customerLead->id)->get();
+        foreach ($tag as $value) {
+            $dataTag = [
+                'tag_id' => $value->tag_id,
+                'customer_potential_id' => $customerPotential->id,
+            ];
+            CustomerPotentialTag::create($dataTag);
+        }
+
+        $statusPotential = StatusParentPotential::where('id', $attributes['statusPotential'])->first();
+        $data = [
+            'status_parent_potential_id' => $statusPotential->id,
+            'customer_potential_id' => $customerPotential->id,
+        ];
+        CustomerPotentialStatusCare::create($data);
 
         return;
     }

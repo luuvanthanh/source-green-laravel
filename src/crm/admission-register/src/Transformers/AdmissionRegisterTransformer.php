@@ -31,7 +31,7 @@ class AdmissionRegisterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['studentInfo', 'parentInfo'];
+    protected $availableIncludes = ['studentInfo', 'parentInfo', 'statusAdmissionRegister'];
 
     /**
      * Transform the CategoryDetail entity.
