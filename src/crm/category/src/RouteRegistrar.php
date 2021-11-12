@@ -35,6 +35,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('search-sources', 'SearchSourceController');
             \Route::resource('status-admission-registers', 'StatusAdmissionRegisterController');
             \Route::resource('branches', 'BranchController');
+            \Route::resource('category-events', 'CategoryEventController');
         });
     }
 }
