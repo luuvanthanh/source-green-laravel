@@ -89,4 +89,11 @@ class CityController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function sort(Request $request)
+    {
+        $city = $this->cityRepository->sort($request->all());
+
+        return $this->success($city, trans('lang::messages.common.getListSuccess'));
+    }
 }

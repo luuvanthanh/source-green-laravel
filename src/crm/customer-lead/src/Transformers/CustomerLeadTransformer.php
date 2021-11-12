@@ -49,9 +49,10 @@ class CustomerLeadTransformer extends BaseTransformer
         $sex = null;
 
         foreach (CustomerLead::SEX as $key => $value) {
-
-            if ($value == $model->sex) {
-                $sex = $key;
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 
