@@ -486,7 +486,7 @@ class Index extends PureComponent {
                   </div>
                   <div className="col-lg-12">
                     <FormItem
-                      label="Tham gia BHXH"
+                      label="Không tham gia BHXH"
                       name="isSocialInsurance"
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"

@@ -41,7 +41,9 @@ class Index extends PureComponent {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.state = {
+      isUnlimited: false,
+    };
     setIsMounted(true);
   }
 
@@ -60,7 +62,7 @@ class Index extends PureComponent {
       type: 'typeOfContractsAdd/GET_PARAMATER_VALUES',
       payload: {
         ...params,
-        type: 'CONTRACT'
+        type: 'CONTRACT',
       },
     });
   }
@@ -77,6 +79,7 @@ class Index extends PureComponent {
         month: toString(details.month),
         paramValue: details.parameterValues.map((item) => item.id),
       });
+      this.onSetUnLimited(details.isUnlimited);
     }
   }
 
@@ -96,6 +99,18 @@ class Index extends PureComponent {
       return;
     }
     this.setState(state, callback);
+  };
+
+  onSetUnLimited = (isUnlimited) => {
+    this.setStateData({
+      isUnlimited,
+    });
+  };
+
+  onChangeUnLimited = (e) => {
+    this.setStateData({
+      isUnlimited: e.target.checked,
+    });
   };
 
   onFinish = (values) => {
@@ -138,6 +153,7 @@ class Index extends PureComponent {
       paramaterValues,
       match: { params },
     } = this.props;
+    const { isUnlimited } = this.state;
     const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
     const loading =
       effects['typeOfContractsAdd/GET_DETAILS'] ||
@@ -156,7 +172,11 @@ class Index extends PureComponent {
           ref={this.formRef}
           onFinish={this.onFinish}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/cau-hinh/loai-hop-dong' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -194,9 +214,23 @@ class Index extends PureComponent {
                           id: 'HOP_DONG',
                           name: 'Hợp đồng',
                         },
+                        {
+                          id: 'THOI_VU',
+                          name: 'Thời vụ',
+                        },
                       ]}
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={[variables.RULES.EMPTY]}
                       type={variables.SELECT}
+                    />
+                  </div>
+                  <div className="col-lg-6">
+                    <FormItem
+                      className="checkbox-small"
+                      label="VÔ THỜI HẠN"
+                      name="isUnlimited"
+                      type={variables.CHECKBOX_FORM}
+                      valuePropName="checked"
+                      onChange={this.onChangeUnLimited}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -205,18 +239,20 @@ class Index extends PureComponent {
                       name="year"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                      disabled={isUnlimited}
                     />
                   </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       label="SỐ THÁNG"
                       name="month"
                       rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
                       type={variables.INPUT}
+                      disabled={isUnlimited}
                     />
                   </div>
+                </div>
+                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={paramaterValues}

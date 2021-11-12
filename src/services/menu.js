@@ -986,24 +986,31 @@ export async function getLeftMenuHRM() {
           permission: [permissions.HRM],
         },
         {
-          title: 'Hợp đồng thử việc',
-          key: 'probationary-contracts',
-          url: [
-            '/quan-ly-nhan-su/hop-dong-thu-viec',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
-          ],
+          title: 'Hợp đồng',
+          key: 'contracts',
           permission: [permissions.HRM],
-        },
-        {
-          title: 'Hợp đồng lao động',
-          key: 'labours-contracts',
-          url: [
-            '/quan-ly-nhan-su/hop-dong-lao-dong',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
-            '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+          children: [
+            {
+              title: 'HĐ thử việc',
+              key: 'probationary-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-thu-viec',
+                '/quan-ly-nhan-su/hop-dong-thu-viec/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-thu-viec/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
+            {
+              title: 'HĐ lao động',
+              key: 'labours-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-lao-dong',
+                '/quan-ly-nhan-su/hop-dong-lao-dong/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
           ],
-          permission: [permissions.HRM],
         },
         {
           title: 'Bảo hiểm xã hội',

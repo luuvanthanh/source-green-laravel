@@ -319,7 +319,7 @@ const renderChildren = (
   checkboxSingle: (
     <Checkbox onChange={onChange} checked={checked} className={styles['checkbox--large']} />
   ),
-  checkboxform: <Checkbox className={styles['checkbox--large']} />,
+  checkboxform: <Checkbox className={styles['checkbox--large']} onChange={onChange} />,
   radio: (
     <Radio.Group className="radio-custom" onChange={onChange}>
       {!_.isEmpty(data) ? (

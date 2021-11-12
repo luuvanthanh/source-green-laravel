@@ -128,6 +128,13 @@ const Index = memo(() => {
         render: (text, record, index) => index + 1,
       },
       {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Số sổ bảo hiểm',
         key: 'insurranceNumber',
         className: 'min-width-150',

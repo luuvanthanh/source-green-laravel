@@ -369,6 +369,18 @@ const General = memo(() => {
                 </div>
               )}
             </div>
+            <div className="row" {...marginProps}>
+              <div className="col-lg-4">
+                <FormItem
+                  name="bankNumberOfAccount"
+                  label="Số tài khoản ngân hàng"
+                  type={variables.INPUT}
+                />
+              </div>
+              <div className="col-lg-4">
+                <FormItem name="bankName" label="Tên ngân hàng" type={variables.INPUT} />
+              </div>
+            </div>
           </div>
           <div className="d-flex justify-content-between" style={{ padding: 20 }}>
             {params.id && (
