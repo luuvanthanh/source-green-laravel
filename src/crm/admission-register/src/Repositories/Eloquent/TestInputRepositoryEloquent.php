@@ -77,6 +77,6 @@ class TestInputRepositoryEloquent extends BaseRepository implements TestInputRep
             $testInput->update($attributes);
         }
 
-        return $this->parserResult($testInput);
+        return parent::all();
     }
 }

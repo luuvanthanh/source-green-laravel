@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 
 /**
@@ -29,7 +30,7 @@ class StudentInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['customerLead'];
+    protected $availableIncludes = ['customerLead', 'categoryRelationship'];
 
     /**
      * Transform the User entity.
@@ -40,17 +41,6 @@ class StudentInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $relationship = null;
-
-        foreach (StudentInfo::RELATIONSHIP as $key => $value) {
-
-            if (!is_null($model->relationship)) {
-                if ($value == $model->relationship) {
-                    $relationship = $key;
-                }
-            }
-        }
-
         $sex = null;
 
         foreach (StudentInfo::SEX as $key => $value) {
@@ -63,7 +53,6 @@ class StudentInfoTransformer extends BaseTransformer
         }
 
         return [
-            'relationship' => $relationship,
             'sex' => $sex,
         ];
     }
@@ -75,5 +64,14 @@ class StudentInfoTransformer extends BaseTransformer
         }
 
         return $this->item($studentInfo->customerLead, new CustomerLeadTransformer, 'CustomerLead');
+    }
+
+    public function includeCategoryRelationship(StudentInfo $studentInfo)
+    {
+        if (empty($studentInfo->categoryRelationship)) {
+            return;
+        }
+
+        return $this->item($studentInfo->categoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
     }
 }

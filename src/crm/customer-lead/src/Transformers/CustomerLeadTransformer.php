@@ -9,6 +9,7 @@ use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
+use GGPHP\Crm\Province\Transformers\TownWardTransformer;
 
 /**
  * Class CityTransformer.
@@ -34,7 +35,7 @@ class CustomerLeadTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare', 'employee', 'branch'];
+    protected $availableIncludes = ['eventInfo', 'customerTag', 'reference', 'studentInfo', 'city', 'district', 'searchSource', 'statusCare', 'employee', 'branch', 'townWard'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -135,5 +136,14 @@ class CustomerLeadTransformer extends BaseTransformer
         }
 
         return $this->item($customerLead->branch, new BranchTransformer, 'Branch');
+    }
+
+    public function includeTownWard(CustomerLead $customerLead)
+    {
+        if (empty($customerLead->townWard)) {
+            return;
+        }
+
+        return $this->item($customerLead->townWard, new TownWardTransformer, 'TownWard');
     }
 }
