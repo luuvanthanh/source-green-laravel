@@ -1685,6 +1685,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Mối quan hệ',
+          key: 'relationship',
+          url: [
+            '/crm/danh-muc/moi-quan-he',
+            '/crm/danh-muc/moi-quan-he/tao-moi',
+            '/crm/danh-muc/moi-quan-he/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
