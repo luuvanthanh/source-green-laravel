@@ -24,9 +24,9 @@ class CreateTestInputRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => 'required|exists:employees,id',
-            'date_interview' => 'required|date_format:Y-m-d',
-            'admission_register_id' => 'required| exists:admission_registers,id'
+            'employee_id' => 'exists:employees,id',
+            'date_interview' => 'date_format:Y-m-d',
+            'admission_register_id' => 'exists:admission_registers,id'
         ];
     }
 }

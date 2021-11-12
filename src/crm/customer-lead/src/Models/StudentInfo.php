@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\CustomerLead\Models;
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\CategoryRelationship;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StudentInfo extends UuidModel
@@ -24,11 +25,16 @@ class StudentInfo extends UuidModel
 
     protected $fillable = [
         'full_name', 'birth_date', 'sex', 'month_age',
-        'customer_lead_id', 'file_image', 'relationship'
+        'customer_lead_id', 'file_image', 'relationship', 'category_relationship_id'
     ];
 
     public function customerLead()
     {
         return $this->belongsTo(CustomerLead::class);
+    }
+
+    public function categoryRelationship()
+    {
+        return $this->belongsTo(CategoryRelationship::class);
     }
 }
