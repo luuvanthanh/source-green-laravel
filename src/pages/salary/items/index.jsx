@@ -360,7 +360,7 @@ class Index extends PureComponent {
         key: 'isSocialInsurance',
         className: 'min-width-150 thead-green text-primary',
         width: 150,
-        render: (record) => record?.isProbation && 'Có',
+        render: (record) => record?.isSocialInsurance && 'Có',
       },
       {
         title: 'Tổng thu nhập',

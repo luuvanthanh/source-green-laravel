@@ -16,6 +16,7 @@ export function get(data = {}) {
           originValue: data.startDate,
           targetValue: '00:00:00',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
       endDate: Helper.getDateTime({
@@ -24,6 +25,7 @@ export function get(data = {}) {
           originValue: data.endDate,
           targetValue: '23:59:59',
         }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
         isUTC: false,
       }),
       include: Helper.convertIncludes(['employee', 'otherDeclarationDetail.employee']),

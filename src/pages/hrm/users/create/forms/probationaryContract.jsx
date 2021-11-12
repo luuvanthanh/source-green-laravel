@@ -230,13 +230,6 @@ const Index = memo(() => {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Tỷ lệ lương',
-        key: 'contract_category',
-        dataIndex: 'salaryRatio',
-        className: 'min-width-150',
-        render: (value) => Helper.getPercent(value),
-      },
-      {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',
@@ -491,14 +484,6 @@ const Index = memo(() => {
           </Pane>
 
           <Pane className="row">
-            <Pane className="col-lg-4">
-              <FormItem
-                label="Tỷ lệ lương thử việc"
-                name="salaryRatio"
-                type={variables.INPUT_COUNT}
-                rules={[variables.RULES.EMPTY]}
-              />
-            </Pane>
             <Pane className="col-lg-4">
               <FormItem
                 data={divisions}

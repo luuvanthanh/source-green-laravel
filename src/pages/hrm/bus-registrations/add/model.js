@@ -104,12 +104,10 @@ export default {
     *GET_DETAILS({ payload }, saga) {
       try {
         const response = yield saga.call(services.details, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response.parsePayload,
-          });
-        }
+        yield saga.put({
+          type: 'SET_DETAILS',
+          payload: response.parsePayload,
+        });
       } catch (error) {
         yield saga.put({
           type: 'SET_ERROR',
