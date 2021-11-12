@@ -2347,6 +2347,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/moi-quan-he',
+            component: './crm/relationship',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/moi-quan-he/tao-moi',
+            component: './crm/relationship/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/moi-quan-he/:id/chi-tiet',
+            component: './crm/relationship/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
             wrappers: ['@/wrappers/auth'],
