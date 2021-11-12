@@ -66,7 +66,10 @@ export function details(data) {
   return request(`/v1/other-declarations/${data.id}`, {
     method: 'GET',
     params: {
-      include: 'otherDeclarationDetail.employee',
+      include: Helper.convertIncludes([
+        'otherDeclarationDetail.employee',
+        'changeContractParameter.employee',
+      ]),
     },
     parse: true,
   });

@@ -45,6 +45,9 @@ export default class Helpers {
   };
 
   static getPrice = (value, number = 0, unit = false) => {
+    if (Number(value) > 0 && Number(value) < 1) {
+      return value;
+    }
     if (value) {
       const dots = toString(value)?.split('.');
       if (size(dots) >= 2) {
@@ -738,7 +741,6 @@ export default class Helpers {
     }
     return [];
   };
-
 
   static onSortDates = (data = [], key = 'created_at', sort = 'desc') => {
     if (!isEmpty(data)) {

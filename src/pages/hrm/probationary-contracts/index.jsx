@@ -290,13 +290,6 @@ class Index extends PureComponent {
         render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE),
       },
       {
-        title: 'Tỷ lệ lương',
-        key: 'contract_category',
-        dataIndex: 'salaryRatio',
-        className: 'min-width-150',
-        render: (value) => Helper.getPercent(value),
-      },
-      {
         title: 'Lương cơ bản',
         key: 'salary',
         className: 'min-width-150',

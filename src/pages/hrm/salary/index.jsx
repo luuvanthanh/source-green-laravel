@@ -373,7 +373,7 @@ class Index extends PureComponent {
           ? 'min-width-50 thead-green text-primary'
           : 'min-width-150 thead-green text-primary',
         width: isCollapsed ? 50 : 150,
-        render: (record) => record?.isProbation && 'Có',
+        render: (record) => record?.isSocialInsurance && 'Có',
       },
       {
         title: 'Tổng thu nhập',
@@ -769,21 +769,23 @@ class Index extends PureComponent {
             (total, item) => total + item.actuallyReceived,
             0,
           ),
-          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance.map((item) => {
-            let summary = 0;
-            data.payrollDetail.forEach((itemPage) => {
-              if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
-                const basic = itemPage.basicSalaryAndAllowance.find(
-                  (itemBasic) => itemBasic.code === item.code,
-                );
-                if (basic) summary += toNumber(basic.value);
-              }
-            });
-            return {
-              ...item,
-              value: summary,
-            };
-          }),
+          basicSalaryAndAllowance: data?.columnBasicSalaryAndAllowance
+            .filter((item) => item.code !== 'TI_LE_THU_VIEC')
+            .map((item) => {
+              let summary = 0;
+              data.payrollDetail.forEach((itemPage) => {
+                if (!isEmpty(itemPage.basicSalaryAndAllowance)) {
+                  const basic = itemPage.basicSalaryAndAllowance.find(
+                    (itemBasic) => itemBasic.code === item.code,
+                  );
+                  if (basic) summary += toNumber(basic.value);
+                }
+              });
+              return {
+                ...item,
+                value: summary,
+              };
+            }),
           incurredAllowance: data?.columnIncurredAllowance.map((item) => {
             let summary = 0;
             data.payrollDetail.forEach((itemPage) => {
