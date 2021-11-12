@@ -36,6 +36,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('status-admission-registers', 'StatusAdmissionRegisterController');
             \Route::resource('branches', 'BranchController');
             \Route::resource('category-events', 'CategoryEventController');
+            \Route::resource('category-relationships', 'CategoryRelationshipController');
         });
     }
 }
