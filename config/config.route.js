@@ -2365,6 +2365,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/loai-su-kien',
+            component: './crm/event-type',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/loai-su-kien/tao-moi',
+            component: './crm/event-type/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/loai-su-kien/:id/chi-tiet',
+            component: './crm/event-type/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
             wrappers: ['@/wrappers/auth'],
