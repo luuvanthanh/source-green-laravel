@@ -335,3 +335,13 @@ export function getSearch(params) {
     },
   });
 }
+
+export function getBranches(params) {
+  return request(`/v1/branches`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}

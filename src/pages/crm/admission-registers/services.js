@@ -8,3 +8,10 @@ export function get(params = {}) {
     },
   });
 }
+
+export function remove(id = {}) {
+  return request(`/v1/status-admission-registers/${id}`, {
+    method: 'DELETE',
+    parse: true,
+  });
+}

@@ -158,6 +158,30 @@ class Index extends PureComponent {
       },
     });
 
+ /**
+ * Function remove items
+ * @param {uid} id id of items
+ */
+  onRemove = (id) => {
+    const { dispatch } = this.props;
+    const self = this;
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'crmAdmissionRegisters/REMOVE',
+          payload: {
+            id,
+          },
+          callback: (response) => {
+            if (response) {
+              self.onLoad();
+            }
+          },
+        });
+      },
+    });
+  };
+
   /**
    * Function header table
    */
@@ -169,8 +193,8 @@ class Index extends PureComponent {
       {
         title: 'Mã tình trạng',
         key: 'code',
-        className: 'max-width-150',
-        width: 150,
+        className: 'min-width-150',
+        width: 300,
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
@@ -181,16 +205,16 @@ class Index extends PureComponent {
       },
       {
         key: 'action',
-        width: 100,
+        width: 125,
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
-              color="success"
+              color="primary"
+              icon="edit"
               onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
+            />
+            <Button color="danger" icon="remove" onClick={() => this.onRemove(record.id)} />
           </div>
         ),
       },
@@ -212,10 +236,10 @@ class Index extends PureComponent {
     const loading = effects['crmAdmissionRegisters/GET_DATA'];
     return (
       <>
-        <Helmet title="Tình trạng phụ huynh Lead" />
+        <Helmet title="Đăng ký nhập học" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tình trạng phụ huynh Lead</Text>
+            <Text color="dark">Đăng ký nhập học</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

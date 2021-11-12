@@ -31,7 +31,7 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   search: crmSaleLeadAdd.search,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches }) => {
     const formRef = useRef();
     const [files, setFiles] = Helper.isJSON(details?.file_image)
       ? useState(JSON.parse(details?.file_image))
@@ -53,7 +53,11 @@ const General = memo(
         type: 'crmSaleLeadAdd/GET_SEARCH',
         payload: {},
       });
-      if(params.id){
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_BRANCHES',
+        payload: {},
+      });
+      if (params.id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_DISTRICTS',
           payload: {},
@@ -148,7 +152,7 @@ const General = memo(
                   </Form.Item>
                 </Pane>
               </Pane>
-              <Pane className="row" {...marginProps}>
+              <Pane className="row border-bottom" {...marginProps}>
                 <Pane className="col-lg-4">
                   <FormItem
                     name="full_name"
@@ -162,7 +166,6 @@ const General = memo(
                     name="birth_date"
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
-                    rules={[variables.RULES.EMPTY]}
                     disabledDate={(current) => current > moment()}
                   />
                 </Pane>
@@ -174,7 +177,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Giới tính"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -182,7 +184,6 @@ const General = memo(
                     name="email"
                     label="Email"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -201,12 +202,11 @@ const General = memo(
                     rules={[variables.RULES.PHONE]}
                   />
                 </Pane>
-                <Pane className="col-lg-4">
+                <Pane className="col-lg-12">
                   <FormItem
                     name="address"
                     label="Địa chỉ"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY_INPUT]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -217,7 +217,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc tỉnh thành"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                     onChange={onChangeCity}
                   />
                 </Pane>
@@ -229,7 +228,14 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc quận huyện"
-                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Phường/Xã"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
@@ -261,28 +267,40 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
-                    name="facility_id"
-                    data={city}
+                    name="branches_id"
+                    data={branches}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Thuộc tỉnh thành"
+                    label="Cơ sở quan tâm"
                   />
                 </Pane>
                 <Pane className="col-lg-4">
-                  <FormItem
+                  {params.id ? <FormItem
                     options={['id', 'name']}
                     name="search_source_id"
                     data={search}
                     placeholder="Chọn"
                     type={variables.SELECT}
-                    label="Nguồn tiềm kiếm"
+                    label="Nguồn tìm kiếm"
                     rules={[variables.RULES.EMPTY_INPUT]}
-                  />
+                    disabled
+                  /> : <FormItem
+                    options={['id', 'name']}
+                    name="search_source_id"
+                    data={search}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Nguồn tìm kiếm"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />}
                 </Pane>
               </Pane>
             </Pane>
 
-            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+            <Pane className="p20 d-flex justify-content-between align-items-center ">
+              <p className="btn-delete" role="presentation" onClick={() => history.push('/crm/sale/ph-lead')}>
+                Hủy
+              </p>
               <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                 Lưu
               </Button>
@@ -310,7 +328,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],
