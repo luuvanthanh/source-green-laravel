@@ -40,6 +40,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('citys', 'CityController');
             \Route::resource('districts', 'DistrictController');
             \Route::resource('town-wards', 'TownWardController');
+            \Route::post('city-sorts', 'CityController@sort');
         });
     }
 }

@@ -44,17 +44,21 @@ class StudentInfoTransformer extends BaseTransformer
 
         foreach (StudentInfo::RELATIONSHIP as $key => $value) {
 
-            if ($value == $model->relationship) {
-                $relationship = $key;
+            if (!is_null($model->relationship)) {
+                if ($value == $model->relationship) {
+                    $relationship = $key;
+                }
             }
         }
 
         $sex = null;
 
         foreach (StudentInfo::SEX as $key => $value) {
-            
-            if ($value == $model->sex) {
-                $sex = $key;
+
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
             }
         }
 

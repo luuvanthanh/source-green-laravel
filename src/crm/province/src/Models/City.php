@@ -12,7 +12,7 @@ class City extends UuidModel
     protected $table = 'citys';
 
     protected $fillable = [
-        'name'
+        'name', 'numerical_city'
     ];
 
     public function district()
