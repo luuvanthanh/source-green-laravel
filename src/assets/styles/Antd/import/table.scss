@@ -83,6 +83,7 @@
   .ant-table-content {
     table {
       width: 100% !important;
+      table-layout: unset !important;
     }
   }
   .ant-table-row-expand-icon {

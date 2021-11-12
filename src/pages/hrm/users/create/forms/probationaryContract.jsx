@@ -183,6 +183,13 @@ const Index = memo(() => {
   const columns = useMemo(
     () => [
       {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Số hợp đồng',
         key: 'contract_number',
         dataIndex: 'contractNumber',
@@ -543,7 +550,7 @@ const Index = memo(() => {
             </Pane>
             <Pane className="col-lg-12">
               <FormItem
-                label="Tham gia BHXH"
+                label="Không tham gia BHXH"
                 name="isSocialInsurance"
                 type={variables.CHECKBOX_FORM}
                 valuePropName="checked"

@@ -2,8 +2,6 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import stylesModule from '@/assets/styles/Modules/Schedules/styles.module.scss';
-import { DeleteOutlined } from '@ant-design/icons';
 import classnames from 'classnames';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -14,6 +12,7 @@ import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { Helper, variables } from '@/utils';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+import PropTypes from 'prop-types';
 
 let isMounted = true;
 /**
@@ -32,11 +31,10 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ busRegistrationsAdd, loading, menu }) => ({
   dataStores: busRegistrationsAdd.dataStores,
-  loading: loading,
+  loading,
   error: busRegistrationsAdd.error,
   details: busRegistrationsAdd.details,
   categories: busRegistrationsAdd.categories,
-  absentTypes: busRegistrationsAdd.absentTypes,
   menuData: menu.menuLeftHRM,
 });
 
@@ -189,7 +187,6 @@ class Index extends PureComponent {
       error,
       menuData,
       categories,
-      absentTypes,
       loading: { effects },
     } = this.props;
     const loading = effects['busRegistrationsAdd/GET_DETAILS'];
@@ -209,7 +206,11 @@ class Index extends PureComponent {
           onFinish={this.onFinish}
           ref={this.formRef}
         >
-          <Loading loading={loading} isError={error.isError} params={{ error, goBack: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus' }}>
+          <Loading
+            loading={loading}
+            isError={error.isError}
+            params={{ error, goBack: '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus' }}
+          >
             <div className={styles['content-form']}>
               <div className={classnames(styles['content-children'], 'mt10')}>
                 <Text color="dark" size="large-medium">
@@ -227,15 +228,25 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
                     <FormItem
-                      label="Ngày đăng ký"
-                      name="date"
+                      label="Ngày đăng ký từ"
+                      name="startDate"
                       rules={[variables.RULES.EMPTY]}
                       type={variables.DATE_PICKER}
+                      disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     />
                   </div>
-                  <div className="col-lg-6">
+                  <div className="col-lg-4">
+                    <FormItem
+                      label="Đến ngày"
+                      name="endDate"
+                      rules={[variables.RULES.EMPTY]}
+                      type={variables.DATE_PICKER}
+                      disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
+                    />
+                  </div>
+                  <div className="col-lg-4">
                     <FormItem
                       label="Số giờ"
                       name="hourNumber"
@@ -284,6 +295,24 @@ class Index extends PureComponent {
   }
 }
 
-Index.propTypes = {};
+Index.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any),
+  menuData: PropTypes.arrayOf(PropTypes.any),
+  loading: PropTypes.objectOf(PropTypes.any),
+  dispatch: PropTypes.objectOf(PropTypes.any),
+  error: PropTypes.objectOf(PropTypes.any),
+  details: PropTypes.objectOf(PropTypes.any),
+  categories: PropTypes.objectOf(PropTypes.any),
+};
+
+Index.defaultProps = {
+  match: {},
+  menuData: [],
+  loading: {},
+  dispatch: {},
+  error: {},
+  details: {},
+  categories: {},
+};
 
 export default Index;

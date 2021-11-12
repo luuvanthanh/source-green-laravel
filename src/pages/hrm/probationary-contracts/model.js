@@ -7,6 +7,11 @@ export default {
     data: [],
     pagination: {},
     employees: [],
+    categories: {
+      branches: [],
+      positions: [],
+      typeOfContracts: [],
+    },
   },
   reducers: {
     INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
@@ -24,12 +29,38 @@ export default {
         },
       },
     }),
+    SET_CATEGORIES: (state, { payload }) => ({
+      ...state,
+      categories: {
+        positions: payload.positions.parsePayload,
+        branches: payload.branches.parsePayload,
+        typeOfContracts: payload.typeOfContracts.parsePayload,
+      },
+    }),
     SET_EMPLOYEES: (state, { payload }) => ({
       ...state,
       employees: payload.parsePayload,
     }),
   },
   effects: {
+    *GET_CATEGORIES({ _ }, saga) {
+      try {
+        const response = yield saga.all({
+          positions: saga.call(categories.getPositions),
+          branches: saga.call(categories.getBranches),
+          typeOfContracts: saga.call(categories.getTypeOfContracts, { type: 'THU_VIEC' }),
+        });
+        yield saga.put({
+          type: 'SET_CATEGORIES',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
     *GET_EMPLOYEES({ payload }, saga) {
       try {
         const response = yield saga.call(categories.getEmployees, payload);

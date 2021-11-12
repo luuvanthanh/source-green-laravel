@@ -231,6 +231,13 @@ class Index extends PureComponent {
           ),
       },
       {
+        title: 'Thời gian tạo',
+        key: 'creationTime',
+        dataIndex: 'creationTime',
+        className: 'min-width-160',
+        render: (value) => Helper.getDate(value, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Họ và Tên',
         key: 'name',
         className: 'min-width-200',
