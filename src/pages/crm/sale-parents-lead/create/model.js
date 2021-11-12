@@ -29,6 +29,7 @@ export default {
     calendar: [],
     data: [],
     branchess: [],
+    parentPotential: [],
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -143,6 +144,10 @@ export default {
     SET_SEARCH: (state, { payload }) => ({
       ...state,
       search: payload.parsePayload,
+    }),
+    SET_PARENT_POTENTIAL: (state, { payload }) => ({
+      ...state,
+      parentPotential: payload.parsePayload,
     }),
   },
   effects: {
@@ -449,6 +454,28 @@ export default {
           type: 'SET_ERROR',
           payload: error.data,
         });
+      }
+    },
+    *GET_PARENT_POTENTIAL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getParentPotential, payload);
+        yield saga.put({
+          type: 'SET_PARENT_POTENTIAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_POTENTIAL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addPotential, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
       }
     },
   },

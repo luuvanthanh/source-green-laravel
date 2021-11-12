@@ -82,7 +82,14 @@ export function details(params = {}) {
     method: 'GET',
     params: {
       ...params,
-      include: Helper.convertIncludes(['studentInfo', 'city', 'district','searchSource','statusCare.statusParentLead','employee']),
+      include: Helper.convertIncludes([
+        'studentInfo',
+        'city',
+        'district',
+        'searchSource',
+        'statusCare.statusParentLead',
+        'employee',
+      ]),
     },
   });
 }
@@ -343,5 +350,18 @@ export function getBranches(params) {
       ...params,
       orderBy: 'name',
     },
+  });
+}
+export function getParentPotential() {
+  return request(`/v1/status-parent-potentials`, {
+    method: 'GET',
+  });
+}
+
+export function addPotential(data = {}) {
+  return request(`/v1/move-customer-potentials`, {
+    method: 'POST',
+    data,
+    parse: true,
   });
 }
