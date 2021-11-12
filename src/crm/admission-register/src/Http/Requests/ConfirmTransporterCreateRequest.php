@@ -26,7 +26,7 @@ class ConfirmTransporterCreateRequest extends FormRequest
         return [
             'confirm_transporter' => 'array',
             'confirm_transporter.*.full_name' => 'required',
-            'confirm_transporter.*.relationship' => 'required',
+            'confirm_transporter.*.category_relationship_id' => 'required|exists:category_relationships,id',
             'admission_register_id' => 'exists:admission_registers,id'
         ];
     }

@@ -3,6 +3,8 @@
 namespace GGPHP\Crm\AdmissionRegister\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\AdmissionRegister\Models\ConfirmTransporter;
+use GGPHP\Crm\Category\Transformers\CategoryRelationshipTransformer;
 
 /**
  * Class CityTransformer.
@@ -28,7 +30,7 @@ class ConfirmTransporterTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['categoryRelationship'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -41,5 +43,14 @@ class ConfirmTransporterTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    public function includeCategoryRelationship(ConfirmTransporter $confirmTransporter)
+    {
+        if (empty($confirmTransporter->categoryRelationship)) {
+            return;
+        }
+
+        return $this->item($confirmTransporter->categoryRelationship, new CategoryRelationshipTransformer, 'CategoryRelationship');
     }
 }
