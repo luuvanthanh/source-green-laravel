@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'crmCity',
+  namespace: 'city',
   state: {
     data: [],
     pagination: {
@@ -30,22 +30,29 @@ export default {
     }),
   },
   effects: {
-    *GET_DATA({ payload }, saga) {
+    *GET_DATA({ payload, callback }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        if (response) {
-          yield saga.put({
-            type: 'SET_DATA',
-            payload: response,
-          });
-        }
+        callback(response.parsePayload?.map((item, index) => ({ ...item, index })));
       } catch (error) {
-        yield saga.put({
-          type: 'SET_ERROR',
-          payload: error.data,
-        });
+        callback(null, error?.data);
+      }
+    },
+    *UPDATE_ORDER_INDEX({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.updateOrderIndex, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data);
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
       }
     },
   },
-  subscriptions: {},
 };

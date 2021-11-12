@@ -1,346 +1,218 @@
-import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
-import { Form } from 'antd';
-import classnames from 'classnames';
-import { debounce, isEmpty } from 'lodash';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import styles from '@/assets/styles/Common/common.scss';
+import { useSelector, useDispatch } from 'dva';
+import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
+import { useHistory, useLocation } from 'umi';
+import { MenuOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import { Form } from 'antd';
+
+import Pane from '@/components/CommonComponent/Pane';
+import Table from '@/components/CommonComponent/Table';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
-import Table from '@/components/CommonComponent/Table';
-import FormItem from '@/components/CommonComponent/FormItem';
+
 import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
+import styles from '@/assets/styles/Common/common.scss';
+import FormItem from '@/components/CommonComponent/FormItem';
 
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmCity, loading }) => ({
-  data: crmCity.data,
-  error: crmCity.error,
-  pagination: crmCity.pagination,
-  loading,
-});
-@connect(mapStateToProps)
-class Index extends PureComponent {
-  formRef = React.createRef();
+const SortableItem = sortableElement((props) => <tr {...props} />);
+const SortableContainer = sortableContainer((props) => <tbody {...props} />);
+const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+const Index = memo(() => {
+  const dispatch = useDispatch();
+  const filterRef = useRef();
+  const [{ error }, loading] = useSelector(({ loading: { effects }, city }) => [city, effects]);
 
-  constructor(props) {
-    super(props);
-    const {
-      location: { query },
-    } = props;
-    this.state = {
-      search: {
-        key: query?.key,
-        page: query?.page || variables.PAGINATION.PAGE,
-        limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-      },
-    };
-    setIsMounted(true);
-  }
+  const { query } = useLocation();
 
-  componentDidMount() {
-    this.onLoad();
-  }
+  const mounted = useRef(false);
 
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
+  const history = useHistory();
+  const { pathname } = useLocation();
 
-  /**
-   * Set state properties
-   * @param {object} data the data input
-   * @param {function} callback the function which will be called after setState
-   * @returns {void} call this.setState to update state
-   * @memberof setStateData
-   */
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
+  const [search, setSearch] = useState({
+    key: query?.key,
+  });
 
-  /**
-   * Function load data
-   */
-  onLoad = () => {
-    const { search } = this.state;
-    const {
-      location: { pathname },
-    } = this.props;
-    this.props.dispatch({
-      type: 'crmCity/GET_DATA',
-      payload: {
-        ...search,
-      },
-    });
-    history.push(
-      `${pathname}?${Helper.convertParamSearchConvert(
-        {
-          ...search,
-        },
-        variables.QUERY_STRING,
-      )}`,
-    );
-  };
-
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearch = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
+  const changeFilterDebouce = debounce((name, value) => {
+    setSearch((prevSearch) => ({
+      ...prevSearch,
+      [name]: value,
+      page: variables.PAGINATION.PAGE,
+      limit: variables.PAGINATION.PAGE_SIZE,
+    }));
   }, 300);
 
-  /**
-   * Function debounce search
-   * @param {string} value value of object search
-   * @param {string} type key of object search
-   */
-  debouncedSearchStatus = debounce((value, type) => {
-    this.setStateData(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          [`${type}`]: value,
-          page: variables.PAGINATION.PAGE,
-          limit: variables.PAGINATION.PAGE_SIZE,
-        },
-      }),
-      () => this.onLoad(),
-    );
-  }, 200);
-
-  /**
-   * Function change input
-   * @param {object} e event of input
-   * @param {string} type key of object search
-   */
-  onChange = (e, type) => {
-    this.debouncedSearch(e.target.value, type);
+  const changeFilter = (name) => (value) => {
+    changeFilterDebouce(name, value);
   };
 
-  /**
-   * Function change select
-   * @param {object} e value of select
-   * @param {string} type key of object search
-   */
-  onChangeSelectStatus = (e, type) => {
-    this.debouncedSearchStatus(e, type);
-  };
+  const [dataSource, setDataSource] = useState([]);
 
-  /**
-   * Function set pagination
-   * @param {integer} page page of pagination
-   * @param {integer} size size of pagination
-   */
-  changePagination = ({ page, limit }) => {
-    this.setState(
-      (prevState) => ({
-        search: {
-          ...prevState.search,
-          page,
-          limit,
-        },
-      }),
-      () => {
-        this.onLoad();
-      },
-    );
-  };
-
-  /**
-   * Function pagination of table
-   * @param {object} pagination value of pagination items
-   */
-  pagination = (pagination) =>
-    Helper.paginationLavarel({
-      pagination,
+  useEffect(() => {
+    dispatch({
+      type: 'city/GET_DATA',
+      payload: { ...search },
       callback: (response) => {
-        this.changePagination(response);
+        if (response) setDataSource(response);
       },
     });
+  }, [search]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return mounted.current;
+  }, []);
 
   /**
    * Function remove items
    * @param {uid} id id of items
    */
-  onRemove = (id) => {
-    const { dispatch } = this.props;
-    const self = this;
+  const onRemove = (id) => {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'crmCity/REMOVE',
+          type: 'city/REMOVE',
           payload: {
             id,
           },
           callback: (response) => {
-            if (response) self.onLoad();
+            if (response) {
+              dispatch({
+                type: 'city/GET_DATA',
+                payload: { ...search },
+                callback: (response) => {
+                  if (response) setDataSource(response);
+                },
+              });
+            }
           },
         });
       },
     });
   };
 
-  renderCalulator = (items) =>
-    items
-      .map((item) => {
-        if (!isEmpty(item.formular)) {
-          return `${item.operator || ''} (${this.renderCalulator(item.formular)})`;
-        }
-        return `${item.operator || ''} ${item.value || item.variable || ''}${this.renderCalulator(
-          item.formular,
-        )}`;
-      })
-      .join(' ');
+  const columns = [
+    {
+      dataIndex: 'sort',
+      width: 50,
+      className: 'drag-visible',
+      render: () => <DragHandle />,
+    },
+    {
+      title: 'Tên',
+      key: 'name',
+      className: 'min-width-200',
+      render: (record) => <Text size="normal">{record.name}</Text>,
+    },
+    {
+      key: 'action',
+      className: 'min-width-80',
+      width: 125,
+      fixed: 'right',
+      render: (record) => (
+        <div className={styles['list-button']}>
+          <Button
+            color="primary"
+            icon="edit"
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`${pathname}/${record?.id}/chi-tiet`);
+            }}
+          />
+          <Button color="danger" icon="remove"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(record.id);
+            }} />
+        </div>
+      ),
+    },
+  ];
 
-  /**
-   * Function header table
-   */
-  header = () => {
-    const {
-      location: { pathname },
-    } = this.props;
-    const columns = [
-      {
-        title: 'Mã cơ sở',
-        key: 'index',
-        className: 'min-width-150',
-        width: 150,
-        render: (text, record, index) =>
-          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
-      },
-      {
-        title: 'Tên tỉnh thành',
-        key: 'name',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.name}</Text>,
-      },
-      {
-        key: 'action',
-        width: 100,
-        fixed: 'right',
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              color="success"
-              onClick={() => history.push(`${pathname}/${record.id}/chi-tiet`)}
-            >
-              Chi tiết
-            </Button>
-          </div>
-        ),
-      },
-    ];
-    return columns;
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter((el) => !!el);
+      setDataSource(newData);
+      dispatch({
+        type: 'city/UPDATE_ORDER_INDEX',
+        payload: {
+          id: newData.map((item) => item.id).join(','),
+        },
+        callback: () => { },
+      });
+    }
   };
 
-  render() {
-    const {
-      error,
-      data,
-      match: { params },
-      pagination,
-      loading: { effects },
-      location: { pathname },
-    } = this.props;
-    const { search } = this.state;
-    const loading = effects['crmCity/GET_DATA'];
-    return (
-      <>
-        <Helmet title="Tỉnh thành" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+  const DraggableContainer = (props) => (
+    <SortableContainer useDragHandle helperClass="row-dragging" onSortEnd={onSortEnd} {...props} />
+  );
+
+  const DraggableBodyRow = ({ ...restProps }) => {
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const index = dataSource.findIndex((x) => x.index === restProps['data-row-key']);
+    return <SortableItem index={index} {...restProps} />;
+  };
+
+  return (
+    <>
+      <Helmet title="Quản lý Thành Phố" />
+      <Pane className="p20">
+        <Pane className=" mb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tỉnh thành</Text>
+            <Text color="dark">Quản lý Thành Phố</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>
           </div>
-          <div className={classnames(styles['block-table'])}>
+        </Pane>
+        <Pane className="card mt20">
+          <Pane className="p20">
             <Form
+              layout="vertical"
+              ref={filterRef}
               initialValues={{
                 ...search,
               }}
-              layout="vertical"
-              ref={this.formRef}
             >
-              <div className="row">
-                <div className="col-lg-5">
+              <Pane className="row">
+                <Pane className="col-lg-3">
                   <FormItem
-                    name="key"
-                    onChange={(event) => this.onChange(event, 'key')}
-                    placeholder="Nhập từ khóa"
                     type={variables.INPUT_SEARCH}
+                    name="key"
+                    onChange={({ target: { value } }) => changeFilter('key')(value)}
+                    placeholder="Nhập từ khóa tìm kiếm"
                   />
-                </div>
-              </div>
+                </Pane>
+              </Pane>
             </Form>
             <Table
-              bordered={false}
-              columns={this.header(params)}
-              dataSource={data}
-              loading={loading}
-              pagination={this.pagination(pagination)}
-              error={error}
+              columns={columns}
+              dataSource={dataSource}
+              loading={loading['city/GET_DATA']}
               isError={error.isError}
-              params={{
-                header: this.header(),
-                type: 'table',
+              pagination={false}
+              rowKey="index"
+              scroll={{ x: '100%', y: '70vh' }}
+              components={{
+                body: {
+                  wrapper: DraggableContainer,
+                  row: DraggableBodyRow,
+                },
               }}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%', y: '60vh' }}
+              onRow={(record) => ({
+                onClick: () => {
+                  history.push(`${pathname}/${record?.id}/chi-tiet`);
+                },
+              })}
             />
-          </div>
-        </div>
-      </>
-    );
-  }
-}
-
-Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  pagination: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  location: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-};
-
-Index.defaultProps = {
-  match: {},
-  data: [],
-  pagination: {},
-  loading: {},
-  dispatch: {},
-  location: {},
-  error: {},
-};
+          </Pane>
+        </Pane>
+      </Pane>
+    </>
+  );
+});
 
 export default Index;
