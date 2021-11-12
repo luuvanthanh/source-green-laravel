@@ -4,6 +4,7 @@ namespace GGPHP\Crm\CustomerLead\Models;
 
 
 use GGPHP\Core\Models\UuidModel;
+use GGPHP\Crm\Category\Models\CategoryEvent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EventInfo extends UuidModel
@@ -20,11 +21,16 @@ class EventInfo extends UuidModel
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'date', 'location', 'status', 'result', 'customer_lead_id', 'time'
+        'name', 'date', 'location', 'status', 'result', 'customer_lead_id', 'time', 'description', 'category_event_id'
     ];
 
     public function customerLead()
     {
         return $this->belongsTo(CustomerLead::class);
+    }
+
+    public function categoryEvent()
+    {
+        return $this->belongsTo(CategoryEvent::class);
     }
 }
