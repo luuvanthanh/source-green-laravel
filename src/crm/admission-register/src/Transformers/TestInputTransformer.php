@@ -30,7 +30,7 @@ class TestInputTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['employee'];
+    protected $availableIncludes = ['employee', 'admissionRegister'];
 
     /**
      * Transform the CategoryDetail entity.
@@ -52,5 +52,14 @@ class TestInputTransformer extends BaseTransformer
         }
 
         return $this->item($testInput->employee, new EmployeeTransformer, 'Employee');
+    }
+
+    public function includeAdmissionRegister(TestInput $testInput)
+    {
+        if (empty($testInput->admissionRegister)) {
+            return;
+        }
+
+        return $this->item($testInput->admissionRegister, new AdmissionRegisterTransformer, 'AdmissionRegister');
     }
 }
