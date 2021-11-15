@@ -84,7 +84,7 @@ const General = memo(
         type: params.id ? 'crmSaleLeadAdd/UPDATE' : 'crmSaleLeadAdd/ADD',
         payload: params.id
           ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
-          : { ...values, file_image: JSON.stringify(files), status: 'WORKING' },
+          : { ...values, file_image: JSON.stringify(files) },
         callback: (response, error) => {
           if (response) {
             history.goBack();

@@ -1,246 +1,319 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'umi';
-import { Form, Tag } from 'antd';
-import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty, head } from 'lodash';
-import classnames from 'classnames';
-import Loading from '@/components/CommonComponent/Loading';
-import Text from '@/components/CommonComponent/Text';
-import Heading from '@/components/CommonComponent/Heading';
-import Pane from '@/components/CommonComponent/Pane';
-import FormItem from '@/components/CommonComponent/FormItem';
-import { variables, Helper } from '@/utils';
-import PropTypes from 'prop-types';
-import stylesModule from './styles.module.scss';
+// import { memo, useState, useRef, useEffect } from 'react';
+// import { Helmet } from 'react-helmet';
+// import { Form, Select, InputNumber, Tag, Input} from 'antd';
+// import classnames from 'classnames';
+// import moment from 'moment';
+// import { useHistory, useParams } from 'umi';
+// import { useSelector, useDispatch } from 'dva';
+// import TableCus from '@/components/CommonComponent/Table';
+// import Text from '@/components/CommonComponent/Text';
+// import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
+// import Pane from '@/components/CommonComponent/Pane';
+// import Button from '@/components/CommonComponent/Button';
+// import { Helper, variables } from '@/utils';
+// import styles from '@/assets/styles/Common/common.scss';
+// import { isEmpty, isNil, keyBy, omit, omitBy, size } from 'lodash';
+// import { v4 as uuidv4 } from 'uuid';
+// import FormItem from '@/components/CommonComponent/FormItem';
+// import Loading from '@/components/CommonComponent/Loading';
 
-let isMounted = true;
-/**
- * Set isMounted
- * @param {boolean} value
- * @returns {boolean} value of isMounted
- */
-const setIsMounted = (value = true) => {
-  isMounted = value;
-  return isMounted;
-};
-/**
- * Get isMounted
- * @returns {boolean} value of isMounted
- */
-const getIsMounted = () => isMounted;
-const mapStateToProps = ({ menu, loading, crmTags }) => ({
-  loading,
-  menuData: menu.menuLeftCRM,
-  details: crmTags.details,
-  error: crmTags.error,
-  tags: crmTags.tags,
-  paramaterValues: crmTags.paramaterValues,
-});
+// const { Option } = Select;
 
-@connect(mapStateToProps)
-class Index extends PureComponent {
-  formRef = React.createRef();
+// const Index = memo(() => {
+//   const {
+//     colorTags,
+//     loading,
+//   } = useSelector(({ loading, crmTags }) => ({
+//     loading,
+//     colorTags: crmTags.colorTags,
+//   }));
+// console.log('colorTags',colorTags)
+//   const dispatch = useDispatch();
+//   const params = useParams();
+//   const history = useHistory();
+//   const formRef = useRef();
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      inputVisible: false,
-    };
-  }
+//   const [data, setData] = useState([
+//     {
+//       id: uuidv4(),
+//       category: { name: undefined },
+//       product_id: undefined,
+//       conversion_unit: undefined,
+//       conversion_price: undefined,
+//     },
+//   ]);
 
-  showInput = () => {
-    this.setState({ inputVisible: true });
-  };
+//   const [products, setProducts] = useState({
+//     productsChildren: [],
+//     productsId: {},
+//   });
 
-  onLoad = () => {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-    dispatch({
-      type: 'crmTags/GET_TAGS',
-      payload: params,
-    });
-    if (params.id) {
-      dispatch({
-        type: 'crmTags/GET_DETAILS',
-        payload: params,
-      });
-    }
-  };
+//   const [units, setUnits] = useState([]);
 
-  delete = (id) => {
-    const { dispatch } = this.props;
-    const self = this;
-    return Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'crmTags/REMOVE',
-          payload: {
-            id,
-          },
-          callback: (response) => {
-            if (response) self.onLoad();
-          },
-        });
-      },
-    });
-  };
+//   const omitByArrs = (arr) => {
+//     const omitObjectArrs = arr.map((val) => omit(omitBy(val, isNil), ['key', 'category']));
+//     const filterArrays = omitObjectArrs.filter((val) => !isEmpty(val));
+//     return filterArrays.length ? filterArrays : undefined;
+//   };
 
-  componentDidMount() {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-    dispatch({
-      type: 'crmTags/GET_TAGS',
-      payload: params,
-    });
-  }
+//   const onFinish = (values) => {
+//     const payload = {
+//       ...params,
+//       start_date: Helper.getDate(values.start_date, variables.DATE_FORMAT.DATE_AFTER),
+//       end_date: Helper.getDate(values.end_date, variables.DATE_FORMAT.DATE_AFTER),
+//       price_row: omitByArrs(data),
+//     };
+//     console.log('payload',payload)
+//     dispatch({
+//       type: '',
+//       payload,
+//       callback: (response, error) => {
+//         if (response) {
+//           history.goBack();
+//         }
+//         if (error) {
+//           if (error?.errors && !isEmpty(error?.errors)) {
+//             error?.errors.forEach((item) => {
+//               formRef.current.setFields([
+//                 {
+//                   name: item?.source?.pointer,
+//                   errors: [item.detail],
+//                 },
+//               ]);
+//             });
+//           }
+//         }
+//       },
+//     });
+//   };
 
-  componentDidUpdate(prevProps) {
-    const {
-      details,
-      match: { params },
-    } = this.props;
-    if (details !== prevProps.details && !isEmpty(details) && params.id) {
-      this.formRef.current.setFieldsValue({
-        ...details,
-      });
-    }
-  }
+//   useEffect(() => {
+//     dispatch({
+//       type: 'crmTags/GET_DATA_PRODUCTS',
+//       payload: {},
+//       callback: (response) => {
+//         if (response) {
+//           const productsChildren = (response?.parsePayload || []).filter((val) => val);
+//           const productsId = keyBy(response?.parsePayload || [], 'id');
+//           setProducts({
+//             productsChildren,
+//             productsId,
+//           });
+//         }
+//       },
+//     });
+//     dispatch({
+//       type: 'crmTags/GET_UNITS',
+//       payload: {},
+//       callback: (response) => {
+//         if (response) {
+//           setUnits(response.parsePayload);
+//         }
+//       },
+//     });
+//   }, []);
+// console.log('data',data)
+//   useEffect(() => {
+//       dispatch({
+//         type: 'crmTags/GET_TAGS',
+//         payload: {},
+//         callback: (response) => {
+//           if (response) {
+//             setData(
+//               response.parsePayload.map((item) => ({
+//                 ...item,
+//               })),
+//             );
+//           }
+//         },
+//       });
+//   }, [params.id]);
 
-  componentWillUnmount() {
-    setIsMounted(false);
-  }
+//   const onSelectProduct = (productId, record) => {
+//     setData((prev) =>
+//       prev.map((item) => ({
+//             ...item,
+//             color_code: item.id === record.id ? productId: item.color_code,
+//       })),
+//     );
+//   };
 
-  setStateData = (state, callback) => {
-    if (!getIsMounted()) {
-      return;
-    }
-    this.setState(state, callback);
-  };
+//   const onSelectConversionUnit = (value, record) => {
+//     setData((prev) =>
+//       prev.map((item) => ({
+//         ...item,
+//         conversion_unit: item.id === record.id ? value : item.conversion_price,
+//       })),
+//     );
+//   };
 
-  onFinish = (values) => {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-    const payload = {
-      ...values,
-      id: params.id,
-    };
-    dispatch({
-      type: params.id ? 'crmTags/UPDATE' : 'crmTags/ADD',
-      payload,
-      callback: (response, error) => {
-        if (response) {
-          dispatch({
-            type: 'crmTags/GET_TAGS',
-            payload: params,
-          });
-        }
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              this.formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
+//   const changeConversionPrice = (value, record) => {
+//     setData((prev) =>
+//       prev.map((item) => ({
+//         ...item,
+//         name: item.id === record.id ? value : item.name,
+//       })),
+//     );
+//   };
 
-  render() {
-    const {
-      error,
-      tags,
-      loading: { effects },
-    } = this.props;
-    const loadingSubmit = effects['crmTags/ADD'] || effects['crmTags/UPDATE'];
-    const loading = effects['crmTags/GET_TAGS'];
-    const { inputVisible } = this.state;
-    return (
-      <>
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Tags</Text>
-          </div>
-          <Form
-            className={styles['layout-form']}
-            layout="vertical"
-            colon={false}
-            ref={this.formRef}
-            onFinish={this.onFinish}
-          >
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
-              <Pane className="card">
-                <Pane className="p20">
-                  <Heading type="form-title" className="mb20">
-                    Thông tin tags
-                  </Heading>
-                  <div className={stylesModule['wrapper-tag']}>
-                    <div className={stylesModule['container-tag']}>
-                      {tags.map((item,index) => (
-                        <div className={stylesModule['model-tag']}>
-                          <Tag color="#27a600" className={stylesModule.tag} key={index}>
-                            {item.name}{' '}
-                            <p
-                              className={classnames(stylesModule['btn-cancel'], 'icon-cancel')}
-                              role="presentation"
-                              onClick={() => this.delete(item.id)}
-                            />
-                          </Tag>
-                        </div>
-                      ))}
-                    </div>
+//   const onChangeTitle = (e, record) => {
+//     setData((prev) =>
+//       prev.map((item) => (item.id === record.id ? { ...item, name: e.target.value } : item)),
+//     );
+//   };
 
-                    {inputVisible && (
-                      <FormItem
-                        loading={loadingSubmit}
-                        name="name"
-                        type={variables.INPUT}
-                        size="small"
-                        style={{ width: 78 }}
-                      />
-                    )}
-                    {!inputVisible && (
-                      <Tag onClick={this.showInput} className={styles['site-tag-plus']}>
-                        <span className="icon-plus" size="small" /> New Tag
-                      </Tag>
-                    )}
-                  </div>
-                </Pane>
-              </Pane>
-            </Loading>
-          </Form>
-        </div>
-      </>
-    );
-  }
-}
 
-Index.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  loading: PropTypes.objectOf(PropTypes.any),
-  dispatch: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
-  tags: PropTypes.arrayOf(PropTypes.any),
-};
+//   const columns = [
+//     {
+//       title: 'Màu',
+//       key: 'color_code',
+//       dataIndex: 'color_code',
+//       width: 350,
+//       className: classnames('min-width-350', 'max-width-350'),
+//       render: (code, record) => {
+//         const initValue = code || products?.productsId[record.color_code]?.id;
+//         return (
+//           <Select
+//             className="w-100"
+//             defaultValue= {record.color_code}
+//             onChange={(val) => onSelectProduct(val, record)}
+//           >
+//             {colorTags.map((item) => (
+//               <Option value={item?.name || ''} key={item.name} style={{ backgroundColor: `${item.name}`}}>
+//                 {item?.name || ''}
+//               </Option>
+//             ))}
+//           </Select>
+//         );
+//       },
+//     },
+//     {
+//       title: 'Tên tags',
+//       key: 'name',
+//       className: 'min-width-150',
+//       width: 150,
+//       render: (value,record) => (
+//         <Input.TextArea
+//           value={value.name}
+//           autoSize={{ minRows: 1, maxRows: 1 }}
+//           placeholder="Nhập"
+//           onChange={(e) => onChangeTitle(e, record)}
+//         />
+//       ),
+//     },
+//     {
+//       title: 'Hiển thị',
+//       dataIndex: 'conversion_unit',
+//       key: 'conversion_unit',
+//       width: 350,
+//       className: classnames('min-width-350', 'max-width-350'),
+//       render: (value, record) => (
+//         <Tag
+//           defaultValue={value}
+//           className="w-100"
+//           color= {record.color_code}
+//         >
+//           {record.name}
+//         </Tag>
+//       ),
+//     },
+//     {
+//       key: 'action',
+//       className: 'min-width-80',
+//       width: 80,
+//       fixed: 'right',
+//       render: (record) => (
+//         <div className={styles['list-button']}>
+//           <Button color="danger" icon="remove"  onClick={() => {
+//                setExchange((prev) => prev.filter((val) => val.id !== record.id));
+//              }} />
+//           {/* <button
+//             type="button"
+//             className={styles['button-action']}
+//             onClick={() => {
+//                setExchange((prev) => prev.filter((val) => val.id !== record.id));
+//              }}
+//           >
+//             <span className="icon-remove" />
+//           </button> */}
+//         </div>
+//       ),
+//     },
+//   ];
 
-Index.defaultProps = {
-  match: {},
-  loading: {},
-  dispatch: {},
-  error: {},
-  details: {},
-  tags: [],
-};
+//   return (
+//     <>
+//       <Pane className="pl20 pr20 mt20">
+//         <Form ref={formRef} onFinish={onFinish} initialValues={{}} layout="vertical">
+//           <Loading
+//             loading={loading['crmTags/GET_DATA'] || loading['crmTags/GET_UNITS']}
+//           >
+//             <Pane className="row">
+//               <Pane className="offset-lg-12 col-lg-12">
+//                 <Pane
+//                   className={classnames(
+//                     'd-flex justify-content-between align-items-center mb20',
+//                     styles['heading-container'],
+//                   )}
+//                 >
+//                     <Text color="dark">Tags</Text>
+//                 </Pane>
+//                 <Pane className="card">
+//                   <Pane className="p20">
+//                     <Pane className={classnames('vertical mt20', styles['table-vertical'])}>
+//                       <TableCus
+//                         rowKey={(record) => record.id}
+//                         className="table-edit"
+//                         columns={columns}
+//                         dataSource={data}
+//                         pagination={false}
+//                         scroll={{ x: '100%' }}
+//                         footer={() => (
+//                           <Button
+//                             onClick={() =>
+//                               setData([
+//                                 ...data,
+//                                 {
+//                                   id: uuidv4(),
+//                                   category: { name: undefined },
+//                                   product_id: undefined,
+//                                   conversion_unit: undefined,
+//                                   conversion_price: undefined,
+//                                 },
+//                               ])
+//                             }
+//                             color="transparent-success"
+//                             icon="plus"
+//                           >
+//                             Thêm tags
+//                           </Button>
+//                         )}
+//                       />
+//                     </Pane>
+//                   </Pane>
+//                 </Pane>
+//                 <Pane className="d-flex justify-content-between align-items-center mb20">
+//                   <Button
+//                     loading={
+//                       loading['crmTags/ADD'] ||
+//                       loading['crmTags/UPDATE'] ||
+//                       loading['crmTags/GET_DATA']
+//                     }
+//                     className="ml-auto px25"
+//                     color="success"
+//                     htmlType="submit"
+//                     size="large"
+//                   >
+//                     Lưu
+//                   </Button>
+//                 </Pane>
+//               </Pane>
+//             </Pane>
+//           </Loading>
+//         </Form>
+//       </Pane>
+//     </>
+//   );
+// });
 
-export default Index;
+// export default Index;

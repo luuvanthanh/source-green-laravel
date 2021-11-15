@@ -20,3 +20,9 @@ export function getTags(data) {
     data,
   });
 }
+
+export function getColorTags() {
+  return request(`/v1/tags`, {
+    method: 'GET',
+  });
+}
