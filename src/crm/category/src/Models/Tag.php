@@ -18,7 +18,7 @@ class Tag extends UuidModel
     public $incrementing = false;
 
     public $fillable = [
-        'name'
+        'name', 'color_code'
     ];
 
     public function customerTag()

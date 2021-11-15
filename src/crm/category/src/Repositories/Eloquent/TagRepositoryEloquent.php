@@ -58,4 +58,26 @@ class TagRepositoryEloquent extends BaseRepository implements TagRepository
 
         return $tag;
     }
+
+    public function create(array $attributes)
+    {
+        if (!empty($attributes['create_rows'])) {
+            foreach ($attributes['create_rows'] as $value) {
+                Tag::create($value);
+            }
+        }
+
+        if (!empty($attributes['update_rows'])) {
+            foreach ($attributes['update_rows'] as $value) {
+                $updateTag = Tag::find($value['tag_id']);
+                $updateTag->update($value);
+            }
+        }
+
+        if (!empty($attributes['delete_rows'])) {
+            Tag::whereIn('id', $attributes['delete_rows'])->delete();
+        }
+
+        return parent::all();
+    }
 }
