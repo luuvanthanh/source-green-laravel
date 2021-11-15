@@ -36,4 +36,9 @@ class AdmissionRegister extends UuidModel
     {
         return $this->hasMany(ConfirmTransporter::class);
     }
+
+    public function testInput()
+    {
+        return $this->hasOne(TestInput::class);
+    }
 }

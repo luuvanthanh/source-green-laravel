@@ -18,4 +18,9 @@ class TestInput extends UuidModel
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function AdmissionRegister()
+    {
+        return $this->belongsTo(AdmissionRegister::class);
+    }
 }
