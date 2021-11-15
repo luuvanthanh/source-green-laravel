@@ -129,6 +129,11 @@ class User extends UuidModel implements HasMedia, AuthenticatableContract, Autho
         return $this->hasMany(\GGPHP\Profile\Models\LabourContract::class, 'EmployeeId');
     }
 
+    public function seasonalContract()
+    {
+        return $this->hasMany(\GGPHP\Profile\Models\SeasonalContract::class, 'EmployeeId');
+    }
+
     /**
      * Define relations store
      */
