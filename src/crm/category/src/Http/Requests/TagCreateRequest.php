@@ -24,7 +24,12 @@ class TagCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'create_rows' => 'array',
+            'update_rows' => 'array',
+            'delete_rows' => 'array',
+            'create_rows.*.name' => 'required|string',
+            'update_rows.*.name' => 'string',
+            'update_rows.*.color_code' => 'string',
         ];
     }
 }
