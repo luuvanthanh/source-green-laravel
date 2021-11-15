@@ -1,8 +1,11 @@
 import request from '@/utils/requestCrm';
 
-export function get() {
-  return request(`/v1/customer-leads?is_null_employee=true`, {
+export function get(params) {
+  return request(`/v1/customer-leads`, {
     method: 'GET',
+    params : {
+      ...params
+    }
   });
 }
 

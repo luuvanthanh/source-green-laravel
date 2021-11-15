@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tag, Modal } from 'antd';
 import classnames from 'classnames';
-import { isEmpty, get, debounce, size, head, last } from 'lodash';
+import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
 import Pane from '@/components/CommonComponent/Pane';
 import Text from '@/components/CommonComponent/Text';
@@ -96,30 +96,30 @@ class Index extends PureComponent {
     }));
   };
 
-  save = () => {
-    const { dispatch } = this.props;
-    const payload = {
-      id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
-    };
-    dispatch({
-      type: 'crmSaleParentsLead/ADD',
-      payload,
-      callback: (response, error) => {
-        if (error) {
-          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-            error?.validationErrors.forEach((item) => {
-              this.formRef.current.setFields([
-                {
-                  name: head(item.members),
-                  errors: [item.message],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
+  // save = () => {
+  //   const { dispatch } = this.props;
+  //   const payload = {
+  //     id: this.state.dataSource.filter((item) => item.isActive).map((item) => item.id),
+  //   };
+  //   dispatch({
+  //     type: 'crmSaleParentsLead/ADD',
+  //     payload,
+  //     callback: (response, error) => {
+  //       if (error) {
+  //         if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+  //           error?.validationErrors.forEach((item) => {
+  //             this.formRef.current.setFields([
+  //               {
+  //                 name: head(item.members),
+  //                 errors: [item.message],
+  //               },
+  //             ]);
+  //           });
+  //         }
+  //       }
+  //     },
+  //   });
+  // };
 
   /**
    * Set state properties
@@ -441,7 +441,7 @@ class Index extends PureComponent {
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
-        {isModal  ? (
+        {isModal ? (
           <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
         ) : (
           <>
@@ -515,8 +515,8 @@ class Index extends PureComponent {
                   >
                     Tạo mới
                   </Button>
-                  <AssignmentComponent />
-                  <Button
+                  <AssignmentComponent dataSource={dataSource} />
+                  {/* <Button
                     color="success"
                     icon="next"
                     className="ml-2"
@@ -524,7 +524,7 @@ class Index extends PureComponent {
                     disabled={!size(dataSource.filter((item) => item.isActive))}
                   >
                     Chuyển tiềm năng
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
               <div className={styles['block-table']}>
