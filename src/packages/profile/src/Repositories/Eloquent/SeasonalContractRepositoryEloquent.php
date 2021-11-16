@@ -132,7 +132,7 @@ class SeasonalContractRepositoryEloquent extends CoreRepositoryEloquent implemen
             \DB::rollback();
         }
 
-        return parent::all();
+        return $this->parserResult($seasonalContract);
     }
 
     public function update(array $attributes, $id)
