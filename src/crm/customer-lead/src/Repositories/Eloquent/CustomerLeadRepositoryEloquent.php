@@ -5,6 +5,7 @@ namespace GGPHP\Crm\CustomerLead\Repositories\Eloquent;
 use Carbon\Carbon;
 use GGPHP\Crm\Category\Models\StatusParentPotential;
 use GGPHP\Crm\CustomerLead\Models\CustomerLead;
+use GGPHP\Crm\CustomerLead\Models\CustomerLeadMarketingProgram;
 use GGPHP\Crm\CustomerLead\Models\CustomerTag;
 use GGPHP\Crm\CustomerLead\Models\StudentInfo;
 use GGPHP\Crm\CustomerLead\Presenters\CustomerLeadPresenter;
@@ -264,5 +265,21 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
         CustomerPotentialStatusCare::create($data);
 
         return;
+    }
+
+    public function storeCareProgram($attributes)
+    {
+        if (!empty($attributes['marketing_program'])) {
+            $customerLead = CustomerLead::find($attributes['customer_lead_id']);
+            $customerLead->marketingProgram()->detach();
+            foreach ($attributes['marketing_program'] as $value) {
+                $customerLead->marketingProgram()->attach($value['marketing_program_id']);
+            }
+        } else {
+            $customerLead = CustomerLead::find($attributes['customer_lead_id']);
+            $customerLead->marketingProgram()->detach();
+        }
+
+        return parent::parserResult($customerLead);
     }
 }

@@ -7,6 +7,7 @@ use GGPHP\Crm\Category\Models\Branch;
 use GGPHP\Crm\Category\Models\SearchSource;
 use GGPHP\Crm\CustomerPotential\Models\CustomerPotential;
 use GGPHP\Crm\Employee\Models\Employee;
+use GGPHP\Crm\Marketing\Models\MarketingProgram;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
 use GGPHP\Crm\Province\Models\TownWard;
@@ -92,5 +93,10 @@ class CustomerLead extends UuidModel
     public function townWard()
     {
         return $this->belongsTo(TownWard::class);
+    }
+
+    public function marketingProgram()
+    {
+        return $this->belongsToMany(MarketingProgram::class, 'customer_lead_marketing_program', 'customer_lead_id', 'marketing_program_id');
     }
 }
