@@ -147,4 +147,11 @@ class CustomerLeadController extends Controller
 
         return $this->success([], trans('lang::messages.common.movedSuccess'));
     }
+
+    public function storeCareProgram(Request $request)
+    {
+        $customerLead = $this->customerLeadRepository->storeCareProgram($request->all());
+
+        return $this->success($customerLead, trans('lang::messages.common.modifySuccess'));    
+    }
 }
