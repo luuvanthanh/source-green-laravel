@@ -1,0 +1,51 @@
+version: '3'
+services:
+  api:
+    image: kun391/phpup:1.1
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    depends_on:
+      - db
+    volumes:
+      - ./src:/var/www/app:delegated
+      - ./deployment/certs/cert.pem:/etc/nginx/www-ssl/certificate.crt
+      - ./deployment/certs/private.key:/etc/nginx/www-ssl/privateKey.key
+      - ./deployment/configs/queue.conf:/etc/supervisor/conf.d/queue.conf
+      - ./deployment/configs/nginx.conf:/etc/nginx/sites-enabled/default.conf
+      - ./deployment/configs/nginx.ssl.conf:/etc/nginx/sites-enabled/default.ssl.conf
+    environment:
+      - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
+  # container for database
+  s3:
+    image: bitnami/minio:latest
+    ports:
+      - ${MINIO_PORT}:9000
+    volumes:
+      - ${PATH_TO_STORAGE}:/data:delegated
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+  db:
+    image: postgres:12
+    command: postgres -c 'max_connections=500'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${MYSQL_DATABASE}
+      POSTGRES_USER: ${MYSQL_USER}
+      POSTGRES_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always
+  # container for UI database management
+  phpmyadmin:
+    image: dpage/pgadmin4
+    ports:
+      - ${PHPADMIN_PORT}:80
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    restart: always
