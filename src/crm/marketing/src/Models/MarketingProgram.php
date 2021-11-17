@@ -19,7 +19,7 @@ class MarketingProgram extends UuidModel
     ];
 
     protected $fillable = [
-        'code', 'name', 'start_date', 'end_date', 'status', 'content', 'note'
+        'code', 'name', 'start_date', 'end_date', 'status', 'content', 'note', 'link_web_form'
     ];
 
     public function article()
