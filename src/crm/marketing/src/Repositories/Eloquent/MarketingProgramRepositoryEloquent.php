@@ -73,6 +73,7 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
     {
         \DB::beginTransaction();
         try {
+
             $code = MarketingProgram::max('code');
 
             if (is_null($code)) {
@@ -81,7 +82,10 @@ class MarketingProgramRepositoryEloquent extends BaseRepository implements Marke
                 $getNumber = substr($code, 2) + 1;
                 $attributes['code'] = MarketingProgram::CODE . "$getNumber";
             }
+
             $marketingProgram = MarketingProgram::create($attributes);
+            $marketingProgram->link_web_form = env('LINK_WEB_FORM') . $marketingProgram->id;
+            $marketingProgram->update();
 
             \DB::commit();
         } catch (\Throwable $th) {
