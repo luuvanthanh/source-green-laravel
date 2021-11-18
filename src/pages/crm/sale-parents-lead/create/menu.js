@@ -52,4 +52,8 @@ export const menu = [{
     key: 'potential',
     label: 'Tình trạng tiềm năng',
   },
+  {
+    key: 'interest',
+    label: 'Chương trình quan tâm',
+  },
 ];

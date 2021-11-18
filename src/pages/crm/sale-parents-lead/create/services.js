@@ -89,6 +89,7 @@ export function details(params = {}) {
         'searchSource',
         'statusCare.statusParentLead',
         'employee',
+        'marketingProgram',
       ]),
     },
   });
@@ -363,5 +364,22 @@ export function addPotential(data = {}) {
     method: 'POST',
     data,
     parse: true,
+  });
+}
+
+export function getProgramInterest(params) {
+  return request(`/v1/marketing-programs`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
+export function addInterest(data = {}) {
+  return request('/v1/customer-lead-marketing-programs', {
+    method: 'POST',
+    data,
   });
 }

@@ -21,7 +21,8 @@ import EventsForm from './forms/events';
 import TagsForm from './forms/tags';
 import CalendarForm from './forms/calendar';
 import PotentialForm from './forms/potential';
-
+import InterestForm from './forms/interest';
+ 
 import { menu, defaultKey } from './menu';
 
 const { Item: MenuItem } = Menu;
@@ -40,6 +41,7 @@ const forms = {
   tags: <TagsForm />,
   calendar: <CalendarForm />,
   potential: <PotentialForm />,
+  interest : <InterestForm/>,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
