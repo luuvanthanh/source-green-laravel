@@ -6,11 +6,13 @@ import Loader from '@/components/LayoutComponents/Loader';
 import PublicLayout from './Public';
 import LoginLayout from './Login';
 import MainLayout from './Main';
+import WebFormLayout from './web-form';
 
 const Layouts = {
   public: PublicLayout,
   login: LoginLayout,
   main: MainLayout,
+  webForm: WebFormLayout,
 };
 
 @connect(({ user, loading }) => ({ user, loading }))
@@ -41,6 +43,9 @@ class IndexLayout extends React.PureComponent {
       }
       if (/^\/error(?=\/|$)/i.test(pathname)) {
         return 'public';
+      }
+      if (/^\/web-form(?=\/|$)/i.test(pathname) || /^\/switch-branches(?=\/|$)/i.test(pathname)) {
+        return 'webForm';
       }
       return 'main';
     };
