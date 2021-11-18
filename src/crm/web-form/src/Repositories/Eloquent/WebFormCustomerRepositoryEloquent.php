@@ -82,14 +82,16 @@ class WebFormCustomerRepositoryEloquent extends BaseRepository implements WebFor
                     $attributes['code'] = CustomerLead::CODE . $stt;
                 }
             }
-            // if (strpos($attributes['url'], 'fbclid') !== false) {
-            //     $searchSource = SearchSource::whereLike('name', 'fanpage')->first();
-            //     $attributes['search_source_id'] = $searchSource->id;
-            // } elseif (strpos($attributes['url'], 'utm_source=zalo') !== false) {
-            //     $searchSource = SearchSource::whereLike('name', 'zalo')->first();
-            //     $attributes['search_source_id'] = $searchSource->id;
-            // }
+
+            if (strpos($attributes['url'], 'fbclid') !== false) {
+                $searchSource = SearchSource::whereLike('type', 'fanpage')->first();
+                $attributes['search_source_id'] = $searchSource->id;
+            } elseif (strpos($attributes['url'], 'utm_source=zalo') !== false) {
+                $searchSource = SearchSource::whereLike('type', 'zalo')->first();
+                $attributes['search_source_id'] = $searchSource->id;
+            }
             $customerLead = CustomerLead::create($attributes);
+            $customerLead->marketingProgram()->attach($attributes['marketing_program_id']);
             foreach ($attributes['web_form_childrens'] as $value) {
                 $value['customer_lead_id'] = $customerLead->id;
                 StudentInfo::create($value);
