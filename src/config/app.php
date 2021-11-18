@@ -169,6 +169,8 @@ return [
         /*
          * Application Service Providers...
          */
+        // ...
+        Orangehill\Iseed\IseedServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
