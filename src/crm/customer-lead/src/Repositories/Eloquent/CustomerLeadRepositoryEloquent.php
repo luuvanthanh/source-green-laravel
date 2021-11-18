@@ -81,7 +81,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->where('search_source_id', $attributes['search_source_id']);
         }
 
-        if (!empty($attributes['employee_id'])) {
+        if (!empty($attributes['employee_id']) && $attributes['employee_id'] != 'null') {
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }
 
@@ -91,7 +91,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             });
         }
 
-        if (!empty($attributes['is_null_employee']) && $attributes['is_null_employee'] == 'true') {
+        if (!empty($attributes['employee_id']) && $attributes['employee_id'] == 'null') {
             $this->model = $this->model->where('employee_id', null);
         }
 
