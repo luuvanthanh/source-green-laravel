@@ -233,6 +233,7 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             'customer_lead_id' => $customerLead->id
         ];
         $customerPotential = CustomerPotential::create($data);
+        $customerLead->update(['flag_move_potential' => true]);
 
         $student = StudentInfo::where('customer_lead_id', $customerLead->id)->get();
         foreach ($student as $value) {
