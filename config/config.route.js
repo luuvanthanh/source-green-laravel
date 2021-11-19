@@ -2349,8 +2349,6 @@ export default [
           {
             path: '/crm/danh-muc/moi-quan-he',
             component: './crm/relationship',
-            path: '/crm/danh-muc/xa-phuong',
-            component: './crm/town-wards',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
@@ -2367,8 +2365,8 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/danh-muc/moi-quan-he',
-            component: './crm/relationship',
+            path: '/crm/danh-muc/xa-phuong',
+            component: './crm/town-wards',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },

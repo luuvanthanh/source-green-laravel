@@ -80,6 +80,15 @@ const General = memo(
       });
     };
 
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
+
     const onChangeDistricts = (district_id) => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
