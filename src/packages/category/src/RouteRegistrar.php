@@ -35,6 +35,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('languages', 'LanguageController')->only('index', 'store');
             \Route::post('import-provinces', 'ProvinceController@importProvince');
             \Route::resource('object-types', 'ObjectTypeController');
+            \Route::resource('card-types', 'CardTypeController');
         });
     }
 }

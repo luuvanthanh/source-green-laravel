@@ -25,5 +25,14 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Category\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+        \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+        \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+        \GGPHP\TravelAgency\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });
