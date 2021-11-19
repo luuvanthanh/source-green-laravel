@@ -292,7 +292,7 @@ const General = memo(
                                 data={parentPotential}
                                 placeholder="Chọn"
                                 type={variables.SELECT}
-                                label="Nguồn tiềm kiếm"
+                                label="Tình trạng tiềm năng"
                                 rules={[variables.RULES.EMPTY_INPUT]}
                               />
                             </Pane>

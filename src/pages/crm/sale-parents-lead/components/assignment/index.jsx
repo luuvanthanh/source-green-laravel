@@ -1,3 +1,4 @@
+import { memo, useEffect, useState } from 'react';
 import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Pane from '@/components/CommonComponent/Pane';
@@ -8,10 +9,11 @@ import { variables } from '@/utils';
 import { Form, Modal } from 'antd';
 import { useDispatch } from 'dva';
 import { useLocation } from 'umi';
-import { memo, useEffect, useState } from 'react';
 import stylesModule from '../../styles.module.scss';
 
-const Index = memo(() => {
+const Index = memo((props) => { 
+  // eslint-disable-next-line react/prop-types
+  const {dataSource} = props;
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
@@ -20,7 +22,6 @@ const Index = memo(() => {
 
   const [employeesId, setEmployeesId] = useState([]);
   const { query } = useLocation();
-
   const handleChangeEmployee = (val, record) => {
     const result = [...employeeAllotment];
     const orderItem = result.find((item) => item.customer_lead_id === record.id);
@@ -41,6 +42,7 @@ const Index = memo(() => {
     }
   };
 
+
   const columns = [
     {
       title: 'Phụ huynh',
@@ -50,7 +52,7 @@ const Index = memo(() => {
     },
 
     {
-      title: 'Nhân viên xử lý',
+      title: 'Nhân viên chăm sóc',
       key: 'employee_id',
       dataIndex: 'employee_id',
       width: 180,
@@ -77,19 +79,24 @@ const Index = memo(() => {
         }
       },
     });
-    dispatch({
-      type: 'crmSaleAssignment/GET_DATA',
-      payload: {},
-      callback: (response) => {
-        if (response) setData(response.parsePayload);
-      },
-    });
+    const dataAssignment = dataSource;
+    const payload = {
+      customer_lead_id: dataAssignment.filter((item) => item.isActive === true).map((item) => item.id).join(","),
+    };
+    if (dataAssignment.length > 0 ) {
+      dispatch({
+        type: 'crmSaleAssignment/GET_DATA',
+        payload,
+        callback: (response) => {
+          if (response) setData(response.parsePayload);
+        }
+      });
+    };
   };
 
   useEffect(() => {
     onLoad();
   }, []);
-
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
       return col;
@@ -176,7 +183,7 @@ const Index = memo(() => {
           Phân công
         </Button>
         <Modal
-          title="Phân công nhân viên Sale"
+          title="Phân công nhân viên Sale chăm sóc"
           className={stylesModule['wrapper-modal']}
           visible={isModalVisible}
           onOk={handleOk}
