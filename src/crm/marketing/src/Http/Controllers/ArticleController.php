@@ -102,7 +102,7 @@ class ArticleController extends Controller
 
             return $this->success((array) $response, trans('Đăng bài viết lên facebook thành công'));
         } catch (\Throwable $th) {
-            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage(), $th->getStatusCode());
+            return $this->error(trans('lang::messages.common.internalServerError'), $th->getMessage());
         }
     }
 }
