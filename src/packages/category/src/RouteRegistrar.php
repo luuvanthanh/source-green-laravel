@@ -32,7 +32,9 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('tourist-destinations', 'TouristDestinationController');
             \Route::resource('event-types', 'EventTypeController')->only('index');
             \Route::resource('provinces', 'ProvinceController')->only('index');
-            \Route::resource('languages', 'LanguageController')->only('index');
+            \Route::resource('languages', 'LanguageController')->only('index', 'store');
+            \Route::post('import-provinces', 'ProvinceController@importProvince');
+            \Route::resource('object-types', 'ObjectTypeController');
         });
     }
 }

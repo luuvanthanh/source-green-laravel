@@ -50,6 +50,7 @@ return [
         'nothingChange'        => 'Nothing to change.',
         'occurError'           => 'An error occurred.',
         'emptyDataSystem'      => 'No data in system. Please try again.',
+        'importExcelSuccess'      => 'Import excel success.',
     ],
     'email'  => [
         'reset' => [
