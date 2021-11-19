@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
@@ -16,44 +16,44 @@ import { Helper } from '@/utils';
 import stylesModule from './styles.module.scss';
 
 
-const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
+const mapStateToProps = ({ loading, crmWebForm }) => ({
     loading,
-    details: crmSaleLeadAdd.details,
-    error: crmSaleLeadAdd.error,
+    details: crmWebForm.details,
+    error: crmWebForm.error,
+    branches: crmWebForm.branches,
+    district: crmWebForm.district,
+    program: crmWebForm.program,
 });
 const General = memo(
-    ({ dispatch, loading: { effects }, match: { params }, details, error, district, }) => {
+    ({ dispatch, location: { pathname }, loading: { effects }, match: { params }, details, error, district, branches, program }) => {
         const formRef = useRef();
-        const [files, setFiles] = Helper.isJSON(details?.file_image)
-            ? useState(JSON.parse(details?.file_image))
-            : useState([]);
         const mounted = useRef(false);
-        const mountedSet = (setFunction, value) =>
-            !!mounted?.current && setFunction && setFunction(value);
         const loadingSubmit =
-            effects[`crmSaleLeadAdd/ADD`] ||
-            effects[`crmSaleLeadAdd/UPDATE`] ||
-            effects[`crmSaleLeadAdd/UPDATE_STATUS`];
-        const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
+            effects[`crmWebForm/ADD`] ||
+            effects[`crmWebForm/UPDATE`] ||
+            effects[`crmWebForm/UPDATE_STATUS`];
+        const loading = effects[`crmWebForm/GET_DETAILS`];
         useEffect(() => {
             dispatch({
-                type: 'crmSaleLeadAdd/GET_CITIES',
+                type: 'crmWebForm/GET_PROGRAMS',
+                payload: params,
+            });
+            dispatch({
+                type: 'crmWebForm/GET_CITIES',
                 payload: {},
             });
             dispatch({
-                type: 'crmSaleLeadAdd/GET_SEARCH',
+                type: 'crmWebForm/GET_BRANCHES',
                 payload: {},
             });
             dispatch({
-                type: 'crmSaleLeadAdd/GET_BRANCHES',
+                type: 'crmWebForm/GET_BRANCHES',
                 payload: {},
             });
-            if (params.id) {
-                dispatch({
-                    type: 'crmSaleLeadAdd/GET_DISTRICTS',
-                    payload: {},
-                });
-            }
+            dispatch({
+                type: 'crmWebForm/GET_DISTRICTS',
+                payload: { city_id: 'e30bfd9c-0668-4860-b065-455cae47d328' }
+            });
         }, [params.id]);
 
 
@@ -62,29 +62,48 @@ const General = memo(
          * Function submit form modal
          * @param {object} values values of form
          */
-        const onFinish = (values) => {
-            dispatch({
-                type: params.id ? 'crmSaleLeadAdd/UPDATE' : 'crmSaleLeadAdd/ADD',
-                payload: params.id
-                    ? { ...details, ...values, id: params.id, file_image: JSON.stringify(files) }
-                    : { ...values, file_image: JSON.stringify(files), status: 'WORKING' },
-                callback: (response, error) => {
-                    if (response) {
-                        history.goBack();
-                    }
-                    if (error) {
-                        if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-                            error.data.errors.forEach((item) => {
-                                formRef.current.setFields([
-                                    {
-                                        name: get(item, 'source.pointer'),
-                                        errors: [get(item, 'detail')],
-                                    },
-                                ]);
-                            });
+        const onFinish = () => {
+            formRef.current.validateFields().then((values) => {
+                const items = {
+                    ...values,
+                    marketing_program_id: params.id,
+                    web_form_childrens: values.web_form_childrens.map((item) => ({
+                        full_name: item.full_name,
+                        birth_date: Helper.getDateTime({
+                            value: Helper.setDate({
+                                ...variables.setDateData,
+                                originValue: item.birth_date,
+                            }),
+                            format: variables.DATE_FORMAT.DATE_AFTER,
+                            isUTC: false,
+                        }),
+                    })),
+                    "url": pathname,
+                };
+                const payload = {
+                    ...items,
+                };
+                dispatch({
+                    type: 'crmWebForm/ADD',
+                    payload,
+                    callback: (response, error) => {
+                        if (response) {
+                            history.goBack();
                         }
-                    }
-                },
+                        if (error) {
+                            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                                error.data.errors.forEach((item) => {
+                                    formRef.current.setFields([
+                                        {
+                                            name: get(item, 'source.pointer'),
+                                            errors: [get(item, 'detail')],
+                                        },
+                                    ]);
+                                });
+                            }
+                        }
+                    },
+                });
             });
         };
 
@@ -105,9 +124,6 @@ const General = memo(
                     dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
                     dateOff: details.dateOff && moment(details.dateOff),
                 });
-                if (Helper.isJSON(details?.file_image)) {
-                    mountedSet(setFiles, JSON.parse(details?.file_image));
-                }
             }
         }, [details]);
 
@@ -117,13 +133,20 @@ const General = memo(
                 <div className={stylesModule['wrapper-logo']}>
                     <img className={stylesModule.img} src="/images/webForm.png" alt="bmi" />
                 </div>
-                <Pane className={classnames(stylesModule['container-main'], "col-lg-6 offset-lg-3")}>
-                    <Pane className="card">
-                        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+                <Form layout="vertical" ref={formRef} onFinish={onFinish} initialValues={{
+                    data: [
+                        {
+                            ...params,
+                            birth_date: params.birth_date && moment(params.birth_date),
+                        },
+                    ],
+                }}>
+                    <Pane className={classnames(stylesModule['container-main'], "col-lg-6 offset-lg-3")}>
+                        <Pane className="card">
                             <Loading loading={loading} isError={error.isError} params={{ error }}>
                                 <Pane className={stylesModule['wrapper-title']}>
                                     <h3 className={stylesModule.title}>
-                                        Đăng ký khóa học online cho trẻ
+                                        {program.name}
                                     </h3>
                                     <h3 className={stylesModule.description}>Chào Ba Mẹ, Ba Mẹ vui lòng dành ít phút để điền thông tin sau đây, để bộ phận Chuyên Môn của Clover có thể liên hệ và tư vấn cho Ba Mẹ sớm nhất nhé! Trân trọng!</h3>
                                 </Pane>
@@ -156,8 +179,8 @@ const General = memo(
                                         <Pane className="col-lg-6">
                                             <FormItem
                                                 options={['id', 'name']}
-                                                name="district_id"
-                                                data={district}
+                                                name="branch_id"
+                                                data={branches}
                                                 placeholder="Chọn"
                                                 type={variables.SELECT}
                                                 label="Cơ sở Ba/Mẹ quan tâm"
@@ -176,26 +199,12 @@ const General = memo(
                                     </Pane>
                                 </Pane>
                             </Loading>
-                        </Form>
-                        <Form
-                            layout="vertical"
-                            initialValues={{
-                                data: [
-                                    {
-                                        ...params,
-                                        birth_date: params.birth_date && moment(params.birth_date),
-                                    },
-                                ],
-                            }}
-                            ref={formRef}
-                            onFinish={onFinish}
-                        >
                             <Pane>
                                 <Pane >
                                     <div className="row">
                                         <div className="col-lg-12">
                                             <Pane className={stylesModule['wrapper-students']}>
-                                                <Form.List name="data" >
+                                                <Form.List name="web_form_childrens" >
                                                     {(fields, { add, remove }) => (
                                                         <>
                                                             {fields.map((field, index) => (
@@ -232,6 +241,7 @@ const General = memo(
                                                                                 label="Sinh nhật trẻ (ngày/tháng/năm)"
                                                                                 fieldKey={[field.fieldKey, 'birth_date']}
                                                                                 type={variables.DATE_PICKER}
+                                                                                disabledDate={(current) => current > moment()}
                                                                             />
                                                                         </Pane>
                                                                     </Pane>
@@ -270,9 +280,9 @@ const General = memo(
                                     </Button>
                                 </Pane>
                             </Pane>
-                        </Form>
+                        </Pane>
                     </Pane>
-                </Pane>
+                </Form>
                 <div className={stylesModule['wrapper-footer']}> Copyright 2021 © ❤️ Clover Montessori </div>
             </div>
         );
@@ -286,6 +296,9 @@ General.propTypes = {
     loading: PropTypes.objectOf(PropTypes.any),
     error: PropTypes.objectOf(PropTypes.any),
     district: PropTypes.arrayOf(PropTypes.any),
+    branches: PropTypes.arrayOf(PropTypes.any),
+    location: PropTypes.objectOf(PropTypes.any),
+    program: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -295,6 +308,9 @@ General.defaultProps = {
     loading: {},
     error: {},
     district: [],
+    branches: [],
+    location: {},
+    program: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));
