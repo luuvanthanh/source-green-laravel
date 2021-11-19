@@ -5,9 +5,11 @@ namespace GGPHP\Category\Http\Controllers;
 use GGPHP\Category\Http\Requests\ProvinceCreateRequest;
 use GGPHP\Category\Http\Requests\ProvinceUpdateRequest;
 use GGPHP\Category\Repositories\Contracts\ProvinceRepository;
+use GGPHP\Category\Imports\ProvinceImport;
 use GGPHP\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProvinceController extends Controller
 {
@@ -85,5 +87,15 @@ class ProvinceController extends Controller
         $this->provinceRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function importProvince()
+    {
+        Excel::import(new ProvinceImport, request()->file('file'));
+
+        return $this->success([], trans('lang::messages.common.importExcelSuccess'));
     }
 }
