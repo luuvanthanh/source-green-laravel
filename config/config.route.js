@@ -2522,6 +2522,11 @@ export default [
           },
         ],
       },
+      //WEBFORM
+      {
+        path: '/web-form/:id',
+        component: './crm/web-form',
+      },
       //PHYSICAL
       {
         path: '/error',
