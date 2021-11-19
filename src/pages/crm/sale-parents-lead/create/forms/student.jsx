@@ -10,6 +10,7 @@ import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import csx from 'classnames';
+import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 
@@ -18,11 +19,6 @@ const genders = [
   { id: 'FEMALE', name: 'Nữ' },
   { id: 'OTHER', name: 'Khác' },
 ];
-const relationship = [
-  { id: 'FATHER', name: 'Cha' },
-  { id: 'MOTHER', name: 'Mẹ' },
-];
-
 const Students = memo(() => {
   const formRef = useRef();
 
@@ -38,8 +34,10 @@ const Students = memo(() => {
     !!mounted?.current && setFunction && setFunction(value);
   const {
     loading: { effects },
+    relationships,
   } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
+    relationships: crmSaleLeadAdd.relationships,
     student: crmSaleLeadAdd.student,
     details: crmSaleLeadAdd.details,
     degrees: crmSaleLeadAdd.degrees,
@@ -104,6 +102,10 @@ const Students = memo(() => {
 
   useEffect(() => {
     dispatch({
+      type: 'crmSaleLeadAdd/GET_RELATIONSHIPS',
+      payload: {},
+    });
+    dispatch({
       type: 'crmSaleLeadAdd/GET_STUDENTS',
       payload: {
         customer_lead_id: params.id,
@@ -137,7 +139,6 @@ const Students = memo(() => {
   const onChaneDate = (e) => {
     mountedSet(setDayOfBirth, e);
   };
-
 
   return (
     <>
@@ -230,10 +231,10 @@ const Students = memo(() => {
                                   </Pane>
                                   <Pane className="col-lg-4">
                                     <FormItem
-                                      data={relationship}
-                                      name={[field.name, 'relationship']}
+                                      data={relationships}
+                                      name={[field.name, 'category_relationship_id']}
                                       label="Mối quan hệ"
-                                      fieldKey={[field.fieldKey, 'relationship']}
+                                      fieldKey={[field.fieldKey, 'category_relationship_id']}
                                       type={variables.SELECT}
                                       rules={[variables.RULES.EMPTY_INPUT]}
                                     />
@@ -263,6 +264,19 @@ const Students = memo(() => {
                                 icon="plus"
                                 onClick={() => {
                                   add();
+                                  setStudents([
+                                    ...students,
+                                    {
+                                      id: uuidv4(),
+                                      birth_date: Helper.getDateTime({
+                                        value: Helper.setDate({
+                                          ...variables.setDateData,
+                                        }),
+                                        format: variables.DATE_FORMAT.DATE_AFTER,
+                                        isUTC: false,
+                                      }),
+                                    },
+                                  ]);
                                   mountedSet(setFileImage, [...fileImage, null]);
                                 }}
                               >
