@@ -30,6 +30,8 @@ export default {
     data: [],
     branchess: [],
     parentPotential: [],
+    interest: [],
+    detailsInterest: {},
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -148,6 +150,10 @@ export default {
     SET_PARENT_POTENTIAL: (state, { payload }) => ({
       ...state,
       parentPotential: payload.parsePayload,
+    }),
+    SET_PROGRAM_INTEREST: (state, { payload }) => ({
+      ...state,
+      interest: payload.parsePayload,
     }),
   },
   effects: {
@@ -473,6 +479,28 @@ export default {
     *ADD_POTENTIAL({ payload, callback }, saga) {
       try {
         yield saga.call(services.addPotential, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data?.error);
+      }
+    },
+    *GET_PROGRAM_INTEREST({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getProgramInterest, payload);
+        yield saga.put({
+          type: 'SET_PROGRAM_INTEREST',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_INTEREST({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addInterest, payload);
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
