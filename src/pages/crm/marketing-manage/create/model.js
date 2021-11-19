@@ -30,6 +30,7 @@ import * as categories from '@/services/categories';
       data: [],
       branchess: [],
       posts: [],
+      pages: [],
     },
     reducers: {
       SET_BRANCHESS: (state, { payload }) => ({
@@ -148,6 +149,10 @@ import * as categories from '@/services/categories';
       SET_POSTS: (state, { payload }) => ({
         ...state,
         posts: payload.parsePayload,
+      }),
+      SET_PAGES: (state, { payload }) => ({
+        ...state,
+        pages: payload.data,
       }),
     },
     effects: {
@@ -506,6 +511,41 @@ import * as categories from '@/services/categories';
           });
         }
       },
+      *ADD_FACEBOOK({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.addFacebook, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error?.data?.error);
+        }
+      },
+      *GET_PAGES({ payload, callback }, saga) {
+        try {
+          const response = yield saga.call(services.getPages, payload);
+          yield saga.put({
+            type: 'SET_PAGES',
+            payload: response,
+          });
+          callback(response);
+        } catch (error) {
+          callback(null, error);
+          yield saga.put({
+            type: 'SET_ERROR',
+            payload: error.data,
+          });
+        }
+      },
+      *GET_USER({ payload }, { put }) {
+        try {
+          yield put({
+            type: 'SET_USER',
+            payload,
+          });
+        } catch (error) {
+          yield put({
+            type: 'SET_ERROR',
+          });
+        }
+      },
     },
   };
-  
