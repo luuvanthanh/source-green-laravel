@@ -76,9 +76,9 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
     {
         $article = Article::findOrFail($attributes['article_id']);
 
-        $attributes['message'] = $article->name . "\n \n" . $article->content;
+        $attributes['message'] = $article->name . "\n" . $article->content;
 
-        if (is_null($article->file_image)) {
+        if ($article->file_image == "[]") {
             $response = FacebookService::publishPagePost($attributes);
             $facebook_post_id = $response->id;
         } else {
@@ -110,7 +110,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         }
 
         PostFacebookInfo::create($data);
-
+        
         return $response;
     }
 
