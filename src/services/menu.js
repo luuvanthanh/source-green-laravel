@@ -1696,6 +1696,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Loại sự kiện',
+          key: 'event',
+          url: [
+            '/crm/danh-muc/loai-su-kien',
+            '/crm/danh-muc/loai-su-kien/tao-moi',
+            '/crm/danh-muc/loai-su-kien/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
