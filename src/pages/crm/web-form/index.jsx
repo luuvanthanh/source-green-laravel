@@ -196,7 +196,12 @@ const General = memo(
                     <h3 className={stylesModule.title}>THÔNG TIN CHUNG</h3>
                     <Pane className={classnames(stylesModule.form, 'row')}>
                       <Pane className="col-lg-6">
-                        <FormItem name="full_name" label="Họ và tên Ba/Mẹ" type={variables.INPUT} />
+                        <FormItem
+                          name="full_name"
+                          label="Họ và tên Ba/Mẹ"
+                          type={variables.INPUT}
+                          rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                        />
                       </Pane>
                       <Pane className="col-lg-6">
                         <FormItem
