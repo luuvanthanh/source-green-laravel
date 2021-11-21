@@ -55,6 +55,7 @@ class IndexLayout extends React.PureComponent {
     const isUserAuthorized = user.authorized;
     const isUserLoading = loading.models.user;
     const isLoginLayout = getLayout() === 'login';
+    const isWebFormLayout = getLayout() === 'webForm';
     const isSwitchLayout = getLayout() === 'switch-branches';
 
     const BootstrappedLayout = () => {
@@ -63,7 +64,7 @@ class IndexLayout extends React.PureComponent {
         return <Loader />;
       }
       // redirect to login page if current is not login page and user not authorized
-      if (!isLoginLayout && !isUserAuthorized) {
+      if (!isLoginLayout && !isUserAuthorized && !isWebFormLayout) {
         return (
           <Redirect to={{ pathname: '/login', query: { redirect: `${pathname}?${search}` } }} />
         );

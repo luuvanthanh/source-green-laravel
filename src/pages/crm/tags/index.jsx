@@ -110,8 +110,7 @@ const Index = memo(() => {
       title: 'Màu',
       key: 'color_code',
       dataIndex: 'color_code',
-      width: 400,
-      className: classnames('min-width-400', 'max-width-400'),
+      lassName: 'min-width-250',
       render: (code, record) => {
         const color = record.color_code;
         return (
@@ -147,7 +146,7 @@ const Index = memo(() => {
       title: 'Hiển thị',
       dataIndex: 'conversion_unit',
       key: 'conversion_unit',
-      width: 400,
+      lassName: 'min-width-250',
       className: stylesModule['tag-color'],
       render: (value, record) => (
         <div className={stylesModule['tag-color']}>
