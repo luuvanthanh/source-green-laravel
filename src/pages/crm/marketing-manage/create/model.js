@@ -156,7 +156,7 @@ import * as categories from '@/services/categories';
       }),
       SET_USER: (state, { payload }) => ({
         ...state,
-        user: payload.data,
+        user: payload,
       }),
     },
     effects: {
