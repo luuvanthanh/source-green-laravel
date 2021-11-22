@@ -82,6 +82,15 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
   };
 
   useEffect(() => {
+    if (params.id) {
+      dispatch({
+        type: 'crmMarketingManageAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, [params.id]);
+
+  useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
@@ -144,6 +153,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   type={variables.INPUT}
                   rules={[variables.RULES.EMPTY_INPUT]}
                 />
+              </Pane>
+              <Pane className="col-lg-12">
+                <FormItem value={details.link_web_form} label="Link Web Form" type={variables.INPUT} />
               </Pane>
               <Pane className="col-lg-12">
                 <FormItem name="content" label="Nội dung" type={variables.TEXTAREA} />

@@ -29,9 +29,10 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
   city: crmSaleLeadAdd.city,
   district: crmSaleLeadAdd.district,
   search: crmSaleLeadAdd.search,
+  townWards: crmSaleLeadAdd.townWards,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches, townWards }) => {
     const formRef = useRef();
     const [files, setFiles] = Helper.isJSON(details?.file_image)
       ? useState(JSON.parse(details?.file_image))
@@ -57,14 +58,19 @@ const General = memo(
         type: 'crmSaleLeadAdd/GET_BRANCHES',
         payload: {},
       });
-      if (params.id) {
+      if (details.id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_DISTRICTS',
-          payload: {},
+          payload: details
         });
       }
-    }, [params.id]);
-
+      if (details.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+          payload: details
+        });
+      }
+    }, [params.id, details.city_id]);
     const onChangeCity = (city_id) => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_DISTRICTS',
@@ -74,6 +80,23 @@ const General = memo(
       });
     };
 
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
+
+    const onChangeDistricts = (district_id) => {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
+        payload: {
+          district_id,
+        },
+      });
+    };
 
     /**
      * Function submit form modal
@@ -228,11 +251,14 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Thuộc quận huyện"
+                    onChange={onChangeDistricts}
                   />
                 </Pane>
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
+                    data={townWards}
+                    name="town_ward_id"
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Phường/Xã"
@@ -323,6 +349,7 @@ General.propTypes = {
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
   search: PropTypes.arrayOf(PropTypes.any),
+  townWards: PropTypes.arrayOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -336,6 +363,7 @@ General.defaultProps = {
   city: [],
   district: [],
   search: [],
+  townWards: [],
 };
 
 export default withRouter(connect(mapStateToProps)(General));

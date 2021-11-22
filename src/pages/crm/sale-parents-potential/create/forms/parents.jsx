@@ -70,6 +70,15 @@ const General = memo(
       });
     };
 
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleParentsPotentialAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
+
     /**
      * Function submit form modal
      * @param {object} values values of form

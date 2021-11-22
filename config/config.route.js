@@ -2365,6 +2365,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/xa-phuong',
+            component: './crm/town-wards',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/tao-moi',
+            component: './crm/town-wards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/:id/chi-tiet',
+            component: './crm/town-wards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/danh-muc/loai-su-kien',
             component: './crm/event-type',
             wrappers: ['@/wrappers/auth'],
@@ -2508,7 +2526,7 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-            {
+          {
             path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/:detailId/chi-tiet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],
