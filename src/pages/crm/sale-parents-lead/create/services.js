@@ -147,7 +147,7 @@ export function getCities() {
 }
 
 export function getDistricts(params) {
-  return request(`/v1/districts`, {
+  return request(`/v1/districts?${params.city_id}`, {
     method: 'GET',
     params: {
       ...params,
@@ -353,6 +353,7 @@ export function getBranches(params) {
     },
   });
 }
+
 export function getParentPotential() {
   return request(`/v1/status-parent-potentials`, {
     method: 'GET',
@@ -377,6 +378,16 @@ export function getProgramInterest(params) {
   });
 }
 
+export function getTownWards(params) {
+  return request(`/v1/town-wards?${params.district_id}`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'name',
+    },
+  });
+}
+
 export function addInterest(data = {}) {
   return request('/v1/customer-lead-marketing-programs', {
     method: 'POST',
@@ -389,3 +400,4 @@ export function getRelationships() {
     method: 'GET',
   });
 }
+

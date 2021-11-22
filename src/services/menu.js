@@ -1697,12 +1697,24 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
+
           title: 'Loại sự kiện',
           key: 'event',
           url: [
             '/crm/danh-muc/loai-su-kien',
             '/crm/danh-muc/loai-su-kien/tao-moi',
             '/crm/danh-muc/loai-su-kien/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Xã Phường',
+          key: 'townWards',
+          url: [
+            '/crm/danh-muc/xa-phuong',
+            '/crm/danh-muc/xa-phuong/tao-moi',
+            '/crm/danh-muc/xa-phuong/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,

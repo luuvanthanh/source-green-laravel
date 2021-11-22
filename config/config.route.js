@@ -2349,6 +2349,8 @@ export default [
           {
             path: '/crm/danh-muc/moi-quan-he',
             component: './crm/relationship',
+            path: '/crm/danh-muc/xa-phuong',
+            component: './crm/town-wards',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
@@ -2361,6 +2363,24 @@ export default [
           {
             path: '/crm/danh-muc/moi-quan-he/:id/chi-tiet',
             component: './crm/relationship/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/moi-quan-he',
+            component: './crm/relationship',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/tao-moi',
+            component: './crm/town-wards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/:id/chi-tiet',
+            component: './crm/town-wards/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
@@ -2508,7 +2528,7 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-            {
+          {
             path: '/crm/tiep-thi/quan-ly-chuong-trinh/:id/chi-tiet/:detailId/chi-tiet',
             component: './crm/marketing-manage/create/add-posts',
             wrappers: ['@/wrappers/auth'],

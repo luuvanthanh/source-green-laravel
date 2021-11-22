@@ -33,6 +33,7 @@ export default {
     interest: [],
     detailsInterest: {},
     relationships: [],
+    townWards: [],
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -159,6 +160,10 @@ export default {
     SET_RELATIONSHIPS: (state, { payload }) => ({
       ...state,
       relationships: payload.parsePayload,
+    }),
+    SET_TOWN_WARDS: (state, { payload }) => ({
+      ...state,
+      townWards: payload.parsePayload,
     }),
   },
   effects: {
@@ -472,6 +477,21 @@ export default {
         const response = yield saga.call(services.getParentPotential, payload);
         yield saga.put({
           type: 'SET_PARENT_POTENTIAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TOWN_WARDS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTownWards, payload);
+        yield saga.put({
+          type: 'SET_TOWN_WARDS',
+
           payload: response,
         });
       } catch (error) {
