@@ -416,3 +416,20 @@ export function getPosts(params = {}) {
     },
   });
 }
+
+export function addFacebook(data = {}) {
+  return request('/v1/post-article-facebooks', {
+    method: 'POST',
+    data: {
+      ...data,
+    },
+  });
+}
+
+export function getPages(params = {}) {
+  return request('/v1/facebook/pages', {
+    prefix: API_URL_CRM,
+    method: 'GET',
+    params,
+  });
+}

@@ -1,13 +1,14 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useState, useEffect } from 'react';
 import { Form } from 'antd';
-
+import { head, get, isEmpty, } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
+import classnames from 'classnames';
 import Table from '@/components/CommonComponent/Table';
 import { useLocation, useParams, useHistory } from 'umi';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import { useSelector, useDispatch } from 'dva';
-import FormItem from '@/components/CommonComponent/FormItem';
 import Button from '@/components/CommonComponent/Button';
 import { Helper, variables } from '@/utils';
 import styles from '@/assets/styles/Common/common.scss';
@@ -28,6 +29,58 @@ const Index = memo(() => {
   const mounted = useRef(false);
   const history = useHistory();
   const { pathname } = useLocation();
+  const [pageCurrent, setPageCurrent] = useState({});
+  const [{ user }] = useSelector(({ crmMarketingManageAdd }) => [crmMarketingManageAdd]);
+
+  const responseFacebook = (response) => {
+    dispatch({
+      type: 'crmMarketingManageAdd/GET_USER',
+      payload: response,
+    });
+  };
+
+  useEffect(() => {
+    dispatch({
+      type: 'crmMarketingManageAdd/GET_PAGES',
+      payload: {
+        user_access_token: user?.accessToken,
+        user_id: user?.userID,
+      },
+      callback: (response) => {
+        if (response) {
+          const firstPage = head(response.data);
+          setPageCurrent(firstPage);
+        }
+      },
+    });
+  }, []);
+  const onFinish = (values) => {
+    dispatch({
+      type: 'crmMarketingManageAdd/ADD_FACEBOOK',
+      payload: {
+        article_id: values,
+        page_id: pageCurrent?.id,
+        page_access_token: pageCurrent.access_token,
+      },
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     mounted.current = true;
@@ -75,13 +128,14 @@ const Index = memo(() => {
         key: 'action',
         width: 320,
         fixed: 'right',
-        render: () => (
+        render: (record) => (
           <div className={styles['list-button']}>
             <Button
               color="primary"
               icon="facebook"
               size="small"
               className={stylesModule['button-fb']}
+              onClick={() => onFinish(record.id)}
             >
               Fanpage
             </Button>
@@ -114,49 +168,64 @@ const Index = memo(() => {
 
   return (
     <>
-      <Form layout="vertical" ref={formRef} onFinish>
-        <Pane className="card">
-          <Pane style={{ padding: 20 }} className="pb-0">
-            <Heading type="page-title">Danh sách bài viết</Heading>
-          </Pane>
-          <Pane style={{ padding: 20 }}>
-            <Form layout="vertical">
-              <Pane className="row" style={{ display: 'flex', paddingRight: 20 }}>
-                <Pane className="col-lg-5">
-                  <FormItem
-                    type={variables.INPUT_SEARCH}
-                    name="keyWord"
-                    placeholder="Nhập từ khóa tìm kiếm"
-                  />
-                </Pane>
-                <Button
-                  className="ml-auto"
-                  color="success"
-                  icon="plus"
-                  onClick={() => history.push(`${pathname}/them-bai-viet`)}
+      <div className={classnames('row', stylesModule.wrapper)}>
+        {isEmpty(user) && (
+          <div className={stylesModule['wrapper-login']}>
+            <FacebookLogin
+              appId={APP_ID_FB}
+              autoLoad={false}
+              fields="name,email,picture,birthday"
+              scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
+              callback={responseFacebook}
+              render={(renderProps) => (
+                <button
+                  onClick={renderProps.onClick}
+                  type="button"
+                  className={stylesModule['button-login']}
                 >
-                  Tạo mới
-                </Button>
-              </Pane>
-            </Form>
-            <Table
-              columns={header()}
-              dataSource={posts}
-              pagination={false}
-              loading={loading}
-              className="table-edit"
-              isEmpty
-              params={{
-                header: header(),
-                type: 'table',
-              }}
-              bordered={false}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
+                  Login FB
+                </button>
+              )}
             />
+          </div>
+        )}
+        <Form layout="vertical" ref={formRef} onFinish>
+          <Pane className="card">
+            <Pane style={{ padding: 20 }} className="pb-0">
+              <Heading type="page-title">Danh sách bài viết</Heading>
+            </Pane>
+            <Pane style={{ padding: 20 }}>
+              <Form layout="vertical">
+                <Pane className="row" style={{ display: 'flex', paddingRight: 20 }}>
+                  <Button
+                    className="ml-auto mb10"
+                    color="success"
+                    icon="plus"
+                    onClick={() => history.push(`${pathname}/them-bai-viet`)}
+                  >
+                    Tạo mới
+                  </Button>
+                </Pane>
+              </Form>
+              <Table
+                columns={header()}
+                dataSource={posts}
+                pagination={false}
+                loading={loading}
+                className="table-edit"
+                isEmpty
+                params={{
+                  header: header(),
+                  type: 'table',
+                }}
+                bordered={false}
+                rowKey={(record) => record.id}
+                scroll={{ x: '100%' }}
+              />
+            </Pane>
           </Pane>
-        </Pane>
-      </Form>
+        </Form>
+      </div>
     </>
   );
 });
