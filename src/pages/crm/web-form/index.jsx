@@ -26,7 +26,7 @@ const mapStateToProps = ({ loading, crmWebForm }) => ({
 const General = memo(
   ({
     dispatch,
-    location: { pathname },
+    location,
     loading: { effects },
     match: { params },
     details,
@@ -86,7 +86,7 @@ const General = memo(
               isUTC: false,
             }),
           })),
-          url: pathname,
+          url: location.search,
         };
         const payload = {
           ...items,

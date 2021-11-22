@@ -22,10 +22,6 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
   loading,
   details: crmMarketingManageAdd.details,
   error: crmMarketingManageAdd.error,
-  branches: crmMarketingManageAdd.branches,
-  classes: crmMarketingManageAdd.classes,
-  city: crmMarketingManageAdd.city,
-  district: crmMarketingManageAdd.district,
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
@@ -37,14 +33,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
     effects[`crmMarketingManageAdd/ADD`] ||
-    effects[`crmMarketingManageAdd/UPDATE`] ||
-    effects[`crmMarketingManageAdd/UPDATE_STATUS`];
+    effects[`crmMarketingManageAdd/UPDATE`];
   const loading = effects[`crmMarketingManageAdd/GET_DETAILS`];
   useEffect(() => {
-    dispatch({
-      type: 'crmMarketingManageAdd/GET_CITIES',
-      payload: {},
-    });
     if (params.id) {
       dispatch({
         type: 'crmMarketingManageAdd/GET_DISTRICTS',
@@ -52,6 +43,7 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       });
     }
   }, [params.id]);
+
 
   /**
    * Function submit form modal
@@ -108,7 +100,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
       }
     }
   }, [details]);
-
   return (
     <Form layout="vertical" ref={formRef} onFinish={onFinish}>
       <Pane className="card">
@@ -154,9 +145,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   rules={[variables.RULES.EMPTY_INPUT]}
                 />
               </Pane>
-              <Pane className="col-lg-12">
+              {params.id ? <Pane className="col-lg-12">
                 <FormItem value={details.link_web_form} label="Link Web Form" type={variables.INPUT} />
-              </Pane>
+              </Pane> : ""}
               <Pane className="col-lg-12">
                 <FormItem name="content" label="Nội dung" type={variables.TEXTAREA} />
               </Pane>
@@ -192,7 +183,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],
