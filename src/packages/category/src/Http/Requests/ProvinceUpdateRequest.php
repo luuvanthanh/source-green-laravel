@@ -4,7 +4,7 @@ namespace GGPHP\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EventTypeUpdateRequest extends FormRequest
+class ProvinceUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -31,7 +31,7 @@ class RouteRegistrar
      */
     public function all()
     {
-        $this->forUpload();
+        $this->forBread();
     }
 
     /**
@@ -39,7 +39,7 @@ class RouteRegistrar
      *
      * @return void
      */
-    public function forUpload()
+    public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
             $router->post('/upload', [

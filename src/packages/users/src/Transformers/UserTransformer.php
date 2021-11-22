@@ -50,7 +50,10 @@ class UserTransformer extends BaseTransformer
         $avatar = null;
 
         if (!is_null($media)) {
-            $avatar = $media->getFullUrl();
+            $avatar = [
+                "path" => $media->getPath(),
+                "name" => $media->name,
+            ];
         }
 
         return [

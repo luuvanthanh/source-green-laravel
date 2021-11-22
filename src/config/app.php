@@ -183,6 +183,8 @@ return [
         GGPHP\Category\Providers\CategoryServiceProvider::class,
         GGPHP\Category\Providers\CategoryServiceProvider::class,
         GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
+        GGPHP\TourGuide\Providers\TourGuideServiceProvider::class,
+        GGPHP\TravelAgency\Providers\TravelAgencyServiceProvider::class,
     ],
 
     /*

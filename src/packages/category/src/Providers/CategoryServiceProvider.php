@@ -2,11 +2,13 @@
 
 namespace GGPHP\Category\Providers;
 
+use GGPHP\Category\Repositories\Contracts\CardTypeRepository;
 use GGPHP\Category\Repositories\Contracts\EventTypeRepository;
 use GGPHP\Category\Repositories\Contracts\LanguageRepository;
 use GGPHP\Category\Repositories\Contracts\ObjectTypeRepository;
 use GGPHP\Category\Repositories\Contracts\ProvinceRepository;
 use GGPHP\Category\Repositories\Contracts\TouristDestinationRepository;
+use GGPHP\Category\Repositories\Eloquent\CardTypeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\EventTypeRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\LanguageRepositoryEloquent;
 use GGPHP\Category\Repositories\Eloquent\ObjectTypeRepositoryEloquent;
@@ -40,5 +42,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(ProvinceRepository::class, ProvinceRepositoryEloquent::class);
         $this->app->bind(LanguageRepository::class, LanguageRepositoryEloquent::class);
         $this->app->bind(ObjectTypeRepository::class, ObjectTypeRepositoryEloquent::class);
+        $this->app->bind(CardTypeRepository::class, CardTypeRepositoryEloquent::class);
     }
 }

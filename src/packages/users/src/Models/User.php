@@ -43,8 +43,9 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      * @var array
      */
     protected $fillable = [
-        'full_name', 'email', 'password', 'phone', 'status', 'created_at', 'updated_at',
+        'full_name', 'email', 'password', 'phone', 'status', 'is_first_login',
     ];
+
     protected $guard_name = 'api';
     protected $appends = ['rolesName'];
 
