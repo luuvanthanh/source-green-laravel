@@ -383,3 +383,9 @@ export function addInterest(data = {}) {
     data,
   });
 }
+
+export function getRelationships() {
+  return request(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}

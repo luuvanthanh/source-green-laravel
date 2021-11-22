@@ -32,6 +32,7 @@ export default {
     parentPotential: [],
     interest: [],
     detailsInterest: {},
+    relationships: [],
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -154,6 +155,10 @@ export default {
     SET_PROGRAM_INTEREST: (state, { payload }) => ({
       ...state,
       interest: payload.parsePayload,
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
     }),
   },
   effects: {
@@ -484,11 +489,26 @@ export default {
         callback(null, error?.data?.error);
       }
     },
+
     *GET_PROGRAM_INTEREST({ payload }, saga) {
       try {
         const response = yield saga.call(services.getProgramInterest, payload);
         yield saga.put({
           type: 'SET_PROGRAM_INTEREST',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
           payload: response,
         });
       } catch (error) {

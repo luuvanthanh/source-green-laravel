@@ -13,6 +13,7 @@ import AvatarTable from '@/components/CommonComponent/AvatarTable';
 import styles from '@/assets/styles/Common/common.scss';
 import stylesModule from '../../styles.module.scss';
 
+const { confirm } = Modal;
 let isMounted = true;
 /**
  * Set isMounted
@@ -382,6 +383,21 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Xã phường',
+        key: 'townWard',
+        width: 170,
+        render: (record) => (
+          <>
+            <Radio.Group
+              onChange={(e) => this.onChangeTownWard(e, record, 'townWardActive')}
+              value={record.townWardActive}
+            >
+              <Radio value={record.name}>{get(record, 'townWard.name')}</Radio>
+            </Radio.Group>
+          </>
+        ),
+      },
+      {
         title: 'Quận Huyện',
         key: 'district',
         width: 170,
@@ -411,54 +427,166 @@ class Index extends PureComponent {
           </>
         ),
       },
+      {
+        title: 'Tên con',
+        key: 'full_name',
+        width: 170,
+        render: (record) => (
+          <>
+            <Radio.Group
+              value={record.studentsNameActive}
+              >
+                <Radio value={record.studentInfo}  onChange={(e) => this.onChangeStudentsName(e, record, 'studentsNameActive')}>
+              {record?.studentInfo?.map((item, index) => (
+                  <Text size="normal" key={index}>
+                    {item.full_name}
+                  </Text>
+              ))} 
+                </Radio>
+            </Radio.Group>
+          </>
+        ),
+      },
+      {
+        title: 'Ngày sinh con',
+        key: 'student_birth_date',
+        width: 170,
+        render: (record) => (
+          <>
+            <Radio.Group
+              onChange={(e) => this.onChangeStudentsBirthDay(e, record, 'StudentsBirthDayActive')}
+              value={record.StudentsBirthDayActive}
+            >
+              <Radio value={record.studentInfo}>
+                {record?.studentInfo?.map((item, index) => (
+                  <Text size="normal" key={index}>
+                    {item.birth_date}
+                  </Text>
+                ))}
+              </Radio>
+            </Radio.Group>
+          </>
+        ),
+      },
     ];
     return columns;
   };
 
+  confirmAction = ({ callback }) => {
+    confirm({
+      centered: true,
+      okText: 'Đồng ý',
+      cancelText: 'Đóng',
+      content:(
+        <>
+       <div className={stylesModule['wrapper-modal-coincide']}> <img src="/images/group.png" alt="bmi" /> </div>
+         <div className={stylesModule['wrapper-coincide-title']}>Dữ liệu bản ghi phụ huynh được chọn sẽ được giữ lại. Dữ liệu bản ghi khác sẽ bị xóa, nhưng những dữ liệu liên quan sẽ được giao cho bản ghi phụ huynh đã chọn.</div>
+         <div className={stylesModule['wrapper-coincide-description']}>Bạn có chắc muốn gộp dữ liệu các bản ghi này?</div>
+        </>
+      ),
+      onOk() {
+        callback();
+      },
+      onCancel() {},
+    });
+  };
+
+
   submit = () => {
     const { dataCoincide } = this.state;
     const items = dataCoincide.filter((item) => item !== null);
+    const student = items.filter((item) => item.studentsNameActive);
+    const a =  student.map((item) => item.studentsNameActive);
     const { search } = this.state;
     const {
       location: { pathname },
     } = this.props;
-    if (items.length) {
-      this.props.dispatch({
-        type: 'crmSaleCheckList/ADD_COINCIDE',
-        payload: {
-          merge_customer_lead_id: items.map((item) => item.id),
-          sex: items.map((item) => item.sexActive).join(''),
-          code: items.map((item) => item.codeActive).join(''),
-          file_image: items.map((item) => item.avtActive).join(''),
-          full_name: items.map((item) => item.nameActive).join(''),
-          email: items.map((item) => item.emailActive).join(''),
-          phone: items.map((item) => item.phoneActive).join(''),
-          other_phone: items.map((item) => item.other_phoneActive).join(''),
-          address: items.map((item) => item.addressActive).join(''),
-          district_id: items.map((item) => get(item, 'districtActive.id')).join(''),
-          city_id: items.map((item) => get(item, 'cityActive.id')).join(''),
-        },
-        callback: (response, error) => {
-          if (response) {
-           this.isModal();
-          }
-          if (error) {
-            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-              error.data.errors.forEach((item) => {
-                this.formRef.current.setFields([
-                  {
-                    name: get(item, 'source.pointer'),
-                    errors: [get(item, 'detail')],
-                  },
-                ]);
-              });
-            }
-          }
+    if (items.length && a.length) {
+      this.confirmAction({
+        callback: () => {
+          this.props.dispatch({
+            type: 'crmSaleCheckList/ADD_COINCIDE',
+            payload: {
+              merge_customer_lead_id: items.map((item) => item.id),
+              sex: items.map((item) => item.sexActive).join(''),
+              code: items.map((item) => item.codeActive).join(''),
+              file_image: items.map((item) => item.avtActive).join(''),
+              full_name: items.map((item) => item.nameActive).join(''),
+              email: items.map((item) => item.emailActive).join(''),
+              phone: items.map((item) => item.phoneActive).join(''),
+              other_phone: items.map((item) => item.other_phoneActive).join(''),
+              address: items.map((item) => item.addressActive).join(''),
+              town_ward_id: items.map((item) => get(item, 'townWardActive.id')).join(''),
+              district_id: items.map((item) => get(item, 'districtActive.id')).join(''),
+              studen_info: a[0].map((i) => ({full_name: i.full_name, birth_date: i.birth_date})),
+              city_id: items.map((item) => get(item, 'cityActive.id')).join(''),
+            },
+            callback: (response, error) => {
+              if (response) {
+                this.isModal();
+              }
+              if (error) {
+                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                  error.data.errors.forEach((item) => {
+                    this.formRef.current.setFields([
+                      {
+                        name: get(item, 'source.pointer'),
+                        errors: [get(item, 'detail')],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+          history.push({
+            pathname,
+            query: Helper.convertParamSearch(search),
+          });
         },
       });
-      history.push({
-        pathname,
-        query: Helper.convertParamSearch(search),
+    }else {
+      this.confirmAction({
+        callback: () => {
+          this.props.dispatch({
+            type: 'crmSaleCheckList/ADD_COINCIDE',
+            payload: {
+              merge_customer_lead_id: items.map((item) => item.id),
+              sex: items.map((item) => item.sexActive).join(''),
+              code: items.map((item) => item.codeActive).join(''),
+              file_image: items.map((item) => item.avtActive).join(''),
+              full_name: items.map((item) => item.nameActive).join(''),
+              email: items.map((item) => item.emailActive).join(''),
+              phone: items.map((item) => item.phoneActive).join(''),
+              other_phone: items.map((item) => item.other_phoneActive).join(''),
+              address: items.map((item) => item.addressActive).join(''),
+              town_ward_id: items.map((item) => get(item, 'townWardActive.id')).join(''),
+              district_id: items.map((item) => get(item, 'districtActive.id')).join(''),
+              city_id: items.map((item) => get(item, 'cityActive.id')).join(''),
+            },
+            callback: (response, error) => {
+              if (response) {
+                this.isModal();
+              }
+              if (error) {
+                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                  error.data.errors.forEach((item) => {
+                    this.formRef.current.setFields([
+                      {
+                        name: get(item, 'source.pointer'),
+                        errors: [get(item, 'detail')],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+          history.push({
+            pathname,
+            query: Helper.convertParamSearch(search),
+          });
+        },
       });
     }
   };
@@ -564,6 +692,15 @@ class Index extends PureComponent {
     }));
   };
 
+  onChangeTownWard = (e, record = {}, key = 'townWardActive', keyOrigin = 'townWard') => {
+    this.setState((prevState) => ({
+      dataCoincide: prevState.dataCoincide.map((item) => ({
+        ...item,
+        [key]: record.id === item.id ? record[keyOrigin] : undefined,
+      })),
+    }));
+  };
+
   onChangeDistrict = (e, record = {}, key = 'districtActive', keyOrigin = 'district') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
@@ -574,6 +711,24 @@ class Index extends PureComponent {
   };
 
   onChangeCity = (e, record = {}, key = 'cityActive', keyOrigin = 'city') => {
+    this.setState((prevState) => ({
+      dataCoincide: prevState.dataCoincide.map((item) => ({
+        ...item,
+        [key]: record.id === item.id ? record[keyOrigin] : undefined,
+      })),
+    }));
+  };
+
+  onChangeStudentsName = (e, record = {}, key = 'studentsNameActive', keyOrigin = 'studentInfo') => {
+    this.setState((prevState) => ({
+      dataCoincide: prevState.dataCoincide.map((item) => ({
+        ...item,
+        [key]: record.id === item.id ? record[keyOrigin] : undefined,
+      })),
+    }));
+  };
+
+  onChangeStudentsBirthDay = (e, record = {}, key = 'StudentsBirthDayActive', keyOrigin = 'studentInfo') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
@@ -602,6 +757,7 @@ class Index extends PureComponent {
   isModal = () => {
     this.props.parentCallback({ isModal: false });
   };
+
 
   render() {
     const {
