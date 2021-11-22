@@ -72,47 +72,82 @@ const General = memo(
      */
     const onFinish = () => {
       formRef.current.validateFields().then((values) => {
-        const items = {
-          ...values,
-          marketing_program_id: params.id,
-          web_form_childrens: values.web_form_childrens.map((item) => ({
-            full_name: item.full_name,
-            birth_date: Helper.getDateTime({
-              value: Helper.setDate({
-                ...variables.setDateData,
-                originValue: item.birth_date,
-              }),
-              format: variables.DATE_FORMAT.DATE_AFTER,
-              isUTC: false,
-            }),
-          })),
-          url: location.search,
-        };
-        const payload = {
-          ...items,
-        };
-        dispatch({
-          type: 'crmWebForm/ADD',
-          payload,
-          callback: (response, error) => {
-            if (response) {
-              setDone(true);
-            }
-            if (error) {
-              setDone(false);
-              if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-                error.data.errors.forEach((item) => {
-                  formRef.current.setFields([
-                    {
-                      name: get(item, 'source.pointer'),
-                      errors: [get(item, 'detail')],
-                    },
-                  ]);
-                });
+        if ((values.web_form_childrens.map((i) => i.birth_date)[0]) === undefined) {
+          const items = {
+            ...values,
+            marketing_program_id: params.id,
+            web_form_childrens: [],
+            url: location.search,
+          };
+          const payload = {
+            ...items,
+          };
+          dispatch({
+            type: 'crmWebForm/ADD',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                setDone(true);
               }
-            }
-          },
-        });
+              if (error) {
+                setDone(false);
+                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                  error.data.errors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: get(item, 'source.pointer'),
+                        errors: [get(item, 'detail')],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+        }
+        else {
+          const items = {
+            ...values,
+            marketing_program_id: params.id,
+            web_form_childrens: values.web_form_childrens.map((item) => ({
+              full_name: item.full_name,
+              birth_date: Helper.getDateTime({
+                value: Helper.setDate({
+                  ...variables.setDateData,
+                  originValue: item.birth_date,
+                }),
+                format: variables.DATE_FORMAT.DATE_AFTER,
+                isUTC: false,
+              }),
+            })),
+            url: location.search,
+          };
+          const payload = {
+            ...items,
+          };
+          dispatch({
+            type: 'crmWebForm/ADD',
+            payload,
+            callback: (response, error) => {
+              if (response) {
+                setDone(true);
+              }
+              if (error) {
+                setDone(false);
+                if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                  error.data.errors.forEach((item) => {
+                    formRef.current.setFields([
+                      {
+                        name: get(item, 'source.pointer'),
+                        errors: [get(item, 'detail')],
+                      },
+                    ]);
+                  });
+                }
+              }
+            },
+          });
+        }
       });
     };
 
@@ -254,12 +289,14 @@ const General = memo(
                                     >
                                       Trẻ {index + 1}
                                     </Heading>
-                                    <DeleteOutlined
-                                      onClick={() => {
-                                        remove(index);
-                                      }}
-                                      className={stylesModule.delete}
-                                    />
+                                    {fields.length > 1 && (
+                                      <DeleteOutlined
+                                        onClick={() => {
+                                          remove(index);
+                                        }}
+                                        className={stylesModule.delete}
+                                      />
+                                    )}
                                   </div>
                                   <Pane className="row">
                                     <Pane className="col-lg-6">
@@ -268,10 +305,6 @@ const General = memo(
                                         name={[field.name, 'full_name']}
                                         fieldKey={[field.fieldKey, 'full_name']}
                                         type={variables.INPUT}
-                                        rules={[
-                                          variables.RULES.EMPTY_INPUT,
-                                          variables.RULES.MAX_LENGTH_INPUT,
-                                        ]}
                                       />
                                     </Pane>
                                     <Pane className="col-lg-6">
@@ -280,7 +313,6 @@ const General = memo(
                                         label="Sinh nhật trẻ (ngày/tháng/năm)"
                                         fieldKey={[field.fieldKey, 'birth_date']}
                                         type={variables.DATE_PICKER}
-                                        rules={[variables.RULES.EMPTY]}
                                         disabledDate={(current) => current > moment()}
                                       />
                                     </Pane>
@@ -345,7 +377,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   district: [],
