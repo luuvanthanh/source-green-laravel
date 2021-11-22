@@ -2382,6 +2382,7 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+
           {
             path: '/crm/danh-muc/loai-su-kien',
             component: './crm/event-type',

@@ -7,6 +7,7 @@ import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import { Helper, variables } from '@/utils';
 import Text from '@/components/CommonComponent/Text';
+import { useDispatch } from 'dva';
 
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
@@ -25,12 +26,12 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
   const formRef = useRef();
   const mounted = useRef(false);
   const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
-
+  const dispatch = useDispatch();
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
-
+  
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
@@ -42,6 +43,15 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
       });
     }
   }, [details]);
+  
+    useEffect(() => {
+      if (params.id) {
+        dispatch({
+          type: 'crmSaleLeadAdd/GET_DETAILS',
+          payload: params,
+        });
+      }
+    }, [params.id]);
   return (
     <Form layout="vertical" ref={formRef}>
       <Pane className="card">

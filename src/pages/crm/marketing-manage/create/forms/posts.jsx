@@ -33,6 +33,7 @@ const Index = memo(() => {
   const [{ user }] = useSelector(({ crmMarketingManageAdd }) => [crmMarketingManageAdd]);
 
   const responseFacebook = (response) => {
+    console.log('response',response);
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
@@ -48,7 +49,7 @@ const Index = memo(() => {
       },
       callback: (response) => {
         if (response) {
-          const firstPage = head(response.data);
+          const firstPage = head(response.payload);
           setPageCurrent(firstPage);
         }
       },
@@ -88,7 +89,7 @@ const Index = memo(() => {
       mounted.current = false;
     };
   }, []);
-
+console.log('user',user)
   /**
    * Function header table
    */
@@ -130,15 +131,40 @@ const Index = memo(() => {
         fixed: 'right',
         render: (record) => (
           <div className={styles['list-button']}>
-            <Button
-              color="primary"
-              icon="facebook"
-              size="small"
-              className={stylesModule['button-fb']}
-              onClick={() => onFinish(record.id)}
-            >
-              Fanpage
-            </Button>
+            <>
+              {isEmpty(user) && (
+                <div >
+                  <FacebookLogin
+                    appId={APP_ID_FB}
+                    autoLoad={false}
+                    fields="name,email,picture,birthday"
+                    scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
+                    callback={responseFacebook}
+                    render={(renderProps) => (
+                      <Button
+                        onClick={renderProps.onClick}
+                        type="button"
+                        size="small"
+                        color="primary"
+                      >
+                        Login FB
+                      </Button>
+                    )}
+                  />
+                </div>
+              )}
+              {!isEmpty(user) && (
+                <Button
+                  color="primary"
+                  icon="facebook"
+                  size="small"
+                  className={stylesModule['button-fb']}
+                  onClick={() => onFinish(record.id)}
+                >
+                  Fanpage
+                </Button>
+              )}
+            </>
             <Button
               color="primary"
               icon="sphere"
@@ -169,26 +195,6 @@ const Index = memo(() => {
   return (
     <>
       <div className={classnames('row', stylesModule.wrapper)}>
-        {isEmpty(user) && (
-          <div className={stylesModule['wrapper-login']}>
-            <FacebookLogin
-              appId={APP_ID_FB}
-              autoLoad={false}
-              fields="name,email,picture,birthday"
-              scope="public_profile,pages_show_list,pages_manage_metadata, pages_manage_posts, pages_read_engagement, pages_read_user_content, pages_manage_engagement, pages_messaging"
-              callback={responseFacebook}
-              render={(renderProps) => (
-                <button
-                  onClick={renderProps.onClick}
-                  type="button"
-                  className={stylesModule['button-login']}
-                >
-                  Login FB
-                </button>
-              )}
-            />
-          </div>
-        )}
         <Form layout="vertical" ref={formRef} onFinish>
           <Pane className="card">
             <Pane style={{ padding: 20 }} className="pb-0">
