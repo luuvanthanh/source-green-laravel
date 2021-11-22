@@ -84,10 +84,10 @@ class WebFormCustomerRepositoryEloquent extends BaseRepository implements WebFor
             }
 
             if (strpos($attributes['url'], 'fbclid') !== false) {
-                $searchSource = SearchSource::whereLike('type', 'fanpage')->first();
+                $searchSource = SearchSource::whereLike('type', SearchSource::FANPAGE)->first();
                 $attributes['search_source_id'] = $searchSource->id;
             } elseif (strpos($attributes['url'], 'utm_source=zalo') !== false) {
-                $searchSource = SearchSource::whereLike('type', 'zalo')->first();
+                $searchSource = SearchSource::whereLike('type', SearchSource::ZALO)->first();
                 $attributes['search_source_id'] = $searchSource->id;
             }
             $customerLead = CustomerLead::create($attributes);

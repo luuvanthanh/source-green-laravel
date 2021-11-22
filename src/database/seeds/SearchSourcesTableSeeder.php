@@ -21,11 +21,11 @@ class SearchSourcesTableSeeder extends Seeder
             array(
                 'id' => 'ff00ee32-6b24-4726-8122-d0de25f57326',
                 'code' => 'N1',
-                'name' => 'Data MKT',
+                'name' => 'Data marketing',
                 'created_at' => '2021-11-18 03:26:30',
                 'updated_at' => '2021-11-18 03:26:30',
                 'deleted_at' => NULL,
-                'type' => 'data_mkt',
+                'type' => 'DATA_MKT',
             ),
             1 =>
             array(
@@ -35,7 +35,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:26:52',
                 'updated_at' => '2021-11-18 03:26:52',
                 'deleted_at' => NULL,
-                'type' => 'website',
+                'type' => 'WEBSITE',
             ),
             2 =>
             array(
@@ -45,7 +45,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:27:04',
                 'updated_at' => '2021-11-18 03:27:04',
                 'deleted_at' => NULL,
-                'type' => 'fanpage',
+                'type' => 'FANPAGE',
             ),
             3 =>
             array(
@@ -55,7 +55,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:27:18',
                 'updated_at' => '2021-11-18 03:27:18',
                 'deleted_at' => NULL,
-                'type' => 'kiddiHub',
+                'type' => 'KIDDIHUB',
             ),
             4 =>
             array(
@@ -65,17 +65,17 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:27:37',
                 'updated_at' => '2021-11-18 03:27:37',
                 'deleted_at' => NULL,
-                'type' => 'di_ngang',
+                'type' => 'DI_NGANG',
             ),
             5 =>
             array(
                 'id' => 'a3432ad0-110c-4ece-99de-a22bf41ab4fb',
                 'code' => 'N6',
-                'name' => 'NQGT',
+                'name' => 'Người quen giới thiệu',
                 'created_at' => '2021-11-18 03:27:52',
                 'updated_at' => '2021-11-18 03:27:52',
                 'deleted_at' => NULL,
-                'type' => 'nqgt',
+                'type' => 'NQGT',
             ),
             6 =>
             array(
@@ -85,7 +85,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:28:23',
                 'updated_at' => '2021-11-18 03:28:23',
                 'deleted_at' => NULL,
-                'type' => 'data_tiem_nang',
+                'type' => 'DATA_TIEM_NANG',
             ),
             7 =>
             array(
@@ -95,7 +95,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:28:57',
                 'updated_at' => '2021-11-18 03:28:57',
                 'deleted_at' => NULL,
-                'type' => 'data_khac',
+                'type' => 'DATA_KHAC',
             ),
             8 =>
             array(
@@ -105,7 +105,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:29:10',
                 'updated_at' => '2021-11-18 03:29:10',
                 'deleted_at' => NULL,
-                'type' => 'youtube',
+                'type' => 'YOUTUBE',
             ),
             9 =>
             array(
@@ -115,7 +115,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:29:24',
                 'updated_at' => '2021-11-18 03:29:24',
                 'deleted_at' => NULL,
-                'type' => 'tiktok',
+                'type' => 'TIKTOK',
             ),
             10 =>
             array(
@@ -125,7 +125,7 @@ class SearchSourcesTableSeeder extends Seeder
                 'created_at' => '2021-11-18 03:29:35',
                 'updated_at' => '2021-11-18 03:29:35',
                 'deleted_at' => NULL,
-                'type' => 'zalo',
+                'type' => 'ZALO',
             ),
         ));
     }
