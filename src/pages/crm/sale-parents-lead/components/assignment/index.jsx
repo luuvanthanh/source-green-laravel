@@ -9,17 +9,18 @@ import { variables } from '@/utils';
 import { Form, Modal } from 'antd';
 import { useDispatch } from 'dva';
 import { useLocation } from 'umi';
+import { size } from 'lodash';
 import stylesModule from '../../styles.module.scss';
 
-const Index = memo((props) => { 
+const Index = memo((props) => {
   // eslint-disable-next-line react/prop-types
-  const {dataSource} = props;
+  const { dataSource } = props;
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [data, setData] = useState([]);
   const [employeeAllotment, setEmployeeAllotment] = useState([]);
   const [dataUser, setDataUser] = useState([]);
-
+  const dataAssignment = dataSource;
   const [employeesId, setEmployeesId] = useState([]);
   const { query } = useLocation();
   const handleChangeEmployee = (val, record) => {
@@ -41,7 +42,6 @@ const Index = memo((props) => {
       setData(newData);
     }
   };
-
 
   const columns = [
     {
@@ -81,17 +81,20 @@ const Index = memo((props) => {
     });
     const dataAssignment = dataSource;
     const payload = {
-      customer_lead_id: dataAssignment.filter((item) => item.isActive === true).map((item) => item.id).join(","),
+      customer_lead_id: dataAssignment
+        .filter((item) => item.isActive === true)
+        .map((item) => item.id)
+        .join(','),
     };
-    if (dataAssignment.length > 0 ) {
+    if (dataAssignment.length > 0) {
       dispatch({
         type: 'crmSaleAssignment/GET_DATA',
         payload,
         callback: (response) => {
           if (response) setData(response.parsePayload);
-        }
+        },
       });
-    };
+    }
   };
 
   useEffect(() => {
@@ -179,7 +182,13 @@ const Index = memo((props) => {
   return (
     <>
       <div>
-        <Button color="success" icon="list" className="ml-2" onClick={showModal}>
+        <Button
+          color="success"
+          icon="list"
+          className="ml-2"
+          onClick={showModal}
+          disabled={!size(dataAssignment.filter((item) => item.isActive))}
+        >
           Phân công
         </Button>
         <Modal

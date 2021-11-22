@@ -1,9 +1,12 @@
 import request from '@/utils/requestCrm';
 
-export function add(data = {}) {
+export function add(data={}) {
   return request('/v1/web-forms', {
     method: 'POST',
-    data,
+    data: {
+      ...data,
+    },
+      parse: true,
   });
 }
 
