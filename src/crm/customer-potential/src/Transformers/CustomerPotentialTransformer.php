@@ -9,6 +9,7 @@ use GGPHP\Crm\CustomerPotential\Models\CustomerPotentialStatusCare;
 use GGPHP\Crm\Employee\Transformers\EmployeeTransformer;
 use GGPHP\Crm\Province\Transformers\CityTransformer;
 use GGPHP\Crm\Province\Transformers\DistrictTransformer;
+use GGPHP\Crm\Province\Transformers\TownWardTransformer;
 
 /**
  * Class CityTransformer.
@@ -34,7 +35,11 @@ class CustomerPotentialTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['potentialStudentInfo', 'city', 'district', 'customerPotentialTag', 'customerPotentialEventInfo', 'customerPotentialStatusCare', 'customerPotentialReference', 'employee', 'searchSource'];
+    protected $availableIncludes = [
+        'potentialStudentInfo', 'city', 'district', 'customerPotentialTag',
+        'customerPotentialEventInfo', 'customerPotentialStatusCare',
+        'customerPotentialReference', 'employee', 'searchSource', 'branch'
+    ];
 
     /**
      * Transform the CategoryDetail entity.
@@ -110,5 +115,14 @@ class CustomerPotentialTransformer extends BaseTransformer
         }
 
         return $this->item($customerPotential->searchSource, new SearchSourceTransformer, 'SearchSource');
+    }
+
+    public function includeTownWard(CustomerPotential $customerPotential)
+    {
+        if (empty($customerPotential->townWard)) {
+            return;
+        }
+
+        return $this->item($customerPotential->townWard, new TownWardTransformer, 'TownWard');
     }
 }

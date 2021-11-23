@@ -81,6 +81,10 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->where('search_source_id', $attributes['search_source_id']);
         }
 
+        if (!empty($attributes['branch_id'])) {
+            $this->model = $this->model->where('branch_id', $attributes['branch_id']);
+        }
+
         if (!empty($attributes['employee_id']) && $attributes['employee_id'] != 'null') {
             $this->model = $this->model->where('employee_id', $attributes['employee_id']);
         }

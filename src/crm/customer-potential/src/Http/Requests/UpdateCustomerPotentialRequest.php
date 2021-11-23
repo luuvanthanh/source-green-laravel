@@ -26,9 +26,7 @@ class UpdateCustomerPotentialRequest extends FormRequest
         return [
             'full_name' => 'string',
             'birth_date' => 'date_format:Y-m-d',
-            'sex' => 'string',
             'email' => 'email',
-            'address' => 'string',
             'city_id' => 'exists:citys,id',
             'district_id' => 'exists:districts,id'
         ];
