@@ -185,6 +185,7 @@ return [
         GGPHP\ActivityLog\Providers\ActivityLogServiceProvider::class,
         GGPHP\TourGuide\Providers\TourGuideServiceProvider::class,
         GGPHP\TravelAgency\Providers\TravelAgencyServiceProvider::class,
+        GGPHP\Event\Providers\EventServiceProvider::class,
     ],
 
     /*
