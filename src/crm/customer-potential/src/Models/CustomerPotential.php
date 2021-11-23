@@ -8,6 +8,7 @@ use GGPHP\Crm\CustomerLead\Models\CustomerLead;
 use GGPHP\Crm\Employee\Models\Employee;
 use GGPHP\Crm\Province\Models\City;
 use GGPHP\Crm\Province\Models\District;
+use GGPHP\Crm\Province\Models\TownWard;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerPotential extends UuidModel
@@ -29,7 +30,7 @@ class CustomerPotential extends UuidModel
         'address', 'city_id', 'district_id', 'branch_id', 'employee_id',
         'employee_info', 'user_create_id', 'user_create_info', 'search_source_id',
         'facebook', 'zalo', 'instagram', 'skype', 'name_company', 'address_company',
-        'phone_company', 'career', 'file_image', 'customer_lead_id'
+        'phone_company', 'career', 'file_image', 'customer_lead_id', 'town_ward_id'
     ];
 
     public function customerLead()
@@ -80,5 +81,10 @@ class CustomerPotential extends UuidModel
     public function searchSource()
     {
         return $this->belongsTo(SearchSource::class);
+    }
+
+    public function townWard()
+    {
+        return $this->belongsTo(TownWard::class);
     }
 }
