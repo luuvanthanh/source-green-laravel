@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { connect, history } from 'umi';
+import { connect, history, useLocation } from 'umi';
 import classnames from 'classnames';
 import { isEmpty, debounce, get } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -44,6 +44,7 @@ class Index extends PureComponent {
   constructor(props) {
     super(props);
     const {
+      location,
       location: { query },
     } = props;
     this.state = {
@@ -499,8 +500,11 @@ class Index extends PureComponent {
     const a =  student.map((item) => item.studentsNameActive);
     const { search } = this.state;
     const {
+      location,
+      location: {query},
       location: { pathname },
     } = this.props;
+    console.log('location',location);
     if (items.length && a.length) {
       this.confirmAction({
         callback: () => {
@@ -524,6 +528,13 @@ class Index extends PureComponent {
             callback: (response, error) => {
               if (response) {
                 this.isModal();
+                this.props.dispatch({
+                  type:  'crmSaleParentsLead/GET_DATA',
+                  payload:{
+                    page: query?.page,
+                    limit: query?.limit,
+                  },
+                });
               }
               if (error) {
                 if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -538,10 +549,6 @@ class Index extends PureComponent {
                 }
               }
             },
-          });
-          history.push({
-            pathname,
-            query: Helper.convertParamSearch(search),
           });
         },
       });
@@ -567,6 +574,13 @@ class Index extends PureComponent {
             callback: (response, error) => {
               if (response) {
                 this.isModal();
+                this.props.dispatch({
+                  type:  'crmSaleParentsLead/GET_DATA',
+                  payload:{
+                    page: query?.page,
+                    limit: query?.limit,
+                  },
+                });
               }
               if (error) {
                 if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -763,7 +777,9 @@ class Index extends PureComponent {
     const {
       match: { params },
       loading: { effects },
+      location,
     } = this.props;
+    console.log('s',location)
     const { dataSource, isModalVisible, dataCoincide } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,

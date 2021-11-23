@@ -127,19 +127,19 @@ const Index = memo((props) => {
   const handleOk = () => {
     dispatch({
       type: 'crmSaleAssignment/ASSIGNMENT',
-      payload: employeeAllotment,
+      payload: employeeAllotment.map((item) => ({
+        ...item,
+        employee_info: dataUser.find(({ id }) => id === item.employee_id),
+      })),
       callback: (response) => {
         if (response) {
           onLoad();
           setIsModalVisible(false);
           dispatch({
-            type: 'orders/GET_DATA',
-            payload: {
+            type:  'crmSaleParentsLead/GET_DATA',
+            payload:{
               page: query?.page,
               limit: query?.limit,
-              status: query?.status,
-              key: query?.key,
-              employee_id: query?.employee_id,
             },
           });
         }

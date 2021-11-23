@@ -44,13 +44,13 @@ const mapStateToProps = ({ crmSaleParentsLead, loading }) => ({
   data: crmSaleParentsLead.data,
   error: crmSaleParentsLead.error,
   pagination: crmSaleParentsLead.pagination,
-  branches: crmSaleParentsLead.branches,
   city: crmSaleParentsLead.city,
   district: crmSaleParentsLead.district,
   tags: crmSaleParentsLead.tags,
   lead: crmSaleParentsLead.lead,
   employees: crmSaleParentsLead.employees,
   searchSource: crmSaleParentsLead.searchSource,
+  branch: crmSaleParentsLead.branch,
   loading,
 });
 @connect(mapStateToProps)
@@ -88,8 +88,9 @@ class Index extends PureComponent {
   }
 
   onSelectChange = (e) => {
-    this.setStateData((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
+    const {data} = this.props;
+    this.setStateData(() => ({
+      dataSource: data.map((item) => ({
         ...item,
         isActive: !!e.includes(item.id),
       })),
@@ -262,6 +263,10 @@ class Index extends PureComponent {
       type: 'crmSaleParentsLead/GET_SEARCH',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_BRANCH',
+      payload: {},
+    });
   };
 
   /**
@@ -296,18 +301,6 @@ class Index extends PureComponent {
         key: 'phone',
         width: 150,
         render: (record) => record?.phone,
-      },
-      {
-        title: 'Địa chỉ',
-        key: 'address',
-        width: 200,
-        render: (record) => record?.address,
-      },
-      {
-        title: 'Tỉnh thành',
-        key: 'city',
-        width: 150,
-        render: (record) => <Text size="normal">{get(record, 'city.name')}</Text>,
       },
       {
         title: 'Quận',
@@ -347,6 +340,12 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Nhân viên chăm sóc',
+        key: 'staff',
+        width: 250,
+        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
+      },
+      {
         title: 'Tag',
         key: 'tags',
         width: 250,
@@ -359,12 +358,6 @@ class Index extends PureComponent {
             ))}
           </>
         ),
-      },
-      {
-        title: 'Nhân viên chăm sóc',
-        key: 'staff',
-        width: 250,
-        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',
@@ -426,23 +419,29 @@ class Index extends PureComponent {
       city,
       district,
       tags,
+      branch,
       lead,
+      data,
       employees,
       searchSource,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
+      location,
     } = this.props;
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
     };
+    console.log('location',location);
+console.log('data',data);
+
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
         {isModal ? (
-          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
+          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} location={location}/>
         ) : (
           <>
             <Helmet title="Phụ huynh lead" />
@@ -451,7 +450,7 @@ class Index extends PureComponent {
                 <Text color="dark">Phụ huynh lead</Text>
                 <div className="d-flex ">
                   <div>
-                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal}>
+                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal} >
                       Check trùng
                     </Button>
                     <Modal
@@ -515,7 +514,7 @@ class Index extends PureComponent {
                   >
                     Tạo mới
                   </Button>
-                  <AssignmentComponent dataSource={dataSource} />
+                  <AssignmentComponent dataSource={dataSource}/>
                   {/* <Button
                     color="success"
                     icon="next"
@@ -566,8 +565,9 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="c"
-                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        name="branch"
+                        data={branch}
+                        onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                         type={variables.SELECT}
                         allowClear={false}
                         placeholder="Chọn cơ sở"
@@ -601,7 +601,7 @@ class Index extends PureComponent {
                         type={variables.SELECT}
                         options={['id', 'full_name']}
                         allowClear={false}
-                        placeholder="Chọn nhân viên"
+                        placeholder="Chọn nhân viên chăm sóc"
                       />
                     </div>
                     <div className="col-lg-3">
@@ -619,7 +619,7 @@ class Index extends PureComponent {
                 <Table
                   bordered={false}
                   columns={this.header(params)}
-                  dataSource={dataSource}
+                  dataSource={data}
                   loading={loading}
                   rowSelection={{ ...rowSelection }}
                   pagination={this.pagination(pagination)}
@@ -651,6 +651,8 @@ Index.propTypes = {
   lead: PropTypes.arrayOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
   searchSource: PropTypes.arrayOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+  branch: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -665,6 +667,8 @@ Index.defaultProps = {
   lead: [],
   employees: [],
   searchSource: [],
+  data: [],
+  branch: [],
 };
 
 export default Index;

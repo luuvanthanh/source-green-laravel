@@ -293,7 +293,7 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
-                    name="branches_id"
+                    name="branch_id"
                     data={branches}
                     placeholder="Chọn"
                     type={variables.SELECT}
