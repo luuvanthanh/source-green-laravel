@@ -18,7 +18,7 @@ class TourGuideTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['tourGuideAdditionalInformation', 'cardType', 'language', 'objectType'];
+    protected $availableIncludes = ['tourGuideAdditionalInformation', 'cardType', 'language', 'objectType', 'event'];
 
     /**
      * Transform the custom field entity.
@@ -89,5 +89,14 @@ class TourGuideTransformer extends BaseTransformer
         }
 
         return $this->item($tourGuide->objectType, new ObjectTypeTransformer, 'ObjectType');
+    }
+
+    /**
+     * Include Event
+     * @param TourGuide $fault
+     */
+    public function includeEvent(TourGuide $tourGuide)
+    {
+        return $this->collection($tourGuide->event, new EventTransformer, 'Event');
     }
 }

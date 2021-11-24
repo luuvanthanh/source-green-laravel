@@ -5,6 +5,7 @@ namespace GGPHP\TourGuide\Http\Controllers;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\TourGuide\Http\Requests\TourGuideCreateRequest;
 use GGPHP\TourGuide\Http\Requests\TourGuideUpdateRequest;
+use GGPHP\TourGuide\Models\TourGuide;
 use GGPHP\TourGuide\Repositories\Contracts\TourGuideRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -32,7 +33,17 @@ class TourGuideController extends Controller
      */
     public function store(TourGuideCreateRequest $request)
     {
-        $tourGuide = $this->tourGuideRepository->create($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = TourGuide::TYPE[$attributes['type']];
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = TourGuide::SEX[$attributes['sex']];
+        }
+
+        $tourGuide = $this->tourGuideRepository->create($attributes);
 
         return $this->success($tourGuide, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
@@ -73,7 +84,17 @@ class TourGuideController extends Controller
      */
     public function update(TourGuideUpdateRequest $request, $id)
     {
-        $tourGuide = $this->tourGuideRepository->update($request->all(), $id);
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $attributes['type'] = TourGuide::TYPE[$attributes['type']];
+        }
+
+        if (!empty($attributes['sex'])) {
+            $attributes['sex'] = TourGuide::SEX[$attributes['sex']];
+        }
+
+        $tourGuide = $this->tourGuideRepository->update($attributes, $id);
 
         return $this->success($tourGuide, trans('lang::messages.common.modifySuccess'));
     }

@@ -60,7 +60,8 @@
             "GGPHP\\ActivityLog\\": "packages/activity-log/src/",
             "GGPHP\\Category\\": "packages/category/src/",
             "GGPHP\\TourGuide\\": "packages/tour-guide/src/",
-            "GGPHP\\TravelAgency\\": "packages/travel-agency/src/"
+            "GGPHP\\TravelAgency\\": "packages/travel-agency/src/",
+            "GGPHP\\Event\\": "packages/event/src/"
         },
         "classmap": [
             "database/seeds",
