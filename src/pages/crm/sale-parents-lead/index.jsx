@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag, Modal } from 'antd';
+import { Form, Tag, Modal , Select} from 'antd';
 import classnames from 'classnames';
 import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -17,6 +17,7 @@ import AssignmentComponent from './components/assignment';
 import Check from './components/list-coincide';
 import stylesModule from './styles.module.scss';
 
+const { Option } = Select;
 const dataSearchCheck = [
   { id: 'full_name:true', name: 'Tên' },
   { id: 'address:true', name: 'Địa chỉ' },
@@ -51,6 +52,7 @@ const mapStateToProps = ({ crmSaleParentsLead, loading }) => ({
   employees: crmSaleParentsLead.employees,
   searchSource: crmSaleParentsLead.searchSource,
   branch: crmSaleParentsLead.branch,
+  types: crmSaleParentsLead.types,
   loading,
 });
 @connect(mapStateToProps)
@@ -88,7 +90,7 @@ class Index extends PureComponent {
   }
 
   onSelectChange = (e) => {
-    const {data} = this.props;
+    const { data } = this.props;
     this.setStateData(() => ({
       dataSource: data.map((item) => ({
         ...item,
@@ -237,6 +239,23 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeTypes = (e, record) => {
+    const { dispatch } = this.props;
+    const payload = {
+      notificationModuleId: record?.moduleId,
+      notificationTypeIds: e,
+    };
+    dispatch({
+      type: 'crmSaleParentsLead/UPDATE',
+      payload: [payload],
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -275,7 +294,9 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
+      tags
     } = this.props;
+    console.log(tags)
     const columns = [
       {
         title: 'STT ',
@@ -311,7 +332,7 @@ class Index extends PureComponent {
       {
         title: 'Tháng tuổi',
         key: 'age',
-        width: 100,
+        width: 150,
         render: (record) => (
           <>
             {record?.studentInfo?.map((item, index) => (
@@ -351,11 +372,33 @@ class Index extends PureComponent {
         width: 250,
         render: (record) => (
           <>
-            {record?.customerTag?.map((item, index) => (
-              <Tag size="normal" color="#27a600" key={index}>
-                {get(item, 'tag.name')}
-              </Tag>
+          {/* <Select
+            color={record?.customerTag?.map((item) => item?.tag?.color_code)}
+            value={record?.customerTag?.map((item) => item?.tag_id)}
+            mode="multiple"
+            dataSet={tags}
+            onChange={(e) => this.onChangeTypes(e, record)}
+            tagRender={<Tag
+              color={record?.customerTag?.map((item) => item?.tag?.color_code)}
+              style={{ marginRight: 3 }}
+            >
+              {record?.customerTag?.map((item) => item?.tag_id)}
+            </Tag>}
+          /> */}
+           <Select
+            mode="multiple"
+            className="w-100"
+            value={record?.customerTag?.map((item) => item?.tag?.name)}
+            style={{ backgroundColor: `${record?.customerTag?.map((item) => item?.tag?.color_code)}` }}
+            backgroundColor="red"
+            tagRender='red'
+          >
+            {tags.map((item) => (
+              <Option value={item?.name || ''} key={item.name} style={{ backgroundColor: `${item.color_code}` }}>
+                {item?.name || ''}
+              </Option>
             ))}
+          </Select>
           </>
         ),
       },
@@ -434,14 +477,12 @@ class Index extends PureComponent {
     const rowSelection = {
       onChange: this.onSelectChange,
     };
-    console.log('location',location);
-console.log('data',data);
-
+    console.log('data', data)
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
         {isModal ? (
-          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} location={location}/>
+          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} location={location} />
         ) : (
           <>
             <Helmet title="Phụ huynh lead" />
@@ -514,7 +555,7 @@ console.log('data',data);
                   >
                     Tạo mới
                   </Button>
-                  <AssignmentComponent dataSource={dataSource}/>
+                  <AssignmentComponent dataSource={dataSource} />
                   {/* <Button
                     color="success"
                     icon="next"
@@ -653,6 +694,7 @@ Index.propTypes = {
   searchSource: PropTypes.arrayOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
   branch: PropTypes.arrayOf(PropTypes.any),
+  types: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -669,6 +711,7 @@ Index.defaultProps = {
   searchSource: [],
   data: [],
   branch: [],
+  types: [],
 };
 
 export default Index;

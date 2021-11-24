@@ -1,5 +1,5 @@
 import request from '@/utils/requestCrm';
-import { Helper } from '@/utils';
+import { Helper, variables } from '@/utils';
 
 export function get(data = {}) {
   return request('/v1/customer-leads', {
@@ -95,6 +95,16 @@ export function getBranch() {
     method: 'GET',
     params: {
       orderBy: 'name',
+    },
+  });
+}
+
+export function getTypes(params = {}) {
+  return request('/v1/tags', {
+    method: 'GET',
+    params: {
+      ...params,
+      ...Helper.getPagination(variables.PAGINATION.PAGE, variables.PAGINATION.SIZEMAX),
     },
   });
 }
