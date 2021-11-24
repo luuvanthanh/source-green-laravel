@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect } from 'react';
 import { Form } from 'antd';
-import { head, get, isEmpty, } from 'lodash';
+import { head, get, isEmpty } from 'lodash';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
@@ -18,9 +18,11 @@ const Index = memo(() => {
   const {
     loading: { effects },
     posts,
+    user,
   } = useSelector(({ loading, crmMarketingManageAdd }) => ({
     loading,
     posts: crmMarketingManageAdd.posts,
+    user: crmMarketingManageAdd.user,
   }));
   const loading = effects[`crmMarketingManageAdd/GET_POSTS`];
   const dispatch = useDispatch();
@@ -30,10 +32,9 @@ const Index = memo(() => {
   const history = useHistory();
   const { pathname } = useLocation();
   const [pageCurrent, setPageCurrent] = useState({});
-  const [{ user }] = useSelector(({ crmMarketingManageAdd }) => [crmMarketingManageAdd]);
 
   const responseFacebook = (response) => {
-    console.log('response',response);
+    console.log('response', response);
     dispatch({
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
@@ -41,20 +42,23 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
-    dispatch({
-      type: 'crmMarketingManageAdd/GET_PAGES',
-      payload: {
-        user_access_token: user?.accessToken,
-        user_id: user?.userID,
-      },
-      callback: (response) => {
-        if (response) {
-          const firstPage = head(response.payload);
-          setPageCurrent(firstPage);
-        }
-      },
-    });
-  }, []);
+    if (user?.userID) {
+      dispatch({
+        type: 'crmMarketingManageAdd/GET_PAGES',
+        payload: {
+          user_access_token: user?.accessToken,
+          user_id: user?.userID,
+        },
+        callback: (response) => {
+          if (response) {
+            const firstPage = head(response.payload);
+            setPageCurrent(firstPage);
+          }
+        },
+      });
+    }
+  }, [user?.userID]);
+
   const onFinish = (values) => {
     dispatch({
       type: 'crmMarketingManageAdd/ADD_FACEBOOK',
@@ -84,12 +88,16 @@ const Index = memo(() => {
   };
 
   useEffect(() => {
+    responseFacebook();
+  }, []);
+
+  useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
     };
   }, []);
-console.log('user',user)
+  console.log('user', user);
   /**
    * Function header table
    */
@@ -98,22 +106,16 @@ console.log('user',user)
       {
         title: 'Thời gian ',
         key: 'date',
-        className: 'min-width-150',
-        width: 150,
         render: (record) => Helper.getDate(record.created_at, variables.DATE_FORMAT.DATE),
       },
       {
         title: 'Hình ảnh ',
         key: 'img',
-        className: 'min-width-100',
-        width: 100,
         render: (record) => <AvatarTable fileImage={Helper.getPathAvatarJson(record.file_image)} />,
       },
       {
         title: 'Bài viết',
         key: 'name',
-        className: 'min-width-250',
-        width: 250,
         render: (record) => (
           <p
             role="presentation"
@@ -132,8 +134,8 @@ console.log('user',user)
         render: (record) => (
           <div className={styles['list-button']}>
             <>
-              {isEmpty(user) && (
-                <div >
+              {isEmpty(user?.userID) && (
+                <div>
                   <FacebookLogin
                     appId={APP_ID_FB}
                     autoLoad={false}
@@ -153,7 +155,7 @@ console.log('user',user)
                   />
                 </div>
               )}
-              {!isEmpty(user) && (
+              {!isEmpty(user?.userID) && (
                 <Button
                   color="primary"
                   icon="facebook"
@@ -226,7 +228,7 @@ console.log('user',user)
                 }}
                 bordered={false}
                 rowKey={(record) => record.id}
-                scroll={{ x: '100%' }}
+                scroll={{ x: '100%', y: 'calc(100vh - 150px)' }}
               />
             </Pane>
           </Pane>

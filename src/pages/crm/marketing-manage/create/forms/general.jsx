@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
@@ -11,7 +11,6 @@ import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
-import { Helper } from '@/utils';
 
 const marginProps = { style: { marginBottom: 12 } };
 const genders = [
@@ -22,29 +21,14 @@ const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
   loading,
   details: crmMarketingManageAdd.details,
   error: crmMarketingManageAdd.error,
-  branches: crmMarketingManageAdd.branches,
-  classes: crmMarketingManageAdd.classes,
-  city: crmMarketingManageAdd.city,
-  district: crmMarketingManageAdd.district,
 });
 const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
-  const [setFiles] = Helper.isJSON(details?.file_image)
-    ? useState(JSON.parse(details?.file_image))
-    : useState([]);
   const mounted = useRef(false);
-  const mountedSet = (setFunction, value) =>
-    !!mounted?.current && setFunction && setFunction(value);
   const loadingSubmit =
-    effects[`crmMarketingManageAdd/ADD`] ||
-    effects[`crmMarketingManageAdd/UPDATE`] ||
-    effects[`crmMarketingManageAdd/UPDATE_STATUS`];
+    effects[`crmMarketingManageAdd/ADD`] || effects[`crmMarketingManageAdd/UPDATE`];
   const loading = effects[`crmMarketingManageAdd/GET_DETAILS`];
   useEffect(() => {
-    dispatch({
-      type: 'crmMarketingManageAdd/GET_CITIES',
-      payload: {},
-    });
     if (params.id) {
       dispatch({
         type: 'crmMarketingManageAdd/GET_DISTRICTS',
@@ -92,7 +76,9 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
 
   useEffect(() => {
     mounted.current = true;
-    return mounted.current;
+    return () => {
+      mounted.current = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -103,9 +89,6 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         start_date: details.start_date && moment(details.start_date),
         end_date: details.end_date && moment(details.end_date),
       });
-      if (Helper.isJSON(details?.file_image)) {
-        mountedSet(setFiles, JSON.parse(details?.file_image));
-      }
     }
   }, [details]);
 
@@ -154,9 +137,17 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                   rules={[variables.RULES.EMPTY_INPUT]}
                 />
               </Pane>
-              <Pane className="col-lg-12">
-                <FormItem value={details.link_web_form} label="Link Web Form" type={variables.INPUT} />
-              </Pane>
+              {params.id ? (
+                <Pane className="col-lg-12">
+                  <FormItem
+                    value={details.link_web_form}
+                    label="Link Web Form"
+                    type={variables.INPUT}
+                  />
+                </Pane>
+              ) : (
+                ''
+              )}
               <Pane className="col-lg-12">
                 <FormItem name="content" label="Nội dung" type={variables.TEXTAREA} />
               </Pane>

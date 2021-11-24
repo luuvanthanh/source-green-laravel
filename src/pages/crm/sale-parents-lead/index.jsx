@@ -423,7 +423,6 @@ class Index extends PureComponent {
 
   render() {
     const {
-      city,
       district,
       tags,
       lead,
@@ -546,16 +545,6 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={city}
-                        name="city"
-                        onChange={(event) => this.onChangeSelect(event, 'city_id')}
-                        type={variables.SELECT}
-                        allowClear={false}
-                        placeholder="Chọn Tỉnh thành"
-                      />
-                    </div>
-                    <div className="col-lg-3">
-                      <FormItem
                         data={district}
                         name="district"
                         onChange={(event) => this.onChangeSelect(event, 'district_id')}
@@ -645,7 +634,6 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
-  city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
   tags: PropTypes.arrayOf(PropTypes.any),
   lead: PropTypes.arrayOf(PropTypes.any),
@@ -659,7 +647,6 @@ Index.defaultProps = {
   loading: {},
   dispatch: {},
   location: {},
-  city: [],
   district: [],
   tags: [],
   lead: [],
