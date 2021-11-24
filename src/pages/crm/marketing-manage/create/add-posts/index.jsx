@@ -1,7 +1,8 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Breadcrumb, Form } from 'antd';
+import { Breadcrumb, Form, Input } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
+// import Quill from '@/components/CommonComponent/Quill';
 import { Link, connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
@@ -19,176 +20,194 @@ const marginProps = { style: { marginBottom: 12 } };
 
 const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
   loading,
-  details: crmMarketingManageAdd.details,
+  detailsAddPost: crmMarketingManageAdd.detailsAddPost,
   detailsPost: crmMarketingManageAdd.detailsPost,
   error: crmMarketingManageAdd.error,
-  branches: crmMarketingManageAdd.branches,
-  classes: crmMarketingManageAdd.classes,
-  city: crmMarketingManageAdd.city,
-  district: crmMarketingManageAdd.district,
 });
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error }) => {
-  const formRef = useRef();
-  const [files, setFiles] = Helper.isJSON(details?.file_image)
-    ? useState(JSON.parse(details?.file_image))
-    : useState([]);
-  const mounted = useRef(false);
-  const mountedSet = (setFunction, value) =>
-    !!mounted?.current && setFunction && setFunction(value);
-  const loadingSubmit =
-    effects[`crmMarketingManageAdd/ADD_POSTS`] ||
-    effects[`crmMarketingManageAdd/UPDATE_POSTS`] ||
-    effects[`crmMarketingManageAdd/UPDATE_STATUS_POSTS`];
-  const loading = effects[`crmMarketingManageAdd/GET_DETAILS_POSTS`];
-  useEffect(() => {
-    if (params.detailId) {
+const General = memo(
+  ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error }) => {
+    const formRef = useRef();
+    const [content, setContent] = useState('');
+    const [files, setFiles] = useState([]);
+    const mounted = useRef(false);
+    const mountedSet = (action, value) => mounted?.current && action(value);
+    const loadingSubmit =
+      effects[`crmMarketingManageAdd/ADD_POSTS`] || effects[`crmMarketingManageAdd/UPDATE_POSTS`];
+    const loading = effects[`crmMarketingManageAdd/GET_DETAILS_POSTS`];
+    useEffect(() => {
+      if (params.detailId) {
+        dispatch({
+          type: 'crmMarketingManageAdd/GET_DETAILS_POSTS',
+          payload: params,
+          callback: (response) => {
+            if (response) {
+              mountedSet(setContent, response.parsePayload.content);
+            }
+          },
+        });
+      }
+    }, [params.detailId]);
+
+    /**
+     * Function submit form modal
+     * @param {object} values values of form
+     */
+    const onFinish = (values) => {
       dispatch({
-        type: 'crmMarketingManageAdd/GET_DETAILS_POSTS',
-        payload: params,
+        type: params.detailId
+          ? 'crmMarketingManageAdd/UPDATE_POSTS'
+          : 'crmMarketingManageAdd/ADD_POSTS',
+        payload: params.detailId
+          ? {
+              ...detailsAddPost,
+              ...values,
+              content,
+              marketing_program_id: params.id,
+              file_image: JSON.stringify(files),
+            }
+          : {
+              ...values,
+              content,
+              file_image: JSON.stringify(files),
+              marketing_program_id: params.id,
+            },
+        callback: (response, error) => {
+          if (response) {
+            history.goBack();
+          }
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                formRef.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
       });
-    }
-  }, [params.detailId]);
+    };
 
-  /**
-   * Function submit form modal
-   * @param {object} values values of form
-   */
-  const onFinish = (values) => {
-    dispatch({
-      type: params.detailId
-        ? 'crmMarketingManageAdd/UPDATE_POSTS'
-        : 'crmMarketingManageAdd/ADD_POSTS',
-      payload: params.detailId
-        ? {
-            ...details,
-            ...values,
-            marketing_program_id: params.id,
-            file_image: JSON.stringify(files),
-          }
-        : { ...values, file_image: JSON.stringify(files),  marketing_program_id: params.id, },
-      callback: (response, error) => {
-        if (response) {
-          history.goBack();
+    useEffect(() => {
+      mounted.current = true;
+      return mounted.current;
+    }, []);
+
+    useEffect(() => {
+      if (params.detailId) {
+        formRef.current.setFieldsValue({
+          ...detailsAddPost,
+          ...head(detailsAddPost.positionLevel),
+          birth_date: detailsAddPost.birth_date && moment(detailsAddPost.birth_date),
+        });
+        if (Helper.isJSON(detailsAddPost?.file_image)) {
+          mountedSet(setFiles, JSON.parse(detailsAddPost?.file_image));
         }
-        if (error) {
-          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
-            error.data.errors.forEach((item) => {
-              formRef.current.setFields([
-                {
-                  name: get(item, 'source.pointer'),
-                  errors: [get(item, 'detail')],
-                },
-              ]);
-            });
-          }
-        }
-      },
-    });
-  };
+      }
+    }, [detailsAddPost]);
 
-  useEffect(() => {
-    mounted.current = true;
-    return mounted.current;
-  }, []);
-
-  useEffect(() => {
-    formRef.current.setFieldsValue({
-      ...details,
-      ...head(details.positionLevel),
-      startDate:
-        head(details.positionLevel)?.startDate && moment(head(details.positionLevel)?.startDate),
-      birth_date: details.birth_date && moment(details.birth_date),
-      dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
-      dateOff: details.dateOff && moment(details.dateOff),
-    });
-    if (Helper.isJSON(details?.file_image)) {
-      mountedSet(setFiles, JSON.parse(details?.file_image));
-    }
-  }, [details]);
-
-  const uploadFiles = (file) => {
-    mountedSet(setFiles, (prev) => [...prev, file]);
-  };
-
-  return (
-    <>
-      <Pane style={{ margin: 20 }}>
-        <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
-          <Breadcrumb.Item>
-            <Link to="/crm/tiep-thi/quan-ly-chuong-trinh" className={stylesModule.details}>
-              Quản lý chương trình
-            </Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <Link
-              to={`/crm/tiep-thi/quan-ly-chuong-trinh/${params.id}/chi-tiet?type=posts`}
-              className={stylesModule.details}
-            >
-              Chi tiết
-            </Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item className={stylesModule.detailsEnd}>
-            {params.detailId ? `${details?.name}` : 'Thêm bài viết'}
-          </Breadcrumb.Item>
-        </Breadcrumb>
-      </Pane>
-      <Form layout="vertical" ref={formRef} onFinish={onFinish}>
-        <Pane className="col-lg-6 offset-lg-3">
-          <Pane className="card">
-            <Loading loading={loading} isError={error.isError} params={{ error }}>
-              <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
-                <Heading type="form-title" style={{ marginBottom: 20 }}>
-                  Thông tin thêm mới
-                </Heading>
-                <Pane className="row" {...marginProps}>
-                  <Pane className="col-lg-12">
-                    <FormItem
-                      name="name"
-                      label="Tên bài viết"
-                      type={variables.INPUT}
-                      rules={[variables.RULES.EMPTY_INPUT]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-12">
-                    <FormItem
-                      name="content"
-                      label="Nội dung"
-                      type={variables.TEXTAREA}
-                      rules={[variables.RULES.EMPTY_INPUT]}
-                    />
-                  </Pane>
-                  <Pane className="col-lg-12">
-                    <Form.Item name="file_image" label="Ảnh đại diện">
-                      <MultipleImageUpload
-                        files={files}
-                        callback={(files) => uploadFiles(files)}
-                        removeFiles={(files) => mountedSet(setFiles, files)}
+    const uploadFiles = (file) => {
+      mountedSet(setFiles, (prev) => [...prev, file]);
+    };
+    const onChangeEditor = (value) => {
+      mountedSet(setContent, value);
+    };
+    return (
+      <>
+        <Pane style={{ margin: 20 }}>
+          <Breadcrumb separator=">" className={stylesModule['wrapper-breadcrumb']}>
+            <Breadcrumb.Item>
+              <Link to="/crm/tiep-thi/quan-ly-chuong-trinh" className={stylesModule.details}>
+                Quản lý chương trình
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link
+                to={`/crm/tiep-thi/quan-ly-chuong-trinh/${params.id}/chi-tiet?type=posts`}
+                className={stylesModule.details}
+              >
+                Chi tiết
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item className={stylesModule.detailsEnd}>
+              {params.detailId ? `${detailsAddPost?.name}` : 'Thêm bài viết'}
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        </Pane>
+        <Form layout="vertical" ref={formRef} onFinish={onFinish}>
+          <Pane className="col-lg-6 offset-lg-3">
+            <Pane className="card">
+              <Loading loading={loading} isError={error.isError} params={{ error }}>
+                <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
+                  <Heading type="form-title" style={{ marginBottom: 20 }}>
+                    Thông tin thêm mới
+                  </Heading>
+                  <Pane className="row" {...marginProps}>
+                    <Pane className="col-lg-12">
+                      <FormItem
+                        name="name"
+                        label="Tên bài viết"
+                        type={variables.INPUT}
+                        rules={[variables.RULES.EMPTY_INPUT]}
                       />
-                    </Form.Item>
+                    </Pane>
+                    {/* <Pane className="col-lg-12">
+                      <Pane className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Nội dung</span>
+                        </label>
+                      </Pane>
+                      <Quill onChange={onChangeEditor} value={content} />
+                    </Pane> */}
+                    <Pane className="col-lg-12 mb15">
+                      <Pane className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Nội dung</span>
+                        </label>
+                      </Pane>
+                      <Input.TextArea
+                        value={content}
+                        autoSize={{ minRows: 15, maxRows: 15 }}
+                        placeholder="Nhập"
+                        onChange={(e) => onChangeEditor(e.target.value)}
+                      />
+                    </Pane>
+                    <Pane className="col-lg-12">
+                      <Form.Item name="file_image" label="Ảnh đại diện">
+                        <MultipleImageUpload
+                          files={files}
+                          callback={(files) => uploadFiles(files)}
+                          removeFiles={(files) => mountedSet(setFiles, files)}
+                        />
+                      </Form.Item>
+                    </Pane>
                   </Pane>
                 </Pane>
-              </Pane>
 
-              <Pane className="p20 d-flex justify-content-between align-items-center ">
-                <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
-                  Hủy
-                </p>
-                <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
-                  Lưu
-                </Button>
-              </Pane>
-            </Loading>
+                <Pane className="p20 d-flex justify-content-between align-items-center ">
+                  <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
+                    Hủy
+                  </p>
+                  <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+                    Lưu
+                  </Button>
+                </Pane>
+              </Loading>
+            </Pane>
           </Pane>
-        </Pane>
-      </Form>
-    </>
-  );
-});
+        </Form>
+      </>
+    );
+  },
+);
 
 General.propTypes = {
   dispatch: PropTypes.func,
   match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
+  detailsAddPost: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   branches: PropTypes.arrayOf(PropTypes.any),
@@ -199,7 +218,7 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  details: {},
+  detailsAddPost: {},
   dispatch: () => {},
   loading: {},
   error: {},

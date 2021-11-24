@@ -308,7 +308,6 @@ const General = memo(
                     placeholder="Chọn"
                     type={variables.SELECT}
                     label="Nguồn tìm kiếm"
-                    rules={[variables.RULES.EMPTY_INPUT]}
                     disabled
                   /> : <FormItem
                     options={['id', 'name']}

@@ -169,6 +169,7 @@ export function addTestInput(data = {}) {
         format: variables.DATE_FORMAT.HOUR,
         isUTC: false,
       }),
+        parse: true,
     },
   });
 }

@@ -31,6 +31,8 @@ import * as categories from '@/services/categories';
       branchess: [],
       posts: [],
       pages: [],
+      user: {},
+      detailsAddPost: {},
     },
     reducers: {
       SET_BRANCHESS: (state, { payload }) => ({
@@ -68,7 +70,7 @@ import * as categories from '@/services/categories';
       }),
       SET_DETAILS_POSTS: (state, { payload }) => ({
         ...state,
-        details: payload.parsePayload,
+        detailsAddPost: payload.parsePayload,
       }),
       SET_STUDENT: (state, { payload }) => ({
         ...state,
@@ -261,12 +263,13 @@ import * as categories from '@/services/categories';
           });
         }
       },
-      *GET_DETAILS_POSTS({ payload }, saga) {
+      *GET_DETAILS_POSTS({ payload, callback }, saga) {
         try {
           yield saga.put({
             type: 'INIT_STATE',
           });
           const response = yield saga.call(services.detailsPosts, payload);
+          callback(response);
           yield saga.put({
             type: 'SET_DETAILS_POSTS',
             payload: response,

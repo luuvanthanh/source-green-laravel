@@ -16,7 +16,7 @@ class LoginLayout extends React.PureComponent {
 
     return (
       <Layout>
-        <Layout.Content className={styles.wrapper}>
+        <Layout.Content className={styles.content}>
           <div>
             {children}
           </div>
