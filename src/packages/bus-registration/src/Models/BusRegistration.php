@@ -2,7 +2,7 @@
 
 namespace GGPHP\BusRegistration\Models;
 
-use GGPHP\Absent\Models\BusRegistrationDetail;
+use GGPHP\BusRegistration\Models\BusRegistrationDetail;
 use GGPHP\Core\Models\UuidModel;
 
 class BusRegistration extends UuidModel
