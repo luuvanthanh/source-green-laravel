@@ -284,7 +284,7 @@ class Index extends PureComponent {
             <Radio.Group
               onChange={(e) => this.onChangeAvt(e, record, 'avtActive')}
               value={record.avtActive}
-              style={{display: 'flex', justifyContent: 'center'}}
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <Radio value={record.file_image}>
                 <AvatarTable fileImage={Helper.getPathAvatarJson(record.file_image)} />
@@ -478,6 +478,7 @@ class Index extends PureComponent {
       centered: true,
       okText: 'Đồng ý',
       cancelText: 'Đóng',
+      wrapClassName: 'wrapper-modal',
       content: (
         <>
           <div className={stylesModule['wrapper-modal-coincide']}> <img src="/images/group.png" alt="bmi" /> </div>
@@ -637,13 +638,13 @@ class Index extends PureComponent {
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
         [key]: record.id === item.id ? record[keyOrigin] : undefined,
-        nameActive:  record.id === item.id ? record.full_name : undefined,
-        avtActive:  record.id === item.id ? record.file_image : undefined,
-        sexActive:  record.id === item.id ? record.sex : undefined,
-        emailActive:  record.id === item.id ? record.email : undefined,
-        phoneActive:  record.id === item.id ? record.phone : undefined,
-        other_phoneActive:  record.id === item.id ? record.other_phone : undefined,
-        addressActive:  record.id === item.id ? record.address : undefined,
+        nameActive: record.id === item.id ? record.full_name : undefined,
+        avtActive: record.id === item.id ? record.file_image : undefined,
+        sexActive: record.id === item.id ? record.sex : undefined,
+        emailActive: record.id === item.id ? record.email : undefined,
+        phoneActive: record.id === item.id ? record.phone : undefined,
+        other_phoneActive: record.id === item.id ? record.other_phone : undefined,
+        addressActive: record.id === item.id ? record.address : undefined,
         townWardActive: record.id === item.id ? record.town_ward_id : undefined,
         districtActive: record.id === item.id ? record.district_id : undefined,
         cityActive: record.id === item.id ? record.city_id : undefined,
@@ -822,7 +823,7 @@ class Index extends PureComponent {
                 Quay lại
               </Button>
               <div>
-                <Button color="success" icon="shrink" className="ml-5" onClick={this.showModal}>
+                <Button color="success" icon="shrink" className="ml-5" onClick={this.showModal}  >
                   Gộp dữ liệu
                 </Button>
                 <Modal

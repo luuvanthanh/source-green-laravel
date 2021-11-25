@@ -17,6 +17,7 @@ import AssignmentComponent from './components/assignment';
 import Check from './components/list-coincide';
 import stylesModule from './styles.module.scss';
 
+
 const { Option } = Select;
 const dataSearchCheck = [
   { id: 'full_name:true', name: 'Tên' },
@@ -76,7 +77,6 @@ class Index extends PureComponent {
       isModalVisible: false,
       isModal: false,
       dataCheck: {},
-      dataTags: [],
     };
     setIsMounted(true);
   }
@@ -240,10 +240,6 @@ class Index extends PureComponent {
     });
   };
 
-  onChangeTypes = (e) => {
-    console.log('tags', e);
-  };
-
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -276,25 +272,14 @@ class Index extends PureComponent {
     });
   };
 
+
   onSelectColor = (e, record) => {
-    const { dispatch, tags } = this.props;
-    const { dataTags } = this.state;
-    this.setStateData(() => ({
-      dataTags: tags.map((item) => ({
-        ...item,
-        tag_id: item.name === e[e] ? item.id : "",
-      })),
-    }));
-    const obj = _.extend({}, e);
-    console.log('record', record);
-    console.log('e', obj);
-    console.log('tags', tags);
-    console.log('dataTags', dataTags);
+    const { dispatch } = this.props;
     dispatch({
       type: 'crmSaleLeadAdd/ADD_TAGS',
       payload: {
-        customer_tag: [{ tag_id: e.map((i)=> i)}],
-        customer_lead_id: record.id
+        customer_tag: e.map((i) => ({ tag_id: i })),
+        customer_lead_id: record.id,
       },
       callback: (response) => {
         if (response) {
@@ -305,12 +290,14 @@ class Index extends PureComponent {
   };
 
   handleChange = (event, record) => {
-    const { dispatch, tags } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'crmSaleLeadAdd/ADD_TAGS',
       payload: {
-        customer_tag: [{tag_id: record?.customerTag.map((i)=> i.id === event.value ? event.value : i.id)}],
-        customer_lead_id: record.id
+        customer_tag: {
+          tag_id: record?.customerTag.map((i) => (i.id === event.value ? event.value : i.id)),
+        },
+        customer_lead_id: record.id,
       },
       callback: (response) => {
         if (response) {
@@ -327,7 +314,7 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
-      tags
+      tags,
     } = this.props;
     const columns = [
       {
@@ -402,54 +389,38 @@ class Index extends PureComponent {
         title: 'Tag',
         key: 'tags',
         width: 250,
-        render: (record) => (
+        render: (record,) => (
           <>
             <Select
-            showArrow
-              color={record?.customerTag?.map((item) => item?.tag?.color_code)}
-              defaultValue= {record?.customerTag?.map((item) => item?.tag?.name)}
-              mode="multiple"
-              className="w-100"
-              onChange={(e) => this.onSelectColor(e, record)}
-              tagRender={(props) => <Tag
-                closable
-                onClose={() => {
-                  this.handleChange(props, record);
-                }}
-                className={stylesModule['tags-content']}
-                color={record?.customerTag?.map((item) => item?.tag?.color_code)}
-                style={{ marginRight: 3 }}
-              >
-                {record?.customerTag?.map((item) => item?.tag?.name)}
-              </Tag>}
-            >
-              {tags.map((item, index) => (
-                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
-                  {item?.name || ''}
-                </Option>
-              ))}
-            </Select>
-            {/* <Select
-              removeIcon
+              showArrow
+              value={record?.customerTag?.map((item) => item?.tag.id)}
               mode="multiple"
               className={stylesModule['wrapper-tags']}
               onChange={(e) => this.onSelectColor(e, record)}
-              value={record?.customerTag?.map((item, index) =>
-                <Tag
-                  closable
-                  key={index}
-                  value={item?.tag?.id || ''}
-                  className={stylesModule['tags-content']}
-                  color={item?.tag?.color_code}>
-                  {item?.tag?.name}
-                </Tag>)}
+              tagRender={({ label, value, color_code, closable, onClose }) => {
+                const itemTag = tags.find(item => item.id === value);
+                return (
+                  <Tag
+                    color={itemTag?.color_code || color_code}
+                    closable={closable}
+                    onClose={onClose}
+                    className={stylesModule['tags-content']}
+                  >
+                    {label}
+                  </Tag>
+                );
+              }}
             >
               {tags.map((item, index) => (
-                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
-                  {item?.name || ''}
+                <Option
+                  value={item?.id}
+                  key={index}
+                  style={{ backgroundColor: `${item.color_code}` }}
+                >
+                  {item?.name}
                 </Option>
               ))}
-            </Select> */}
+            </Select>
           </>
         ),
       },
@@ -523,10 +494,13 @@ class Index extends PureComponent {
       location: { pathname },
       location,
     } = this.props;
-    console.log('data', data);
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
+      getCheckboxProps: (record) => ({
+        disabled: record.employee_id !== null,
+        name: record.employee_id,
+      }),
     };
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
@@ -541,7 +515,7 @@ class Index extends PureComponent {
                 <Text color="dark">Phụ huynh lead</Text>
                 <div className="d-flex ">
                   <div>
-                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal} >
+                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal}>
                       Check trùng
                     </Button>
                     <Modal
@@ -626,7 +600,7 @@ class Index extends PureComponent {
                   ref={this.formRef}
                 >
                   <div className="row">
-                    <div className="col-lg-3">
+                    <div className="col-lg-6">
                       <FormItem
                         name="key"
                         onChange={(event) => this.onChange(event, 'key')}
@@ -636,7 +610,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={district}
+                        data={[{ name: 'Chọn tất cả Quận huyện' }, ...district,]}
                         name="district"
                         onChange={(event) => this.onChangeSelect(event, 'district_id')}
                         type={variables.SELECT}
@@ -646,8 +620,8 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
+                        data={[{ name: 'Chọn tất cả Cơ sở' }, ...branch,]}
                         name="branch"
-                        data={branch}
                         onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -656,8 +630,8 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
+                        data={[{ name: 'Chọn tất cả Nguồn' }, ...searchSource,]}
                         name="search"
-                        data={searchSource}
                         onChange={(event) => this.onChangeSelect(event, 'search_source_id')}
                         type={variables.SELECT}
                         allowClear={false}
@@ -666,7 +640,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={lead}
+                        data={[{ name: 'Chọn tất cả Tình trạng lead' }, ...lead,]}
                         name="lead"
                         onChange={(event) => this.onChangeSelect(event, 'lead_id')}
                         type={variables.SELECT}
@@ -677,7 +651,10 @@ class Index extends PureComponent {
                     <div className="col-lg-3">
                       <FormItem
                         name="full_name"
-                        data={[{ id: 'null', full_name: 'Chọn tất cả NV chưa được phân công' }, ...employees]}
+                        data={[
+                          { id: 'null', full_name: 'Chưa có nhân viên chăm sóc' },
+                          ...employees,
+                        ]}
                         onChange={(event) => this.onChangeSelect(event, 'employee_id')}
                         type={variables.SELECT}
                         options={['id', 'full_name']}
@@ -687,7 +664,7 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        data={tags}
+                        data={[{ name: 'Chọn tất cả tags' }, ...tags,]}
                         name="tags"
                         type={variables.SELECT}
                         onChange={(event) => this.onChangeSelect(event, 'tag_id')}
@@ -702,6 +679,7 @@ class Index extends PureComponent {
                   columns={this.header(params)}
                   dataSource={data}
                   loading={loading}
+                  disabled
                   rowSelection={{ ...rowSelection }}
                   pagination={this.pagination(pagination)}
                   params={{
@@ -733,7 +711,6 @@ Index.propTypes = {
   searchSource: PropTypes.arrayOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
   branch: PropTypes.arrayOf(PropTypes.any),
-  types: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -749,7 +726,6 @@ Index.defaultProps = {
   searchSource: [],
   data: [],
   branch: [],
-  types: [],
 };
 
 export default Index;

@@ -13,7 +13,6 @@ import csx from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
-import student from '@/pages/crm/sale-admission-registers/create/forms/student';
 
 const genders = [
   { id: 'MALE', name: 'Nam' },
@@ -29,7 +28,7 @@ const Students = memo(() => {
 
   const mounted = useRef(false);
   const [fileImage, setFileImage] = useState([null]);
-  const [birth_date, setDayOfBirth] = useState(null);
+  const [dayOfBirth, setDayOfBirth] = useState(null);
 
   const mountedSet = (setFunction, value) =>
     !!mounted?.current && setFunction && setFunction(value);
@@ -58,10 +57,8 @@ const Students = memo(() => {
   };
 
   const onFinish = (values) => {
-    const month_age = moment().diff(moment(birth_date), 'month');
     const items = values.data.map((item, index) => ({
       ...item,
-      month_age,
       file_image: fileImage[index],
       birth_date: Helper.getDateTime({
         value: Helper.setDate({
@@ -118,7 +115,7 @@ const Students = memo(() => {
           setStudents(response.parsePayload);
           setDayOfBirth(moment(response.parsePayload.map((item) => ({
             birth_date: moment(item.birth_date),
-          }))));
+          })),));
           formRef.current.setFieldsValue({
             data: response.parsePayload.map((item) => ({
               ...item,
@@ -135,14 +132,14 @@ const Students = memo(() => {
       mountedSet(
         setFileImage,
         students.map((item) => item.file_image || null),
-      );
-    }
+        );
+      }
   }, [students]);
 
   const onChaneDate = (e) => {
     mountedSet(setDayOfBirth, e);
   };
-  console.log('data', students);
+
   return (
     <>
       <Pane>
@@ -168,108 +165,97 @@ const Students = memo(() => {
                       <Form.List name="data">
                         {(fields, { add, remove }) => (
                           <>
-                            {fields.map((field, index) => {
-                              const studentsData = students.map((i) => i.month_age);
-                              console.log('studentsData',studentsData)
-                              return (
-                                <>
-                                  <Pane
-                                    key={field.key}
-                                    className={csx('pb-0', 'border-bottom', 'position-relative')}
-                                    style={{ padding: 20 }}
-                                  >
-                                    <Heading type="form-title" style={{ marginBottom: 20 }}>
-                                      Thông tin học sinh
-                                    </Heading>
-                                    <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                      Học sinh {index + 1}
-                                    </Heading>
+                            {fields.map((field, index) => (
+                              <Pane
+                                key={field.key}
+                                className={csx('pb-0', 'border-bottom', 'position-relative')}
+                                style={{ padding: 20 }}
+                              >
+                                <Heading type="form-title" style={{ marginBottom: 20 }}>
+                                  Thông tin học sinh
+                                </Heading>
+                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                                  Học sinh {index + 1}
+                                </Heading>
 
-                                    <Pane className="row">
-                                      <Pane className="col-lg-4">
-                                        <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
-                                          <ImageUpload
-                                            callback={(res) => {
-                                              onSetImage(res.fileInfo.url, index);
-                                            }}
-                                            fileImage={fileImage[index]}
-                                          />
-                                        </Form.Item>
-                                      </Pane>
-                                    </Pane>
-
-                                    <Pane className="row">
-                                      <Pane className="col-lg-4">
-                                        <FormItem
-                                          label="Họ và tên"
-                                          name={[field.name, 'full_name']}
-                                          fieldKey={[field.fieldKey, 'full_name']}
-                                          type={variables.INPUT}
-                                          rules={[
-                                            variables.RULES.EMPTY_INPUT,
-                                            variables.RULES.MAX_LENGTH_INPUT,
-                                          ]}
-                                        />
-                                      </Pane>
-                                      <Pane className="col-lg-4">
-                                        <FormItem
-                                          name={[field.name, 'birth_date']}
-                                          label="Ngày sinh"
-                                          fieldKey={[field.fieldKey, 'birth_date']}
-                                          type={variables.DATE_PICKER}
-                                          onChange={onChaneDate}
-                                        />
-                                      </Pane>
-                                      <Pane className="col-lg-4">
-                                          {studentsData.map((i)=> i) !== undefined ?
-                                            <FormItem
-                                              name={[field.name, 'month_age']}
-                                              label="Tuổi (tháng)"
-                                              fieldKey={[field.fieldKey, 'month_age']}
-                                            />
-                                            
-                                            :
-                                            `${birth_date &&
-                                            moment().diff(moment(birth_date), 'month')}`
-                                          }
-                                      </Pane>
-                                      <Pane className="col-lg-4">
-                                        <FormItem
-                                          data={genders}
-                                          name={[field.name, 'sex']}
-                                          label="Giới tính"
-                                          fieldKey={[field.fieldKey, 'sex']}
-                                          type={variables.SELECT}
-                                          rules={[variables.RULES.EMPTY_INPUT]}
-                                        />
-                                      </Pane>
-                                      <Pane className="col-lg-4">
-                                        <FormItem
-                                          data={relationships}
-                                          name={[field.name, 'category_relationship_id']}
-                                          label="Mối quan hệ"
-                                          fieldKey={[field.fieldKey, 'category_relationship_id']}
-                                          type={variables.SELECT}
-                                          rules={[variables.RULES.EMPTY_INPUT]}
-                                        />
-                                      </Pane>
-                                    </Pane>
-
-                                    {fields.length > 0 && (
-                                      <DeleteOutlined
-                                        className="position-absolute"
-                                        style={{ top: 20, right: 20 }}
-                                        onClick={() => {
-                                          const student = students?.find(
-                                            (item, studentsIndex) => studentsIndex === index,
-                                          );
-                                          setDeleteRows((prev) => [...prev, student.id]);
-                                          remove(index);
+                                <Pane className="row">
+                                  <Pane className="col-lg-4">
+                                    <Form.Item name={[field.key, 'file_image']} label="Hình ảnh">
+                                      <ImageUpload
+                                        callback={(res) => {
+                                          onSetImage(res.fileInfo.url, index);
                                         }}
+                                        fileImage={fileImage[index]}
                                       />
-                                    )}
-                                  </Pane> </>);
-                            })}
+                                    </Form.Item>
+                                  </Pane>
+                                </Pane>
+
+                                <Pane className="row">
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      label="Họ và tên"
+                                      name={[field.name, 'full_name']}
+                                      fieldKey={[field.fieldKey, 'full_name']}
+                                      type={variables.INPUT}
+                                      rules={[
+                                        variables.RULES.EMPTY_INPUT,
+                                        variables.RULES.MAX_LENGTH_INPUT,
+                                      ]}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      name={[field.name, 'birth_date']}
+                                      label="Ngày sinh"
+                                      fieldKey={[field.fieldKey, 'birth_date']}
+                                      type={variables.DATE_PICKER}
+                                      onChange={onChaneDate}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <Form.Item label="Tuổi (tháng)" name={[field.name, 'month_age']}>
+                                      {dayOfBirth &&
+                                        moment().diff(moment(dayOfBirth), 'month')}
+                                    </Form.Item>
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      data={genders}
+                                      name={[field.name, 'sex']}
+                                      label="Giới tính"
+                                      fieldKey={[field.fieldKey, 'sex']}
+                                      type={variables.SELECT}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
+                                    />
+                                  </Pane>
+                                  <Pane className="col-lg-4">
+                                    <FormItem
+                                      data={relationships}
+                                      name={[field.name, 'category_relationship_id']}
+                                      label="Mối quan hệ"
+                                      fieldKey={[field.fieldKey, 'category_relationship_id']}
+                                      type={variables.SELECT}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
+                                    />
+                                  </Pane>
+                                </Pane>
+
+                                {fields.length > 0 && (
+                                  <DeleteOutlined
+                                    className="position-absolute"
+                                    style={{ top: 20, right: 20 }}
+                                    onClick={() => {
+                                      const student = students?.find(
+                                        (item, studentsIndex) => studentsIndex === index,
+                                      );
+                                      setDeleteRows((prev) => [...prev, student.id]);
+                                      remove(index);
+                                    }}
+                                  />
+                                )}
+                              </Pane>
+                            ))}
 
                             <Pane style={{ padding: 20 }} className="border-bottom">
                               <Button

@@ -20,7 +20,6 @@ import SocialNetworkForm from './forms/social-network';
 import EventsForm from './forms/events';
 import TagsForm from './forms/tags';
 import CalendarForm from './forms/calendar';
-import PotentialForm from './forms/potential';
 import InterestForm from './forms/interest';
  
 import { menu, defaultKey } from './menu';
@@ -40,7 +39,6 @@ const forms = {
   events: <EventsForm />,
   tags: <TagsForm />,
   calendar: <CalendarForm />,
-  potential: <PotentialForm />,
   interest : <InterestForm/>,
 };
 
