@@ -30,7 +30,7 @@ services:
     image: postgres:12
     command: postgres -c 'max_connections=500'
     ports:
-      - 5432:5432
+      - ${DB_PORT}:5432
     environment:
       POSTGRES_DB: ${MYSQL_DATABASE}
       POSTGRES_USER: ${MYSQL_USER}
