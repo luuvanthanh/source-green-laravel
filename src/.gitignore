@@ -12,3 +12,4 @@ npm-debug.log
 yarn-error.log
 /storage/worker.log
 .idead/
+laravel-echo-server.lock

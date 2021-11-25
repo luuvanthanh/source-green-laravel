@@ -86,7 +86,7 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
      */
     public function collection()
     {
-        return $this->belongsToMany(\GGPHP\Collection\Models\Collection::class, 'user_collections');
+        return $this->belongsToMany(\GGPHP\Collection\Models\Collection::class, 'user_collection');
     }
 
     /**

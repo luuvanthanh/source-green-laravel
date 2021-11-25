@@ -61,7 +61,11 @@
             "GGPHP\\Category\\": "packages/category/src/",
             "GGPHP\\TourGuide\\": "packages/tour-guide/src/",
             "GGPHP\\TravelAgency\\": "packages/travel-agency/src/",
-            "GGPHP\\Event\\": "packages/event/src/"
+            "GGPHP\\Event\\": "packages/event/src/",
+            "GGPHP\\Camera\\": "packages/camera/src/",
+            "GGPHP\\Collection\\": "packages/collection/src/",
+            "GGPHP\\CameraServer\\": "packages/camera-server/src/",
+            "GGPHP\\VideoWall\\": "packages/video-wall/src/"
         },
         "classmap": [
             "database/seeds",

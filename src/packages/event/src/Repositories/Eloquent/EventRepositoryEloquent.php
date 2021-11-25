@@ -159,4 +159,37 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         return parent::find($id);
     }
+
+    public function handleEventMuti(array $attributes, $id)
+    {
+        $event = $this->model()::findOrFail($id);
+
+        if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
+            $attributes['is_follow'] = true;
+        }
+
+        $event->update([
+            "status" => $attributes['status'],
+            "status_detail" => $attributes['status_detail'],
+            "is_follow" => $attributes['is_follow']
+        ]);
+
+        $attributes['event_id'] = $id;
+        EventHandle::create($attributes);
+
+        foreach ($attributes['related_events'] as $relatedEventId) {
+            $relatedEvent = $this->model()::findOrFail($relatedEventId);
+
+            $relatedEvent->update([
+                "status" => $attributes['status'],
+                "status_detail" => $attributes['status_detail'],
+                "is_follow" => $attributes['is_follow']
+            ]);
+
+            $attributes['event_id'] = $relatedEventId;
+            EventHandle::create($attributes);
+        }
+
+        return parent::find($id);
+    }
 }
