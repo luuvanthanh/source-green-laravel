@@ -161,7 +161,7 @@ const Index = memo((props) => {
       if (count < employeesId.length) {
         count += 1;
       } else {
-        count = 0;
+        count = 1;
         index = 0;
       }
       return {

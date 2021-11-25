@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag, Modal , Select} from 'antd';
+import { Form, Tag, Modal, Select } from 'antd';
 import classnames from 'classnames';
 import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -76,6 +76,7 @@ class Index extends PureComponent {
       isModalVisible: false,
       isModal: false,
       dataCheck: {},
+      dataTags: [],
     };
     setIsMounted(true);
   }
@@ -239,21 +240,8 @@ class Index extends PureComponent {
     });
   };
 
-  onChangeTypes = (e, record) => {
-    const { dispatch } = this.props;
-    const payload = {
-      notificationModuleId: record?.moduleId,
-      notificationTypeIds: e,
-    };
-    dispatch({
-      type: 'crmSaleParentsLead/UPDATE',
-      payload: [payload],
-      callback: (response) => {
-        if (response) {
-          this.onLoad();
-        }
-      },
-    });
+  onChangeTypes = (e) => {
+    console.log('tags', e);
   };
 
   loadCategories = () => {
@@ -288,6 +276,51 @@ class Index extends PureComponent {
     });
   };
 
+  onSelectColor = (e, record) => {
+    const { dispatch, tags } = this.props;
+    const { dataTags } = this.state;
+    this.setStateData(() => ({
+      dataTags: tags.map((item) => ({
+        ...item,
+        tag_id: item.name === e[e] ? item.id : "",
+      })),
+    }));
+    const obj = _.extend({}, e);
+    console.log('record', record);
+    console.log('e', obj);
+    console.log('tags', tags);
+    console.log('dataTags', dataTags);
+    dispatch({
+      type: 'crmSaleLeadAdd/ADD_TAGS',
+      payload: {
+        customer_tag: [{ tag_id: e.map((i)=> i)}],
+        customer_lead_id: record.id
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+  handleChange = (event, record) => {
+    const { dispatch, tags } = this.props;
+    dispatch({
+      type: 'crmSaleLeadAdd/ADD_TAGS',
+      payload: {
+        customer_tag: [{tag_id: record?.customerTag.map((i)=> i.id === event.value ? event.value : i.id)}],
+        customer_lead_id: record.id
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+
   /**
    * Function header table
    */
@@ -296,7 +329,6 @@ class Index extends PureComponent {
       location: { pathname },
       tags
     } = this.props;
-    console.log(tags)
     const columns = [
       {
         title: 'STT ',
@@ -372,33 +404,52 @@ class Index extends PureComponent {
         width: 250,
         render: (record) => (
           <>
-          {/* <Select
-            color={record?.customerTag?.map((item) => item?.tag?.color_code)}
-            value={record?.customerTag?.map((item) => item?.tag_id)}
-            mode="multiple"
-            dataSet={tags}
-            onChange={(e) => this.onChangeTypes(e, record)}
-            tagRender={<Tag
+            <Select
+            showArrow
               color={record?.customerTag?.map((item) => item?.tag?.color_code)}
-              style={{ marginRight: 3 }}
+              defaultValue= {record?.customerTag?.map((item) => item?.tag?.name)}
+              mode="multiple"
+              className="w-100"
+              onChange={(e) => this.onSelectColor(e, record)}
+              tagRender={(props) => <Tag
+                closable
+                onClose={() => {
+                  this.handleChange(props, record);
+                }}
+                className={stylesModule['tags-content']}
+                color={record?.customerTag?.map((item) => item?.tag?.color_code)}
+                style={{ marginRight: 3 }}
+              >
+                {record?.customerTag?.map((item) => item?.tag?.name)}
+              </Tag>}
             >
-              {record?.customerTag?.map((item) => item?.tag_id)}
-            </Tag>}
-          /> */}
-           <Select
-            mode="multiple"
-            className="w-100"
-            value={record?.customerTag?.map((item) => item?.tag?.name)}
-            style={{ backgroundColor: `${record?.customerTag?.map((item) => item?.tag?.color_code)}` }}
-            backgroundColor="red"
-            tagRender='red'
-          >
-            {tags.map((item) => (
-              <Option value={item?.name || ''} key={item.name} style={{ backgroundColor: `${item.color_code}` }}>
-                {item?.name || ''}
-              </Option>
-            ))}
-          </Select>
+              {tags.map((item, index) => (
+                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
+                  {item?.name || ''}
+                </Option>
+              ))}
+            </Select>
+            {/* <Select
+              removeIcon
+              mode="multiple"
+              className={stylesModule['wrapper-tags']}
+              onChange={(e) => this.onSelectColor(e, record)}
+              value={record?.customerTag?.map((item, index) =>
+                <Tag
+                  closable
+                  key={index}
+                  value={item?.tag?.id || ''}
+                  className={stylesModule['tags-content']}
+                  color={item?.tag?.color_code}>
+                  {item?.tag?.name}
+                </Tag>)}
+            >
+              {tags.map((item, index) => (
+                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
+                  {item?.name || ''}
+                </Option>
+              ))}
+            </Select> */}
           </>
         ),
       },
@@ -473,11 +524,11 @@ class Index extends PureComponent {
       location: { pathname },
       location,
     } = this.props;
+    console.log('data', data);
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
     };
-    console.log('data', data)
     const loading = effects['crmSaleParentsLead/GET_DATA'];
     return (
       <>
