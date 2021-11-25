@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
-import { Form, Tag, Modal } from 'antd';
+import { Form, Tag, Modal, Select } from 'antd';
 import classnames from 'classnames';
 import { get, debounce, head, last } from 'lodash';
 import { Helmet } from 'react-helmet';
@@ -17,6 +17,7 @@ import AssignmentComponent from './components/assignment';
 import Check from './components/list-coincide';
 import stylesModule from './styles.module.scss';
 
+const { Option } = Select;
 const dataSearchCheck = [
   { id: 'full_name:true', name: 'Tên' },
   { id: 'address:true', name: 'Địa chỉ' },
@@ -44,13 +45,14 @@ const mapStateToProps = ({ crmSaleParentsLead, loading }) => ({
   data: crmSaleParentsLead.data,
   error: crmSaleParentsLead.error,
   pagination: crmSaleParentsLead.pagination,
-  branches: crmSaleParentsLead.branches,
   city: crmSaleParentsLead.city,
   district: crmSaleParentsLead.district,
   tags: crmSaleParentsLead.tags,
   lead: crmSaleParentsLead.lead,
   employees: crmSaleParentsLead.employees,
   searchSource: crmSaleParentsLead.searchSource,
+  branch: crmSaleParentsLead.branch,
+  types: crmSaleParentsLead.types,
   loading,
 });
 @connect(mapStateToProps)
@@ -74,6 +76,7 @@ class Index extends PureComponent {
       isModalVisible: false,
       isModal: false,
       dataCheck: {},
+      dataTags: [],
     };
     setIsMounted(true);
   }
@@ -88,8 +91,9 @@ class Index extends PureComponent {
   }
 
   onSelectChange = (e) => {
-    this.setStateData((prevState) => ({
-      dataSource: prevState.dataSource.map((item) => ({
+    const { data } = this.props;
+    this.setStateData(() => ({
+      dataSource: data.map((item) => ({
         ...item,
         isActive: !!e.includes(item.id),
       })),
@@ -236,6 +240,10 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeTypes = (e) => {
+    console.log('tags', e);
+  };
+
   loadCategories = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -262,7 +270,56 @@ class Index extends PureComponent {
       type: 'crmSaleParentsLead/GET_SEARCH',
       payload: {},
     });
+    dispatch({
+      type: 'crmSaleParentsLead/GET_BRANCH',
+      payload: {},
+    });
   };
+
+  onSelectColor = (e, record) => {
+    const { dispatch, tags } = this.props;
+    const { dataTags } = this.state;
+    this.setStateData(() => ({
+      dataTags: tags.map((item) => ({
+        ...item,
+        tag_id: item.name === e[e] ? item.id : "",
+      })),
+    }));
+    const obj = _.extend({}, e);
+    console.log('record', record);
+    console.log('e', obj);
+    console.log('tags', tags);
+    console.log('dataTags', dataTags);
+    dispatch({
+      type: 'crmSaleLeadAdd/ADD_TAGS',
+      payload: {
+        customer_tag: [{ tag_id: e.map((i)=> i)}],
+        customer_lead_id: record.id
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
+  handleChange = (event, record) => {
+    const { dispatch, tags } = this.props;
+    dispatch({
+      type: 'crmSaleLeadAdd/ADD_TAGS',
+      payload: {
+        customer_tag: [{tag_id: record?.customerTag.map((i)=> i.id === event.value ? event.value : i.id)}],
+        customer_lead_id: record.id
+      },
+      callback: (response) => {
+        if (response) {
+          this.onLoad();
+        }
+      },
+    });
+  };
+
 
   /**
    * Function header table
@@ -270,6 +327,7 @@ class Index extends PureComponent {
   header = () => {
     const {
       location: { pathname },
+      tags
     } = this.props;
     const columns = [
       {
@@ -298,18 +356,6 @@ class Index extends PureComponent {
         render: (record) => record?.phone,
       },
       {
-        title: 'Địa chỉ',
-        key: 'address',
-        width: 200,
-        render: (record) => record?.address,
-      },
-      {
-        title: 'Tỉnh thành',
-        key: 'city',
-        width: 150,
-        render: (record) => <Text size="normal">{get(record, 'city.name')}</Text>,
-      },
-      {
         title: 'Quận',
         key: 'district',
         width: 150,
@@ -318,7 +364,7 @@ class Index extends PureComponent {
       {
         title: 'Tháng tuổi',
         key: 'age',
-        width: 100,
+        width: 150,
         render: (record) => (
           <>
             {record?.studentInfo?.map((item, index) => (
@@ -347,24 +393,65 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Nhân viên chăm sóc',
+        key: 'staff',
+        width: 250,
+        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
+      },
+      {
         title: 'Tag',
         key: 'tags',
         width: 250,
         render: (record) => (
           <>
-            {record?.customerTag?.map((item, index) => (
-              <Tag size="normal" color="#27a600" key={index}>
-                {get(item, 'tag.name')}
-              </Tag>
-            ))}
+            <Select
+            showArrow
+              color={record?.customerTag?.map((item) => item?.tag?.color_code)}
+              defaultValue= {record?.customerTag?.map((item) => item?.tag?.name)}
+              mode="multiple"
+              className="w-100"
+              onChange={(e) => this.onSelectColor(e, record)}
+              tagRender={(props) => <Tag
+                closable
+                onClose={() => {
+                  this.handleChange(props, record);
+                }}
+                className={stylesModule['tags-content']}
+                color={record?.customerTag?.map((item) => item?.tag?.color_code)}
+                style={{ marginRight: 3 }}
+              >
+                {record?.customerTag?.map((item) => item?.tag?.name)}
+              </Tag>}
+            >
+              {tags.map((item, index) => (
+                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
+                  {item?.name || ''}
+                </Option>
+              ))}
+            </Select>
+            {/* <Select
+              removeIcon
+              mode="multiple"
+              className={stylesModule['wrapper-tags']}
+              onChange={(e) => this.onSelectColor(e, record)}
+              value={record?.customerTag?.map((item, index) =>
+                <Tag
+                  closable
+                  key={index}
+                  value={item?.tag?.id || ''}
+                  className={stylesModule['tags-content']}
+                  color={item?.tag?.color_code}>
+                  {item?.tag?.name}
+                </Tag>)}
+            >
+              {tags.map((item, index) => (
+                <Option value={item?.id || ''} key={index} style={{ backgroundColor: `${item.color_code}` }}>
+                  {item?.name || ''}
+                </Option>
+              ))}
+            </Select> */}
           </>
         ),
-      },
-      {
-        title: 'Nhân viên chăm sóc',
-        key: 'staff',
-        width: 250,
-        render: (record) => <Text size="normal">{get(record, 'employee.full_name')}</Text>,
       },
       {
         title: 'Nguồn tìm kiếm',
@@ -425,14 +512,18 @@ class Index extends PureComponent {
     const {
       district,
       tags,
+      branch,
       lead,
+      data,
       employees,
       searchSource,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
+      location,
     } = this.props;
+    console.log('data', data);
     const { search, dataSource, isModalVisible, dataCheck, isModal } = this.state;
     const rowSelection = {
       onChange: this.onSelectChange,
@@ -441,7 +532,7 @@ class Index extends PureComponent {
     return (
       <>
         {isModal ? (
-          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} />
+          <Check dataCheck={dataCheck} parentCallback={this.callbackFunction} location={location} />
         ) : (
           <>
             <Helmet title="Phụ huynh lead" />
@@ -450,7 +541,7 @@ class Index extends PureComponent {
                 <Text color="dark">Phụ huynh lead</Text>
                 <div className="d-flex ">
                   <div>
-                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal}>
+                    <Button color="danger" icon="shrink" className="ml-2" onClick={this.showModal} >
                       Check trùng
                     </Button>
                     <Modal
@@ -555,8 +646,9 @@ class Index extends PureComponent {
                     </div>
                     <div className="col-lg-3">
                       <FormItem
-                        name="c"
-                        onChange={(event) => this.onChangeSelect(event, 'branchId')}
+                        name="branch"
+                        data={branch}
+                        onChange={(event) => this.onChangeSelect(event, 'branch_id')}
                         type={variables.SELECT}
                         allowClear={false}
                         placeholder="Chọn cơ sở"
@@ -590,7 +682,7 @@ class Index extends PureComponent {
                         type={variables.SELECT}
                         options={['id', 'full_name']}
                         allowClear={false}
-                        placeholder="Chọn nhân viên"
+                        placeholder="Chọn nhân viên chăm sóc"
                       />
                     </div>
                     <div className="col-lg-3">
@@ -608,7 +700,7 @@ class Index extends PureComponent {
                 <Table
                   bordered={false}
                   columns={this.header(params)}
-                  dataSource={dataSource}
+                  dataSource={data}
                   loading={loading}
                   rowSelection={{ ...rowSelection }}
                   pagination={this.pagination(pagination)}
@@ -639,6 +731,9 @@ Index.propTypes = {
   lead: PropTypes.arrayOf(PropTypes.any),
   employees: PropTypes.arrayOf(PropTypes.any),
   searchSource: PropTypes.arrayOf(PropTypes.any),
+  data: PropTypes.arrayOf(PropTypes.any),
+  branch: PropTypes.arrayOf(PropTypes.any),
+  types: PropTypes.arrayOf(PropTypes.any),
 };
 
 Index.defaultProps = {
@@ -652,6 +747,9 @@ Index.defaultProps = {
   lead: [],
   employees: [],
   searchSource: [],
+  data: [],
+  branch: [],
+  types: [],
 };
 
 export default Index;

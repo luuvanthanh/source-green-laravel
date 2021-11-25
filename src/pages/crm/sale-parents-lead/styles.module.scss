@@ -202,3 +202,21 @@
     border: 1px solid #EAEAEA !important;
   }
 }
+
+.wrapper-tags {
+  width: 100%;
+  :global(.ant-select-selection-item){
+  background-color: transparent !important;
+  border: unset;
+  padding-left: 0;
+  padding-right: 0;
+
+}
+}
+
+.tags-content {
+  color:  #3E4247 !important;
+  :global(.ant-tag-close-icon) {
+    color: #3E4247  !important;
+  }
+}

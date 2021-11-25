@@ -34,9 +34,7 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, city, district, search, branches, townWards }) => {
     const formRef = useRef();
-    const [files, setFiles] = Helper.isJSON(details?.file_image)
-      ? useState(JSON.parse(details?.file_image))
-      : useState([]);
+    const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
@@ -293,7 +291,7 @@ const General = memo(
                 <Pane className="col-lg-4">
                   <FormItem
                     options={['id', 'name']}
-                    name="branches_id"
+                    name="branch_id"
                     data={branches}
                     placeholder="Chọn"
                     type={variables.SELECT}

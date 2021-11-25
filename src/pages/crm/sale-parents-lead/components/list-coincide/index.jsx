@@ -278,12 +278,13 @@ class Index extends PureComponent {
       {
         title: 'Hình ảnh phụ huynh',
         key: 'img',
-        width: 160,
+        width: 170,
         render: (record) => (
           <>
             <Radio.Group
               onChange={(e) => this.onChangeAvt(e, record, 'avtActive')}
               value={record.avtActive}
+              style={{display: 'flex', justifyContent: 'center'}}
             >
               <Radio value={record.file_image}>
                 <AvatarTable fileImage={Helper.getPathAvatarJson(record.file_image)} />
@@ -385,14 +386,14 @@ class Index extends PureComponent {
       {
         title: 'Xã phường',
         key: 'townWard',
-        width: 170,
+        width: 200,
         render: (record) => (
           <>
             <Radio.Group
               onChange={(e) => this.onChangeTownWard(e, record, 'townWardActive')}
               value={record.townWardActive}
             >
-              <Radio value={record.name}>{get(record, 'townWard.name')}</Radio>
+              <Radio value={record.town_ward_id}>{get(record, 'townWard.name')}</Radio>
             </Radio.Group>
           </>
         ),
@@ -407,7 +408,7 @@ class Index extends PureComponent {
               onChange={(e) => this.onChangeDistrict(e, record, 'districtActive')}
               value={record.districtActive}
             >
-              <Radio value={record.district}>{get(record, 'district.name')}</Radio>
+              <Radio value={record.district_id}>{get(record, 'district.name')}</Radio>
             </Radio.Group>
           </>
         ),
@@ -422,7 +423,7 @@ class Index extends PureComponent {
               onChange={(e) => this.onChangeCity(e, record, 'cityActive')}
               value={record.cityActive}
             >
-              <Radio value={record.city}>{get(record, 'city.name')}</Radio>
+              <Radio value={record.city_id}>{get(record, 'city.name')}</Radio>
             </Radio.Group>
           </>
         ),
@@ -435,14 +436,14 @@ class Index extends PureComponent {
           <>
             <Radio.Group
               value={record.studentsNameActive}
-              >
-                <Radio value={record.studentInfo}  onChange={(e) => this.onChangeStudentsName(e, record, 'studentsNameActive')}>
-              {record?.studentInfo?.map((item, index) => (
+            >
+              <Radio value={record.studentInfo} onChange={(e) => this.onChangeStudentsName(e, record, 'studentsNameActive')}>
+                {record?.studentInfo?.map((item, index) => (
                   <Text size="normal" key={index}>
                     {item.full_name}
                   </Text>
-              ))} 
-                </Radio>
+                ))}
+              </Radio>
             </Radio.Group>
           </>
         ),
@@ -477,17 +478,17 @@ class Index extends PureComponent {
       centered: true,
       okText: 'Đồng ý',
       cancelText: 'Đóng',
-      content:(
+      content: (
         <>
-       <div className={stylesModule['wrapper-modal-coincide']}> <img src="/images/group.png" alt="bmi" /> </div>
-         <div className={stylesModule['wrapper-coincide-title']}>Dữ liệu bản ghi phụ huynh được chọn sẽ được giữ lại. Dữ liệu bản ghi khác sẽ bị xóa, nhưng những dữ liệu liên quan sẽ được giao cho bản ghi phụ huynh đã chọn.</div>
-         <div className={stylesModule['wrapper-coincide-description']}>Bạn có chắc muốn gộp dữ liệu các bản ghi này?</div>
+          <div className={stylesModule['wrapper-modal-coincide']}> <img src="/images/group.png" alt="bmi" /> </div>
+          <div className={stylesModule['wrapper-coincide-title']}>Dữ liệu bản ghi phụ huynh được chọn sẽ được giữ lại. Dữ liệu bản ghi khác sẽ bị xóa, nhưng những dữ liệu liên quan sẽ được giao cho bản ghi phụ huynh đã chọn.</div>
+          <div className={stylesModule['wrapper-coincide-description']}>Bạn có chắc muốn gộp dữ liệu các bản ghi này?</div>
         </>
       ),
       onOk() {
         callback();
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -496,9 +497,10 @@ class Index extends PureComponent {
     const { dataCoincide } = this.state;
     const items = dataCoincide.filter((item) => item !== null);
     const student = items.filter((item) => item.studentsNameActive);
-    const a =  student.map((item) => item.studentsNameActive);
+    const a = student.map((item) => item.studentsNameActive);
     const { search } = this.state;
     const {
+      location: { query },
       location: { pathname },
     } = this.props;
     if (items.length && a.length) {
@@ -516,14 +518,21 @@ class Index extends PureComponent {
               phone: items.map((item) => item.phoneActive).join(''),
               other_phone: items.map((item) => item.other_phoneActive).join(''),
               address: items.map((item) => item.addressActive).join(''),
-              town_ward_id: items.map((item) => get(item, 'townWardActive.id')).join(''),
-              district_id: items.map((item) => get(item, 'districtActive.id')).join(''),
-              studen_info: a[0].map((i) => ({full_name: i.full_name, birth_date: i.birth_date})),
-              city_id: items.map((item) => get(item, 'cityActive.id')).join(''),
+              town_ward_id: items?.map((item) => item.townWardActive).join(''),
+              district_id: items?.map((item) => item.districtActive).join(''),
+              city_id: items?.map((item) => item.cityActive).join(''),
+              studen_info: a[0].map((i) => ({ full_name: i.full_name, birth_date: i.birth_date })),
             },
             callback: (response, error) => {
               if (response) {
                 this.isModal();
+                this.props.dispatch({
+                  type: 'crmSaleParentsLead/GET_DATA',
+                  payload: {
+                    page: query?.page,
+                    limit: query?.limit,
+                  },
+                });
               }
               if (error) {
                 if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -539,13 +548,9 @@ class Index extends PureComponent {
               }
             },
           });
-          history.push({
-            pathname,
-            query: Helper.convertParamSearch(search),
-          });
         },
       });
-    }else {
+    } else {
       this.confirmAction({
         callback: () => {
           this.props.dispatch({
@@ -560,13 +565,20 @@ class Index extends PureComponent {
               phone: items.map((item) => item.phoneActive).join(''),
               other_phone: items.map((item) => item.other_phoneActive).join(''),
               address: items.map((item) => item.addressActive).join(''),
-              town_ward_id: items.map((item) => get(item, 'townWardActive.id')).join(''),
-              district_id: items.map((item) => get(item, 'districtActive.id')).join(''),
-              city_id: items.map((item) => get(item, 'cityActive.id')).join(''),
+              town_ward_id: items?.map((item) => item.townWardActive).join(''),
+              district_id: items?.map((item) => item.districtActive).join(''),
+              city_id: items?.map((item) => item.cityActive).join(''),
             },
             callback: (response, error) => {
               if (response) {
                 this.isModal();
+                this.props.dispatch({
+                  type: 'crmSaleParentsLead/GET_DATA',
+                  payload: {
+                    page: query?.page,
+                    limit: query?.limit,
+                  },
+                });
               }
               if (error) {
                 if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -620,16 +632,28 @@ class Index extends PureComponent {
     }
   };
 
-  onChangeCoin = (e, record = {}, key = 'codeActive', keyOrigin = 'code') => {
+  onChangeCoin = (e, record = {}, key = ['codeActive'], keyOrigin = 'code') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
         [key]: record.id === item.id ? record[keyOrigin] : undefined,
+        nameActive:  record.id === item.id ? record.full_name : undefined,
+        avtActive:  record.id === item.id ? record.file_image : undefined,
+        sexActive:  record.id === item.id ? record.sex : undefined,
+        emailActive:  record.id === item.id ? record.email : undefined,
+        phoneActive:  record.id === item.id ? record.phone : undefined,
+        other_phoneActive:  record.id === item.id ? record.other_phone : undefined,
+        addressActive:  record.id === item.id ? record.address : undefined,
+        townWardActive: record.id === item.id ? record.town_ward_id : undefined,
+        districtActive: record.id === item.id ? record.district_id : undefined,
+        cityActive: record.id === item.id ? record.city_id : undefined,
+        studentsNameActive: record.id === item.id ? record.studentInfo : undefined,
+        StudentsBirthDayActive: record.id === item.id ? record.studentInfo : undefined,
       })),
     }));
   };
 
-  onChangeName = (e, record = {}, key = 'codename', keyOrigin = 'full_name') => {
+  onChangeName = (e, record = {}, key = 'nameActive', keyOrigin = 'full_name') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
@@ -692,7 +716,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeTownWard = (e, record = {}, key = 'townWardActive', keyOrigin = 'townWard') => {
+  onChangeTownWard = (e, record = {}, key = 'townWardActive', keyOrigin = 'town_ward_id') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
@@ -701,7 +725,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeDistrict = (e, record = {}, key = 'districtActive', keyOrigin = 'district') => {
+  onChangeDistrict = (e, record = {}, key = 'districtActive', keyOrigin = 'district_id') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,
@@ -710,7 +734,7 @@ class Index extends PureComponent {
     }));
   };
 
-  onChangeCity = (e, record = {}, key = 'cityActive', keyOrigin = 'city') => {
+  onChangeCity = (e, record = {}, key = 'cityActive', keyOrigin = 'city_id') => {
     this.setState((prevState) => ({
       dataCoincide: prevState.dataCoincide.map((item) => ({
         ...item,

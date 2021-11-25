@@ -44,11 +44,12 @@ export function add(data = {}) {
   });
 }
 
-export function addCoincide(data = {}) {
+export function addCoincide(data = []) {
   return request(`/v1/merge-customer-leads`, {
     method: 'POST',
-    data,
-    parse: true,
+    data:{
+     ...data,
+    },
   });
 }
 
@@ -67,6 +68,7 @@ export function getCoincide(params = {}) {
         'studentInfo',
         'city',
         'district',
+        'townWard',
       ]),
       employeeId: params.employeeId && params.employeeId.join(','),
     },

@@ -8,6 +8,8 @@ export default {
     district: [],
     tags: [],
     lead: [],
+    branch: [],
+    types: [],
     searchSource: [],
     employees: [],
     pagination: {
@@ -58,12 +60,19 @@ export default {
       ...state,
       searchSource: payload.parsePayload,
     }),
+    SET_BRANCH: (state, { payload }) => ({
+      ...state,
+      branch: payload.parsePayload,
+    }),
+    SET_TYPES: (state, { payload }) => ({
+      ...state,
+      types: payload.items,
+    }),
   },
   effects: {
-    *GET_DATA({ payload, callback }, saga) {
+    *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        callback(response);
         if (response) {
           yield saga.put({
             type: 'SET_DATA',
@@ -160,6 +169,34 @@ export default {
         const response = yield saga.call(services.getSearch, payload);
         yield saga.put({
           type: 'SET_SEARCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_BRANCH({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getBranch, payload);
+        yield saga.put({
+          type: 'SET_BRANCH',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_TYPES({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getTypes, payload);
+        yield saga.put({
+          type: 'SET_TYPES',
           payload: response,
         });
       } catch (error) {
