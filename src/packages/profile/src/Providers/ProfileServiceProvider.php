@@ -7,11 +7,13 @@ use GGPHP\Profile\Repositories\Contracts\InsurranceRepository;
 use GGPHP\Profile\Repositories\Contracts\LabourContractRepository;
 use GGPHP\Profile\Repositories\Contracts\ProbationaryContractRepository;
 use GGPHP\Profile\Repositories\Contracts\SabbaticalLeaveRepository;
+use GGPHP\Profile\Repositories\Contracts\SeasonalContractRepository;
 use GGPHP\Profile\Repositories\Eloquent\HealthInsuranceRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\InsurranceRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\LabourContractRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\ProbationaryContractRepositoryEloquent;
 use GGPHP\Profile\Repositories\Eloquent\SabbaticalLeaveRepositoryEloquent;
+use GGPHP\Profile\Repositories\Eloquent\SeasonalContractRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class ProfileServiceProvider extends ServiceProvider
@@ -40,5 +42,6 @@ class ProfileServiceProvider extends ServiceProvider
         $this->app->bind(InsurranceRepository::class, InsurranceRepositoryEloquent::class);
         $this->app->bind(SabbaticalLeaveRepository::class, SabbaticalLeaveRepositoryEloquent::class);
         $this->app->bind(HealthInsuranceRepository::class, HealthInsuranceRepositoryEloquent::class);
+        $this->app->bind(SeasonalContractRepository::class, SeasonalContractRepositoryEloquent::class);
     }
 }
