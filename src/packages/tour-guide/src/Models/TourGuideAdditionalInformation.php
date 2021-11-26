@@ -10,6 +10,8 @@ class TourGuideAdditionalInformation extends UuidModel implements HasMedia
 {
     use InteractsWithMedia;
 
+    public $timestamps = false;
+
     /**
      * Declare the table name
      */

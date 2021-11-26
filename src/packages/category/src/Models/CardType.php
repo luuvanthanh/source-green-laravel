@@ -20,7 +20,7 @@ class CardType extends  UuidModel implements HasMedia
     protected $table = 'card_types';
 
     public $fillable = [
-        'color', 'scope_of_practice', 'duration', 'condition', 'application_form_for_card', 'sequence'
+        'color', 'scope_of_practice', 'duration', 'condition', 'application_form_for_card', 'sequence', 'name'
     ];
 
     public function registerMediaCollections(): void
