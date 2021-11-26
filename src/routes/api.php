@@ -37,5 +37,12 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Event\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\Camera\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+        \GGPHP\Collection\RouteRegistrar::routes();
+        \GGPHP\CameraServer\RouteRegistrar::routes();
+        \GGPHP\VideoWall\RouteRegistrar::routes();
     });
 });

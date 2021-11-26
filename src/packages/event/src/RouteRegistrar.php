@@ -32,6 +32,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('events', 'EventController');
 
             \Route::post('event-handle/{id}', 'EventController@handleEvent');
+
+            \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti');
         });
     }
 }

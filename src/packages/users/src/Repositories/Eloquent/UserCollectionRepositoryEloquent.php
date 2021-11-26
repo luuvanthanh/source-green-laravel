@@ -119,7 +119,7 @@ class UserCollectionRepositoryEloquent extends BaseRepository implements UserCol
             }
         }
 
-        \DB::table('user_collections')->insert($dataUserCollections);
+        \DB::table('user_collection')->insert($dataUserCollections);
         \DB::table('model_has_permissions')->insert($datasUserPermission);
 
         return [];
@@ -145,5 +145,4 @@ class UserCollectionRepositoryEloquent extends BaseRepository implements UserCol
 
         return true;
     }
-
 }

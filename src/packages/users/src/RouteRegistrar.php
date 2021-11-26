@@ -58,5 +58,7 @@ class RouteRegistrar extends CoreRegistrar
         \Route::delete('user-collections', 'UserCollectionController@removeUser');
 
         \Route::get('users/{id}/collections', 'UserCollectionController@assigned');
+
+        \Route::get('me', 'AuthController@authenticated');
     }
 }

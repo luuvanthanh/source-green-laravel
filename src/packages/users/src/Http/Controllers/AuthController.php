@@ -105,4 +105,15 @@ class AuthController extends Controller
     {
         return Auth::guard('api');
     }
+
+    /**
+     * authenticated
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function authenticated(Request $request)
+    {
+        $user = $this->userRepository->find(Auth::id());
+        return $this->success($user, trans('lang::messages.common.getInfoSuccess'));
+    }
 }
