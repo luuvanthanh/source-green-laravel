@@ -55,7 +55,7 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - '6379:6379'
+      - '${LARAVEL_ECHO_SERVER_REDIS_PORT}:6379'
   laravel-echo-server:
     image: oanhnn/laravel-echo-server:latest
     environment:
