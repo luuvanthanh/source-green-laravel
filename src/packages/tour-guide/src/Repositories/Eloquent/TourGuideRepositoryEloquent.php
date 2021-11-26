@@ -3,6 +3,7 @@
 namespace GGPHP\TourGuide\Repositories\Eloquent;
 
 use GGPHP\TourGuide\Models\TourGuide;
+use GGPHP\TourGuide\Models\TourGuideAdditionalInformation;
 use GGPHP\TourGuide\Presenters\TourGuidePresenter;
 use GGPHP\TourGuide\Repositories\Contracts\TourGuideRepository;
 use Prettus\Repository\Criteria\RequestCriteria;

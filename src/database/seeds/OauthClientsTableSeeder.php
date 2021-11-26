@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class OauthClientsTableSeeder extends Seeder
@@ -12,39 +14,39 @@ class OauthClientsTableSeeder extends Seeder
      */
     public function run()
     {
-        
+
 
         \DB::table('oauth_clients')->delete();
-        
-        \DB::table('oauth_clients')->insert(array (
-            0 => 
-            array (
-                'id' => 1,
+
+        \DB::table('oauth_clients')->insert(array(
+            0 =>
+            array(
+                'id' => '94f79c4e-5619-4ced-ba43-d150fd8d9449',
                 'user_id' => NULL,
                 'name' => 'Laravel Personal Access Client',
-                'secret' => 'Iujas1LBMFUb6GnzNlgSDyl8Yd8hdr49FWZv4sDD',
+                'secret' => 'xs35K3VhqyI9uEENBO97wgkNvUI6gggEWhL4kaBQ',
+                'provider' => NULL,
                 'redirect' => 'http://localhost',
                 'personal_access_client' => 1,
                 'password_client' => 0,
                 'revoked' => 0,
-                'created_at' => '2020-07-13 20:33:38',
-                'updated_at' => '2020-07-13 20:33:38',
+                'created_at' => '2021-11-26 14:33:22',
+                'updated_at' => '2021-11-26 14:33:22',
             ),
-            1 => 
-            array (
-                'id' => 2,
+            1 =>
+            array(
+                'id' => '94f79c4e-af07-4557-9342-420bdb8be78c',
                 'user_id' => NULL,
                 'name' => 'Laravel Password Grant Client',
-                'secret' => 'QpXeR4t3rnatH9TP7wQfNZMggFNZ2RE8wEcqulVE',
+                'secret' => 'gNwkLr7QOpKCSLVULb812K3zhqcezLSkZsIHh381',
+                'provider' => 'users',
                 'redirect' => 'http://localhost',
                 'personal_access_client' => 0,
                 'password_client' => 1,
                 'revoked' => 0,
-                'created_at' => '2020-07-13 20:33:38',
-                'updated_at' => '2020-07-13 20:33:38',
+                'created_at' => '2021-11-26 14:33:22',
+                'updated_at' => '2021-11-26 14:33:22',
             ),
         ));
-        
-        
     }
 }

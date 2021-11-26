@@ -29,7 +29,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('travel-agencies', 'TravelAgencyController')->only('index', 'show');
+            \Route::resource('travel-agencies', 'TravelAgencyController')->only('index', 'show', 'store');
             \Route::post('travel-agencie-tour-guides/{id}', 'TravelAgencyController@addTourGuidesToTravelAgencie');
             \Route::delete('travel-agencie-tour-guides/{id}', 'TravelAgencyController@deleteTourGuidesToTravelAgencie');
         });

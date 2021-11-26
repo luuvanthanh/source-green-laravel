@@ -1,5 +1,14 @@
 <?php
 
+
+use Database\Seeders\CardTypesTableSeeder;
+use Database\Seeders\EventsTableSeeder;
+use Database\Seeders\OauthClientsTableSeeder;
+use Database\Seeders\OauthPersonalAccessClientsTableSeeder;
+use Database\Seeders\ObjectTypesTableSeeder;
+use Database\Seeders\TourGuidesTableSeeder;
+use Database\Seeders\TouristDestinationsTableSeeder;
+use Database\Seeders\TravelAgenciesTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,5 +24,13 @@ class DatabaseSeeder extends Seeder
         $this->call(EventTypesTableSeeder::class);
         $this->call(ProvincesTableSeeder::class);
         $this->call(LanguagesTableSeeder::class);
+        $this->call(OauthClientsTableSeeder::class);
+        $this->call(OauthPersonalAccessClientsTableSeeder::class);
+        $this->call(TouristDestinationsTableSeeder::class);
+        $this->call(ObjectTypesTableSeeder::class);
+        $this->call(CardTypesTableSeeder::class);
+        $this->call(TourGuidesTableSeeder::class);
+        $this->call(TravelAgenciesTableSeeder::class);
+        $this->call(EventsTableSeeder::class);
     }
 }

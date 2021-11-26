@@ -17,6 +17,7 @@ class CreateCardTypesTable extends Migration
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->string('color');
+            $table->string('name');
             $table->string('scope_of_practice');
             $table->string('duration', 1000);
             $table->string('condition', 1000);
