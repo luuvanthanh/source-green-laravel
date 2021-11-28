@@ -75,6 +75,10 @@ class Index extends PureComponent {
         payload: params,
       });
     }
+    dispatch({
+      type: 'crmSaleParentsLead/GET_DATA',
+      payload:{},
+    });
   }
 
   componentDidUpdate(prevProps) {

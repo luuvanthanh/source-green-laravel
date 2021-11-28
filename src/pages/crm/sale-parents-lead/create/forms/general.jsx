@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
@@ -9,7 +9,9 @@ import { Helper, variables } from '@/utils';
 import Text from '@/components/CommonComponent/Text';
 import { useDispatch } from 'dva';
 
+import FormItem from '@/components/CommonComponent/FormItem';
 import Pane from '@/components/CommonComponent/Pane';
+import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
 import Loading from '@/components/CommonComponent/Loading';
 import stylesModule from '../../styles.module.scss';
@@ -25,13 +27,43 @@ const mapStateToProps = ({ loading, crmSaleLeadAdd }) => ({
 const General = memo(({ loading: { effects }, match: { params }, details, error }) => {
   const formRef = useRef();
   const mounted = useRef(false);
+  const [dataUser, setDataUser] = useState([]);
   const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
   const dispatch = useDispatch();
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
   }, []);
-  
+
+  const loadingSubmit =
+    effects[`crmSaleAssignment/ASSIGNMENT`];
+
+  /**
+      * Function submit form modal
+      * @param {object} values values of form
+      */
+  const onFinish = (values) => {
+    dispatch({
+      type: 'crmSaleAssignment/ASSIGNMENT',
+      payload: [{ employee_id: values.employee_id, customer_lead_id: params.id, employee_info: dataUser.find((item) => item.id === values.employee_id) }],
+      callback: (response, error) => {
+        if (error) {
+          if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+            error.data.errors.forEach((item) => {
+              formRef.current.setFields([
+                {
+                  name: get(item, 'source.pointer'),
+                  errors: [get(item, 'detail')],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
+
+
   useEffect(() => {
     if (!isEmpty(details) && params.id) {
       formRef.current.setFieldsValue({
@@ -43,31 +75,32 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
       });
     }
   }, [details]);
-  
-    useEffect(() => {
-      if (params.id) {
-        dispatch({
-          type: 'crmSaleLeadAdd/GET_DETAILS',
-          payload: params,
-        });
-      }
-    }, [params.id]);
+  useEffect(() => {
+    dispatch({
+      type: 'crmSaleAssignment/GET_EMPLOYEES',
+      callback: (response) => {
+        if (response) {
+          setDataUser(response?.parsePayload);
+        }
+      },
+    });
+    if (params.id) {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }, [params.id]);
   return (
-    <Form layout="vertical" ref={formRef}>
+    <Form layout="vertical" ref={formRef} onFinish={onFinish}>
       <Pane className="card">
         <Loading loading={loading} isError={error.isError} params={{ error }}>
           <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
             <Heading type="form-title" style={{ marginBottom: 20 }}>
-              Thông tin cơ bản
+              Thông tin chung
             </Heading>
 
             <div className="row" {...marginProps}>
-              <div className="col-lg-4">
-                <div className="ant-col ant-form-item-label">
-                  <label className="ant-form-item-required">Nguồn</label>
-                </div>
-                <Text size="normal"  className={stylesModule['general-detail']}>{get(details, 'searchSource.name')}</Text>
-              </div>
               <div className="col-lg-4">
                 <div className="ant-col ant-form-item-label">
                   <label className="ant-form-item-required">Người tạo</label>
@@ -94,11 +127,17 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
                 <div className="ant-col ant-form-item-label">
                   <label className="ant-form-item-required">Nhân viên chăm sóc</label>
                 </div>
-                <Text size="normal" className={stylesModule['general-detail']}>{get(details, 'employee.full_name')}</Text>
+                <FormItem
+                  options={['id', 'full_name']}
+                  data={dataUser}
+                  name="employee_id"
+                  placeholder="Chọn"
+                  type={variables.SELECT}
+                />
               </div>
               <div className="col-lg-4">
                 <div className="ant-col ant-form-item-label">
-                  <label className="ant-form-item-required">Tình trạng khách hàng</label>
+                  <label className="ant-form-item-required">Tình trạng chăm sóc lead</label>
                 </div>
                 <div size="normal" className={stylesModule['general-detail']}>
                   {details?.statusCare
@@ -111,6 +150,11 @@ const General = memo(({ loading: { effects }, match: { params }, details, error 
                 </div>
               </div>
             </div>
+          </Pane>
+          <Pane className="p20 d-flex flex-row-reverse ">
+            <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
+              Lưu
+            </Button>
           </Pane>
         </Loading>
       </Pane>
@@ -131,7 +175,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   branches: [],
