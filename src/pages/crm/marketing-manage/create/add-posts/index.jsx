@@ -1,8 +1,8 @@
 import { memo, useRef, useEffect, useState } from 'react';
-import { Breadcrumb, Form } from 'antd';
+import { Breadcrumb, Form, Input } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
-import Quill from '@/components/CommonComponent/Quill';
+// import Quill from '@/components/CommonComponent/Quill';
 import { Link, connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 
@@ -59,18 +59,18 @@ const General = memo(
           : 'crmMarketingManageAdd/ADD_POSTS',
         payload: params.detailId
           ? {
-            ...detailsAddPost,
-            ...values,
-            content,
-            marketing_program_id: params.id,
-            file_image: JSON.stringify(files),
-          }
+              ...detailsAddPost,
+              ...values,
+              content,
+              marketing_program_id: params.id,
+              file_image: JSON.stringify(files),
+            }
           : {
-            ...values,
-            content,
-            file_image: JSON.stringify(files),
-            marketing_program_id: params.id,
-          },
+              ...values,
+              content,
+              file_image: JSON.stringify(files),
+              marketing_program_id: params.id,
+            },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -154,13 +154,26 @@ const General = memo(
                         rules={[variables.RULES.EMPTY_INPUT]}
                       />
                     </Pane>
-                    <Pane className="col-lg-12">
+                    {/* <Pane className="col-lg-12">
                       <Pane className="ant-col ant-form-item-label">
                         <label>
                           <span>Nội dung</span>
                         </label>
                       </Pane>
                       <Quill onChange={onChangeEditor} value={content} />
+                    </Pane> */}
+                    <Pane className="col-lg-12 mb15">
+                      <Pane className="ant-col ant-form-item-label">
+                        <label>
+                          <span>Nội dung</span>
+                        </label>
+                      </Pane>
+                      <Input.TextArea
+                        value={content}
+                        autoSize={{ minRows: 15, maxRows: 15 }}
+                        placeholder="Nhập"
+                        onChange={(e) => onChangeEditor(e.target.value)}
+                      />
                     </Pane>
                     <Pane className="col-lg-12">
                       <Form.Item name="file_image" label="Ảnh đại diện">
@@ -206,7 +219,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   detailsAddPost: {},
-  dispatch: () => { },
+  dispatch: () => {},
   loading: {},
   error: {},
   branches: [],

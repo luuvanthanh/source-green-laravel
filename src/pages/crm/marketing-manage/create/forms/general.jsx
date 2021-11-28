@@ -11,6 +11,7 @@ import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
+import stylesModule from '../../styles.module.scss';
 
 const marginProps = { style: { marginBottom: 12 } };
 const genders = [
@@ -92,6 +93,10 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
     }
   }, [details]);
 
+  const myFunction = () => {
+    navigator.clipboard.writeText(details.link_web_form);
+  };
+
   return (
     <Form layout="vertical" ref={formRef} onFinish={onFinish}>
       <Pane className="card">
@@ -138,13 +143,21 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
                 />
               </Pane>
               {params.id ? (
-                <Pane className="col-lg-12">
-                  <FormItem
-                    value={details.link_web_form}
-                    label="Link Web Form"
-                    type={variables.INPUT}
-                  />
-                </Pane>
+                <>
+                  <Pane className="col-lg-12">
+                    <span >Link Web Form</span>
+                  </Pane>
+                  <Pane className="col-lg-10">
+                      <FormItem
+                        className={stylesModule['genneral-title-link']}
+                        value={details.link_web_form}
+                        type={variables.INPUT}
+                      />
+                  </Pane>
+                  <Pane className="col-lg-2">
+                    <Button onClick={myFunction()} className={stylesModule['genneral-btn-link']} >Copy Link</Button>
+                  </Pane>
+                </>
               ) : (
                 ''
               )}

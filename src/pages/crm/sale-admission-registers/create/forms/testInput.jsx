@@ -37,6 +37,22 @@ const General = memo(
           callback: (response, error) => {
             if (response) {
               setIsModalVisible(false);
+              dispatch({
+                type: 'crmSaleAdmissionAdd/GET_TEST_INPUT',
+                payload: { admission_register_id: params.id },
+                callback: (response) => {
+                  if (response) {
+                    setStudents(response.parsePayload);
+                    formRef.current.setFieldsValue({
+                      data: response.parsePayload.map((item) => ({
+                        ...item,
+                        date_interview: moment(item.date_interview),
+                        time_interview: moment(item.time_interview, variables.DATE_FORMAT.HOUR),
+                      })),
+                    });
+                  }
+                },
+              });
             }
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -69,9 +85,7 @@ const General = memo(
           }),
           customer_lead_id: params.id,
         }));
-        const payload = {
-          ...items,
-        };
+        const payload = items[0];
         dispatch({
           type: 'crmSaleAdmissionAdd/ADD_TEST_INPUT',
           payload,
@@ -95,7 +109,6 @@ const General = memo(
                 },
               });
             }
-
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
                 error.data.errors.forEach((item) => {
@@ -156,7 +169,7 @@ const General = memo(
 
     return (
       <>
-        {students.length > 0 ? (
+        {students.length > 10 ? (
           <Form
             layout="vertical"
             ref={formRef}
@@ -367,7 +380,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => { },
+  dispatch: () => {},
   loading: {},
   // error: {},
   employees: [],

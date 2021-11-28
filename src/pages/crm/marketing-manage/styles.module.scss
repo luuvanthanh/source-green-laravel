@@ -168,3 +168,25 @@
     outline: none;
   }
 }
+
+.genneral-title-link {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.genneral-btn-link {
+  position: absolute;
+  right: 20px;
+  margin-top: 10px;
+  background-color: green !important;
+  border: none !important; 
+}
+
+.genneral-btn-link:focus {
+  position: absolute;
+  right: 20px;
+  margin-top: 10px;
+  color: black !important;
+  background-color: #FF0000 !important;
+  border: none !important; 
+}

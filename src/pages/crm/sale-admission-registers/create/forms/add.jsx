@@ -19,13 +19,10 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   customerLead: crmSaleAdmissionAdd.customerLead,
 });
 const General = memo(
-  ({ dispatch, match: { params }, details, loading: { effects }, error, customerLead }) => {
+  ({ dispatch, match: { params }, loading: { effects }, error, customerLead }) => {
     const formRef = useRef();
     const mounted = useRef(false);
-    const loadingSubmit =
-      effects[`crmSaleAdmissionAdd/ADD`] ||
-      effects[`crmSaleAdmissionAdd/UPDATE`] ||
-      effects[`crmSaleAdmissionAdd/UPDATE_STATUS`];
+    const loadingSubmit = effects[`crmSaleAdmissionAdd/ADD`];
     const loading =
       effects[`crmSaleAdmissionAdd/GET_DETAILS`] ||
       effects[`crmSaleAdmissionAdd/GET_STUDENTS_LEAD`];
@@ -76,10 +73,8 @@ const General = memo(
      */
     const onFinish = (values) => {
       dispatch({
-        type: params.id ? 'crmSaleAdmissionAdd/UPDATE' : 'crmSaleAdmissionAdd/ADD',
-        payload: params.id
-          ? { ...details, ...values, id: params.id }
-          : { ...values, status: 'WORKING' },
+        type: 'crmSaleAdmissionAdd/ADD',
+        payload: { ...values },
         callback: (response, error) => {
           if (response) {
             history.goBack();
@@ -227,7 +222,6 @@ const General = memo(
 General.propTypes = {
   dispatch: PropTypes.func,
   match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   customerLead: PropTypes.arrayOf(PropTypes.any),
@@ -235,7 +229,6 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  details: {},
   dispatch: () => {},
   loading: {},
   error: {},
