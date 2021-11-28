@@ -169,7 +169,7 @@ const General = memo(
 
     return (
       <>
-        {students.length > 10 ? (
+        {students.length > 0 ? (
           <Form
             layout="vertical"
             ref={formRef}
@@ -301,6 +301,7 @@ const General = memo(
                       onOk={() => handleOk()}
                       className={stylesModule['wrapper-modal']}
                       onCancel={() => handleCancel()}
+                      width={['auto']}
                       footer={[
                         <p
                           key="back"
@@ -328,10 +329,10 @@ const General = memo(
                             <FormItem
                               options={['id', 'full_name']}
                               name="employee_id"
+                              style={{ width: '200px' }}
                               data={employees}
                               placeholder="Chọn"
                               type={variables.SELECT}
-                              width={400}
                               label="giáo viên phỏng vấn trẻ"
                             />
                           </Pane>
@@ -340,7 +341,7 @@ const General = memo(
                             <FormItem
                               name="date_interview"
                               label="Ngày phỏng vấn"
-                              width="200"
+                              style={{ width: '200px' }}
                               type={variables.DATE_PICKER}
                             />
                           </Pane>
@@ -348,8 +349,8 @@ const General = memo(
                           <Pane className="col-lg-4">
                             <FormItem
                               label="Giờ phỏng vấn"
+                              style={{ width: '200px' }}
                               name="time_interview"
-                              width="200"
                               type={variables.TIME_PICKER}
                             />
                           </Pane>
