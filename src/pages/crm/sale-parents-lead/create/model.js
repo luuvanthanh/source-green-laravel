@@ -34,6 +34,8 @@ export default {
     detailsInterest: {},
     relationships: [],
     townWards: [],
+    categoryEvents: [],
+    eventDetails: {},
   },
   reducers: {
     SET_BRANCHESS: (state, { payload }) => ({
@@ -139,7 +141,7 @@ export default {
     }),
     SET_EVENTS_DETAILS: (state, { payload }) => ({
       ...state,
-      details: payload.parsePayload,
+      eventDetails: payload.parsePayload,
     }),
     SET_REFERENCES: (state, { payload }) => ({
       ...state,
@@ -164,6 +166,10 @@ export default {
     SET_TOWN_WARDS: (state, { payload }) => ({
       ...state,
       townWards: payload.parsePayload,
+    }),
+    SET_CATEGORY_EVENTS: (state, { payload }) => ({
+      ...state,
+      categoryEvents: payload.parsePayload,
     }),
   },
   effects: {
@@ -544,6 +550,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error?.data?.error);
+      }
+    },
+    *GET_CATEGORY_EVENTS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getCategoryEvents, payload);
+        yield saga.put({
+          type: 'SET_CATEGORY_EVENTS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },
