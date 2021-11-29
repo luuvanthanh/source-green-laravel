@@ -95,12 +95,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $event = $this->model()::create($attributes);
 
-        if (!empty($attributes['images'])) {
-            $event->addMediaToEntity($event, $attributes['images'], 'image');
+        if (!empty($attributes['image'])) {
+            $event->addMediaFromDisk($attributes['image']['path'])->usingName($attributes['image']['file_name'])->preservingOriginal()->toMediaCollection('image');
         }
 
-        if (!empty($attributes['videos'])) {
-            $event->addMediaToEntity($event, $attributes['videos'], 'video');
+        if (!empty($attributes['video'])) {
+            $event->addMediaFromDisk($attributes['video']['path'])->usingName($attributes['video']['file_name'])->preservingOriginal()->toMediaCollection('video');
         }
 
         return parent::find($event->id);
@@ -112,14 +112,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         $event->update($attributes);
 
-        if (!empty($attributes['images'])) {
-            $event->clearMediaCollection('images');
-            $event->addMediaToEntity($event, $attributes['images'], 'image');
+        if (!empty($attributes['image'])) {
+            $event->addMediaFromDisk($attributes['image']['path'])->usingName($attributes['image']['file_name'])->preservingOriginal()->toMediaCollection('image');
         }
 
-        if (!empty($attributes['videos'])) {
-            $event->clearMediaCollection('videos');
-            $event->addMediaToEntity($event, $attributes['videos'], 'video');
+        if (!empty($attributes['video'])) {
+            $event->addMediaFromDisk($attributes['video']['path'])->usingName($attributes['video']['file_name'])->preservingOriginal()->toMediaCollection('video');
         }
 
         return parent::find($id);

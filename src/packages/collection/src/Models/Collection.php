@@ -2,14 +2,14 @@
 
 namespace GGPHP\Collection\Models;
 
-use GGPHP\Core\Models\UUidModel;
+use GGPHP\Core\Models\UuidModel;
 use GGPHP\Users\Models\User;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use GGPHP\Camera\Models\Camera;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Collection extends UUidModel implements HasMedia
+class Collection extends UuidModel implements HasMedia
 {
     use SoftDeletes;
     use InteractsWithMedia;
@@ -25,10 +25,8 @@ class Collection extends UUidModel implements HasMedia
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'type', 'location', 'created_by', 'created_at', 'updated_at',
+        'name', 'description', 'type', 'location', 'created_by'
     ];
-
-    protected $guard_name = 'api';
 
     /**
      * The storage format of the model's date columns.

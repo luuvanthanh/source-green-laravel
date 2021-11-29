@@ -139,13 +139,9 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
      */
     public function create(array $attributes)
     {
-        $attributes['created_by'] = auth()->user()->id;
+        $attributes['created_by'] = "fe9880d9-8872-4c70-b299-cfb609118ef9";
         $collection = Collection::create($attributes);
 
-        if (!empty($attributes['avatar'])) {
-            $path = StorageService::upload($attributes['avatar'], config('filesystems.pathToUpload'));
-            $collection->addMediaFromDisk($path['path'])->preservingOriginal()->toMediaCollection('avatar');
-        }
 
         return parent::find($collection->id);
     }
@@ -171,7 +167,7 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
             $cameraArray = [];
             foreach ($cameras as $key => $camera) {
                 if (!empty($camera['id'])) {
-                    $cameraArray[$camera['id']] = !empty($camera['priority']) ? ['priority' => $camera['priority']] : [] ;
+                    $cameraArray[$camera['id']] = !empty($camera['priority']) ? ['priority' => $camera['priority']] : [];
                 }
             }
 
@@ -240,7 +236,6 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
 
                 return true;
             }
-
         } catch (\Exception $e) {
             \DB::rollback();
             \Log::error($e->getMessage());

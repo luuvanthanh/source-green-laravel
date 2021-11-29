@@ -33,6 +33,9 @@ class Event extends UuidModel implements HasMedia
         'MISTAKE' => 1,
         'HANDLE_NOW' => 2,
         'HANDLE_FOLLOW' => 3,
+        'HANDLE_NOW_MUTI' => 4,
+        'HANDLE_FOLLOW_MUTI' => 5,
+        'SKIP_MUTI' => 6,
     ];
 
 
@@ -43,8 +46,14 @@ class Event extends UuidModel implements HasMedia
      */
     protected $fillable = [
         'event_type_id', 'tourist_destination_id', 'camera_id', 'warning_level', 'status', 'is_follow',
-        'time', 'tour_guide_id', 'classify', 'status_detail'
+        'time', 'tour_guide_id', 'classify', 'status_detail', 'is_read'
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')->singleFile();
+        $this->addMediaCollection('video')->singleFile();
+    }
 
     /**
      * The attributes that should be hidden for arrays.

@@ -35,7 +35,6 @@ class TourGuideTransformer extends BaseTransformer
         $avatar = null;
 
         if (!is_null($media)) {
-            // dd($media->getPath());
             $avatar = [
                 "path" => $media->getPath(),
                 "name" => $media->name,
