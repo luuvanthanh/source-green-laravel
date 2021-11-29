@@ -80,10 +80,16 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
      */
     public function create(array $attributes)
     {
-        $role = Role::create($attributes);
+        \DB::beginTransaction();
+        try {
+            $role = Role::create($attributes);
 
-        if (!empty($attributes['permission_id'])) {
-            $role->givePermissionTo($attributes['permission_id']);
+            if (!empty($attributes['permission_id'])) {
+                $role->givePermissionTo($attributes['permission_id']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
         }
 
         return parent::find($role->id);
@@ -97,12 +103,19 @@ class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
      */
     public function update(array $attributes, $id)
     {
-        $role = Role::findOrFail($id);
+        \DB::beginTransaction();
 
-        $role->update($attributes);
+        try {
+            $role = Role::findOrFail($id);
 
-        if (!empty($attributes['permission_id'])) {
-            $role->syncPermissions($attributes['permission_id']);
+            $role->update($attributes);
+
+            if (!empty($attributes['permission_id'])) {
+                $role->syncPermissions($attributes['permission_id']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
         }
 
         return parent::find($id);

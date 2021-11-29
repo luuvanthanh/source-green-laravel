@@ -9,6 +9,15 @@ class CameraServer extends UuidModel
 {
     use SoftDeletes;
 
+    const STATUS = [
+        "NOT_ACTIVATED" => 0,
+        "CONNECTING" => 1,
+        "CONNECTION" => 2,
+        "DISABLE" => 3,
+        "DISCONNECT" => 4,
+        "LOCK" => 5,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -18,12 +27,15 @@ class CameraServer extends UuidModel
         'ipv4', 'ipv6', 'nas_folder', 'status', 'user_id'
     ];
 
-    protected $guard_name = 'api';
-
     /**
      * The storage format of the model's date columns.
      *
      * @var string
      */
     protected $dateTimeFormat = 'c';
+
+    public function camera()
+    {
+        return $this->hasMany(\GGPHP\Camera\Models\Camera::class);
+    }
 }

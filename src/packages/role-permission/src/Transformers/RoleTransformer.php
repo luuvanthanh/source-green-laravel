@@ -35,6 +35,7 @@ class RoleTransformer extends BaseTransformer
     {
         return [
             'name' => $model->name,
+            'is_unlimited' => $model->is_unlimited,
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,
         ];
@@ -48,5 +49,4 @@ class RoleTransformer extends BaseTransformer
     {
         return $this->collection($role->permissions, new PermissionTransformer, 'Permission');
     }
-
 }

@@ -14,7 +14,7 @@ class RouteRegistrar extends CoreRegistrar
     /**
      * Register routes for bread.
      *
-     * @return void
+     * @return void 
      */
     public function all()
     {
@@ -31,5 +31,9 @@ class RouteRegistrar extends CoreRegistrar
         // CameraServer
         \Route::resource('camera-servers', 'CameraServerController');
         \Route::post('camera-servers/uuid', 'CameraServerController@uuid');
+
+        \Route::post('camera-servers/{id}/transfer-cameras', 'CameraServerController@transferCamera');
+
+        \Route::post('camera-servers/{id}/change-status', 'CameraServerController@changeStatus');
     }
 }

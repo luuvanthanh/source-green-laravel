@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Arr;
@@ -30,12 +31,18 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
         Authorizable,
         CanResetPassword,
         MustVerifyEmail,
-        InteractsWithMedia;
+        InteractsWithMedia,
+        SoftDeletes;
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')->singleFile();
     }
+
+    const STATUS = [
+        'ACTIVITY' => 0,
+        'LOCK' => 1,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -143,33 +150,5 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
     public function permissionsWithCollection($collectionId)
     {
         return $this->permissions()->where('collection_id', $collectionId)->get();
-    }
-
-    /**
-     * Add scope filter user by request params
-     *
-     * @param type $query
-     * @param type $request
-     * @return type
-     */
-    public function scopeByFilter($query, $request)
-    {
-        // Filter by collection
-        if ($request->has('collection_id')) {
-            $collectionId = $request->collection_id;
-            $query->whereHas('collection', function ($query) use ($collectionId) {
-                return $query->where('collection_id', $collectionId);
-            });
-        }
-
-        // Filter by role
-        if ($request->has('role_id')) {
-            $roleId = explode(',', $request->role_id);
-            $query->whereHas('roles', function ($query) use ($roleId) {
-                $query->whereIn('role_id', $roleId);
-            });
-        }
-
-        return $query;
     }
 }

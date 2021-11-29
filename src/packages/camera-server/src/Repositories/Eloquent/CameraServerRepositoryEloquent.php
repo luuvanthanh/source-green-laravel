@@ -63,6 +63,14 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
      */
     public function getCameraServers(array $attributes)
     {
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->whereIn('status', $attributes['status']);
+        }
+
+        if (!empty($attributes['id_server'])) {
+            $this->model = $this->model->whereLike('id', $attributes['id_server']);
+        }
+
         if (empty($attributes['limit'])) {
             $result = $this->all();
         } else {
@@ -70,5 +78,31 @@ class CameraServerRepositoryEloquent extends BaseRepository implements CameraSer
         }
 
         return $result;
+    }
+
+    public function transferCamera(array $attributes, $id)
+    {
+        $cameraServer = CameraServer::findOrFail($id);
+
+        $cameras = $cameraServer->camera;
+
+        if (count($cameras) > 0) {
+            $cameras->update([
+                'camera_server_id' => $attributes['camera_server_to']
+            ]);
+        }
+
+        return parent::parserResult($cameraServer);
+    }
+
+    public function changeStatus(array $attributes, $id)
+    {
+        $cameraServer = CameraServer::findOrFail($id);
+
+        $cameraServer->update([
+            'status' => $attributes['status']
+        ]);
+
+        return parent::parserResult($cameraServer);
     }
 }

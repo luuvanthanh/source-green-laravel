@@ -41,7 +41,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->userRepository->listing($request);
+        $attributes = $request->all();
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Order::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
+
+        $users = $this->userRepository->listing($attributes);
+
         return $this->success($users, trans('lang::messages.common.getListSuccess'));
     }
 
@@ -139,4 +151,16 @@ class UserController extends Controller
         return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
 
+    public function lockUser(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = User::STATUS[$attributes['status']];
+        }
+
+        $user = $this->userRepository->lockUser($attributes, $id);
+
+        return $this->success($user, trans('lang::messages.common.modifySuccess'));
+    }
 }

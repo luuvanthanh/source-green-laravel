@@ -19,12 +19,13 @@ class AccessTokenController extends ATController
     {
         try {
             $username = $request->getParsedBody()['username'];
-            $user = User::where('email', '=', $username)->firstOrFail();
+            User::where('email', '=', $username)->where('status', User::STATUS['ACTIVITY'])->firstOrFail();
             //generate token
             $tokenResponse = parent::issueToken($request);
             //convert response to json string
             $content = $tokenResponse->getContent();
             $data = json_decode($content, true);
+
             if (isset($data['error'])) {
                 throw new OAuthServerException('The user credentials were incorrect.', 6, 'invalid_credentials', 401);
             }

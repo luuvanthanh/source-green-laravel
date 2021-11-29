@@ -63,7 +63,6 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
                 }
             }
         }
-
         foreach ($dataPermission as $permission) {
             Permission::updateOrCreate(["name" => $permission['name']], $permission);
         }
@@ -78,5 +77,4 @@ class PermissionRepositoryEloquent extends BaseRepository implements PermissionR
 
         return $permission;
     }
-
 }

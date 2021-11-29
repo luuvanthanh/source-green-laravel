@@ -63,17 +63,42 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      *
      * @param type $request
      */
-    public function listing($request)
+    public function listing($attributes)
     {
-        // Add scope filter
-        $this->scopeQuery(function ($query) use ($request) {
-            return $query->byFilter($request);
-        });
 
-        if (empty($request->limit)) {
+        // Filter by key
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->where(function ($query) use ($attributes) {
+                $query->orWhereLike('full_name', $attributes['key']);
+                $query->orWhereLike('email', $attributes['key']);
+            });
+        }
+
+        // Filter by status
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->whereIn('status', $attributes['status']);
+        }
+
+        // Filter by collection
+        if (!empty($attributes['collection_id'])) {
+            $collectionId = $attributes['collection_id'];
+            $this->model = $this->model->whereHas('collection', function ($query) use ($collectionId) {
+                return $query->where('collection_id', $collectionId);
+            });
+        }
+
+        // Filter by role
+        if (!empty($attributes['role_id'])) {
+            $roleId = explode(',', $attributes['role_id']);
+            $this->model = $this->model->whereHas('roles', function ($query) use ($roleId) {
+                $query->whereIn('role_id', $roleId);
+            });
+        }
+
+        if (empty($attributes['limit'])) {
             $users = $this->all();
         } else {
-            $users = $this->paginate($request->limit);
+            $users = $this->paginate($attributes['limit']);
         }
 
         return $users;
@@ -165,18 +190,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         $user->update($attributes);
 
         // Check if avatar null, remove avatar
-        if (array_key_exists('avatar', $attributes)) {
-            if (empty($attributes['avatar'])) {
-                $media = $user->getAvatar();
-                if ($media) {
-                    $media->delete();
-                    $user->clearMediaCollection('avatar');
-                }
-            } else {
-                $path = StorageService::upload($attributes['avatar'], config('filesystems.pathToUpload'));
-                $user->addMediaFromDisk($path['path'])->preservingOriginal()->toMediaCollection('avatar');
-            }
-        };
+        if (!empty($attributes['avatar'])) {
+            $user->addMediaFromDisk($attributes['avatar']['path'])->usingName($attributes['avatar']['file_name'])->preservingOriginal()->toMediaCollection('avatar');
+        }
 
         if (!empty($attributes['role_id'])) {
             $user->syncRoles($attributes['role_id']);
@@ -185,6 +201,15 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         if (!empty($attributes['permission_id'])) {
             $user->syncPermissions($attributes['permission_id']);
         }
+
+        return $this->parserResult($user);
+    }
+
+    public function lockUser(array $attributes, $id)
+    {
+        $user = $this->model()::findOrFail($id);
+
+        $user->update($attributes);
 
         return $this->parserResult($user);
     }

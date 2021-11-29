@@ -42,9 +42,8 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         \Route::put('users/me', 'UserController@updateProfile');
-        \Route::group(['middleware' => ['permission:user.update.other']], function () {
-            \Route::delete('users/{id}', 'UserController@destroy');
-        });
+        \Route::delete('users/{id}', 'UserController@destroy');
+
         \Route::resource('users', 'UserController')->except(['destroy']);
         \Route::get('session', 'AuthController@logged')->name('logged');
         \Route::post('logout', 'AuthController@logout');
@@ -60,5 +59,7 @@ class RouteRegistrar extends CoreRegistrar
         \Route::get('users/{id}/collections', 'UserCollectionController@assigned');
 
         \Route::get('me', 'AuthController@authenticated');
+
+        \Route::put('user-lock/{id}', 'UserController@lockUser');
     }
 }

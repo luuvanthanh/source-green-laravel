@@ -2,7 +2,11 @@
 
 namespace GGPHP\TourGuide\Transformers;
 
+use GGPHP\Category\Transformers\CardTypeTransformer;
+use GGPHP\Category\Transformers\LanguageTransformer;
+use GGPHP\Category\Transformers\ObjectTypeTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Event\Transformers\EventTransformer;
 use GGPHP\TourGuide\Models\TourGuide;
 
 /**
@@ -27,10 +31,12 @@ class TourGuideTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        // dd(config('filesystems'));
         $media = $model->getAvatar();
         $avatar = null;
 
         if (!is_null($media)) {
+            // dd($media->getPath());
             $avatar = [
                 "path" => $media->getPath(),
                 "name" => $media->name,
@@ -48,8 +54,11 @@ class TourGuideTransformer extends BaseTransformer
      */
     public function includeTourGuideAdditionalInformation(TourGuide $tourGuide)
     {
+        if (is_null($tourGuide->tourGuideAdditionalInformation)) {
+            return;
+        }
 
-        return $this->collection($tourGuide->tourGuideAdditionalInformation, new TourGuideAdditionalInformationTransformer, 'TourGuideAdditionalInformation');
+        return $this->item($tourGuide->tourGuideAdditionalInformation, new TourGuideAdditionalInformationTransformer, 'TourGuideAdditionalInformation');
     }
 
     /**
