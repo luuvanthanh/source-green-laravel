@@ -82,17 +82,27 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
             $response = FacebookService::publishPagePost($attributes);
             $facebook_post_id = $response->id;
         } else {
-            $path = json_decode($article->file_image);
-            $url = env('IMAGE_URL') . $path[0];
-            if (pathinfo($url, PATHINFO_EXTENSION) == "mp4") {
+            $paths = json_decode($article->file_image);
+
+            foreach ($paths as $path) {
+                $urls[] = env('IMAGE_URL') . $path;
+            }
+            $video = false;
+            foreach ($urls as $url) {
+                if (pathinfo($url, PATHINFO_EXTENSION) == "mp4") {
+                    $video = true;
+                    break;
+                }
+            }
+            if ($video) {
                 $attributes['title'] = $article->name;
                 $attributes['description'] = $article->content;
-                $response = FacebookService::publishPagePostWithVideo($attributes, $url);
+                $response = FacebookService::publishPagePostWithVideo($attributes, $urls);
 
                 $video_id = $response->id;
             } else {
-                $response = FacebookService::publishPagePostWithImage($attributes, $url);
-                $facebook_post_id = $response->post_id;
+                $response = FacebookService::publishPagePostWithImage($attributes, $urls);
+                $facebook_post_id = $response->id;
             }
         }
 
@@ -110,7 +120,7 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         }
 
         PostFacebookInfo::create($data);
-        
+
         return $response;
     }
 
@@ -138,7 +148,9 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
                 $postFacebookInfo->quantity_comment = $quantity_comment - 1;
             }
 
-            $postFacebookInfo->update();
+            if (!empty($postFacebookInfo)) {
+                $postFacebookInfo->update();
+            }
 
             if ($attributes['value']['item'] == "post" && $attributes['value']['verb'] == "remove") {
                 PostFacebookInfo::where('facebook_post_id', $attributes['value']['post_id'])->delete();
