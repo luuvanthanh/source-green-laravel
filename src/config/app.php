@@ -189,6 +189,7 @@ return [
         GGPHP\Crm\Employee\Providers\EmployeeServiceProvider::class,
         GGPHP\Crm\AdmissionRegister\Providers\AdmissionRegisterServiceProvider::class,
         GGPHP\Crm\WebForm\Providers\WebFormCustomerServiceProvider::class,
+        GGPHP\Crm\Icon\Providers\IconServiceProvider::class,
     ],
 
     /*
