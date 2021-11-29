@@ -71,7 +71,7 @@ class EventTransformer extends BaseTransformer
      */
     public function includeEventHandle(Event $event)
     {
-        if (!is_null($event->eventHandle)) {
+        if (is_null($event->eventHandle)) {
             return;
         }
 
@@ -83,7 +83,7 @@ class EventTransformer extends BaseTransformer
      */
     public function includeEventType(Event $event)
     {
-        if (!is_null($event->eventType)) {
+        if (is_null($event->eventType)) {
             return;
         }
 
@@ -95,7 +95,7 @@ class EventTransformer extends BaseTransformer
      */
     public function includeTouristDestination(Event $event)
     {
-        if (!is_null($event->touristDestination)) {
+        if (is_null($event->touristDestination)) {
             return;
         }
 
@@ -107,7 +107,7 @@ class EventTransformer extends BaseTransformer
      */
     public function includeCamera(Event $event)
     {
-        if (!is_null($event->camera)) {
+        if (is_null($event->camera)) {
             return;
         }
 
@@ -119,7 +119,7 @@ class EventTransformer extends BaseTransformer
      */
     public function includeTourGuide(Event $event)
     {
-        if (!is_null($event->tourGuide)) {
+        if (is_null($event->tourGuide)) {
             return;
         }
 
