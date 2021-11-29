@@ -19,6 +19,7 @@ class RouteRegistrar extends CoreRegistrar
     public function all()
     {
         $this->forBread();
+        $this->forAi();
     }
 
     /**
@@ -34,6 +35,19 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('event-handle/{id}', 'EventController@handleEvent');
 
             \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti');
+        });
+    }
+
+
+    /**
+     * Register the routes needed for managing clients.
+     *
+     * @return void
+     */
+    public function forAi()
+    {
+        $this->router->group(['middleware' => []], function ($router) {
+            \Route::post('events', 'EventController@store');
         });
     }
 }

@@ -18,7 +18,20 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forGuest();
     });
 
-    Route::group(['middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'ai'], function () {
+        \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
+        \GGPHP\Event\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
+    });
+
+    \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    Route::group(['middleware' => ['auth:api']], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
@@ -26,9 +39,6 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
             $router->forBread();
         });
         \GGPHP\TourGuide\RouteRegistrar::routes(function ($router) {
-            $router->forBread();
-        });
-        \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
         \GGPHP\TravelAgency\RouteRegistrar::routes(function ($router) {

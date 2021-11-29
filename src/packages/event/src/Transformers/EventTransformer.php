@@ -2,8 +2,12 @@
 
 namespace GGPHP\Event\Transformers;
 
+use GGPHP\Camera\Transformers\CameraTransformer;
+use GGPHP\Category\Transformers\EventTypeTransformer;
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Event\Models\Event;
+use GGPHP\TourGuide\Transformers\TourGuideTransformer;
 
 /**
  * Class EventTransformer.
@@ -18,7 +22,7 @@ class EventTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['eventHandle'];
+    protected $availableIncludes = ['eventHandle', 'eventType', 'touristDestination', 'camera', 'tourGuide'];
 
     /**
      * Transform the custom field entity.
@@ -27,9 +31,38 @@ class EventTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        //get status
+        $status = null;
 
+        foreach (Event::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
 
-        return [];
+        //get statu detail
+        $statusDetail = null;
+
+        foreach (Event::STATUS_DETAIL as $key => $value) {
+            if ($value == $model->status_detail) {
+                $statusDetail = $key;
+            }
+        }
+
+        //get warning level
+        $warningLevel = null;
+
+        foreach (Event::WARNING_LEVEL as $key => $value) {
+            if ($value == $model->status_detail) {
+                $warningLevel = $key;
+            }
+        }
+
+        return [
+            'status' => $status,
+            'status_detail' => $statusDetail,
+            'warning_level' => $warningLevel
+        ];
     }
 
     /**
@@ -43,5 +76,53 @@ class EventTransformer extends BaseTransformer
         }
 
         return $this->item($event->eventHandle, new EventHandleTransformer, 'EventHandle');
+    }
+    /**
+     * Include EventAdditionalInformation
+     * @param Event $fault
+     */
+    public function includeEventType(Event $event)
+    {
+        if (!is_null($event->eventType)) {
+            return;
+        }
+
+        return $this->item($event->eventType, new EventTypeTransformer, 'EventType');
+    }
+    /**
+     * Include EventAdditionalInformation
+     * @param Event $fault
+     */
+    public function includeTouristDestination(Event $event)
+    {
+        if (!is_null($event->touristDestination)) {
+            return;
+        }
+
+        return $this->item($event->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
+    }
+    /**
+     * Include EventAdditionalInformation
+     * @param Event $fault
+     */
+    public function includeCamera(Event $event)
+    {
+        if (!is_null($event->camera)) {
+            return;
+        }
+
+        return $this->item($event->camera, new CameraTransformer, 'Camera');
+    }
+    /**
+     * Include EventAdditionalInformation
+     * @param Event $fault
+     */
+    public function includeTourGuide(Event $event)
+    {
+        if (!is_null($event->tourGuide)) {
+            return;
+        }
+
+        return $this->item($event->tourGuide, new TourGuideTransformer, 'TourGuide');
     }
 }

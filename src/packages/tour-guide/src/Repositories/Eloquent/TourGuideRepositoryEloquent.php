@@ -75,6 +75,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $this->model = $this->model->where('object_type_id', $attributes['object_type_id']);
         }
 
+        if (!empty($attributes['type'])) {
+            $this->model = $this->model->whereIn('type', $attributes['type']);
+        }
+
         if (empty($attributes['limit'])) {
             $tourGuide = $this->all();
         } else {

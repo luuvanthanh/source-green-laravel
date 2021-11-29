@@ -46,6 +46,7 @@ class UserTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
+        //get avatr
         $media = $model->getAvatar();
         $avatar = null;
 
@@ -56,8 +57,18 @@ class UserTransformer extends BaseTransformer
             ];
         }
 
+        //get status
+        $status = null;
+
+        foreach (User::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
         return [
-            "avatar" => $avatar
+            "avatar" => $avatar,
+            "status" => $status,
         ];
     }
 

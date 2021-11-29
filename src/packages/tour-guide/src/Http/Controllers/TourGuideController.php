@@ -69,7 +69,19 @@ class TourGuideController extends Controller
      */
     public function index(Request $request)
     {
-        $tourGuide = $this->tourGuideRepository->getTourGuide($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
+        $tourGuide = $this->tourGuideRepository->getTourGuide($attributes);
 
         return $this->success($tourGuide, trans('lang::messages.common.getListSuccess'));
     }

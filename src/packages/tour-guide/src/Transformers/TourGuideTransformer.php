@@ -31,7 +31,6 @@ class TourGuideTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        // dd(config('filesystems'));
         $media = $model->getAvatar();
         $avatar = null;
 
@@ -43,8 +42,28 @@ class TourGuideTransformer extends BaseTransformer
             ];
         }
 
+        //get type
+        $type = null;
+
+        foreach (TourGuide::TYPE as $key => $value) {
+            if ($value == $model->type) {
+                $type = $key;
+            }
+        }
+
+        //sex
+        $sex = null;
+
+        foreach (TourGuide::SEX as $key => $value) {
+            if ($value == $model->sex) {
+                $sex = $key;
+            }
+        }
+
         return [
-            "avatar" => $avatar
+            "avatar" => $avatar,
+            "type" => $type,
+            "sex" => $sex
         ];
     }
 
