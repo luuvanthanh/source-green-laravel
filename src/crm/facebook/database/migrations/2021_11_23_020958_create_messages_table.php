@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserFacebookInfos extends Migration
+class CreateMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateUserFacebookInfos extends Migration
      */
     public function up()
     {
-        Schema::create('user_facebook_infos', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->index()->unique();
             $table->primary('id');
-            $table->string('user_id');
-            $table->string('user_name')->nullable();
-            $table->string('user_email')->nullable();
-            $table->string('user_phone')->nullable();
-            $table->string('user_birth_date')->nullable();
-            $table->string('user_address')->nullable();
+            $table->string('content');
+            $table->string('message_id_facebook');
+            $table->uuid('from')->nullable();
+            $table->uuid('to')->nullable();
+            $table->uuid('conversation_id');
             $table->timestamps();
         });
     }
@@ -33,6 +32,6 @@ class CreateUserFacebookInfos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_facebook_infos');
+        Schema::dropIfExists('messages');
     }
 }
