@@ -62,11 +62,11 @@ const General = memo(() => {
 
 
     const onChangeDescription = (value) => {
-        mountedSet(setDescription, value);
+            mountedSet(setDescription, value);
     };
 
     const onChangeResult = (value) => {
-        mountedSet(setResult, value);
+            mountedSet(setResult, value);
     };
 
 
@@ -129,6 +129,12 @@ const General = memo(() => {
             dispatch({
                 type: 'crmSaleLeadAdd/GET_EVENTS',
                 payload: record,
+                callback: (response) => {
+                    if (response) {
+                        mountedSet(setDescription, response.parsePayload.description);
+                        mountedSet(setResult, response.parsePayload.result);
+                    }
+                  },
             });
             dispatch({
                 type: 'crmSaleLeadAdd/EVENTS',
@@ -506,6 +512,7 @@ const General = memo(() => {
                     ? { ...eventDetails, ...values, customer_lead_id: params.id, status: "COMING_EVENTS", description, result }
                     : { ...values, customer_lead_id: params.id, description },
                 callback: (response, error) => {
+                    mountedSet(setDescription, "");
                     if (response) {
                         setModal(false);
                         dispatch({
@@ -535,6 +542,7 @@ const General = memo(() => {
     const handleCancel = () => {
         setModal(false);
         formRef.current.resetFields();
+        mountedSet(setDescription, "");
         mountedSet(setObjects, {});
         dispatch({
             type: 'crmSaleLeadAdd/EVENTS',

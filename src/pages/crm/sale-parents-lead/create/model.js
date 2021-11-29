@@ -372,13 +372,13 @@ export default {
         callback(null, error);
       }
     },
-    *GET_EVENTS({ payload }, saga) {
+    *GET_EVENTS({ payload , callback}, saga) {
       try {
         yield saga.put({
           type: 'INIT_STATE',
         });
         const response = yield saga.call(services.getEvents, payload);
-
+        callback(response);
         yield saga.put({
           type: 'SET_EVENTS_DETAILS',
           payload: response,
