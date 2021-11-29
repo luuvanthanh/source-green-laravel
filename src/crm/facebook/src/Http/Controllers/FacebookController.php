@@ -4,6 +4,11 @@ namespace GGPHP\Crm\Facebook\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use GGPHP\Crm\Facebook\Events\FacebookReceiveMessage;
+use GGPHP\Crm\Facebook\Models\Conversation;
+use GGPHP\Crm\Facebook\Models\Page;
+use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
+use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
+use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleRepositoryEloquent;
@@ -11,6 +16,21 @@ use Illuminate\Http\Request;
 
 class FacebookController extends Controller
 {
+
+    /**
+     * @var $employeeRepository
+     */
+    protected $messageRepository;
+
+    /**
+     * UserController constructor.
+     * @param StatusParentLeadRepository $inOutHistoriesRepository
+     */
+    public function __construct(MessageRepository $messageRepository)
+    {
+        $this->messageRepository = $messageRepository;
+    }
+
     public function webhook(Request $request)
     {
         if (isset($request->hub_challenge)) {
@@ -41,12 +61,27 @@ class FacebookController extends Controller
                     }
 
                     if (isset($messaging['message']) && !is_null($text)) {
-                        \Log::info('send');
+                        //\Log::info('send');
                         broadcast(new FacebookReceiveMessage([
                             'sender' => $messaging['sender']['id'],
                             'recipient' => $messaging['recipient']['id'],
                             'message' => $text,
                         ]));
+                    }
+
+                    $messageId = null;
+                    if (isset($messaging['message']) && isset($messaging['message']['mid'])) {
+                        $messageId = $messaging['message']['mid'];
+                    }
+
+                    if (isset($messaging['message']) && !is_null($text) && !is_null($messageId)) {
+                        $attributes = [
+                            'from' => $messaging['sender']['id'],
+                            'to' => $messaging['recipient']['id'],
+                            'content' => $text,
+                            'message_id_facebook' => $messageId
+                        ];
+                        $this->messageRepository->checkCutomerConversationMessage($attributes);
                     }
                 }
                 if (isset($entry['changes'])) {

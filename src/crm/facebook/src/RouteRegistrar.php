@@ -40,6 +40,11 @@ class RouteRegistrar extends CoreRegistrar
                 \Route::post('pages/post', 'FacebookController@publishPagePost');
                 \Route::get('pages/post', 'FacebookController@getPagePost');
 
+                \Route::post('pages/synchronize-conversations', 'ConversationController@synchronizeConversation');
+                \Route::post('pages/send-messages', 'PageController@pageSendMessage');
+                \Route::get('pages/list-conversations', 'ConversationController@listConversation');
+                \Route::get('pages/list-messages', 'MessageController@listMessage');
+
             });
         });
     }

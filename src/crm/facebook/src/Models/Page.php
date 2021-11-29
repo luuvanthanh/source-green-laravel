@@ -4,13 +4,13 @@ namespace GGPHP\Crm\Facebook\Models;
 
 use GGPHP\Core\Models\UuidModel;
 
-class UserFacebookInfo extends UuidModel
+class Page extends UuidModel
 {
 
-    protected $table = 'user_facebook_infos';
+    protected $table = 'pages';
 
     protected $fillable = [
-        'user_id', 'user_name', 'user_email', 'user_phone', 'user_birth_date', 'user_address'
+        'page_id_facebook', 'name',
     ];
 
     public function conversation()

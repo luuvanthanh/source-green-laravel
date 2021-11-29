@@ -2,6 +2,12 @@
 
 namespace GGPHP\Crm\Facebook\Providers;
 
+use GGPHP\Crm\Facebook\Repositories\Contracts\ConversationRepository;
+use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
+use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
+use GGPHP\Crm\Facebook\Repositories\Eloquent\ConversationRepositoryEloquent;
+use GGPHP\Crm\Facebook\Repositories\Eloquent\MessageRepositoryEloquent;
+use GGPHP\Crm\Facebook\Repositories\Eloquent\PageRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class FacebookServiceProvider extends ServiceProvider
@@ -34,5 +40,8 @@ class FacebookServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(PageRepository::class, PageRepositoryEloquent::class);
+        $this->app->bind(MessageRepository::class, MessageRepositoryEloquent::class);
+        $this->app->bind(ConversationRepository::class, ConversationRepositoryEloquent::class);
     }
 }
