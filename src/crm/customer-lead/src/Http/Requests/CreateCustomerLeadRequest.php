@@ -28,7 +28,7 @@ class CreateCustomerLeadRequest extends FormRequest
             'birth_date' => 'date_format:Y-m-d',
             'sex' => 'string',
             'email' => 'email',
-            'phone' => 'required|string',
+            'phone' => 'required|string|unique:customer_leads,phone',
             'address' => 'string',
             'city_id' => 'exists:citys,id',
             'district_id' => 'exists:districts,id',
