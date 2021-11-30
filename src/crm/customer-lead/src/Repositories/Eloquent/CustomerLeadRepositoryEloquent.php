@@ -144,6 +144,10 @@ class CustomerLeadRepositoryEloquent extends BaseRepository implements CustomerL
             $this->model = $this->model->whereIn('id', $customer_lead_id);
         }
 
+        if (!empty($attributes['status_customer_lead']) && $attributes['status_customer_lead'] == 'false') {
+            $this->model = $this->model->whereDoesntHave('statusCare');
+        }
+
         if (!empty($attributes['limit'])) {
             $customerLead = $this->paginate($attributes['limit']);
         } else {
