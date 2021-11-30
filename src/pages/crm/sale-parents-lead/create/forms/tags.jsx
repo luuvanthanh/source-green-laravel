@@ -1,14 +1,14 @@
-import { memo, useRef, useEffect } from 'react';
-import { Form } from 'antd';
+import { memo, useRef, useEffect, useState } from 'react';
+import { Form, Select, Tag } from 'antd';
 import { useParams } from 'umi';
 import { useSelector, useDispatch } from 'dva';
 import Heading from '@/components/CommonComponent/Heading';
-import { variables } from '@/utils';
 import { isEmpty, get } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
-import FormItem from '@/components/CommonComponent/FormItem';
+import stylesModule from '../../styles.module.scss';
 
+const { Option } = Select;
 const General = memo(() => {
   const formRef = useRef();
   const dispatch = useDispatch();
@@ -19,41 +19,55 @@ const General = memo(() => {
     detailsTags,
     loading: { effects },
     tags,
+    details,
     error,
   } = useSelector(({ loading, crmSaleLeadAdd }) => ({
     loading,
+    details: crmSaleLeadAdd.details,
     tags: crmSaleLeadAdd.tags,
     error: crmSaleLeadAdd.error,
     detailsTags: crmSaleLeadAdd.detailsTags,
     data: crmSaleLeadAdd.data,
   }));
-
-  const loading = effects[`crmSaleLeadAdd/GET_CUSTOMER_TAGS`] || effects[`crmSaleLeadAdd/GET_TAGS`];
+  const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
   const loadingSubmit = effects[`crmSaleLeadAdd/ADD_TAGS`];
-  useEffect(() => {
-    dispatch({
-      type: 'crmSaleLeadAdd/GET_CUSTOMER_TAGS',
-      payload: {
-        customer_lead_id: params.id,
-      },
-      callback: (response) => {
-        if (response) {
-          formRef.current.setFieldsValue({
-            data: response.parsePayload.map((item) => ({
-              ...item,
-            })),
-          });
-        }
-      },
-    });
-  }, []);
+  const [dataTags, setDataTags] = useState([]);
+
+  // useEffect(() => {
+  //   dispatch({
+  //     type: 'crmSaleLeadAdd/GET_CUSTOMER_TAGS',
+  //     payload: {
+  //       customer_lead_id: params.id,
+  //     },
+  //     callback: (response) => {
+  //       if (response) {
+  //         formRef.current.setFieldsValue({
+  //           data: response.parsePayload.map((item) => ({
+  //             ...item,
+  //           })),
+  //         });
+  //       }
+  //     },
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (params.id) {
-      formRef.current.setFieldsValue({
-        tag_id: detailsTags?.map((item) => item.tag_id),
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_DETAILS',
+        payload: params,
       });
     }
+  }, [params.id]);
+
+  const onSelectColor = (e) => {
+    setDataTags(e);
+  };
+
+  useEffect(() => {
+    formRef.current.setFieldsValue({
+      tag_id: detailsTags?.map((item) => item.tag_id),
+    });
   }, [detailsTags]);
 
   useEffect(() => {
@@ -68,17 +82,20 @@ const General = memo(() => {
     return mounted.current;
   }, []);
 
-  const onFinish = (values) => {
+  const onFinish = () => {
     dispatch({
       type: 'crmSaleLeadAdd/ADD_TAGS',
       payload: {
         customer_lead_id: params.id,
-        customer_tag: values.tag_id.map((item) => ({ tag_id: item })),
+        customer_tag: dataTags.map((item) => ({ tag_id: item })),
       },
       callback: (response, error) => {
-        // if (response) {
-        //   history.goBack();
-        // }
+        if (response) {
+          dispatch({
+            type: 'crmSaleLeadAdd/GET_DETAILS',
+            payload: params,
+          });
+        }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {
@@ -94,7 +111,6 @@ const General = memo(() => {
       },
     });
   };
-
   useEffect(() => {
     mounted.current = true;
     return mounted.current;
@@ -117,13 +133,37 @@ const General = memo(() => {
             </Heading>
             <div className="row">
               <div className="col-lg-12">
-                <FormItem
-                  data={tags}
-                  options={['id', 'name']}
-                  name="tag_id"
-                  placeholder="Chọn"
-                  type={variables.SELECT_MUTILPLE}
-                />
+                <Select
+                  showArrow
+                  // value={details?.customerTag?.map((item) => item?.tag_id)}
+                  defaultValue={details?.customerTag?.map((item) => item?.tag.id)}
+                  mode="multiple"
+                  className={stylesModule['details-tags']}
+                  onChange={(e) => onSelectColor(e)}
+                  tagRender={({ label, value, color_code, closable, onClose }) => {
+                    const itemTag = tags.find(item => item.id === value);
+                    return (
+                      <Tag
+                        color={itemTag?.color_code || color_code}
+                        closable={closable}
+                        onClose={onClose}
+                        className={stylesModule['tags-content']}
+                      >
+                        {label}
+                      </Tag>
+                    );
+                  }}
+                >
+                  {tags.map((item, index) => (
+                    <Option
+                      value={item?.id}
+                      key={index}
+                      style={{ backgroundColor: `${item.color_code}` }}
+                    >
+                      {item?.name}
+                    </Option>
+                  ))}
+                </Select>
               </div>
             </div>
           </div>

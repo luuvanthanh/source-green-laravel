@@ -90,6 +90,7 @@ export function details(params = {}) {
         'statusCare.statusParentLead',
         'employee',
         'marketingProgram',
+        'customerTag.tag',
       ]),
     },
   });
