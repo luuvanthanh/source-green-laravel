@@ -191,6 +191,7 @@ return [
         GGPHP\Collection\Providers\CollectionServiceProvider::class,
         GGPHP\CameraServer\Providers\CameraServerServiceProvider::class,
         GGPHP\VideoWall\Providers\VideoWallServiceProvider::class,
+        GGPHP\NumberOfTourist\Providers\NumberOfTouristServiceProvider::class,
     ],
 
     /*

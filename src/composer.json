@@ -62,7 +62,8 @@
             "GGPHP\\Camera\\": "packages/camera/src/",
             "GGPHP\\Collection\\": "packages/collection/src/",
             "GGPHP\\CameraServer\\": "packages/camera-server/src/",
-            "GGPHP\\VideoWall\\": "packages/video-wall/src/"
+            "GGPHP\\VideoWall\\": "packages/video-wall/src/",
+            "GGPHP\\NumberOfTourist\\": "packages/number-of-tourist/src/"
         },
         "classmap": [
             "database/seeds",

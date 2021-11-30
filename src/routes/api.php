@@ -25,6 +25,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Event\RouteRegistrar::routes(function ($router) {
             $router->forAi();
         });
+        \GGPHP\NumberOfTourist\RouteRegistrar::routes(function ($router) {
+            $router->forAi();
+        });
     });
 
     \GGPHP\Storage\RouteRegistrar::routes(function ($router) {
@@ -49,6 +52,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         });
 
         \GGPHP\Camera\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
+        \GGPHP\NumberOfTourist\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
         \GGPHP\Collection\RouteRegistrar::routes();

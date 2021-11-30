@@ -79,11 +79,16 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $this->model = $this->model->whereIn('type', $attributes['type']);
         }
 
+        if (!empty($attributes['updated_at'])) {
+            $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
+        }
+
         if (empty($attributes['limit'])) {
             $tourGuide = $this->all();
         } else {
             $tourGuide = $this->paginate($attributes['limit']);
         }
+
         return $tourGuide;
     }
 

@@ -30,7 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forBread()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::resource('events', 'EventController');
+            \Route::resource('events', 'EventController')->only('index', 'show');
 
             \Route::post('event-handle/{id}', 'EventController@handleEvent');
 
@@ -49,7 +49,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forAi()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::post('events', 'EventController@store');
+            \Route::post('events', 'EventController@storeAi');
         });
     }
 }

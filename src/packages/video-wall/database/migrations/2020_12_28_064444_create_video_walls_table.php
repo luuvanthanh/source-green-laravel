@@ -18,8 +18,8 @@ class CreateVideoWallsTable extends Migration
             $table->uuid('id')->index()->unique();
             $table->primary('id');
             $table->string('name');
-            $table->enum('display_type', [VideoWall::TYPE_2X2, VideoWall::TYPE_3X3, VideoWall::TYPE_4X4])->nullable();
-            $table->integer('user_id');
+            $table->integer('display_type')->default(0);
+            $table->uuid('user_id');
             $table->timestamps();
             $table->softDeletes();
         });

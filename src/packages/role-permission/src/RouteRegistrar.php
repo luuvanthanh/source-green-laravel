@@ -38,14 +38,6 @@ class RouteRegistrar extends CoreRegistrar
                 'is_system' => true,
             ]);
 
-            //roles
-            \Route::put('permissions-for-role', [
-                'comment' => 'Thêm quyền cho vai trò',
-                'uses' => 'RoleController@updatePermissionForRole',
-                'as' => 'roles.permission.update',
-                'group' => 'Vai trò',
-                'is_system' => true,
-            ]);
             \Route::get('roles', [
                 'comment' => 'Danh sách vai trò',
                 'uses' => 'RoleController@index',

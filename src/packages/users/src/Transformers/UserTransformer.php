@@ -34,7 +34,7 @@ class UserTransformer extends BaseTransformer
      * @var array
      */
     protected $availableIncludes = [
-        'roles', 'collection', 'permissionSystem', 'permissions', 'videoWalls', 'permissionsWithCollection'
+        'role', 'collection', 'permissionSystem', 'permission', 'videoWall'
     ];
 
     /**
@@ -76,7 +76,7 @@ class UserTransformer extends BaseTransformer
      * Include Role
      * @param  User $user
      */
-    public function includeRoles(User $user)
+    public function includeRole(User $user)
     {
         return $this->collection($user->roles, new RoleTransformer, 'Role');
     }
@@ -94,18 +94,9 @@ class UserTransformer extends BaseTransformer
      * Include Permission
      * @param  User $user
      */
-    public function includePermissions(User $user)
+    public function includePermission(User $user)
     {
         return $this->collection($user->permissions, new PermissionTransformer, 'Permission');
-    }
-
-    /**
-     * Include PermissionsWithCollection
-     * @param  User $user
-     */
-    public function includePermissionsWithCollection(User $user)
-    {
-        return $this->collection($user->permissionsWithCollection($user->collection_id), new PermissionTransformer, 'Permission');
     }
 
     /**
@@ -123,7 +114,7 @@ class UserTransformer extends BaseTransformer
      * Include Role
      * @param  User $user
      */
-    public function includeVideoWalls(User $user)
+    public function includeVideoWall(User $user)
     {
         return $this->collection($user->videoWalls, new VideoWallTransformer, 'VideoWall');
     }

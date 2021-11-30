@@ -57,15 +57,19 @@ class VideoWallController extends Controller
      */
     public function store(VideoWallCreateRequest $request)
     {
-        $credentials = $request->all();
-        $credentials['user_id'] = auth()->user()->id;
 
-        $videoWalls = $this->videoWallRepository->create($credentials);
+        $attributes = $request->all();
+
+        if (!empty($attributes['display_type'])) {
+            $attributes['display_type'] = VideoWall::DISPLAY_TYPE[$attributes['display_type']];
+        }
+
+        $videoWalls = $this->videoWallRepository->create($attributes);
 
         return $this->success($videoWalls, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
-     /**
+    /**
      *
      * @param VideoWallUpdateRequest $request
      * @param  string $id
@@ -74,7 +78,13 @@ class VideoWallController extends Controller
      */
     public function update(VideoWallUpdateRequest $request, VideoWall $videoWall)
     {
-        $videoWall =  $this->videoWallRepository->update($request->all(), $videoWall);
+        $attributes = $request->all();
+
+        if (!empty($attributes['display_type'])) {
+            $attributes['display_type'] = VideoWall::DISPLAY_TYPE[$attributes['display_type']];
+        }
+
+        $videoWall =  $this->videoWallRepository->update($attributes, $videoWall);
 
         return $this->success($videoWall, trans('lang::messages.common.modifySuccess'));
     }

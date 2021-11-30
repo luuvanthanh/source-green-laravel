@@ -220,4 +220,30 @@ class EventController extends Controller
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }
+
+    /**
+     * Store a newly created resoucre in storage
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeAi(EventCreateRequest $request)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['warning_level'])) {
+            $attributes['warning_level'] = Event::WARNING_LEVEL[$attributes['warning_level']];
+        }
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Event::STATUS[$attributes['status']];
+        }
+
+        if (!empty($attributes['status_detail'])) {
+            $attributes['status_detail'] = Event::STATUS_DETAIL[$attributes['status_detail']];
+        }
+
+        $event = $this->eventRepository->createAi($attributes);
+
+        return $this->success($event, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
 }

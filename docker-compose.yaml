@@ -14,8 +14,10 @@ services:
       - ./deployment/certs/private.key:/etc/nginx/www-ssl/privateKey.key
       - ./deployment/configs/queue.conf:/etc/supervisor/conf.d/queue.conf
       - ./deployment/configs/nginx.conf:/etc/nginx/sites-enabled/default.conf
+      - ./deployment/configs/php.ini:/etc/php8/php.ini
     environment:
       - PHP_MEM_LIMIT=${PHP_MEM_LIMIT}
+      - UPLOAD_LIMIT=64M
   # container for database
   s3:
     image: bitnami/minio:2021.6.14

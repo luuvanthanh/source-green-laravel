@@ -6,8 +6,6 @@ use Config;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
-use GGPHP\Users\Repositories\Contracts\UserCollectionRepository;
-use GGPHP\Users\Repositories\Eloquent\UserCollectionRepositoryEloquent;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as AuthServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -30,7 +28,8 @@ class UserServiceProvider extends AuthServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/config.php', 'constants'
+            __DIR__ . '/../config/config.php',
+            'constants'
         );
         $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'ggphp-users');
         $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'lang-user');
@@ -57,6 +56,5 @@ class UserServiceProvider extends AuthServiceProvider
     public function register()
     {
         $this->app->bind(UserRepository::class, UserRepositoryEloquent::class);
-        $this->app->bind(UserCollectionRepository::class, UserCollectionRepositoryEloquent::class);
     }
 }

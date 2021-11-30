@@ -44,19 +44,12 @@ class CollectionTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $media = $model->getAvatar();
-        $avatar = null;
-
-        if (!is_null($media)) {
-            $avatar = $media->getFullUrl();
-        }
 
         $user = User::findOrFail(Auth::id());
 
         $permissions = $user->permissions()->where('collection_id', $model->id)->get();
 
         return [
-            "avatar" => $avatar,
             "permission_collection" => $permissions,
         ];
     }

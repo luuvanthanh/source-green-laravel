@@ -4,20 +4,13 @@ namespace GGPHP\Collection\Models;
 
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Users\Models\User;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use GGPHP\Camera\Models\Camera;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Collection extends UuidModel implements HasMedia
+class Collection extends UuidModel
 {
     use SoftDeletes;
-    use InteractsWithMedia;
 
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('avatar')->singleFile();
-    }
 
     /**
      * The attributes that are mass assignable.
@@ -55,15 +48,5 @@ class Collection extends UuidModel implements HasMedia
     public function user()
     {
         return $this->belongsToMany(User::class, 'user_collection', 'collection_id', 'user_id');
-    }
-
-    /**
-     * Get avatar
-     */
-    public function getAvatar()
-    {
-        $avatar = $this->getMedia('avatar');
-
-        return $avatar->isEmpty() ? null : $avatar->first();
     }
 }

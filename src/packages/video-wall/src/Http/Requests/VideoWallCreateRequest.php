@@ -26,7 +26,6 @@ class VideoWallCreateRequest extends FormRequest
     {
         return [
             'name'         => 'required|string|max:20',
-            'display_type' => 'sometimes|in:'. VideoWall::TYPE_2X2. ','. VideoWall::TYPE_3X3. ','. VideoWall::TYPE_4X4,
         ];
     }
 }

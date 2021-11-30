@@ -2,7 +2,7 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
-use GGPHP\Storage\Services\StorageService;
+use GGPHP\RolePermission\Models\Role;
 use GGPHP\Users\Jobs\SendEmail;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Spatie\Permission\Models\Role;
 
 /**
  * Class UserRepositoryEloquent.
@@ -105,40 +104,6 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
     }
 
     /**
-     * Update role user
-     * @param  array  $attributes attributes from request
-     * @param  string  $id id from request
-     * @return object
-     */
-    public function updateRoleUser(array $attributes, $id)
-    {
-        $user = $this->model()::find($id);
-
-        if (!empty($attributes['roles'])) {
-            $user->syncRoles($attributes['roles']);
-        }
-
-        return parent::find($id);
-    }
-
-    /**
-     * Update permission user
-     * @param  array  $attributes attributes from request
-     * @param  string  $id id from request
-     * @return object
-     */
-    public function updatePermissionUser(array $attributes, $id)
-    {
-        $user = $this->model()::find($id);
-
-        if (!empty($attributes['permission_id'])) {
-            $user->syncPermissions($attributes['permission_id']);
-        }
-
-        return parent::find($id);
-    }
-
-    /**
      * Create user
      * @param  array  $attributes attributes from request
      * @return object
@@ -155,11 +120,20 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         }
 
         if (!empty($attributes['role_id'])) {
-            $user->assignRole($attributes['role_id']);
+            $user->roles()->sync($attributes['role_id']);
         }
 
         if (!empty($attributes['permission_id'])) {
-            $user->assignPermissions($attributes['permission_id']);
+            $data = [];
+            foreach ($attributes['permission_id'] as  $permission) {
+                $data[] = [
+                    'permission_id' => $permission,
+                    'model_type' => User::class,
+                    'model_id' => $user->id,
+                    'collection_id' => '00000000-0000-0000-0000-000000000000',
+                ];
+            }
+            \DB::table('model_has_permissions')->insert($data);
         }
 
         // send mail
@@ -179,7 +153,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
      * @param  array  $attributes attributes from request
      * @return object
      */
-    public function updateProfile(array $attributes, $id)
+    public function update(array $attributes, $id)
     {
         $user = $this->model()::findOrFail($id);
 
@@ -195,11 +169,25 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         }
 
         if (!empty($attributes['role_id'])) {
-            $user->syncRoles($attributes['role_id']);
+            $user->roles()->detach();
+            $user->roles()->sync($attributes['role_id']);
         }
 
         if (!empty($attributes['permission_id'])) {
-            $user->syncPermissions($attributes['permission_id']);
+            $data = [];
+            foreach ($attributes['permission_id'] as  $permission) {
+                $data[] = [
+                    'permission_id' => $permission,
+                    'model_type' => User::class,
+                    'model_id' => $id,
+                    'collection_id' => '00000000-0000-0000-0000-000000000000',
+                ];
+            }
+            \DB::table('model_has_permissions')
+                ->where('model_id', $id)
+                ->where('model_type',  User::class)
+                ->where('collection_id', '00000000-0000-0000-0000-000000000000')->delete();
+            \DB::table('model_has_permissions')->insert($data);
         }
 
         return $this->parserResult($user);

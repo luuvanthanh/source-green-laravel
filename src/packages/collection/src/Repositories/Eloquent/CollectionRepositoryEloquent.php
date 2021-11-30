@@ -187,50 +187,27 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
 
         $collection->update($attributes);
 
-        if (!empty($attributes['avatar'])) {
-            $path = StorageService::upload($attributes['avatar'], config('filesystems.pathToUpload'));
-            $collection->addMediaFromDisk($path['path'])->preservingOriginal()->toMediaCollection('avatar');
-        }
-
-        if (!empty($attributes['cameras'])) {
-            $cameras = $attributes['cameras'];
-            $cameraArray = [];
-            foreach ($cameras as $key => $camera) {
-                if (!empty($camera['id'])) {
-                    $cameraArray[$camera['id']] = !empty($camera['priority']) ? ['priority' => $camera['priority']] : [];
-                }
-            }
-
-            if (!empty($cameraArray)) {
-                $collection->camera()->sync($cameraArray);
-            }
+        if (!empty($attributes['camera_id'])) {
+            $collection->camera()->sync($attributes['camera_id']);
         }
 
         if (!empty($attributes['users'])) {
-            $users = $attributes['users'];
-            $userId = [];
-            foreach ($users as $key => $user) {
-                if (!empty($user['id'])) {
-                    $userModel = User::find($user['id']);
-                    if ($userModel) {
-                        $userPermission = [];
-                        if (!empty($user['permission'])) {
-                            foreach ($user['permission'] as $value) {
-                                $userPermission[$value] = ['collection_id' => $collection->id];
-                            }
-                            if (!empty($userPermission)) {
-                                $userModel->permissions()->wherePivot('collection_id', $collection->id)->sync($userPermission);
-                                $userModel->load('permissions');
-                            }
-                        }
-                        $userId[] = $user['id'];
-                    }
+            $listUserId = [];
+            $listdUserCollectionPermission = [];
+            foreach ($attributes['users'] as  $itemUser) {
+                $listUserId[] = $itemUser['user_id'];
+                foreach ($itemUser['permisson_id'] as $itemPermission) {
+                    $listdUserCollectionPermission[] = [
+                        'permission_id' => $itemPermission,
+                        'model_type' => User::class,
+                        'model_id' => $itemUser['user_id'],
+                        'collection_id' => $collection->id,
+                    ];
                 }
             }
-
-            if (!empty($userId)) {
-                $collection->user()->sync($userId);
-            }
+            $collection->user()->sync($listUserId);
+            \DB::table('model_has_permissions')->where('collection_id', $collection->id)->delete();
+            \DB::table('model_has_permissions')->insert($listdUserCollectionPermission);
         }
 
         return $this->parserResult($collection);

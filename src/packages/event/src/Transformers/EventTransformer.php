@@ -53,7 +53,7 @@ class EventTransformer extends BaseTransformer
         $warningLevel = null;
 
         foreach (Event::WARNING_LEVEL as $key => $value) {
-            if ($value == $model->status_detail) {
+            if ($value == $model->warning_level) {
                 $warningLevel = $key;
             }
         }

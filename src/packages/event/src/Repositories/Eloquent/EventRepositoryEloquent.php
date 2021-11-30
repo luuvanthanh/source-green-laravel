@@ -74,6 +74,11 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $this->model = $this->model->whereIn('warning_level', $attributes['warning_level']);
         }
 
+        if (!empty($attributes['tour_guide_id'])) {
+            $tourGuideId = explode(',', $attributes['tour_guide_id']);
+            $this->model = $this->model->whereIn('tour_guide_id', $tourGuideId);
+        }
+
         if (!empty($attributes['status_detail'])) {
             $this->model = $this->model->whereIn('status_detail', $attributes['status_detail']);
         }
@@ -86,8 +91,19 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $this->model = $this->model->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
         }
 
+        if (!empty($attributes['event_code'])) {
+            $this->model = $this->model->whereHas('eventType', function ($query) use ($attributes) {
+                $query->where('code', $attributes['event_code']);
+            });
+        }
+
+        if (!empty($attributes['is_follow'])) {
+            $attributes['is_follow'] = $attributes['is_follow'] == 'true' ? true : false;
+            $this->model = $this->model->where('is_follow', $attributes['is_follow']);
+        }
+
         if (!empty($attributes['date'])) {
-            $this->model = $this->model->whereDate('time', $attributes['start_time']);
+            $this->model = $this->model->whereDate('time', $attributes['date']);
         }
 
         if (empty($attributes['limit'])) {
@@ -99,8 +115,11 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         return $event;
     }
 
-    public function create(array $attributes)
+    public function createAi(array $attributes)
     {
+        $camera = Camera::find($attributes['camera_id']);
+        $attributes['tourist_destination_id'] = $camera->tourist_destination_id;
+
         $event = $this->model()::create($attributes);
 
         if (!empty($attributes['image_path'])) {
@@ -112,23 +131,6 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         }
 
         return parent::find($event->id);
-    }
-
-    public function update(array $attributes, $id)
-    {
-        $event = $this->model()::findOrFail($id);
-
-        $event->update($attributes);
-
-        if (!empty($attributes['image_path'])) {
-            $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
-        }
-
-        if (!empty($attributes['video_path'])) {
-            $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
-        }
-
-        return parent::find($id);
     }
 
     public function skipEvent(array $attributes, $id)
@@ -150,6 +152,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $event = $this->model()::findOrFail($id);
 
+        $attributes['is_follow'] = false;
         if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
             $attributes['is_follow'] = true;
         }
@@ -170,6 +173,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $event = $this->model()::findOrFail($id);
 
+        $attributes['is_follow'] = false;
         if ($attributes['status_detail'] == $this->model()::STATUS_DETAIL['HANDLE_FOLLOW']) {
             $attributes['is_follow'] = true;
         }

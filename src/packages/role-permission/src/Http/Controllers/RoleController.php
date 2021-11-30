@@ -102,18 +102,4 @@ class RoleController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT, 'isShowData' => false]);
     }
-
-    /**
-     * Assign permissions to role
-     *
-     * @param RoleAssignPermissionRequest $request
-     * @param type $id
-     * @return type
-     */
-    public function updatePermissionForRole(RoleAssignPermissionRequest $request)
-    {
-        $roles = $this->roleRepository->updatePermissionForRole($request->all());
-
-        return $this->success($roles, trans('lang::messages.common.getInfoSuccess'));
-    }
 }

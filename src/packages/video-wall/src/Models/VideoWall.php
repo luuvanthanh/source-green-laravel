@@ -8,6 +8,12 @@ use GGPHP\Camera\Models\Camera;
 
 class VideoWall extends UuidModel
 {
+    const DISPLAY_TYPE = [
+        'TYPE_2X2' => 1,
+        'TYPE_3X3' => 2,
+        'TYPE_4X4' => 3
+    ];
+
     /**
      * Display type: 2x2
      */
@@ -54,8 +60,6 @@ class VideoWall extends UuidModel
      */
     public function cameras()
     {
-        return $this->belongsToMany(Camera::class, 'camera_video_wall', 'video_wall_id', 'camera_id')
-            ->withPivot('priority')
-            ->orderBy('camera_video_wall.priority');
+        return $this->belongsToMany(Camera::class, 'camera_video_wall', 'video_wall_id', 'camera_id');
     }
 }

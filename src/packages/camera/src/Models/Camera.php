@@ -5,6 +5,7 @@ namespace GGPHP\Camera\Models;
 use GGPHP\Core\Models\UuidModel;
 use GGPHP\Collection\Models\Collection;
 use GGPHP\CameraServer\Models\CameraServer;
+use GGPHP\Category\Models\TouristDestination;
 use GGPHP\VideoWall\Models\VideoWall;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -80,8 +81,7 @@ class Camera extends UuidModel
         'camera_server_id',
         'preset_view_id',
         'preset_update_id',
-        'created_at',
-        'updated_at',
+        'tourist_destination_id'
     ];
     protected $appends = ['status_label'];
     protected $guard_name = 'api';
@@ -164,6 +164,16 @@ class Camera extends UuidModel
     public function videoWalls()
     {
         return $this->belongsToMany(VideoWall::class, 'camera_video_wall')->withPivot('priority');
+    }
+
+    /**
+     * Get video wall of camera
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function touristDestination()
+    {
+        return $this->belongsTo(TouristDestination::class);
     }
 
     public static function publishRedis($camera, $chanel = '')

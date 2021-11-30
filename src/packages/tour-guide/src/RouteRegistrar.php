@@ -42,7 +42,7 @@ class RouteRegistrar extends CoreRegistrar
     public function forAi()
     {
         $this->router->group(['middleware' => []], function ($router) {
-            \Route::get('tour-guides', 'TourGuideController@index');
+            \Route::get('objects', 'TourGuideController@index');
         });
     }
 }

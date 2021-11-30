@@ -90,7 +90,7 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $user = $this->userRepository->updateProfile($request->all(), $id);
+        $user = $this->userRepository->update($request->all(), $id);
 
         return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
@@ -106,49 +106,6 @@ class UserController extends Controller
         $this->userRepository->delete($id);
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
-    }
-
-    /**
-     *
-     * @param UserUpdateRoleRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     */
-    public function updateRoleUser(UserUpdateRoleRequest $request, $id)
-    {
-        $user = $this->userRepository->updateRoleUser($request->all(), $id);
-
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
-    }
-
-    /**
-     *
-     * @param UserUpdatePermissionRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     */
-    public function updatePermissionUser(UserUpdatePermissionRequest $request, $id)
-    {
-        $user = $this->userRepository->updatePermissionUser($request->all(), $id);
-
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
-    }
-
-    /**
-     *
-     * @param UserUpdateProfileRequest $request
-     * @param  string $id
-     *
-     * @return Response
-     */
-    public function updateProfile(UserUpdateProfileRequest $request)
-    {
-        $userId = Auth::id();
-        $user = $this->userRepository->updateProfile($request->all(), $userId);
-
-        return $this->success($user, trans('lang::messages.common.modifySuccess'));
     }
 
     public function lockUser(Request $request, $id)

@@ -48,15 +48,6 @@ class RouteRegistrar extends CoreRegistrar
         \Route::get('session', 'AuthController@logged')->name('logged');
         \Route::post('logout', 'AuthController@logout');
         \Route::post('password/change', 'ChangePasswordController@changePassword');
-        \Route::post('users/roles/{id}', 'UserController@updateRoleUser')->name('users.update.role');
-        \Route::post('users/permissions/{id}', 'UserController@updatePermissionUser');
-
-        // User collection
-        \Route::post('user-collections', 'UserCollectionController@assignOrRemoveUser');
-
-        \Route::delete('user-collections', 'UserCollectionController@removeUser');
-
-        \Route::get('users/{id}/collections', 'UserCollectionController@assigned');
 
         \Route::get('me', 'AuthController@authenticated');
 

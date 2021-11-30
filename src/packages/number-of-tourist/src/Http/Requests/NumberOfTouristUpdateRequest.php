@@ -1,13 +1,13 @@
 <?php
 
-namespace GGPHP\Users\Http\Requests;
+namespace GGPHP\NumberOfTourist\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserCollectionRequest extends FormRequest
+class NumberOfTouristUpdateRequest extends FormRequest
 {
     /**
-     * Determine if the camera is authorized to make this request.
+     * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
@@ -23,11 +23,8 @@ class UpdateUserCollectionRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'users_id' => 'required|exists:users,id',
-            'collection_id' => 'required|exists:collections,id',
-            'role_id' => 'required|exists:roles,id',
+            'name' => 'string',
         ];
     }
 }

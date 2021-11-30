@@ -3,6 +3,7 @@
 
 use Database\Seeders\CardTypesTableSeeder;
 use Database\Seeders\EventsTableSeeder;
+use Database\Seeders\NumberOfTouristsTableSeeder;
 use Database\Seeders\OauthClientsTableSeeder;
 use Database\Seeders\OauthPersonalAccessClientsTableSeeder;
 use Database\Seeders\ObjectTypesTableSeeder;
@@ -32,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TourGuidesTableSeeder::class);
         $this->call(TravelAgenciesTableSeeder::class);
         $this->call(EventsTableSeeder::class);
+        $this->call(NumberOfTouristsTableSeeder::class);
     }
 }

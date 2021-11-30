@@ -119,7 +119,7 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
             $permissions = $permissions->merge($role->permissions);
         }
 
-        return $permissions->merge($this->permissions()->where('collection_id', 0)->get());
+        return $permissions->merge($this->permissions()->where('collection_id', '00000000-0000-0000-0000-000000000000')->get());
     }
 
     /**
@@ -142,13 +142,5 @@ class User extends UuidModel implements AuthenticatableContract, AuthorizableCon
             config('permission.column_names.model_morph_key'),
             'permission_id'
         )->withPivot('collection_id');
-    }
-
-    /**
-     * A model may have multiple direct permissions with collection.
-     */
-    public function permissionsWithCollection($collectionId)
-    {
-        return $this->permissions()->where('collection_id', $collectionId)->get();
     }
 }

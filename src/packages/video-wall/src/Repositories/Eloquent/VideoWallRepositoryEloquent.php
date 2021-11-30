@@ -90,7 +90,7 @@ class VideoWallRepositoryEloquent extends BaseRepository implements VideoWallRep
             $cameraArray = [];
             foreach ($cameras as $key => $camera) {
                 if (!empty($camera['id'])) {
-                    $cameraArray[$camera['id']] = !empty($camera['priority']) ? ['priority' => $camera['priority']] : [] ;
+                    $cameraArray[$camera['id']] = !empty($camera['priority']) ? ['priority' => $camera['priority']] : [];
                 }
             }
 
@@ -100,31 +100,5 @@ class VideoWallRepositoryEloquent extends BaseRepository implements VideoWallRep
         }
 
         return $this->parserResult($videoWall);
-    }
-
-    /**
-     * Delete camera
-     *
-     * @param type $id
-     * @return type
-     */
-    public function delete($videoWall)
-    {
-        \DB::beginTransaction();
-        try {
-            if (!empty($videoWall->cameras)) {
-                $videoWall->cameras()->detach();
-            }
-
-            if ($videoWall->delete()) {
-                \DB::commit();
-                return true;
-            }
-        } catch (\Exception $ex) {
-            \DB::rollback();
-            \Log::error($ex->getMessage());
-        }
-
-        return false;
     }
 }

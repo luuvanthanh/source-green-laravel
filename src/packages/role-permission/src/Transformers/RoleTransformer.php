@@ -3,7 +3,7 @@
 namespace GGPHP\RolePermission\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use Spatie\Permission\Models\Role;
+use GGPHP\RolePermission\Models\Role;
 
 /**
  * Class RolesTransformer.
