@@ -262,7 +262,7 @@ export function removeEvents(id = {}) {
 }
 
 export function getEvents(params = {}) {
-  return request(`/v1/event-infos/${params.detailId}`, {
+  return request(`/v1/event-infos/${params}`, {
     method: 'GET',
   });
 }
@@ -397,6 +397,12 @@ export function addInterest(data = {}) {
 
 export function getRelationships() {
   return request(`/v1/category-relationships`, {
+    method: 'GET',
+  });
+}
+
+export function getCategoryEvents() {
+  return request(`/v1/category-events`, {
     method: 'GET',
   });
 }
