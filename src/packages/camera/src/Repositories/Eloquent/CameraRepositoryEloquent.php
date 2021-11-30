@@ -82,20 +82,61 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
      * @param type $request
      * @return type
      */
-    public function cameras($request)
+    public function getCamera($attributes)
     {
-        $limit = config('constants.SEARCH_VALUES_DEFAULT.LIMIT');
 
-        if ($request->has('limit')) {
-            $limit = $request->limit;
+        // Filter camera by collection
+        if (!empty($attributes['collection'])) {
+            $collectionId = explode(',', $attributes['collection']);
+            $this->model = $this->model->whereHas('collection', function ($query) use ($collectionId) {
+                return $query->whereIn('collection_id', $collectionId);
+            });
         }
 
-        // Add scope filter
-        $this->scopeQuery(function ($query) use ($request) {
-            return $query->byFilter($request);
-        });
+        if (!empty($attributes['except_collection_id'])) {
+            $exceptCollectionId = explode(',', $attributes['except_collection_id']);
+            $this->model = $this->model->whereHas('collection', function ($query) use ($exceptCollectionId) {
+                return $query->whereIn('collection_id', '=', $exceptCollectionId);
+            }, '=', 0);
+        }
 
-        return $this->paginate($limit);
+        // Filter camera by video wall
+        if (!empty($attributes['video_wall_id'])) {
+            $videoWallId = explode(',', $attributes['video_wall_id']);
+            $this->model = $this->model->whereHas('videoWalls', function ($query) use ($videoWallId) {
+                return $query->whereIn('video_wall_id', $videoWallId);
+            });
+        }
+
+        if (!empty($attributes['except_video_wall_id'])) {
+            $exceptVideoWallId = explode(',', $attributes['except_video_wall_id']);
+            $this->model = $this->model->whereHas('videoWalls', function ($q) use ($exceptVideoWallId) {
+                return $q->where('video_wall_id', '=', $exceptVideoWallId);
+            }, '=', 0);
+        }
+
+        // Filter by camera device name/number
+        if (!empty($attributes['key'])) {
+            $this->model = $this->model->whereLike('address', $attributes['key'])
+                ->orWhere(function ($query) use ($attributes) {
+                    $query->whereHas('generalProperties', function ($q) use ($attributes) {
+                        $q->orWhereLike('device_name', $attributes['key'])
+                            ->orWhereLike('device_number', $attributes['key']);
+                    });
+                });
+        }
+
+        if (!empty($attributes['status'])) {
+            $this->model = $this->model->whereIn('status', $attributes['status']);
+        }
+
+        if (empty($attributes['limit'])) {
+            $result = $this->all();
+        } else {
+            $result = $this->paginate($attributes['limit']);
+        }
+
+        return $result;
     }
 
     /**
@@ -112,7 +153,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
         // Merge with fills default
         $dataCamera = array_merge($dataCamera, [
-            'user_id' => auth()->user()->id,
+            'user_id' => "fe9880d9-8872-4c70-b299-cfb609118ef9",
             'uuid' => (string) Str::uuid(),
             'status' => Camera::STATUS_STOPPED,
         ]);

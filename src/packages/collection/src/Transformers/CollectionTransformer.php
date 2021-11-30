@@ -67,7 +67,8 @@ class CollectionTransformer extends BaseTransformer
      * @param Collection $item
      * @return type
      */
-    public function includeCameras(Collection $collection) {
+    public function includeCameras(Collection $collection)
+    {
         if (empty($collection->camera)) {
             return;
         }
@@ -81,7 +82,8 @@ class CollectionTransformer extends BaseTransformer
      * @param Collection $item
      * @return type
      */
-    public function includeUsers(Collection $collection) {
+    public function includeUsers(Collection $collection)
+    {
         if (empty($collection->user)) {
             return;
         }

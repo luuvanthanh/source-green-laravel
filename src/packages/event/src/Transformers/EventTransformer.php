@@ -59,7 +59,7 @@ class EventTransformer extends BaseTransformer
         }
 
         //get image
-        $imageMedia = $this->getMedia('image');
+        $imageMedia = $model->getMedia('image');
         $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
         $image = null;
 
@@ -71,7 +71,7 @@ class EventTransformer extends BaseTransformer
         }
 
         //get video
-        $videoMedia = $this->getMedia('video');
+        $videoMedia = $model->getMedia('video');
         $videoMedia = $videoMedia->isEmpty() ? null : $videoMedia->first();
         $video = null;
 

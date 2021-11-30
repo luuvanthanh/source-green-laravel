@@ -99,8 +99,6 @@ class UserCollectionRepositoryEloquent extends BaseRepository implements UserCol
         }
 
         $now = Carbon::now();
-        $datas = [];
-        $modelTypeUser = User::class;
 
         foreach ($attributes['users'] as $item) {
             $dataUserCollections[] = [

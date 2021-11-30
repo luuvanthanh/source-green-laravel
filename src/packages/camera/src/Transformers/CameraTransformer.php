@@ -69,7 +69,7 @@ class CameraTransformer extends BaseTransformer
      */
     public function includeCollection(Camera $camera)
     {
-        return $this->collection(!empty($camera->collection) ? $camera->collection : [], new CollectionTransformer(), 'Collection');
+        return $this->collection(!empty($camera->collection) ? $camera->collection : [], new CollectionTransformer, 'Collection');
     }
 
     /* @param General Properties $camera
@@ -81,7 +81,7 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->generalProperties, new CameraGeneralPropertiesTransformer(), 'general');
+        return $this->item($camera->generalProperties, new CameraGeneralPropertiesTransformer, 'general');
     }
 
     /* @param Video Properties $camera
@@ -93,7 +93,7 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->videoProperties, new CameraVideoPropertiesTransformer(), 'video');
+        return $this->item($camera->videoProperties, new CameraVideoPropertiesTransformer, 'video');
     }
 
     /* @param Network Properties $camera
@@ -105,7 +105,7 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->networkProperties, new CameraNetworkPropertiesTransformer(), 'network');
+        return $this->item($camera->networkProperties, new CameraNetworkPropertiesTransformer, 'network');
     }
 
     /* @param Ptz Properties $camera
@@ -117,6 +117,6 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->ptzProperties, new CameraPtzPropertiesTransformer(), 'ptz');
+        return $this->item($camera->ptzProperties, new CameraPtzPropertiesTransformer, 'ptz');
     }
 }

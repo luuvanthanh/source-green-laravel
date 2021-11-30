@@ -4,6 +4,7 @@ namespace GGPHP\TravelAgency\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\TravelAgency\Models\TravelAgency;
+use GGPHP\TravelAgency\Transformers\TravelAgencieTourGuideTransformer;
 
 /**
  * Class TravelAgencyTransformer.
@@ -71,6 +72,6 @@ class TravelAgencyTransformer extends BaseTransformer
     public function includeTravelAgencyAdditionalInformation(TravelAgency $travelAgency)
     {
 
-        return $this->collection($travelAgency->travelAgencyAdditionalInformation, new TravelAgencyAdditionalInformationTransformer, 'TravelAgencyAdditionalInformation');
+        return $this->collection($travelAgency->travelAgencyAdditionalInformation, new TravelAgencieTourGuideTransformer, 'TravelAgencyAdditionalInformation');
     }
 }

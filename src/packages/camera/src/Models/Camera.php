@@ -13,6 +13,14 @@ class Camera extends UuidModel
 {
     use SoftDeletes;
 
+    const STATUS = [
+        "STATUS_READY" => 0,
+        "STATUS_STARTED" => 1,
+        "STATUS_RUNNING" => 2,
+        "STATUS_STOPPED" => 3,
+        "STATUS_FAILED" => 4,
+    ];
+
     /**
      * Status: Ready(User not activated Recording or Streaming)
      */
@@ -211,79 +219,5 @@ class Camera extends UuidModel
     public function getLongAttribute($value)
     {
         return ($value === self::LONG_DEFAULT) ? null : (float) $value;
-    }
-
-    /**
-     * Add scope filter camera by request params
-     *
-     * @param type $query
-     * @param type $request
-     * @return type
-     */
-    public function scopeByFilter($query, $request)
-    {
-        $keyword = $request->get('keyword', '');
-        $status = $request->get('status', '');
-
-        // Filter camera by collection
-        if ($request->has('collection_id')) {
-            $collectionId = $request->collection_id;
-            $query->whereHas('collection', function ($query) use ($collectionId) {
-                return $query->where('collection_id', $collectionId);
-            });
-        }
-
-        if ($request->has('except_collection_id')) {
-            $collectionId = $request->except_collection_id;
-            $query->whereHas('collection', function ($query) use ($collectionId) {
-                return $query->where('collection_id', '=', $collectionId);
-            }, '=', 0);
-        }
-
-        // Filter camera by video wall
-        if ($request->has('video_wall_id')) {
-            $videoWallId = $request->video_wall_id;
-            $query->whereHas('videoWalls', function ($query) use ($videoWallId) {
-                return $query->where('video_wall_id', $videoWallId);
-            });
-        }
-
-        if ($request->has('except_video_wall_id')) {
-            $videoWallId = $request->except_video_wall_id;
-            $query->whereHas('videoWalls', function ($q) use ($videoWallId) {
-                return $q->where('video_wall_id', '=', $videoWallId);
-            }, '=', 0);
-        }
-
-        // Filter by camera device name/number
-        if (!empty($keyword)) {
-            $query->where(function ($query) use ($keyword) {
-                return $query->where('address', 'LIKE', "%$keyword%")
-                    ->orWhere(function ($query) use ($keyword) {
-                        $query->whereHas('generalProperties', function ($query) use ($keyword) {
-                            return $query->where('device_name', 'LIKE', "%$keyword%")
-                                ->orWhere('device_number', 'LIKE', "%$keyword%");
-                        });
-                    });
-            });
-        }
-
-        if (!empty($status)) {
-            switch ($status) {
-                case self::STATUS_READY:
-                case self::STATUS_STARTED:
-                case self::STATUS_RUNNING:
-                    $status = [self::STATUS_READY, self::STATUS_STARTED, self::STATUS_RUNNING];
-                    break;
-                case self::STATUS_STOPPED:
-                case self::STATUS_FAILED:
-                    $status = [self::STATUS_STOPPED, self::STATUS_FAILED];
-                    break;
-            }
-
-            $query->whereIn('status', $status);
-        }
-
-        return $query;
     }
 }

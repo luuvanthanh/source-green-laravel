@@ -82,6 +82,14 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $this->model = $this->model->whereIn('status', $attributes['status']);
         }
 
+        if (!empty($attributes['start_time']) && !empty($attributes['end_time'])) {
+            $this->model = $this->model->where('time', '>=', $attributes['start_time'])->where('time', '<=', $attributes['end_time']);
+        }
+
+        if (!empty($attributes['date'])) {
+            $this->model = $this->model->whereDate('time', $attributes['start_time']);
+        }
+
         if (empty($attributes['limit'])) {
             $event = $this->all();
         } else {
@@ -95,12 +103,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $event = $this->model()::create($attributes);
 
-        if (!empty($attributes['image'])) {
-            $event->addMediaFromDisk($attributes['image']['path'])->usingName($attributes['image']['file_name'])->preservingOriginal()->toMediaCollection('image');
+        if (!empty($attributes['image_path'])) {
+            $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
         }
 
-        if (!empty($attributes['video'])) {
-            $event->addMediaFromDisk($attributes['video']['path'])->usingName($attributes['video']['file_name'])->preservingOriginal()->toMediaCollection('video');
+        if (!empty($attributes['video_path'])) {
+            $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
         }
 
         return parent::find($event->id);
@@ -112,12 +120,12 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         $event->update($attributes);
 
-        if (!empty($attributes['image'])) {
-            $event->addMediaFromDisk($attributes['image']['path'])->usingName($attributes['image']['file_name'])->preservingOriginal()->toMediaCollection('image');
+        if (!empty($attributes['image_path'])) {
+            $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
         }
 
-        if (!empty($attributes['video'])) {
-            $event->addMediaFromDisk($attributes['video']['path'])->usingName($attributes['video']['file_name'])->preservingOriginal()->toMediaCollection('video');
+        if (!empty($attributes['video_path'])) {
+            $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
         }
 
         return parent::find($id);
@@ -187,6 +195,15 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $attributes['event_id'] = $relatedEventId;
             EventHandle::create($attributes);
         }
+
+        return parent::find($id);
+    }
+
+    public function updateHandleEvent(array $attributes, $id)
+    {
+        $event = $this->model()::findOrFail($id);
+
+        $event->eventHandle()->updateOrCreate($attributes);
 
         return parent::find($id);
     }

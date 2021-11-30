@@ -20,4 +20,9 @@ class TravelAgencieTourGuide extends UuidModel
     protected $fillable = [
         'travel_agency_id', 'tour_guide_id', 'date_of_entering_the_company',
     ];
+
+    public function tourGuide()
+    {
+        return $this->belongsTo(\GGPHP\TourGuide\Models\TourGuide::class);
+    }
 }

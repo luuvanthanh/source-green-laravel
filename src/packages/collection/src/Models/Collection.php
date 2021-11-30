@@ -54,7 +54,7 @@ class Collection extends UuidModel implements HasMedia
      */
     public function user()
     {
-        return $this->belongsToMany(User::class, 'user_collection', 'collection_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'user_collection', 'collection_id', 'user_id');
     }
 
     /**

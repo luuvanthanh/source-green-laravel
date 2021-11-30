@@ -36,7 +36,20 @@ class CameraController extends Controller
      */
     public function index(Request $request)
     {
-        $cameras = $this->cameraRepository->cameras($request);
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Camera::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
+
+        $cameras = $this->cameraRepository->getCamera($attributes);
+
         return $this->success($cameras, trans('lang::messages.common.getListSuccess'));
     }
 

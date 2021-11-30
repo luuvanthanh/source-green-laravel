@@ -139,8 +139,38 @@ class CollectionRepositoryEloquent extends BaseRepository implements CollectionR
      */
     public function create(array $attributes)
     {
-        $attributes['created_by'] = "fe9880d9-8872-4c70-b299-cfb609118ef9";
-        $collection = Collection::create($attributes);
+
+        \DB::beginTransaction();
+        try {
+            $collection = Collection::create($attributes);
+
+            if (!empty($attributes['camera_id'])) {
+                $collection->camera()->sync($attributes['camera_id']);
+            }
+
+            if (!empty($attributes['users'])) {
+                $listUserId = [];
+                $listdUserCollectionPermission = [];
+                foreach ($attributes['users'] as  $itemUser) {
+                    $listUserId[] = $itemUser['user_id'];
+                    foreach ($itemUser['permisson_id'] as $itemPermission) {
+                        $listdUserCollectionPermission[] = [
+                            'permission_id' => $itemPermission,
+                            'model_type' => User::class,
+                            'model_id' => $itemUser['user_id'],
+                            'collection_id' => $collection->id,
+                        ];
+                    }
+                }
+                $collection->user()->sync($listUserId);
+                \DB::table('model_has_permissions')->insert($listdUserCollectionPermission);
+            }
+
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw $th;
+        }
 
 
         return parent::find($collection->id);

@@ -198,4 +198,26 @@ class EventController extends Controller
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateHandleEvent(Request $request, $id)
+    {
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Event::STATUS[$attributes['status']];
+        }
+
+        if (!empty($attributes['status_detail'])) {
+            $attributes['status_detail'] = Event::STATUS_DETAIL[$attributes['status_detail']];
+        }
+
+        $event = $this->eventRepository->updateHandleEvent($request->all(), $id);
+
+        return $this->success($event, trans('lang::messages.common.modifySuccess'));
+    }
 }

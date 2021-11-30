@@ -2,6 +2,7 @@
 
 namespace GGPHP\TravelAgency\Repositories\Eloquent;
 
+use GGPHP\TravelAgency\Models\TravelAgencieTourGuide;
 use GGPHP\TravelAgency\Models\TravelAgency;
 use GGPHP\TravelAgency\Presenters\TravelAgencyPresenter;
 use GGPHP\TravelAgency\Repositories\Contracts\TravelAgencyRepository;
@@ -92,7 +93,9 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
     public function deleteTourGuidesToTravelAgencie($id)
     {
-        TravelAgencieTourGuide::delete($id);
+        $travelAgencieTourGuide = TravelAgencieTourGuide::findOrFail($id);
+
+        $travelAgencieTourGuide->delete();
 
         return true;
     }
