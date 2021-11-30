@@ -29,8 +29,8 @@ class PostArticleFacebookRequest extends FormRequest
             'article_id' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $article = PostFacebookInfo::where('article_id', $value)->withTrashed()->first();
-                   
+                    $article = PostFacebookInfo::where('article_id', $value)->first();
+
                     if (is_null($article)) {
                         return true;
                     }
