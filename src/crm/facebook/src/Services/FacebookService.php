@@ -411,4 +411,34 @@ class FacebookService
             }
         }
     }
+
+    public static function deletePagePost($attributes)
+    {
+        $fb = getFacebookSdk();
+
+        try {
+            $response = $fb->delete('/'.
+                $attributes['facebook_post_id'],[],
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode);
+    }
 }

@@ -11,6 +11,7 @@ use GGPHP\Crm\Facebook\Repositories\Contracts\MessageRepository;
 use GGPHP\Crm\Facebook\Repositories\Contracts\PageRepository;
 use GGPHP\Crm\Facebook\Services\FacebookService;
 use GGPHP\Crm\Marketing\Models\PostFacebookInfo;
+use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 use GGPHP\Crm\Marketing\Repositories\Eloquent\ArticleRepositoryEloquent;
 use Illuminate\Http\Request;
 
@@ -21,14 +22,15 @@ class FacebookController extends Controller
      * @var $employeeRepository
      */
     protected $messageRepository;
-
+    protected $articleRepository;
     /**
      * UserController constructor.
      * @param StatusParentLeadRepository $inOutHistoriesRepository
      */
-    public function __construct(MessageRepository $messageRepository)
+    public function __construct(MessageRepository $messageRepository, ArticleRepository $articleRepository)
     {
         $this->messageRepository = $messageRepository;
+        $this->articleRepository = $articleRepository;
     }
 
     public function webhook(Request $request)
@@ -94,8 +96,10 @@ class FacebookController extends Controller
                             $postFacebookInfo->update();
                         }
                     }
-                    ArticleRepositoryEloquent::postFacebookInfo($changes);
+                    $this->articleRepository->postFacebookInfo($changes);
                 }
+
+                
                 break;
         }
 

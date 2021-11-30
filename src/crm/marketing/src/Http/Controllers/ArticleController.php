@@ -5,6 +5,7 @@ namespace GGPHP\Crm\Marketing\Http\Controllers;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
 use GGPHP\Crm\Marketing\Http\Requests\CreateArticleRequest;
+use GGPHP\Crm\Marketing\Http\Requests\DeleteArticleRequest;
 use GGPHP\Crm\Marketing\Http\Requests\PostArticleFacebookRequest;
 use GGPHP\Crm\Marketing\Http\Requests\UpdateArticleRequest;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
@@ -87,9 +88,9 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, DeleteArticleRequest $request)
     {
-        $this->articleRepository->delete($id);
+        $this->articleRepository->deleteArticle($id, $request->all());
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }

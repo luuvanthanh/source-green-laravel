@@ -9,7 +9,6 @@ use GGPHP\Crm\Marketing\Presenters\ArticlePresenter;
 use GGPHP\Crm\Marketing\Repositories\Contracts\ArticleRepository;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Illuminate\Container\Container as Application;
 
 /**
  * Class InOutHistoriesRepositoryEloquent.
@@ -124,39 +123,56 @@ class ArticleRepositoryEloquent extends BaseRepository implements ArticleReposit
         return $response;
     }
 
-    public static function postFacebookInfo($attributes)
+    public function postFacebookInfo($attributes)
     {
         if (isset($attributes['value']['post_id'])) {
             $post_id = $attributes['value']['post_id'];
             $postFacebookInfo = PostFacebookInfo::where('facebook_post_id', $post_id)->first();
-
-            if (!isset($attributes['value']['comment_id'])) {
-                if ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "add") {
-                    $quantity_reaction = $postFacebookInfo->quantity_reaction;
-                    $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
-                } elseif ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "remove") {
-                    $quantity_reaction = $postFacebookInfo->quantity_reaction;
-                    $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
-                }
-            }
-
-            if ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "add") {
-                $quantity_comment = $postFacebookInfo->quantity_comment;
-                $postFacebookInfo->quantity_comment = $quantity_comment + 1;
-            } elseif ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "remove") {
-                $quantity_comment = $postFacebookInfo->quantity_comment;
-                $postFacebookInfo->quantity_comment = $quantity_comment - 1;
-            }
-
             if (!empty($postFacebookInfo)) {
+                if (!isset($attributes['value']['comment_id'])) {
+                    if ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "add") {
+                        $quantity_reaction = $postFacebookInfo->quantity_reaction;
+                        $postFacebookInfo->quantity_reaction = $quantity_reaction + 1;
+                    } elseif ($attributes['value']['item'] == "reaction" && $attributes['value']['verb'] == "remove") {
+                        $quantity_reaction = $postFacebookInfo->quantity_reaction;
+                        $postFacebookInfo->quantity_reaction = $quantity_reaction - 1;
+                    }
+                }
+
+                if ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "add") {
+                    $quantity_comment = $postFacebookInfo->quantity_comment;
+                    $postFacebookInfo->quantity_comment = $quantity_comment + 1;
+                } elseif ($attributes['value']['item'] == "comment" && $attributes['value']['verb'] == "remove") {
+                    $quantity_comment = $postFacebookInfo->quantity_comment;
+                    $postFacebookInfo->quantity_comment = $quantity_comment - 1;
+                }
+
                 $postFacebookInfo->update();
             }
 
             if ($attributes['value']['item'] == "post" && $attributes['value']['verb'] == "remove") {
-                PostFacebookInfo::where('facebook_post_id', $attributes['value']['post_id'])->delete();
+                PostFacebookInfo::where('facebook_post_id', $attributes['value']['post_id'])->forceDelete();
             }
 
             FacebookService::createUserFacebookInfo($attributes);
         }
+    }
+
+    public function deleteArticle($id, $attributes)
+    {
+        \DB::beginTransaction();
+        try {
+            $postFacebookInfo = PostFacebookInfo::where('article_id', $id)->first();
+            $attributes['facebook_post_id'] = $postFacebookInfo->facebook_post_id;
+            $response = FacebookService::deletePagePost($attributes);
+            if ($response->success) {
+                $postFacebookInfo->forceDelete();
+            }
+            Article::where('id', $id)->delete();
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+        }
+        return;
     }
 }
