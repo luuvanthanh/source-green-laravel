@@ -62,6 +62,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = $this->eventRepository->find($id);
+        $this->eventRepository->update(['is_read' => true], $id);
 
         return $this->success($event, trans('lang::messages.common.getInfoSuccess'));
     }
@@ -169,6 +170,7 @@ class EventController extends Controller
         if (!empty($attributes['status_detail'])) {
             $attributes['status_detail'] = Event::STATUS_DETAIL[$attributes['status_detail']];
         }
+        $this->eventRepository->update(['is_read' => true], $id);
 
         $event = $this->eventRepository->handleEvent($request->all(), $id);
 

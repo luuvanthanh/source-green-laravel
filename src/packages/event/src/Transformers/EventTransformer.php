@@ -58,10 +58,36 @@ class EventTransformer extends BaseTransformer
             }
         }
 
+        //get image
+        $imageMedia = $this->getMedia('image');
+        $imageMedia = $imageMedia->isEmpty() ? null : $imageMedia->first();
+        $image = null;
+
+        if (!is_null($imageMedia)) {
+            $image = [
+                "path" => $imageMedia->getPath(),
+                "name" => $imageMedia->name,
+            ];
+        }
+
+        //get video
+        $videoMedia = $this->getMedia('video');
+        $videoMedia = $videoMedia->isEmpty() ? null : $videoMedia->first();
+        $video = null;
+
+        if (!is_null($videoMedia)) {
+            $video = [
+                "path" => $videoMedia->getPath(),
+                "name" => $videoMedia->name,
+            ];
+        }
+
         return [
             'status' => $status,
             'status_detail' => $statusDetail,
-            'warning_level' => $warningLevel
+            'warning_level' => $warningLevel,
+            'image' => $image,
+            'video' => $video
         ];
     }
 

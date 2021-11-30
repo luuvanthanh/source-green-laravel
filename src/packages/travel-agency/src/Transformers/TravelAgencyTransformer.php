@@ -39,8 +39,28 @@ class TravelAgencyTransformer extends BaseTransformer
             }
         }
 
+        //get locality
+        $locality = null;
+
+        foreach (TravelAgency::LOCALITY as $key => $value) {
+            if ($value == $model->locality) {
+                $locality = $key;
+            }
+        }
+
+        //get service_type
+        $serviceType = null;
+
+        foreach (TravelAgency::SERVICE_TYPE as $key => $value) {
+            if ($value == $model->service_type) {
+                $serviceType = $key;
+            }
+        }
+
         return [
             'files' => $files,
+            'locality' => $locality,
+            'service_type' => $serviceType,
         ];
     }
 

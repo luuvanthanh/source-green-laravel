@@ -59,6 +59,8 @@ class TravelAgencyController extends Controller
      */
     public function index(Request $request)
     {
+        $attributes = $request->all();
+
         if (!empty($attributes['locality'])) {
             $locality = explode(',', $attributes['locality']);
             $newLocality = [];
@@ -79,7 +81,7 @@ class TravelAgencyController extends Controller
             $attributes['service_type'] = array_values($newServiceType);
         }
 
-        $travelAgency = $this->travelAgencyRepository->getTravelAgency($request->all());
+        $travelAgency = $this->travelAgencyRepository->getTravelAgency($attributes);
 
         return $this->success($travelAgency, trans('lang::messages.common.getListSuccess'));
     }
