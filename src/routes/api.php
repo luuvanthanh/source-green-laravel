@@ -31,7 +31,7 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         $router->forBread();
     });
 
-    Route::group(['middleware' => []], function () {
+    Route::group(['middleware' => ['auth:api']], function () {
         \GGPHP\Users\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
