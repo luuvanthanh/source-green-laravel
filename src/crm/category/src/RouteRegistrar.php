@@ -37,6 +37,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('branches', 'BranchController');
             \Route::resource('category-events', 'CategoryEventController');
             \Route::resource('category-relationships', 'CategoryRelationshipController');
+            \Route::resource('category-skills', 'CategorySkillController');
         });
     }
 }
