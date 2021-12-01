@@ -1730,6 +1730,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Vấn đề khó khăn của trẻ',
+          key: 'ChildrensProblems',
+          url: [
+            '/crm/danh-muc/van-de-kho-khan-cua-tre',
+            '/crm/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
+            '/crm/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
