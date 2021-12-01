@@ -2419,8 +2419,6 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-
-          // chilldrensProblems
           {
             path: '/crm/danh-muc/van-de-kho-khan-cua-tre',
             component: './crm/childrens-problems',
@@ -2439,7 +2437,6 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-          //chilldrensProblems
           {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
