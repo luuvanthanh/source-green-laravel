@@ -2437,14 +2437,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-          //reviewQuestion
           {
             path: '/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh',
             component: './crm/review-question',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
-          //reviewQuestion
           {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
