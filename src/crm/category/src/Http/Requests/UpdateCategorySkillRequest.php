@@ -2,10 +2,10 @@
 
 namespace GGPHP\Crm\Category\Http\Requests;
 
-use GGPHP\Crm\Category\Models\SearchSource;
+use GGPHP\Crm\Category\Models\CategorySkill;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSearchSourceRequest extends FormRequest
+class UpdateCategorySkillRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,9 +28,9 @@ class UpdateSearchSourceRequest extends FormRequest
             'id' => 'required',
             'name' => [
                 function ($attribute, $value, $fail) {
-                    $searchSource = SearchSource::where('name', $value)->where('id', '!=', $this->id)->first();
+                    $categorySkill = CategorySkill::where('name', $value)->where('id', '!=', $this->id)->first();
 
-                    if (is_null($searchSource)) {
+                    if (is_null($categorySkill)) {
                         return true;
                     }
 
