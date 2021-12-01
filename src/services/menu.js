@@ -1741,6 +1741,15 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Câu hỏi đánh giá cho phụ huynh',
+          key: 'review-question',
+          url: [
+            '/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {

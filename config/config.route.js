@@ -2438,6 +2438,12 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh',
+            component: './crm/review-question',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
             wrappers: ['@/wrappers/auth'],
