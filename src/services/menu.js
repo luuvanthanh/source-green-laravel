@@ -1719,6 +1719,17 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Kỹ năng',
+          key: 'skill',
+          url: [
+            '/crm/danh-muc/ky-nang',
+            '/crm/danh-muc/ky-nang/tao-moi',
+            '/crm/danh-muc/ky-nang/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
