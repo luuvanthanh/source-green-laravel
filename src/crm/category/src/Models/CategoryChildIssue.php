@@ -5,15 +5,15 @@ namespace GGPHP\Crm\Category\Models;
 use GGPHP\Core\Models\UuidModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CategorySkill extends UuidModel
+class CategoryChildIssue extends UuidModel
 {
     use SoftDeletes;
 
-    const CODE = 'KN0';
-
-    protected $table = 'category_skills';
+    const CODE = 'VD';
+    
+    protected $table = 'category_child_issues';
 
     protected $fillable = [
-        'code', 'name', 'use', 'numerical_skill'
+        'code', 'name'
     ];
 }
