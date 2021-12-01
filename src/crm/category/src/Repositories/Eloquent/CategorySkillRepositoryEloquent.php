@@ -19,7 +19,7 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
      * @var array
      */
     protected $fieldSearchable = [
-        'created_at',
+        'created_at', 'numerical_skill'
     ];
 
     /**
@@ -78,5 +78,19 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
         $categorySkill = CategorySkill::create($attributes);
 
         return parent::parserResult($categorySkill);
+    }
+
+    public function sort(array $attributes)
+    {
+        $listId = explode(',', $attributes['id']);
+
+        foreach ($listId as $key => $value) {
+            $fisrtValue = CategorySkill::find($value);
+
+            $fisrtValue->update(['numerical_skill' => $key + 1]);
+        }
+        $result = CategorySkill::orderBy('numerical_skill')->get();
+
+        return parent::parserResult($result);
     }
 }

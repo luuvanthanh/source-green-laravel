@@ -92,4 +92,11 @@ class CategorySkillController extends Controller
 
         return $this->success([], trans('lang::messages.common.deleteSuccess'));
     }
+
+    public function sort(Request $request)
+    {
+        $categorySkill = $this->categorySkillRepository->sort($request->all());
+
+        return $this->success($categorySkill, trans('lang::messages.common.getListSuccess'));
+    }
 }

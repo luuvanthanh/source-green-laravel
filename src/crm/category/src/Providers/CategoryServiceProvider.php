@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Category\Providers;
 
 use GGPHP\Crm\Category\Repositories\Contracts\BranchRepository;
+use GGPHP\Crm\Category\Repositories\Contracts\CategoryChildIssueRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategoryEventRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategoryRelationshipRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategorySkillRepository;
@@ -13,6 +14,7 @@ use GGPHP\Crm\Category\Repositories\Eloquent\StatusParentPotentialRepositoryEloq
 use GGPHP\Crm\Category\Repositories\Contracts\StatusParentLeadRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\TagRepository;
 use GGPHP\Crm\Category\Repositories\Eloquent\BranchRepositoryEloquent;
+use GGPHP\Crm\Category\Repositories\Eloquent\CategoryChildIssueRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\CategoryEventRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\CategoryRelationshipRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\CategorySkillRepositoryEloquent;
@@ -52,5 +54,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(CategoryEventRepository::class, CategoryEventRepositoryEloquent::class);
         $this->app->bind(CategoryRelationshipRepository::class, CategoryRelationshipRepositoryEloquent::class);
         $this->app->bind(CategorySkillRepository::class, CategorySkillRepositoryEloquent::class);
+        $this->app->bind(CategoryChildIssueRepository::class, CategoryChildIssueRepositoryEloquent::class);
     }
 }

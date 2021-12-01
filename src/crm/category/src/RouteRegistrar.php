@@ -38,6 +38,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('category-events', 'CategoryEventController');
             \Route::resource('category-relationships', 'CategoryRelationshipController');
             \Route::resource('category-skills', 'CategorySkillController');
+            \Route::resource('category-child-issues', 'CategoryChildIssueController');
+            \Route::post('category-skill-sorts', 'CategorySkillController@sort');
         });
     }
 }
