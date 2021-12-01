@@ -2419,6 +2419,27 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+
+          // chilldrensProblems
+          {
+            path: '/crm/danh-muc/van-de-kho-khan-cua-tre',
+            component: './crm/childrens-problems',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
+            component: './crm/childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
+            component: './crm/childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          //chilldrensProblems
           {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
