@@ -2402,6 +2402,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/ky-nang',
+            component: './crm/skill',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/ky-nang/tao-moi',
+            component: './crm/skill/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/ky-nang/:id/chi-tiet',
+            component: './crm/skill/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/sale/ph-lead',
             component: './crm/sale-parents-lead',
             wrappers: ['@/wrappers/auth'],

@@ -156,10 +156,10 @@ import * as categories from '@/services/categories';
         ...state,
         pages: payload.data,
       }),
-      // SET_USER: (state, { payload }) => ({
-      //   ...state,
-      //   user: payload,
-      // }),
+      SET_USER: (state, { payload }) => ({
+        ...state,
+        user: payload,
+      }),
     },
     effects: {
       *GET_STUDENTS({ payload, callback }, saga) {
