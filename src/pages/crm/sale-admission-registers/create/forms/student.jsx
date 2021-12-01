@@ -175,7 +175,6 @@ const General = memo(
                     name="address"
                     label="Địa chỉ"
                     type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                   />
                 </Pane>
                 <Pane className="col-lg-4">

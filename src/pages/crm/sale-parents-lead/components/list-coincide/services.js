@@ -6,8 +6,7 @@ export function get(data = {}) {
     method: 'GET',
     params: {
       ...data,
-      orderBy: 'created_at',
-      sortedBy: 'desc',
+      orderBy: "full_name",
       searchJoin: 'and',
       include: Helper.convertIncludes([
         'search',
