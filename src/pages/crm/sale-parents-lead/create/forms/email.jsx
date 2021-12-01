@@ -9,6 +9,7 @@ import Table from '@/components/CommonComponent/Table';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { get } from 'lodash';
+import stylesModule from '../../styles.module.scss';
 
 const General = memo(() => {
   const dispatch = useDispatch();
@@ -101,20 +102,22 @@ const General = memo(() => {
           </Heading>
           <div className="row">
             <Pane className="col-lg-12">
-              <Table
-                columns={header()}
-                dataSource={data}
-                pagination={false}
-                className="table-edit"
-                isEmpty
-                params={{
-                  header: header(),
-                  type: 'table',
-                }}
-                bordered={false}
-                rowKey={(record) => record.id}
-                scroll={{ x: '100%' }}
-              />
+              <div className={stylesModule['wrapper-table']}>
+                <Table
+                  columns={header()}
+                  dataSource={data}
+                  pagination={false}
+                  className="table-edit"
+                  isEmpty
+                  params={{
+                    header: header(),
+                    type: 'table',
+                  }}
+                  bordered={false}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                />
+              </div>
             </Pane>
           </div>
         </div>

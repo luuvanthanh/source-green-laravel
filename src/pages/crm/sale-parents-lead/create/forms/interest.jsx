@@ -24,6 +24,14 @@ const General = memo(
         const formRef = useRef();
         const mounted = useRef(false);
 
+        useEffect(() => {
+            dispatch({
+                type: 'crmSaleLeadAdd/GET_DETAILS',
+                payload: params,
+            });
+        }, [params.id]);
+
+
         const loadingSubmit =
             effects[`crmSaleLeadAdd/ADD_INTEREST`];
         const loading = effects[`crmSaleLeadAdd/GET_DETAILS`];
@@ -65,7 +73,7 @@ const General = memo(
         }, []);
 
         useEffect(() => {
-            if (!isEmpty(details) && params.id) {
+            if (params.id && details.marketingProgram) {
                 formRef.current.setFieldsValue({
                     ...details,
                     ...head(details.positionLevel),

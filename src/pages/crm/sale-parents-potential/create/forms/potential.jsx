@@ -172,6 +172,7 @@ const General = memo(() => {
           </Heading>
           <div className="row">
             <Pane className="col-lg-12">
+            <div className={stylesModule['wrapper-table']}>
               <Table
                 columns={header()}
                 dataSource={lead}
@@ -186,6 +187,7 @@ const General = memo(() => {
                 rowKey={(record) => record.id}
                 scroll={{ x: '100%' }}
               />
+              </div>
             </Pane>
           </div>
         </div>

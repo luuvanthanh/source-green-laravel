@@ -10,7 +10,7 @@ import styles from '@/assets/styles/Common/common.scss';
 import Button from '@/components/CommonComponent/Button';
 import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
-
+import stylesModule from '../../styles.module.scss';
 
 const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   loading,
@@ -22,7 +22,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   city: crmSaleAdmissionAdd.city,
   district: crmSaleAdmissionAdd.district,
 });
-const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error,data }) => {
+const General = memo(({ dispatch, loading: { effects }, match: { params }, details, error, data }) => {
   const formRef = useRef();
   const mounted = useRef(false);
   const loadingSubmit =
@@ -83,14 +83,14 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         className: 'min-width-250',
         width: 250,
         render: (record) => (
-            <>
-              <Radio.Group
-              >
-                <Radio value={record.full_name}>Đã nhận</Radio>
-                <Radio value={record.full_name}>Chưa nhận</Radio>
-              </Radio.Group>
-            </>
-          ),
+          <>
+            <Radio.Group
+            >
+              <Radio value={record.full_name}>Đã nhận</Radio>
+              <Radio value={record.full_name}>Chưa nhận</Radio>
+            </Radio.Group>
+          </>
+        ),
       },
       {
         title: 'File đính kèm',
@@ -125,25 +125,27 @@ const General = memo(({ dispatch, loading: { effects }, match: { params }, detai
         <Pane className="card">
           <Pane className="border-bottom">
             <Pane className="p20">
-            <Heading type="form-title" style={{ marginBottom: 20 }}>
-              Thông tin hồ sơ
-            </Heading>
-            <Table
-              columns={header()}
-              dataSource={data}
-              pagination={false}
-              loading={loading}
-              className="table-edit"
-              isEmpty
-              params={{
-                header: header(),
-                type: 'table',
-              }}
-              bordered={false}
-              rowKey={(record) => record.id}
-              scroll={{ x: '100%' }}
-              />
-              </Pane>
+              <Heading type="form-title" style={{ marginBottom: 20 }}>
+                Thông tin hồ sơ
+              </Heading>
+              <div className={stylesModule['wrapper-table']}>
+                <Table
+                  columns={header()}
+                  dataSource={data}
+                  pagination={false}
+                  loading={loading}
+                  className="table-edit"
+                  isEmpty
+                  params={{
+                    header: header(),
+                    type: 'table',
+                  }}
+                  bordered={false}
+                  rowKey={(record) => record.id}
+                  scroll={{ x: '100%' }}
+                />
+              </div>
+            </Pane>
           </Pane>
           <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
             <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
@@ -168,7 +170,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   data: [],

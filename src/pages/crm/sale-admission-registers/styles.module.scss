@@ -144,3 +144,11 @@
   font-weight: 400;
   color: #3E4247;
 }
+
+.wrapper-table { 
+  :global(.ant-table-thead > tr > th) {
+    background-color: #3B5CAD !important;
+    font-weight: 700;
+    color: white !important;
+  }
+}

@@ -324,20 +324,22 @@ const General = memo(
               </Heading>
               <div className="row">
                 <Pane className="col-lg-12">
-                  <Table
-                    columns={header()}
-                    dataSource={lead}
-                    pagination={false}
-                    className="table-edit"
-                    isEmpty
-                    params={{
-                      header: header(),
-                      type: 'table',
-                    }}
-                    bordered={false}
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                  />
+                  <div className={stylesModule['wrapper-table']}>
+                    <Table
+                      columns={header()}
+                      dataSource={lead}
+                      pagination={false}
+                      className="table-edit"
+                      isEmpty
+                      params={{
+                        header: header(),
+                        type: 'table',
+                      }}
+                      bordered={false}
+                      rowKey={(record) => record.id}
+                      scroll={{ x: '100%' }}
+                    />
+                  </div>
                 </Pane>
               </div>
             </div>

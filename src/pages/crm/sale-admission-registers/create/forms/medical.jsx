@@ -317,44 +317,46 @@ const General = memo(
                 <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                   Diễn biến sức khỏe của trẻ
                 </Heading>
-                <TableCus
-                  rowKey={(record) => record.id}
-                  className="table-edit"
-                  columns={columns}
-                  dataSource={data}
-                  isEmpty
-                  pagination={false}
-                  scroll={{ x: '100%' }}
-                  footer={() => (
-                    <Button
-                      onClick={() =>
-                        setData([
-                          ...data,
-                          {
-                            id: uuidv4(),
-                            title: undefined,
-                            content: undefined,
-                            file_image: undefined,
-                          },
-                        ])
-                      }
-                      color="transparent-success"
-                      icon="plus"
-                    >
-                      Thêm
-                    </Button>
-                  )}
-                />
+                <div className={stylesModule['wrapper-table']}>
+                  <TableCus
+                    rowKey={(record) => record.id}
+                    className="table-edit"
+                    columns={columns}
+                    dataSource={data}
+                    isEmpty
+                    pagination={false}
+                    scroll={{ x: '100%' }}
+                    footer={() => (
+                      <Button
+                        onClick={() =>
+                          setData([
+                            ...data,
+                            {
+                              id: uuidv4(),
+                              title: undefined,
+                              content: undefined,
+                              file_image: undefined,
+                            },
+                          ])
+                        }
+                        color="transparent-success"
+                        icon="plus"
+                      >
+                        Thêm
+                      </Button>
+                    )}
+                  />
+                </div>
               </Pane>
             </Pane>
-          <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-            <Button color="primary" icon="export" className="ml-2">
-              Xuất file khai báo y tế
-            </Button>
-            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
-              Lưu
-            </Button>
-          </Pane>
+            <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
+              <Button color="primary" icon="export" className="ml-2">
+                Xuất file khai báo y tế
+              </Button>
+              <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
+                Lưu
+              </Button>
+            </Pane>
           </Pane>
         </Loading>
       </Form>
@@ -375,7 +377,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   data: [],

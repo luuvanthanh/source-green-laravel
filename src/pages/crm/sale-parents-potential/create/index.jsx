@@ -11,9 +11,10 @@ import { Link } from 'umi';
 import ParentsForm from './forms/parents';
 import StudentForm from './forms/student';
 import PotentialForm from './forms/potential';
-// import ReportFeeForm from './forms/reportFee';
-// import RegisterForm from './forms/register';
-// import InputForm from './forms/input';
+import AdmissionForm from './forms/admission';
+import TestInput from './forms/test-input';
+// import TuitionForm from './forms/tuition';
+// import EndowForm from './forms/endow';
 
 import { menu, defaultKey } from './menu';
 
@@ -23,9 +24,10 @@ const forms = {
   parents: <ParentsForm />,
   student: <StudentForm />,
   potential: <PotentialForm />,
-  // reportFee: <ReportFeeForm />,
-  // register: <RegisterForm />,
-  // input: <InputForm />,
+  admission: <AdmissionForm />,
+  testInput: <TestInput />,
+  // tuition: <TuitionForm />,
+  // endow: <EndowForm />,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
@@ -48,7 +50,7 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
       <Helmet title="Tạo hồ sơ phụ huynh" />
       <Breadcrumbs
         className="pb20 pt0"
-        last= 'Chi tiết'
+        last='Chi tiết'
         menu={menuLeftCRM}
       />
       <div className="row">
@@ -58,12 +60,12 @@ const Index = memo(({ match: { params }, location: { pathname, query } }) => {
               <Menu selectedKeys={query.type || activeMenuItem} mode="inline">
                 {
                   menu
-                  .filter((item) => item.key)
-                  .map(({ key, label }) => (
-                    <MenuItem key={key}>
-                      <Link to={`${pathname}?type=${key}`}>{label}</Link>
-                    </MenuItem>
-                  ))
+                    .filter((item) => item.key)
+                    .map(({ key, label }) => (
+                      <MenuItem key={key}>
+                        <Link to={`${pathname}?type=${key}`}>{label}</Link>
+                      </MenuItem>
+                    ))
                 }
               </Menu>
             </Scrollbars>
