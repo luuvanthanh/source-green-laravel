@@ -21,13 +21,13 @@ const marginProps = { style: { marginBottom: 12 } };
 const mapStateToProps = ({ loading, crmMarketingManageAdd }) => ({
   loading,
   detailsAddPost: crmMarketingManageAdd.detailsAddPost,
-  detailsPost: crmMarketingManageAdd.detailsPost,
   error: crmMarketingManageAdd.error,
 });
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error }) => {
     const formRef = useRef();
     const [content, setContent] = useState('');
+    const user = JSON.parse(localStorage.getItem('user'));
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (action, value) => mounted?.current && action(value);
@@ -95,6 +95,25 @@ const General = memo(
       mounted.current = true;
       return mounted.current;
     }, []);
+      const cancel = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return Helper.confirmAction({
+          callback: () => {
+            dispatch({
+              type: 'crmMarketingManageAdd/REMOVE_FACEBOOK',
+              payload: {
+                 id : detailsAddPost.id,
+                 page_access_token: user?.accessToken,
+              },
+              callback: (response) => {
+                if (response) {
+                  history.goBack();
+                }
+              },
+            });
+          },
+        });
+      };
 
     useEffect(() => {
       if (params.detailId) {
@@ -188,9 +207,25 @@ const General = memo(
                 </Pane>
 
                 <Pane className="p20 d-flex justify-content-between align-items-center ">
-                  <p className="btn-delete" role="presentation" onClick={() => history.goBack()}>
-                    Hủy
-                  </p>
+                {detailsAddPost.id && user?.userID ? (
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          loading={loadingSubmit}
+                          onClick={() => cancel()}
+                        >
+                          Xóa
+                        </p>
+                      ) : (
+                        <p
+                          className="btn-delete"
+                          role="presentation"
+                          loading={loadingSubmit}
+                          onClick={() => history.goBack()}
+                        >
+                          Hủy
+                        </p>
+                      )}
                   <Button color="success" size="large" htmlType="submit" loading={loadingSubmit}>
                     Lưu
                   </Button>
@@ -214,6 +249,7 @@ General.propTypes = {
   classes: PropTypes.arrayOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
+  detailsPost: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -226,6 +262,7 @@ General.defaultProps = {
   classes: [],
   city: [],
   district: [],
+  detailsPost: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

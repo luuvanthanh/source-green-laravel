@@ -39,6 +39,7 @@ const Index = memo(() => {
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
     });
+    localStorage.setItem('user', JSON.stringify(user));
   };
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const Index = memo(() => {
       mounted.current = false;
     };
   }, []);
-  console.log('user', user);
+console.log("user", user);
   /**
    * Function header table
    */

@@ -156,10 +156,10 @@ import * as categories from '@/services/categories';
         ...state,
         pages: payload.data,
       }),
-      SET_USER: (state, { payload }) => ({
-        ...state,
-        user: payload,
-      }),
+      // SET_USER: (state, { payload }) => ({
+      //   ...state,
+      //   user: payload,
+      // }),
     },
     effects: {
       *GET_STUDENTS({ payload, callback }, saga) {
@@ -552,6 +552,14 @@ import * as categories from '@/services/categories';
           yield put({
             type: 'SET_ERROR',
           });
+        }
+      },
+      *REMOVE_FACEBOOK({ payload, callback }, saga) {
+        try {
+          yield saga.call(services.removeFacebook, payload);
+          callback(payload);
+        } catch (error) {
+          callback(null, error);
         }
       },
     },

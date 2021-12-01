@@ -40,7 +40,7 @@ const General = memo(() => {
     const today = new Date();
     const dateHistory = new Date(eventDetails.date);
     const timeHistory = `${eventDetails.time}`;
-    const date = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+    const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
     const time = `${today.getHours()}:${today.getMinutes()}`;
     const miliToday = today.getTime();
     const miliDateHistory = dateHistory.getTime();
@@ -387,7 +387,7 @@ const General = memo(() => {
         const today = new Date();
         const dateHistory = new Date(a);
         const timeHistory = `${e}`;
-        const date = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+        const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
         const time = `${today.getHours()}:${today.getMinutes()}`;
         const miliToday = today.getTime();
         const miliDateHistory = dateHistory.getTime();
