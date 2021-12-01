@@ -433,3 +433,13 @@ export function getPages(params = {}) {
     params,
   });
 }
+
+export function removeFacebook(data = {}) {
+  return request(`/v1/articles/${data.id}`, {
+    method: 'DELETE',
+    parse: true,
+    data: {
+      page_access_token: data.page_access_token,
+    }
+  });
+}
