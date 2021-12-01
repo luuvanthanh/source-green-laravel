@@ -13,15 +13,19 @@ export const menu = [{
     label: 'Tình trạng tiềm năng',
   },
   {
-    key: 'reportFee',
-    label: 'Báo phí',
+    key: 'admission',
+    label: 'Thông tin nhập học',
   },
   {
-    key: 'register',
-    label: 'Đăng ký nhập học',
-  },
-  {
-    key: 'input',
+    key: 'testInput',
     label: 'Thông tin test đầu vào',
+  },
+  {
+    key: 'tuition',
+    label: 'Thông tin học phí HS',
+  },
+  {
+    key: 'endow',
+    label: 'Thông tin ưu đãi PH',
   },
 ];

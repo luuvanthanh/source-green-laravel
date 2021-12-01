@@ -62,11 +62,11 @@ const General = memo(() => {
 
 
     const onChangeDescription = (value) => {
-            mountedSet(setDescription, value);
+        mountedSet(setDescription, value);
     };
 
     const onChangeResult = (value) => {
-            mountedSet(setResult, value);
+        mountedSet(setResult, value);
     };
 
 
@@ -134,7 +134,7 @@ const General = memo(() => {
                         mountedSet(setDescription, response.parsePayload.description);
                         mountedSet(setResult, response.parsePayload.result);
                     }
-                  },
+                },
             });
             dispatch({
                 type: 'crmSaleLeadAdd/EVENTS',
@@ -665,21 +665,23 @@ const General = memo(() => {
                         </div>
                         <div className="row">
                             <Pane className="col-lg-12">
-                                <Table
-                                    columns={header()}
-                                    dataSource={events}
-                                    pagination={false}
-                                    className="table-normal"
-                                    isEmpty
-                                    loading={loading}
-                                    params={{
-                                        header: header(),
-                                        type: 'table',
-                                    }}
-                                    bordered
-                                    rowKey={(record) => record.id}
-                                    scroll={{ x: '100%' }}
-                                />
+                                <div className={stylesModule['wrapper-table']}>
+                                    <Table
+                                        columns={header()}
+                                        dataSource={events}
+                                        pagination={false}
+                                        className="table-normal"
+                                        isEmpty
+                                        loading={loading}
+                                        params={{
+                                            header: header(),
+                                            type: 'table',
+                                        }}
+                                        bordered
+                                        rowKey={(record) => record.id}
+                                        scroll={{ x: '100%' }}
+                                    />
+                                </div>
                             </Pane>
                         </div>
                     </div>

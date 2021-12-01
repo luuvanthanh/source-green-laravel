@@ -190,55 +190,57 @@ const General = memo(
                   <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                     Chi tiết loại phí
                   </Heading>
-                  <Table
-                    columns={header()}
-                    dataSource={data}
-                    pagination={false}
-                    loading={loading}
-                    className="table-edit"
-                    isEmpty
-                    params={{
-                      header: header(),
-                      type: 'table',
-                    }}
-                    bordered
-                    rowKey={(record) => record.id}
-                    scroll={{ x: '100%' }}
-                    summary={(pageData) => {
-                      let totalBorrow = 0;
-                      let totalShipping = 0;
-                      pageData.forEach(({ total_price, shipping_fee }) => {
-                        totalBorrow += total_price;
-                        totalShipping += shipping_fee;
-                      });
-                      return (
-                        <>
-                          <Table.Summary.Row>
-                            <Table.Summary.Cell colSpan={2}>
-                              <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                Tổng tiền
-                              </Text>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                              <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                {Helper.getPrice(totalBorrow)}
-                              </Text>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                              <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                {Helper.getPrice(totalShipping)}
-                              </Text>
-                            </Table.Summary.Cell>
-                            <Table.Summary.Cell>
-                              <Text size="normal" style={{ fontWeight: 'bold' }}>
-                                {Helper.getPrice(totalBorrow + totalShipping)}
-                              </Text>
-                            </Table.Summary.Cell>
-                          </Table.Summary.Row>
-                        </>
-                      );
-                    }}
-                  />
+                  <div className={stylesModule['wrapper-table']}>
+                    <Table
+                      columns={header()}
+                      dataSource={data}
+                      pagination={false}
+                      loading={loading}
+                      className="table-edit"
+                      isEmpty
+                      params={{
+                        header: header(),
+                        type: 'table',
+                      }}
+                      bordered
+                      rowKey={(record) => record.id}
+                      scroll={{ x: '100%' }}
+                      summary={(pageData) => {
+                        let totalBorrow = 0;
+                        let totalShipping = 0;
+                        pageData.forEach(({ total_price, shipping_fee }) => {
+                          totalBorrow += total_price;
+                          totalShipping += shipping_fee;
+                        });
+                        return (
+                          <>
+                            <Table.Summary.Row>
+                              <Table.Summary.Cell colSpan={2}>
+                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                  Tổng tiền
+                                </Text>
+                              </Table.Summary.Cell>
+                              <Table.Summary.Cell>
+                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                  {Helper.getPrice(totalBorrow)}
+                                </Text>
+                              </Table.Summary.Cell>
+                              <Table.Summary.Cell>
+                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                  {Helper.getPrice(totalShipping)}
+                                </Text>
+                              </Table.Summary.Cell>
+                              <Table.Summary.Cell>
+                                <Text size="normal" style={{ fontWeight: 'bold' }}>
+                                  {Helper.getPrice(totalBorrow + totalShipping)}
+                                </Text>
+                              </Table.Summary.Cell>
+                            </Table.Summary.Row>
+                          </>
+                        );
+                      }}
+                    />
+                  </div>
                 </Pane>
               </Pane>
               <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
@@ -269,7 +271,7 @@ General.propTypes = {
 General.defaultProps = {
   match: {},
   details: {},
-  dispatch: () => {},
+  dispatch: () => { },
   loading: {},
   error: {},
   data: [],
