@@ -7,6 +7,7 @@ use GGPHP\Crm\Category\Repositories\Contracts\CategoryChildIssueRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategoryEventRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategoryRelationshipRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\CategorySkillRepository;
+use GGPHP\Crm\Category\Repositories\Contracts\QuestionReviewRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\SearchSourceRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\StatusAdmissionRegisterRepository;
 use GGPHP\Crm\Category\Repositories\Contracts\StatusParentPotentialRepository;
@@ -18,6 +19,7 @@ use GGPHP\Crm\Category\Repositories\Eloquent\CategoryChildIssueRepositoryEloquen
 use GGPHP\Crm\Category\Repositories\Eloquent\CategoryEventRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\CategoryRelationshipRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\CategorySkillRepositoryEloquent;
+use GGPHP\Crm\Category\Repositories\Eloquent\QuestionReviewRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\SearchSourceRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\StatusAdmissionRegisterRepositoryEloquent;
 use GGPHP\Crm\Category\Repositories\Eloquent\StatusParentLeadRepositoryEloquent;
@@ -55,5 +57,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRelationshipRepository::class, CategoryRelationshipRepositoryEloquent::class);
         $this->app->bind(CategorySkillRepository::class, CategorySkillRepositoryEloquent::class);
         $this->app->bind(CategoryChildIssueRepository::class, CategoryChildIssueRepositoryEloquent::class);
+        $this->app->bind(QuestionReviewRepository::class, QuestionReviewRepositoryEloquent::class);
     }
 }

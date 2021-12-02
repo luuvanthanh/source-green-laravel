@@ -40,6 +40,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('category-skills', 'CategorySkillController');
             \Route::resource('category-child-issues', 'CategoryChildIssueController');
             \Route::post('category-skill-sorts', 'CategorySkillController@sort');
+            \Route::post('question-reviews', 'QuestionReviewController@questionReview');
+            \Route::get('question-reviews', 'QuestionReviewController@index');
         });
     }
 }
