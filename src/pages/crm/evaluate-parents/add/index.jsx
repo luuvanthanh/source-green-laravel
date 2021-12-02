@@ -40,8 +40,8 @@ const Index = memo(() => {
 
   return (
     <>
-      <Helmet title="Chi tiết ghi nhận" />
-      <Breadcrumbs last="Chi tiết ghi nhận" menu={menuLeftCRM} />
+      <Helmet title="Chi tiết đánh giá" />
+      <Breadcrumbs last="Chi tiết đánh giá" menu={menuLeftCRM} />
       <Pane style={{ padding: '10px 20px', paddingBottom: 0 }}>
         <Loading
           loading={loading['mediaDetails/GET_DETAILS']}

@@ -281,10 +281,7 @@ class Index extends PureComponent {
         customer_tag: e.map((i) => ({ tag_id: i })),
         customer_lead_id: record.id,
       },
-      callback: (response) => {
-        if (response) {
-          this.onLoad();
-        }
+      callback: () => {
       },
     });
   };
@@ -388,12 +385,12 @@ class Index extends PureComponent {
       {
         title: 'Tag',
         key: 'tags',
-        width: 250,
+        width: 300,
         render: (record,) => (
           <>
             <Select
               showArrow
-              value={record?.customerTag?.map((item) => item?.tag.id)}
+              defaultValue={record?.customerTag?.map((item) => item?.tag.id)}
               mode="multiple"
               className={stylesModule['wrapper-tags']}
               onChange={(e) => this.onSelectColor(e, record)}

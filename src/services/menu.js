@@ -1882,8 +1882,11 @@ export async function getLeftMenuCRM() {
         },
         {
           title: 'Đánh giá đầu vào',
-          key: '',
-          url: [],
+          key: 'nput-rating',
+          url: [
+            '/crm/danh-gia/danh-gia-dau-vao',
+            '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },
