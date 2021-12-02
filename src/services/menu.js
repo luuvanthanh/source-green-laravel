@@ -1664,6 +1664,17 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
+          title: 'Xã Phường',
+          key: 'townWards',
+          url: [
+            '/crm/danh-muc/xa-phuong',
+            '/crm/danh-muc/xa-phuong/tao-moi',
+            '/crm/danh-muc/xa-phuong/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
           title: 'Cơ sở',
           key: 'basis',
           url: [
@@ -1709,17 +1720,6 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
-          title: 'Xã Phường',
-          key: 'townWards',
-          url: [
-            '/crm/danh-muc/xa-phuong',
-            '/crm/danh-muc/xa-phuong/tao-moi',
-            '/crm/danh-muc/xa-phuong/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
           title: 'Kỹ năng',
           key: 'skill',
           url: [
@@ -1746,6 +1746,17 @@ export async function getLeftMenuCRM() {
           key: 'review-question',
           url: [
             '/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Kịch bản đánh giá',
+          key: 'review-scenario',
+          url: [
+            '/crm/danh-muc/kich-ban-danhh-gia',
+            '/crm/danh-muc/kich-ban-danhh-gia/tao-moi',
+            '/crm/danh-muc/kich-ban-danhh-gia/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,

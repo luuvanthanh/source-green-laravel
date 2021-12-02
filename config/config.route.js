@@ -2311,6 +2311,24 @@ export default [
             authority: [permissions.CRM],
           },
           {
+            path: '/crm/danh-muc/xa-phuong',
+            component: './crm/town-wards',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/tao-moi',
+            component: './crm/town-wards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/xa-phuong/:id/chi-tiet',
+            component: './crm/town-wards/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
             path: '/crm/danh-muc/co-so',
             component: './crm/basis',
             wrappers: ['@/wrappers/auth'],
@@ -2365,25 +2383,6 @@ export default [
             authority: [permissions.CRM],
           },
           {
-            path: '/crm/danh-muc/xa-phuong',
-            component: './crm/town-wards',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CRM],
-          },
-          {
-            path: '/crm/danh-muc/xa-phuong/tao-moi',
-            component: './crm/town-wards/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CRM],
-          },
-          {
-            path: '/crm/danh-muc/xa-phuong/:id/chi-tiet',
-            component: './crm/town-wards/add',
-            wrappers: ['@/wrappers/auth'],
-            authority: [permissions.CRM],
-          },
-
-          {
             path: '/crm/danh-muc/loai-su-kien',
             component: './crm/event-type',
             wrappers: ['@/wrappers/auth'],
@@ -2434,6 +2433,24 @@ export default [
           {
             path: '/crm/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
             component: './crm/childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/kich-ban-danhh-gia',
+            component: './crm/review-scenario',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/kich-ban-danhh-gia/tao-moi',
+            component: './crm/review-scenario/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-muc/kich-ban-danhh-gia/:id/chi-tiet',
+            component: './crm/review-scenario/add',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
