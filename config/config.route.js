@@ -2634,6 +2634,18 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/danh-gia/danh-gia-dau-vao',
+            component: './crm/input-rating',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet',
+            component: './crm/input-rating/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
