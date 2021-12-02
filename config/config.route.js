@@ -2616,6 +2616,24 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/danh-gia/danh-gia-tu-phu-huynh',
+            component: './crm/evaluate-parents',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-gia/danh-gia-tu-phu-huynh/tao-moi',
+            component: './crm/evaluate-parents/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/danh-gia/danh-gia-tu-phu-huynh/:id/chi-tiet',
+            component: './crm/evaluate-parents/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM

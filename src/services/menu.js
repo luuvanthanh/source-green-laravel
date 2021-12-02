@@ -1863,5 +1863,38 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    {
+      title: 'Đánh giá',
+      key: 'evaluate',
+      icon: 'icon icon-clipboard',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Đánh giá từ PH',
+          key: 'evaluate-parents',
+          url: [
+            '/crm/danh-gia/danh-gia-tu-phu-huynh',
+            '/crm/danh-gia/danh-gia-tu-phu-huynh/tao-moi',
+            '/crm/danh-gia/danh-gia-tu-phu-huynh/:id/chi-tiet',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Đánh giá đầu vào',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Đánh giá định kỳ',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
