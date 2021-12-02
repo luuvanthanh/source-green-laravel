@@ -1,0 +1,22 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [{
+        "name": "tamnn",
+        "email": "tamnn@greenglobal.vn"
+    }],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\Crm\\Config\\": "crm/config/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\Crm\\Config\\Providers\\ConfigServiceProvider::class"
+            ]
+        }
+    }
+}

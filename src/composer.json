@@ -73,7 +73,8 @@
             "GGPHP\\Crm\\Employee\\": "crm/employee/src",
             "GGPHP\\Crm\\AdmissionRegister\\": "crm/admission-register/src",
             "GGPHP\\Crm\\WebForm\\": "crm/web-form/src",
-            "GGPHP\\Crm\\Icon\\": "crm/icon/src"
+            "GGPHP\\Crm\\Icon\\": "crm/icon/src",
+            "GGPHP\\Crm\\Config\\": "crm/config/src"
         },
         "classmap": [
             "database/seeds",
