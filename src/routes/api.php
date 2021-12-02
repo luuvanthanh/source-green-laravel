@@ -60,5 +60,9 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
         \GGPHP\Crm\Icon\RouteRegistrar::routes(function ($router) {
             $router->forBread();
         });
+
+        \GGPHP\Crm\Config\RouteRegistrar::routes(function ($router) {
+            $router->forBread();
+        });
     });
 });

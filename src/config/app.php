@@ -190,6 +190,7 @@ return [
         GGPHP\Crm\AdmissionRegister\Providers\AdmissionRegisterServiceProvider::class,
         GGPHP\Crm\WebForm\Providers\WebFormCustomerServiceProvider::class,
         GGPHP\Crm\Icon\Providers\IconServiceProvider::class,
+        GGPHP\Crm\Config\Providers\ConfigServiceProvider::class,
     ],
 
     /*
