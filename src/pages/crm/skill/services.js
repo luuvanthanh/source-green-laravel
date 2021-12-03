@@ -5,13 +5,13 @@ export function get(params) {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'numerical_city',
+      orderBy: 'numerical_skill',
     },
   });
 }
 
 export function updateOrderIndex(data = {}) {
-  return request(`/v1/city-sorts`, {
+  return request(`/v1/category-skill-sorts`, {
     method: 'POST',
     data,
   });
@@ -20,6 +20,14 @@ export function updateOrderIndex(data = {}) {
 export function remove(id) {
   return request(`/v1/category-skills/${id}`, {
     method: 'DELETE',
+    parse: true,
+  });
+}
+
+export function update(data = {}) {
+  return request(`/v1/category-skills/${data.id}`, {
+    method: 'PUT',
+    data,
     parse: true,
   });
 }

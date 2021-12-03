@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'skill',
+  namespace: 'crmSkill',
   state: {
     data: [],
     pagination: {
@@ -52,6 +52,14 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *UPDATE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.update, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error?.data);
       }
     },
   },
