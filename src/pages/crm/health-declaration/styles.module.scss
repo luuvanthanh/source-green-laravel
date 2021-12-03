@@ -1,0 +1,42 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-title {
+  color: #36383a;
+  font-family: $base__font-family;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+.wrapper-table {
+  border: 1px solid #eaeaea;
+  .title {
+    padding: 10px;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 20px;
+    color: #36383a;
+    background-color: #EEF0F4;
+    width: 100%;
+    border: 1px solid #eaeaea;
+  }
+  .item {
+    background-color: blanchedalmond;
+  }
+  .delete {
+    padding-top: 7px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: auto;  
+    cursor: pointer;
+    align-self: center;
+  }
+  .add {
+    padding: 5px 10px;
+    border: 1px solid #E1E5EF;
+    border-radius: 6px;
+  }
+}

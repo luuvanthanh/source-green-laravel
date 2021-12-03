@@ -1899,5 +1899,43 @@ export async function getLeftMenuCRM() {
         },
       ],
     },
+    {
+      title: 'Cấu hình',
+      key: 'configurationCrm',
+      icon: 'icon icon-wrench',
+      permission: [permissions.CRM],
+      children: [
+        {
+          title: 'Cảnh báo',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Khai báo y tế',
+          key: 'health-declaration',
+          url: [
+            '/crm/cau-hinh/khai-bao-y-te',
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Thông tin hồ sơ',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+        {
+          title: 'Kiểm tra đầu vào',
+          key: '',
+          url: [],
+          permission: [permissions.CRM],
+          pro: true,
+        },
+      ],
+    },
   ];
 }
