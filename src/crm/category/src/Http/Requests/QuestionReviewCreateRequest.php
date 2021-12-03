@@ -24,9 +24,9 @@ class QuestionReviewCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'createRows' => 'array',
-            'updateRows' => 'array',
-            'deleteRows' => 'array',
+            'create_rows' => 'array',
+            'update_rows' => 'array',
+            'delete_rows' => 'array',
             'create_rows.*.question' => 'required|string',
             'update_rows.*.question' => 'string',
         ];
