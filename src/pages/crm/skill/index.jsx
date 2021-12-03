@@ -23,7 +23,7 @@ const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', c
 const Index = memo(() => {
   const dispatch = useDispatch();
   const filterRef = useRef();
-  const [{ error }, loading] = useSelector(({ loading: { effects }, skill }) => [skill, effects]);
+  const [{ error }, loading] = useSelector(({ loading: { effects }, crmSkill }) => [crmSkill, effects]);
 
   const { query } = useLocation();
 
@@ -49,19 +49,17 @@ const Index = memo(() => {
     changeFilterDebouce(name, value);
   };
 
-  const [dataSource, setDataSource] = useState([
-    {code : 'MT01', full_name: 'Tương tác xã hội'}
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
-  // useEffect(() => {
-  //   dispatch({
-  //     type: 'skill/GET_DATA',
-  //     payload: { ...search },
-  //     callback: (response) => {
-  //       if (response) setDataSource(response);
-  //     },
-  //   });
-  // }, [search]);
+  useEffect(() => {
+    dispatch({
+      type: 'crmSkill/GET_DATA',
+      payload: { ...search },
+      callback: (response) => {
+        if (response) setDataSource(response);
+      },
+    });
+  }, [search]);
 
   useEffect(() => {
     mounted.current = true;
@@ -76,14 +74,14 @@ const Index = memo(() => {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'skill/REMOVE',
+          type: 'crmSkill/REMOVE',
           payload: {
             id,
           },
           callback: (response) => {
             if (response) {
               dispatch({
-                type: 'skill/GET_DATA',
+                type: 'crmSkill/GET_DATA',
                 payload: { ...search },
                 callback: (response) => {
                   if (response) setDataSource(response);
@@ -113,14 +111,14 @@ const Index = memo(() => {
       title: 'Tên kỹ năng',
       key: 'name',
       className: 'min-width-200',
-      render: (record) => <Text size="normal">{record.full_name}</Text>,
+      render: (record) => <Text size="normal">{record.name}</Text>,
     },
     {
-      title: 'Hiển thị tại trang chủ',
-      dataIndex: 'show_home_page',
+      title: 'Sử dụng',
+      dataIndex: 'use',
       width: 160,
       className: 'min-width-160',
-      render: (showHomePage, ) => (
+      render: (use, record) => (
         <div
           role="presentation"
           onClick={(e) => {
@@ -128,7 +126,28 @@ const Index = memo(() => {
           }}
         >
           <Switch
-            defaultChecked={showHomePage}
+            defaultChecked={use}
+            onChange={() => {
+              const payload = {
+                id: record?.id,
+                use: !use,
+              };
+              dispatch({
+                type: 'crmSkill/UPDATE',
+                payload,
+                callback: (response) => {
+                  if (response) {
+                    dispatch({
+                      type: 'crmSkill/GET_DATA',
+                      payload: {},
+                      callback: (response) => {
+                        if (response) setDataSource(response);
+                      },
+                    });
+                  }
+                },
+              });
+            }}
           />
         </div>
       ),
@@ -163,7 +182,7 @@ const Index = memo(() => {
       const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter((el) => !!el);
       setDataSource(newData);
       dispatch({
-        type: 'skill/UPDATE_ORDER_INDEX',
+        type: 'crmSkill/UPDATE_ORDER_INDEX',
         payload: {
           id: newData.map((item) => item.id).join(','),
         },
@@ -217,7 +236,7 @@ const Index = memo(() => {
             <Table
               columns={columns}
               dataSource={dataSource}
-              loading={loading['skill/GET_DATA']}
+              loading={loading['crmSkill/GET_DATA']}
               isError={error.isError}
               pagination={false}
               rowKey="index"

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
-import { isEmpty, } from 'lodash';
+import { isEmpty,head } from 'lodash';
 import Loading from '@/components/CommonComponent/Loading';
 import Button from '@/components/CommonComponent/Button';
 import Heading from '@/components/CommonComponent/Heading';
@@ -45,18 +45,18 @@ class Index extends PureComponent {
     setIsMounted(true);
   }
 
-  // componentDidMount() {
-  //   const {
-  //     dispatch,
-  //     match: { params },
-  //   } = this.props;
-  //   if (params.id) {
-  //     dispatch({
-  //       type: 'crmSkillAdd/GET_DETAILS',
-  //       payload: params,
-  //     });
-  //   }
-  // }
+  componentDidMount() {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    if (params.id) {
+      dispatch({
+        type: 'crmSkillAdd/GET_DETAILS',
+        payload: params,
+      });
+    }
+  }
 
   componentDidUpdate(prevProps) {
     const {
@@ -88,37 +88,37 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  // onFinish = (values) => {
-  //   const {
-  //     dispatch,
-  //     match: { params },
-  //   } = this.props;
-  //   const payload = {
-  //     ...values,
-  //     id: params.id,
-  //   };
-  //   dispatch({
-  //     type: params.id ? 'crmSkillAdd/UPDATE' : 'crmSkillAdd/ADD',
-  //     payload,
-  //     callback: (response, error) => {
-  //       if (response) {
-  //         history.goBack();
-  //       }
-  //       if (error) {
-  //         if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
-  //           error?.validationErrors.forEach((item) => {
-  //             this.formRef.current.setFields([
-  //               {
-  //                 name: head(item.members),
-  //                 errors: [item.message],
-  //               },
-  //             ]);
-  //           });
-  //         }
-  //       }
-  //     },
-  //   });
-  // };
+  onFinish = (values) => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
+    const payload = {
+      ...values,
+      id: params.id,
+    };
+    dispatch({
+      type: params.id ? 'crmSkillAdd/UPDATE' : 'crmSkillAdd/ADD',
+      payload,
+      callback: (response, error) => {
+        if (response) {
+          history.goBack();
+        }
+        if (error) {
+          if (error?.validationErrors && !isEmpty(error?.validationErrors)) {
+            error?.validationErrors.forEach((item) => {
+              this.formRef.current.setFields([
+                {
+                  name: head(item.members),
+                  errors: [item.message],
+                },
+              ]);
+            });
+          }
+        }
+      },
+    });
+  };
 
   render() {
     const {
@@ -142,7 +142,7 @@ class Index extends PureComponent {
             layout="vertical"
             colon={false}
             ref={this.formRef}
-            // onFinish={this.onFinish}
+            onFinish={this.onFinish}
           >
             <Loading loading={loading} isError={error.isError} params={{ error }}>
               <div className={styles['content-form']}>
@@ -163,7 +163,7 @@ class Index extends PureComponent {
                           <FormItem
                             valuePropName="checked"
                             label="Sử dụng"
-                            name="show_home_page"
+                            name="use"
                             type={variables.SWITCH}
                           />
                         </Pane>
@@ -192,7 +192,7 @@ Index.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   menuData: PropTypes.arrayOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  // dispatch: PropTypes.objectOf(PropTypes.any),
+   dispatch: PropTypes.objectOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
 };
@@ -201,7 +201,7 @@ Index.defaultProps = {
   match: {},
   menuData: [],
   loading: {},
-  // dispatch: {},
+   dispatch: {},
   error: {},
   details: {},
 };
