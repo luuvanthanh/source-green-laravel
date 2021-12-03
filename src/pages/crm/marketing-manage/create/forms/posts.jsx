@@ -39,7 +39,9 @@ const Index = memo(() => {
       type: 'crmMarketingManageAdd/GET_USER',
       payload: response,
     });
-    localStorage.setItem('user', JSON.stringify(user));
+    if(response){
+      localStorage.setItem('user', JSON.stringify(user));
+    }
   };
 
   useEffect(() => {
