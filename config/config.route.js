@@ -2646,6 +2646,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/cau-hinh/khai-bao-y-te',
+            component: './crm/health-declaration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
