@@ -95,9 +95,9 @@ class VideoWallController extends Controller
      *
      * @return Response
      */
-    public function destroy(Request $request, VideoWall $videoWall)
+    public function destroy($id)
     {
-        if ($this->videoWallRepository->delete($videoWall)) {
+        if ($this->videoWallRepository->delete($id)) {
             return $this->success([], trans('lang::messages.common.deleteSuccess'), ['code' => Response::HTTP_NO_CONTENT]);
         }
 

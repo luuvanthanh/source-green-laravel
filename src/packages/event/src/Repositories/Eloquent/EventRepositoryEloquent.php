@@ -2,6 +2,7 @@
 
 namespace GGPHP\Event\Repositories\Eloquent;
 
+use GGPHP\Camera\Models\Camera;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
@@ -128,6 +129,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         if (!empty($attributes['video_path'])) {
             $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
+        }
+
+        if (!empty($attributes['related_image'])) {
+            $event->addMediaToEntity($event, $attributes['related_image'], 'related_image');
         }
 
         return parent::find($event->id);

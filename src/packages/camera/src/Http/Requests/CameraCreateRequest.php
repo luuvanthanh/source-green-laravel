@@ -29,7 +29,7 @@ class CameraCreateRequest extends FormRequest
         return [
             'collection_id' => 'sometimes|array|required|exists:collections,id',
             'address' => 'required|string',
-            'tourist_destination_id' => 'required|exists:tourist-destinations,id',
+            'tourist_destination_id' => 'required|exists:tourist_destinations,id',
             'lat' => ['required', 'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/'],
             'long' => ['required', 'regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/'],
             'camera_server_id' => 'sometimes|uuid'

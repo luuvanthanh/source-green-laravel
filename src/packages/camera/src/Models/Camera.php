@@ -62,7 +62,8 @@ class Camera extends UuidModel
         'address_detail',
         'lat',
         'long',
-        'camera_server_id'
+        'camera_server_id',
+        'tourist_destination_id'
     ];
 
     /**

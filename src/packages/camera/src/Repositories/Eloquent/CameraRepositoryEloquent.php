@@ -153,7 +153,7 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
         // Merge with fills default
         $dataCamera = array_merge($dataCamera, [
-            'user_id' => "fe9880d9-8872-4c70-b299-cfb609118ef9",
+            'user_id' => auth()->user()->id,
             'uuid' => (string) Str::uuid(),
             'status' => Camera::STATUS_STOPPED,
         ]);
