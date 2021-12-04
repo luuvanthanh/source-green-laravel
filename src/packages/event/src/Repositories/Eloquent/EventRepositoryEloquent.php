@@ -3,6 +3,7 @@
 namespace GGPHP\Event\Repositories\Eloquent;
 
 use GGPHP\Camera\Models\Camera;
+use GGPHP\Category\Models\EventType;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
@@ -120,8 +121,18 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $camera = Camera::find($attributes['camera_id']);
         $attributes['tourist_destination_id'] = $camera->tourist_destination_id;
+        $attributes['tour_guide_id'] = $attributes['object_id'];
 
-        $event = $this->model()::create($attributes);
+        $eventType = EventType::where('code', $attributes['event_code'])->first();
+        $attributes['event_type_id'] = $eventType->id;
+
+        $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+
+        if (is_null($event)) {
+            $event = $this->model()::create($attributes);
+        } else {
+            $event->update($attributes);
+        }
 
         if (!empty($attributes['image_path'])) {
             $event->addMediaFromDisk($attributes['image_path'])->preservingOriginal()->toMediaCollection('image');
@@ -131,8 +142,9 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
         }
 
-        if (!empty($attributes['related_image'])) {
-            $event->addMediaToEntity($event, $attributes['related_image'], 'related_image');
+        if (!empty($attributes['related_images'])) {
+            $event->clearMediaCollection('related_images');
+            $event->addMediaToEntity($event, $attributes['related_images'], 'related_images');
         }
 
         return parent::find($event->id);

@@ -148,64 +148,28 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
      */
     public function create($data)
     {
-        // Get only fills define
-        $dataCamera = Arr::only($data, Camera::$fillable_post);
-
         // Merge with fills default
-        $dataCamera = array_merge($dataCamera, [
-            'user_id' => auth()->user()->id,
-            'uuid' => (string) Str::uuid(),
+        $data = array_merge($data, [
             'status' => Camera::STATUS_STOPPED,
         ]);
 
         DB::beginTransaction();
         try {
-            // Create camera
-            $camera = Camera::create($dataCamera);
+            $camera = Camera::create($data);
+
             if (isset($data['collection_id']) && !empty($data['collection_id'])) {
-                $cameraCollection = $camera->collection()->attach($data['collection_id']);
+                $camera->collection()->attach($data['collection_id']);
             }
-            $data['general']['device_name'] = !empty($data['general']['device_name']) ? $data['general']['device_name'] : $this->autoGenCameraGeneralName($camera->id);
-            $data['general']['device_number'] = !empty($data['general']['device_number']) ? $data['general']['device_number'] : $camera->id;
-            // $data['General']['device_number'] = $this->autoGenCameraGeneralNumber();
-            if (isset($data['general'])) {
 
-                $cameraGeneral = $this->cameraGeneralPropertiesRepository->create(array_merge($data['general'], ['camera_id' => $camera->id]));
-            }
             if (isset($data['video'])) {
-                if (empty($data['video']['rtsp_url'])) {
-                    $username = !empty($data['general']['user_name']) ? $data['general']['user_name'] : null;
-                    $password = !empty($data['general']['password']) ? $data['general']['password'] : null;
-                    $ip = !empty($data['general']['ip']) ? $data['general']['ip'] : null;
-                    $port = !empty($data['general']['port']) ? $data['general']['port'] : null;
-                    $data['video']['rtsp_url'] = self::generateVideoSource($username, $password, $ip, $port);
-                }
-
-                if (isset($data['video']['streaming_enabled']) && $data['video']['streaming_enabled'] == CameraVideoProperties::STREAMING_ENABLED) {
-                    $data['video']['stream_url'] = self::generateStreamURL($camera);
-                }
-
                 $videoProperties = array_merge($data['video'], [
-                    'camera_id' => $camera->id,
-                    'recording_enabled' => !empty($data['video']['recording_enabled']) ? $data['video']['recording_enabled'] : CameraVideoProperties::RECORDING_DISABLED,
-                    'streaming_enabled' => !empty($data['video']['streaming_enabled']) ? $data['video']['streaming_enabled'] : CameraVideoProperties::STREAMING_DISBALED,
+                    'camera_id' => $camera->id
                 ]);
 
-                $cameraVideo = $this->cameraVideoPropertiesRepository->create($videoProperties);
-            }
-            if (isset($data['network'])) {
-                $cameraNetwork = $this->cameraNetworkPropertiesRepository->create(array_merge($data['network'], ['camera_id' => $camera->id]));
-            }
-            if (isset($data['ptz'])) {
-                $cameraPtz = $this->cameraPtzPropertiesRepository->create(array_merge($data['ptz'], ['camera_id' => $camera->id]));
+                $this->cameraVideoPropertiesRepository->create($videoProperties);
             }
 
             DB::commit();
-
-            $camera = Camera::with('videoProperties')->find($camera->id);
-
-            // Publish event added
-            event(new CameraAdded($camera));
         } catch (\Throwable $e) {
             DB::rollback();
             throw $e;
@@ -226,11 +190,8 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         // Check camera exist before update
         $camera = Camera::findOrFail($id);
 
-        // Get only fills define
-        $dataCamera = Arr::only($data, Camera::$fillable_post);
-
         // Merge with fills default
-        $dataCamera = array_merge($dataCamera, [
+        $dataCamera = array_merge($data, [
             'user_id' => auth()->user()->id,
             'uuid' => (string) Str::uuid(),
             'status' => Camera::STATUS_STOPPED,
@@ -244,68 +205,19 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             }
 
             if (!empty($data['collection_id'])) {
-                $cameraCollection = $camera->collection()->sync($data['collection_id']);
-            } else {
-                $cameraCollection = $camera->collection()->detach();
+                $camera->collection()->detach();
+                $camera->collection()->sync($data['collection_id']);
             }
-            if (isset($data['general'])) {
-                if (!empty($camera->generalProperties->id)) {
-                    $cameraGeneral = $this->cameraGeneralPropertiesRepository->update($data['general'], $camera->generalProperties->id);
-                } else {
-                    $cameraGeneral = $this->cameraGeneralPropertiesRepository->create(array_merge($data['general'], ['camera_id' => $camera->id]));
-                }
-            }
+
             if (isset($data['video'])) {
-                if (empty($data['video']['rtsp_url'])) {
-                    $userName = !empty($data['general']['user_name']) ? $data['general']['user_name'] : (!empty($camera->generalProperties->user_name) ? $camera->generalProperties->user_name : null);
-                    $password = !empty($data['general']['password']) ? $data['general']['password'] : (!empty($camera->generalProperties->password) ? $camera->generalProperties->password : null);
-                    $ip = !empty($data['general']['ip']) ? $data['general']['ip'] : (!empty($camera->generalProperties->ip) ? $camera->generalProperties->ip : null);
-                    $port = !empty($data['general']['port']) ? $data['general']['port'] : (!empty($camera->generalProperties->port) ? $camera->generalProperties->port : null);
-                    $data['video']['rtsp_url'] = self::generateVideoSource($userName, $password, $ip, $port);
-                }
-
-                if (isset($data['video']['streaming_enabled']) && $data['video']['streaming_enabled'] == CameraVideoProperties::STREAMING_ENABLED) {
-                    $data['video']['stream_url'] = self::generateStreamURL($camera);
-                } else {
-                    $data['video']['stream_url'] = "";
-                }
-
                 if (!empty($camera->videoProperties->id)) {
-                    $cameraVideo = $this->cameraVideoPropertiesRepository->update($data['video'], $camera->videoProperties->id);
+                    $this->cameraVideoPropertiesRepository->update($data['video'], $camera->videoProperties->id);
                 } else {
-                    $cameraVideo = $this->cameraVideoPropertiesRepository->create(array_merge($data['video'], ['camera_id' => $camera->id]));
-                }
-
-                // Update status camera
-                if (
-                    $cameraVideo->streaming_enabled === CameraVideoProperties::STREAMING_ENABLED ||
-                    $cameraVideo->recording_enabled === CameraVideoProperties::RECORDING_ENABLED
-                ) {
-                    $camera->status = Camera::STATUS_STARTED;
-                    $camera->save();
-                }
-            }
-
-            if (isset($data['network'])) {
-                if (!empty($camera->networkProperties->id)) {
-                    $cameraNetwork = $this->cameraNetworkPropertiesRepository->update($data['network'], $camera->networkProperties->id);
-                } else {
-                    $cameraNetwork = $this->cameraNetworkPropertiesRepository->create(array_merge($data['network'], ['camera_id' => $camera->id]));
-                }
-            }
-
-            if (isset($data['ptz'])) {
-                if (!empty($camera->ptzProperties->id)) {
-                    $cameraPtz = $this->cameraPtzPropertiesRepository->update($data['ptz'], $camera->ptzProperties->id);
-                } else {
-                    $cameraPtz = $this->cameraPtzPropertiesRepository->create(array_merge($data['ptz'], ['camera_id' => $camera->id]));
+                    $this->cameraVideoPropertiesRepository->create(array_merge($data['video'], ['camera_id' => $camera->id]));
                 }
             }
 
             $camera = Camera::with('videoProperties')->find($camera->id);
-
-            // Publish event updated
-            event(new CameraUpdated($camera));
         } catch (\Throwable $e) {
             throw $e;
         }
@@ -324,25 +236,14 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
         $camera = Camera::findOrFail($id);
         \DB::beginTransaction();
         try {
-            if (!empty($camera->generalProperties->id)) {
-                $camGeneral = $this->cameraGeneralPropertiesRepository->find($camera->generalProperties->id);
-                if (!empty($camGeneral)) {
-                    $camGeneral->delete();
-                }
-            }
+
             if (!empty($camera->videoProperties->id)) {
                 $camVideo = $this->cameraVideoPropertiesRepository->find($camera->videoProperties->id);
                 if (!empty($camVideo)) {
                     $camVideo->delete();
                 }
             }
-            if (!empty($camera->networkProperties->id)) {
-                $camNetwork = $this->cameraNetworkPropertiesRepository->find($camera->networkProperties->id);
-                \Log::debug($camNetwork);
-                if (!empty($camNetwork)) {
-                    $camNetwork->delete();
-                }
-            }
+
             if (!empty($camera->ptzProperties->id)) {
                 $camPtz = $this->cameraPtzPropertiesRepository->find($camera->ptzProperties->id);
                 if (!empty($camPtz)) {

@@ -28,7 +28,7 @@ class CameraTransformer extends BaseTransformer
      */
     protected $defaultIncludes = [];
 
-    protected $availableIncludes = ['collection', 'general', 'video', 'network', 'ptz'];
+    protected $availableIncludes = ['collection', 'video'];
 
     // protected $availableIncludes = ['collection', 'generalProperties'];
     /**

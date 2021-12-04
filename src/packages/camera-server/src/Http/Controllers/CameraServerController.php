@@ -65,6 +65,19 @@ class CameraServerController extends Controller
     }
 
     /**
+     *
+     * @param CameraServerCreateRequest $request
+     *
+     * @return Response
+     */
+    public function show($id)
+    {
+        $cameraServer = $this->cameraServerRepository->find($id);
+
+        return $this->success($cameraServer, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    /**
      * Create uuid
      *
      * @return void

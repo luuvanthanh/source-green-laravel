@@ -34,15 +34,7 @@ class CameraVideoProperties extends UuidModel
      * @var array
      */
     protected $fillable = [
-        'id', 'camera_id', 'rtsp_url', 'resolution', 'video_encoding', 'frame_rate', 'bit_rate', 'stream_url', 'recording_enabled', 'streaming_enabled'
+        'camera_id', 'rtsp_url', 'resolution', 'video_encoding', 'frame_rate', 'bit_rate', 'stream_url', 'recording_enabled', 'streaming_enabled',
+        'device_number', 'model', 'serial_number', 'firmware_ver'
     ];
-
-    protected $guard_name = 'api';
-
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    protected $dateTimeFormat = 'c';
 }

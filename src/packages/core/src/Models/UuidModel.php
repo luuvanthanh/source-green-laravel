@@ -29,7 +29,12 @@ class UuidModel extends CoreModel
     public function addMediaToEntity($entity, $images = [], $collection = 'files')
     {
         foreach ($images as $image_path) {
-            $entity->addMediaFromDisk($image_path['path'])->usingName($image_path['file_name'])->preservingOriginal()->toMediaCollection($collection);
+            $fileName = isset($image_path['file_name']) ? $image_path['file_name'] : 'file_name';
+            $vector = isset($image_path['vector']) ? $image_path['vector'] : null;
+            $entity->addMediaFromDisk($image_path['path'])->usingName($fileName)
+                ->withCustomProperties([
+                    "vector" => $vector
+                ])->preservingOriginal()->toMediaCollection($collection);
         }
     }
 }

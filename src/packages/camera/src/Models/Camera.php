@@ -57,32 +57,15 @@ class Camera extends UuidModel
      */
     const LONG_DEFAULT = "0.00000000";
 
-    public static $fillable_post = [
-        'address',
-        'address_detail',
-        'lat',
-        'long',
-        'camera_server_id',
-        'tourist_destination_id'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'status',
-        'status_label',
-        'address',
-        'address_detail',
-        'lat',
-        'long',
-        'user_id',
-        'camera_server_id',
-        'preset_view_id',
-        'preset_update_id',
-        'tourist_destination_id'
+        'status', 'status_label', 'address', 'address_detail', 'lat', 'long',
+        'user_id', 'camera_server_id', 'preset_view_id', 'preset_update_id', 'tourist_destination_id',
+        'name', 'ip', 'port', 'user_name', 'password', 'video_source', 'is_recording', 'is_streaming', 'video_url'
     ];
     protected $appends = ['status_label'];
     protected $guard_name = 'api';
