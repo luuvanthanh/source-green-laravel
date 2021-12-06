@@ -171,5 +171,13 @@ Route::group(['prefix' => 'v1', 'middleware' => []], function () {
     \GGPHP\WorkOnline\RouteRegistrar::routes(function ($router) {
         $router->forBread();
     });
+
+    \GGPHP\ChildDevelop\Category\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
+
+    GGPHP\ChildDevelop\ChildEvaluate\RouteRegistrar::routes(function ($router) {
+        $router->forBread();
+    });
 });
     // });

@@ -1,0 +1,22 @@
+{
+    "name": "building/package",
+    "description": "building package posts laravel",
+    "license": "MIT",
+    "authors": [{
+        "name": "tamnn",
+        "email": "tamnn@greenglobal.vn"
+    }],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "GGPHP\\ChildDevelop\\Category\\": "Child-develop/category/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GGPHP\\ChildDevelop\\Category\\Providers\\CategoryServiceProvider::class"
+            ]
+        }
+    }
+}

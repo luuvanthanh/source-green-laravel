@@ -102,7 +102,9 @@
             "GGPHP\\Facebook\\": "crm/facebook/src/",
             "GGPHP\\Zalo\\": "crm/zalo/src/",
             "ZK\\": "packages/zk/src",
-            "GGPHP\\WorkOnline\\": "packages/work-online/src"
+            "GGPHP\\WorkOnline\\": "packages/work-online/src",
+            "GGPHP\\ChildDevelop\\Category\\": "child-develop/category/src",
+            "GGPHP\\ChildDevelop\\ChildEvaluate\\": "child-develop/child-evaluate/src"
         },
         "classmap": [
             "database/seeds",
