@@ -1523,6 +1523,24 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu',
+            component: './hrm/seasonal-contracts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu/tao-moi',
+            component: './hrm/seasonal-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu/:id/chi-tiet',
+            component: './hrm/seasonal-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/phan-ca-lam-viec',
             component: './hrm/work-shift',
             wrappers: ['@/wrappers/auth'],
