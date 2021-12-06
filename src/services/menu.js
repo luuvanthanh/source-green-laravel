@@ -1923,8 +1923,10 @@ export async function getLeftMenuCRM() {
         },
         {
           title: 'Thông tin hồ sơ',
-          key: '',
-          url: [],
+          key: 'configuration-file',
+          url: [
+            '/crm/cau-hinh/danh-sach-ho-so',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },

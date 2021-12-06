@@ -1,0 +1,12 @@
+@import "@/assets/styles/mixins.scss";
+
+.wrapper-title {
+    font-family: $semi-bold__font-family;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 20px;
+    line-height: 20px;
+    font-weight: 700;
+    color: #35373a;
+}
