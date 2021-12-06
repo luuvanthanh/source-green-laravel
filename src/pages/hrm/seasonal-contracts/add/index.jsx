@@ -279,7 +279,7 @@ function Index() {
               loading['seasonalContractsAdd/GET_TYPE_CONTRACTS']
             }
             isError={error.isError}
-            params={{ error, type: 'container', goBack: '/quan-ly-nhan-su/hop-dong-lao-dong' }}
+            params={{ error, type: 'container', goBack: '/quan-ly-nhan-su/hop-dong-thoi-vu' }}
           >
             <div className={classnames(styles['content-children'], 'mt0')}>
               <Text color="dark" size="large-medium">
