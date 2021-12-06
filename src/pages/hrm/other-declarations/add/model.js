@@ -12,7 +12,7 @@ export default {
       users: [],
       absentTypes: [],
       paramaterValues: [],
-      paramaterContrack: [],
+      paramaterContract: [],
     },
     details: {},
   },
@@ -41,7 +41,7 @@ export default {
       categories: {
         users: payload.users.parsePayload,
         paramaterValues: payload.paramaterValues.parsePayload,
-        paramaterContrack: payload.paramaterContrack.parsePayload,
+        paramaterContract: payload.paramaterContract.parsePayload,
       },
     }),
   },
@@ -51,7 +51,7 @@ export default {
         const response = yield saga.all({
           users: saga.call(categories.getUsers),
           paramaterValues: saga.call(services.getParamaterValues),
-          paramaterContrack: saga.call(services.getParamaterValuesTypeContract),
+          paramaterContract: saga.call(services.getParamaterValuesTypeContract),
         });
         yield saga.put({
           type: 'SET_CATEGORIES',

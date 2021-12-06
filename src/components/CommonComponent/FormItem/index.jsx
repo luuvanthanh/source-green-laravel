@@ -215,7 +215,7 @@ const renderChildren = (
       value={value}
     />
   ),
-  month_yearPicker: (
+  monthYearPicker: (
     <DatePicker
       disabled={disabled}
       allowClear={allowClear}

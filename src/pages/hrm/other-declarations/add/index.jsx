@@ -286,7 +286,7 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
-              const itemParamaterValues = categories.paramaterContrack.find(({ id }) => id === item);
+              const itemParamaterValues = categories.paramaterContract.find(({ id }) => id === item);
               return itemParamaterValues;
             })
           : []),
@@ -296,7 +296,7 @@ class Index extends PureComponent {
         detail: value
           ? [
               ...value.map((item) => {
-                const itemParamaterValues = categories.paramaterContrack.find(
+                const itemParamaterValues = categories.paramaterContract.find(
                   ({ id }) => id === item,
                 );
                 return itemParamaterValues;
@@ -593,9 +593,9 @@ class Index extends PureComponent {
                   <div className="row">
                     <div className="col-lg-12">
                       <FormItem
-                        data={categories?.paramaterContrack}
+                        data={categories?.paramaterContract}
                         label="Khai báo"
-                        name={[ 'changeContract', 'paramaterValues']}
+                        name={['changeContract', 'paramaterValues']}
                         rules={[variables.RULES.EMPTY]}
                         type={variables.SELECT_MUTILPLE}
                         onChange={this.onChangeParamaterContract}

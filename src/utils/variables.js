@@ -22,7 +22,7 @@ export const variables = {
   TREE_SELECT_SINGLE: 'treeSelectSingle',
   DATE_PICKER: 'datePicker',
   MONTH_PICKER: 'monthPicker',
-  MONTH_YEAR_PICKER: 'month_yearPicker',
+  MONTH_YEAR_PICKER: 'monthYearPicker',
   YEAR_PICKER: 'yearPicker',
   DATE_TIME_PICKER: 'dateTimePicker',
   CHECKBOX: 'checkbox',
