@@ -3,19 +3,17 @@ import * as services from './services';
 export default {
   namespace: 'crmDeclaration',
   state: {
-    details: {},
+    details: [],
     error: {
       isError: false,
       data: {},
     },
-    classproducts: [],
-    sensitivePeriods: [],
   },
   reducers: {
-    INIT_STATE: (state) => ({ ...state, isError: false, data: [] }),
+    INIT_STATE: (state) => ({ ...state,  data: [] }),
     SET_DATA: (state, { payload }) => ({
       ...state,
-      details: payload,
+      details: payload.parsePayload,
     }),
     SET_ERROR: (state, { payload }) => ({
       ...state,
@@ -26,22 +24,21 @@ export default {
         },
       },
     }),
-    SET_CLASS_products: (state, { payload }) => ({
-      ...state,
-      classproducts: payload.parsePayload,
-    }),
-    SET_SENSITIVE_PERIODS: (state, { payload }) => ({
-      ...state,
-      sensitivePeriods: payload.items,
-    }),
   },
   effects: {
     *GET_DATA({ payload, callback }, saga) {
       try {
-        const response = yield saga.call(services.get, payload);
+        const response = yield saga.call(services.getData, payload);
         callback(response);
+        yield saga.put({
+          type: 'SET_DATA',
+          payload: response,
+        });
       } catch (error) {
-        callback(null, error);
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
     *ADD({ payload, callback }, saga) {

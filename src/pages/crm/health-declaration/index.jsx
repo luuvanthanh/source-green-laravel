@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Form, Checkbox } from 'antd';
+import { isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import { useSelector, useDispatch } from 'dva';
 import { variables } from '@/utils';
@@ -20,44 +21,71 @@ const Index = memo(() => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
 
-    const [loading] = useSelector(({ loading: { effects } }) => [effects]);
     const mounted = useRef(false);
     const [checkbox, setCheckbox] = useState(false);
-    const [deleteRows, setDeleteRows] = useState([]);
-    const [students, setStudents] = useState([]);
+    // const [deleteRows, setDeleteRows] = useState([]);
+    const {
+        loading,
+        details,
+    } = useSelector(({ loading, crmDeclaration }) => ({
+        loading,
+        details: crmDeclaration.details,
+        error: crmDeclaration.error,
+    }));
 
-    useEffect(() => {
-        mounted.current = false;
-        return () => {
-            mounted.current = false;
-        };
-    }, []);
 
     const onFinish = (values) => {
         const items = values.data.map((item) => ({
             ...item,
+            detail: item.configMedicalDeclareDetail.map((a) => ({ name: a.name }))
         }));
         const payload = {
             createRows: items.filter((item) => !item.id),
             updateRows: items.filter((item) => item.id),
-            deleteRows,
         };
         dispatch({
             type: 'crmDeclaration/ADD',
             payload,
+            callback: (response, error) => {
+                if (response) {
+                    useEffect(() => {
+                        dispatch({
+                            type: 'crmDeclaration/GET_DATA',
+                            payload: {},
+                            callback: (response) => {
+                                if (response) {
+                                    form.setFieldsValue({
+                                        data: response.parsePayload,
+                                    });
+                                }
+                            },
+                        });
+                    }, []);
+                }
+                if (error) {
+                    if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+                        error.data.errors.forEach((item) => {
+                            form.current.setFields([
+                                {
+                                    name: get(item, 'source.pointer'),
+                                    errors: [get(item, 'detail')],
+                                },
+                            ]);
+                        });
+                    }
+                }
+            },
         });
     };
+
     useEffect(() => {
         dispatch({
             type: 'crmDeclaration/GET_DATA',
             payload: {},
             callback: (response) => {
                 if (response) {
-                    setStudents(response.parsePayload);
-                    form.current.setFieldsValue({
-                        data: response.parsePayload.map((item) => ({
-                            ...item,
-                        })),
+                    form.setFieldsValue({
+                        data: response.parsePayload,
                     });
                 }
             },
@@ -67,6 +95,11 @@ const Index = memo(() => {
     const onChange = (e) => {
         setCheckbox(e.target.checked);
     };
+
+    useEffect(() => {
+        mounted.current = true;
+        return mounted.current;
+    }, []);
 
     return (
         <>
@@ -81,7 +114,11 @@ const Index = memo(() => {
                     <Text color="dark">Cấu hình khai báo y tế</Text>
                 </Pane>
                 <Pane className="col-lg-6 offset-lg-3">
-                    <Form layout="vertical" onFinish={onFinish} form={form}>
+                    <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
+                        data: [
+                            {},
+                        ],
+                    }}>
                         <Pane className="card p20">
                             <Pane
                                 className={classnames(
@@ -95,108 +132,128 @@ const Index = memo(() => {
                                 <Form.List name="data">
                                     {(fields, { add }) => (
                                         <>
-                                            {fields.map((field, index) => (
-                                                <Pane className="offset-lg-12 col-lg-12 border-top pt15" key={field.key}>
-                                                    <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                                        Học sinh {index + 1}
-                                                    </Heading>
-                                                    <Pane className="card">
-                                                        <Pane >
-                                                            <>
-                                                                <Pane className="row">
-                                                                    <Pane className="col-lg-12">
-                                                                        <FormItem
-                                                                            label="Tên thông tin"
-                                                                            name={[field.name, 'name']}
-                                                                            fieldKey={[field.fieldKey, 'name']}
-                                                                            type={variables.INPUT}
-                                                                            rules={[variables.RULES.EMPTY]}
-                                                                        />
-                                                                    </Pane>
-                                                                    <Pane className="col-lg-6">
-                                                                        <FormItem
-                                                                            label="Loại khai báo"
-                                                                            name={[field.name, 'type']}
-                                                                            fieldKey={[field.fieldKey, 'type']}
-                                                                            data={genders}
-                                                                            type={variables.SELECT}
-                                                                        // rules={[variables.RULES.EMPTY]}
-                                                                        />
-                                                                    </Pane>
-                                                                    <Pane className="col-lg-12">
-                                                                        <h4 className={stylesModule['wrapper-title']}>Chi tiết</h4>
-                                                                        <div className={stylesModule['wrapper-table']}>
-                                                                            <h3 className={stylesModule.title}>Tên checkbox</h3>
-                                                                            <Form.List label="Chi tiết" name={[field.name, 'detail']} fieldKey={[field.fieldKey, 'detail']}>
-                                                                                {(fields, { add, remove }) => (
-                                                                                    <Pane>
-                                                                                        {fields.map((field, index) => (
-                                                                                            <Pane
-                                                                                                key={index}
-                                                                                                className="d-flex mt20 border-bottom"
-                                                                                            >
-                                                                                                <Pane className="col-lg-10">
-                                                                                                    <FormItem
-                                                                                                        className={stylesModule.item}
-                                                                                                        fieldKey={[field.fieldKey, 'name']}
-                                                                                                        name={[field.name, 'name']}
-                                                                                                        type={variables.INPUT}
-                                                                                                    />
-                                                                                                </Pane>
-                                                                                                <Pane className="col-lg-2">
-                                                                                                    {fields.length > 0 && (
-                                                                                                        <div className={stylesModule.delete}>
-                                                                                                            <span
-                                                                                                                className="icon icon-remove"
-                                                                                                                role="presentation"
-                                                                                                                onClick={() => {
-                                                                                                                    const student = students?.find(
-                                                                                                                        (item, studentsIndex) => studentsIndex === index,
-                                                                                                                    );
-                                                                                                                    setDeleteRows((prev) => [...prev, student.id]);
-                                                                                                                    remove(index);
-                                                                                                                }}
+                                            {fields.map((field, index) => {
+                                                let file = {};
+                                                const { data } = form.getFieldsValue();
+                                                const itemData = data?.find((item, indexWater) => indexWater === index);
+                                                file = details.find((item) => item.id === itemData?.id);
+                                                return (
+                                                    <>
+                                                        <Pane className="offset-lg-12 col-lg-12 border-top pt15" key={field.key}>
+                                                            <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                                                                Học sinh {index + 1}
+                                                            </Heading>
+                                                            <Pane className="card">
+                                                                <Pane >
+                                                                    <>
+                                                                        <Pane className="row">
+                                                                            <Pane className="col-lg-12">
+                                                                                <FormItem
+                                                                                    label="Tên thông tin"
+                                                                                    name={[field.name, 'name']}
+                                                                                    fieldKey={[field.fieldKey, 'name']}
+                                                                                    type={variables.INPUT}
+                                                                                    rules={[variables.RULES.EMPTY]}
+                                                                                />
+                                                                            </Pane>
+                                                                            <Pane className="col-lg-6">
+                                                                                <FormItem
+                                                                                    label="Loại khai báo"
+                                                                                    name={[field.name, 'type']}
+                                                                                    fieldKey={[field.fieldKey, 'type']}
+                                                                                    data={genders}
+                                                                                    type={variables.SELECT}
+                                                                                />
+                                                                            </Pane>
+                                                                            <Pane className="col-lg-12">
+                                                                                <h4 className={stylesModule['wrapper-title']}>Chi tiết</h4>
+                                                                                <div className={stylesModule['wrapper-table']}>
+                                                                                    <h3 className={stylesModule.title}>Tên checkbox</h3>
+                                                                                    <Form.List label="Chi tiết" name={[field.name, 'configMedicalDeclareDetail']} fieldKey={[field.fieldKey, 'configMedicalDeclareDetail']}>
+                                                                                        {(fields, { add, remove }) => (
+                                                                                            <Pane>
+                                                                                                {fields.map((fieldItem, index) => (
+                                                                                                    <Pane
+                                                                                                        key={index}
+                                                                                                        className="d-flex mt20 border-bottom"
+                                                                                                    >
+                                                                                                        <Pane className="col-lg-11">
+                                                                                                            <FormItem
+                                                                                                                className={stylesModule.item}
+                                                                                                                fieldKey={[fieldItem.fieldKey, 'name']}
+                                                                                                                name={[fieldItem.name, 'name']}
+                                                                                                                type={variables.INPUT}
                                                                                                             />
-                                                                                                        </div>
-                                                                                                    )}
+                                                                                                        </Pane>
+                                                                                                        <Pane className="col-lg-1">
+                                                                                                            {fields.length > 0 && (
+                                                                                                                <div className={stylesModule.delete}>
+                                                                                                                    <span
+                                                                                                                        className="icon icon-remove"
+                                                                                                                        role="presentation"
+                                                                                                                        onClick={() => {
+                                                                                                                            remove(index);
+                                                                                                                        }}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                        </Pane>
+                                                                                                    </Pane>
+                                                                                                ))}
+                                                                                                <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer">
+                                                                                                    <span
+                                                                                                        onClick={() => add()}
+                                                                                                        role="presentation"
+                                                                                                        className={stylesModule.add}
+                                                                                                    >
+                                                                                                        <span className="icon-plus-circle mr5" />
+                                                                                                        Thêm
+                                                                                                    </span>
                                                                                                 </Pane>
                                                                                             </Pane>
-                                                                                        ))}
-                                                                                        <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer">
-                                                                                            <span
-                                                                                                onClick={() => add()}
-                                                                                                role="presentation"
-                                                                                                className={stylesModule.add}
-                                                                                            >
-                                                                                                <span className="icon-plus-circle mr5" />
-                                                                                                Thêm
-                                                                                            </span>
-                                                                                        </Pane>
+                                                                                        )}
+                                                                                    </Form.List>
+                                                                                </div>
+                                                                            </Pane>
+                                                                            {file?.text_box ?
+                                                                                <>
+                                                                                    <Pane className="col-lg-12 pt20 pb10">
+                                                                                        <Checkbox defaultChecked >Thêm textbox mô tả</Checkbox>
                                                                                     </Pane>
-                                                                                )}
-                                                                            </Form.List>
-                                                                        </div>
-                                                                    </Pane>
-                                                                    <Pane className="col-lg-12 pt20 pb10">
-                                                                        <Checkbox onChange={onChange}>Thêm textbox mô tả</Checkbox>
-                                                                    </Pane>
-                                                                    {checkbox ?
-                                                                        <Pane className="col-lg-12">
-                                                                            <FormItem
-                                                                                label="Tên textbox"
-                                                                                name={[field.name, 'text_box']}
-                                                                                fieldKey={[field.fieldKey, 'text_box']}
-                                                                                type={variables.INPUT}
-                                                                            />
+                                                                                    <Pane className="col-lg-12">
+                                                                                        <FormItem
+                                                                                            label="Text box"
+                                                                                            name={[field.name, 'text_box']}
+                                                                                            fieldKey={[field.fieldKey, 'text_box']}
+                                                                                            type={variables.INPUT}
+                                                                                            rules={[variables.RULES.EMPTY]}
+                                                                                        />
+                                                                                    </Pane>
+                                                                                </>
+                                                                                :
+                                                                                <Pane className="col-lg-12 pt20 pb10">
+                                                                                    <Checkbox onChange={onChange}>Thêm textbox mô tả</Checkbox>
+                                                                                </Pane>
+                                                                            }
+                                                                            {checkbox ?
+                                                                                <Pane className="col-lg-12">
+                                                                                    <FormItem
+                                                                                        label="Tên textbox"
+                                                                                        name={[field.name, 'text_box']}
+                                                                                        fieldKey={[field.fieldKey, 'text_box']}
+                                                                                        type={variables.INPUT}
+                                                                                    />
+                                                                                </Pane>
+                                                                                : ""
+                                                                            }
                                                                         </Pane>
-                                                                        : ""
-                                                                    }
+                                                                    </>
                                                                 </Pane>
-                                                            </>
+                                                            </Pane>
                                                         </Pane>
-                                                    </Pane>
-                                                </Pane>
-                                            ))}
+                                                    </>
+                                                );
+                                            })}
                                             <Pane className="pl20 pb20" >
                                                 <Button
                                                     color="success"
