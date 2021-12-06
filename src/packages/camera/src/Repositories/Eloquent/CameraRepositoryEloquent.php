@@ -117,14 +117,14 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
 
         // Filter by camera device name/number
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereLike('address', $attributes['key'])
-                ->orWhere(function ($query) use ($attributes) {
-                    $query->whereHas('generalProperties', function ($q) use ($attributes) {
-                        $q->orWhereLike('device_name', $attributes['key'])
-                            ->orWhereLike('device_number', $attributes['key']);
-                    });
-                });
+            $this->model = $this->model->orWhereLike('address', $attributes['key'])
+                ->orWhereLike('name', $attributes['key']);
         }
+
+        // Filter by camera device name/number
+        if (!empty($attributes['name'])) {
+            $this->model = $this->model->whereLike('name', $attributes['name']);
+        };
 
         if (!empty($attributes['status'])) {
             $this->model = $this->model->whereIn('status', $attributes['status']);

@@ -26,9 +26,7 @@ class EventCreateRequest extends FormRequest
         return [
             "event_code" => 'required',
             "time" => 'required',
-            "object_id" => 'required',
             "camera_id" => 'required',
-            "track_id" => 'required'
         ];
     }
 }

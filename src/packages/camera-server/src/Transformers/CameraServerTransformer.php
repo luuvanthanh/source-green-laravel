@@ -2,9 +2,11 @@
 
 namespace GGPHP\CameraServer\Transformers;
 
+use GGPHP\Camera\Transformers\CameraTransformer;
 use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
+use GGPHP\Users\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -25,6 +27,13 @@ class CameraServerTransformer extends BaseTransformer
      * Array attribute doesn't parse.
      */
     public $ignoreAttributes = [];
+
+    /**
+     * List of resources possible to include
+     *
+     * @var array
+     */
+    protected $availableIncludes = ['user', 'camera'];
 
     /**
      * Transform the User entity.
@@ -48,5 +57,31 @@ class CameraServerTransformer extends BaseTransformer
         return [
             "status" => $status,
         ];
+    }
+
+    /**
+     * Load user
+     *
+     * @param CameraServer $item
+     * @return type
+     */
+    public function includeUser(CameraServer $cameraServer)
+    {
+        if (is_null($cameraServer->user)) {
+            return;
+        }
+
+        return $this->item($cameraServer->user, new UserTransformer, 'User');
+    }
+
+    /**
+     * Load cameras
+     *
+     * @param CameraServer $item
+     * @return type
+     */
+    public function includeCamera(CameraServer $cameraServer)
+    {
+        return $this->collection($cameraServer->camera, new CameraTransformer, 'Camera');
     }
 }

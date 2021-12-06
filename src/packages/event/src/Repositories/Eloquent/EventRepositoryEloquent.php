@@ -121,12 +121,19 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
     {
         $camera = Camera::find($attributes['camera_id']);
         $attributes['tourist_destination_id'] = $camera->tourist_destination_id;
-        $attributes['tour_guide_id'] = $attributes['object_id'];
+
+        if (!empty($attributes['object_id'])) {
+            $attributes['tour_guide_id'] = $attributes['object_id'];
+        }
 
         $eventType = EventType::where('code', $attributes['event_code'])->first();
         $attributes['event_type_id'] = $eventType->id;
 
-        $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+        $event = null;
+
+        if (!empty($attributes['track_id'])) {
+            $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+        }
 
         if (is_null($event)) {
             $event = $this->model()::create($attributes);

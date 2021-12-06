@@ -1,5 +1,8 @@
 <?php
+
 namespace GGPHP\Storage\Services;
+
+use Illuminate\Support\Facades\Http;
 
 class StorageService
 {
@@ -11,16 +14,36 @@ class StorageService
     {
         $path = '';
         $paths = [];
+        $vector = null;
         $files = $request->file('file') ?? $request->file('files');
         if (is_array($files)) {
             foreach ($files as $file) {
                 $paths[] = $file->store($dir);
             }
         } else {
+
+            // try {
+            //     $response = Http::attach('image', file_get_contents($files), 'image.jpg')
+            //         ->post(env('AI_URL') . "/face_service/get_face_vector", []);
+            //     if ($response->successful()) {
+            //         $respone = json_decode($response->body());
+
+            //         $vector = json_encode($respone->vector[0]);
+            //     }
+            // } catch (\Throwable $th) {
+            //     \Log::info('Ai lỗi');
+            // }
+
+
             $path = $files->store($dir);
         }
 
-        return compact('path', 'paths');
+        $data = [
+            'path' => $path,
+            'vector' => $vector
+        ];
+
+        return $data;
     }
 
     /**
