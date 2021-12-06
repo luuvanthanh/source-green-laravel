@@ -28,7 +28,7 @@ class CollectionTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['cameras', 'users'];
+    protected $availableIncludes = ['camera', 'users'];
 
     /**
      * Array attribute doesn't parse.
@@ -60,7 +60,7 @@ class CollectionTransformer extends BaseTransformer
      * @param Collection $item
      * @return type
      */
-    public function includeCameras(Collection $collection)
+    public function includeCamera(Collection $collection)
     {
         if (empty($collection->camera)) {
             return;

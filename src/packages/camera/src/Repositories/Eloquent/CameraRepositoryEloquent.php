@@ -259,7 +259,6 @@ class CameraRepositoryEloquent extends BaseRepository implements CameraRepositor
             }
 
             //TODO: remove camera from video wall....
-
             if ($camera->delete()) {
                 // Publish event deleted
                 event(new CameraDeleted($camera));

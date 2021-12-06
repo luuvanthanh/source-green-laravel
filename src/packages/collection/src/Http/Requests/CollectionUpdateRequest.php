@@ -29,10 +29,9 @@ class CollectionUpdateRequest extends FormRequest
             'type'               => 'sometimes|string',
             'location'           => 'sometimes|string',
             'cameras'            => 'sometimes|array',
-            'cameras.*.id'       => 'required|exists:cameras,id',
-            'cameras.*.priority' => 'required|integer',
+            'cameras.*'       => 'sometimes|exists:cameras,id',
             'users'              => 'sometimes|array',
-            'users.*.id'         => 'required|exists:users,id',
+            'users.*.user_id'         => 'sometimes|exists:users,id',
             'users.*.permission' => 'array'
         ];
     }

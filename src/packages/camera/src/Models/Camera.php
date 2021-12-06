@@ -147,7 +147,7 @@ class Camera extends UuidModel
      */
     public function videoWalls()
     {
-        return $this->belongsToMany(VideoWall::class, 'camera_video_wall')->withPivot('priority');
+        return $this->belongsToMany(VideoWall::class, 'camera_video_wall');
     }
 
     /**

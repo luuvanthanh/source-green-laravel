@@ -103,6 +103,7 @@ class EventTransformer extends BaseTransformer
 
         return $this->item($event->eventHandle, new EventHandleTransformer, 'EventHandle');
     }
+
     /**
      * Include EventAdditionalInformation
      * @param Event $fault

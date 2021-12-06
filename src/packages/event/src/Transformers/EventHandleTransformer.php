@@ -3,6 +3,8 @@
 namespace GGPHP\Event\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Event\Models\EventHandle;
+use GGPHP\Users\Transformers\UserTransformer;
 
 /**
  * Class EventHandleTransformer.
@@ -17,7 +19,7 @@ class EventHandleTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['userEdit'];
 
     /**
      * Transform the custom field entity.
@@ -27,5 +29,18 @@ class EventHandleTransformer extends BaseTransformer
     public function customAttributes($model): array
     {
         return [];
+    }
+
+    /**
+     * Include EventAdditionalInformation
+     * @param EventHandle $fault
+     */
+    public function includeUserEdit(EventHandle $eventHandle)
+    {
+        if (is_null($eventHandle->userEdit)) {
+            return;
+        }
+
+        return $this->item($eventHandle->userEdit, new UserTransformer, 'UserEdit');
     }
 }
