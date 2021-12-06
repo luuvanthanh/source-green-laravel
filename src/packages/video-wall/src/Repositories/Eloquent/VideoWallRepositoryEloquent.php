@@ -2,7 +2,6 @@
 
 namespace GGPHP\VideoWall\Repositories\Eloquent;
 
-use GGPHP\Camera\Models\Camera;
 use GGPHP\VideoWall\Models\VideoWall;
 use GGPHP\VideoWall\Presenters\VideoWallPresenter;
 use GGPHP\VideoWall\Repositories\Contracts\VideoWallRepository;
@@ -97,6 +96,18 @@ class VideoWallRepositoryEloquent extends BaseRepository implements VideoWallRep
             if (!empty($cameraArray)) {
                 $videoWall->cameras()->sync($cameraArray);
             }
+        }
+
+        return $this->parserResult($videoWall);
+    }
+
+    public function addCameraToVideoWall(array $attributes, $id)
+    {
+        $videoWall = VideoWall::findOrFail($id);
+
+        if (!empty($attributes['camera_ids'])) {
+            $videoWall->cameras()->detach();
+            $videoWall->cameras()->sync($attributes['camera_ids']);
         }
 
         return $this->parserResult($videoWall);

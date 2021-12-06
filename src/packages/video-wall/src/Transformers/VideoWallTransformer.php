@@ -26,7 +26,7 @@ class VideoWallTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['user', 'cameras'];
+    protected $availableIncludes = ['user', 'camera'];
 
     /**
      * Array attribute doesn't parse.
@@ -34,17 +34,30 @@ class VideoWallTransformer extends BaseTransformer
     public $ignoreAttributes = [];
 
     /**
+     * Transform the User entity.
+     *
+     * @param User $model
+     *
+     * @return array
+     */
+    public function customAttributes($model): array
+    {
+        return [];
+    }
+
+    /**
      * Load user
      *
      * @param VideoWall $item
      * @return type
      */
-    public function includeUser(VideoWall $item) {
-        if (empty($item->user)) {
+    public function includeUser(VideoWall $item)
+    {
+        if (is_null($item->user)) {
             return;
         }
 
-        return $this->item($item->user, new UserTransformer(), 'User');
+        return $this->item($item->user, new UserTransformer, 'User');
     }
 
     /**
@@ -53,11 +66,8 @@ class VideoWallTransformer extends BaseTransformer
      * @param VideoWall $item
      * @return type
      */
-    public function includeCameras(VideoWall $videoWall) {
-        if (empty($videoWall->cameras)) {
-            return;
-        }
-
+    public function includeCamera(VideoWall $videoWall)
+    {
         return $this->collection($videoWall->cameras, new CameraTransformer, 'Camera');
     }
 }

@@ -78,7 +78,13 @@ class CameraController extends Controller
      */
     public function store(CameraCreateRequest $request)
     {
-        $camera = $this->cameraRepository->create($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Camera::STATUS[$attributes['status']];
+        }
+
+        $camera = $this->cameraRepository->create($attributes);
         return $this->success($camera, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
 
@@ -102,7 +108,13 @@ class CameraController extends Controller
      */
     public function update(CameraUpdateRequest $request, $id)
     {
-        $camera = $this->cameraRepository->update($request->all(), $id);
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Camera::STATUS[$attributes['status']];
+        }
+
+        $camera = $this->cameraRepository->update($attributes, $id);
         return $this->success($camera, trans('lang::messages.common.modifySuccess'));
     }
 

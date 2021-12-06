@@ -57,11 +57,34 @@ class CameraServerController extends Controller
      */
     public function store(CameraServerCreateRequest $request)
     {
-        $credentials = $request->all();
+        $attributes = $request->all();
 
-        $cameraServer = $this->cameraServerRepository->create($credentials);
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = CameraServer::STATUS[$attributes['status']];
+        }
+
+        $cameraServer = $this->cameraServerRepository->create($attributes);
 
         return $this->success($cameraServer, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
+    }
+
+    /**
+     *
+     * @param CameraUpdateRequest $request
+     * @param  string $id
+     *
+     * @return Response
+     */
+    public function update(Request $request, $id)
+    {
+        $attributes = $request->all();
+
+        if (!empty($attributes['status'])) {
+            $attributes['status'] = Camera::STATUS[$attributes['status']];
+        }
+
+        $cameraServer = $this->cameraServerRepository->update($attributes, $id);
+        return $this->success($cameraServer, trans('lang::messages.common.modifySuccess'));
     }
 
     /**

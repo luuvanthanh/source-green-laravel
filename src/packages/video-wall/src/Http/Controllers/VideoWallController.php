@@ -103,4 +103,13 @@ class VideoWallController extends Controller
 
         return response()->json(null, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public function addCameraToVideoWall(Request  $request, $id)
+    {
+        $attributes = $request->all();
+
+        $videoWall =  $this->videoWallRepository->addCameraToVideoWall($attributes, $id);
+
+        return $this->success($videoWall, trans('lang::messages.common.modifySuccess'));
+    }
 }

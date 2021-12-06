@@ -163,6 +163,8 @@ class EventController extends Controller
      */
     public function handleEvent(Request $request, $id)
     {
+        $attributes = $request->all();
+
         if (!empty($attributes['status'])) {
             $attributes['status'] = Event::STATUS[$attributes['status']];
         }
@@ -172,7 +174,7 @@ class EventController extends Controller
         }
         $this->eventRepository->update(['is_read' => true], $id);
 
-        $event = $this->eventRepository->handleEvent($request->all(), $id);
+        $event = $this->eventRepository->handleEvent($attributes, $id);
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }
@@ -208,6 +210,8 @@ class EventController extends Controller
      */
     public function updateHandleEvent(Request $request, $id)
     {
+        $attributes = $request->all();
+
         if (!empty($attributes['status'])) {
             $attributes['status'] = Event::STATUS[$attributes['status']];
         }
@@ -216,7 +220,7 @@ class EventController extends Controller
             $attributes['status_detail'] = Event::STATUS_DETAIL[$attributes['status_detail']];
         }
 
-        $event = $this->eventRepository->updateHandleEvent($request->all(), $id);
+        $event = $this->eventRepository->updateHandleEvent($attributes, $id);
 
         return $this->success($event, trans('lang::messages.common.modifySuccess'));
     }

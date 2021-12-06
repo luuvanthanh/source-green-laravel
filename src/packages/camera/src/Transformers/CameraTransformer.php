@@ -59,8 +59,19 @@ class CameraTransformer extends BaseTransformer
             $permissions = $permissions->merge($user->permissions()->where('collection_id', $value)->get());
         }
 
+        //status 
+        $status = null;
+
+        foreach (Camera::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
+
         return [
             "permission_camera" => $permissions,
+            "status" => $status,
         ];
     }
 

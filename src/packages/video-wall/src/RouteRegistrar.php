@@ -30,5 +30,7 @@ class RouteRegistrar extends CoreRegistrar
     {
         // VideoWall
         \Route::resource('video-walls', 'VideoWallController');
+
+        \Route::put('video-walls/{id}/add-camera', 'VideoWallController@addCameraToVideoWall');
     }
 }

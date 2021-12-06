@@ -2,6 +2,7 @@
 
 namespace GGPHP\CameraServer\Transformers;
 
+use GGPHP\CameraServer\Models\CameraServer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -24,4 +25,28 @@ class CameraServerTransformer extends BaseTransformer
      * Array attribute doesn't parse.
      */
     public $ignoreAttributes = [];
+
+    /**
+     * Transform the User entity.
+     *
+     * @param User $model
+     *
+     * @return array
+     */
+    public function customAttributes($model): array
+    {
+        //status 
+        $status = null;
+
+        foreach (CameraServer::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
+
+        return [
+            "status" => $status,
+        ];
+    }
 }
