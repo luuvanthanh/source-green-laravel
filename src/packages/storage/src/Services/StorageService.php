@@ -10,7 +10,7 @@ class StorageService
      * @param $attributes
      * @return bool
      */
-    public static function upload($request, $dir)
+    public static function upload($request, $dir, $isVector = false)
     {
         $path = '';
         $paths = [];
@@ -22,18 +22,14 @@ class StorageService
             }
         } else {
 
-            // try {
-            //     $response = Http::attach('image', file_get_contents($files), 'image.jpg')
-            //         ->post(env('AI_URL') . "/face_service/get_face_vector", []);
-            //     if ($response->successful()) {
-            //         $respone = json_decode($response->body());
-
-            //         $vector = json_encode($respone->vector[0]);
-            //     }
-            // } catch (\Throwable $th) {
-            //     \Log::info('Ai lỗi');
-            // }
-
+            if ($isVector) {
+                $response = Http::attach('image', file_get_contents($files), 'image.jpg')
+                    ->post(env('AI_URL') . "/face_service/get_face_vector", []);
+                if ($response->successful()) {
+                    $respone = json_decode($response->body());
+                    $vector = json_encode($respone->vector[0]);
+                }
+            }
 
             $path = $files->store($dir);
         }

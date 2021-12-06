@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Event\Http\Requests;
+namespace GGPHP\Category\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EventCreateRequest extends FormRequest
+class UnitCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class EventCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "event_code" => 'required',
-            "time" => 'required',
-            "camera_id" => 'required|exists:cameras,id',
+            'name' => 'required|string',
         ];
     }
 }
