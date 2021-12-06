@@ -1523,6 +1523,24 @@ export default [
             authority: [permissions.HRM],
           },
           {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu',
+            component: './hrm/seasonal-contracts',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu/tao-moi',
+            component: './hrm/seasonal-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
+            path: '/quan-ly-nhan-su/hop-dong-thoi-vu/:id/chi-tiet',
+            component: './hrm/seasonal-contracts/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.HRM],
+          },
+          {
             path: '/quan-ly-nhan-su/phan-ca-lam-viec',
             component: './hrm/work-shift',
             wrappers: ['@/wrappers/auth'],
@@ -2649,6 +2667,12 @@ export default [
           {
             path: '/crm/cau-hinh/khai-bao-y-te',
             component: './crm/health-declaration',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
+          {
+            path: '/crm/cau-hinh/danh-sach-ho-so',
+            component: './crm/configuration-file',
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },

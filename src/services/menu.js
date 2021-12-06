@@ -1010,6 +1010,16 @@ export async function getLeftMenuHRM() {
               ],
               permission: [permissions.HRM],
             },
+            {
+              title: 'HĐ thời vụ',
+              key: 'seasonal-contracts',
+              url: [
+                '/quan-ly-nhan-su/hop-dong-thoi-vu',
+                '/quan-ly-nhan-su/hop-dong-thoi-vu/tao-moi',
+                '/quan-ly-nhan-su/hop-dong-thoi-vu/:id/chi-tiet',
+              ],
+              permission: [permissions.HRM],
+            },
           ],
         },
         {
@@ -1708,7 +1718,6 @@ export async function getLeftMenuCRM() {
           pro: true,
         },
         {
-
           title: 'Loại sự kiện',
           key: 'event',
           url: [
@@ -1744,9 +1753,7 @@ export async function getLeftMenuCRM() {
         {
           title: 'Câu hỏi đánh giá cho phụ huynh',
           key: 'review-question',
-          url: [
-            '/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh',
-          ],
+          url: ['/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -1883,10 +1890,7 @@ export async function getLeftMenuCRM() {
         {
           title: 'Đánh giá đầu vào',
           key: 'nput-rating',
-          url: [
-            '/crm/danh-gia/danh-gia-dau-vao',
-            '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet',
-          ],
+          url: ['/crm/danh-gia/danh-gia-dau-vao', '/crm/danh-gia/danh-gia-dau-vao/:id/chi-tiet'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -1915,16 +1919,16 @@ export async function getLeftMenuCRM() {
         {
           title: 'Khai báo y tế',
           key: 'health-declaration',
-          url: [
-            '/crm/cau-hinh/khai-bao-y-te',
-          ],
+          url: ['/crm/cau-hinh/khai-bao-y-te'],
           permission: [permissions.CRM],
           pro: true,
         },
         {
           title: 'Thông tin hồ sơ',
-          key: '',
-          url: [],
+          key: 'configuration-file',
+          url: [
+            '/crm/cau-hinh/danh-sach-ho-so',
+          ],
           permission: [permissions.CRM],
           pro: true,
         },
