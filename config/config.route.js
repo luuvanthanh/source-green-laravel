@@ -2652,6 +2652,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.CRM],
           },
+          {
+            path: '/crm/cau-hinh/danh-sach-ho-so',
+            component: './crm/configuration-file',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.CRM],
+          },
         ],
       },
       //WEBFORM
