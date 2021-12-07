@@ -37,11 +37,6 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('branches', 'BranchController');
             \Route::resource('category-events', 'CategoryEventController');
             \Route::resource('category-relationships', 'CategoryRelationshipController');
-            \Route::resource('category-skills', 'CategorySkillController');
-            \Route::resource('category-child-issues', 'CategoryChildIssueController');
-            \Route::post('category-skill-sorts', 'CategorySkillController@sort');
-            \Route::post('question-reviews', 'QuestionReviewController@questionReview');
-            \Route::get('question-reviews', 'QuestionReviewController@index');
         });
     }
 }

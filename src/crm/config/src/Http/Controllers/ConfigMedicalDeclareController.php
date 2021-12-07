@@ -52,4 +52,17 @@ class ConfigMedicalDeclareController extends Controller
 
         return $this->success($configMedicalDeclare, trans('lang::messages.common.createSuccess'));
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->configMedicalDeclareRepository->delete($id);
+
+        return $this->success([], trans('lang::messages.common.deleteSuccess'));
+    }
 }
