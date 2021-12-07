@@ -41,7 +41,7 @@ const General = memo(() => {
     const dateHistory = new Date(eventDetails.date);
     const timeHistory = `${eventDetails.time}`;
     const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
-    const time = `${today.getHours()}:${today.getMinutes()}`;
+    const time = `${today.getHours()< 10 ?  `${`0${ today.getHours()}:${today.getMinutes()}`}`: `${today.getHours()}:${today.getMinutes()}`}` ;
     const miliToday = today.getTime();
     const miliDateHistory = dateHistory.getTime();
     const dateYear = `${Helper.getDate(eventDetails.created_at, variables.DATE_FORMAT.DATE)}`;
@@ -388,7 +388,7 @@ const General = memo(() => {
         const dateHistory = new Date(a);
         const timeHistory = `${e}`;
         const date = `${today.getDate()< 10 ? `${`0${  today.getDate()}`}`: today.getDate() }-${today.getMonth() + 1}-${today.getFullYear()}`;
-        const time = `${today.getHours()}:${today.getMinutes()}`;
+        const time = `${today.getHours()< 10 ?  `${`0${ today.getHours()}:${today.getMinutes()}`}`: `${today.getHours()}:${today.getMinutes()}`}` ;
         const miliToday = today.getTime();
         const miliDateHistory = dateHistory.getTime();
         const dateYear = `${Helper.getDate(a, variables.DATE_FORMAT.DATE)}`;
