@@ -82,7 +82,7 @@ class Index extends PureComponent {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === details.typeOfContractId);
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      if (itemContract?.name === 'Vô thời hạn') {
+      if (itemContract?.code === 'VTH') {
         this.setStateData({
           disabledInput: true,
         });
@@ -144,7 +144,7 @@ class Index extends PureComponent {
   changeContract = (value) => {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === value);
-    if (itemContract?.name !== 'Vô thời hạn') {
+    if (itemContract?.code !== 'VTH') {
       this.setStateData({
         parameterValues: itemContract.parameterValues.map((item, index) => ({
           index,
