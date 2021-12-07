@@ -54,8 +54,6 @@ const General = memo(
       });
     };
 
-    const disabledDate = (current) => current && current > moment().endOf('day').subtract(1, 'days');
-
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -168,6 +166,8 @@ const General = memo(
     const uploadFiles = (file) => {
       mountedSet(setFiles, (prev) => [...prev, file]);
     };
+
+    const disabledDate = (current) => current && current > moment().endOf('day').subtract(1, 'days');
 
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
