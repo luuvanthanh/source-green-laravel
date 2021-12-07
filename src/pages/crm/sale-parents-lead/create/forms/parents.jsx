@@ -56,19 +56,25 @@ const General = memo(
         type: 'crmSaleLeadAdd/GET_BRANCHES',
         payload: {},
       });
-      if (details.id) {
+      dispatch({
+        type: 'crmSaleLeadAdd/GET_DISTRICTS',
+        payload: {}
+      });
+    }, []);
+
+    useEffect(() => {
+      if (params.id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_DISTRICTS',
           payload: details
         });
-      }
-      if (details.id) {
         dispatch({
           type: 'crmSaleLeadAdd/GET_TOWN_WARDS',
           payload: details
         });
       }
-    }, [params.id, details.city_id]);
+    }, [params.id]);
+
     const onChangeCity = (city_id) => {
       dispatch({
         type: 'crmSaleLeadAdd/GET_DISTRICTS',

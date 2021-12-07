@@ -9,12 +9,10 @@ import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
 import { variables } from '@/utils/variables';
-import ImageUpload from '@/components/CommonComponent/ImageUpload';
 import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
 
-const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
@@ -40,36 +38,34 @@ const General = memo(
       !!mounted?.current && setFunction && setFunction(value);
     const loadingSubmit =
       effects[`crmSaleAdmissionAdd/ADD_PARENTS`];
-      const [fileImage, setFileImage] = useState([null]);
 
-    const onSetImage = (file, position) => {
-      mountedSet(
-        setFileImage,
-        fileImage.map((item, index) => (index === position ? file : item)),
-      );
-    };
+    const [files, setFiles] = useState({});
 
 
     useEffect(() => {
       dispatch({
-        type: 'crmSaleAdmissionAdd/GET_PARENTS',
-        payload: { admission_register_id: params.id },
-        callback: (response) => {
-          if (response) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) => ({
-                ...item,
-                birth_date: moment(item.birth_date),
-              })),
-            });
-          }
-        },
-      });
-      dispatch({
         type: 'crmSaleAdmissionAdd/GET_CITIES',
         payload: {},
       });
+    }, []);
+
+    useEffect(() => {
       if (params.id) {
+        dispatch({
+          type: 'crmSaleAdmissionAdd/GET_PARENTS',
+          payload: { admission_register_id: params.id },
+          callback: (response) => {
+            if (response) {
+              formRef.current.setFieldsValue({
+                data: response.parsePayload.map((item) => ({
+                  ...item,
+                  birth_date: item.birth_date && moment(item.birth_date),
+                })),
+              });
+              setFiles({ ...response.parsePayload.map(item => ({ files: Helper.isJSON(item.file_image) ? JSON.parse(item.file_image) : [] })) });
+            }
+          },
+        });
         dispatch({
           type: 'crmSaleAdmissionAdd/GET_DISTRICTS',
           payload: {},
@@ -94,7 +90,7 @@ const General = memo(
       formRef.current.validateFields().then((values) => {
         const items = values.data.map((item, index) => ({
           ...item,
-          file_image: fileImage[index],
+          file_image: files[index]?.files ? JSON.stringify(files[index].files) : undefined,
           birth_date: Helper.getDateTime({
             value: Helper.setDate({
               ...variables.setDateData,
@@ -142,14 +138,28 @@ const General = memo(
           ...head(details.positionLevel),
           birth_date: details.birth_date && moment(details.birth_date),
         });
-        mountedSet(
-          setFileImage,
-          parents.map((item) => item?.file_image || null),
-        );
       }
     }, [details]);
-    console.log('parens', parents)
-console.log(fileImage)
+
+    const uploadFiles = (file, index) => {
+      mountedSet(setFiles, (prev) => ({
+        ...prev,
+        [index]: {
+          files: prev[index]?.files ? [...prev[index].files, file] : [file],
+        },
+      }));
+    };
+
+
+    const removeFiles = (file, index) => {
+      mountedSet(setFiles, (prev) => ({
+        ...prev,
+        [index]: {
+          files: file,
+        },
+      }));
+    };
+
     return (
       <Pane>
         <Pane>
@@ -197,14 +207,11 @@ console.log(fileImage)
 
                                       <Pane className="row">
                                         <Pane className="col">
-                                          <Form.Item name={[field.key, 'file_image']} label="Hình ảnh phụ huynh">
-                                            <MultipleImageUpload
-                                              callback={(res) => {
-                                                onSetImage(res.fileInfo.url, index);
-                                              }}
-                                              fileImage={fileImage[index]}
-                                            />
-                                          </Form.Item>
+                                          <MultipleImageUpload
+                                            // callback={(event) => uploadFiles(event, index)}
+                                            removeFiles={(event) => removeFiles(event, index)}
+                                            files={files[index]?.files || []}
+                                          />
                                         </Pane>
                                       </Pane>
 
@@ -338,11 +345,10 @@ console.log(fileImage)
                                         <Pane className="row">
                                           <Pane className="col">
                                             <Form.Item name={[field.key, 'file_image']} label="Hình ảnh phụ huynh">
-                                              <ImageUpload
-                                                callback={(res) => {
-                                                  onSetImage(res.fileInfo.url, index);
-                                                }}
-                                                fileImage={fileImage[index]}
+                                              <MultipleImageUpload
+                                                callback={(event) => uploadFiles(event, index)}
+                                                removeFiles={(event) => removeFiles(event, index)}
+                                                files={files[index]?.files || []}
                                               />
                                             </Form.Item>
                                           </Pane>
@@ -355,7 +361,7 @@ console.log(fileImage)
                                               name={[field.name, 'full_name']}
                                               fieldKey={[field.fieldKey, 'full_name']}
                                               type={variables.INPUT}
-
+                                              rules={[variables.RULES.EMPTY_INPUT]}
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -482,7 +488,6 @@ console.log(fileImage)
                                 icon="plus"
                                 onClick={() => {
                                   add();
-                                  mountedSet(setFileImage, [...fileImage, null]);
                                 }}
                               >
                                 Thêm thông tin
