@@ -41,4 +41,9 @@ class AdmissionRegister extends UuidModel
     {
         return $this->hasOne(TestInput::class);
     }
+
+    public function medicalInfo()
+    {
+        return $this->hasOne(MedicalInfo::class, 'admission_register_id');
+    }
 }

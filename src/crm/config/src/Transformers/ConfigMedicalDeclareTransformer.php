@@ -3,7 +3,6 @@
 namespace GGPHP\Crm\Config\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
-use GGPHP\Crm\Config\Models\ConfigMedicalDeclare;
 
 /**
  * Class CategoryDetailTransformer.
@@ -29,7 +28,7 @@ class ConfigMedicalDeclareTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['configMedicalDeclareDetail'];
+    protected $availableIncludes = [];
 
     /**
      * Transform the CategoryDetail entity.
@@ -41,20 +40,7 @@ class ConfigMedicalDeclareTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        $type = null;
 
-        foreach (ConfigMedicalDeclare::TYPE as $key => $value) {
-            if ($value == $model->type) {
-                $type = $key;
-            }
-        }
-        return [
-            "type" => $type
-        ];
-    }
-
-    public function includeConfigMedicalDeclareDetail(ConfigMedicalDeclare $configMedicalDeclare)
-    {
-        return $this->collection($configMedicalDeclare->configMedicalDeclareDetail, new ConfigMedicalDeclareDetailTransformer, ' ConfigMedicalDeclareDetail');
+        return [];
     }
 }

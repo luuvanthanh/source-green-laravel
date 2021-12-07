@@ -1,10 +1,10 @@
 <?php
 
-namespace GGPHP\Crm\Config\Http\Requests;
+namespace GGPHP\Crm\AdmissionRegister\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ConfigMedicalDeclareCreateRequest extends FormRequest
+class MedicalInfoCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,9 @@ class ConfigMedicalDeclareCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'create_rows' => 'array',
-            'update_rows' => 'array',
-            'delete_rows' => 'array',
-            'create_rows.*.name' => 'required|string|unique:config_medical_declares,name',
+            'admission_register_id' => 'required|exists:admission_registers,id',
+            'weight' => 'required',
+            'height' => 'required'
         ];
     }
 }

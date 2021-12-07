@@ -1,15 +1,15 @@
 <?php
 
-namespace GGPHP\Crm\Config\Transformers;
+namespace GGPHP\Crm\AdmissionRegister\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
 
 /**
- * Class CategoryDetailTransformer.
+ * Class CityTransformer.
  *
  * @package namespace App\Transformers;
  */
-class ConfigMedicalDeclareDetailTransformer extends BaseTransformer
+class ChildHeathDevelopTransformer extends BaseTransformer
 {
     /**
      * List of resources possible to include
@@ -33,7 +33,7 @@ class ConfigMedicalDeclareDetailTransformer extends BaseTransformer
     /**
      * Transform the CategoryDetail entity.
      *
-     * @param Branch 
+     * @param  
 
      *
      * @return array

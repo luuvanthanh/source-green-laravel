@@ -68,34 +68,21 @@ class ConfigMedicalDeclareRepositoryEloquent extends BaseRepository implements C
 
     public function createOrUpdate(array $attributes)
     {
-        if (!empty($attributes['createRows'])) {
-            foreach ($attributes['createRows'] as $value) {
-                $value['type'] = ConfigMedicalDeclare::TYPE[$value['type']];
+        if (!empty($attributes['create_rows'])) {
+            foreach ($attributes['create_rows'] as $value) {
                 $medicalDeclare = ConfigMedicalDeclare::create($value);
-
-                foreach ($value['detail'] as $valueDetail) {
-                    $valueDetail['config_madical_declare_id'] = $medicalDeclare->id;
-                    ConfigMedicalDeclareDetail::create($valueDetail);
-                }
             }
         }
 
-        if (!empty($attributes['updateRows'])) {
-            foreach ($attributes['updateRows'] as $value) {
-                ConfigMedicalDeclareDetail::where('config_madical_declare_id', $value['id'])->delete();
+        if (!empty($attributes['update_rows'])) {
+            foreach ($attributes['update_rows'] as $value) {
                 $medicalDeclare = ConfigMedicalDeclare::find($value['id']);
-                $value['type'] = ConfigMedicalDeclare::TYPE[$value['type']];
                 $medicalDeclare->update($value);
-
-                foreach ($value['detail'] as $valueDetail) {
-                    $valueDetail['config_madical_declare_id'] = $medicalDeclare->id;
-                    ConfigMedicalDeclareDetail::create($valueDetail);
-                }
             }
         }
 
-        if (!empty($attributes['deleteRows'])) {
-            ConfigMedicalDeclare::whereIn('id', $attributes['deleteRows'])->delete();
+        if (!empty($attributes['delete_rows'])) {
+            ConfigMedicalDeclare::whereIn('id', $attributes['delete_rows'])->delete();
         }
 
         return parent::all();
