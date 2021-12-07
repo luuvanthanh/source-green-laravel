@@ -13,7 +13,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import Table from '@/components/CommonComponent/Table';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
-
+ 
 const { TabPane } = Tabs;
 let isMounted = true;
 /**
@@ -286,7 +286,7 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
-              const itemParamaterValues = categories.paramaterValues.find(({ id }) => id === item);
+              const itemParamaterValues = categories.paramaterContract.find(({ id }) => id === item);
               return itemParamaterValues;
             })
           : []),
@@ -296,7 +296,7 @@ class Index extends PureComponent {
         detail: value
           ? [
               ...value.map((item) => {
-                const itemParamaterValues = categories.paramaterValues.find(
+                const itemParamaterValues = categories.paramaterContract.find(
                   ({ id }) => id === item,
                 );
                 return itemParamaterValues;
@@ -593,7 +593,7 @@ class Index extends PureComponent {
                   <div className="row">
                     <div className="col-lg-12">
                       <FormItem
-                        data={categories?.paramaterValues}
+                        data={categories?.paramaterContract}
                         label="Khai báo"
                         name={['changeContract', 'paramaterValues']}
                         rules={[variables.RULES.EMPTY]}

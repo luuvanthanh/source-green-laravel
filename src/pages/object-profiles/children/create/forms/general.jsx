@@ -54,6 +54,8 @@ const General = memo(
       });
     };
 
+    const disabledDate = (current) => current && current > moment().endOf('day').subtract(1, 'days');
+
     /**
      * Function submit form modal
      * @param {object} values values of form
@@ -219,6 +221,7 @@ const General = memo(
                     label="Ngày sinh"
                     type={variables.DATE_PICKER}
                     rules={[variables.RULES.EMPTY]}
+                    disabledDate={disabledDate}
                     onChange={onChaneDate}
                   />
                 </Pane>

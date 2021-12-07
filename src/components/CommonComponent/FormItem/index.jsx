@@ -215,6 +215,17 @@ const renderChildren = (
       value={value}
     />
   ),
+  monthYearPicker: (
+    <DatePicker
+      disabled={disabled}
+      allowClear={allowClear}
+      disabledDate={disabledDate}
+      format={variables.DATE_FORMAT.MONTH_YEAR}
+      onChange={onChange}
+      placeholder="tháng/năm"
+      value={value}
+    />
+  ),
   monthPicker: (
     <DatePicker
       disabled={disabled}
