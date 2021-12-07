@@ -2,9 +2,11 @@
 
 namespace GGPHP\ActivityLog\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\ActivityLog\Models\ActivityLog;
 use GGPHP\ActivityLog\Presenters\ActivityLogPresenter;
 use GGPHP\ActivityLog\Repositories\Contracts\ActivityLogRepository;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Repositories\Eloquent\UserRepositoryEloquent;
 use Illuminate\Container\Container as Application;
@@ -55,7 +57,7 @@ class ActivityLogRepositoryEloquent extends BaseRepository implements ActivityLo
         return ActivityLogPresenter::class;
     }
 
-    public function filterAcitivity($attributes)
+    public function filterAcitivity($attributes, $parse = true)
     {
         if (!empty($attributes['user_name'])) {
             $user = User::where('full_name', 'like', "%{$attributes['user_name']}%")->get()->pluck('id')->toArray();
@@ -66,6 +68,10 @@ class ActivityLogRepositoryEloquent extends BaseRepository implements ActivityLo
             $this->model = $this->model->whereDate('created_at', '>=', $attributes['start_date'])->whereDate('created_at', '<=', $attributes['end_date']);
         }
 
+        if (!$parse) {
+            return $this->model->get();
+        }
+
         if (!empty($attributes['limit'])) {
             $activities = $this->paginate($attributes['limit']);
         } else {
@@ -73,6 +79,28 @@ class ActivityLogRepositoryEloquent extends BaseRepository implements ActivityLo
         }
 
         return $activities;
+    }
 
+    public function exportExcel($attributes)
+    {
+        $activities = $this->filterAcitivity($attributes, false);
+
+
+        $params = [];
+        $models = config('constants-activity.MODEL_COLLECTIONS');
+
+        foreach ($activities as $key => $activitie) {
+            $function = array_key_exists($activitie->subject_type, $models) ? $models[$activitie->subject_type] : $activitie->subject_type;
+
+            $action = config('constants-activity.ACTION_COLLECTIONS')[$activitie->description];
+
+            $params['[number]'][] = ++$key;
+            $params['[date]'][] = !is_null($activitie->created_at) ? Carbon::parse($activitie->created_at)->format('d-m-Y') : null;
+            $params['[full_name]'][] = !is_null($activitie->causer) ? $activitie->causer->full_name : null;
+            $params['[function]'][] = $function;
+            $params['[action]'][] = $action;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('activity_log', $params);
     }
 }

@@ -250,4 +250,15 @@ class EventController extends Controller
 
         return $this->success($event, trans('lang::messages.common.createSuccess'), ['code' => Response::HTTP_CREATED]);
     }
+
+    public function exportExcel(Request $request)
+    {
+        $result = $this->eventRepository->exportExcel($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

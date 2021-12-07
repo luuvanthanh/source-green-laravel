@@ -192,6 +192,7 @@ return [
         GGPHP\CameraServer\Providers\CameraServerServiceProvider::class,
         GGPHP\VideoWall\Providers\VideoWallServiceProvider::class,
         GGPHP\NumberOfTourist\Providers\NumberOfTouristServiceProvider::class,
+        GGPHP\ExcelExporter\Providers\ExcelExporterServiceProvider::class,
     ],
 
     /*

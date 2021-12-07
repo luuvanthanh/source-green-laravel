@@ -8,6 +8,8 @@ use GGPHP\TourGuide\Presenters\TourGuidePresenter;
 use GGPHP\TourGuide\Repositories\Contracts\TourGuideRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Carbon\Carbon;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 
 /**
  * Class TourGuideRepositoryEloquent.
@@ -16,6 +18,8 @@ use Prettus\Repository\Eloquent\BaseRepository;
  */
 class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRepository
 {
+
+
 
     /**
      * @var array
@@ -53,7 +57,7 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         $this->pushCriteria(app(RequestCriteria::class));
     }
 
-    public function getTourGuide(array $attributes)
+    public function getTourGuide(array $attributes, $parse = true)
     {
         if (!empty($attributes['full_name'])) {
             $this->model = $this->model->whereLike('full_name', $attributes['full_name']);
@@ -81,6 +85,10 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
 
         if (!empty($attributes['updated_at'])) {
             $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
+        }
+
+        if (!$parse) {
+            return $this->model->get();
         }
 
         if (empty($attributes['limit'])) {
@@ -133,5 +141,24 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return parent::find($id);
+    }
+
+    public function exportExcel($attributes)
+    {
+        $tourGuides = $this->getTourGuide($attributes, false);
+
+        $params = [];
+
+        foreach ($tourGuides as $key => $tourGuide) {
+            $params['[number]'][] = ++$key;
+            $params['[full_name]'][] = $tourGuide->full_name;
+            $params['[id_card]'][] = $tourGuide->id_card;
+            $params['[card_type]'][] = !is_null($tourGuide->cardType) ? $tourGuide->cardType->name : null;
+            $params['[card_number]'][] = $tourGuide->card_number;
+            $params['[language]'][] = !is_null($tourGuide->language) ?  $tourGuide->language->vietnamese_name : null;
+            $params['[expiration_date]'][] = !is_null($tourGuide->expiration_date) ?  Carbon::parse($tourGuide->expiration_date)->format('d-m-Y') : null;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);
     }
 }

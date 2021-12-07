@@ -31,10 +31,11 @@ trait ResponseTrait
         ];
 
         if ($isContainByDataString) {
-            $result = ['data' => (object) $result];
+            $result = ['data' => $result];
         }
 
         $response = array_merge($response, $result);
+
         return response()->json($response, $code);
     }
 
@@ -58,7 +59,6 @@ trait ResponseTrait
                 'title' => $error,
                 'detail' => $message,
             ];
-
         } else {
             $detailErrors = array_unique(array_flatten(is_array($message) ? $message : $message->toArray()));
             foreach ($detailErrors as $detailError) {

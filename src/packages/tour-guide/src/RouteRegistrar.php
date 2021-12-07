@@ -31,6 +31,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::resource('tour-guides', 'TourGuideController');
+
+            \Route::get('export-excel-tour-guides', 'TourGuideController@exportExcel');
         });
     }
 

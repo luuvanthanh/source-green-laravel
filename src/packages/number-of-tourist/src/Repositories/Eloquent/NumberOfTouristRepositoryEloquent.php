@@ -2,12 +2,16 @@
 
 namespace GGPHP\NumberOfTourist\Repositories\Eloquent;
 
+use alhimik1986\PhpExcelTemplator\params\CallbackParam;
+use alhimik1986\PhpExcelTemplator\PhpExcelTemplator;
 use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\NumberOfTourist\Models\NumberOfTourist;
 use GGPHP\NumberOfTourist\Models\NumberOfTouristHandle;
 use GGPHP\NumberOfTourist\Presenters\NumberOfTouristPresenter;
 use GGPHP\NumberOfTourist\Repositories\Contracts\NumberOfTouristRepository;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -218,7 +222,7 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
         }
 
         return [
-            'data' => $data,
+            'data' => array_values($data),
         ];
     }
 
@@ -230,5 +234,107 @@ class NumberOfTouristRepositoryEloquent extends BaseRepository implements Number
         $numberOfTourist = NumberOfTourist::create($attributes);
 
         return parent::parserResult($numberOfTourist);
+    }
+    public function exportExcel($attributes)
+    {
+        $reports = $this->report($attributes);
+
+        $params = [];
+
+        $tourist_destination = [];
+        $column = [];
+        $total = [];
+        foreach ($reports['data'] as  $item) {
+            $value = [];
+
+            foreach ($item['tourist_destination'] as $touristDestination) {
+                $value[] = $touristDestination['number_of_guest'];
+                $value[] = ($touristDestination['number_of_guest'] / $item['number_of_guest']) * 100;
+
+                if (!array_key_exists($touristDestination['name'], $tourist_destination)) {
+                    $tourist_destination[$touristDestination['name']] = $touristDestination['name'];
+                    $tourist_destination[] = $touristDestination['name'];
+                    $column[] = 'Số lượng du khách';
+                    $column[] = 'Tỷ lệ trên tổng (%)';
+                    $total[] = $item['number_of_guest'];
+                    $total[] = 100;
+                }
+            }
+
+            $params['[time]'][] = Carbon::parse($item['time'])->format('d-m-Y');
+            $params['[[value]]'][] = array_values($value);
+        }
+
+        $params['[[tourist_destination]]'][] = array_values($tourist_destination);
+        $params['[[column]]'][] = array_values($column);
+
+        $params['[time]'][]  = 'Tổng';
+        $params['[[value]]'][] = $total;
+        $params['{c_time}'][] = '';
+
+        $listMerge = [];
+
+        $callbacks = [
+            '[[tourist_destination]]' => function (CallbackParam $param) use (&$listMerge) {
+                $row_index = $param->row_index;
+                $col_index = $param->col_index;
+                $cell_coordinate = $param->coordinate;
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $mergeCoordinate[] = $cell_coordinate;
+                $firstValue = $param->param[$row_index][0];
+
+                if ($col_index == 0) {
+                    $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($currentColumn);
+                    for ($i = 0; $i < count($param->param[$row_index]); $i++) {
+                        $adjustedColumnIndex = $columnIndex + $i;
+                        if ($param->param[$row_index][$i] != $firstValue) {
+
+                            $adjustedColumnBefor = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex - 1);
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+
+                            $mergeCoordinate[] = $adjustedColumnBefor . $currentRow;
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                            $firstValue = $param->param[$row_index][$i];
+                        }
+
+                        if ($i == count($param->param[$row_index]) - 1) {
+                            $adjustedColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($adjustedColumnIndex);
+                            $mergeCoordinate[] = $adjustedColumn . $currentRow;
+                        }
+                    }
+                }
+
+                foreach ($mergeCoordinate as $key => $coordinate) {
+                    if ($key % 2 != 0) {
+                        $merge = $mergeCoordinate[$key - 1] . ":" . $mergeCoordinate[$key];
+                        $listMerge[] = $merge;
+                    }
+                }
+            },
+            '{c_time}' => function (CallbackParam $param)  use (&$listMerge) {
+                $cell_coordinate = $param->coordinate;
+                $currentRow = preg_replace('/[A-Z]+/', '', $cell_coordinate);
+                $currentColumn = preg_replace('/[0-9]+/', '', $cell_coordinate);
+                $coordinateMerge = (int) $currentRow + 1;
+                $mergeCol = $currentColumn . $coordinateMerge;
+                $merge = $cell_coordinate . ":" . $mergeCol;
+
+                $listMerge[] = $merge;
+                $sheet = $param->sheet;
+                $sheet->getCell($cell_coordinate)->setValue("Thời gian");
+            },
+        ];
+
+        $events = [
+            PhpExcelTemplator::AFTER_INSERT_PARAMS => function (Worksheet $sheet, array $templateVarsArr) use (&$listMerge) {
+                foreach ($listMerge as $item) {
+                    $sheet->mergeCells($item);
+                }
+            },
+
+        ];
+
+        return  resolve(ExcelExporterServices::class)->export('number_of_tourists', $params, $callbacks, $events);
     }
 }

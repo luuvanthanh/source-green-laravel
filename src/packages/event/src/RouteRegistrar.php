@@ -37,6 +37,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::put('event-handle/{id}', 'EventController@updateHandleEvent');
 
             \Route::post('event-handle-muti/{id}', 'EventController@handleEventMuti');
+
+            \Route::get('export-excel-events', 'EventController@exportExcel');
         });
     }
 

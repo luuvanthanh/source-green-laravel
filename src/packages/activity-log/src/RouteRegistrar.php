@@ -43,6 +43,8 @@ class RouteRegistrar extends CoreRegistrar
                 'as' => 'activity-logs.show',
                 'group' => 'Lịch sử hệ thống',
             ]);
+
+            \Route::get('export-excel-activity-logs', 'ActivityLogController@exportExcel');
         });
     }
 }

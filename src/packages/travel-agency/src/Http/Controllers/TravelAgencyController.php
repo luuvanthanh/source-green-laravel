@@ -142,4 +142,15 @@ class TravelAgencyController extends Controller
 
         return $this->success([], trans('lang::messages.common.modifySuccess'));
     }
+
+    public function exportExcel(Request $request)
+    {
+        $result = $this->travelAgencyRepository->exportExcel($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }

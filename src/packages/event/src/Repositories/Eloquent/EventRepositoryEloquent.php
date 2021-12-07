@@ -2,12 +2,14 @@
 
 namespace GGPHP\Event\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Camera\Models\Camera;
 use GGPHP\Category\Models\EventType;
 use GGPHP\Event\Models\Event;
 use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -55,7 +57,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $this->pushCriteria(app(RequestCriteria::class));
     }
 
-    public function getEvent(array $attributes)
+    public function getEvent(array $attributes, $parse = true)
     {
         if (!empty($attributes['event_type_id'])) {
             $evenTypeId = explode(',', $attributes['event_type_id']);
@@ -106,6 +108,10 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
         if (!empty($attributes['date'])) {
             $this->model = $this->model->whereDate('time', $attributes['date']);
+        }
+
+        if (!$parse) {
+            return $this->model->get();
         }
 
         if (empty($attributes['limit'])) {
@@ -234,5 +240,64 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         $event->eventHandle()->updateOrCreate($attributes);
 
         return parent::find($id);
+    }
+
+    public function exportExcel($attributes)
+    {
+        $events = $this->getEvent($attributes, false);
+
+        $params = [];
+
+        foreach ($events as $key => $event) {
+            $params['[number]'][] = ++$key;
+            $params['[event_type]'][] = !is_null($event->eventType) ?  $event->eventType->name : null;
+            $params['[time]'][] = !is_null($event->time) ?  Carbon::parse($event->time)->format('d-m-Y, H:m') : null;
+            $params['[tourist_destination]'][] = !is_null($event->touristDestination) ?  $event->touristDestination->name : null;
+            $params['[camera]'][] = !is_null($event->camera) ? $event->camera->name : null;
+            $params['[warning_level]'][] = $this->getConstWarningLevel($event->warning_level);
+            $params['[status]'][] =  $this->getConstStatus($event->status);
+            $params['[image]'][] =  null;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('event', $params);
+    }
+
+    public function getConstWarningLevel($value)
+    {
+        $value = null;
+        switch ($value) {
+            case Event::WARNING_LEVEL['LOW']:
+                $value = "Thấp";
+                break;
+            case Event::WARNING_LEVEL['MEDIUM']:
+                $value = "Trung bình";
+                break;
+            case Event::WARNING_LEVEL['HIGH']:
+                $value = "Cao";
+                break;
+            case Event::WARNING_LEVEL['EMERGENCY']:
+                $value = "Khẩn cấp";
+                break;
+        }
+
+        return $value;
+    }
+
+    public function getConstStatus($value)
+    {
+        $value = null;
+        switch ($value) {
+            case Event::STATUS['PENDING']:
+                $value = "Chưa xử lý";
+                break;
+            case Event::STATUS['DOING']:
+                $value = "Đang xử lý";
+                break;
+            case Event::STATUS['DONE']:
+                $value = "Đã xử lý";
+                break;
+        }
+
+        return $value;
     }
 }
