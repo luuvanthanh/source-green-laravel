@@ -27,6 +27,17 @@ export function getParamaterValues() {
     },
   });
 }
+export function getParamaterValuesTypeContract() {
+  return request(`/v1/paramater-values`, {
+    method: 'GET',
+    params: {
+      type: 'CONTRACT',
+      search: Helper.convertParamSearchConvert({
+        Type: 'CONTRACT',
+      }),
+    },
+  });
+}
 
 export function add(data = {}) {
   return request('/v1/other-declarations', {

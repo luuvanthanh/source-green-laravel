@@ -49,12 +49,12 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
-        endDate: query?.endDate
-          ? moment(query?.endDate)
-          : moment().startOf('month').add(24, 'days'),
         startDate: query?.startDate
           ? moment(query?.startDate)
-          : moment().startOf('month').subtract(1, 'months').add(25, 'days'),
+          : moment().startOf('month').subtract(1, 'months').add(24, 'days'),
+        endDate: query?.endDate
+          ? moment(query?.endDate)
+          : moment().startOf('month').add(1, 'days'),
       },
     };
     setIsMounted(true);
@@ -110,8 +110,8 @@ class Index extends PureComponent {
       `${pathname}?${Helper.convertParamSearchConvert(
         {
           ...search,
-          endDate: Helper.getDate(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
-          startDate: Helper.getDate(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
+          endDate: Helper.getDateSearch(search.endDate, variables.DATE_FORMAT.DATE_AFTER),
+          startDate: Helper.getDateSearch(search.startDate, variables.DATE_FORMAT.DATE_AFTER),
         },
         variables.QUERY_STRING,
       )}`,
@@ -338,7 +338,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="startDate"
                     onChange={(event) => this.onChangeDate(event, 'startDate')}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_YEAR_PICKER}
                     disabledDate={(current) => Helper.disabledDateFrom(current, this.formRef)}
                     allowClear={false}
                   />
@@ -347,7 +347,7 @@ class Index extends PureComponent {
                   <FormItem
                     name="endDate"
                     onChange={(event) => this.onChangeDate(event, 'endDate')}
-                    type={variables.DATE_PICKER}
+                    type={variables.MONTH_YEAR_PICKER}
                     disabledDate={(current) => Helper.disabledDateTo(current, this.formRef)}
                     allowClear={false}
                   />
