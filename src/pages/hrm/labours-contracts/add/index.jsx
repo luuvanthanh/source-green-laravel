@@ -49,6 +49,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       parameterValues: [],
+      disabledInput: false,
     };
     setIsMounted(true);
   }
@@ -78,7 +79,18 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
+    const { contractTypes } = this.props;
+    const itemContract = contractTypes.find((item) => item.id === details.typeOfContractId);
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
+      if (itemContract?.name === 'Vô thời hạn') {
+        this.setStateData({
+          disabledInput: true,
+        });
+      } else {
+        this.setStateData({
+          disabledInput: false,
+        });
+      }
       this.formRef.current.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
@@ -132,16 +144,25 @@ class Index extends PureComponent {
   changeContract = (value) => {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === value);
-    if (itemContract) {
+    if (itemContract?.name !== 'Vô thời hạn') {
       this.setStateData({
         parameterValues: itemContract.parameterValues.map((item, index) => ({
           index,
           ...item,
         })),
+        disabledInput: false,
       });
       this.formRef.current.setFieldsValue({
         month: toString(itemContract.month),
         year: toString(itemContract.year),
+      });
+    } else {
+      this.setStateData({
+        disabledInput: true,
+      });
+      this.formRef.current.setFieldsValue({
+        month: 0,
+        year: 0,
       });
     }
   };
@@ -332,7 +353,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { parameterValues } = this.state;
+    const { parameterValues, disabledInput } = this.state;
     const loading =
       effects['laboursContractsAdd/GET_CATEGORIES'] ||
       effects['laboursContractsAdd/GET_DETAILS'] ||
@@ -409,6 +430,7 @@ class Index extends PureComponent {
                       name="year"
                       type={variables.INPUT_COUNT}
                       rules={[variables.RULES.EMPTY]}
+                      disabled={disabledInput}
                     />
                   </div>
                   <div className="col-lg-4">
@@ -417,6 +439,7 @@ class Index extends PureComponent {
                       name="month"
                       type={variables.INPUT_COUNT}
                       rules={[variables.RULES.EMPTY]}
+                      disabled={disabledInput}
                     />
                   </div>
                   <div className="col-lg-4">
