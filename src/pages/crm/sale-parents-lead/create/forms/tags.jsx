@@ -90,12 +90,6 @@ const General = memo(() => {
         customer_tag: dataTags.map((item) => ({ tag_id: item })),
       },
       callback: (response, error) => {
-        if (response) {
-          dispatch({
-            type: 'crmSaleLeadAdd/GET_DETAILS',
-            payload: params,
-          });
-        }
         if (error) {
           if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
             error.data.errors.forEach((item) => {

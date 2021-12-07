@@ -26,20 +26,20 @@ import * as services from './services';
       }),
     },
     effects: {
-      *GET_DETAILS({ payload }, saga) {
-        try {
-          const response = yield saga.call(services.get, payload);
-          yield saga.put({
-            type: 'SET_DETAILS',
-            payload: response,
-          });
-        } catch (error) {
-          yield saga.put({
-            type: 'SET_ERROR',
-            payload: error.data,
-          });
-        }
-      },
+      // *GET_DETAILS({ payload }, saga) {
+      //   try {
+      //     const response = yield saga.call(services.get, payload);
+      //     yield saga.put({
+      //       type: 'SET_DETAILS',
+      //       payload: response,
+      //     });
+      //   } catch (error) {
+      //     yield saga.put({
+      //       type: 'SET_ERROR',
+      //       payload: error.data,
+      //     });
+      //   }
+      // },
       *REMOVE({ payload, callback }, saga) {
         try {
           yield saga.call(services.remove, payload);

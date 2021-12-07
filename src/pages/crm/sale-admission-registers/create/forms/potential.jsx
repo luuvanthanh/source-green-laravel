@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useState } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { Form } from 'antd';
 import { head, isEmpty, get } from 'lodash';
 import moment from 'moment';
@@ -24,7 +24,7 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error }) => {
     const formRef = useRef();
     const mounted = useRef(false);
-    const [ramdom, setRamdom] = useState(0);
+    // const [ramdom, setRamdom] = useState(0);
     const loadingSubmit =
       effects[`crmSaleAdmissionAdd/UPDATE_STUDENTS`];
     const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
@@ -33,7 +33,7 @@ const General = memo(
         type: 'crmSaleAdmissionAdd/GET_DETAILS',
         payload: params,
       });
-    }, [params.id, ramdom]);
+    }, [params.id]);
 
     /**
      * Function submit form modal
@@ -44,9 +44,9 @@ const General = memo(
         type: 'crmSaleAdmissionAdd/UPDATE_STUDENTS',
         payload: { ...details, ...values, id: params.id },
         callback: (response, error) => {
-          if (response) {
-            setRamdom(Math.random());
-          }
+          // if (response) {
+          //   setRamdom(Math.random());
+          // }
           if (error) {
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {

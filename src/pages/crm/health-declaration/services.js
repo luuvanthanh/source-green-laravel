@@ -1,17 +1,13 @@
 import request from '@/utils/requestCrm';
 import { Helper } from '@/utils';
 
-export function get(params = {}) {
-  return request(`/v1/config-medical-declares`, {
+export function getData(params) {
+  return request('/v1/config-medical-declares', {
     method: 'GET',
     params: {
       ...params,
       include: Helper.convertIncludes([
-        'slider',
-        'banner',
-        'contentThree.contentThreeDetail',
-        'socialNetwork',
-        'contentTwo',
+        'configMedicalDeclareDetail',
       ]),
     },
   });
