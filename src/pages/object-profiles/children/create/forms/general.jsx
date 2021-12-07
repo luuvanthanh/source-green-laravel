@@ -136,6 +136,10 @@ const General = memo(
     }, []);
 
     useEffect(() => {
+      formRef.current.setFieldsValue({
+        dayOfBirth: moment().add(1, 'days')
+      });
+      setDayOfBirth(0);
       mounted.current = true;
       return mounted.current;
     }, []);
