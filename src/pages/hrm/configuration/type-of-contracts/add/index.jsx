@@ -111,6 +111,10 @@ class Index extends PureComponent {
     this.setStateData({
       isUnlimited: e.target.checked,
     });
+    this.formRef.current.setFieldsValue({
+      month: 0,
+      year: 0,
+    });
   };
 
   onFinish = (values) => {
@@ -237,7 +241,11 @@ class Index extends PureComponent {
                     <FormItem
                       label="SỐ NĂM"
                       name="year"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={
+                        !this.state.isUnlimited
+                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
+                          : []
+                      }
                       type={variables.INPUT}
                       disabled={isUnlimited}
                     />
@@ -246,7 +254,11 @@ class Index extends PureComponent {
                     <FormItem
                       label="SỐ THÁNG"
                       name="month"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={
+                        !this.state.isUnlimited
+                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
+                          : []
+                      }
                       type={variables.INPUT}
                       disabled={isUnlimited}
                     />
