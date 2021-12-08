@@ -125,7 +125,7 @@ class Index extends PureComponent {
    * @param {object} e event of input
    * @param {string} type key of object search
    */
-  onChange = (e, type) => {
+  onChangeInput = (e, type) => {
     this.debouncedSearch(e.target.value, type);
   };
 
@@ -385,7 +385,7 @@ class Index extends PureComponent {
                 <div className="col-lg-3">
                   <FormItem
                     name="fullName"
-                    onChange={(event) => this.onChange(event, 'fullName')}
+                    onChange={(event) => this.onChangeInput(event, 'fullName')}
                     placeholder="Nhập từ khóa tìm kiếm"
                     type={variables.INPUT_SEARCH}
                   />
