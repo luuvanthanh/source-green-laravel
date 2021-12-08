@@ -2683,6 +2683,76 @@ export default [
         path: '/web-form/:id',
         component: './crm/web-form',
       },
+      //CHILD'S DEVELOPMENT
+      {
+        path: '/su-phat-trien-cua-tre',
+        routes: [
+          {
+            path: '/su-phat-trien-cua-tre',
+            redirect: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+            component: './child-develop/skill',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ky-nang/tao-moi',
+            component: './child-develop/skill/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ky-nang/:id/chi-tiet',
+            component: './child-develop/skill/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre',
+            component: './child-develop/review-question',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre',
+            component: './child-develop/childrens-problems',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
+            component: './child-develop/childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
+            component: './child-develop/childrens-problems/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
+            component: './child-develop/review-scenario',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/tao-moi',
+            component: './child-develop/review-scenario/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/:id/chi-tiet',
+            component: './child-develop/review-scenario/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+        ],
+      },
       //PHYSICAL
       {
         path: '/error',

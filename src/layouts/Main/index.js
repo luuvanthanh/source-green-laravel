@@ -114,6 +114,11 @@ const OBJECTS = {
     title: 'CRM',
     menu: 'menuLeftCRM',
   },
+  CHILD_DEVELOP: {
+    icon: '/images/home/crm.svg',
+    title: 'Sự phát triển của trẻ',
+    menu: 'menuLeftChildDevelop',
+  },
 };
 
 @withRouter
@@ -187,6 +192,9 @@ class MainLayout extends React.PureComponent {
     }
     if (/^\/crm(?=\/|$)/i.test(pathname)) {
       key = 'CRM';
+    }
+    if (/^\/su-phat-trien-cua-tre(?=\/|$)/i.test(pathname)) {
+      key = 'CHILD_DEVELOP';
     }
     return key;
   };

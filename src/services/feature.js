@@ -152,6 +152,13 @@ export const feature = {
       target: true,
       permission: [permissions.CAMERAAI],
     },
+    {
+      title: 'Sự phát triển của trẻ',
+      src: '/images/home/crm.svg',
+      animation: animationImage.crm,
+      url: '/su-phat-trien-cua-tre',
+      permission: [permissions.CRM],
+    },
   ],
 };
 

@@ -1943,3 +1943,60 @@ export async function getLeftMenuCRM() {
     },
   ];
 }
+
+
+export async function getLeftMenuChildDevelop() {
+  return [
+    {
+      title: 'Danh mục',
+      key: 'childsDevelop',
+      icon: 'icon icon-list',
+      permission: [],
+      children: [
+        {
+          title: 'Kỹ năng',
+          key: 'child-develop',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang',
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/ky-nang/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Câu hỏi đánh giá của trẻ',
+          key: 'review-question',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre',
+          ],
+          permission: [],
+          pro: true,
+        },
+        {
+          title: 'Vấn đề khó khăn của trẻ',
+          key: 'childrens-problems',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre',
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
+      ],
+    },
+    {
+      title: 'Cấu hình kịch bản đánh giá',
+      key: '/childrens-problems',
+      icon: 'icon icon-setting',
+      permission: [],
+      url: [
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/tao-moi',
+        '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia/:id/chi-tiet',
+      ],
+    },
+  ];
+}
+
