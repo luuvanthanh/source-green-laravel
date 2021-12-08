@@ -73,6 +73,7 @@ class ParentInfoRepositoryEloquent extends BaseRepository implements ParentInfoR
                 if (!empty($value['sex'])) {
                     $value['sex'] = ParentInfo::SEX[$value['sex']];
                 }
+                $value['status'] = true;
                 $parentInfo = ParentInfo::create($value);
             }
         }

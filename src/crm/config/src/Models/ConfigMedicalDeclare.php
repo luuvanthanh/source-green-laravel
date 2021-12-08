@@ -18,7 +18,7 @@ class ConfigMedicalDeclare extends UuidModel
     ];
 
     protected $fillable = [
-        'name', 'type', 'text_box'
+        'name', 'type', 'text_box', 'use', 'use_yes_or_no', 'use_input'
     ];
 
     public function configMedicalDeclareDetail()
