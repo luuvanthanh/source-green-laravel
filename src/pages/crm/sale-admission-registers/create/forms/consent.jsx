@@ -26,8 +26,10 @@ const Students = memo(() => {
     !!mounted?.current && setFunction && setFunction(value);
   const {
     loading: { effects },
+    relationships,
   } = useSelector(({ loading, crmSaleAdmissionAdd }) => ({
     loading,
+    relationships: crmSaleAdmissionAdd.relationships,
     writtenConsent: crmSaleAdmissionAdd.writtenConsent,
     details: crmSaleAdmissionAdd.details,
     degrees: crmSaleAdmissionAdd.degrees,
@@ -107,6 +109,13 @@ const Students = memo(() => {
   }, [params.id]);
 
   useEffect(() => {
+    dispatch({  
+      type: 'crmSaleAdmissionAdd/GET_RELATIONSHIPS',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
     if (!isEmpty(writtenConsent)) {
       mountedSet(
         setFileImage,
@@ -181,14 +190,12 @@ const Students = memo(() => {
                                   </Pane>
                                   <Pane className="col-lg-4">
                                     <FormItem
+                                      data={relationships}
+                                      name={[field.name, 'category_relationship_id']}
                                       label="Mối quan hệ"
-                                      name={[field.name, 'relationship']}
-                                      fieldKey={[field.fieldKey, 'relationship']}
-                                      type={variables.INPUT}
-                                      rules={[
-                                        variables.RULES.EMPTY_INPUT,
-                                        variables.RULES.MAX_LENGTH_INPUT,
-                                      ]}
+                                      fieldKey={[field.fieldKey, 'category_relationship_id']}
+                                      type={variables.SELECT}
+                                      rules={[variables.RULES.EMPTY_INPUT]}
                                     />
                                   </Pane>
                                   <Pane className="col-lg-4">

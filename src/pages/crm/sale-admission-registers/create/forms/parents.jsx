@@ -13,7 +13,6 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import MultipleImageUpload from '@/components/CommonComponent/UploadAvatar';
 import { Helper } from '@/utils';
 
-const marginProps = { style: { marginBottom: 12 } };
 const genders = [
   { id: 'MALE', name: 'Nam' },
   { id: 'FEMALE', name: 'Nữ' },
@@ -31,38 +30,42 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
 });
 const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, city, district, parents }) => {
+
     const formRef = useRef();
-    const formInput = useRef();
-    const [files, setFiles] = Helper.isJSON(details?.file_image)
-      ? useState(JSON.parse(details?.file_image))
-      : useState([]);
+
     const mounted = useRef(false);
     const mountedSet = (setFunction, value) =>
       !!mounted?.current && setFunction && setFunction(value);
     const loadingSubmit =
       effects[`crmSaleAdmissionAdd/ADD_PARENTS`];
 
-    useEffect(() => {
+    const [files, setFiles] = useState({});
 
-      dispatch({
-        type: 'crmSaleAdmissionAdd/GET_PARENTS',
-        payload: { admission_register_id: params.id },
-        callback: (response) => {
-          if (response) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) => ({
-                ...item,
-                birth_date: moment(item.birth_date),
-              })),
-            });
-          }
-        },
-      });
+
+    useEffect(() => {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_CITIES',
         payload: {},
       });
+    }, []);
+
+    useEffect(() => {
       if (params.id) {
+        dispatch({
+          type: 'crmSaleAdmissionAdd/GET_PARENTS',
+          payload: { admission_register_id: params.id },
+          callback: (response) => {
+            if (response) {
+              formRef.current.setFieldsValue({
+                data: response.parsePayload.map((item) => ({
+                  ...item,
+                  birth_date: item.birth_date && moment(item.birth_date),
+                })),
+              });
+              setFiles({ ...response.parsePayload.map(item => ({ files: Helper.isJSON(item.file_image) ? JSON.parse(item.file_image) : [] })) });
+            }
+          },
+        });
         dispatch({
           type: 'crmSaleAdmissionAdd/GET_DISTRICTS',
           payload: {},
@@ -84,18 +87,27 @@ const General = memo(
      * @param {object} values values of form
      */
     const onFinish = () => {
-      formInput.current.validateFields().then((values) => {
+      formRef.current.validateFields().then((values) => {
+        const items = values.data.map((item, index) => ({
+          ...item,
+          file_image: files[index]?.files ? JSON.stringify(files[index].files) : undefined,
+          birth_date: Helper.getDateTime({
+            value: Helper.setDate({
+              ...variables.setDateData,
+              originValue: item.birth_date,
+            }),
+            format: variables.DATE_FORMAT.DATE_AFTER,
+            isUTC: false,
+          }),
+          admission_register_id: params.id,
+        }));
+        const payload = {
+          createRows: items.filter((item) => !item.id),
+          updateRows: items.filter((item) => item.id),
+        };
         dispatch({
           type: 'crmSaleAdmissionAdd/ADD_PARENTS',
-          payload: {
-            updateRows: [{
-              ...values,
-              file_image: JSON.stringify(files),
-              customer_lead_id: "",
-              admission_register_id: params.id,
-              status: true
-            }]
-          },
+          payload,
           callback: (response, error) => {
             if (error) {
               if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -120,25 +132,32 @@ const General = memo(
     }, []);
 
     useEffect(() => {
-      if (!isEmpty(details) && params.id) {
+      if (params.id) {
         formRef.current.setFieldsValue({
           ...details,
           ...head(details.positionLevel),
-          startDate:
-            head(details.positionLevel)?.startDate &&
-            moment(head(details.positionLevel)?.startDate),
           birth_date: details.birth_date && moment(details.birth_date),
-          dateOfIssueIdCard: details.dateOfIssueIdCard && moment(details.dateOfIssueIdCard),
-          dateOff: details.dateOff && moment(details.dateOff),
         });
-        if (Helper.isJSON(details?.file_image)) {
-          mountedSet(setFiles, JSON.parse(details?.file_image));
-        }
       }
     }, [details]);
 
-    const uploadFiles = (file) => {
-      mountedSet(setFiles, (prev) => [...prev, file]);
+    const uploadFiles = (file, index) => {
+      mountedSet(setFiles, (prev) => ({
+        ...prev,
+        [index]: {
+          files: prev[index]?.files ? [...prev[index].files, file] : [file],
+        },
+      }));
+    };
+
+
+    const removeFiles = (file, index) => {
+      mountedSet(setFiles, (prev) => ({
+        ...prev,
+        [index]: {
+          files: file,
+        },
+      }));
     };
 
     return (
@@ -162,14 +181,17 @@ const General = memo(
                 <Pane className="card">
                   <div className="row">
                     <div className="col-lg-12" >
-
-                      {parents.map((item, index) =>
-                        <div key={index}> {item.sex === 'MALE' ?
+                      <Form.List name="data">
+                        {(fields, { add }) => (
                           <>
-                            <Form.List name="data" >
-                              {(fields,) => (
-                                <div className="border-bottom">
-                                  {fields.map((field) => (
+                            {fields.map((field, index) => {
+                              let file = {};
+                              const data = formRef?.current?.getFieldsValue();
+                              const itemData = data?.data?.find((item, indexWater) => indexWater === index);
+                              file = parents.find((item) => item.id === itemData?.id);
+                              return (
+                                <>
+                                  {file?.status === false ?
                                     <Pane
                                       key={field.key}
                                       style={{ padding: 20 }}
@@ -178,19 +200,18 @@ const General = memo(
                                         Thông tin phụ huynh
                                       </Heading>
                                       <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                        Thông tin Cha
+                                        {file?.sex === "MALE" ? 'THÔNG TIN CHA' : ""}
+                                        {file?.sex === "FEMALE" ? 'THÔNG TIN MẸ' : ""}
+                                        {file?.sex === "OTHER" ? 'THÔNG TIN KHÁC' : ""}
                                       </Heading>
 
                                       <Pane className="row">
                                         <Pane className="col">
-                                          <Form.Item name="file_image" label="Hình ảnh phụ huynh">
-                                            <MultipleImageUpload
-                                              files={files}
-                                              callback={(files) => uploadFiles(files)}
-                                              removeFiles={(files) => mountedSet(setFiles, files)}
-                                              disabled
-                                            />
-                                          </Form.Item>
+                                          <MultipleImageUpload
+                                            // callback={(event) => uploadFiles(event, index)}
+                                            removeFiles={(event) => removeFiles(event, index)}
+                                            files={files[index]?.files || []}
+                                          />
                                         </Pane>
                                       </Pane>
 
@@ -223,7 +244,6 @@ const General = memo(
                                             placeholder="Chọn"
                                             type={variables.SELECT}
                                             label="Giới tính"
-                                            rules={[variables.RULES.EMPTY_INPUT]}
                                             disabled
                                           />
                                         </Pane>
@@ -232,7 +252,6 @@ const General = memo(
                                             name={[field.name, 'email']}
                                             label="Email"
                                             type={variables.INPUT}
-                                            rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
                                             disabled
                                           />
                                         </Pane>
@@ -241,7 +260,6 @@ const General = memo(
                                             name={[field.name, 'phone']}
                                             label="Số điện thoại"
                                             type={variables.INPUT}
-                                            rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
                                             disabled
                                           />
                                         </Pane>
@@ -259,7 +277,6 @@ const General = memo(
                                             name={[field.name, 'address']}
                                             label="Địa chỉ"
                                             type={variables.INPUT}
-                                            rules={[variables.RULES.EMPTY_INPUT]}
                                             disabled
                                           />
                                         </Pane>
@@ -271,7 +288,6 @@ const General = memo(
                                             placeholder="Chọn"
                                             type={variables.SELECT}
                                             label="Thuộc tỉnh thành"
-                                            rules={[variables.RULES.EMPTY_INPUT]}
                                             disabled
                                           />
                                         </Pane>
@@ -283,7 +299,6 @@ const General = memo(
                                             placeholder="Chọn"
                                             type={variables.SELECT}
                                             label="Thuộc quận huyện"
-                                            rules={[variables.RULES.EMPTY_INPUT]}
                                             disabled
                                           />
                                         </Pane>
@@ -315,191 +330,25 @@ const General = memo(
                                       </Pane>
 
                                     </Pane>
-                                  ))}
-                                </div>
-                              )}
-                            </Form.List>
-                          </>
-                          :
-                          <Form
-                            layout="vertical"
-                            initialValues={{
-                              data: [
-                                {
-                                  ...params,
-                                  birth_date: params.birth_date && moment(params.birth_date),
-                                },
-                              ],
-                            }}
-                            ref={formInput}
-                            onFinish={onFinish}
-                          >
-                            <div className="border-bottom">
-                              <div className="p20">
-                                <Heading type="form-title" style={{ marginBottom: 20 }}>
-                                  Thông tin phụ huynh
-                                </Heading>
-                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                  Thông tin Cha
-                                </Heading>
-                                <Pane className="row">
-                                  <Pane className="col">
-                                    <Form.Item name="file_image" label="Hình ảnh phụ huynh">
-                                      <MultipleImageUpload
-                                        files={files}
-                                        callback={(files) => uploadFiles(files)}
-                                        removeFiles={(files) => mountedSet(setFiles, files)}
-                                      />
-                                    </Form.Item>
-                                  </Pane>
-                                </Pane>
-                                <Pane className="row" {...marginProps}>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="full_name"
-                                      label="Họ và tên"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="birth_date"
-                                      label="Ngày sinh"
-                                      type={variables.DATE_PICKER}
-                                      rules={[variables.RULES.EMPTY]}
-                                      disabledDate={(current) => current > moment()}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="sex"
-                                      data={[{ id: 'MALE', name: 'Nam' },]}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Giới tính"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="email"
-                                      label="Email"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="phone"
-                                      label="Số điện thoại"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="other_phone"
-                                      label="Số điện thoại Khác"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.PHONE]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="address"
-                                      label="Địa chỉ"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="city_id"
-                                      data={city}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc tỉnh thành"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                      onChange={onChangeCity}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="district_id"
-                                      data={district}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc quận huyện"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="facebook" label="Facebook" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="zalo" label="Zalo" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="skype" label="Skype" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="instagram" label="Instagram" type={variables.INPUT} />
-                                  </Pane>
-                                </Pane>
-                                <Pane className="row" {...marginProps}>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="name_company" label="Tên công ty" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="address_company" label="Địa chỉ công ty" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="phone_company" label="Số điện thoại" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="career" label="Nghề nghiệp " type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="facility_id"
-                                      data={city}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc tỉnh thành"
-                                    />
-                                  </Pane>
-                                </Pane>
-                              </div>
-                            </div>
-                          </Form>
-                        }
-                          {item.sex === 'FEMALE' ?
-                            <>
-                              <Form.List name="data">
-                                {(fields) => (
-                                  <div>
-                                    {fields.map((field) => (
+                                    :
+                                    <>
                                       <Pane
                                         key={field.key}
                                         style={{ padding: 20 }}
                                       >
                                         <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                          Thông tin Mẹ
+                                          {file?.sex === "MALE" ? 'THÔNG TIN CHA' : ""}
+                                          {file?.sex === "FEMALE" ? 'THÔNG TIN MẸ' : ""}
+                                          {file?.sex === "OTHER" ? 'THÔNG TIN KHÁC' : ""}
                                         </Heading>
 
                                         <Pane className="row">
                                           <Pane className="col">
-                                            <Form.Item name="file_image" label="Hình ảnh phụ huynh">
+                                            <Form.Item name={[field.key, 'file_image']} label="Hình ảnh phụ huynh">
                                               <MultipleImageUpload
-                                                files={files}
-                                                callback={(files) => uploadFiles(files)}
-                                                removeFiles={(files) => mountedSet(setFiles, files)}
-                                                disabled
+                                                callback={(event) => uploadFiles(event, index)}
+                                                removeFiles={(event) => removeFiles(event, index)}
+                                                files={files[index]?.files || []}
                                               />
                                             </Form.Item>
                                           </Pane>
@@ -512,7 +361,7 @@ const General = memo(
                                               name={[field.name, 'full_name']}
                                               fieldKey={[field.fieldKey, 'full_name']}
                                               type={variables.INPUT}
-                                              disabled
+                                              rules={[variables.RULES.EMPTY_INPUT]}
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -521,7 +370,7 @@ const General = memo(
                                               label="Ngày sinh"
                                               fieldKey={[field.fieldKey, 'birth_date']}
                                               type={variables.DATE_PICKER}
-                                              disabled
+
                                             />
                                           </Pane>
 
@@ -535,7 +384,7 @@ const General = memo(
                                               type={variables.SELECT}
                                               label="Giới tính"
                                               rules={[variables.RULES.EMPTY_INPUT]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -544,7 +393,7 @@ const General = memo(
                                               label="Email"
                                               type={variables.INPUT}
                                               rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -553,7 +402,7 @@ const General = memo(
                                               label="Số điện thoại"
                                               type={variables.INPUT}
                                               rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -562,7 +411,7 @@ const General = memo(
                                               label="Số điện thoại Khác"
                                               type={variables.INPUT}
                                               rules={[variables.RULES.PHONE]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -571,7 +420,7 @@ const General = memo(
                                               label="Địa chỉ"
                                               type={variables.INPUT}
                                               rules={[variables.RULES.EMPTY_INPUT]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -583,7 +432,7 @@ const General = memo(
                                               type={variables.SELECT}
                                               label="Thuộc tỉnh thành"
                                               rules={[variables.RULES.EMPTY_INPUT]}
-                                              disabled
+                                              onChange={onChangeCity}
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
@@ -595,200 +444,58 @@ const General = memo(
                                               type={variables.SELECT}
                                               label="Thuộc quận huyện"
                                               rules={[variables.RULES.EMPTY_INPUT]}
-                                              disabled
+
                                             />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'facebook']} label="Facebook" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'facebook']} label="Facebook" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'zalo']} label="Zalo" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'zalo']} label="Zalo" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'skype']} label="Skype" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'skype']} label="Skype" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'instagram']} label="Instagram" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'instagram']} label="Instagram" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'name_company']} label="Tên công ty" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'name_company']} label="Tên công ty" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'address_company']} label="Địa chỉ công ty" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'address_company']} label="Địa chỉ công ty" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'phone_company']} label="Số điện thoại" type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'phone_company']} label="Số điện thoại" type={variables.INPUT} />
                                           </Pane>
                                           <Pane className="col-lg-4">
-                                            <FormItem name={[field.name, 'career']} label="Nghề nghiệp " type={variables.INPUT} disabled />
+                                            <FormItem name={[field.name, 'career']} label="Nghề nghiệp " type={variables.INPUT} />
                                           </Pane>
 
                                         </Pane>
 
                                       </Pane>
-                                    ))}
-                                  </div>
-                                )}
-                              </Form.List>
-                            </>
-                            :
-                            <Form
-                              layout="vertical"
-                              initialValues={{
-                                data: [
-                                  {
-                                    ...params,
-                                    birth_date: params.birth_date && moment(params.birth_date),
-                                  },
-                                ],
-                              }}
-                              ref={formInput}
-                              onFinish={onFinish}
-                            >
-                              <div className="p20">
-                                <Heading type="form-title" style={{ marginBottom: 20 }}>
-                                  Thông tin phụ huynh
-                                </Heading>
-                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                  Thông tin Mẹ
-                                </Heading>
-                                <Pane className="row">
-                                  <Pane className="col">
-                                    <Form.Item name="file_image" label="Hình ảnh phụ huynh">
-                                      <MultipleImageUpload
-                                        files={files}
-                                        callback={(files) => uploadFiles(files)}
-                                        removeFiles={(files) => mountedSet(setFiles, files)}
-                                      />
-                                    </Form.Item>
-                                  </Pane>
-                                </Pane>
-                                <Pane className="row" {...marginProps}>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="full_name"
-                                      label="Họ và tên"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="birth_date"
-                                      label="Ngày sinh"
-                                      type={variables.DATE_PICKER}
-                                      rules={[variables.RULES.EMPTY]}
-                                      disabledDate={(current) => current > moment()}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="sex"
-                                      data={[{ id: 'FEMALE', name: 'Nữ' },]}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Giới tính"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="email"
-                                      label="Email"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY, variables.RULES.EMAIL]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="phone"
-                                      label="Số điện thoại"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY, variables.RULES.PHONE]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="other_phone"
-                                      label="Số điện thoại Khác"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.PHONE]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      name="address"
-                                      label="Địa chỉ"
-                                      type={variables.INPUT}
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="city_id"
-                                      data={city}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc tỉnh thành"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                      onChange={onChangeCity}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="district_id"
-                                      data={district}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc quận huyện"
-                                      rules={[variables.RULES.EMPTY_INPUT]}
-                                    />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="facebook" label="Facebook" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="zalo" label="Zalo" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="skype" label="Skype" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="instagram" label="Instagram" type={variables.INPUT} />
-                                  </Pane>
-                                </Pane>
-                                <Pane className="row" {...marginProps}>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="name_company" label="Tên công ty" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="address_company" label="Địa chỉ công ty" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="phone_company" label="Số điện thoại" type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem name="career" label="Nghề nghiệp " type={variables.INPUT} />
-                                  </Pane>
-                                  <Pane className="col-lg-4">
-                                    <FormItem
-                                      options={['id', 'name']}
-                                      name="facility_id"
-                                      data={city}
-                                      placeholder="Chọn"
-                                      type={variables.SELECT}
-                                      label="Thuộc tỉnh thành"
-                                    />
-                                  </Pane>
-                                </Pane>
-                              </div>
-                            </Form>
-                          }
-                        </div>
-                      )}
+                                    </>
+                                  }
+                                </>
+
+                              );
+                            })}
+                            <Pane className="pl20 pb20" >
+                              <Button
+                                color="success"
+                                ghost
+                                icon="plus"
+                                onClick={() => {
+                                  add();
+                                }}
+                              >
+                                Thêm thông tin
+                              </Button>
+                            </Pane>
+                          </>
+                        )}
+                      </Form.List>
                     </div>
                   </div>
                 </Pane>
@@ -804,10 +511,10 @@ const General = memo(
                   </Button>
                 </Pane>
               </Pane>
-            </Pane>
-          </Form>
-        </Pane>
-      </Pane>
+            </Pane >
+          </Form >
+        </Pane >
+      </Pane >
     );
   },
 );
@@ -817,9 +524,6 @@ General.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-  branches: PropTypes.arrayOf(PropTypes.any),
-  classes: PropTypes.arrayOf(PropTypes.any),
   city: PropTypes.arrayOf(PropTypes.any),
   district: PropTypes.arrayOf(PropTypes.any),
   parents: PropTypes.arrayOf(PropTypes.any),
@@ -830,9 +534,6 @@ General.defaultProps = {
   details: {},
   dispatch: () => { },
   loading: {},
-  error: {},
-  branches: [],
-  classes: [],
   city: [],
   district: [],
   parents: [],
