@@ -125,6 +125,15 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function createAi(array $attributes)
     {
+        if ($attributes['event_code'] == 'UPDATE_VIDEO') {
+            $event = $this->model()::where('track_id', $attributes['track_id'])->first();
+            if (!is_null($event) && !empty($attributes['video_path'])) {
+                $event->addMediaFromDisk($attributes['video_path'])->preservingOriginal()->toMediaCollection('video');
+            }
+
+            return parent::find($event->id);
+        }
+
         $camera = Camera::find($attributes['camera_id']);
         $attributes['tourist_destination_id'] = $camera->tourist_destination_id;
 
