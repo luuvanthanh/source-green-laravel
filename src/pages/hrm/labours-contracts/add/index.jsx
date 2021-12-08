@@ -14,7 +14,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
 import PropTypes from 'prop-types';
- 
+
 const { TabPane } = Tabs;
 let isMounted = true;
 /**
@@ -49,7 +49,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       parameterValues: [],
-      disabledInput: false,
+      typeContract: null,
     };
     setIsMounted(true);
   }
@@ -79,25 +79,17 @@ class Index extends PureComponent {
       details,
       match: { params },
     } = this.props;
-    const { contractTypes } = this.props;
-    const itemContract = contractTypes.find((item) => item.id === details.typeOfContractId);
-    if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
-      if (itemContract?.code === 'VTH') {
-        this.setStateData({
-          disabledInput: true,
-        });
-      } else {
-        this.setStateData({
-          disabledInput: false,
-        });
-      }
+    if (details !== prevProps.details && !isEmpty(details) && params?.id) {
+      this.setStateData({
+        typeContract: details?.typeOfContract?.code,
+      });
       this.formRef.current.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
         contractFrom: details.contractFrom && moment(details.contractFrom),
         contractTo: details.contractTo && moment(details.contractTo),
       });
-      this.setparameterValues(
+      this.setParameterValues(
         details.parameterValues.map((item) => ({
           ...item,
           valueDefault: item.pivot.value,
@@ -121,7 +113,7 @@ class Index extends PureComponent {
     this.setState(state, callback);
   };
 
-  setparameterValues = (parameterValues) => {
+  setParameterValues = (parameterValues) => {
     this.setStateData({
       parameterValues: parameterValues.map((item, index) => ({ ...item, index })),
     });
@@ -144,25 +136,13 @@ class Index extends PureComponent {
   changeContract = (value) => {
     const { contractTypes } = this.props;
     const itemContract = contractTypes.find((item) => item.id === value);
-    if (itemContract?.code !== 'VTH') {
-      this.setStateData({
-        parameterValues: itemContract.parameterValues.map((item, index) => ({
-          index,
-          ...item,
-        })),
-        disabledInput: false,
-      });
-      this.formRef.current.setFieldsValue({
-        month: toString(itemContract.month),
-      });
-    } else {
-      this.setStateData({
-        disabledInput: true,
-      });
-      this.formRef.current.setFieldsValue({
-        month: 0,
-      });
-    }
+    this.setStateData({
+      disabledInput: true,
+      typeContract: itemContract?.code,
+    });
+    this.formRef.current.setFieldsValue({
+      month: itemContract?.code !== 'VTH' ? 0 : toString(itemContract.month),
+    });
   };
 
   formUpdate = (value, values) => {
@@ -170,8 +150,7 @@ class Index extends PureComponent {
 
     if (moment.isMoment(contractFrom)) {
       this.formRef?.current?.setFieldsValue({
-        contractTo: moment(contractFrom)
-          .add(month || 0, 'months')
+        contractTo: moment(contractFrom).add(month || 0, 'months'),
       });
     }
   };
@@ -350,7 +329,7 @@ class Index extends PureComponent {
       loading: { effects },
       match: { params },
     } = this.props;
-    const { parameterValues, disabledInput } = this.state;
+    const { parameterValues, typeContract } = this.state;
     const loading =
       effects['laboursContractsAdd/GET_CATEGORIES'] ||
       effects['laboursContractsAdd/GET_DETAILS'] ||
@@ -421,15 +400,18 @@ class Index extends PureComponent {
                 </div>
 
                 <div className="row">
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Số tháng hợp đồng"
-                      name="month"
-                      type={variables.INPUT_COUNT}
-                      rules={[variables.RULES.EMPTY]}
-                      disabled={disabledInput}
-                    />
-                  </div>
+                  {typeContract !== 'VTH' && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Số tháng hợp đồng"
+                        name="month"
+                        type={variables.INPUT_COUNT}
+                        rules={[variables.RULES.EMPTY]}
+                        disabled={typeContract === 'VTH'}
+                      />
+                    </div>
+                  )}
+
                   <div className="col-lg-4">
                     <FormItem
                       data={categories.divisions}
@@ -450,15 +432,17 @@ class Index extends PureComponent {
                       rules={[variables.RULES.EMPTY]}
                     />
                   </div>
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Thời hạn HĐ đến"
-                      name="contractTo"
-                      type={variables.DATE_PICKER}
-                      rules={[variables.RULES.EMPTY]}
-                      disabled
-                    />
-                  </div>
+                  {typeContract !== 'VTH' && (
+                    <div className="col-lg-4">
+                      <FormItem
+                        label="Thời hạn HĐ đến"
+                        name="contractTo"
+                        type={variables.DATE_PICKER}
+                        rules={[variables.RULES.EMPTY]}
+                        disabled
+                      />
+                    </div>
+                  )}
                   <div className="col-lg-4">
                     <FormItem
                       data={categories.positions}
