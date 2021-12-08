@@ -120,23 +120,6 @@ const Index = memo(() => {
     });
   };
 
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  const onRemove = (id) => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'HRMusersAdd/REMOVE',
-          payload: {
-            id,
-          },
-        });
-      },
-    });
-  };
-
   const onChange = (e, record) => {
     dispatch({
       type: 'HRMusersAdd/UPDATE_CHILDREN',
@@ -150,6 +133,23 @@ const Index = memo(() => {
         ],
       },
       callback: () => {},
+    });
+  };
+
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+   const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'HRMusersAdd/REMOVE_CHILDREN',
+          payload: {
+            id,
+          },
+        });
+      },
     });
   };
 

@@ -63,6 +63,23 @@ const Index = memo(() => {
     }
   };
 
+  /**
+   * Function remove items
+   * @param {uid} id id of items
+   */
+   const onRemove = (id) => {
+    Helper.confirmAction({
+      callback: () => {
+        dispatch({
+          type: 'HRMusersAdd/REMOVE_INSURRANCES',
+          payload: {
+            id,
+          },
+        });
+      },
+    });
+  };
+
   const save = () => {
     formRefModal.current.validateFields().then((values) => {
       dispatch({
@@ -94,23 +111,6 @@ const Index = memo(() => {
           }
         },
       });
-    });
-  };
-
-  /**
-   * Function remove items
-   * @param {uid} id id of items
-   */
-  const onRemove = (id) => {
-    Helper.confirmAction({
-      callback: () => {
-        dispatch({
-          type: 'HRMusersAdd/REMOVE',
-          payload: {
-            id,
-          },
-        });
-      },
     });
   };
 
