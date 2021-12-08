@@ -6,6 +6,7 @@ export function getData(params) {
     method: 'GET',
     params: {
       ...params,
+      orderBy: 'created_at',
       include: Helper.convertIncludes([
         'configMedicalDeclareDetail',
       ]),

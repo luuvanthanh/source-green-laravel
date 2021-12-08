@@ -131,6 +131,10 @@ const General = memo(
         type: 'crmSaleAdmissionAdd/GET_EMPLOYEES',
         payload: {},
       });
+    }, []);
+
+    useEffect(() => {
+     if (params.id) {
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_TEST_INPUT',
         payload: { admission_register_id: params.id },
@@ -148,7 +152,8 @@ const General = memo(
           }
         },
       });
-    }, []);
+    }
+    }, [params.id]);
 
     useEffect(() => {
       mounted.current = true;

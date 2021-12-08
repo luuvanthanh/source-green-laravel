@@ -13,7 +13,7 @@ import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
 import PropTypes from 'prop-types';
 import Table from '@/components/CommonComponent/Table';
 import AvatarTable from '@/components/CommonComponent/AvatarTable';
- 
+
 const { TabPane } = Tabs;
 let isMounted = true;
 /**
@@ -143,7 +143,7 @@ class Index extends PureComponent {
 
   onSetParamaterValuesContract = (item) => {
     this.setStateData({
-      paramaterValuesContract: item.detail,
+      paramaterValuesContract: item || [],
     });
   };
 
@@ -286,7 +286,9 @@ class Index extends PureComponent {
       paramaterValuesContract: [
         ...(value
           ? value.map((item) => {
-              const itemParamaterValues = categories.paramaterContract.find(({ id }) => id === item);
+              const itemParamaterValues = categories.paramaterContract.find(
+                ({ id }) => id === item,
+              );
               return itemParamaterValues;
             })
           : []),
@@ -457,24 +459,26 @@ class Index extends PureComponent {
         ),
       },
     ];
-    const columnsMerge = paramaterValuesContract.map((item) => ({
-      title: item.name,
-      key: item.code,
-      className: 'min-width-200',
-      width: 200,
-      render: (record) => {
-        const itemParamater = record?.detail?.find((itemDetail) => itemDetail.id === item.id);
-        return (
-          <InputNumber
-            className={classnames('input-number', styles['input-number-container'])}
-            formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
-            placeholder="Nhập"
-            value={itemParamater?.value || 0}
-            onChange={(value) => this.onChangeNumberContract(value, record, item)}
-          />
-        );
-      },
-    }));
+    
+    const columnsMerge = isEmpty(paramaterValuesContract) ? paramaterValuesContract?.map((item) => ({
+          title: item.name,
+          key: item.code,
+          className: 'min-width-200',
+          width: 200,
+          render: (record) => {
+            const itemParamater = record?.detail?.find((itemDetail) => itemDetail.id === item.id);
+            return (
+              <InputNumber
+                className={classnames('input-number', styles['input-number-container'])}
+                formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
+                placeholder="Nhập"
+                value={itemParamater?.value || 0}
+                onChange={(value) => this.onChangeNumberContract(value, record, item)}
+              />
+            );
+          },
+        })) : [];
+
     return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
   };
 

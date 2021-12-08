@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Form, Checkbox } from 'antd';
+import { Form } from 'antd';
 import { isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
 import { useSelector, useDispatch } from 'dva';
@@ -8,22 +8,19 @@ import { variables } from '@/utils';
 import Text from '@/components/CommonComponent/Text';
 import Heading from '@/components/CommonComponent/Heading';
 import classnames from 'classnames';
+import { DeleteOutlined } from '@ant-design/icons';
 import Pane from '@/components/CommonComponent/Pane';
 import Button from '@/components/CommonComponent/Button';
 import FormItem from '@/components/CommonComponent/FormItem';
 import stylesModule from './styles.module.scss';
 
-const genders = [
-    { id: 'RADIO', name: 'Radio button' },
-    { id: 'CHECKBOX', name: 'Checkbox' },
-];
 const Index = memo(() => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
 
     const mounted = useRef(false);
-    const [checkbox, setCheckbox] = useState(false);
-    // const [deleteRows, setDeleteRows] = useState([]);
+    const [deleteRows, setDeleteRows] = useState([]);
+
     const {
         loading,
         details,
@@ -37,30 +34,28 @@ const Index = memo(() => {
     const onFinish = (values) => {
         const items = values.data.map((item) => ({
             ...item,
-            detail: item.configMedicalDeclareDetail.map((a) => ({ name: a.name }))
         }));
         const payload = {
-            createRows: items.filter((item) => !item.id),
-            updateRows: items.filter((item) => item.id),
+            create_rows: items.filter((item) => !item.id),
+            update_rows: items.filter((item) => item.id),
+            delete_rows: deleteRows,
         };
         dispatch({
             type: 'crmDeclaration/ADD',
             payload,
             callback: (response, error) => {
                 if (response) {
-                    useEffect(() => {
-                        dispatch({
-                            type: 'crmDeclaration/GET_DATA',
-                            payload: {},
-                            callback: (response) => {
-                                if (response) {
-                                    form.setFieldsValue({
-                                        data: response.parsePayload,
-                                    });
-                                }
-                            },
-                        });
-                    }, []);
+                    dispatch({
+                        type: 'crmDeclaration/GET_DATA',
+                        payload: {},
+                        callback: (response) => {
+                            if (response) {
+                                form.setFieldsValue({
+                                    data: response.parsePayload,
+                                });
+                            }
+                        },
+                    });
                 }
                 if (error) {
                     if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
@@ -92,10 +87,6 @@ const Index = memo(() => {
         });
     }, []);
 
-    const onChange = (e) => {
-        setCheckbox(e.target.checked);
-    };
-
     useEffect(() => {
         mounted.current = true;
         return mounted.current;
@@ -126,11 +117,11 @@ const Index = memo(() => {
                                     styles['heading-container'],
                                 )}
                             >
-                                <Text color="dark">Thông tin cấu hình</Text>
+                                <Text color="dark">Thông tin cấu hình khai báo y tế</Text>
                             </Pane>
                             <Pane className="row">
                                 <Form.List name="data">
-                                    {(fields, { add }) => (
+                                    {(fields, { add, remove }) => (
                                         <>
                                             {fields.map((field, index) => {
                                                 let file = {};
@@ -140,114 +131,65 @@ const Index = memo(() => {
                                                 return (
                                                     <>
                                                         <Pane className="offset-lg-12 col-lg-12 border-top pt15" key={field.key}>
-                                                            <Heading type="form-block-title" style={{ marginBottom: 12 }}>
-                                                                Học sinh {index + 1}
-                                                            </Heading>
+                                                            <Pane className={stylesModule['wrapper-content']}>
+                                                                <Heading type="form-block-title" style={{ marginBottom: 12 }}>
+                                                                    Thông tin {index + 1}
+                                                                </Heading>
+                                                                <Pane className="d-flex">
+                                                                    <Pane className={stylesModule.btn}>
+                                                                        <FormItem
+                                                                            valuePropName="checked"
+                                                                            label="Sử dụng"
+                                                                            name={[field.name, 'use']}
+                                                                            fieldKey={[field.fieldKey, 'use']}
+                                                                            type={variables.SWITCH}
+                                                                        />
+                                                                    </Pane>
+                                                                    {fields.length > 0 && (
+                                                                        <DeleteOutlined
+                                                                            className={stylesModule.delete}
+                                                                            onClick={(e) => {
+                                                                                setDeleteRows((prev) => [...prev, file.id]);
+                                                                                remove(index);
+                                                                                e.stopPropagation();
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </Pane>
+                                                            </Pane>
                                                             <Pane className="card">
                                                                 <Pane >
-                                                                    <>
-                                                                        <Pane className="row">
-                                                                            <Pane className="col-lg-12">
-                                                                                <FormItem
-                                                                                    label="Tên thông tin"
-                                                                                    name={[field.name, 'name']}
-                                                                                    fieldKey={[field.fieldKey, 'name']}
-                                                                                    type={variables.INPUT}
-                                                                                    rules={[variables.RULES.EMPTY]}
-                                                                                />
-                                                                            </Pane>
-                                                                            <Pane className="col-lg-6">
-                                                                                <FormItem
-                                                                                    label="Loại khai báo"
-                                                                                    name={[field.name, 'type']}
-                                                                                    fieldKey={[field.fieldKey, 'type']}
-                                                                                    data={genders}
-                                                                                    type={variables.SELECT}
-                                                                                />
-                                                                            </Pane>
-                                                                            <Pane className="col-lg-12">
-                                                                                <h4 className={stylesModule['wrapper-title']}>Chi tiết</h4>
-                                                                                <div className={stylesModule['wrapper-table']}>
-                                                                                    <h3 className={stylesModule.title}>Tên checkbox</h3>
-                                                                                    <Form.List label="Chi tiết" name={[field.name, 'configMedicalDeclareDetail']} fieldKey={[field.fieldKey, 'configMedicalDeclareDetail']}>
-                                                                                        {(fields, { add, remove }) => (
-                                                                                            <Pane>
-                                                                                                {fields.map((fieldItem, index) => (
-                                                                                                    <Pane
-                                                                                                        key={index}
-                                                                                                        className="d-flex mt20 border-bottom"
-                                                                                                    >
-                                                                                                        <Pane className="col-lg-11">
-                                                                                                            <FormItem
-                                                                                                                className={stylesModule.item}
-                                                                                                                fieldKey={[fieldItem.fieldKey, 'name']}
-                                                                                                                name={[fieldItem.name, 'name']}
-                                                                                                                type={variables.INPUT}
-                                                                                                            />
-                                                                                                        </Pane>
-                                                                                                        <Pane className="col-lg-1">
-                                                                                                            {fields.length > 0 && (
-                                                                                                                <div className={stylesModule.delete}>
-                                                                                                                    <span
-                                                                                                                        className="icon icon-remove"
-                                                                                                                        role="presentation"
-                                                                                                                        onClick={() => {
-                                                                                                                            remove(index);
-                                                                                                                        }}
-                                                                                                                    />
-                                                                                                                </div>
-                                                                                                            )}
-                                                                                                        </Pane>
-                                                                                                    </Pane>
-                                                                                                ))}
-                                                                                                <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer">
-                                                                                                    <span
-                                                                                                        onClick={() => add()}
-                                                                                                        role="presentation"
-                                                                                                        className={stylesModule.add}
-                                                                                                    >
-                                                                                                        <span className="icon-plus-circle mr5" />
-                                                                                                        Thêm
-                                                                                                    </span>
-                                                                                                </Pane>
-                                                                                            </Pane>
-                                                                                        )}
-                                                                                    </Form.List>
-                                                                                </div>
-                                                                            </Pane>
-                                                                            {file?.text_box ?
-                                                                                <>
-                                                                                    <Pane className="col-lg-12 pt20 pb10">
-                                                                                        <Checkbox defaultChecked >Thêm textbox mô tả</Checkbox>
-                                                                                    </Pane>
-                                                                                    <Pane className="col-lg-12">
-                                                                                        <FormItem
-                                                                                            label="Text box"
-                                                                                            name={[field.name, 'text_box']}
-                                                                                            fieldKey={[field.fieldKey, 'text_box']}
-                                                                                            type={variables.INPUT}
-                                                                                            rules={[variables.RULES.EMPTY]}
-                                                                                        />
-                                                                                    </Pane>
-                                                                                </>
-                                                                                :
-                                                                                <Pane className="col-lg-12 pt20 pb10">
-                                                                                    <Checkbox onChange={onChange}>Thêm textbox mô tả</Checkbox>
-                                                                                </Pane>
-                                                                            }
-                                                                            {checkbox ?
-                                                                                <Pane className="col-lg-12">
-                                                                                    <FormItem
-                                                                                        label="Tên textbox"
-                                                                                        name={[field.name, 'text_box']}
-                                                                                        fieldKey={[field.fieldKey, 'text_box']}
-                                                                                        type={variables.INPUT}
-                                                                                    />
-                                                                                </Pane>
-                                                                                : ""
-                                                                            }
+                                                                    <Pane className="row">
+                                                                        <Pane className="col-lg-12">
+                                                                            <FormItem
+                                                                                label="Tên thông tin"
+                                                                                name={[field.name, 'name']}
+                                                                                fieldKey={[field.fieldKey, 'name']}
+                                                                                type={variables.INPUT}
+                                                                                rules={[variables.RULES.EMPTY]}
+                                                                            />
                                                                         </Pane>
-                                                                    </>
+                                                                        <Pane className="col-lg-12">
+                                                                            <FormItem
+                                                                                className="checkbox-row checkbox-small"
+                                                                                label="Hiển thị câu trả lời Có/ Không"
+                                                                                name={[field.name, 'use_yes_or_no']}
+                                                                                fieldKey={[field.fieldKey, 'use_yes_or_no']}
+                                                                                type={variables.CHECKBOX_FORM}
+                                                                                valuePropName="checked"
+                                                                            />
+                                                                        </Pane>
+                                                                        <Pane className="col-lg-12">
+                                                                            <FormItem
+                                                                                className="checkbox-row checkbox-small"
+                                                                                label="Hiển thị text box mô tả khác"
+                                                                                name={[field.name, 'use_input']}
+                                                                                fieldKey={[field.fieldKey, 'use_input']}
+                                                                                type={variables.CHECKBOX_FORM}
+                                                                                valuePropName="checked"
+                                                                            />
+                                                                        </Pane>
+                                                                    </Pane>
                                                                 </Pane>
                                                             </Pane>
                                                         </Pane>

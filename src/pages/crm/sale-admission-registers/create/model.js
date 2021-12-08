@@ -14,6 +14,7 @@ export default {
     district: [],
     parents: [],
     student: [],
+    relationships: [],
     error: {
       isError: false,
       data: {},
@@ -70,6 +71,10 @@ export default {
       ...state,
       details: payload.parsePayload,
       testInputs: payload.parsePayload,
+    }),
+    SET_RELATIONSHIPS: (state, { payload }) => ({
+      ...state,
+      relationships: payload.parsePayload,
     }),
   },
   effects: {
@@ -242,6 +247,20 @@ export default {
         callback(response);
         yield saga.put({
           type: 'SET_TEST_INPUT',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_RELATIONSHIPS({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getRelationships, payload);
+        yield saga.put({
+          type: 'SET_RELATIONSHIPS',
           payload: response,
         });
       } catch (error) {

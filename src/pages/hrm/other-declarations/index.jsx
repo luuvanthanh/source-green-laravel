@@ -68,7 +68,7 @@ class Index extends PureComponent {
   componentWillUnmount() {
     setIsMounted(false);
   }
-
+ 
   /**
    * Set state properties
    * @param {object} data the data input

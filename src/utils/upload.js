@@ -4,7 +4,7 @@ const allowImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
 const allowVideoTypes = ['video/mp4'];
 
-const warningType = 'Định dạng hình ảnh thuộc loại .JPG, .PNG';
+const warningType = 'Định dạng hình ảnh thuộc loại .JPG, .PNG .Hãy chọn file đúng định dạng yêu cầu';
 
 const maxSize = 5 * 2 ** 20; // 5 mB
 
