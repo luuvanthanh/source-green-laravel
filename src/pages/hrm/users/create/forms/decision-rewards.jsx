@@ -131,6 +131,14 @@ const Index = memo(() => {
           payload: {
             id,
           },
+          callback: (response) => {
+            if(response) {
+              dispatch({
+                type: 'HRMusersAdd/GET_DECISION_REWARDS',
+                payload: params,
+              });
+            }
+          }
         });
       },
     });
