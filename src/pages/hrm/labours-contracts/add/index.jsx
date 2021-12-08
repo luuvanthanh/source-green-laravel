@@ -14,7 +14,7 @@ import Loading from '@/components/CommonComponent/Loading';
 import Table from '@/components/CommonComponent/Table';
 import Select from '@/components/CommonComponent/Select';
 import PropTypes from 'prop-types';
-
+ 
 const { TabPane } = Tabs;
 let isMounted = true;
 /**
@@ -154,7 +154,6 @@ class Index extends PureComponent {
       });
       this.formRef.current.setFieldsValue({
         month: toString(itemContract.month),
-        year: toString(itemContract.year),
       });
     } else {
       this.setStateData({
@@ -162,19 +161,17 @@ class Index extends PureComponent {
       });
       this.formRef.current.setFieldsValue({
         month: 0,
-        year: 0,
       });
     }
   };
 
   formUpdate = (value, values) => {
-    const { month, year, contractFrom } = values;
+    const { month, contractFrom } = values;
 
     if (moment.isMoment(contractFrom)) {
       this.formRef?.current?.setFieldsValue({
         contractTo: moment(contractFrom)
           .add(month || 0, 'months')
-          .add(year || 0, 'years'),
       });
     }
   };
@@ -424,15 +421,6 @@ class Index extends PureComponent {
                 </div>
 
                 <div className="row">
-                  <div className="col-lg-4">
-                    <FormItem
-                      label="Số năm hợp đồng"
-                      name="year"
-                      type={variables.INPUT_COUNT}
-                      rules={[variables.RULES.EMPTY]}
-                      disabled={disabledInput}
-                    />
-                  </div>
                   <div className="col-lg-4">
                     <FormItem
                       label="Số tháng hợp đồng"
