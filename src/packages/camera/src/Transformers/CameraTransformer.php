@@ -8,6 +8,7 @@ use GGPHP\Camera\Transformers\CameraGeneralPropertiesTransformer;
 use GGPHP\Camera\Transformers\CameraNetworkPropertiesTransformer;
 use GGPHP\Camera\Transformers\CameraPtzPropertiesTransformer;
 use GGPHP\Camera\Transformers\CameraVideoPropertiesTransformer;
+use GGPHP\Category\Transformers\TouristDestinationTransformer;
 use GGPHP\Collection\Transformers\CollectionTransformer;
 use GGPHP\Core\Transformers\BaseTransformer;
 use GGPHP\Users\Models\User;
@@ -28,7 +29,7 @@ class CameraTransformer extends BaseTransformer
      */
     protected $defaultIncludes = [];
 
-    protected $availableIncludes = ['collection', 'video'];
+    protected $availableIncludes = ['collection', 'video', 'touristDestination'];
 
     // protected $availableIncludes = ['collection', 'generalProperties'];
     /**
@@ -104,7 +105,7 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->videoProperties, new CameraVideoPropertiesTransformer, 'video');
+        return $this->item($camera->videoProperties, new CameraVideoPropertiesTransformer, 'Video');
     }
 
     /* @param Network Properties $camera
@@ -128,6 +129,18 @@ class CameraTransformer extends BaseTransformer
             return;
         }
 
-        return $this->item($camera->ptzProperties, new CameraPtzPropertiesTransformer, 'ptz');
+        return $this->item($camera->ptzProperties, new CameraPtzPropertiesTransformer, 'Ptz');
+    }
+
+    /* @param Ptz Properties $camera
+     * @return mixed
+     */
+    public function includeTouristDestination(Camera $camera)
+    {
+        if (empty($camera->touristDestination)) {
+            return;
+        }
+
+        return $this->item($camera->touristDestination, new TouristDestinationTransformer, 'TouristDestination');
     }
 }
