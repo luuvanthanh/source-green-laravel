@@ -12,7 +12,7 @@ import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-
+ 
 let isMounted = true;
 /**
  * Set isMounted
@@ -239,6 +239,12 @@ class Index extends PureComponent {
         key: 'schoolYear',
         className: 'min-width-150',
         render: (record) => `${record?.schoolYear?.yearFrom || ''} - ${record?.schoolYear?.yearTo || ''}`
+      },
+      {
+        title: 'Ngày nhập học',
+        key: 'dayAdmission',
+        className: 'min-width-150',
+        render: (record) =>Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
       },
       {
         title: 'Chi tiết các loại phí',
