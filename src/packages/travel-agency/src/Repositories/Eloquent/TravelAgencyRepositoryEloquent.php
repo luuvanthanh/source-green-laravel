@@ -2,6 +2,8 @@
 
 namespace GGPHP\TravelAgency\Repositories\Eloquent;
 
+use Carbon\Carbon;
+use GGPHP\ExcelExporter\Services\ExcelExporterServices;
 use GGPHP\TravelAgency\Models\TravelAgencieTourGuide;
 use GGPHP\TravelAgency\Models\TravelAgency;
 use GGPHP\TravelAgency\Presenters\TravelAgencyPresenter;
@@ -53,7 +55,7 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
         $this->pushCriteria(app(RequestCriteria::class));
     }
 
-    public function getTravelAgency(array $attributes)
+    public function getTravelAgency(array $attributes, $parse = true)
     {
         if (!empty($attributes['name'])) {
             $this->model = $this->model->whereLike('name', $attributes['name']);
@@ -69,6 +71,10 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
 
         if (!empty($attributes['service_type'])) {
             $this->model = $this->model->whereIn('service_type', $attributes['service_type']);
+        }
+
+        if (!$parse) {
+            return $this->model->get();
         }
 
         if (empty($attributes['limit'])) {
@@ -98,5 +104,52 @@ class TravelAgencyRepositoryEloquent extends BaseRepository implements TravelAge
         $travelAgencieTourGuide->delete();
 
         return true;
+    }
+
+
+    public function exportExcel($attributes)
+    {
+        $travelAgencies = $this->getTravelAgency($attributes, false);
+
+        $params = [];
+
+        foreach ($travelAgencies as $key => $travelAgency) {
+            $params['[number]'][] = ++$key;
+            $params['[name]'][] = $travelAgency->name;
+            $params['[service_type]'][] = $this->getConstServiceType($travelAgency->service_type);
+            $params['[number_tour_guide]'][] = $travelAgency->travelAgencyAdditionalInformation()->count();
+            $params['[address]'][] = $travelAgency->address;
+            $params['[license_number]'][] = $travelAgency->license_number;
+            $params['[license_date]'][] = !is_null($travelAgency->license_date) ?  Carbon::parse($travelAgency->license_date)->format('d-m-Y') : null;
+        }
+
+        return  resolve(ExcelExporterServices::class)->export('dvdl', $params);
+    }
+
+    public function getConstServiceType($value)
+    {
+        $value = null;
+        switch ($value) {
+            case TravelAgency::SERVICE_TYPE['AUTHORIZED_DEALER']:
+                $value = "Đại lý ủy quyền";
+                break;
+            case TravelAgency::SERVICE_TYPE['REPRESENTATIVE_OFFICE']:
+                $value = "Văn phòng đại diện";
+                break;
+            case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO_BRANCH']:
+                $value = "Chi nhánh lữ hành quốc tế";
+                break;
+            case TravelAgency::SERVICE_TYPE['INLAND_TO_BRANCH']:
+                $value = "Chi nhánh lữ hành nội địa";
+                break;
+            case TravelAgency::SERVICE_TYPE['INLAND_TO']:
+                $value = "Công ty lữ hành nội địa";
+                break;
+            case TravelAgency::SERVICE_TYPE['INTERNATIONAL_TO']:
+                $value = "Công ty lữ hành quốc tế";
+                break;
+        }
+
+        return $value;
     }
 }

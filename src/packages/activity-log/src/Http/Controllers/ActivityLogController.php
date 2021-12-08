@@ -41,7 +41,6 @@ class ActivityLogController extends Controller
         $activities = $this->activityLogRepository->filterAcitivity($data);
 
         return $this->success($activities, trans('lang-activity::messages.activity.getListSuccess'));
-
     }
 
     /**
@@ -54,5 +53,16 @@ class ActivityLogController extends Controller
     {
         $reviewMonth = $this->activityLogRepository->find($id);
         return $this->success($reviewMonth, trans('lang-review::messages.activity.getInfoSuccess'));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $result = $this->activityLogRepository->exportExcel($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
     }
 }

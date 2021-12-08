@@ -21,13 +21,14 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.3.3",
         "league/fractal": "^0.19.2",
-        "maatwebsite/excel": "^3.1",
+        "maatwebsite/excel": "3.1.26",
         "orangehill/iseed": "^3.0.1",
         "prettus/l5-repository": "^2.6",
         "spatie/laravel-activitylog": "^3.17",
         "spatie/laravel-medialibrary": "^9.8",
         "spatie/laravel-permission": "^3.13",
-        "webpatser/laravel-uuid": "^4.0"
+        "webpatser/laravel-uuid": "^4.0",
+        "phpoffice/phpspreadsheet": "1.18"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
@@ -63,7 +64,8 @@
             "GGPHP\\Collection\\": "packages/collection/src/",
             "GGPHP\\CameraServer\\": "packages/camera-server/src/",
             "GGPHP\\VideoWall\\": "packages/video-wall/src/",
-            "GGPHP\\NumberOfTourist\\": "packages/number-of-tourist/src/"
+            "GGPHP\\NumberOfTourist\\": "packages/number-of-tourist/src/",
+            "GGPHP\\ExcelExporter\\": "packages/excel-exporter/src/"
         },
         "classmap": [
             "database/seeds",

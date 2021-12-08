@@ -31,6 +31,8 @@ class RouteRegistrar extends CoreRegistrar
     {
         $this->router->group(['middleware' => []], function ($router) {
             \Route::get('report-number-of-tourists', 'NumberOfTouristController@report');
+
+            \Route::get('export-excel-report-number-of-tourists', 'NumberOfTouristController@exportExcel');
         });
     }
 

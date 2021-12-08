@@ -51,4 +51,15 @@ class NumberOfTouristController extends Controller
 
         return $this->success($numberOfTourist, trans('lang::messages.common.getListSuccess'));
     }
+
+    public function exportExcel(Request $request)
+    {
+        $result = $this->numberOfTouristRepository->exportExcel($request->all());
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('Template not found'), 400);
+        }
+
+        return $result;
+    }
 }
