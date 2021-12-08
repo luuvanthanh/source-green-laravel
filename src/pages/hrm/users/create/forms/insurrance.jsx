@@ -105,7 +105,7 @@ const Index = memo(() => {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'HRMusersAdd/REMOVE',
+          type: 'HRMusersAdd/REMOVE_INSURRANCES',
           payload: {
             id,
           },
