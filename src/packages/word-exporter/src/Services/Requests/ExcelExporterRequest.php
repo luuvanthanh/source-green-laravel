@@ -1,10 +1,12 @@
 <?php
 
-namespace GGPHP\Event\Http\Requests;
+namespace GGPHP\ExcelExporter\Services\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
-class EventCreateRequest extends FormRequest
+class ExcelExporterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,11 +23,10 @@ class EventCreateRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
-            "event_code" => 'required',
-            "camera_id" => 'required|exists:cameras,id',
+            'template.*' => 'required|file',
         ];
     }
 }
