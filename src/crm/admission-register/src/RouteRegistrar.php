@@ -34,6 +34,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('confirm-transporters', 'ConfirmTransporterController');
             \Route::resource('test-inputs', 'TestInputController');
             \Route::resource('medical-infos', 'MedicalInfoController');
+            \Route::resource('profile-infos', 'ProfileInfoController');
         });
     }
 }
