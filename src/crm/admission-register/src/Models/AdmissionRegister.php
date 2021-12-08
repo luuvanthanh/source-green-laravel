@@ -46,4 +46,9 @@ class AdmissionRegister extends UuidModel
     {
         return $this->hasOne(MedicalInfo::class, 'admission_register_id');
     }
+
+    public function profileInfo()
+    {
+        return $this->hasMany(ProfileInfo::class, 'admission_register_id');
+    }
 }
