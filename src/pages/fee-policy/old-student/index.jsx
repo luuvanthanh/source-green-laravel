@@ -244,10 +244,7 @@ class Index extends PureComponent {
         title: 'Ngày nhập học',
         key: 'dayAdmission',
         className: 'min-width-150',
-        render: (record) =>
-          record?.dayAdmission
-            ? Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
-            : '',
+        render: (record) =>Helper.getDate(record?.dayAdmission, variables.DATE_FORMAT.DATE_VI)
       },
       {
         title: 'Chi tiết các loại phí',
