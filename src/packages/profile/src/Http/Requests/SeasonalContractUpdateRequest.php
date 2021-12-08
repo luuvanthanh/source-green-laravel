@@ -28,12 +28,13 @@ class SeasonalContractUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => 'required',
             'employeeId' => [
                 'exists:Employees,Id',
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
                     $seasonalContract = SeasonalContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    
+
                     if (!is_null($seasonalContract)  && $seasonalContract->Id != request()->id) {
                         return $fail("Hợp đồng không phải là mới nhất, không được phép chỉnh sửa.");
                     }
@@ -54,8 +55,8 @@ class SeasonalContractUpdateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $employeeId = request()->employeeId;
                     $labourContract = LabourContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
-                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
-                    $seasonalContract = SeasonalContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
+                    $probationaryContract = ProbationaryContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
+                    $seasonalContract = SeasonalContract::where('EmployeeId', $employeeId)->where('Id', '!=', request()->id)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
 
                     if (!is_null($seasonalContract) && $value <= $seasonalContract->ContractTo->format('Y-m-d')) {
