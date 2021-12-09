@@ -905,6 +905,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/co-so/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Bộ phận',
@@ -915,6 +916,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/bo-phan/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Chức vụ',
@@ -925,6 +927,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/chuc-vu/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Trường đào tạo',
@@ -935,6 +938,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/truong-dao-tao/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Ngành đào tạo',
@@ -945,6 +949,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/nganh-dao-tao/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Bằng cấp',
@@ -955,6 +960,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/bang-cap/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Trình độ văn hóa',
@@ -965,6 +971,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/cau-hinh/trinh-do-hoc-van/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
           ],
         },
@@ -1148,12 +1155,14 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/lich-lam-viec/cau-hinh/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Chia ca',
           key: 'schedules',
           url: ['/quan-ly-nhan-su/lich-lam-viec'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Phân ca làm việc',
@@ -1164,12 +1173,14 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/phan-ca-lam-viec/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Cấu hình vân tay',
           key: 'fingerprints',
           url: ['/quan-ly-nhan-su/may-cham-cong-van-tay'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Danh mục Ngày nghỉ trong năm',
@@ -1215,6 +1226,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/phieu-dang-ky-gio-lam-them/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'Phiếu ĐK đi xe bus',
@@ -1225,6 +1237,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/phieu-dang-ky-di-xe-bus/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
           ],
         },
@@ -1237,18 +1250,21 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/don-xin-phep/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Lịch sử vào ra',
           key: 'timekeeping',
           url: ['/quan-ly-nhan-su/lich-su-vao-ra'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Không xác định công',
           key: 'timekeeping-invalid',
           url: ['/quan-ly-nhan-su/khong-xac-dinh-cong'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Công bổ sung',
@@ -1259,24 +1275,28 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cong-bo-sung/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Bảng tổng hợp công tháng',
           key: 'total',
           url: ['/quan-ly-nhan-su/tong-hop-cong'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Bảng chấm công thêm ngoài giờ',
           key: 'totalOvertime',
           url: ['/quan-ly-nhan-su/bang-cham-cong-them-ngoai-gio'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Bảng chấm công xe bus',
           key: 'totalBus',
           url: ['/quan-ly-nhan-su/bang-cham-cong-xe-bus'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Cấu hình',
@@ -1308,12 +1328,14 @@ export async function getLeftMenuHRM() {
           key: 'salary-payroll',
           url: ['/quan-ly-nhan-su/tinh-luong'],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Bảng lương',
           key: 'salary-items',
           url: ['/quan-ly-nhan-su/bang-luong'],
           permission: [permissions.HRM],
+          pro: true,
         },
       ],
     },
@@ -1332,6 +1354,7 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-gia-tri/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
         {
           title: 'Tham số công thức',
@@ -1342,6 +1365,7 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/tham-so-cong-thuc/:id/chi-tiet',
           ],
           permission: [permissions.BANGLUONG],
+          pro: true,
         },
         {
           title: 'Loại hợp đồng',
@@ -1352,6 +1376,7 @@ export async function getLeftMenuHRM() {
             '/quan-ly-nhan-su/cau-hinh/loai-hop-dong/:id/chi-tiet',
           ],
           permission: [permissions.HRM],
+          pro: true,
         },
       ],
     },
