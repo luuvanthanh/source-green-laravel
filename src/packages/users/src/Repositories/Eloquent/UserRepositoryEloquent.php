@@ -2,8 +2,11 @@
 
 namespace GGPHP\Users\Repositories\Eloquent;
 
+use Carbon\Carbon;
 use GGPHP\Core\Repositories\Eloquent\CoreRepositoryEloquent;
 use GGPHP\Core\Services\CrmService;
+use GGPHP\Profile\Models\LabourContract;
+use GGPHP\Profile\Models\ProbationaryContract;
 use GGPHP\Users\Models\User;
 use GGPHP\Users\Presenters\UserPresenter;
 use GGPHP\Users\Repositories\Contracts\UserRepository;
@@ -87,6 +90,17 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         }
 
         $this->model = $this->model->tranferHistory($attributes);
+
+        if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
+            $now = Carbon::now()->format('Y-m-d');
+
+            $this->model = $this->model->doesntHave('labourContract')->orDoesntHave('probationaryContract')
+                ->whereHas('labourContract', function ($q) use ($now) {
+                    $q->where('ContractTo', '<', $now);
+                })->orWhereHas('probationaryContract', function ($q) use ($now) {
+                    $q->where('ContractTo', '<', $now);
+                });
+        }
 
         if (empty($attributes['limit'])) {
             $users = $this->get();
