@@ -34,6 +34,15 @@ export function get(data = {}) {
   });
 }
 
+export function getCountContract(params = {}) {
+  return request('/v1/labours-contracts?status=GAN_HET_HAN', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+  });
+}
+
 export function remove(id) {
   return request(`/v1/seasonal-contracts/${id}`, {
     method: 'DELETE',
