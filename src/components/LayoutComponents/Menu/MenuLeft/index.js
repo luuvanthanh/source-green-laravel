@@ -58,8 +58,8 @@ class MenuLeft extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.badges !== prevProps.badges) {
-      this.onSetMenu(this.props.badges);
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      this.onSetMenu(this.props.menu);
     }
   }
 
@@ -75,8 +75,8 @@ class MenuLeft extends React.Component {
 
   onSetMenu = (badges) => {
     if (!_.isEmpty(badges)) {
-      this.setState((prevState) => ({
-        menuData: prevState.menuData,
+      this.setState(({
+        menuData: badges,
       }));
     }
   };
