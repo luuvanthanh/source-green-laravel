@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Radio, Input } from 'antd';
-import { isEmpty, get } from 'lodash';
+import { Form, Radio, Input, InputNumber, Space } from 'antd';
+import { isEmpty, get, head, } from 'lodash';
 import { connect, history, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import TableCus from '@/components/CommonComponent/Table';
@@ -32,7 +32,9 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, details, error, sliderRows, medical, categoryMedical, medicalCheck }) => {
     const formRef = useRef();
     const mounted = useRef(false);
-    const [data, setData] = useState(sliderRows);
+    const [dataTable, setDataTable] = useState([]);
+    const [form1, setForm1] = useState([]);
+    const [newForm, setNewForm] = useState(false);
     const loadingSubmit =
       effects[`crmSaleAdmissionAdd/ADD`] ||
       effects[`crmSaleAdmissionAdd/UPDATE`] ||
@@ -42,33 +44,11 @@ const General = memo(
      * Function submit form modal
      * @param {object} values values of form
      */
-    useEffect(() => {
-      if (!isEmpty(sliderRows)) {
-        setData(sliderRows);
-      }
-    }, [sliderRows]);
-
-
-    useEffect(() => {
-      dispatch({
-        type: 'crmSaleAdmissionAdd/GET_MEDICAL',
-        payload: { admission_register_id: params.id },
-        
-        callback: (response) => {
-          if (response) {
-            formRef.current.setFieldsValue({
-              data: response.parsePayload.map((item) =>
-               [item.medicalDeclareInfo],
-              ),
-            });
-            console.log(response);
-            console.log("data", response.parsePayload.map((item) =>
-            item.medicalDeclareInfo
-           ),)
-          }
-        },
-      });
-    }, [params.id]);
+    // useEffect(() => {
+    //   if (!isEmpty(sliderRows)) {
+    //     setDataTable(sliderRows);
+    //   }
+    // }, [sliderRows]);
 
     useEffect(() => {
       dispatch({
@@ -77,30 +57,59 @@ const General = memo(
         callback: (response) => {
           if (response) {
             formRef.current.setFieldsValue({
-              data: response.parsePayload,
+              data: response.parsePayload?.filter((item) => item.use) || [],
             });
-            console.log("response", response)
           }
         },
       });
     }, []);
 
+    useEffect(() => {
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_MEDICAL',
+        payload: { admission_register_id: params.id },
+
+        callback: (response) => {
+          if (response) {
+            setNewForm(true);
+            setDataTable(response?.parsePayload[0]?.childHeathDevelop || []);
+            formRef.current.setFieldsValue({
+              data: response.parsePayload[0].medicalDeclareInfo.filter((item) => item.is_checked) || [],
+            });
+            setForm1(response.parsePayload[0].medicalDeclareInfo);
+            console.log("repon", response)
+            console.log("repon", response.parsePayload[0].medicalDeclareInfo?.filter((item) => item.configMedicalDeclare.use) || []);
+            // console.log("data", response?.parsePayload?.map((item, index) => ({ ...item.childHeathDevelop[0], index })) || [],);
+          }
+        },
+      });
+    }, []);
+
+    useEffect(() => {
+      if (params.id) {
+        formRef.current.setFieldsValue({
+          ...medicalCheck,
+          ...head(medicalCheck.positionLevel),
+        });
+      }
+    }, [medicalCheck]);
 
     const onFinish = (values) => {
-      const items = values.data.map((item, index) => ({
-        config_medical_declare_id: item.id,
-        reason : null,
-        is_checked: item.is_checked,
+      const items = values.data.map((item) => ({
+        config_medical_declare_id: item?.config_medical_declare_id || item?.id,
+        reason: item?.reason || "",
+        is_checked: item?.is_checked,
       }));
       dispatch({
         type: 'crmSaleAdmissionAdd/ADD_MEDICAL',
-        payload: { admission_register_id: params.id,
-            height: values.height, note: values.note, 
-            weight: values.weight,medical_declare: items,child_heath: data, },
+        payload: {
+          admission_register_id: params.id,
+          height: values.height,
+          note: values.note,
+          weight: values.weight, medical_declare: items, child_heath: dataTable,
+        },
         callback: (response, error) => {
-          if (response) {
-            history.goBack();
-          }
+
           if (error) {
             if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
               error.data.errors.forEach((item) => {
@@ -116,16 +125,13 @@ const General = memo(
         },
       });
     };
-    console.log("medical", medical);
-    console.log("categoryMedical", categoryMedical);
-    console.log("medicalCheck",medicalCheck);
     useEffect(() => {
       mounted.current = true;
       return mounted.current;
     }, []);
 
     const onChangeSick = (e, record) => {
-      setData((prev) =>
+      setDataTable((prev) =>
         prev.map((item) => (
           item.test === record.test && item.id === record.id ? { ...item, sick: e.target.value } : { ...item }
         ),
@@ -133,7 +139,7 @@ const General = memo(
     };
 
     const onChangeYear = (e, record) => {
-      setData((prev) =>
+      setDataTable((prev) =>
         prev.map((item) => (
           item.test === record.test && item.id === record.id ? { ...item, year: e.target.value } : { ...item }
         ),
@@ -141,18 +147,35 @@ const General = memo(
     };
 
     const onChangeHospitalTime = (e, record) => {
-      setData((prev) =>
+      setDataTable((prev) =>
         prev.map((item) => (
           item.test === record.test && item.id === record.id ? { ...item, hospital_time: e.target.value } : { ...item }
         ),
         ));
     };
     const onChangeStatus = (e, record) => {
-      setData((prev) =>
+      setDataTable((prev) =>
         prev.map((item) => (
           item.test === record.test && item.id === record.id ? { ...item, status: e.target.value } : { ...item }
         ),
         ));
+    };
+
+    const newMedical = () => {
+
+      dispatch({
+        type: 'crmSaleAdmissionAdd/GET_CATEGORY_MEDICAL',
+        payload: {},
+        callback: (response) => {
+          if (response) {
+            setNewForm(false);
+            formRef.current.setFieldsValue({
+              data: response?.parsePayload?.filter((item) => item.use) || [],
+            });
+          }
+        },
+      });
+
     };
 
     const columns = [
@@ -160,11 +183,11 @@ const General = memo(
         title: 'Bệnh đã mắc phải nằm viện',
         dataIndex: 'sick',
         key: 'sick',
-        width: 250,
+        width: 200,
         className: classnames('min-width-200', 'max-width-200'),
         render: (value, record) => (
           <Input.TextArea
-             value={record.sick}
+            value={record.sick}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
             onChange={(e) => onChangeSick(e, record)}
@@ -175,11 +198,11 @@ const General = memo(
         title: 'Năm',
         dataIndex: 'year',
         key: 'year',
-        width: 100,
+        width: 80,
         className: classnames('min-width-200', 'max-width-200'),
         render: (value, record) => (
           <Input.TextArea
-             value={value.year}
+            value={record.year}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
             onChange={(e) => onChangeYear(e, record)}
@@ -194,7 +217,7 @@ const General = memo(
         className: classnames('min-width-200', 'max-width-200'),
         render: (value, record) => (
           <Input.TextArea
-            value={value.hospital_time}
+            value={record.hospital_time}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
             onChange={(e) => onChangeHospitalTime(e, record)}
@@ -208,7 +231,7 @@ const General = memo(
         dataIndex: 'status',
         render: (value, record) => (
           <Input.TextArea
-             value={value.status}
+            value={record.status}
             autoSize={{ minRows: 1, maxRows: 1 }}
             placeholder="Nhập"
             onChange={(e) => onChangeStatus(e, record)}
@@ -224,7 +247,7 @@ const General = memo(
           <div className={styles['list-button']}>
             <button
               onClick={() => {
-                setData(data.filter((val) => (val.key || val.id) !== (record.key || record.id)));
+                setDataTable(dataTable.filter((val) => (val.key || val.id) !== (record.key || record.id)));
               }}
               type="button"
               className={styles['button-circle']}
@@ -241,7 +264,13 @@ const General = memo(
         {/* <Pane className="card"> */}
         {/* <Loading loading={loading} isError={error.isError} params={{ error }}> */}
         <Pane className="card">
-          <Pane className="row p20" >
+          <Heading type="form-title" className="pl20 pt20">
+            Thông tin y tế
+          </Heading>
+          <Heading type="form-block-title" className="pl20 pt10"  >
+            Thông tin học sinh
+          </Heading>
+          <Pane className="row pl20 pr20 pb20 pt10" >
             <Pane className="col-lg-4">
               <FormItem
                 name="weight"
@@ -259,92 +288,133 @@ const General = memo(
               />
             </Pane>
           </Pane>
-          <Heading type="form-block-title" className="ml20">
-            Thông tin khai báo y tế
-          </Heading>
-          
+          <Pane className="border-top pt20 d-flex justify-content-between align-items-center">
+            <Heading type="form-block-title" className="ml20">
+              Thông tin khai báo y tế
+            </Heading>
+            <Button color="success" onClick={() => newMedical()} className="ml-2 mr20" >
+              Cập nhập câu hỏi y tế
+            </Button>
+          </Pane>
           {
-            medicalCheck ? 
-            <Form.List name="data">
-            {(fields,) => (
-              <>
-                {fields.map((field, index) => {
-                  let file = {};
-                  const { data } = formRef.current.getFieldsValue();
-                  const itemData = data?.find((item, indexWater) => indexWater === index);
-                  file = categoryMedical.find((item) => item.id === itemData?.id);
-                  return (
-                    <>
-                      <Pane className="offset-lg-12 col-lg-12 pt20 p20" key={field.key}>
-                        <Pane className={stylesModule['wrapper-radio']}>
-                          <h3 className={stylesModule.title}>{index + 1}. {file?.name}</h3>
-                          <Pane >
-                            <FormItem
-                              className="title-black w-100 d-flex"
-                              name={[field.name, 'is_checked']}
-                              fieldKey={[field.fieldKey, 'is_checked']}
-                              type={variables.RADIO}
-                              rules={[variables.RULES.EMPTY]}
-                              data={[
-                                { value: true, label: 'Có' },
-                                { value: false, label: 'Không' },
-                              ]}
-                            />
-                          </Pane>
-                        </Pane>
-
-                      </Pane>
-                    </>
-                  );
-                })}
-
-              </>
-            )}
-          </Form.List> :
-          <Form.List name="data">
-          {(fields,) => (
-            <>
-              {fields.map((field, index) => {
-                let file = {};
-                const { data } = formRef.current.getFieldsValue();
-                const itemData = data?.find((item, indexWater) => indexWater === index);
-                file = categoryMedical.find((item) => item.id === itemData?.id);
-                return (
+            medical.length && newForm ?
+              <Form.List name="data">
+                {(fields,) => (
                   <>
-                    <Pane className="offset-lg-12 col-lg-12 pt20 p20" key={field.key}>
-                      <Pane className={stylesModule['wrapper-radio']}>
-                        <h3 className={stylesModule.title}>{index + 1}. {file?.name}</h3>
-                        <Pane >
-                          <FormItem
-                            className="title-black w-100 d-flex"
-                            name={[field.name, 'is_checked']}
-                            fieldKey={[field.fieldKey, 'is_checked']}
-                            type={variables.RADIO}
-                            rules={[variables.RULES.EMPTY]}
-                            data={[
-                              { value: true, label: 'Có' },
-                              { value: false, label: 'Không' },
-                            ]}
-                          />
-                        </Pane>
-                      </Pane>
+                    {fields.map((field, index) => {
+                      const itemData = categoryMedical?.find((item, indexWater) => indexWater === index);
+                      const file = form1.find((item) => item.config_medical_declare_id === itemData?.id);
+                      console.log("file", file)
+                      console.log("categoryMedical",categoryMedical)
+                      console.log("file", file)
+                      return (
+                        <>
+                          <Pane className="offset-lg-12 col-lg-12 pt20 pl20 pr20 border-bottom" key={field?.key}>
+                            <Pane className={stylesModule['wrapper-radio']}>
+                              <h3 className={stylesModule.title}>{index + 1}. {file?.configMedicalDeclare?.name}</h3>
+                              <Pane >
+                                {file?.configMedicalDeclare?.use_yes_or_no ?
+                                  <FormItem
+                                    className="title-black w-100 d-flex"
+                                    name={[field.name, 'is_checked']}
+                                    fieldKey={[field.fieldKey, 'is_checked']}
+                                    type={variables.RADIO}
+                                    width={10}
+                                    rules={[variables.RULES.EMPTY]}
+                                    data={[
+                                      { value: true, label: 'Có' },
+                                      { value: false, label: 'Không' },
+                                    ]}
+                                  />
+                                  : ""}
+                              </Pane>
+                            </Pane>
+                            {
+                              file?.configMedicalDeclare?.use_input ?
+                                <Pane className="col-lg-12 p0">
+                                  <FormItem
+                                    label="Lý do"
+                                    name={[field.name, 'reason']}
+                                    fieldKey={[field.fieldKey, 'reason']}
+                                    type={variables.INPUT}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                                : ""
+                            }
 
-                    </Pane>
+                          </Pane>
+                        </>
+                      );
+                    })}
+
                   </>
-                );
-              })}
 
-            </>
-          )}
-        </Form.List> 
+                )}
+              </Form.List> :
+              <Form.List name="data">
+                {(fields,) => (
+                  <>
+                    {fields.map((field, index) => {
+                      let file = {};
+                      const { data } = formRef.current.getFieldsValue();
+                      const itemData = data?.find((item, indexWater) => indexWater === index);
+                      file = categoryMedical.find((item) => item.id === itemData?.id);
+                      // console.log("file2", file)
+                      console.log("data", data)
+                      const count = index + 1;
+                      // count = !file?.use ? count - 1 : index;
+
+
+                      return (
+                        <>
+                          <Pane className="offset-lg-12 col-lg-12 pt20 pl20 pr20 pb10 border-bottom" key={field.key}>
+                            <Pane className={stylesModule['wrapper-radio']}>
+                              <h3 className={stylesModule.title}>{count}. {file?.name}</h3>
+                              <Pane >
+                                {file?.use_yes_or_no ?
+                                  <FormItem
+                                    className="title-black w-100 d-flex"
+                                    name={[field.name, 'is_checked']}
+                                    fieldKey={[field.fieldKey, 'is_checked']}
+                                    type={variables.RADIO}
+                                    rules={[variables.RULES.EMPTY]}
+                                    data={[
+                                      { value: true, label: 'Có' },
+                                      { value: false, label: 'Không' },
+                                    ]}
+                                  /> : ""}
+                              </Pane>
+                              {file?.use_input ?
+                                <Pane className="col-lg-12 p0">
+                                  <FormItem
+                                    label="Lý do"
+                                    name={[field.name, 'reason']}
+                                    fieldKey={[field.fieldKey, 'reason']}
+                                    type={variables.INPUT}
+                                    rules={[variables.RULES.EMPTY]}
+                                  />
+                                </Pane>
+                                : ""
+                              }
+                            </Pane>
+                          </Pane>
+                        </>
+                      );
+                    })}
+
+                  </>
+                )}
+              </Form.List>
           }
-          
-          <Pane className="col-lg-12">
+          <Pane className="col-lg-12 pt20 pl20 pr20">
+            <h3 className={stylesModule['wrapper-title']}>8. Lưu ý khác (nếu có)</h3>
+          </Pane>
+          <Pane className="col-lg-12 pl20 pr20 border-bottom">
             <FormItem
               name="note"
               label="Nội dung"
               type={variables.INPUT}
-              rules={[variables.RULES.EMPTY]}
             />
           </Pane>
           <Pane className=" border-bottom">
@@ -357,20 +427,17 @@ const General = memo(
                   rowKey={(record) => record.id}
                   className="table-edit"
                   columns={columns}
-                  dataSource={medical}
+                  dataSource={dataTable}
                   isEmpty
                   pagination={false}
                   scroll={{ x: '100%' }}
                   footer={() => (
                     <Button
                       onClick={() =>
-                        setData([
-                          ...data,
+                        setDataTable([
+                          ...dataTable,
                           {
-                            id: uuidv4(),
-                            title: undefined,
-                            content: undefined,
-                            file_image: undefined,
+                            test: uuidv4(),
                           },
                         ])
                       }
@@ -384,12 +451,14 @@ const General = memo(
               </div>
             </Pane>
           </Pane>
-        </Pane>
-        <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
-
-          <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
-            Lưu
-          </Button>
+          <Pane className="d-flex justify-content-end p20">
+            <Button color="primary" icon="export" className="ml-2">
+              Xuất file khai báo y tế
+            </Button>
+            <Button color="success" htmlType="submit" loading={loadingSubmit} className="ml-2">
+              Lưu
+            </Button>
+          </Pane>
         </Pane>
         {/* </Loading> */}
       </Form >
@@ -405,9 +474,9 @@ General.propTypes = {
   error: PropTypes.objectOf(PropTypes.any),
   data: PropTypes.arrayOf(PropTypes.any),
   sliderRows: PropTypes.arrayOf(PropTypes.any),
-  categoryMedical:PropTypes.arrayOf(PropTypes.any),
+  categoryMedical: PropTypes.arrayOf(PropTypes.any),
   medical: PropTypes.arrayOf(PropTypes.any),
-  medicalCheck : PropTypes.objectOf(PropTypes.any),
+  medicalCheck: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -420,7 +489,7 @@ General.defaultProps = {
   sliderRows: [],
   categoryMedical: [],
   medical: [],
-  medicalCheck : {},
+  medicalCheck: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

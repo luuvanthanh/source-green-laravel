@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import FormItem from '@/components/CommonComponent/FormItem';
 
@@ -21,7 +20,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   students: crmSaleAdmissionAdd.students,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error }) => {
+  ({ dispatch, loading: { effects }, match: { params }, details, }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     // const [ramdom, setRamdom] = useState(0);
@@ -29,10 +28,12 @@ const General = memo(
       effects[`crmSaleAdmissionAdd/UPDATE_STUDENTS`];
     const loading = effects[`crmSaleAdmissionAdd/GET_DETAILS`];
     useEffect(() => {
+      if(params.id){
       dispatch({
         type: 'crmSaleAdmissionAdd/GET_DETAILS',
         payload: params,
       });
+    }
     }, [params.id]);
 
     /**
@@ -85,7 +86,6 @@ const General = memo(
     return (
       <Form layout="vertical" ref={formRef} onFinish={onFinish}>
         <Pane className="card">
-          <Loading loading={loading} isError={error.isError} params={{ error }}>
             <Pane style={{ padding: 20 }} className="pb-0 border-bottom">
               <Heading type="form-title" style={{ marginBottom: 20 }}>
               Thông tin đăng ký
@@ -124,7 +124,6 @@ const General = memo(
                 Lưu
               </Button>
             </Pane>
-          </Loading>
         </Pane>
       </Form>
     );
@@ -136,7 +135,6 @@ General.propTypes = {
   match: PropTypes.objectOf(PropTypes.any),
   details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
 };
 
 General.defaultProps = {
@@ -144,7 +142,6 @@ General.defaultProps = {
   details: {},
   dispatch: () => { },
   loading: {},
-  error: {},
 };
 
 export default withRouter(connect(mapStateToProps)(General));

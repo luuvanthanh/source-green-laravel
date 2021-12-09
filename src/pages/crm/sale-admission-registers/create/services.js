@@ -230,6 +230,11 @@ export function getMedical(data = {}) {
 export function getCategory(params) {
   return request(`/v1/config-medical-declares`, {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      // sortedBy: 'desc',
+      // searchJoin: 'and',
+    },
   });
 }
