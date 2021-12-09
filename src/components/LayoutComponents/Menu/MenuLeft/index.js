@@ -202,7 +202,9 @@ class MenuLeft extends React.Component {
               >
                 {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
-                {pro && <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />}
+                {key === 'labours-contracts' && (
+                  <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
+                )}
               </Link>
             )}
           </Menu.Item>
@@ -218,7 +220,9 @@ class MenuLeft extends React.Component {
         >
           {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
           <span className={styles.title}>{title}</span>
-          {pro && <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />}
+          {key === 'labours-contracts' && (
+            <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
+          )}
         </Menu.Item>
       );
     };
@@ -240,7 +244,7 @@ class MenuLeft extends React.Component {
               <span key={menuItem.key}>
                 {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
                 <span className={styles.title}>{menuItem.title}</span>
-                {menuItem.pro && (
+                {menuItem.key === 'contracts' && (
                   <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
                 )}
               </span>
