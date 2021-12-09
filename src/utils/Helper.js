@@ -11,7 +11,7 @@ import {
   last,
   toNumber,
 } from 'lodash';
-import { notification, Modal } from 'antd';
+import { notification, Modal, Badge } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import Cookies from 'universal-cookie';
@@ -1096,7 +1096,12 @@ export default class Helpers {
       return <Tag color="success">Đang hiệu lực</Tag>;
     }
     if (diffExpirationDateMonth < 1 && diffExpirationDate >= 0) {
-      return <Tag color="yellow">Gần hết hạn</Tag>;
+      return (
+        <Tag color="yellow">
+          <Badge status="error" />
+          Gần hết hạn
+        </Tag>
+      );
     }
     if (diffExpirationDate < 0) {
       return <Tag color="danger">Đã hết hạn</Tag>;

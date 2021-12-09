@@ -36,6 +36,7 @@ const mapStateToProps = ({ laboursContracts, loading }) => ({
   categories: laboursContracts.categories,
   loading,
 });
+const statuses = variables.STATUS_CONTRACT;
 @connect(mapStateToProps)
 class Index extends PureComponent {
   formRef = React.createRef();
@@ -51,6 +52,7 @@ class Index extends PureComponent {
         fullName: query?.fullName,
         branchId: query?.branchId,
         positionId: query?.positionId,
+        status: query?.status,
         employeeId: query?.employeeId ? query?.employeeId.split(',') : undefined,
         page: query?.page || variables.PAGINATION.PAGE,
         limit: query?.limit || variables.PAGINATION.PAGE_SIZE,
@@ -392,6 +394,7 @@ class Index extends PureComponent {
                 typeOfContractId: search.typeOfContractId || null,
                 branchId: search.branchId || null,
                 positionId: search.positionId || null,
+                status: search.status || null,
               }}
               layout="vertical"
               ref={this.formRef}
@@ -420,6 +423,16 @@ class Index extends PureComponent {
                     data={[{ id: null, name: 'Tất cả chức vụ' }, ...categories.positions]}
                     name="positionId"
                     onChange={(event) => this.onChangeSelect(event, 'positionId')}
+                    type={variables.SELECT}
+                    allowClear={false}
+                  />
+                </div>
+                {/* {console.log(categories.status)} */}
+                <div className="col-lg-3">
+                  <FormItem
+                    data={[{ id: null, name: 'Tất cả trạng thái' }, ...statuses]}
+                    name="status"
+                    onChange={(event) => this.onChangeSelect(event, 'status')}
                     type={variables.SELECT}
                     allowClear={false}
                   />
