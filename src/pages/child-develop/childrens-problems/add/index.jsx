@@ -29,7 +29,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, loading, childDevelopChildProblemsAdd }) => ({
   loading,
-  menuData: menu.menuLeftCRM,
+  menuData: menu.menuLeftChildDevelop,
   details: childDevelopChildProblemsAdd.details,
   error: childDevelopChildProblemsAdd.error,
   paramaterValues: childDevelopChildProblemsAdd.paramaterValues,
@@ -77,7 +77,7 @@ class Index extends PureComponent {
     }
     dispatch({
       type: 'crmSaleParentsLead/GET_DATA',
-      payload:{},
+      payload: {},
     });
   }
 
