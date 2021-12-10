@@ -27,10 +27,9 @@ const setIsMounted = (value = true) => {
  * @returns {boolean} value of isMounted
  */
 const getIsMounted = () => isMounted;
-const mapStateToProps = ({ crmChildrensProblems, loading }) => ({
-  data: crmChildrensProblems.data,
-  error: crmChildrensProblems.error,
-  pagination: crmChildrensProblems.pagination,
+const mapStateToProps = ({ medicalListTrouble, loading }) => ({
+  data: medicalListTrouble.data,
+  error: medicalListTrouble.error,
   loading,
 });
 @connect(mapStateToProps)
@@ -83,7 +82,7 @@ class Index extends PureComponent {
       location: { pathname },
     } = this.props;
     this.props.dispatch({
-      type: 'crmChildrensProblems/GET_DATA',
+      type: 'medicalListTrouble/GET_DATA',
       payload: {
         ...search,
       },
@@ -168,7 +167,7 @@ class Index extends PureComponent {
     Helper.confirmAction({
       callback: () => {
         dispatch({
-          type: 'crmChildrensProblems/REMOVE',
+          type: 'medicalListTrouble/REMOVE',
           payload: {
             id,
           },
@@ -191,14 +190,22 @@ class Index extends PureComponent {
     } = this.props;
     const columns = [
       {
-        title: 'Mã VD',
+        title: 'STT ',
+        key: 'index',
+        width: 80,
+        fixed: 'left',
+        render: (text, record, index) =>
+          Helper.serialOrder(this.state.search?.page, index, this.state.search?.limit),
+      },
+      {
+        title: 'Mã sự cố',
         key: 'code',
         className: 'min-width-150',
         width: 300,
         render: (record) => <Text size="normal">{record.code}</Text>,
       },
       {
-        title: 'Tên vấn đề khó khăn',
+        title: 'Tên sự cố',
         key: 'name',
         className: 'min-width-150',
         render: (record) => <Text size="normal">{record.name}</Text>,
@@ -233,15 +240,15 @@ class Index extends PureComponent {
     } = this.props;
 
     const { search } = this.state;
-    const loading = effects['crmChildrensProblems/GET_DATA'];
+    const loading = effects['medicalListTrouble/GET_DATA'];
     return (
       <>
-        <Helmet title="Vấn đề khó khăn của trẻ" />
+        <Helmet title="Danh mục sự cố" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Vấn đề khó khăn của trẻ</Text>
+            <Text color="dark">Danh mục sự cố</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
-              Thêm mới
+              Tạo mới
             </Button>
           </div>
           <div className={styles['block-table']}>
@@ -253,7 +260,7 @@ class Index extends PureComponent {
               ref={this.formRef}
             >
               <div className="row">
-                <div className="col-lg-5">
+                <div className="col-lg-3">
                   <FormItem
                     name="key"
                     onChange={(event) => this.onChange(event, 'key')}

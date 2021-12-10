@@ -1,7 +1,7 @@
 import * as services from './services';
 
 export default {
-  namespace: 'crmReviewScenarioAdd',
+  namespace: 'medicalListTroubleAdd',
   state: {
     details: {},
     error: {
