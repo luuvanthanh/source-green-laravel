@@ -24,7 +24,7 @@ class CreateCategoryChildIssueRequest extends FormRequest
     public function rules()
     {
         return [
-            'Name' => 'required|string|unique:CategoryChildIssues,Name'
+            'name' => 'required|string|unique:CategoryChildIssues,Name'
         ];
     }
 }

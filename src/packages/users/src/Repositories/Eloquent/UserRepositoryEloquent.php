@@ -94,12 +94,11 @@ class UserRepositoryEloquent extends CoreRepositoryEloquent implements UserRepos
         if (!empty($attributes['getLimitUser']) && $attributes['getLimitUser'] == 'true') {
             $now = Carbon::now()->format('Y-m-d');
 
-            $this->model = $this->model->doesntHave('labourContract')->orDoesntHave('probationaryContract')
-                ->whereHas('labourContract', function ($q) use ($now) {
-                    $q->where('ContractTo', '<', $now);
-                })->orWhereHas('probationaryContract', function ($q) use ($now) {
-                    $q->where('ContractTo', '<', $now);
-                });
+            $this->model = $this->model->whereDoesntHave('labourContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            })->whereDoesntHave('probationaryContract', function ($query) use ($now) {
+                $query->where('ContractTo', '>', $now);
+            });
         }
 
         if (empty($attributes['limit'])) {

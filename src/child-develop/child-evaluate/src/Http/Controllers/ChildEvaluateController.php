@@ -4,6 +4,7 @@ namespace GGPHP\ChildDevelop\ChildEvaluate\Http\Controllers;
 
 use GGPHP\ChildDevelop\ChildEvaluate\Http\Requests\ChildEvaluateCreateRequest;
 use GGPHP\ChildDevelop\ChildEvaluate\Http\Requests\ChildEvaluateUpdateRequest;
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Repositories\Contracts\ChildEvaluateRepository;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -32,7 +33,12 @@ class ChildEvaluateController extends Controller
      */
     public function index(Request $request)
     {
-        $ChildEvaluate = $this->ChildEvaluateRepository->getAll($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['age'])) {
+            $attributes['age'] = ChildEvaluate::MONTH[$attributes['age']];
+        }
+        $ChildEvaluate = $this->ChildEvaluateRepository->getAll($attributes);
 
         return $this->success($ChildEvaluate, trans('lang::messages.common.getListSuccess'));
     }
@@ -74,7 +80,7 @@ class ChildEvaluateController extends Controller
     public function update(ChildEvaluateUpdateRequest $request, $id)
     {
         $attributes = $request->all();
-        
+
         $ChildEvaluate = $this->ChildEvaluateRepository->update($attributes, $id);
 
         return $this->success($ChildEvaluate, trans('lang::messages.common.modifySuccess'));

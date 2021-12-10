@@ -54,8 +54,18 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function getAll(array $attributes)
     {
+        if (!empty($attributes['age'])) {
+            $this->model = $this->model->where('Age', $attributes['age']);
+        }
+
+        if (!empty($attributes['CategorySkillId'])) {
+            $this->model = $this->model->where('CategorySkillId', $attributes['CategorySkillId']);
+        }
+
         if (!empty($attributes['key'])) {
-            $this->model = $this->model->whereLike('Name', $attributes['key']);
+            $this->model = $this->model->whereHas('categorySkill', function ($q) use ($attributes) {
+                $q->whereLike('Name', $attributes['key']);
+            });
         }
 
         if (!empty($attributes['limit'])) {
