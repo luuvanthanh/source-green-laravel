@@ -241,7 +241,7 @@ class Index extends PureComponent {
                       label="SỐ NĂM"
                       name="year"
                       rules={
-                        !this.state.isUnlimited
+                        !isUnlimited
                           ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
                           : []
                       }
@@ -254,7 +254,7 @@ class Index extends PureComponent {
                       label="SỐ THÁNG"
                       name="month"
                       rules={
-                        !this.state.isUnlimited
+                        !isUnlimited
                           ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
                           : []
                       }
