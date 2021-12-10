@@ -775,6 +775,16 @@ export async function getLeftMenuMedical() {
       permission: [permissions.YTE],
       pro: true,
     },
+    {
+      title: 'Danh mục học sinh bị sự cố',
+      key: 'student-problem',
+      url: [
+        '/y-te/danh-muc-hoc-sinh-bi-su-co',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {
