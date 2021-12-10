@@ -278,6 +278,13 @@ class Index extends PureComponent {
         render: (record) => `${get(record, 'hours[0].in')} - ${get(record, 'hours[0].out')}`,
       },
       {
+        title: 'Ngày tạo',
+        key: 'creationTime',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Ngày áp dụng',
         key: 'date',
         width: 120,
