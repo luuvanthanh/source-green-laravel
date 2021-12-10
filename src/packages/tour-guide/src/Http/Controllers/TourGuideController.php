@@ -147,4 +147,21 @@ class TourGuideController extends Controller
 
         return $result;
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return Response
+     */
+    public function exportWord($id)
+    {
+        $result = $this->tourGuideRepository->exportWord($id);
+
+        if (is_string($result)) {
+            return $this->error('Export failed', trans('lang::messages.export.template-not-found'), 400);
+        }
+
+        return $result;
+    }
 }

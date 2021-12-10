@@ -10,6 +10,7 @@ use GGPHP\Event\Models\EventHandle;
 use GGPHP\Event\Presenters\EventPresenter;
 use GGPHP\Event\Repositories\Contracts\EventRepository;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -269,6 +270,35 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
         }
 
         return  resolve(ExcelExporterServices::class)->export('event', $params);
+    }
+
+
+    public function exportWord($id)
+    {
+        $event = Event::findOrFail($id);
+
+        $tourGuide = !is_null($event->tourGuide) ?  $event->tourGuide : null;
+        $classify = null;
+
+        if (!is_null($tourGuide)) {
+            $classify = !is_null($tourGuide->objectType) ?  $tourGuide->objectType->name : null;
+        }
+
+        $params = [
+            'date_now' => Carbon::now()->format('d'),
+            'month_now' =>  Carbon::now()->format('m'),
+            'year_now' =>  Carbon::now()->format('Y'),
+            'event_type' => !is_null($event->eventType) ?  $event->eventType->name : null,
+            'time' =>  !is_null($event->time) ?  Carbon::parse($event->time)->format('d-m-Y, H:m') : null,
+            'tourist_destination' => !is_null($event->touristDestination) ?  $event->touristDestination->name : null,
+            'camera' => !is_null($event->camera) ? $event->camera->name : null,
+            'warning_level' => $this->getConstWarningLevel($event->warning_level),
+            'status' =>  $this->getConstStatus($event->status),
+            'tour_guide' => !is_null($tourGuide) ?  $tourGuide->full_name : null,
+            'classify' => $classify,
+        ];
+
+        return resolve(WordExporterServices::class)->exportWord('event', $params);
     }
 
     public function getConstWarningLevel($value)

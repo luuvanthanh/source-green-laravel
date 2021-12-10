@@ -14,25 +14,13 @@ class WordExporterServices
     protected $disk, $endPoint, $templateFileUrl, $resultFileUrl;
 
     public $configs = [
-        'labour_contract' => [
-            'template' => 'labour_contract.docx',
-            'result' => 'labour_contract.docx',
+        'event' => [
+            'template' => 'event.docx',
+            'result' => 'event.docx',
         ],
-        'minutes_of_agreements' => [
-            'template' => 'minutes_of_agreements.docx',
-            'result' => 'minutes_of_agreements.docx',
-        ],
-        'transfer' => [
-            'template' => 'transfer.docx',
-            'result' => 'transfer.docx',
-        ],
-        'decision_reward' => [
-            'template' => 'decision_reward.docx',
-            'result' => 'decision_reward.docx',
-        ],
-        'entrance-paper' => [
-            'template' => 'entrance-paper.docx',
-            'result' => 'entrance-paper.docx',
+        'tour_guide' => [
+            'template' => 'tour_guide.docx',
+            'result' => 'tour_guide.docx',
         ],
     ];
 
@@ -104,5 +92,4 @@ class WordExporterServices
             mkdir($path, 0777, true);
         }
     }
-
 }

@@ -33,6 +33,8 @@ class RouteRegistrar extends CoreRegistrar
             \Route::resource('tour-guides', 'TourGuideController');
 
             \Route::get('export-excel-tour-guides', 'TourGuideController@exportExcel');
+
+            \Route::get('tour-guides-export-word/{id}', 'TourGuideController@exportWord');
         });
     }
 

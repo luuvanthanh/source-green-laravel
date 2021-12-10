@@ -10,6 +10,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Carbon\Carbon;
 use GGPHP\ExcelExporter\Services\ExcelExporterServices;
+use GGPHP\WordExporter\Services\WordExporterServices;
 
 /**
  * Class TourGuideRepositoryEloquent.
@@ -168,5 +169,40 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
         }
 
         return  resolve(ExcelExporterServices::class)->export('hdvhp', $params);
+    }
+
+    public function exportWord($id)
+    {
+        $tourGuide = TourGuide::findOrFail($id);
+
+        $params = [
+            'date_now' => Carbon::now()->format('d'),
+            'month_now' =>  Carbon::now()->format('m'),
+            'year_now' =>  Carbon::now()->format('Y'),
+            'full_name' => $tourGuide->full_name,
+            'nationality' => is_null($tourGuide->nationality) ? null : $tourGuide->nationality,
+            'home_town' => is_null($tourGuide->home_town) ? null : $tourGuide->home_town,
+            'resident' => is_null($tourGuide->resident) ? null : $tourGuide->resident,
+            'sex' =>  is_null($tourGuide->sex) ? null : $this->getSEX($tourGuide->sex),
+            'id_card' => is_null($tourGuide->nationality) ? null : $tourGuide->nationality,
+            'classify' => !is_null($tourGuide->objectType) ?  $tourGuide->objectType->name : null,
+        ];
+
+        return resolve(WordExporterServices::class)->exportWord('tour_guide', $params);
+    }
+
+    public function getSEX($value)
+    {
+        $value = null;
+        switch ($value) {
+            case TourGuide::SEX['MALE']:
+                $value = "Nam";
+                break;
+            case TourGuide::SEX['FEMALE']:
+                $value = "Nữ";
+                break;
+        }
+
+        return $value;
     }
 }
