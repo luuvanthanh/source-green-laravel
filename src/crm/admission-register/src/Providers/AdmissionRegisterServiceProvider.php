@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\AdmissionRegister\Providers;
 
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\AdmissionRegisterRepository;
+use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ChildEvaluateInfoRepository;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ParentInfoRepository;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\AdmissionRegisterRepositoryEloquent;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\ParentInfoRepositoryEloquent;
@@ -10,6 +11,7 @@ use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ConfirmTransporterReposit
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\MedicalInfoRepository;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\ProfileInfoRepository;
 use GGPHP\Crm\AdmissionRegister\Repositories\Contracts\TestInputRepository;
+use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\ChildEvaluateInfoRepositoryEloquent;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\ConfirmTransporterRepositoryEloquent;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\MedicalInfoRepositoryEloquent;
 use GGPHP\Crm\AdmissionRegister\Repositories\Eloquent\ProfileInfoRepositoryEloquent;
@@ -43,5 +45,6 @@ class AdmissionRegisterServiceProvider extends ServiceProvider
         $this->app->bind(TestInputRepository::class, TestInputRepositoryEloquent::class);
         $this->app->bind(MedicalInfoRepository::class, MedicalInfoRepositoryEloquent::class);
         $this->app->bind(ProfileInfoRepository::class, ProfileInfoRepositoryEloquent::class);
+        $this->app->bind(ChildEvaluateInfoRepository::class, ChildEvaluateInfoRepositoryEloquent::class);
     }
 }
