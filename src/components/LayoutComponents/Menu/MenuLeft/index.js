@@ -88,9 +88,9 @@ class MenuLeft extends React.Component {
 
   onSetMenu = (badges) => {
     if (!_.isEmpty(badges)) {
-      this.setState(({
+      this.setState({
         menuData: badges,
-      }));
+      });
     }
   };
 
@@ -196,10 +196,7 @@ class MenuLeft extends React.Component {
                 {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
               </a>
             ) : (
-              <Link
-                to={_.isArray(url) ? url[0] : url}
-                className="d-flex justify-content-between align-items-center"
-              >
+              <Link to={_.isArray(url) ? url[0] : url}>
                 {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
                 {key === 'labours-contracts' && (
