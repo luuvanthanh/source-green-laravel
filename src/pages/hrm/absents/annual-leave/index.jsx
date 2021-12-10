@@ -282,6 +282,13 @@ class Index extends PureComponent {
         ),
       },
       {
+        title: 'Ngày tạo',
+        key: 'creationTime',
+        className: 'min-width-120',
+        width: 120,
+        render: (record) => Helper.getDate(record?.creationTime),
+      },
+      {
         title: 'Từ ngày - Đến ngày',
         key: 'count',
         className: 'min-width-200',
