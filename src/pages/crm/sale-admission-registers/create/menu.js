@@ -22,6 +22,10 @@ export const menu = [
     label: 'Thông tin giấy đồng ý',
   },
   {
+    key: 'childEvaluation',
+    label: 'Thông tin đánh giá trẻ',
+  },
+  {
     key: 'testInput',
     label: 'Thông tin test đầu vào',
   },
