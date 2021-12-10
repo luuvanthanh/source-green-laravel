@@ -151,6 +151,15 @@ function Index() {
     });
   };
 
+  const handleCheckbox = () => {
+    setShow(!show);
+    if (!show) {
+      formRef.setFieldsValue({
+        nameProject: null,
+      });
+    }
+  };
+
   const onFinish = (values) => {
     const payload = {
       ...values,
@@ -162,6 +171,7 @@ function Index() {
         parameterValueId: id,
         value: valueDefault,
       })),
+      nameProject: values.project ? values.nameProject : null,
     };
     dispatch({
       type: params.id ? 'seasonalContractsAdd/UPDATE' : 'seasonalContractsAdd/ADD',
@@ -426,7 +436,7 @@ function Index() {
                     name="project"
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
-                    onChange={() => setShow(!show)}
+                    onChange={handleCheckbox}
                   />
                 </div>
                 {show && (

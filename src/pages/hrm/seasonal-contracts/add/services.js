@@ -39,3 +39,10 @@ export function get(data = {}) {
     },
   });
 }
+
+export function getUsers(data = {}) {
+  return request('/v1/employees?getLimitUser=true', {
+    method: 'GET',
+    data,
+  });
+}
