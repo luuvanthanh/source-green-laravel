@@ -989,6 +989,7 @@ export async function getLeftMenuHRM() {
           title: 'Hợp đồng',
           key: 'contracts',
           permission: [permissions.HRM],
+          pro: true,
           children: [
             {
               title: 'HĐ thử việc',
@@ -1009,6 +1010,7 @@ export async function getLeftMenuHRM() {
                 '/quan-ly-nhan-su/hop-dong-lao-dong/:id/chi-tiet',
               ],
               permission: [permissions.HRM],
+              pro: true,
             },
             {
               title: 'HĐ thời vụ',
@@ -1926,9 +1928,7 @@ export async function getLeftMenuCRM() {
         {
           title: 'Thông tin hồ sơ',
           key: 'configuration-file',
-          url: [
-            '/crm/cau-hinh/danh-sach-ho-so',
-          ],
+          url: ['/crm/cau-hinh/danh-sach-ho-so'],
           permission: [permissions.CRM],
           pro: true,
         },
@@ -1943,7 +1943,6 @@ export async function getLeftMenuCRM() {
     },
   ];
 }
-
 
 export async function getLeftMenuChildDevelop() {
   return [
@@ -1967,9 +1966,7 @@ export async function getLeftMenuChildDevelop() {
         {
           title: 'Câu hỏi đánh giá của trẻ',
           key: 'review-question',
-          url: [
-            '/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre',
-          ],
+          url: ['/su-phat-trien-cua-tre/danh-muc/cau-hoi-danh-gia-cua-tre'],
           permission: [],
           pro: true,
         },
@@ -1999,4 +1996,3 @@ export async function getLeftMenuChildDevelop() {
     },
   ];
 }
-

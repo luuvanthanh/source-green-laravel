@@ -46,6 +46,13 @@ export const variables = {
     MAX_LENGTH_INPUT_CODE: { max: 30, message: 'Trường này không quá 30 kí tự' },
     MAX_LENGTH_INPUT: { max: 500, message: 'Trường này không quá 500 kí tự' },
     MAX_LENGTH_TEXTAREA: { max: 1000, message: 'Trường này không quá 1000 kí tự' },
+    MAX_LENGTH_INPUT_MONTH: {
+      type: 'number',
+      min: 0,
+      max: 12,
+      message: 'Trường này tối đa 12',
+    },
+    MIN_LENGTH_INPUT: { type: 'number', min: 0, message: 'Trường này tối thiểu 1' },
     // TODO: Rename
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
@@ -183,6 +190,12 @@ export const variables = {
     FEMALE: 'Nữ',
     OTHER: 'Khác',
   },
+  STATUS_CONTRACT: [
+    { id: 'DANG_HIEU_LUC', name: 'Đang hiệu lực' },
+    { id: 'GAN_HET_HAN', name: 'Gần hết hạn' },
+    { id: 'DA_HET_HAN', name: 'Đã hết hạn' },
+    { id: 'CHUA_DEN_HAN', name: 'Chưa đến hạn' },
+  ],
 };
 
 export default variables;

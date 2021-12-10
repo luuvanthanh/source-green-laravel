@@ -241,3 +241,10 @@ export function getSensitivePeriods(params = {}) {
     },
   });
 }
+
+export function getCountContract(params = {}) {
+  return requestLaravel('/v1/labours-contracts?status=GAN_HET_HAN', {
+    method: 'GET',
+    params,
+  });
+}
