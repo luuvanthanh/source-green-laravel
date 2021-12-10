@@ -335,6 +335,7 @@ const General = memo(
                                       <Pane
                                         key={field.key}
                                         style={{ padding: 20 }}
+                                        className="border-top"
                                       >
                                         <Heading type="form-block-title" style={{ marginBottom: 12 }}>
                                           {file?.sex === "MALE" ? 'THÔNG TIN CHA' : ""}

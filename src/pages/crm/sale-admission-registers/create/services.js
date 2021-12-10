@@ -50,7 +50,12 @@ export function details(params = {}) {
 export function getParents(params) {
   return request('/v1/parent-infos', {
     method: 'GET',
-    params,
+    params: {
+      ...params,
+      limit: params.limit,
+      page: params.page,
+      orderBy: 'created_at',
+    },
   });
 }
 
@@ -184,5 +189,52 @@ export function getTestInputs(params = {}) {
 export function getRelationships() {
   return request(`/v1/category-relationships`, {
     method: 'GET',
+  });
+}
+
+export function addMedical(data = {}) {
+  return request('/v1/medical-infos', {
+    method: 'POST',
+    data: {
+      ...data,
+      birth_date: Helper.getDateTime({
+        value: Helper.setDate({
+          ...variables.setDateData,
+          originValue: data.birth_date,
+        }),
+        format: variables.DATE_FORMAT.DATE_AFTER,
+        isUTC: false,
+      }),
+    },
+  });
+}
+
+export function getMedical(data = {}) {
+  return request(`/v1/medical-infos`, {
+    method: 'GET',
+    params: {
+      MedicalInfo:data.id,
+      ...data,
+      limit: data.limit,
+      page: data.page,
+      orderBy: 'created_at',
+      sortedBy: 'desc',
+      searchJoin: 'and',
+      include: Helper.convertIncludes([
+        "medicalDeclareInfo.configMedicalDeclare,childHeathDevelop"
+      ]),
+    },
+  });
+}
+
+export function getCategory(params) {
+  return request(`/v1/config-medical-declares`, {
+    method: 'GET',
+    params: {
+      ...params,
+      orderBy: 'created_at',
+      // sortedBy: 'desc',
+      // searchJoin: 'and',
+    },
   });
 }

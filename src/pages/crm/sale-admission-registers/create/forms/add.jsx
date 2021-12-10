@@ -187,6 +187,7 @@ const General = memo(
                     name="date_register"
                     label="Thời gian đăng ký nhập học"
                     type={variables.DATE_PICKER}
+                    rules={[variables.RULES.EMPTY]}
                   />
                 </Pane>
                 <Pane className="col-lg-12">

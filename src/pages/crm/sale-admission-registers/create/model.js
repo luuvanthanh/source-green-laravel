@@ -15,6 +15,9 @@ export default {
     parents: [],
     student: [],
     relationships: [],
+    medical: [],
+    categoryMedical: [],
+    medicalCheck: {},
     error: {
       isError: false,
       data: {},
@@ -75,6 +78,15 @@ export default {
     SET_RELATIONSHIPS: (state, { payload }) => ({
       ...state,
       relationships: payload.parsePayload,
+    }),
+    SET_MEDICAL: (state, { payload }) => ({
+      ...state,
+      medicalCheck: payload.parsePayload[0],
+      medical: payload?.parsePayload?.map((item, index) => ({ ...item.childHeathDevelop[0], index })) || [], ///.map((item,index)=> ({...item?.childHeathDevelop, index})) || [],
+    }),
+    SET_CATEGORY_MEDICAL: (state, { payload }) => ({
+      ...state,
+      categoryMedical: payload?.parsePayload,
     }),
   },
   effects: {
@@ -261,6 +273,50 @@ export default {
         const response = yield saga.call(services.getRelationships, payload);
         yield saga.put({
           type: 'SET_RELATIONSHIPS',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *ADD_MEDICAL({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.addMedical, payload);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
+    *GET_MEDICAL({ payload, callback }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getMedical, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_MEDICAL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *GET_CATEGORY_MEDICAL({ payload, callback }, saga) {
+      try {
+        yield saga.put({
+          type: 'INIT_STATE',
+        });
+        const response = yield saga.call(services.getCategory, payload);
+        callback(response);
+        yield saga.put({
+          type: 'SET_CATEGORY_MEDICAL',
           payload: response,
         });
       } catch (error) {

@@ -109,7 +109,7 @@ const Students = memo(() => {
   }, [params.id]);
 
   useEffect(() => {
-    dispatch({  
+    dispatch({
       type: 'crmSaleAdmissionAdd/GET_RELATIONSHIPS',
       payload: {},
     });
@@ -256,7 +256,7 @@ const Students = memo(() => {
                   </div>
                   <Pane className="d-flex" style={{ marginLeft: 'auto', padding: 20 }}>
                     <Button color="primary" icon="export" className="ml-2">
-                      Xuất file khai báo y tế
+                      Xuất file giấy đồng ý
                     </Button>
                     <Button
                       color="success"
