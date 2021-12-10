@@ -74,6 +74,11 @@ class TourGuide extends UuidModel implements HasMedia
         return $this->hasMany(\GGPHP\Event\Models\Event::class);
     }
 
+    public function travelAgencieTourGuide()
+    {
+        return $this->hasMany(\GGPHP\TravelAgency\Models\TravelAgencieTourGuide::class);
+    }
+
     /**
      * Get avatar
      */

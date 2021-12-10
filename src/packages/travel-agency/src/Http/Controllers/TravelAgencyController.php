@@ -145,7 +145,29 @@ class TravelAgencyController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $result = $this->travelAgencyRepository->exportExcel($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['locality'])) {
+            $locality = explode(',', $attributes['locality']);
+            $newLocality = [];
+            foreach ($locality as $value) {
+                $newLocality[] = TravelAgency::LOCALITY[$value];
+            }
+
+            $attributes['locality'] = array_values($newLocality);
+        }
+
+        if (!empty($attributes['service_type'])) {
+            $serviceType = explode(',', $attributes['service_type']);
+            $newServiceType = [];
+            foreach ($serviceType as $value) {
+                $newServiceType[] = TravelAgency::SERVICE_TYPE[$value];
+            }
+
+            $attributes['service_type'] = array_values($newServiceType);
+        }
+
+        $result = $this->travelAgencyRepository->exportExcel($attributes);
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('Template not found'), 400);

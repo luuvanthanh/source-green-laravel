@@ -253,7 +253,39 @@ class EventController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $result = $this->eventRepository->exportExcel($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['warning_level'])) {
+            $warningLevel = explode(',', $attributes['warning_level']);
+            $newWarningLevel = [];
+            foreach ($warningLevel as $value) {
+                $newWarningLevel[] = Event::WARNING_LEVEL[$value];
+            }
+
+            $attributes['warning_level'] = array_values($newWarningLevel);
+        }
+
+        if (!empty($attributes['status'])) {
+            $status = explode(',', $attributes['status']);
+            $newStatus = [];
+            foreach ($status as $value) {
+                $newStatus[] = Event::STATUS[$value];
+            }
+
+            $attributes['status'] = array_values($newStatus);
+        }
+
+        if (!empty($attributes['status_detail'])) {
+            $statusDetail = explode(',', $attributes['status_detail']);
+            $newStatusDetail = [];
+            foreach ($statusDetail as $value) {
+                $newStatusDetail[] = Event::STATUS[$value];
+            }
+
+            $attributes['status_detail'] = array_values($newStatusDetail);
+        }
+
+        $result = $this->eventRepository->exportExcel($attributes);
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('Template not found'), 400);

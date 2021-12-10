@@ -87,6 +87,14 @@ class TourGuideRepositoryEloquent extends BaseRepository implements TourGuideRep
             $this->model = $this->model->where('updated_at', '>=', $attributes['updated_at']);
         }
 
+        if (!empty($attributes['travel_agency_id'])) {
+            $travelAgencyId = explode(',', $attributes['travel_agency_id']);
+
+            $this->model = $this->model->whereHas('travelAgencieTourGuide', function ($query) use ($travelAgencyId) {
+                $query->whereIn('travel_agency_id', $travelAgencyId);
+            });
+        }
+
         if (!$parse) {
             return $this->model->get();
         }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\Presentable;
 use Prettus\Repository\Traits\PresentableTrait;
 use GGPHP\Core\Traits\CastDatetimeFormatTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Traits\CausesActivity;
 
@@ -14,6 +15,32 @@ class CoreModel extends Model implements Presentable
     use PresentableTrait, LogsActivity, CausesActivity, CastDatetimeFormatTrait;
 
     protected static $logFillable = true;
+
+    /**
+     * Anonymous scope
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+
+        static::addGlobalScope('exclude', function (Builder $builder) {
+
+            if (!is_null(request()->exclude_field)) {
+                $excludeField = explode(',', request()->exclude_field);
+
+                $model =  $builder->getModel();
+                $fillables = $model->getFillable();
+
+                if (method_exists($model, 'getDateTimeFields')) {
+                    $fillables = array_merge($fillables, $model->getDateTimeFields());
+                }
+
+
+                $builder->select(array_diff($fillables, $excludeField));
+            }
+        });
+    }
 
     public function scopeWhereLike($query, $key, $value)
     {

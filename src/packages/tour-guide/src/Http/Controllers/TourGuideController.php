@@ -127,7 +127,19 @@ class TourGuideController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $result = $this->tourGuideRepository->exportExcel($request->all());
+        $attributes = $request->all();
+
+        if (!empty($attributes['type'])) {
+            $type = explode(',', $attributes['type']);
+            $newType = [];
+            foreach ($type as $value) {
+                $newType[] = TourGuide::TYPE[$value];
+            }
+
+            $attributes['type'] = array_values($newType);
+        }
+
+        $result = $this->tourGuideRepository->exportExcel($attributes);
 
         if (is_string($result)) {
             return $this->error('Export failed', trans('Template not found'), 400);
