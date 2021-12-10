@@ -17,6 +17,7 @@ import TestInputForm from './forms/testInput';
 import TuitionForm from './forms/tuition';
 import FileForm from './forms/file';
 import AddForm from './forms/add';
+import ChildEvaluationForm from './forms/child-evaluation';
 
 import { menu, defaultKey } from './menu';
 
@@ -31,6 +32,7 @@ const forms = {
   testInput: <TestInputForm />,
   tuition: <TuitionForm />,
   file: <FileForm />,
+  childEvaluation :<ChildEvaluationForm/>,
 };
 
 const Index = memo(({ match: { params }, location: { pathname, query } }) => {
