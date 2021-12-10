@@ -763,6 +763,18 @@ export async function getLeftMenuMedical() {
         },
       ],
     },
+    {
+      title: 'Danh mục sự cố',
+      key: 'list-trouble',
+      url: [
+        '/y-te/danh-muc-su-co',
+        '/y-te/danh-muc-su-co/tao-moi',
+        '/y-te/danh-muc-su-co/:id/chi-tiet',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {
@@ -1726,46 +1738,6 @@ export async function getLeftMenuCRM() {
             '/crm/danh-muc/loai-su-kien',
             '/crm/danh-muc/loai-su-kien/tao-moi',
             '/crm/danh-muc/loai-su-kien/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Kỹ năng',
-          key: 'skill',
-          url: [
-            '/crm/danh-muc/ky-nang',
-            '/crm/danh-muc/ky-nang/tao-moi',
-            '/crm/danh-muc/ky-nang/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Vấn đề khó khăn của trẻ',
-          key: 'ChildrensProblems',
-          url: [
-            '/crm/danh-muc/van-de-kho-khan-cua-tre',
-            '/crm/danh-muc/van-de-kho-khan-cua-tre/tao-moi',
-            '/crm/danh-muc/van-de-kho-khan-cua-tre/:id/chi-tiet',
-          ],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Câu hỏi đánh giá cho phụ huynh',
-          key: 'review-question',
-          url: ['/crm/danh-muc/cau-hoi-danh-gia-cho-phu-huynh'],
-          permission: [permissions.CRM],
-          pro: true,
-        },
-        {
-          title: 'Kịch bản đánh giá',
-          key: 'review-scenario',
-          url: [
-            '/crm/danh-muc/kich-ban-danhh-gia',
-            '/crm/danh-muc/kich-ban-danhh-gia/tao-moi',
-            '/crm/danh-muc/kich-ban-danhh-gia/:id/chi-tiet',
           ],
           permission: [permissions.CRM],
           pro: true,

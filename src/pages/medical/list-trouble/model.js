@@ -1,26 +1,23 @@
 // import * as services from './services';
 
 export default {
-  namespace: 'crmReviewScenario',
+  namespace: 'medicalListTrouble',
   state: {
     data: [
       {
         id: 1,
-        skill: "Tương tác xã hội",
-        age: "30 – 36 tháng",
-        doen_aansoek: 'Đánh giá đầu vào',
+        code: "SK01",
+        name: 'Sốt',
       },
       {
         id: 2,
-        skill: "Kỹ năng mềm",
-        age: "20 – 25 tháng",
-        doen_aansoek: 'Đánh giá đầu vào',
+        code: "KSK02",
+        name: 'Té',
       },
       {
         id: 3,
-        skill: "Sức khoẻ của bé",
-        age: "15 – 25 tháng",
-        doen_aansoek: 'Đánh giá định kỳ',
+        code: "SK03",
+        name: 'Vỡ giáo cụ/ Chén đĩa',
       }
     ],
     pagination: {
