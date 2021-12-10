@@ -19,7 +19,7 @@ class CategoryQuestionParentRepositoryEloquent extends BaseRepository implements
      * @var array
      */
     protected $fieldSearchable = [
-        'created_at',
+        'Id', 'CreationTime'
     ];
 
     /**

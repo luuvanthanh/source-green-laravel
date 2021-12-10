@@ -59,7 +59,7 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
         if (!empty($attributes['limit'])) {
             $categorySkill = $this->paginate($attributes['limit']);
         } else {
-            $categorySkill = $this->orderBy('NumericalSkill')->get();
+            $categorySkill = $this->get();
         }
 
         return $categorySkill;
@@ -94,5 +94,13 @@ class CategorySkillRepositoryEloquent extends BaseRepository implements Category
         $result = CategorySkill::orderBy('NumericalSkill')->get();
 
         return parent::parserResult($result);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $categorySkill = CategorySkill::find($id);
+        $categorySkill->update($attributes);
+
+        return parent::find($id);
     }
 }

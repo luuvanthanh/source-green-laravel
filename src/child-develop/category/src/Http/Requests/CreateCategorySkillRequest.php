@@ -24,7 +24,7 @@ class CreateCategorySkillRequest extends FormRequest
     public function rules()
     {
         return [
-            'Name' => 'required|string|unique:CategorySkills,Name'
+            'name' => 'required|string|unique:CategorySkills,Name'
         ];
     }
 }

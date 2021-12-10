@@ -19,7 +19,7 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
      * @var array
      */
     protected $fieldSearchable = [
-        'created_at',
+        'Id', 'CreationTime'
     ];
 
     /**
@@ -78,5 +78,13 @@ class CategoryChildIssueRepositoryEloquent extends BaseRepository implements Cat
         $categoryChildIssue = CategoryChildIssue::create($attributes);
 
         return parent::parserResult($categoryChildIssue);
+    }
+
+    public function update(array $attributes, $id)
+    {
+        $categoryChildIssue = CategoryChildIssue::find($id);
+        $categoryChildIssue->update($attributes);
+
+        return parent::find($id);
     }
 }

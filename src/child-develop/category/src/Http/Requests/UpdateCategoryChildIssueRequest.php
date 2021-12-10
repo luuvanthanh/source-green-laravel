@@ -25,8 +25,8 @@ class UpdateCategoryChildIssueRequest extends FormRequest
     public function rules()
     {
         return [
-            'Id' => 'required',
-            'Name' => [
+            'id' => 'required',
+            'name' => [
                 function ($attribute, $value, $fail) {
                     $categoryChildIssue = CategoryChildIssue::where('Name', $value)->where('Id', '!=', $this->id)->first();
 

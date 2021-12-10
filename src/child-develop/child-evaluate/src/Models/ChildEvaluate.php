@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\ChildEvaluate\Models;
 
+use GGPHP\ChildDevelop\Category\Models\CategorySkill;
 use GGPHP\Core\Models\UuidModel;
 
 class ChildEvaluate extends UuidModel
@@ -26,6 +27,11 @@ class ChildEvaluate extends UuidModel
 
     public function childEvaluateDetail()
     {
-        return $this->hasMany(ChildEvaluateDetail::class,'ChildEvaluateId');
+        return $this->hasMany(ChildEvaluateDetail::class, 'ChildEvaluateId');
+    }
+
+    public function categorySkill()
+    {
+        return $this->belongsTo(CategorySkill::class, 'CategorySkillId');
     }
 }

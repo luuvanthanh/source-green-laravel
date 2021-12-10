@@ -25,8 +25,8 @@ class UpdateCategorySkillRequest extends FormRequest
     public function rules()
     {
         return [
-            'Id' => 'required',
-            'Name' => [
+            'id' => 'required',
+            'name' => [
                 function ($attribute, $value, $fail) {
                     $categorySkill = CategorySkill::where('Name', $value)->where('Id', '!=', $this->id)->first();
 

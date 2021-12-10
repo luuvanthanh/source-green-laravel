@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\ChildEvaluate\Transformers;
 
+use GGPHP\ChildDevelop\Category\Transformers\CategorySkillTransformer;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluateDetail;
 use GGPHP\Core\Transformers\BaseTransformer;
@@ -30,7 +31,7 @@ class ChildEvaluateTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = ['childEvaluateDetail'];
+    protected $availableIncludes = ['childEvaluateDetail', 'categorySkill'];
 
     /**
      * Transform the ReviewDetail entity.
@@ -57,5 +58,13 @@ class ChildEvaluateTransformer extends BaseTransformer
     public function includeChildEvaluateDetail(ChildEvaluate $childEvaluete)
     {
         return $this->collection($childEvaluete->childEvaluateDetail, new ChildEvaluateDetailTransformer, 'ChildEvaluateDetail');
+    }
+
+    public function includeCategorySkill(ChildEvaluate $childEvaluate)
+    {
+        if (empty($childEvaluate->categorySkill)) {
+            return;
+        }
+        return $this->item($childEvaluate->categorySkill, new CategorySkillTransformer, 'CategorySkill');
     }
 }

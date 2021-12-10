@@ -39,14 +39,6 @@ class SeasonalContractCreateRequest extends FormRequest
                     $seasonalContract = SeasonalContract::where('EmployeeId', $employeeId)->orderBy('CreationTime', 'DESC')->first();
                     $value = Carbon::parse($value)->setTimezone('GMT+7')->format('Y-m-d');
                     $now = Carbon::now()->setTimezone('GMT+7')->format('Y-m-d');
-                    
-                    if ((!is_null($probationaryContract) && $now <= $probationaryContract->ContractTo->format('Y-m-d'))) {
-                        return $fail("không được tạo HĐ thời vụ" . $probationaryContract->ContractTo->format('d-m-Y'));
-                    }
-
-                    if ((!is_null($labourContract) && $now <= $labourContract->ContractTo->format('Y-m-d'))) {
-                        return $fail("không được tạo HĐ thời vụ" . $labourContract->ContractTo->format('d-m-Y'));
-                    }
 
                     if (!is_null($seasonalContract) && $value <= $seasonalContract->ContractDate->format('Y-m-d')) {
                         return $fail("Ngày hợp đồng phải lớn hơn ngày hợp đồng gần nhất " . $seasonalContract->ContractDate->format('d-m-Y'));
@@ -90,7 +82,7 @@ class SeasonalContractCreateRequest extends FormRequest
             'workDetail' => 'required|string',
             'workTime' => 'required|string',
             'branchId' => 'required|exists:Branches,Id',
-            'nameProject' => 'required|string',
+            'nameProject' => 'string',
         ];
     }
 }
