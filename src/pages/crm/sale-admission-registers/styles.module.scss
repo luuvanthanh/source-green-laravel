@@ -175,8 +175,6 @@
     margin-bottom: 10px !important;
   }
 }
-
-<<<<<<< HEAD
 .wrapper-child {
   .child-title {
     padding: 20px 20px 0px 20px;
@@ -193,9 +191,71 @@
     .date {
       font-family: $base__font-family;
       display: flex;
-=======
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #35373a;
+    }
+    .time {
+      font-family: $base__font-family;
+      display: flex;
+      font-style: normal;
+      font-weight: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #3b5cad;
+    }
+  }
+
+  .child-content {
+    padding: 0px 20px;
+    border-bottom: 1px solid #eaeaea;
+    .title {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #35373a;
+      padding-top: 12px;
+      padding-bottom: 10px;
+    }
+    .description {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      font-weight: 700;
+      padding-top: 5px;
+      line-height: 20px;
+      color: #36383a;
+      padding-bottom: 10px;
+    }
+  }
+
+  .child-main {
+    padding: 0px 20px;
+    border-bottom: 1px solid #eaeaea;
+    .title {
+      font-family: $base__font-family;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #36383a;
+      padding: 15px 0px;
+    }
+  }
+}
+
 .wrapper-testInput {
   padding: 20px;
+
   .wrapper-card-img {
     .wrapperImg {
       width: 100px;
@@ -231,7 +291,6 @@
     .contentDay {
       display: flex;
       font-family: $base__font-family;
->>>>>>> feature/UI-CRM-ADMISSION-testInput
       font-style: normal;
       font-weight: normal;
       font-weight: 400;
@@ -241,10 +300,6 @@
     }
     .time {
       font-family: $base__font-family;
-<<<<<<< HEAD
-      display: flex;
-=======
->>>>>>> feature/UI-CRM-ADMISSION-testInput
       font-style: normal;
       font-weight: normal;
       font-weight: 400;
@@ -254,21 +309,6 @@
     }
   }
 
-<<<<<<< HEAD
-  .child-content {
-    padding: 0px 20px;
-    border-bottom: 1px solid #EAEAEA;
-    .title {
-      font-family: $base__font-family;
-      font-style: normal;
-      font-weight: normal;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 20px;
-      color: #35373a;
-      padding-top: 12px;
-      padding-bottom: 10px;
-=======
   .wrapper-container {
     width: 100%;
     padding-top: 15px;
@@ -291,38 +331,12 @@
       line-height: 24px;
       padding: 0px !important;
       color: #27a600;
->>>>>>> feature/UI-CRM-ADMISSION-testInput
     }
     .description {
       font-family: $base__font-family;
       font-style: normal;
-<<<<<<< HEAD
-      font-weight: bold;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 20px;
-      color: #36383a;
-      padding-bottom: 10px;
-
-    }
-  }
-
-  .child-main {
-    padding: 0px 20px;
-    border-bottom: 1px solid #EAEAEA;
-    .title {
-      font-family: $base__font-family;
-      font-style: normal;
-      font-weight: bold;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 20px;
-      color: #36383a;
-      padding: 15px 0px;
-=======
       font-weight: 600;
       font-size: 14px;
-      margin-top: 5px;
       line-height: 20px;
       color: #36383a;
     }
@@ -359,7 +373,6 @@
 
   .wrapper-title {
     display: flex;
-    width: 100%;
     padding: 15px 0px;
     border-top: 1px dashed #eaeaea;
     .icon {
@@ -371,7 +384,7 @@
       border-radius: 50%;
     }
     .title {
-      width: calc(100% - 30px);
+      width: calc(100% -50px);
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -379,7 +392,6 @@
       line-height: 20px;
       color: #36383a;
       padding-left: 15px;
->>>>>>> feature/UI-CRM-ADMISSION-testInput
     }
   }
 }
