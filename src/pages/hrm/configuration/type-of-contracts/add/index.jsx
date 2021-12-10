@@ -110,6 +110,10 @@ class Index extends PureComponent {
     this.setStateData({
       isUnlimited: e.target.checked,
     });
+    this.formRef.current.setFieldsValue({
+      month: 0,
+      year: 0,
+    });
   };
 
   onFinish = (values) => {
@@ -232,13 +236,28 @@ class Index extends PureComponent {
                       onChange={this.onChangeUnLimited}
                     />
                   </div>
-                </div>
-                <div className="row">
+                  <div className="col-lg-6">
+                    <FormItem
+                      label="SỐ NĂM"
+                      name="year"
+                      rules={
+                        !isUnlimited
+                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
+                          : []
+                      }
+                      type={variables.INPUT}
+                      disabled={isUnlimited}
+                    />
+                  </div>
                   <div className="col-lg-6">
                     <FormItem
                       label="SỐ THÁNG"
                       name="month"
-                      rules={[variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]}
+                      rules={
+                        !isUnlimited
+                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
+                          : []
+                      }
                       type={variables.INPUT}
                       disabled={isUnlimited}
                     />
