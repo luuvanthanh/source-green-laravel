@@ -86,11 +86,14 @@ const General = memo(() => {
                 customer_lead_id: params.id,
             },
         });
+    }, []);
+
+    useEffect(() => {
         dispatch({
             type: 'crmSaleLeadAdd/GET_CATEGORY_EVENTS',
             payload: {},
         });
-    }, [params.id]);
+    }, []);
 
     useEffect(() => {
         mounted.current = true;
@@ -544,12 +547,6 @@ const General = memo(() => {
         formRef.current.resetFields();
         mountedSet(setDescription, "");
         mountedSet(setObjects, {});
-        dispatch({
-            type: 'crmSaleLeadAdd/EVENTS',
-            payload: {
-                customer_lead_id: params.id,
-            },
-        });
     };
 
     return (
@@ -664,7 +661,7 @@ const General = memo(() => {
                             </>
                         </div>
                         <div className="row">
-                            <Pane className="col-lg-12">
+                            <Pane className="col-lg-12 pb20">
                                 <div className={stylesModule['wrapper-table']}>
                                     <Table
                                         columns={header()}
