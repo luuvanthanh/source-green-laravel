@@ -1,7 +1,7 @@
 import { memo, useRef, useState, useEffect } from 'react';
-import { Form, Radio, Input, InputNumber, Space } from 'antd';
+import { Form, Input } from 'antd';
 import { isEmpty, get, head, } from 'lodash';
-import { connect, history, withRouter } from 'umi';
+import { connect, withRouter } from 'umi';
 import PropTypes from 'prop-types';
 import TableCus from '@/components/CommonComponent/Table';
 import classnames from 'classnames';
@@ -9,7 +9,6 @@ import styles from '@/assets/styles/Common/common.scss';
 import Pane from '@/components/CommonComponent/Pane';
 import Heading from '@/components/CommonComponent/Heading';
 import Button from '@/components/CommonComponent/Button';
-import Loading from '@/components/CommonComponent/Loading';
 import { variables } from '@/utils/variables';
 import { v4 as uuidv4 } from 'uuid';
 import FormItem from '@/components/CommonComponent/FormItem';
@@ -29,7 +28,7 @@ const mapStateToProps = ({ loading, crmSaleAdmissionAdd }) => ({
   medicalCheck: crmSaleAdmissionAdd.medicalCheck,
 });
 const General = memo(
-  ({ dispatch, loading: { effects }, match: { params }, details, error, sliderRows, medical, categoryMedical, medicalCheck }) => {
+  ({ dispatch, loading: { effects }, match: { params }, medical, categoryMedical, medicalCheck }) => {
     const formRef = useRef();
     const mounted = useRef(false);
     const [dataTable, setDataTable] = useState([]);
@@ -39,16 +38,10 @@ const General = memo(
       effects[`crmSaleAdmissionAdd/ADD`] ||
       effects[`crmSaleAdmissionAdd/UPDATE`] ||
       effects[`crmSaleAdmissionAdd/UPDATE_STATUS`];
-    const loading = effects[`crmSaleAdmissionAdd/GET_MEDICAL`] || effects[`crmSaleAdmissionAdd/GET_CATEGORY_MEDICAL`];
     /**
      * Function submit form modal
      * @param {object} values values of form
      */
-    // useEffect(() => {
-    //   if (!isEmpty(sliderRows)) {
-    //     setDataTable(sliderRows);
-    //   }
-    // }, [sliderRows]);
 
     useEffect(() => {
       dispatch({
@@ -57,7 +50,7 @@ const General = memo(
         callback: (response) => {
           if (response) {
             formRef.current.setFieldsValue({
-              data: response.parsePayload?.filter((item) => item.use) || [],
+              data: response.parsePayload,
             });
           }
         },
@@ -74,12 +67,9 @@ const General = memo(
             setNewForm(true);
             setDataTable(response?.parsePayload[0]?.childHeathDevelop || []);
             formRef.current.setFieldsValue({
-              data: response.parsePayload[0].medicalDeclareInfo.filter((item) => item.is_checked) || [],
+              data: response.parsePayload[0].medicalDeclareInfo,
             });
             setForm1(response.parsePayload[0].medicalDeclareInfo);
-            console.log("repon", response)
-            console.log("repon", response.parsePayload[0].medicalDeclareInfo?.filter((item) => item.configMedicalDeclare.use) || []);
-            // console.log("data", response?.parsePayload?.map((item, index) => ({ ...item.childHeathDevelop[0], index })) || [],);
           }
         },
       });
@@ -170,7 +160,7 @@ const General = memo(
           if (response) {
             setNewForm(false);
             formRef.current.setFieldsValue({
-              data: response?.parsePayload?.filter((item) => item.use) || [],
+              data: response?.parsePayload,
             });
           }
         },
@@ -304,9 +294,6 @@ const General = memo(
                     {fields.map((field, index) => {
                       const itemData = categoryMedical?.find((item, indexWater) => indexWater === index);
                       const file = form1.find((item) => item.config_medical_declare_id === itemData?.id);
-                      console.log("file", file)
-                      console.log("categoryMedical",categoryMedical)
-                      console.log("file", file)
                       return (
                         <>
                           <Pane className="offset-lg-12 col-lg-12 pt20 pl20 pr20 border-bottom" key={field?.key}>
@@ -360,17 +347,12 @@ const General = memo(
                       const { data } = formRef.current.getFieldsValue();
                       const itemData = data?.find((item, indexWater) => indexWater === index);
                       file = categoryMedical.find((item) => item.id === itemData?.id);
-                      // console.log("file2", file)
-                      console.log("data", data)
-                      const count = index + 1;
-                      // count = !file?.use ? count - 1 : index;
-
 
                       return (
                         <>
                           <Pane className="offset-lg-12 col-lg-12 pt20 pl20 pr20 pb10 border-bottom" key={field.key}>
                             <Pane className={stylesModule['wrapper-radio']}>
-                              <h3 className={stylesModule.title}>{count}. {file?.name}</h3>
+                              <h3 className={stylesModule.title}>{index + 1}. {file?.name}</h3>
                               <Pane >
                                 {file?.use_yes_or_no ?
                                   <FormItem
@@ -469,11 +451,7 @@ const General = memo(
 General.propTypes = {
   dispatch: PropTypes.func,
   match: PropTypes.objectOf(PropTypes.any),
-  details: PropTypes.objectOf(PropTypes.any),
   loading: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-  data: PropTypes.arrayOf(PropTypes.any),
-  sliderRows: PropTypes.arrayOf(PropTypes.any),
   categoryMedical: PropTypes.arrayOf(PropTypes.any),
   medical: PropTypes.arrayOf(PropTypes.any),
   medicalCheck: PropTypes.objectOf(PropTypes.any),
@@ -481,12 +459,8 @@ General.propTypes = {
 
 General.defaultProps = {
   match: {},
-  details: {},
   dispatch: () => { },
   loading: {},
-  error: {},
-  data: [],
-  sliderRows: [],
   categoryMedical: [],
   medical: [],
   medicalCheck: {},
