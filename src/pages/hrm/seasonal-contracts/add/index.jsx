@@ -3,7 +3,7 @@ import { useHistory, useRouteMatch } from 'umi';
 import { Form, Tabs, InputNumber } from 'antd';
 import styles from '@/assets/styles/Common/common.scss';
 import classnames from 'classnames';
-import { get, isEmpty, toString, last, head, omit } from 'lodash';
+import { get, isEmpty, last, head, omit } from 'lodash';
 import moment from 'moment';
 import Text from '@/components/CommonComponent/Text';
 import Button from '@/components/CommonComponent/Button';
@@ -34,6 +34,7 @@ function Index() {
   ]);
 
   const [parameterValues, setParameterValues] = useState([]);
+  const [show, setShow] = useState(false);
 
   const loadCategories = () => {
     dispatch({
@@ -66,6 +67,7 @@ function Index() {
 
   useEffect(() => {
     if (!!details && !isEmpty(details) && get(params, 'id')) {
+      if (details?.project) setShow(true);
       formRef.setFieldsValue({
         ...details,
         contractDate: details.contractDate && moment(details.contractDate),
@@ -82,6 +84,18 @@ function Index() {
     }
   }, [details]);
 
+  const formUpdate = (value, values) => {
+    const { month, date, contractFrom } = values;
+
+    if (moment.isMoment(contractFrom)) {
+      formRef?.setFieldsValue({
+        contractTo: moment(contractFrom)
+          .add(month || 0, 'months')
+          .add(date || 0, 'day'),
+      });
+    }
+  };
+
   const changeContract = (value) => {
     const itemContract = contractTypes.find((item) => item.id === value);
     if (itemContract) {
@@ -92,20 +106,8 @@ function Index() {
         })),
       );
       formRef.setFieldsValue({
-        month: toString(itemContract.month),
-        year: toString(itemContract.year),
-      });
-    }
-  };
-
-  const formUpdate = (value, values) => {
-    const { month, year, contractFrom } = values;
-
-    if (moment.isMoment(contractFrom)) {
-      formRef?.setFieldsValue({
-        contractTo: moment(contractFrom)
-          .add(month || 0, 'months')
-          .add(year || 0, 'years'),
+        month: itemContract.month,
+        date: itemContract.month ? 30 * itemContract.month + 5 : 0,
       });
     }
   };
@@ -321,6 +323,7 @@ function Index() {
                     label="Loại hợp đồng"
                     name="typeOfContractId"
                     type={variables.SELECT}
+                    rules={[variables.RULES.EMPTY]}
                     onChange={changeContract}
                   />
                 </div>
@@ -332,7 +335,7 @@ function Index() {
                     label="Số tháng hợp đồng"
                     name="month"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY]}
+                    rules={[variables.RULES.EMPTY, variables.RULES.MAX_LENGTH_INPUT_MONTH]}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -340,7 +343,7 @@ function Index() {
                     label="Số ngày hợp đồng"
                     name="date"
                     type={variables.INPUT_COUNT}
-                    rules={[variables.RULES.EMPTY]}
+                    rules={[variables.RULES.EMPTY, variables.RULES.MIN_LENGTH_INPUT]}
                   />
                 </div>
                 <div className="col-lg-4">
@@ -369,7 +372,6 @@ function Index() {
                     data={categories.branches}
                     label="Nơi làm việc"
                     name="branchId"
-                    // type={variables.SELECT_MUTILPLE}
                     type={variables.SELECT}
                     rules={[variables.RULES.EMPTY]}
                   />
@@ -413,7 +415,7 @@ function Index() {
                 <div className="col-lg-4">
                   <FormItem
                     label="Không tham gia BHXH"
-                    name="isSocialInsurance"
+                    name="joinSocialInsurance"
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
                   />
@@ -421,19 +423,22 @@ function Index() {
                 <div className="col-lg-4">
                   <FormItem
                     label="Có dự án"
-                    name="isProject"
+                    name="project"
                     type={variables.CHECKBOX_FORM}
                     valuePropName="checked"
+                    onChange={() => setShow(!show)}
                   />
                 </div>
-                <div className="col-lg-12">
-                  <FormItem
-                    label="Tên dự án"
-                    name="nameProject"
-                    type={variables.INPUT}
-                    rules={[variables.RULES.EMPTY]}
-                  />
-                </div>
+                {show && (
+                  <div className="col-lg-12">
+                    <FormItem
+                      label="Tên dự án"
+                      name="nameProject"
+                      type={variables.INPUT}
+                      rules={[variables.RULES.EMPTY]}
+                    />
+                  </div>
+                )}
               </div>
               {!isEmpty(parameterValues) && (
                 <>

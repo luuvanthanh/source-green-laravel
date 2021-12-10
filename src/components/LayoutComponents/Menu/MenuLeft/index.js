@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { size } from 'lodash';
 import React from 'react';
 import store from 'store';
 import classnames from 'classnames';
@@ -21,6 +21,7 @@ const mapStateToProps = ({ menu, settings, user }) => ({
   isSettingsOpen: settings.isSettingsOpen,
   isMenuCollapsed: settings.isMenuCollapsed,
   isMobileMenuOpen: settings.isMobileMenuOpen,
+  categories: settings.categories,
   user,
 });
 
@@ -31,6 +32,7 @@ class MenuLeft extends React.Component {
     super(props, context);
     const { user } = props;
     this.state = {
+      count: 0 || null,
       menuData: props.menu || props.menuData,
       openedKeys: store.get('app.menu.openedKeys') || [],
       selectedKeys: store.get('app.menu.selectedKeys') || [],
@@ -57,9 +59,20 @@ class MenuLeft extends React.Component {
     this.setSelectedKeys(this.props);
   }
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'settings/GET_COUNT_CONTRACT',
+      payload: {},
+      callback: (response) => {
+        this.setState({ count: size(response) });
+      },
+    });
+  }
+
   componentDidUpdate(prevProps) {
-    if (this.props.badges !== prevProps.badges) {
-      this.onSetMenu(this.props.badges);
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      this.onSetMenu(this.props.menu);
     }
   }
 
@@ -75,8 +88,8 @@ class MenuLeft extends React.Component {
 
   onSetMenu = (badges) => {
     if (!_.isEmpty(badges)) {
-      this.setState((prevState) => ({
-        menuData: prevState.menuData,
+      this.setState(({
+        menuData: badges,
       }));
     }
   };
@@ -183,10 +196,15 @@ class MenuLeft extends React.Component {
                 {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
               </a>
             ) : (
-              <Link to={_.isArray(url) ? url[0] : url}>
+              <Link
+                to={_.isArray(url) ? url[0] : url}
+                className="d-flex justify-content-between align-items-center"
+              >
                 {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
                 <span className={styles.title}>{title}</span>
-                {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
+                {key === 'labours-contracts' && (
+                  <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
+                )}
               </Link>
             )}
           </Menu.Item>
@@ -202,7 +220,9 @@ class MenuLeft extends React.Component {
         >
           {icon && <span className={`${icon} ${styles.icon} icon-collapsed-hidden`} />}
           <span className={styles.title}>{title}</span>
-          {pro && <Badge className="ml-2 badge-custom" dot count={item.count || 0} />}
+          {key === 'labours-contracts' && (
+            <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
+          )}
         </Menu.Item>
       );
     };
@@ -224,8 +244,8 @@ class MenuLeft extends React.Component {
               <span key={menuItem.key}>
                 {menuItem.icon && <span className={`${menuItem.icon} ${styles.icon}`} />}
                 <span className={styles.title}>{menuItem.title}</span>
-                {menuItem.pro && (
-                  <Badge className="ml-2 badge-custom" dot count={menuItem.count || 0} />
+                {menuItem.key === 'contracts' && (
+                  <Badge className="ml-2 badge-custom" dot count={this.state.count || 0} />
                 )}
               </span>
             );

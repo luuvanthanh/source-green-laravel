@@ -75,7 +75,6 @@ class Index extends PureComponent {
     if (details !== prevProps.details && !isEmpty(details) && get(params, 'id')) {
       this.formRef.current.setFieldsValue({
         ...details,
-        year: toString(details.year),
         month: toString(details.month),
         paramValue: details.parameterValues.map((item) => item.id),
       });
@@ -263,8 +262,6 @@ class Index extends PureComponent {
                       disabled={isUnlimited}
                     />
                   </div>
-                </div>
-                <div className="row">
                   <div className="col-lg-6">
                     <FormItem
                       data={paramaterValues}
