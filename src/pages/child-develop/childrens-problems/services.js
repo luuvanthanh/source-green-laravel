@@ -1,4 +1,4 @@
-import request from '@/utils/requestCrm';
+import request from '@/utils/requestLavarel';
 
 export function get(params = {}) {
   return request('/v1/category-child-issues', {

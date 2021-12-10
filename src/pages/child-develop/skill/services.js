@@ -1,11 +1,11 @@
-import request from '@/utils/requestCrm';
+import request from '@/utils/requestLavarel';
 
 export function get(params) {
   return request(`/v1/category-skills`, {
     method: 'GET',
     params: {
       ...params,
-      orderBy: 'numerical_skill',
+      orderBy: 'NumericalSkill',
     },
   });
 }

@@ -1,4 +1,4 @@
-import request from '@/utils/requestCrm';
+import request from '@/utils/requestLavarel';
 
 export function add(data = {}) {
   return request('/v1/status-parent-leads', {

@@ -29,7 +29,7 @@ const setIsMounted = (value = true) => {
 const getIsMounted = () => isMounted;
 const mapStateToProps = ({ menu, loading, childDevelopSkillAdd }) => ({
   loading,
-  menuData: menu.menuLeftCRM,
+  menuData: menu.menuLeftChildDevelop,
   details: childDevelopSkillAdd.details,
   error: childDevelopSkillAdd.error,
   paramaterValues: childDevelopSkillAdd.paramaterValues,

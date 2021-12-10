@@ -50,7 +50,7 @@ const General = memo(
         conversion_price: undefined,
       },
     ]);
-    const [{ menuLeftCRM }] = useSelector(({ menu }) => [menu]);
+    const [{ menuLeftChildDevelop }] = useSelector(({ menu }) => [menu]);
     const mounted = useRef(false);
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const General = memo(
     ];
     return (
       <>
-        <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftCRM} />
+        <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftChildDevelop} />
         <Pane className="p20">
           <Form
             layout="vertical"
