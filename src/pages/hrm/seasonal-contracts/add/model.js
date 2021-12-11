@@ -75,7 +75,7 @@ export default {
     *GET_CATEGORIES({ _ }, saga) {
       try {
         const response = yield saga.all({
-          users: saga.call(categories.getUsers),
+          users: saga.call(services.getUsers),
           divisions: saga.call(categories.getDivisions),
           positions: saga.call(categories.getPositions),
           branches: saga.call(categories.getBranches),
