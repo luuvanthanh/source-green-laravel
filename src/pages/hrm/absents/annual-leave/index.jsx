@@ -270,6 +270,13 @@ class Index extends PureComponent {
           ),
       },
       {
+        title: 'Ngày tạo',
+        key: 'creationTime',
+        className: 'min-width-180',
+        width: 180,
+        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
+      },
+      {
         title: 'Nhân viên',
         key: 'fullName',
         className: 'min-width-220',
@@ -280,13 +287,6 @@ class Index extends PureComponent {
             fullName={record?.employee?.fullName}
           />
         ),
-      },
-      {
-        title: 'Ngày tạo',
-        key: 'creationTime',
-        className: 'min-width-120',
-        width: 120,
-        render: (record) => Helper.getDate(record?.creationTime, variables.DATE_FORMAT.DATE_TIME),
       },
       {
         title: 'Từ ngày - Đến ngày',
@@ -313,6 +313,7 @@ class Index extends PureComponent {
         key: 'action',
         className: 'min-width-80',
         width: 80,
+        fixed: "right",
         render: (record) => (
           <div className={styles['list-button']}>
             <Button
