@@ -115,7 +115,7 @@ const OBJECTS = {
     menu: 'menuLeftCRM',
   },
   CHILD_DEVELOP: {
-    icon: '/images/home/crm.svg',
+    icon: '/images/home/spreadsheet.svg',
     title: 'Sự phát triển của trẻ',
     menu: 'menuLeftChildDevelop',
   },
