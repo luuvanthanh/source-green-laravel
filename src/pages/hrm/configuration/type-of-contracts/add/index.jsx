@@ -43,6 +43,7 @@ class Index extends PureComponent {
     super(props, context);
     this.state = {
       isUnlimited: false,
+      isDuration: false,
     };
     setIsMounted(true);
   }
@@ -79,6 +80,7 @@ class Index extends PureComponent {
         paramValue: details.parameterValues.map((item) => item.id),
       });
       this.onSetUnLimited(details.isUnlimited);
+      this.onSetDuration(!details.isUnlimited);
     }
   }
 
@@ -106,6 +108,12 @@ class Index extends PureComponent {
     });
   };
 
+  onSetDuration = (isDuration) => {
+    this.setStateData({
+      isDuration,
+    });
+  }
+
   onChangeUnLimited = (e) => {
     this.setStateData({
       isUnlimited: e.target.checked,
@@ -114,6 +122,18 @@ class Index extends PureComponent {
       month: 0,
     });
   };
+
+  onChangeMonth = (e) => {
+    if(e.target?.value){
+      this.setStateData({
+        isDuration: true
+      });
+    } else {
+      this.setStateData({
+        isDuration: false
+      });
+    }
+  }
 
   onFinish = (values) => {
     const {
@@ -155,7 +175,8 @@ class Index extends PureComponent {
       paramaterValues,
       match: { params },
     } = this.props;
-    const { isUnlimited } = this.state;
+    const { isUnlimited, isDuration } = this.state;
+    
     const loadingSubmit = effects['typeOfContractsAdd/ADD'] || effects['typeOfContractsAdd/UPDATE'];
     const loading =
       effects['typeOfContractsAdd/GET_DETAILS'] ||
@@ -233,6 +254,7 @@ class Index extends PureComponent {
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
                       onChange={this.onChangeUnLimited}
+                      disabled={isDuration}
                     />
                   </div>
                   <div className="col-lg-6">
@@ -246,6 +268,7 @@ class Index extends PureComponent {
                       }
                       type={variables.INPUT}
                       disabled={isUnlimited}
+                      onChange={this.onChangeMonth}
                     />
                   </div>
                   <div className="col-lg-6">
