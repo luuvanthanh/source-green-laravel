@@ -154,10 +154,18 @@ export const feature = {
     },
     {
       title: 'Sự phát triển của trẻ',
-      src: '/images/home/crm.svg',
-      animation: animationImage.crm,
+      src: '/images/home/spreadsheet.svg',
+      animation: animationImage.programStudy,
       url: '/su-phat-trien-cua-tre',
-      permission: [permissions.CRM],
+      permission: [permissions.CTH],
+    },
+    {
+      title: 'Chiến dịch Email',
+      src: '/images/home/news.svg',
+      animation: animationImage.notification,
+      url: URL_EMAIL_MARKETING,
+      target: true,
+      permission: [permissions.CAMERAAI],
     },
   ],
 };
