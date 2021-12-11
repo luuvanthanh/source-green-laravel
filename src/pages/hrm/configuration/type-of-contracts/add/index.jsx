@@ -112,7 +112,6 @@ class Index extends PureComponent {
     });
     this.formRef.current.setFieldsValue({
       month: 0,
-      year: 0,
     });
   };
 
@@ -234,19 +233,6 @@ class Index extends PureComponent {
                       type={variables.CHECKBOX_FORM}
                       valuePropName="checked"
                       onChange={this.onChangeUnLimited}
-                    />
-                  </div>
-                  <div className="col-lg-6">
-                    <FormItem
-                      label="SỐ NĂM"
-                      name="year"
-                      rules={
-                        !isUnlimited
-                          ? [variables.RULES.EMPTY_INPUT, variables.RULES.MAX_LENGTH_INPUT]
-                          : []
-                      }
-                      type={variables.INPUT}
-                      disabled={isUnlimited}
                     />
                   </div>
                   <div className="col-lg-6">
