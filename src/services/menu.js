@@ -785,6 +785,16 @@ export async function getLeftMenuMedical() {
       permission: [permissions.YTE],
       pro: true,
     },
+    {
+      title: 'Báo cáo tình hình sự cố của học sinh',
+      key: 'incident-situation',
+      url: [
+        '/y-te/bao-cao-tinh-hinh-su-co-cua-hoc-sinh',
+      ],
+      icon: 'icon icon-list',
+      permission: [permissions.YTE],
+      pro: true,
+    },
   ];
 }
 export async function getLeftMenuTimeTable() {

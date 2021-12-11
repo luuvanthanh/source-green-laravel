@@ -1792,6 +1792,12 @@ export default [
             wrappers: ['@/wrappers/auth'],
             authority: [permissions.YTE],
           },
+          {
+            path: '/y-te/bao-cao-tinh-hinh-su-co-cua-hoc-sinh',
+            component: './medical/incident-situation',
+            wrappers: ['@/wrappers/auth'],
+            authority: [permissions.YTE],
+          },
         ],
       },
       {
