@@ -1,284 +1,364 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Form, Input, Switch } from 'antd';
-import { connect, history, withRouter } from 'umi';
-import PropTypes from 'prop-types';
-import { useSelector } from 'dva';
-import Pane from '@/components/CommonComponent/Pane';
-import Heading from '@/components/CommonComponent/Heading';
-import Button from '@/components/CommonComponent/Button';
-import Loading from '@/components/CommonComponent/Loading';
-import { DeleteOutlined } from '@ant-design/icons';
-import { variables } from '@/utils/variables';
-import FormItem from '@/components/CommonComponent/FormItem';
-import TableCus from '@/components/CommonComponent/Table';
+import { memo, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet';
+import { Form } from 'antd';
+import { head, isEmpty, get } from 'lodash';
 import styles from '@/assets/styles/Common/common.scss';
+import { useSelector, useDispatch } from 'dva';
+import { variables } from '@/utils';
+import { useParams, history } from 'umi';
+import Heading from '@/components/CommonComponent/Heading';
+import classnames from 'classnames';
 import Breadcrumbs from '@/components/LayoutComponents/Breadcrumbs';
-import { v4 as uuidv4 } from 'uuid';
+import Pane from '@/components/CommonComponent/Pane';
+import Button from '@/components/CommonComponent/Button';
+import FormItem from '@/components/CommonComponent/FormItem';
 import stylesModule from '../styles.module.scss';
 
-const parentIds = [
-  {
-    id: 0,
-    name: 'Nhóm mẹ',
-  },
-  {
-    id: 1,
-    name: 'Nhóm con',
-  },
+
+const age = [
+  { id: '0-6', name: '0 - 6 tháng' },
+  { id: '6-9', name: '6 - 9 tháng' },
+  { id: '9-12', name: '9 - 12 tháng' },
+  { id: '12-18', name: '12 - 18 tháng' },
+  { id: '18-24', name: '18 - 24 tháng' },
+  { id: '24-30', name: '24 - 30 tháng' },
+  { id: '30-36', name: '30 - 36 tháng' },
+  { id: '36-50', name: '36 - 50 tháng' },
+  { id: '50-60', name: '50- 60 tháng' },
 ];
-const mapStateToProps = ({ loading, childDevelopReviewScenarioAdd }) => ({
-  loading,
-  details: childDevelopReviewScenarioAdd.details,
-  error: childDevelopReviewScenarioAdd.error,
-  branches: childDevelopReviewScenarioAdd.branches,
-  classes: childDevelopReviewScenarioAdd.classes,
-  city: childDevelopReviewScenarioAdd.city,
-  district: childDevelopReviewScenarioAdd.district,
-  search: childDevelopReviewScenarioAdd.search,
-  townWards: childDevelopReviewScenarioAdd.townWards,
-});
-const General = memo(
-  ({ match: { params }, error }) => {
-    const formRef = useRef();
-    const [remove, setRemove] = useState([]);
-    const [data, setData] = useState([
-      {
-        id: uuidv4(),
-        category: { name: undefined },
-        product_id: undefined,
-        conversion_unit: undefined,
-        conversion_price: undefined,
-      },
-    ]);
-    const [{ menuLeftChildDevelop }] = useSelector(({ menu }) => [menu]);
-    const mounted = useRef(false);
 
-    useEffect(() => {
-      mounted.current = true;
-      return mounted.current;
-    }, []);
+const Index = memo(() => {
+  const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const params = useParams();
+  const mounted = useRef(false);
+  const {
+    loading,
+    details,
+    skill,
+    menuLeftChildDevelop,
+  } = useSelector(({ menu, loading, childDevelopReviewScenarioAdd }) => ({
+    loading,
+    menuLeftChildDevelop: menu.menuLeftChildDevelop,
+    details: childDevelopReviewScenarioAdd.details,
+    skill: childDevelopReviewScenarioAdd.skill,
+    error: childDevelopReviewScenarioAdd.error,
+  }));
 
-    const columns = [
-      {
-        title: 'Nội dung',
-        key: 'name',
-        lassName: 'min-width-100',
-        render: (value) => (
-          <Input.TextArea
-            value={value.name}
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            placeholder="Nhập"
-          />
-        ),
-      },
-      {
-        title: 'Sử dụng',
-        dataIndex: 'show_home_page',
-        width: 160,
-        className: 'min-width-160',
-        render: (showHomePage,) => (
-          <div
-            role="presentation"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <Switch
-              defaultChecked={showHomePage}
-            />
-          </div>
-        ),
-      },
-      {
-        key: 'action',
-        className: 'min-width-100',
-        width: 100,
-        fixed: 'right',
-        render: (record) => (
-          <div className={styles['list-button']}>
-            <Button
-              onClick={() => {
-                setData(data.filter((val) => (val.key || val.id || val.test) !== (record.key || record.id || record.test)));
-                setRemove([...remove, record.id]);
-              }}
-              type="button"
-              color="danger" icon="remove"
-            />
+  const onFinish = () => {
+    form.validateFields().then((values) => {
+      dispatch({
+        type: params.id ? 'childDevelopReviewScenarioAdd/UPDATE' : 'childDevelopReviewScenarioAdd/ADD',
+        payload: params.id ? {
+          id: params.id,
+          categorySkillId: values.categorySkillId ? values.categorySkillId : details.categorySkillId,
+          age: values.age ? values.age : details.age,
+          detail: values.data.map((i) => ({
+            nameCriteria: i?.nameCriteria,
+            inputAssessment: i?.inputAssessment,
+            periodicAssessment: i?.periodicAssessment,
+            use: i?.use,
+            detailChildren: i?.childEvaluateDetailChildrent?.map((item) => ({
+              content: item.content, use: item.use
+            })),
+          }))
+        }
+          :
+          {
+            categorySkillId: values.categorySkillId, age: values.age, detail: values.data.map((item) => ({
+              ...item,
+              detailChildren: item?.childEvaluateDetailChildrent,
+            }))
+          },
+        callback: (response, error) => {
+          if (response) {
+            if (response) {
+              history.goBack();
+            }
+          }
+          if (error) {
+            if (get(error, 'data.status') === 400 && !isEmpty(error?.data?.errors)) {
+              error.data.errors.forEach((item) => {
+                form.current.setFields([
+                  {
+                    name: get(item, 'source.pointer'),
+                    errors: [get(item, 'detail')],
+                  },
+                ]);
+              });
+            }
+          }
+        },
+      });
+    });
+  };
 
-          </div>
-        ),
+  useEffect(() => {
+    dispatch({
+      type: 'childDevelopReviewScenarioAdd/GET_SKILL',
+      payload: {},
+    });
+  }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: 'childDevelopReviewScenarioAdd/GET_DATA',
+      payload: params,
+      callback: (response) => {
+        if (response) {
+          form.setFieldsValue({
+            data: response.parsePayload.childEvaluateDetail,
+          });
+        }
       },
-    ];
-    return (
-      <>
-        <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftChildDevelop} />
-        <Pane className="p20">
-          <Form
-            layout="vertical"
-            ref={formRef}
-            initialValues={{}}
-          >
-            <Pane>
-              <Pane className="card">
-                <Pane className="p20">
-                  <Heading type="form-title" className="mb20">
-                    Thông tin chung
-                  </Heading>
-                  <Pane className="row mt20">
-                    <Pane className="col-lg-3">
-                      <FormItem label="Kỹ năng" name="skill" type={variables.SELECT} rules={[variables.RULES.EMPTY_INPUT]} />
-                    </Pane>
-                    <Pane className="col-lg-3">
-                      <FormItem label="Độ tuổi" name="age" type={variables.SELECT} rules={[variables.RULES.EMPTY_INPUT]} />
-                    </Pane>
-                  </Pane>
+    });
+  }, [params.id]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return mounted.current;
+  }, []);
+
+  useEffect(() => {
+    if (params.id) {
+      form.setFieldsValue({
+        ...details,
+        ...head(details.positionLevel),
+      });
+    }
+  }, [details]);
+
+  return (
+    <>
+      <Breadcrumbs last={params.id ? 'Chỉnh sửa ' : 'Tạo mới'} menu={menuLeftChildDevelop} />
+      <Helmet title="Cấu hình khai báo y tế" />
+      <Pane className="pl20 pr20">
+        <Pane >
+          <Form layout="vertical" onFinish={onFinish} form={form} initialValues={{
+            data: [
+              {},
+            ],
+          }}>
+
+            <Pane className="card p20">
+              <Heading type="form-title" className="mb15">
+                Thông tin chung
+              </Heading>
+              <Pane className="row">
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name="categorySkillId"
+                    data={skill}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Kỹ năng"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
+                </Pane>
+                <Pane className="col-lg-4">
+                  <FormItem
+                    options={['id', 'name']}
+                    name="age"
+                    data={age}
+                    placeholder="Chọn"
+                    type={variables.SELECT}
+                    label="Độ tuổi"
+                    rules={[variables.RULES.EMPTY_INPUT]}
+                  />
                 </Pane>
               </Pane>
-              <Pane className="card">
-                <Loading isError={error.isError} params={{ error }}>
-                  <Pane>
-                    <Pane className="pl20 pt0 pr20 pb20">
-                      <Pane className={stylesModule['wrapper-students']}>
-                        <Form.List name="web_form_childrens">
-                          {(fields, { add, remove }) => (
-                            <>
-                              {fields.map((field, index) => (
-                                <Pane key={field.key} className='border-bottom pt20'>
-                                  <Heading type="form-title"  >
-                                    Thông tin tiêu chí {index + 1}
-                                  </Heading>
-                                  <div className="d-flex flex-row-reverse ">
-                                    {fields.length > 1 && (
-                                      <DeleteOutlined
-                                        onClick={() => {
-                                          remove(index);
-                                        }}
-                                        className={stylesModule['wrapper-btn']}
-                                      />
-                                    )}
-                                  </div>
+            </Pane>
+            <Pane className="card p20">
+              <Pane className="row">
+                <Form.List name="data">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map((field, index) => (
+                        <>
+                          <Pane className="offset-lg-12 col-lg-12 border-bottom pt15" key={field.key}>
+                            <Heading type="form-title" className="mb15">
+                              Thông tin tiêu chí {index + 1}
+                            </Heading>
+                            {fields.length > 0 && (
+                              <div className={styles['list-button']}>
+                                <button
+                                  className={styles['button-circle']}
+                                  style={{ display: 'flex', position: 'absolute', top: 20, right: 20 }}
+                                  onClick={() => {
+                                    remove(index);
+                                  }}
+                                  type="button"
+                                >
+                                  <span className="icon-remove" />
+                                </button>
+                              </div>
+                            )}
+                            <Pane className="card">
+                              <Pane >
+                                <>
                                   <Pane className="row">
                                     <Pane className="col-lg-6">
                                       <FormItem
                                         label="Tên tiêu chí"
-                                        name={[field.name, 'full_name']}
-                                        fieldKey={[field.fieldKey, 'full_name']}
+                                        name={[field.name, 'nameCriteria']}
+                                        fieldKey={[field.fieldKey, 'nameCriteria']}
                                         type={variables.INPUT}
-                                        rules={[variables.RULES.EMPTY_INPUT]}
+                                        rules={[variables.RULES.EMPTY]}
                                       />
                                     </Pane>
-                                    <Pane className="col-lg-3 radio-only--custom">
-                                      <FormItem
-                                        name="groups"
-                                        label="Áp dụng"
-                                        type={variables.CHECKBOX}
-                                        data={parentIds.map((item) => ({ value: item.id, label: item.name }))}
-                                      />
+                                    <Pane className="col-lg-3">
+                                      <Pane className="row">
+                                        <Pane className="col-lg-12">
+                                          <h3 className={stylesModule['wrapper-checkBox']}>Áp dụng</h3>
+                                        </Pane>
+                                        <Pane className={classnames('col-lg-6', stylesModule['checkBox-item'],)}>
+                                          <FormItem
+                                            className="checkbox-row checkbox-small"
+                                            label="Test đầu vào"
+                                            name={[field.name, 'inputAssessment']}
+                                            fieldKey={[field.fieldKey, 'inputAssessment']}
+                                            type={variables.CHECKBOX_FORM}
+                                            valuePropName="checked"
+                                          />
+                                        </Pane>
+                                        <Pane className={classnames('col-lg-6', stylesModule['checkBox-item'],)}>
+                                          <FormItem
+                                            className="checkbox-row checkbox-small"
+                                            label="ĐG định kỳ"
+                                            name={[field.name, 'periodicAssessment']}
+                                            fieldKey={[field.fieldKey, 'periodicAssessment']}
+                                            type={variables.CHECKBOX_FORM}
+                                            valuePropName="checked"
+                                          />
+                                        </Pane>
+                                      </Pane>
                                     </Pane>
                                     <Pane className="col-lg-3">
                                       <FormItem
                                         valuePropName="checked"
                                         label="Sử dụng"
-                                        name="show"
+                                        name={[field.name, 'use']}
+                                        fieldKey={[field.fieldKey, 'use']}
                                         type={variables.SWITCH}
                                       />
                                     </Pane>
+                                    <Pane className="col-lg-12">
+                                      <h4 className={stylesModule['wrapper-title']}>Hình thức tiếp cận</h4>
+                                      <div className={stylesModule['wrapper-table']}>
+                                        <div className={stylesModule['card-heading']}>
+                                          <div className={stylesModule.col}>
+                                            <p className={stylesModule.norm}>Nội dung</p>
+                                          </div>
+                                          <div className={stylesModule.col}>
+                                            <p className={stylesModule.norm}>Sử dụng</p>
+                                          </div>
+                                          <div className={stylesModule.cols}>
+                                            <p className={stylesModule.norm} />
+                                          </div>
+                                        </div>
+                                        <Form.List label="Hình thức tiếp cận" name={[field.name, 'childEvaluateDetailChildrent']} fieldKey={[field.fieldKey, 'childEvaluateDetailChildrent']}>
+                                          {(fieldss, { add, remove }) => (
+                                            <Pane>
+                                              {fieldss.map((fieldItem, index) => (
+                                                <>
+                                                  <Pane
+                                                    key={index}
+                                                    className="d-flex"
+                                                  >
+                                                    <div className={stylesModule['card-item']}>
+                                                      <div className={classnames(stylesModule.col)}>
+                                                        <FormItem
+                                                          className={stylesModule.item}
+                                                          fieldKey={[fieldItem.fieldKey, 'content']}
+                                                          name={[fieldItem.name, 'content']}
+                                                          type={variables.INPUT}
+                                                        />
+                                                      </div>
+                                                      <div className={classnames(stylesModule.col)}>
+                                                        <FormItem
+                                                          valuePropName='checked'
+                                                          name={[fieldItem.name, 'use']}
+                                                          fieldKey={[fieldItem.fieldKey, 'use']}
+                                                          type={variables.SWITCH}
+                                                        />
+                                                      </div>
+                                                      <div className={classnames(stylesModule.col)}>
+                                                        {fields.length > 0 && (
+                                                          <div className={styles['list-button']}>
+                                                            <button
+                                                              className={styles['button-circle']}
+                                                              onClick={() => {
+                                                                remove(index);
+                                                              }}
+                                                              type="button"
+                                                            >
+                                                              <span className="icon-remove" />
+                                                            </button>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  </Pane>
+                                                </>
+                                              ))}
+                                              <Pane className="mt10 ml10 mb10 d-flex align-items-center color-success pointer " >
+                                                <span
+                                                  onClick={() => add()}
+                                                  role="presentation"
+                                                  className={stylesModule.add}
+                                                >
+                                                  <span className="icon-plus-circle mr5" />
+                                                  Thêm
+                                                </span>
+                                              </Pane>
+                                            </Pane>
+                                          )}
+                                        </Form.List>
+                                      </div>
+                                    </Pane>
                                   </Pane>
-                                  <Heading type="form-title" className="mb10">
-                                    Hình thức tiếp cận
-                                  </Heading>
-                                  <div className={stylesModule['wrapper-table']}>
-                                    <TableCus
-                                      rowKey={(record) => record.id}
-                                      className="table-edit mb20"
-                                      columns={columns}
-                                      dataSource={data}
-                                      pagination={false}
-                                      scroll={{ x: '100%' }}
-                                      footer={(item, index) => (
-                                        <Button
-                                          key={index}
-                                          onClick={() =>
-                                            setData([
-                                              ...data,
-                                              {
-                                                key: '',
-                                                test: uuidv4(),
-                                              },
-                                            ])
-                                          }
-                                          color="transparent-success"
-                                          icon="plus"
-                                        >
-                                          Thêm
-                                        </Button>
-                                      )}
-                                    />
-                                  </div>
-                                </Pane>
-                              ))}
-                              <Pane className='pt20'>
-                                <Button
-                                  color="success"
-                                  ghost
-                                  icon="plus"
-                                  onClick={() => {
-                                    add();
-                                  }}
-                                >
-                                  Thêm tiêu chí
-                                </Button>
+                                </>
                               </Pane>
-                            </>
-                          )}
-                        </Form.List>
+                            </Pane>
+                          </Pane>
+                        </>
+                      ))}
+                      <Pane className="pl20 pb20 pt20" >
+                        <Button
+                          color="success"
+                          ghost
+                          icon="plus"
+                          onClick={() => {
+                            add();
+                          }}
+                        >
+                          Thêm thông tin
+                        </Button>
                       </Pane>
-                    </Pane>
-                    <Pane className="p20 d-flex justify-content-between align-items-center border-top">
-                      {params.id ? (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                        >
-                          Xóa
-                        </p>
-                      ) : (
-                        <p
-                          className="btn-delete"
-                          role="presentation"
-                          onClick={() => history.goBack()}
-                        >
-                          Hủy
-                        </p>
-                      )}
-                      <Button
-                        className="ml-auto px25"
-                        color="success"
-                        htmlType="submit"
-                        size="large"
-                      >
-                        Lưu
-                      </Button>
-                    </Pane>
-                  </Pane>
-                </Loading>
+                    </>
+                  )}
+                </Form.List>
+
               </Pane>
             </Pane>
+            <Pane className="d-flex justify-content-between align-items-center mb20">
+              <Button
+                className="ml-auto px25"
+                color="success"
+                htmlType="submit"
+                size="large"
+                loading={loading['childDevelopReviewScenarioAdd/ADD'] || loading['childDevelopReviewScenarioAdd/UPDATE'] || loading['childDevelopReviewScenarioAdd/GET_DATA']}
+              >
+                Lưu
+              </Button>
+            </Pane>
+
           </Form>
         </Pane>
-      </>
-    );
-  },
-);
+      </Pane>
+    </>
+  );
+});
 
-General.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any),
-  error: PropTypes.objectOf(PropTypes.any),
-};
-
-General.defaultProps = {
-  match: {},
-  error: {},
-};
-
-export default withRouter(connect(mapStateToProps)(General));
+export default Index;

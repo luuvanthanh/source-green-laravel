@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tag } from 'antd';
 import classnames from 'classnames';
-import { debounce } from 'lodash';
+import {get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -203,7 +203,7 @@ class Index extends PureComponent {
         key: 'skill',
         className: 'min-width-150',
         width: 300,
-        render: (record) => <Text size="normal">{record.skill}</Text>,
+        render: (record) => <Text size="normal">{get(record, 'categorySkill.name')}</Text>,
       },
       {
         title: 'Độ tuổi',
@@ -245,15 +245,15 @@ class Index extends PureComponent {
       loading: { effects },
       location: { pathname },
     } = this.props;
-
+    console.log(data)
     const { search } = this.state;
     const loading = effects['childDevelopReviewScenario/GET_DATA'];
     return (
       <>
-        <Helmet title="Kịch bản đánh giá" />
+        <Helmet title="Cấu hình kịch bản đánh giá" />
         <div className={classnames(styles['content-form'], styles['content-form-children'])}>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-            <Text color="dark">Kịch bản đánh giá</Text>
+            <Text color="dark">Cấu hình kịch bản đánh giá</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới
             </Button>

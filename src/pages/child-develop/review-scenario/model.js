@@ -1,28 +1,9 @@
-// import * as services from './services';
+import * as services from './services';
 
 export default {
   namespace: 'childDevelopReviewScenario',
   state: {
-    data: [
-      {
-        id: 1,
-        skill: "Tương tác xã hội",
-        age: "30 – 36 tháng",
-        doen_aansoek: 'Đánh giá đầu vào',
-      },
-      {
-        id: 2,
-        skill: "Kỹ năng mềm",
-        age: "20 – 25 tháng",
-        doen_aansoek: 'Đánh giá đầu vào',
-      },
-      {
-        id: 3,
-        skill: "Sức khoẻ của bé",
-        age: "15 – 25 tháng",
-        doen_aansoek: 'Đánh giá định kỳ',
-      }
-    ],
+    data: [],
     pagination: {
       total: 0,
     },
@@ -49,30 +30,31 @@ export default {
     }),
   },
   effects: {
-    // *GET_DATA({ payload }, saga) {
-    //   try {
-    //     const response = yield saga.call(services.get, payload);
-    //     if (response) {
-    //       yield saga.put({
-    //         type: 'SET_DATA',
-    //         payload: response,
-    //       });
-    //     }
-    //   } catch (error) {
-    //     yield saga.put({
-    //       type: 'SET_ERROR',
-    //       payload: error.data,
-    //     });
-    //   }
-    // },
-    // *REMOVE({ payload, callback }, saga) {
-    //   try {
-    //     yield saga.call(services.remove, payload.id);
-    //     callback(payload);
-    //   } catch (error) {
-    //     callback(null, error);
-    //   }
-    // },
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        console.log('repon', response)
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };

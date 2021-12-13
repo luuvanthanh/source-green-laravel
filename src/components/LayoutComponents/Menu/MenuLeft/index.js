@@ -60,14 +60,17 @@ class MenuLeft extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'settings/GET_COUNT_CONTRACT',
-      payload: {},
-      callback: (response) => {
-        this.setState({ count: size(response) });
-      },
-    });
+    const { dispatch,location: {pathname} } = this.props;
+    if (/^\/quan-ly-nhan-su(?=\/|$)/i.test(pathname)) {
+      dispatch({
+        type: 'settings/GET_COUNT_CONTRACT',
+        payload: {},
+        callback: (response) => {
+          this.setState({ count: size(response) });
+        },
+      });
+    }
+    
   }
 
   componentDidUpdate(prevProps) {
