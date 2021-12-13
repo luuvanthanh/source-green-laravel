@@ -52,10 +52,11 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         return MessagePresenter::class;
     }
 
-    public function listMessage($attributes)
+    public function getMessage($attributes)
     {
         if (!empty($attributes['conversation_id'])) {
             $this->model = $this->model->where('conversation_id', $attributes['conversation_id']);
+            $this->seenConversation($attributes['conversation_id']);
         }
 
         if (!empty($attributes['limit'])) {
@@ -91,27 +92,28 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
 
     public function storeMessage($attributes)
     {
+        \Log::info($attributes);
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
-
+        \Log::info($page);
+        $notiInbox = Conversation::NOTI_INBOX['SEEN'];
         if (!is_null($page)) {
             $from = $page->id;
             $pageId = $page->id;
-        } else {
-            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['from'])->first();
-            $from = $userFacebookInfo->id;
-            $userFacebookInfoId = $userFacebookInfo->id;
-        }
-        $page = Page::where('page_id_facebook', $attributes['to'])->first();
-        if (!is_null($page)) {
-            $to =  $page->id;
-            $pageId = $page->id;
-        } else {
             $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['to'])->first();
             $to = $userFacebookInfo->id;
             $userFacebookInfoId = $userFacebookInfo->id;
+        } else {
+            $notiInbox = Conversation::NOTI_INBOX['NOT_SEEN'];
+            $userFacebookInfo = UserFacebookInfo::where('user_id', $attributes['from'])->first();
+            $from = $userFacebookInfo->id;
+            $userFacebookInfoId = $userFacebookInfo->id;
+            $page = Page::where('page_id_facebook', $attributes['to'])->first();
+            $to =  $page->id;
+            $pageId = $page->id;
         }
 
         $conversation = Conversation::where('page_id', $pageId)->where('user_facebook_info_id', $userFacebookInfoId)->first();
+        $conversation->update(['noti_inbox' => $notiInbox]);
         $dataMessage = [
             'content' => $attributes['content'],
             'message_id_facebook' => $attributes['message_id_facebook'],
@@ -140,11 +142,12 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
     public function storeConversationMessageNew($attributes)
     {
         $page = Page::where('page_id_facebook', $attributes['from'])->first();
-
+        $notiInbox = Conversation::NOTI_INBOX['SEEN'];
         if (!is_null($page)) {
             $userId = $attributes['to'];
             $pageId = $page->id;
         } else {
+            $notiInbox = Conversation::NOTI_INBOX['NOT_SEEN'];
             $userId = $attributes['from'];
             $page = Page::where('page_id_facebook', $attributes['to'])->first();
             $pageId = $page->id;
@@ -171,7 +174,8 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
         $created_at = $message->created_at;
         $dataConversation = [
             'time' => $created_at->setTimezone('GMT+7')->format('H:i'),
-            'snippet' => $message->content
+            'snippet' => $message->content,
+            'noti_inbox' => $notiInbox
         ];
 
         $conversation->update($dataConversation);
@@ -186,5 +190,12 @@ class MessageRepositoryEloquent extends BaseRepository implements MessageReposit
             'to' => $message->to,
             'content' => $message->content,
         ]));
+    }
+
+    public function seenConversation($conversation_id)
+    {
+        $conversation = Conversation::find($conversation_id);
+        $conversation->update(['noti_inbox' => Conversation::NOTI_INBOX['SEEN']]);
+        return;
     }
 }

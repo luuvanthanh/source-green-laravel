@@ -208,6 +208,29 @@ class FacebookService
                 ],
                 $attributes['page_access_token']
             );
+            if (!empty($attributes['urls'])) {
+                $type = $attributes['type'];
+                foreach ($attributes['urls'] as $key => $url) {
+                    $response = $fb->post(
+                        '/me/messages',
+                        [
+                            "recipient" => [
+                                "id" => $attributes['recipient_id'], // id người nhận
+                            ],
+                            "message" => [
+                                "attachment" => [
+                                    "type" => $type,
+                                    "payload" => [
+                                        "is_reusable" => true,
+                                        "url" => $url
+                                    ]
+                                ]
+                            ]
+                        ],
+                        $attributes['page_access_token']
+                    );
+                }
+            }
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
             $status = 500;
             if ($e->getHttpStatusCode() != 500) {
@@ -217,9 +240,9 @@ class FacebookService
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         } catch (\Facebook\Exceptions\FacebookSDKException $e) {
             $status = 500;
-            if ($e->getStatusCode() != 500) {
-                $status = $e->getStatusCode();
-            }
+            // if ($e->getStatusCode() != 500) {
+            //     $status = $e->getStatusCode();
+            // }
 
             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
         }
@@ -228,6 +251,48 @@ class FacebookService
 
         return json_decode($graphNode);
     }
+
+    // public static function uploadMultipleFile($attributes, $urls)
+    // {
+    //     $pageId = $attributes['page_id'];
+    //     $fb = getFacebookSdk();
+    //     $photoIdArray = array();
+    //     foreach ($urls as $url) {
+    //         $params = array(
+    //             "message" => [
+    //                 "attachment" => [
+    //                     "type" => "image",
+    //                     "payload" => [
+    //                         "is_reusable" => true,
+    //                         "url" => $url
+    //                     ]
+    //                 ]
+    //             ]
+    //         );
+    //         try {
+    //             $postResponse = $fb->post(
+    //                 "me/message_attachments",
+    //                 $params,
+    //                 $attributes['page_access_token']
+    //             );
+    //             $photoId = $postResponse->getDecodedBody();
+
+    //             if (!empty($photoId["attachment_id"])) {
+    //                 $photoIdArray[] = $photoId["attachment_id"];
+    //             }
+    //         } catch (FacebookResponseException $e) {
+    //             $status = 500;
+    //             if ($e->getHttpStatusCode() != 500) {
+    //                 $status = $e->getHttpStatusCode();
+    //             }
+    //             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+    //         } catch (FacebookSDKException $e) {
+    //             throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+    //         }
+    //     }
+
+    //     return $photoIdArray;
+    // }
 
     public static function publishPagePost(array $attributes)
     {
@@ -263,8 +328,7 @@ class FacebookService
 
         return json_decode($graphNode);
     }
-
-    public static function publishPagePostWithImage(array $attributes, $urls)
+    public static function postMultipleImage($attributes, $urls)
     {
         $pageId = $attributes['page_id'];
         $fb = getFacebookSdk();
@@ -294,7 +358,16 @@ class FacebookService
                 throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
             }
         }
-        $photoIdArray;
+
+        return $photoIdArray;
+    }
+
+    public static function publishPagePostWithImage(array $attributes, $urls)
+    {
+        $pageId = $attributes['page_id'];
+        $fb = getFacebookSdk();
+
+        $photoIdArray = self::postMultipleImage($attributes, $urls);
         $postParam["message"] = $attributes['message'];
         foreach ($photoIdArray as $key => $photoId) {
             $postParam['attached_media'][$key] = '{"media_fbid":"' . $photoId . '"}';
@@ -417,8 +490,10 @@ class FacebookService
         $fb = getFacebookSdk();
 
         try {
-            $response = $fb->delete('/'.
-                $attributes['facebook_post_id'],[],
+            $response = $fb->delete(
+                '/' .
+                    $attributes['facebook_post_id'],
+                [],
                 $attributes['page_access_token']
             );
         } catch (\Facebook\Exceptions\FacebookResponseException $e) {
@@ -440,5 +515,36 @@ class FacebookService
         $graphNode = $response->getBody();
 
         return json_decode($graphNode);
+    }
+
+    public static function pageRole(array $attributes)
+    {
+        $fb = getFacebookSdk();
+
+        try {
+            $pageId = $attributes['page_id'];
+            $response = $fb->get(
+                "/$pageId/roles",
+                $attributes['page_access_token']
+            );
+        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+            $status = 500;
+            if ($e->getHttpStatusCode() != 500) {
+                $status = $e->getHttpStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        } catch (\Facebook\Exceptions\FacebookSDKException $e) {
+            $status = 500;
+            if ($e->getStatusCode() != 500) {
+                $status = $e->getStatusCode();
+            }
+
+            throw new HttpException($status, 'Graph returned an error:' .  $e->getMessage());
+        }
+
+        $graphNode = $response->getBody();
+
+        return json_decode($graphNode)->data;
     }
 }

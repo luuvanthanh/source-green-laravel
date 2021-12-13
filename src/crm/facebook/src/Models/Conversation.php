@@ -8,9 +8,14 @@ class Conversation extends UuidModel
 {
 
     protected $table = 'conversations';
-    
+
+    const NOTI_INBOX = [
+        'NOT_SEEN' => 0,
+        'SEEN' => 1
+    ];
+
     protected $fillable = [
-        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time'
+        'conversation_id_facebook', 'page_id', 'user_facebook_info_id', 'avatar', 'snippet', 'time', 'noti_inbox'
     ];
 
     public function page()

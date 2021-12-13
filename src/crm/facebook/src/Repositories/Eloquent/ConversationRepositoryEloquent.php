@@ -52,11 +52,66 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
         return ConversationPresenter::class;
     }
 
-    public function listConversation($attributes)
+    public function getConversation($attributes)
     {
-        if (!empty($attributes['page_id'])) {
+        if (!empty($attributes['page_id_facebook'])) {
             $this->model = $this->model->whereHas('page', function ($query) use ($attributes) {
-                $query->where('page_id_facebook', $attributes['page_id']);
+                $query->where('page_id_facebook', $attributes['page_id_facebook']);
+            });
+        }
+
+        if (!empty($attributes['name_inbox'])) {
+            $this->model = $this->model->whereHas('userFacebookInfo', function ($query) use ($attributes) {
+                $query->whereLike('user_name', $attributes['name_inbox']);
+            });
+        }
+
+        if (!empty($attributes['page_id'])) {
+            $this->model = $this->model->where('page_id', $attributes['page_id']);
+        }
+
+        if (!empty($attributes['tag_id'])) {
+            $tagId = explode(',', $attributes['tag_id']);
+            $this->model = $this->model->whereHas('userFacebookInfo', function ($query) use ($tagId) {
+                $query->whereHas('userFacebookInfoTag', function ($q) use ($tagId) {
+                    $q->whereIn('tag_id', $tagId);
+                });
+            });
+        }
+
+        if (!empty($attributes['noti_inbox']) && $attributes['noti_inbox'] == 'NOT_SEEN') {
+            $this->model = $this->model->where('noti_inbox', Conversation::NOTI_INBOX[$attributes['noti_inbox']]);
+        }
+
+        if (!empty($attributes['noti_inbox']) && $attributes['noti_inbox'] == 'SEEN') {
+            $this->model = $this->model->where('noti_inbox', Conversation::NOTI_INBOX[$attributes['noti_inbox']]);
+        }
+
+        if (!empty($attributes['not_reply']) && $attributes['not_reply'] == 'true') {
+            $conversationId = $this->notReply($this->model->get(), $attributes['page_id']);
+            $this->model = $this->model->whereIn('id', $conversationId);
+        }
+
+        if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'true') {
+            $this->model = $this->model->whereDoesntHave('message', function ($query) {
+                $query->where(function ($q) {
+                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                });
+            });
+        }
+
+        if (!empty($attributes['not_phone_number']) && $attributes['not_phone_number'] == 'false') {
+            $this->model = $this->model->whereHas('message', function ($query) {
+                $query->where(function ($q) {
+                    $q->whereLike('content', 'sđt')->orWhereLike('content', 'số đt')->orWhereLike('content', 'số điện thoại')->orWhereLike('content', 'sodienthoai')->orWhereLike('content', 'điện thoại')->orWhereLike('content', 'số phone');
+                });
+            });
+        }
+
+        if (!empty($attributes['employee_facebook_id'])) {
+            $employeeFacebookId = explode(',', $attributes['employee_facebook_id']);
+            $this->model = $this->model->whereHas('userFacebookInfo', function ($query) use ($employeeFacebookId) {
+                $query->whereIn('employee_facebook_id', $employeeFacebookId);
             });
         }
 
@@ -89,9 +144,9 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
 
                 if (is_null($userFacebookInfo)) {
                     $userFacebookInfo = UserFacebookInfo::create($dataUserFacebookInfo);
+                } else {
+                    $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
                 }
-
-                $userFacebookInfo->update(['user_name' => $dataUserFacebookInfo['user_name']]);
 
                 $page = Page::Where('page_id_facebook', $dataPage['page_id_facebook'])->first();
 
@@ -114,6 +169,28 @@ class ConversationRepositoryEloquent extends BaseRepository implements Conversat
             }
         }
 
-        return $conversation;
+        return parent::all();
+    }
+
+    public function seenConversation($attributes)
+    {
+        $conversation = Conversation::find($attributes['conversation_id']);
+        $conversation->update(['noti_inbox' => Conversation::NOTI_INBOX[$attributes['noti_inbox']]]);
+        return;
+    }
+
+    public function notReply($conversations, $pageId)
+    {
+        $conversationId = [];
+        foreach ($conversations as $conversation) {
+            $message = Message::where('conversation_id', $conversation->id)->orderBy('created_at', 'desc')->first();
+            if (!is_null($message)) {
+                if ($message->from != $pageId) {
+                    $conversationId[] = $message->conversation_id;
+                }
+            }
+        }
+
+        return $conversationId;
     }
 }

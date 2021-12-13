@@ -3,6 +3,7 @@
 namespace GGPHP\Crm\Facebook\Transformers;
 
 use GGPHP\Core\Transformers\BaseTransformer;
+use GGPHP\Crm\Facebook\Models\UserFacebookInfo;
 
 /**
  * Class CustomerPotentialEventInfoTransformer.
@@ -28,7 +29,7 @@ class UserFacebookInfoTransformer extends BaseTransformer
      *
      * @var array
      */
-    protected $availableIncludes = [];
+    protected $availableIncludes = ['userFacebookInfoTag', 'employeeFacebook'];
 
     /**
      * Transform the User entity.
@@ -39,6 +40,36 @@ class UserFacebookInfoTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $sex = null;
+        foreach (UserFacebookInfo::SEX as $key => $value) {
+            if (!is_null($model->sex)) {
+                if ($value == $model->sex) {
+                    $sex = $key;
+                }
+            }
+        }
+
+        $status = null;
+
+        foreach (UserFacebookInfo::STATUS as $key => $value) {
+            if ($value == $model->status) {
+                $status = $key;
+            }
+        }
+
+        return [
+            'status' => $status,
+            'sex' => $sex
+        ];
+    }
+
+    public function includeUserFacebookInfoTag(UserFacebookInfo $userFacebookInfo)
+    {
+        return $this->collection($userFacebookInfo->userFacebookInfoTag, new UserFacebookInfoTagTransformer, 'UserFacebookInfoTag');
+    }
+
+    public function includeEmployeeFacebook(UserFacebookInfo $userFacebookInfo)
+    {
+        return $this->item($userFacebookInfo->employeeFacebook, new EmployeeFacebookTransformer, 'EmployeeFacebook');
     }
 }

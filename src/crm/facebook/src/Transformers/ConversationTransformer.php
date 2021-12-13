@@ -40,7 +40,16 @@ class ConversationTransformer extends BaseTransformer
      */
     public function customAttributes($model): array
     {
-        return [];
+        $noti_inbox = null;
+
+        foreach (Conversation::NOTI_INBOX as $key => $value) {
+            if ($value == $model->noti_inbox) {
+                $noti_inbox = $key;
+            }
+        }
+        return [
+            'noti_inbox' => $noti_inbox
+        ];
     }
 
     public function includeUserFacebookInfo(Conversation $conversation)
@@ -54,11 +63,11 @@ class ConversationTransformer extends BaseTransformer
 
     public function includePage(Conversation $conversation)
     {
-        
+
         if (empty($conversation->page)) {
             return;
         }
-       
+
         return $this->item($conversation->page, new PageTransformer, 'Page');
     }
 }
