@@ -219,12 +219,6 @@ class Index extends PureComponent {
         ),
       },
       {
-        title: 'SỐ NĂM',
-        key: 'year',
-        className: 'min-width-150',
-        render: (record) => <Text size="normal">{record.year}</Text>,
-      },
-      {
         title: 'SỐ THÁNG',
         key: 'month',
         className: 'min-width-150',
