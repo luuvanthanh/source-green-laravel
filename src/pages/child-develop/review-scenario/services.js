@@ -23,3 +23,12 @@ export function remove(id = {}) {
     parse: true,
   });
 }
+
+export function getSkill() {
+  return request(`/v1/category-skills`, {
+    method: 'GET',
+    params: {
+      orderBy: 'Name',
+    },
+  });
+}

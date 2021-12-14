@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form } from 'antd';
-import classnames from 'classnames';
 import { debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
@@ -237,8 +236,8 @@ class Index extends PureComponent {
     return (
       <>
         <Helmet title="Vấn đề khó khăn của trẻ" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div className='pl20 pr20 pb20'>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-4 pt0">
             <Text color="dark">Vấn đề khó khăn của trẻ</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
               Thêm mới

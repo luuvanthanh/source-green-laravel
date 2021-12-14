@@ -1118,4 +1118,9 @@ export default class Helpers {
     }
     return null;
   };
+
+  static unique = (items, key = 'name') => {
+    if (isEmpty(items)) return [];
+    return [...new Set(items.map((item) => item[key]))];
+  };
 }

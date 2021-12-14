@@ -4,6 +4,7 @@ export default {
   namespace: 'childDevelopReviewScenario',
   state: {
     data: [],
+    skill: [],
     pagination: {
       total: 0,
     },
@@ -28,12 +29,15 @@ export default {
         },
       },
     }),
+    SET_SKILL: (state, { payload }) => ({
+      ...state,
+      skill: payload.parsePayload,
+    }),
   },
   effects: {
     *GET_DATA({ payload }, saga) {
       try {
         const response = yield saga.call(services.get, payload);
-        console.log('repon', response)
         if (response) {
           yield saga.put({
             type: 'SET_DATA',
@@ -53,6 +57,20 @@ export default {
         callback(payload);
       } catch (error) {
         callback(null, error);
+      }
+    },
+    *GET_SKILL({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.getSkill, payload);
+        yield saga.put({
+          type: 'SET_SKILL',
+          payload: response,
+        });
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
       }
     },
   },

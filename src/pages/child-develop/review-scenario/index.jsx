@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect, history } from 'umi';
 import { Form, Tag } from 'antd';
-import classnames from 'classnames';
-import {get, debounce } from 'lodash';
+import { get, debounce } from 'lodash';
 import { Helmet } from 'react-helmet';
 import styles from '@/assets/styles/Common/common.scss';
 import Text from '@/components/CommonComponent/Text';
@@ -11,6 +10,9 @@ import Table from '@/components/CommonComponent/Table';
 import FormItem from '@/components/CommonComponent/FormItem';
 import { variables, Helper } from '@/utils';
 import PropTypes from 'prop-types';
+import stylesModule from './styles.module.scss';
+import variablesModules from './variables';
+
 
 let isMounted = true;
 /**
@@ -31,6 +33,7 @@ const mapStateToProps = ({ childDevelopReviewScenario, loading }) => ({
   data: childDevelopReviewScenario.data,
   error: childDevelopReviewScenario.error,
   pagination: childDevelopReviewScenario.pagination,
+  skill: childDevelopReviewScenario.skill,
   loading,
 });
 @connect(mapStateToProps)
@@ -54,6 +57,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onLoad();
+    this.loadCategories();
   }
 
   componentWillUnmount() {
@@ -96,6 +100,14 @@ class Index extends PureComponent {
         variables.QUERY_STRING,
       )}`,
     );
+  };
+
+  loadCategories = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'childDevelopReviewScenario/GET_SKILL',
+      payload: {},
+    });
   };
 
   /**
@@ -182,6 +194,24 @@ class Index extends PureComponent {
     });
   };
 
+  covertChildEvaluateDetail = items => {
+    let array = [];
+    items.forEach(({ id }) => {
+      const existAssessment = items.find(item => item.inputAssessment && item.id === id);
+      const existPeriodicAssessment = items.find(item => item.periodicAssessment && item.id === id);
+      if (existAssessment && existPeriodicAssessment) {
+        array = [...array, 'Test đầu vào', 'Đánh giá định kỳ'];
+      }
+      if (existAssessment && !existPeriodicAssessment) {
+        array = [...array, 'Test đầu vào'];
+      }
+      if (!existAssessment && existPeriodicAssessment) {
+        array = [...array, 'Đánh giá định kỳ'];
+      }
+    });
+    return [...new Set(array)];
+  }
+
   /**
    * Function header table
    */
@@ -202,7 +232,7 @@ class Index extends PureComponent {
         title: 'Kỹ năng',
         key: 'skill',
         className: 'min-width-150',
-        width: 300,
+        width: 500,
         render: (record) => <Text size="normal">{get(record, 'categorySkill.name')}</Text>,
       },
       {
@@ -215,7 +245,11 @@ class Index extends PureComponent {
         title: 'Áp dụng',
         key: 'doen_aansoek',
         className: 'min-width-150',
-        render: (record) => <Tag size="normal">{record.doen_aansoek}</Tag>,
+        render: (record) => (this.covertChildEvaluateDetail(record?.childEvaluateDetail))?.map((item, index) => (
+          <div className={stylesModule['wrapper-tag']}>
+            <Tag size="normal" key={index}>{item}</Tag>
+          </div>
+        ))
       },
       {
         key: 'action',
@@ -236,22 +270,40 @@ class Index extends PureComponent {
     return columns;
   };
 
+  onChangeSelect = (e, type) => {
+    this.debouncedSearch(e, type);
+  };
+
+  debouncedSearch = debounce((value, type) => {
+    this.setStateData(
+      (prevState) => ({
+        search: {
+          ...prevState.search,
+          [`${type}`]: value,
+          page: variables.PAGINATION.PAGE,
+          limit: variables.PAGINATION.PAGE_SIZE,
+        },
+      }),
+      () => this.onLoad(),
+    );
+  }, 300);
+
   render() {
     const {
       error,
       data,
+      skill,
       match: { params },
       pagination,
       loading: { effects },
       location: { pathname },
     } = this.props;
-    console.log(data)
     const { search } = this.state;
     const loading = effects['childDevelopReviewScenario/GET_DATA'];
     return (
       <>
         <Helmet title="Cấu hình kịch bản đánh giá" />
-        <div className={classnames(styles['content-form'], styles['content-form-children'])}>
+        <div className='pl20 pr20 pb20'>
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Cấu hình kịch bản đánh giá</Text>
             <Button color="success" icon="plus" onClick={() => history.push(`${pathname}/tao-moi`)}>
@@ -277,8 +329,9 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Tất cả kỹ năng' }]}
-                    name="district"
+                    data={[{ name: 'Chọn tất cả kỹ năng' }, ...skill,]}
+                    name="name"
+                    onChange={(event) => this.onChangeSelect(event, 'CategorySkillId')}
                     type={variables.SELECT}
                     allowClear={false}
                     placeholder="Chọn kỹ năng"
@@ -286,20 +339,22 @@ class Index extends PureComponent {
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Tất cả độ tuổi' }]}
-                    name="district"
+                    data={[{ name: 'Chọn tất cả độ tuổi' }, ...variablesModules.AGE,]}
+                    name="age"
+                    onChange={(event) => this.onChangeSelect(event, 'age')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn độ tuổi"
+                    placeholder="Chọn kỹ năng"
                   />
                 </div>
                 <div className="col-lg-2">
                   <FormItem
-                    data={[{ name: 'Tất cả loại áp dụng' }]}
-                    name="district"
+                    data={[{ name: 'Chọn tất cả loại áp dụng' }, ...variablesModules.APPLY,]}
+                    name="aplly"
+                    onChange={(event) => this.onChangeSelect(event, 'age')}
                     type={variables.SELECT}
                     allowClear={false}
-                    placeholder="Chọn loại áp dụng"
+                    placeholder="Chọn kỹ năng"
                   />
                 </div>
               </div>
@@ -333,6 +388,7 @@ Index.propTypes = {
   loading: PropTypes.objectOf(PropTypes.any),
   dispatch: PropTypes.objectOf(PropTypes.any),
   location: PropTypes.objectOf(PropTypes.any),
+  skill: PropTypes.arrayOf(PropTypes.any),
   error: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -344,6 +400,7 @@ Index.defaultProps = {
   dispatch: {},
   location: {},
   error: {},
+  skill: [],
 };
 
 export default Index;

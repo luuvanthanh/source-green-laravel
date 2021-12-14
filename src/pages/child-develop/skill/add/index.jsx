@@ -157,7 +157,7 @@ class Index extends PureComponent {
                           <FormItem label="Mã kỹ năng" name="code" type={variables.INPUT} placeholder={" "} disabled />
                         </Pane>
                         <Pane className="col-lg-12">
-                          <FormItem label="Tên kỹ năng *" name="name" type={variables.INPUT} />
+                          <FormItem label="Tên kỹ năng" name="name" type={variables.INPUT}  rules={[variables.RULES.EMPTY]}/>
                         </Pane>
                         <Pane className="col-lg-6">
                           <FormItem

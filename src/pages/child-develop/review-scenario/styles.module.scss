@@ -115,3 +115,19 @@
     height: 32px !important;
   }
 }
+
+.wrapper-tag {
+  :global(.ant-tag ){
+    margin: 5px !important;
+  }
+}
+
+
+.wraper-container {
+  :global(.ant-collapse-arrow){
+     top:  -35px !important;
+  }
+  :global(.ant-collapse-header){
+    padding: 0px !important;
+ }
+}
