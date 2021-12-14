@@ -26,7 +26,7 @@ class RenameColumnBirthDateToPotentialStudentsTable extends Migration
     public function down()
     {
         Schema::table('fee."PotentialStudents"', function (Blueprint $table) {
-            $table->renameColumn('"DateOfBirht"', '"DateOfBirth"');
+            // $table->renameColumn('"DateOfBirht"', '"DateOfBirth"');
         });
     }
 }

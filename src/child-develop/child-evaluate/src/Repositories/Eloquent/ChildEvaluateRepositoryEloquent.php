@@ -68,14 +68,14 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
             });
         }
 
-        if (!empty($attributes['inputAssessment']) && $attributes['inputAssessment'] == 'true') {
-            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) use ($attributes) {
+        if (!empty($attributes['apply']) && $attributes['apply'] == 'inputAssessment') {
+            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) {
                 $q->where('InputAssessment', true);
             });
         }
 
-        if (!empty($attributes['periodicAssessment']) && $attributes['periodicAssessment'] == 'true') {
-            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) use ($attributes) {
+        if (!empty($attributes['apply']) && $attributes['apply'] == 'periodicAssessment') {
+            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) {
                 $q->where('PeriodicAssessment', true);
             });
         }

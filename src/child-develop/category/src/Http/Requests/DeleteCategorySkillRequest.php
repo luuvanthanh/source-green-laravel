@@ -2,6 +2,7 @@
 
 namespace GGPHP\ChildDevelop\Category\Http\Requests;
 
+use GGPHP\ChildDevelop\ChildEvaluate\Models\ChildEvaluate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteCategorySkillRequest extends FormRequest
@@ -23,6 +24,29 @@ class DeleteCategorySkillRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        return [
+            'id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $checkId = $this->checkAccessDelete($value);
+
+                    if ($checkId) {
+                        return true;
+                    }
+                    return $fail('Dữ liệu đang được sử dụng');
+                },
+            ],
+        ];
+    }
+
+    private function checkAccessDelete($id)
+    {
+        $childEvaluate = ChildEvaluate::where('CategorySkillId', $id)->first();
+
+        if (is_null($childEvaluate)) {
+            return true;
+        }
+
+        return false;
     }
 }

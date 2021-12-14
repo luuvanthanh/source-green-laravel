@@ -33,6 +33,7 @@ class RouteRegistrar extends CoreRegistrar
             \Route::post('category-skill-sorts', 'CategorySkillController@sort');
             \Route::resource('category-child-issues', 'CategoryChildIssueController');
             \Route::resource('category-question-parents', 'CategoryQuestionParentController');
+            \Route::resource('assessment-periods', 'AssessmentPeriodController');
         });
     }
 }
