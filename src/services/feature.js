@@ -161,8 +161,8 @@ export const feature = {
     },
     {
       title: 'Chiến dịch Email',
-      src: '/images/home/news.svg',
-      animation: animationImage.notification,
+      src: '/images/home/emailMarketing.svg',
+      animation: animationImage.emailMarketting,
       url: URL_EMAIL_MARKETING,
       target: true,
       permission: [permissions.CAMERAAI],

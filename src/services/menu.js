@@ -1830,6 +1830,21 @@ export async function getLeftMenuCRM() {
           permission: [permissions.CRM],
           pro: true,
         },
+        {
+          title: 'Quản lý kịch bản chatbot',
+          key: 'chatbot',
+          children: [
+            {
+              title: 'Kịch bản chào mừng',
+              key: 'welcome-script',
+              url: ['/crm/chat/quan-ly-kich-ban-chatbot'],
+              permission: [permissions.CRM],
+              pro: true,
+            },
+          ],
+          permission: [permissions.CRM],
+          pro: true,
+        },
       ],
     },
     {
