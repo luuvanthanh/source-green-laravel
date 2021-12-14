@@ -81,8 +81,7 @@ class SeasonalContractCreateRequest extends FormRequest
             'positionId' => 'required|exists:Positions,Id',
             'workDetail' => 'required|string',
             'workTime' => 'required|string',
-            'branchId' => 'required|exists:Branches,Id',
-            'nameProject' => 'string',
+            'branchId' => 'required|exists:Branches,Id'
         ];
     }
 }

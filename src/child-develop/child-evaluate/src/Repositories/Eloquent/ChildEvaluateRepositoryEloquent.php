@@ -54,7 +54,7 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
 
     public function getAll(array $attributes)
     {
-        if (!empty($attributes['age'])) {
+        if (isset($attributes['age'])) {
             $this->model = $this->model->where('Age', $attributes['age']);
         }
 
@@ -65,6 +65,18 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         if (!empty($attributes['key'])) {
             $this->model = $this->model->whereHas('categorySkill', function ($q) use ($attributes) {
                 $q->whereLike('Name', $attributes['key']);
+            });
+        }
+
+        if (!empty($attributes['inputAssessment']) && $attributes['inputAssessment'] == 'true') {
+            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) use ($attributes) {
+                $q->where('InputAssessment', true);
+            });
+        }
+
+        if (!empty($attributes['periodicAssessment']) && $attributes['periodicAssessment'] == 'true') {
+            $this->model = $this->model->whereHas('childEvaluateDetail', function ($q) use ($attributes) {
+                $q->where('PeriodicAssessment', true);
             });
         }
 
@@ -94,7 +106,10 @@ class ChildEvaluateRepositoryEloquent extends BaseRepository implements ChildEva
         foreach ($detail as $value) {
             $value['ChildEvaluateId'] = $id;
             $detail = ChildEvaluateDetail::create($value);
-            $this->storeDetailChildrent($detail->Id, $value['detailChildren']);
+
+            if (!empty($value['detailChildren'])) {
+                $this->storeDetailChildrent($detail->Id, $value['detailChildren']);
+            }
         }
 
         return true;
