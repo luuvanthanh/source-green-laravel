@@ -1973,6 +1973,17 @@ export async function getLeftMenuChildDevelop() {
           permission: [],
           pro: true,
         },
+        {
+          title: 'Kì đánh giá',
+          key: 'assessment-period',
+          url: [
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/tao-moi',
+            '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/:id/chi-tiet',
+          ],
+          permission: [],
+          pro: true,
+        },
       ],
     },
     {

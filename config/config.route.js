@@ -2704,6 +2704,24 @@ export default [
             authority: [],
           },
           {
+            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia',
+            component: './child-develop/assessment-period',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/tao-moi',
+            component: './child-develop/assessment-period/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
+            path: '/su-phat-trien-cua-tre/danh-muc/ki-danh-gia/:id/chi-tiet',
+            component: './child-develop/assessment-period/add',
+            wrappers: ['@/wrappers/auth'],
+            authority: [],
+          },
+          {
             path: '/su-phat-trien-cua-tre/cau-hinh-kich-ban-danh-gia',
             component: './child-develop/review-scenario',
             wrappers: ['@/wrappers/auth'],
