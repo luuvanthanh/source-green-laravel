@@ -48,6 +48,7 @@ class Index extends PureComponent {
       paramaterValues: [],
       detailContract: [],
       paramaterValuesContract: [],
+      isContactSocialInsurance: false,
     };
     setIsMounted(true);
   }
@@ -295,7 +296,7 @@ class Index extends PureComponent {
       ],
       detailContract: prevState.detailContract.map((item) => ({
         ...item,
-        detail: value
+        detailContract: value
           ? [
               ...value.map((item) => {
                 const itemParamaterValues = categories.paramaterContract.find(
@@ -381,6 +382,12 @@ class Index extends PureComponent {
     });
   };
 
+  onChangeCheckbox = (value) => {
+    this.setStateData(() => ({
+      isContactSocialInsurance: value.target.checked
+    }));
+  }
+
   /**
    * Function header table
    */
@@ -433,7 +440,7 @@ class Index extends PureComponent {
   };
 
   headerContact = () => {
-    const { paramaterValuesContract } = this.state;
+    const { paramaterValuesContract, isContactSocialInsurance } = this.state;
     const columns = [
       {
         title: 'Nhân viên',
@@ -460,24 +467,34 @@ class Index extends PureComponent {
       },
     ];
     
-    const columnsMerge = isEmpty(paramaterValuesContract) ? paramaterValuesContract?.map((item) => ({
+    const columnsMerge = paramaterValuesContract?.map((item) => ({
           title: item.name,
           key: item.code,
-          className: 'min-width-200',
-          width: 200,
+          className: item.code === 'T_BHXH' ? 'min-width-80 d-flex justify-content-center' : 'min-width-200',
+          width: item.code === 'T_BHXH' ? 80 : 200,
           render: (record) => {
-            const itemParamater = record?.detail?.find((itemDetail) => itemDetail.id === item.id);
+            const itemParamater = record?.detailContract?.find((itemDetail) => itemDetail.id === item.id);
+            if(itemParamater?.code === 'T_BHXH'){
+              return (
+                <FormItem
+                  type={variables.CHECKBOX_FORM}
+                  onChange={(value) => this.onChangeCheckbox(value, record, item)}
+                  valuePropName="checked"
+                  checked={isContactSocialInsurance}
+                />
+              );
+            }
             return (
               <InputNumber
                 className={classnames('input-number', styles['input-number-container'])}
                 formatter={(value) => value.replace(variables.REGEX_NUMBER, ',')}
                 placeholder="Nhập"
-                value={itemParamater?.value || 0}
+                value={itemParamater?.valueDefault || 0}
                 onChange={(value) => this.onChangeNumberContract(value, record, item)}
               />
             );
           },
-        })) : [];
+        }));
 
     return [...columns.slice(0, 1), ...columnsMerge, ...columns.slice(1)];
   };
@@ -556,7 +573,7 @@ class Index extends PureComponent {
                   <div className="row">
                     <div className="col-lg-12">
                       <FormItem
-                        data={categories?.paramaterValues}
+                        data={Helper.convertSelectUsers(categories?.paramaterValues)}
                         label="Khai báo"
                         name="paramaterValues"
                         rules={[variables.RULES.EMPTY]}
