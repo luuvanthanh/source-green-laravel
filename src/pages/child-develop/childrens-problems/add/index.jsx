@@ -176,7 +176,7 @@ class Index extends PureComponent {
                           <FormItem label="Mã vấn đề" name="code" type={variables.INPUT} placeholder={" "} disabled />
                         </Pane>
                         <Pane className="col-lg-6">
-                          <FormItem label="Tên vấn đề khó khăn" name="name" type={variables.INPUT} />
+                          <FormItem label="Tên vấn đề khó khăn" name="name" type={variables.INPUT}  rules={[variables.RULES.EMPTY]}/>
                         </Pane>
                       </Pane>
                     </Pane>
@@ -185,7 +185,7 @@ class Index extends PureComponent {
                         <p
                           className="btn-delete"
                           role="presentation"
-                          loading={loadingSubmit}
+                        
                           onClick={() => this.cancel(params.id)}
                         >
                           Xóa
@@ -194,7 +194,7 @@ class Index extends PureComponent {
                         <p
                           className="btn-delete"
                           role="presentation"
-                          loading={loadingSubmit}
+                        
                           onClick={() => history.goBack()}
                         >
                           Hủy

@@ -27,7 +27,7 @@ const General = memo(
   ({ dispatch, loading: { effects }, match: { params }, detailsAddPost, error }) => {
     const formRef = useRef();
     const [content, setContent] = useState('');
-    const user = JSON.parse(localStorage.getItem('user'));
+    // const user = JSON.parse(localStorage.getItem('user'));
     const [files, setFiles] = useState([]);
     const mounted = useRef(false);
     const mountedSet = (action, value) => mounted?.current && action(value);
@@ -207,7 +207,7 @@ const General = memo(
                 </Pane>
 
                 <Pane className="p20 d-flex justify-content-between align-items-center ">
-                {detailsAddPost.id && user?.userID ? (
+                {params.detailId ? (
                         <p
                           className="btn-delete"
                           role="presentation"
@@ -222,7 +222,7 @@ const General = memo(
                           role="presentation"
                           loading={loadingSubmit}
                           onClick={() => history.goBack()}
-                        >
+                        >git 
                           Hủy
                         </p>
                       )}

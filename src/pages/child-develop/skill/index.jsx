@@ -204,7 +204,7 @@ const Index = memo(() => {
   return (
     <>
       <Helmet title="Kỹ năng" />
-      <Pane className="p20">
+      <Pane className="pl20 pr20 pb20">
         <Pane className=" mb20">
           <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
             <Text color="dark">Kỹ năng</Text>

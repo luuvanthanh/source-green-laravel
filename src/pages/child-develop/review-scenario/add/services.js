@@ -1,29 +1,48 @@
 import request from '@/utils/requestLavarel';
+import { Helper } from '@/utils';
 
 export function add(data = {}) {
-  return request('/v1/status-parent-leads', {
+  return request('/v1/child-evaluates', {
     method: 'POST',
     data,
   });
 }
 
 export function update(data = {}) {
-  return request(`/v1/status-parent-leads/${data.id}`, {
+  return request(`/v1/child-evaluates/${data.id}`, {
     method: 'PUT',
-    data,
+    data: {
+      ...data,
+    },
     parse: true,
   });
 }
 
-export function details(data = {}) {
-  return request(`/v1/status-parent-leads/${data.id}`, {
+export function getData(params = {}) {
+  return request(`/v1/child-evaluates/${params.id}`, {
     method: 'GET',
+    params: {
+      ...params,
+      include: Helper.convertIncludes([
+        'childEvaluateDetail.childEvaluateDetailChildrent',
+        'childEvaluateDetailChildrent',
+      ]),
+    },
   });
 }
 
 export function remove(id = {}) {
-  return request(`/v1/status-parent-leads/${id}`, {
+  return request(`/v1/child-evaluates/${id}`, {
     method: 'DELETE',
     parse: true,
+  });
+}
+
+export function getSkill() {
+  return request(`/v1/category-skills`, {
+    method: 'GET',
+    params: {
+      orderBy: 'Name',
+    },
   });
 }

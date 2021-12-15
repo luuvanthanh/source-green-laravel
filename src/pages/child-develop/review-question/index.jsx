@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const Index = memo(() => {
   const {
-    loading,
+    loading: { effects },
   } = useSelector(({ loading, childDevelopReviewQuestion }) => ({
     loading,
     colorTags: childDevelopReviewQuestion.colorTags,
@@ -30,16 +30,16 @@ const Index = memo(() => {
       question: "",
     },
   ]);
-
+  const loadingSubmit = effects[`childDevelopReviewQuestion/ADD`];
   const onFinish = () => {
     const items = data.map((item) => ({
       ...item,
       question: item.question,
     }));
     const payload = {
-      create_rows: items.filter((item) => !item.id),
-      update_rows: items.filter((item) => item.id),
-      delete_rows: remove,
+      createRows: items.filter((item) => !item.id),
+      updateRows: items.filter((item) => item.id),
+      deleteRows: remove,
     };
     dispatch({
       type: 'childDevelopReviewQuestion/ADD',
@@ -173,18 +173,17 @@ const Index = memo(() => {
                 <p
                   className="btn-delete mr10"
                   role="presentation"
+                  loading={loadingSubmit}
                   onClick={() => setData(data.filter((val) => (val.key || val.id)))}
                 >
                   Hủy thay đổi
                 </p>
                 <Button
-                  loading={
-                    loading['childDevelopReviewQuestion/ADD']
-                  }
                   className="px25"
-                  color="success"
+                  color="success" 
                   htmlType="submit"
                   size="large"
+                  loading={loadingSubmit}
                 >
                   Lưu
                 </Button>
