@@ -54,11 +54,7 @@ class AssessmentPeriodTransformer extends BaseTransformer
 
     public function includeBranch(AssessmentPeriod $assessmentPeriod)
     {
-        if (empty($assessmentPeriod->branch)) {
-            return;
-        }
-
-        return $this->item($assessmentPeriod->branch, new BranchTransformer, 'Branch');
+        return $this->collection($assessmentPeriod->branch, new BranchTransformer, 'Branch');
     }
 
     public function includeSchoolYear(AssessmentPeriod $assessmentPeriod)

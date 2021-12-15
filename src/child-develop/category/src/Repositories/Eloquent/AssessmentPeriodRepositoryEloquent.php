@@ -78,6 +78,10 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
 
         $assessmentPeriod = AssessmentPeriod::create($attributes);
 
+        if (!empty($attributes['branchId'])) {
+            $assessmentPeriod->branch()->sync($attributes['branchId']);
+        }
+
         if (!empty($attributes['classesId'])) {
             $assessmentPeriod->classes()->sync($attributes['classesId']);
         }
@@ -89,6 +93,11 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
     {
         $assessmentPeriod = AssessmentPeriod::find($id);
         $assessmentPeriod->update($attributes);
+
+        if (!empty($attributes['branchId'])) {
+            $assessmentPeriod->branch()->detach();
+            $assessmentPeriod->branch()->sync($attributes['branchId']);
+        }
 
         if (!empty($attributes['classesId'])) {
             $assessmentPeriod->classes()->detach();
@@ -102,6 +111,7 @@ class AssessmentPeriodRepositoryEloquent extends BaseRepository implements Asses
     {
         $assessmentPeriod = AssessmentPeriod::find($id);
         $assessmentPeriod->classes()->detach();
+        $assessmentPeriod->branch()->detach();
         $assessmentPeriod->delete();
 
         return $this->parserResult($assessmentPeriod);
