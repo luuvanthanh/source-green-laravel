@@ -17,7 +17,7 @@ class CreateChildrenTable extends Migration
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
             $table->uuid('EmployeeId');
-            $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
+            // $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
             $table->string('FullName');
             $table->date('Birthday');
             $table->string('Status')->default('ON');
@@ -34,6 +34,6 @@ class CreateChildrenTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('Children');
+        Schema::dropIfExists('Childrens');
     }
 }

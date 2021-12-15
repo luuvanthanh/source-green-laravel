@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateHealthInsurancesTable extends Migration
+class CreateAssessmentPeriodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateHealthInsurancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('HealthInsurances', function (Blueprint $table) {
+        Schema::create('AssessmentPeriods', function (Blueprint $table) {
             $table->uuid('Id')->index()->unique();
             $table->primary('Id');
-            $table->string('InsuranceNumber');
-            $table->string('MedicalTreatmentPlace');
-            $table->uuid('EmployeeId');
-            // $table->foreign('EmployeeId')->references('Id')->on('Employees')->onDelete('SET NULL');
+            $table->string('Code');
+            $table->string('Name');
+            $table->uuid('SchoolYearId')->nullable();
+            $table->date('StartDate');
+            $table->date('EndDate');
+            $table->uuid('BranchId');
+            $table->boolean('Use')->default('false');
             $table->timestamp('CreationTime', 0)->nullable();
             $table->timestamp('LastModificationTime', 0)->nullable();
         });
@@ -32,6 +35,6 @@ class CreateHealthInsurancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('HealthInsurances');
+        Schema::dropIfExists('AssessmentPeriods');
     }
 }

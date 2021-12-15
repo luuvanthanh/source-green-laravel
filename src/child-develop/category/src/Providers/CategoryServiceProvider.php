@@ -2,12 +2,14 @@
 
 namespace GGPHP\ChildDevelop\Category\Providers;
 
+use GGPHP\ChildDevelop\Category\Repositories\Contracts\AssessmentPeriodRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryChildIssueRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategoryQuestionParentRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Contracts\CategorySkillRepository;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategoryChildIssueRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategoryQuestionParentRepositoryEloquent;
 use GGPHP\ChildDevelop\Category\Repositories\Eloquent\CategorySkillRepositoryEloquent;
+use GGPHP\ChildDevelop\Category\Repositories\Eloquent\AssessmentPeriodRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
 class CategoryServiceProvider extends ServiceProvider
@@ -34,5 +36,6 @@ class CategoryServiceProvider extends ServiceProvider
         $this->app->bind(CategorySkillRepository::class, CategorySkillRepositoryEloquent::class);
         $this->app->bind(CategoryChildIssueRepository::class, CategoryChildIssueRepositoryEloquent::class);
         $this->app->bind(CategoryQuestionParentRepository::class, CategoryQuestionParentRepositoryEloquent::class);
+        $this->app->bind(AssessmentPeriodRepository::class, AssessmentPeriodRepositoryEloquent::class);
     }
 }

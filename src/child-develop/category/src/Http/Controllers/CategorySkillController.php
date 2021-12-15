@@ -3,6 +3,7 @@
 namespace GGPHP\ChildDevelop\Category\Http\Controllers;
 
 use GGPHP\ChildDevelop\Category\Http\Requests\CreateCategorySkillRequest;
+use GGPHP\ChildDevelop\Category\Http\Requests\DeleteCategorySkillRequest;
 use GGPHP\ChildDevelop\Category\Http\Requests\UpdateCategorySkillRequest;
 use Illuminate\Http\Request;
 use GGPHP\Core\Http\Controllers\Controller;
@@ -74,7 +75,7 @@ class CategorySkillController extends Controller
     public function update(UpdateCategorySkillRequest $request, $id)
     {
         $credentials = $request->all();
-        
+
         $categorySkill = $this->categorySkillRepository->update($credentials, $id);
 
         return $this->success($categorySkill, trans('lang::messages.common.modifySuccess'));
@@ -86,7 +87,7 @@ class CategorySkillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteCategorySkillRequest $request, $id)
     {
         $this->categorySkillRepository->delete($id);
 
