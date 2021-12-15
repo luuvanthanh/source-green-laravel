@@ -1,37 +1,9 @@
-// import * as services from './services';
+import * as services from './services';
 
 export default {
   namespace: 'childDevelopAssessmentPeriod',
   state: {
-    data: [
-      {
-        id: 1,
-        key: 1,
-        code: "KN01",
-        name: "Học kì I",
-        date: "2018 - 2019",
-        time: "01/01/2019 - 31/01/2019 ",
-        use: true
-      },
-      {
-        id: 2,
-        key: 2,
-        code: "KN02",
-        name: "Học kì I",
-        date: "2018 - 2019",
-        time: "01/01/2019 - 31/01/2019 ",
-        use: false
-      },
-      {
-        id: 3,
-        key: 3,
-        code: "KN03",
-        name: "Học kì I",
-        date: "2018 - 2019",
-        time: "01/01/2019 - 31/01/2019 ",
-        use: true
-      }
-    ],
+    data: [],
     pagination: {
       total: 0,
     },
@@ -58,30 +30,30 @@ export default {
     }),
   },
   effects: {
-    // *GET_DATA({ payload }, saga) {
-    //   try {
-    //     const response = yield saga.call(services.get, payload);
-    //     if (response) {
-    //       yield saga.put({
-    //         type: 'SET_DATA',
-    //         payload: response,
-    //       });
-    //     }
-    //   } catch (error) {
-    //     yield saga.put({
-    //       type: 'SET_ERROR',
-    //       payload: error.data,
-    //     });
-    //   }
-    // },
-    // *REMOVE({ payload, callback }, saga) {
-    //   try {
-    //     yield saga.call(services.remove, payload.id);
-    //     callback(payload);
-    //   } catch (error) {
-    //     callback(null, error);
-    //   }
-    // },
+    *GET_DATA({ payload }, saga) {
+      try {
+        const response = yield saga.call(services.get, payload);
+        if (response) {
+          yield saga.put({
+            type: 'SET_DATA',
+            payload: response,
+          });
+        }
+      } catch (error) {
+        yield saga.put({
+          type: 'SET_ERROR',
+          payload: error.data,
+        });
+      }
+    },
+    *REMOVE({ payload, callback }, saga) {
+      try {
+        yield saga.call(services.remove, payload.id);
+        callback(payload);
+      } catch (error) {
+        callback(null, error);
+      }
+    },
   },
   subscriptions: {},
 };
