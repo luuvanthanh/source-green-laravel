@@ -48,7 +48,7 @@ class Index extends PureComponent {
       paramaterValues: [],
       detailContract: [],
       paramaterValuesContract: [],
-      is_BHXH: false,
+      isContactSocialInsurance: false,
     };
     setIsMounted(true);
   }
@@ -384,7 +384,7 @@ class Index extends PureComponent {
 
   onChangeCheckbox = (value) => {
     this.setStateData(() => ({
-      is_BHXH: value.target.checked
+      isContactSocialInsurance: value.target.checked
     }));
   }
 
@@ -440,7 +440,7 @@ class Index extends PureComponent {
   };
 
   headerContact = () => {
-    const { paramaterValuesContract, is_BHXH } = this.state;
+    const { paramaterValuesContract, isContactSocialInsurance } = this.state;
     const columns = [
       {
         title: 'Nhân viên',
@@ -480,7 +480,7 @@ class Index extends PureComponent {
                   type={variables.CHECKBOX_FORM}
                   onChange={(value) => this.onChangeCheckbox(value, record, item)}
                   valuePropName="checked"
-                  checked={is_BHXH}
+                  checked={isContactSocialInsurance}
                 />
               );
             }

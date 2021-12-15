@@ -52,7 +52,8 @@ export const variables = {
       max: 12,
       message: 'Trường này tối đa 12',
     },
-    MIN_LENGTH_INPUT: { type: 'number', min: 0, message: 'Trường này tối thiểu 1' },
+    MIN_LENGTH_INPUT: { type: 'number', min: 1, message: 'Trường này tối thiểu 1' },
+    MAX_LENGTH_INPUT_DATE: { type: 'number', min: 0, max: 365, message: 'Số ngày không được quá 12 tháng' },
     // TODO: Rename
     MAX_LENGTH_255: { max: 255, message: 'Trường này không quá 255 kí tự' },
     MAX_NUMBER: { max: 15, message: 'Trường này không quá 15 kí tự' },
